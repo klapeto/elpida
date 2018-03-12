@@ -49,20 +49,37 @@ namespace Elpida
 
 	std::unordered_map<std::string, std::string> _featuresNames = {
 			{ "CMOV", "Conditional move instructions" },
-			{ "MMX", "MMX instruction support" },
+			{ "MMX", "MMX instructions support" },
 			{ "MmxExt", "AMD extensions to MMX instructions" },
-			{ "SSE", "SSE instruction support" },
-			{ "SSE2", "SSE2 instruction support" },
-			{ "SSE3", "SSE3 instruction support" },
-			{ "SSSE3", "Supplemental SSE3 instruction support" },
-			{ "SSE41", "SSE4.1 instruction support" },
-			{ "SSE42", "SSE4.2 instruction support" },
-			{ "SSE4A", "SSE4A instruction support" },
-			{ "FMA", "FMA instruction support" },
-			{ "FMA4", "Four-operand FMA instruction support" },
-			{ "AES", "AES instruction support" },
-			{ "AVX", "AVX instruction support" },
-			{ "AVX2", "AVX2 instruction support" },
+			{ "SSE", "SSE instructions support" },
+			{ "SSE2", "SSE2 instructions support" },
+			{ "SSE3", "SSE3 instructions support" },
+			{ "SSSE3", "Supplemental SSE3 instructions support" },
+			{ "SSE41", "SSE4.1 instructions support" },
+			{ "SSE42", "SSE4.2 instructions support" },
+			{ "SSE4A", "SSE4A instructions support" },
+			{ "FMA", "FMA instructions support" },
+			{ "FMA4", "Four-operand FMA instructions support" },
+			{ "AES", "AES instructions support" },
+			{ "AVX", "AVX instructions support" },
+			{ "AVX2", "AVX2 instructions support" },
+			{ "AVX512-F", "AVX512 Fountation" },
+			{ "AVX512-BW", "AVX-512 Byte and Word instructions support" },
+			{ "AVX512-DQ", "AVX-512 DWORD and QWORD instructions support" },
+			{ "AVX512-IFMA", "AVX-512 Integer FMA instructions support" },
+			{ "AVX512-PF", "AVX-512 Prefetch instructions support" },
+			{ "AVX512-ER", "AVX-512 Exp. and Recp. instructions support" },
+			{ "AVX512-CD", "AVX-512 Conflict Detection instructions support" },
+			{ "AVX512-VBMI", "AVX-512 Vector BMI instructions support" },
+			{ "AVX512-VBMI2", "AVX-512 Vector BMI2 instructions suppport" },
+			{ "AVX512-VNNI", "AVX-512 Vector Neural Network instructions support" },
+			{ "AVX512-4VNNIW", "AVX-512 4-register Neural Network instructions support" },
+			{ "AVX512-BITALG", "AVX-512 BITALG instructions support" },
+			{ "AVX512-VL", "AVX-512 Vector Length Extensions support" },
+			{ "AVX512-VPOPCNTDQ", "AVX-512 Vector Population Count D/Q support" },
+			{ "AVX512-4FMAPS", "AVX-512 4-register Multiply Accumulation Single precision support" },
+			{ "SHA", "Intel SHA extensions support" },
+			{ "VAES", "Vector AES instruction set (VEX-256/EVEX) support" },
 			{ "XOP", "Extended operation support" },
 			{ "3DNow", "3DNow! instruction support" },
 			{ "3DNowExt", "AMD extensions to 3DNow! instructions" },
@@ -71,7 +88,27 @@ namespace Elpida
 			{ "BMI2", "Bit manipulation group 2 instruction support" },
 			{ "ABM", "Advanced bit manipulation" },
 			{ "F16C", "Half-precision convert instruction support" },
-			{ "RDRAND", "RDRAND (HW RNG) instruction support" } };
+			{ "RDRAND", "RDRAND (HW RNG) instruction support" }, };
+
+	std::string amdCacheAssociativities[] = {
+			"Disabled",
+			"Direct mapped",
+			"2-Way",
+			"",
+			"4-Way",
+			"",
+			"8-Way",
+			"",
+			"16-Way",
+			"",
+			"32-Way",
+			"48-Way",
+			"64-Way",
+			"96-Way",
+			"128-Way",
+			"Fully" };
+
+	std::string intelCacheTypes[] = { "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
 
 	CpuInfo::CpuInfo() :
 			_vendor(Vendor::Unknown), _model(-1), _family(-1), _baseFequency(0), _cacheLineSize(-1), _physicalCores(1), _logicalProcessors(
@@ -152,7 +189,11 @@ namespace Elpida
 			default:
 				break;
 		}
-		getCpuFrequency();
+
+		if (_rdtscp)
+		{
+			getCpuFrequency();
+		}
 	}
 
 	CpuInfo::~CpuInfo()
@@ -173,23 +214,39 @@ namespace Elpida
 		out("Family:", _family);
 		out("Stepping:", _stepping);
 		out("Hyper Threading:", (_hyperThreading ? "true" : "false"));
+		out("Turbo Boost:", (_turboBoost ? "true" : "false"));
+		out("Turbo Boost 3:", (_turboBoost3 ? "true" : "false"));
 		out("Logical Cores:", _logicalProcessors);
-		out("Physical Cores:", _physicalCores);
 
 		output << _newLine << _newLine << "CPU Instructions Extensions:" << _newLine;
-		TextTable<3> outputTable =
-				{ TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
 
-		outputTable.setPadding(4);
-		for (auto instruction : _instructionExtensions)
 		{
-			outputTable.addRow(
-					{
-							instruction.getDescription(),
-							instruction.getName(),
-							(instruction.isSupported() ? "true" : "false") });
+			TextTable<3> outputTable = { TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported",
+					10) };
+
+			outputTable.setPadding(4);
+			for (auto instruction : _instructionExtensions)
+			{
+				outputTable.addRow(
+						{ instruction.getDescription(), instruction.getName(), (
+								instruction.isSupported() ? "true" : "false") });
+			}
+			outputTable.exportTo(output);
 		}
-		outputTable.exportTo(output);
+
+		output << _newLine << _newLine << "CPU Caches:" << _newLine << _newLine;
+
+		for (auto cache : _caches)
+		{
+			out(cache.name, "");
+			out("-------------------------", "");
+			out("Size: ", std::to_string(cache.size / 1000) + " KB");
+			out("Associativity: ", cache.associativity);
+			out("Lines per tag: ", cache.linesPerTag);
+			out("Line size: ", std::to_string(cache.lineSize) + " Bytes");
+			output << _newLine;
+		}
+
 	}
 
 	void CpuInfo::getCpuFrequency()
@@ -250,13 +307,35 @@ namespace Elpida
 
 		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "AES", ecx, 25);
-		addFeature(_instructionExtensions, "AVX", ecx, 25);
+		addFeature(_instructionExtensions, "AVX", ecx, 28);
 
 		if (_maximumStandardFunction >= 7)
 		{
 			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
-			addFeature(_instructionExtensions, "AVX2", ebx, 5);
 		}
+		else
+		{
+			eax = ebx = ecx = edx = 0;
+		}
+		addFeature(_instructionExtensions, "AVX2", ebx, 5);
+		// Not supported by AMD
+		addFeature(_instructionExtensions, "AVX512-F", 0, 0);
+		addFeature(_instructionExtensions, "AVX512-BW", 0, 0);
+		addFeature(_instructionExtensions, "AVX512-DQ", 0, 0);
+		addFeature(_instructionExtensions, "AVX512-IFMA", 0, 0);
+		addFeature(_instructionExtensions, "AVX512-PF", 0, 0);
+		addFeature(_instructionExtensions, "AVX512-ER", 0, 0);
+		addFeature(_instructionExtensions, "AVX512-CD", 0, 0);
+		addFeature(_instructionExtensions, "AVX512-VBMI", 0, 0);
+		//addFeature(_instructionExtensions, "AVX512-VBMI2", 0, 0);
+		//addFeature(_instructionExtensions, "AVX512-VNNI", 0, 0);
+		//addFeature(_instructionExtensions, "AVX512-4VNNIW", 0, 0);
+		//addFeature(_instructionExtensions, "AVX512-BITALG", 0, 0);
+		//addFeature(_instructionExtensions, "AVX512-VL", 0, 0);
+		//addFeature(_instructionExtensions, "AVX512-VPOPCNTDQ", 0, 0);
+		//addFeature(_instructionExtensions, "AVX512-4FMAPS", 0, 0);
+		addFeature(_instructionExtensions, "SHA", 0, 0);
+		//addFeature(_instructionExtensions, "VAES", 0, 0);
 
 		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "XOP", ecx, 11);
@@ -267,9 +346,14 @@ namespace Elpida
 		if (_maximumStandardFunction >= 7)
 		{
 			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
-			addFeature(_instructionExtensions, "BMI1", ebx, 3);
-			addFeature(_instructionExtensions, "BMI2", ebx, 8);
 		}
+		else
+		{
+			eax = ebx = ecx = edx = 0;
+		}
+
+		addFeature(_instructionExtensions, "BMI1", ebx, 3);
+		addFeature(_instructionExtensions, "BMI2", ebx, 8);
 
 		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "ABM", ecx, 5);
@@ -283,6 +367,49 @@ namespace Elpida
 			__get_cpuid(0x80000008, &eax, &ebx, &ecx, &edx);
 			_physicalCores = getRegisterValue(ecx, 0, 0xFF) + 1;
 		}
+
+		if (_maximumExtendedFunction >= 0x80000005)
+		{
+
+			__get_cpuid(0x80000005, &eax, &ebx, &ecx, &edx);
+			Cache tmpCache;
+
+			tmpCache.name = "L1 Instruction Cache (Per Core)";
+			tmpCache.size = (getRegisterValue(edx, 24, 0xFF) * 1000);
+			tmpCache.associativity = std::to_string(getRegisterValue(edx, 16, 0xFF)) + "-way";
+			tmpCache.linesPerTag = getRegisterValue(edx, 8, 0xFF);
+			tmpCache.lineSize = getRegisterValue(edx, 0, 0xFF);
+			_caches.push_back(tmpCache);
+
+			tmpCache.name = "L1 Data Cache (Per Core)";
+			tmpCache.size = (getRegisterValue(ecx, 24, 0xFF) * 1000);
+			tmpCache.associativity = std::to_string(getRegisterValue(ecx, 16, 0xFF)) + "-way";
+			tmpCache.linesPerTag = getRegisterValue(ecx, 8, 0xFF);
+			tmpCache.lineSize = getRegisterValue(ecx, 0, 0xFF);
+			_caches.push_back(tmpCache);
+
+			__get_cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
+
+			tmpCache.name = "L2 Cache (Per Core)";
+			tmpCache.size = (getRegisterValue(ecx, 16, 0xFFFF) * 1000);
+			tmpCache.associativity = amdCacheAssociativities[getRegisterValue(ecx, 12, 0xF)];
+			tmpCache.linesPerTag = getRegisterValue(ecx, 8, 0xF);
+			tmpCache.lineSize = getRegisterValue(ecx, 0, 0xFF);
+			_caches.push_back(tmpCache);
+
+			tmpCache.name = "L3 Cache (Shared)";
+			tmpCache.size = (getRegisterValue(edx, 18, 0x3FFF) * 512000);
+			tmpCache.associativity = amdCacheAssociativities[getRegisterValue(edx, 12, 0xF)];
+			tmpCache.linesPerTag = getRegisterValue(edx, 8, 0xF);
+			tmpCache.lineSize = getRegisterValue(edx, 0, 0xFF);
+			_caches.push_back(tmpCache);
+		}
+
+		if (_maximumExtendedFunction >= 0x80000007)
+		{
+			__get_cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
+			_turboBoost = featureCheck(edx, 9);
+		}
 	}
 
 	void CpuInfo::getIntelFeatures()
@@ -290,6 +417,119 @@ namespace Elpida
 		unsigned eax, ebx, edx, ecx;
 		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
 		_rdtscp = featureCheck(edx, 4);
+		if (_hyperThreading)
+		{
+			_logicalProcessors = getRegisterValue(edx, 16, 0xFF);
+		}
+		else
+		{
+			_logicalProcessors = _physicalCores;
+		}
+
+		addFeature(_instructionExtensions, "CMOV", edx, 15);
+		addFeature(_instructionExtensions, "MMX", edx, 23);
+		addFeature(_instructionExtensions, "MmxExt", 0, 0);	// Not supported by Intel
+		addFeature(_instructionExtensions, "SSE", edx, 25);
+		addFeature(_instructionExtensions, "SSE2", edx, 26);
+		addFeature(_instructionExtensions, "SSE3", ecx, 0);
+		addFeature(_instructionExtensions, "SSSE3", ecx, 9);
+		addFeature(_instructionExtensions, "SSE41", ecx, 19);
+		addFeature(_instructionExtensions, "SSE42", ecx, 20);
+		addFeature(_instructionExtensions, "SSE4A", 0, 0);	// Not supported by Intel
+		addFeature(_instructionExtensions, "FMA", ecx, 12);
+		addFeature(_instructionExtensions, "FMA4", 0, 0);	// Not supported by Intel
+		addFeature(_instructionExtensions, "AES", ecx, 25);
+		addFeature(_instructionExtensions, "AVX", ecx, 28);
+
+		if (_maximumStandardFunction >= 7)
+		{
+			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
+		}
+		else
+		{
+			eax = ebx = ecx = edx = 0;
+		}
+
+		addFeature(_instructionExtensions, "AVX2", ebx, 5);
+		addFeature(_instructionExtensions, "AVX512-F", ebx, 16);
+		addFeature(_instructionExtensions, "AVX512-BW", ebx, 30);
+		addFeature(_instructionExtensions, "AVX512-DQ", ebx, 17);
+		addFeature(_instructionExtensions, "AVX512-IFMA", ebx, 21);
+		addFeature(_instructionExtensions, "AVX512-PF", ebx, 26);
+		addFeature(_instructionExtensions, "AVX512-ER", ebx, 27);
+		addFeature(_instructionExtensions, "AVX512-CD", ebx, 28);
+		addFeature(_instructionExtensions, "AVX512-VBMI", ecx, 1);
+
+		// The bellow are not written in intel documentation, seen on wikipedia (CPUID)
+		// its better to  disable for now
+		//addFeature(_instructionExtensions, "AVX512-VBMI2", ecx, 6);
+		//addFeature(_instructionExtensions, "AVX512-VNNI", ecx, 11);
+		//addFeature(_instructionExtensions, "AVX512-4VNNIW", edx, 2);
+		//addFeature(_instructionExtensions, "AVX512-BITALG", ecx, 12);
+		//addFeature(_instructionExtensions, "AVX512-VPOPCNTDQ", ecx, 14);
+		//addFeature(_instructionExtensions, "AVX512-4FMAPS", edx, 3);
+		addFeature(_instructionExtensions, "SHA", ebx, 29);
+		//addFeature(_instructionExtensions, "VAES", ecx, 9);
+
+		addFeature(_instructionExtensions, "XOP", 0, 0);
+		addFeature(_instructionExtensions, "3DNow", 0, 0);
+		addFeature(_instructionExtensions, "3DNowExt", 0, 0);
+		addFeature(_instructionExtensions, "3DNowPrefetch", 0, 0);
+		addFeature(_instructionExtensions, "BMI", ebx, 3);
+		addFeature(_instructionExtensions, "BMI2", ebx, 8);
+		addFeature(_instructionExtensions, "ABM", 0, 0);
+
+		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
+		addFeature(_instructionExtensions, "F16C", ecx, 29);
+		addFeature(_instructionExtensions, "RDRAND", ecx, 30);
+
+		for (int i = 2; i <= 4; ++i)
+		{
+			__get_cpuid(0x80000002 + i, &eax, &ebx, &ecx, &edx);
+			_processorBrand.append((char*) (&eax), 4);
+			_processorBrand.append((char*) (&ebx), 4);
+			_processorBrand.append((char*) (&ecx), 4);
+			_processorBrand.append((char*) (&edx), 4);
+		}
+
+		if (_maximumStandardFunction >= 0x6)
+		{
+			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
+			_turboBoost = featureCheck(eax, 1);
+			_turboBoost3 = featureCheck(eax, 14);
+		}
+
+		if (_maximumStandardFunction >= 0x4)
+		{
+
+			int i = 0;
+
+			while (true)
+			{
+				__asm__ volatile ("movl %0, %%ecx;"
+						:
+						: "r" (i));
+
+				__get_cpuid(0x4, &eax, &ebx, &ecx, &edx);
+
+				if (getRegisterValue(eax, 0, 0x1F) == 0) break;
+
+				Cache tmpCache;
+
+				tmpCache.name = "L" + std::to_string(getRegisterValue(eax, 5, 0x7)) + " "
+						+ intelCacheTypes[getRegisterValue(eax, 0, 0x1F) < 4 ? getRegisterValue(eax, 0, 0x1F) : 0];
+
+				tmpCache.size = (getRegisterValue(ebx, 22, 0x3FF) + 1) * (getRegisterValue(ebx, 12, 0x3FF) + 1)
+						* (getRegisterValue(ebx, 0, 0xFFF) + 1) * (getRegisterValue(ecx, 0, 0x7FFFFFFF) + 1);
+
+				tmpCache.associativity = std::to_string((getRegisterValue(ebx, 22, 0x3FF) + 1)) + "-way";
+				tmpCache.linesPerTag = (getRegisterValue(ebx, 12, 0x3FF) + 1);
+				tmpCache.lineSize = (getRegisterValue(ebx, 0, 0xFFF) + 1);
+				_caches.push_back(tmpCache);
+				i++;
+			}
+
+		}
 
 	}
 

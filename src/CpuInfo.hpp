@@ -41,6 +41,14 @@ namespace Elpida
 	{
 		public:
 
+			struct Cache {
+				std::string name;
+				std::string associativity;
+				int size;
+				int linesPerTag;
+				int lineSize;
+			};
+
 			enum class Vendor
 			{
 				AMD, Intel, Unknown
@@ -126,6 +134,7 @@ namespace Elpida
 
 		private:
 			std::vector<CpuFeature> _instructionExtensions;
+			std::vector<Cache> _caches;
 			std::string _vendorString;
 			std::string _processorBrand;
 
@@ -142,6 +151,8 @@ namespace Elpida
 			unsigned _maximumExtendedFunction;
 			bool _hyperThreading;
 			bool _rdtscp;
+			bool _turboBoost;
+			bool _turboBoost3;
 
 			CpuInfo();
 			~CpuInfo();
