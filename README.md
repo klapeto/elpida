@@ -1,6 +1,6 @@
 # Elpida
 
-Elpida is a x86 benchmarking tool, aimed to be transparent and as accurate as can be.
+Elpida is a x86 CPU/Algorithm benchmarking tool, aimed to be as transparent and as accurate as can be.
 To fully test the capabilities of the CPU, the benchmark is offered to be compiled the the specific architecture that it currently runs (eg. -march=native).
 
 
@@ -18,6 +18,7 @@ To fully test the capabilities of the CPU, the benchmark is offered to be compil
 1.  install Meson
 
 `sudo apt install python3 ninja-build python3-pip`
+
 `pip3 install --user meson`
 
 2.  Run the build script

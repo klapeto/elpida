@@ -16,39 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
-conf_data = configuration_data()
-
-conf_data.set('_elpida_compiler_string', '"' + gpp.get_id() + ' ' + gpp.version() + '"')
-
-if build_machine.system() == 'linux'
-	conf_data.set('_elpida_linux', 1)
-else
-	if build_machine.system() == 'windows'
-		conf_data.set('_elpida_windows', 1)
-	endif
-endif
-
-conf_data.set('_elpida_version_string', '"' + meson.project_version() + '"')
-
-configure_file(	input: 'Config.hpp.in',
-				output : 'Config.hpp',
-				configuration : conf_data)
-
-
-
-subdir('Utilities')
-subdir('Tasks')
-
-core_sources = ['CpuFeature.cpp',
-				'CpuInfo.cpp',
-				'Exportable.cpp', 
-				'MultiThreadTask.cpp',
-				'Runner.cpp',
-				'SingleThreadTask.cpp',
-				'Task.cpp',
-				'TaskBatch.cpp',
-				'TaskThread.cpp']
-
-core = static_library('Core', 
-						core_sources,
+imageLoader_sources = ['LibPngLoader.cpp']
+imageLoader = static_library('ImageLoader', 
+						imageLoader_sources,
+						link_with: libpng,
 						include_directories : inc)

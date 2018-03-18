@@ -18,46 +18,55 @@
 *************************************************************************/
 
 /*
- * IExportable.hpp
+ * MultiThreadTask.hpp
  *
- *  Created on: 10 Μαρ 2018
+ *  Created on: 17 Μαρ 2018
  *      Author: klapeto
  */
 
-#ifndef SRC_EXPORTABLE_HPP_
-#define SRC_EXPORTABLE_HPP_
+#ifndef SRC_MULTITHREADTASK_HPP_
+#define SRC_MULTITHREADTASK_HPP_
 
-#include <ostream>
-#include <string>
+#include "Task.hpp"
+#include "TaskThread.hpp"
+#include <mutex>
+#include <condition_variable>
+#include <vector>
 
 namespace Elpida
 {
 
-	class Exportable
+	class MultiThreadTask: public Task
 	{
 		public:
-			virtual void setPadding(int spaces)
+
+			void run()
 			{
-				_newLine = "\n";
-				for (int i = 0; i < spaces; ++i)
+				std::unique_lock<std::mutex> lock(_mutex);
+				for (auto& task : _tasksToBeExecuted)
 				{
-					_newLine += ' ';
+					task.getReadyToStart();
+				}
+				lock.unlock();
+				for (auto& task : _tasksToBeExecuted)
+				{
+					task.join();
 				}
 			}
 
-			virtual void exportTo(std::ostream& output) const = 0;
+			MultiThreadTask(const std::vector<Task*>& tasks, bool strictAffinity);
+			virtual ~MultiThreadTask();
 
-			Exportable()
-			{
-			}
-
-			virtual ~Exportable()
-			{
-			}
-		protected:
-			std::string _newLine = "\n";
+			MultiThreadTask(MultiThreadTask&&) = default;
+			MultiThreadTask(const MultiThreadTask&) = default;
+			MultiThreadTask& operator=(MultiThreadTask&&) = default;
+			MultiThreadTask& operator=(const MultiThreadTask&) = default;
+		private:
+			std::mutex _mutex;
+			std::vector<TaskThread> _tasksToBeExecuted;
+			bool _strictAffinity;
 	};
 
 } /* namespace Elpida */
 
-#endif /* SRC_EXPORTABLE_HPP_ */
+#endif /* SRC_MULTITHREADTASK_HPP_ */

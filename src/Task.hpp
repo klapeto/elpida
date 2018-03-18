@@ -17,31 +17,50 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>
 *************************************************************************/
 
-#include <xmmintrin.h>
-#include <iostream>
+/*
+ * Task.hpp
+ *
+ *  Created on: 17 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Config.hpp"
-#include "CpuInfo.hpp"
-#include "Utilities/TextRow.hpp"
-#include "Utilities/TextTable.hpp"
+#ifndef SRC_TASK_HPP_
+#define SRC_TASK_HPP_
 
-using namespace Elpida;
+#include <string>
 
-int main(int argc, char** argv)
+namespace Elpida
 {
 
-	_mm_setcsr(_mm_getcsr() | 0x8040);
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	class Task
+	{
+		public:
 
-	TextTable<2> infoTable = { TextColumn { "Elpida", 15 }, TextColumn { "", 15 } };
-	infoTable.addRow(TextRow<2> { "Version:", _elpida_version_string });
-	infoTable.addRow(TextRow<2> { "Build with:", _elpida_compiler_string });
-	infoTable.setPadding(4);
-	infoTable.setDrawBorders(true);
-	infoTable.exportTo(std::cout);
+			inline const std::string& getName() const
+			{
+				return _name;
+			}
 
-	CpuInfo::getCpuInfo().exportTo(std::cout);
+			virtual void run() = 0;
 
-	return 0;
-}
+			Task(const std::string& name) :
+					_name(name)
+			{
 
+			}
+			virtual ~Task()
+			{
+
+			}
+
+			Task(Task&&) = default;
+			Task(const Task&) = default;
+			Task& operator=(Task&&) = default;
+			Task& operator=(const Task&) = default;
+		private:
+			std::string _name;
+	};
+
+} /* namespace Elpida */
+
+#endif /* SRC_TASK_HPP_ */

@@ -18,15 +18,65 @@
 *************************************************************************/
 
 /*
- * TextTable.cpp
+ * ElpidaException.hpp
  *
- *  Created on: 11 Μαρ 2018
+ *  Created on: 13 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "Utilities/TextTable.hpp"
+#ifndef SRC_UTILITIES_ELPIDAEXCEPTION_HPP_
+#define SRC_UTILITIES_ELPIDAEXCEPTION_HPP_
 
+#include <string>
 namespace Elpida
 {
 
+	class ElpidaException
+	{
+		public:
+
+			const std::string& getMessage() const
+			{
+				return _message;
+			}
+
+			const std::string& getWhatThrewThis() const
+			{
+				return _what;
+			}
+
+			ElpidaException()
+			{
+
+			}
+
+			ElpidaException(const std::string& what) :
+					_what(what)
+			{
+
+			}
+
+			ElpidaException(const std::string& what, const std::string& message) :
+					_what(what), _message(message)
+			{
+
+			}
+
+			~ElpidaException()
+			{
+
+			}
+
+			ElpidaException(ElpidaException&&) = default;
+			ElpidaException(const ElpidaException&) = default;
+			ElpidaException& operator=(ElpidaException&&) = default;
+			ElpidaException& operator=(const ElpidaException&) = default;
+
+		protected:
+			std::string _what;
+			std::string _message;
+	};
+
 } /* namespace Elpida */
+
+#endif /* SRC_UTILITIES_ELPIDAEXCEPTION_HPP_ */

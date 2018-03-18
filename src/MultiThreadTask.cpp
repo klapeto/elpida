@@ -17,31 +17,35 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>
 *************************************************************************/
 
-#include <xmmintrin.h>
-#include <iostream>
+/*
+ * MultiThreadTask.cpp
+ *
+ *  Created on: 17 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Config.hpp"
+#include "MultiThreadTask.hpp"
 #include "CpuInfo.hpp"
-#include "Utilities/TextRow.hpp"
-#include "Utilities/TextTable.hpp"
 
-using namespace Elpida;
-
-int main(int argc, char** argv)
+namespace Elpida
 {
 
-	_mm_setcsr(_mm_getcsr() | 0x8040);
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	MultiThreadTask::MultiThreadTask(const std::vector<Task*>& tasks, bool strictAffinity) :
+			Task(tasks[0]->getName() + " (Multi Threaded)"), _strictAffinity(strictAffinity)
+	{
+		if (tasks.size() > (size_t) CpuInfo::getCpuInfo().getLogicalProcessors())
+		{
+			_strictAffinity = false;
+		}
+		int affinity = 0;
+		for (auto task : tasks)
+		{
+			_tasksToBeExecuted.push_back(TaskThread(*task, _mutex, _strictAffinity ? affinity++ : -1));
+		}
+	}
 
-	TextTable<2> infoTable = { TextColumn { "Elpida", 15 }, TextColumn { "", 15 } };
-	infoTable.addRow(TextRow<2> { "Version:", _elpida_version_string });
-	infoTable.addRow(TextRow<2> { "Build with:", _elpida_compiler_string });
-	infoTable.setPadding(4);
-	infoTable.setDrawBorders(true);
-	infoTable.exportTo(std::cout);
+	MultiThreadTask::~MultiThreadTask()
+	{
+	}
 
-	CpuInfo::getCpuInfo().exportTo(std::cout);
-
-	return 0;
-}
-
+} /* namespace Elpida */

@@ -18,18 +18,19 @@
 *************************************************************************/
 
 /*
- * Runner.cpp
+ * TaskThread.cpp
  *
- *  Created on: 8 Μαρ 2018
+ *  Created on: 17 Μαρ 2018
  *      Author: klapeto
  */
 
 #include "Config.hpp"
-#include "Runner.hpp"
+#include "TaskThread.hpp"
+#include "Task.hpp"
 #include <iostream>
 
 #if _elpida_linux
-#include <sys/resource.h>
+#include <sched.h>
 #elif _elpida_windows
 #include <Windows.h>
 #endif
@@ -37,37 +38,56 @@
 namespace Elpida
 {
 
-	Runner::Runner()
+	TaskThread::TaskThread(Task& task, std::mutex& mutex, int affinity) :
+			_task(task), _mutex(mutex), _affinity(affinity)
 	{
 	}
 
-	Runner::~Runner()
+	TaskThread::~TaskThread()
 	{
+		if (_runnerThread.joinable())
+		{
+			_runnerThread.join();
+		}
 	}
 
-	void Runner::executeTasks() const
+	void TaskThread::getReadyToStart()
 	{
-
+		_runnerThread = std::thread(&TaskThread::runTask, this);
 	}
 
-	void Runner::setProcessPriority(ProcessPriority priority)
+	void TaskThread::join()
+	{
+		if (_runnerThread.joinable())
+		{
+			_runnerThread.join();
+		}
+	}
+
+	void TaskThread::runTask()
+	{
+		if (_affinity != -1)
+		{
+			setCurrentThreadAffinity(_affinity);
+		}
+		std::unique_lock<std::mutex> lock(_mutex);
+		lock.unlock();
+		_task.run();
+	}
+
+	void TaskThread::setCurrentThreadAffinity(int cpuId)
 	{
 #if _elpida_linux
-		switch (priority)
+		cpu_set_t mask;
+		CPU_ZERO(&mask);
+		CPU_SET(cpuId, &mask);
+		if (sched_setaffinity(0, sizeof(cpu_set_t), &mask))
 		{
-			case ProcessPriority::High:
-				setpriority(PRIO_PROCESS, 0, PRIO_MIN);
-				break;
-			default:
-				setpriority(PRIO_PROCESS, 0, 0);
-				break;
+			std::cout << "Warning! Failed to set affinity to " << cpuId << " on a thread!" << std::endl;
 		}
 #elif _elpida_windows
-		if(!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
-		{
-			std::cout << "Warning! Failed to set process priority: " << GetLastError() << std::endl;
-		}
+		SetThreadAffinityMask(GetCurrentThread(), 1 << (int)cpuId);
 #endif
 	}
 
-}/* namespace Elpida */
+} /* namespace Elpida */

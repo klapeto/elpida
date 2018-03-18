@@ -1,0 +1,87 @@
+/**************************************************************************
+*   elpida - CPU benchmark tool
+*   
+*   Copyright (C) 2018  Ioannis Panagiotopoulos
+*   
+*   This program is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.
+*   
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*   
+*   You should have received a copy of the GNU General Public License
+*   along with this program.  If not, see <https://www.gnu.org/licenses/>
+*************************************************************************/
+
+/*
+ * Grayscale.hpp
+ *
+ *  Created on: 8 Μαρ 2018
+ *      Author: klapeto
+ */
+
+#ifndef SRC_TASKS_IMAGE_GRAYSCALEAVERAGE_HPP_
+#define SRC_TASKS_IMAGE_GRAYSCALEAVERAGE_HPP_
+
+#include "Image.hpp"
+#include "Task.hpp"
+#include <thread>
+#include <chrono>
+#include "Utilities/ElpidaException.hpp"
+
+namespace Elpida
+{
+	template<typename T>
+	class GrayscaleAverage: public Task
+	{
+
+		public:
+
+			void run()
+			{
+				size_t size = _targetImage.getTotalSize();
+				Pixel<T>* sourceData = _sourceImage.getData();
+				Pixel<T>* targetData = _targetImage.getData();
+				for (size_t i = 0; i < size; ++i)
+				{
+					T newColor = (sourceData[i].R + sourceData[i].G + sourceData[i].B) / 3;
+					targetData[i].R = newColor;
+					targetData[i].G = newColor;
+					targetData[i].B = newColor;
+					targetData[i].A = 255;
+				}
+			}
+
+			GrayscaleAverage(Image<T> &sourceImage, Image<T> &targetImage) :
+					Task("Grayscale conversion (Average)"), _sourceImage(sourceImage), _targetImage(targetImage)
+			{
+				if (!sourceImage.isCompatibleWith(targetImage))
+				{
+					throw ElpidaException("Grayscale", "Images are not the same size!");
+				}
+			}
+
+			GrayscaleAverage(Image<T> &image) :
+					_sourceImage(image), _targetImage(image)
+			{
+
+			}
+
+			~GrayscaleAverage()
+			{
+
+			}
+
+		private:
+			Image<T> &_sourceImage;
+			Image<T> &_targetImage;
+
+	};
+
+} /* namespace Elpida */
+
+#endif /* SRC_TASKS_IMAGE_GRAYSCALEAVERAGE_HPP_ */

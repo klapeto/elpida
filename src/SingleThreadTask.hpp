@@ -17,31 +17,48 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>
 *************************************************************************/
 
-#include <xmmintrin.h>
-#include <iostream>
+/*
+ * SingleThreadTask.hpp
+ *
+ *  Created on: 17 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Config.hpp"
-#include "CpuInfo.hpp"
-#include "Utilities/TextRow.hpp"
-#include "Utilities/TextTable.hpp"
+#ifndef SRC_SINGLETHREADTASK_HPP_
+#define SRC_SINGLETHREADTASK_HPP_
 
-using namespace Elpida;
+#include "Task.hpp"
 
-int main(int argc, char** argv)
+namespace Elpida
 {
 
-	_mm_setcsr(_mm_getcsr() | 0x8040);
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	class SingleThreadTask: public Task
+	{
+		public:
 
-	TextTable<2> infoTable = { TextColumn { "Elpida", 15 }, TextColumn { "", 15 } };
-	infoTable.addRow(TextRow<2> { "Version:", _elpida_version_string });
-	infoTable.addRow(TextRow<2> { "Build with:", _elpida_compiler_string });
-	infoTable.setPadding(4);
-	infoTable.setDrawBorders(true);
-	infoTable.exportTo(std::cout);
+			inline void run()
+			{
+				_taskToBeExecuted.run();
+			}
 
-	CpuInfo::getCpuInfo().exportTo(std::cout);
+			SingleThreadTask(Task& taskToBeExecuted) :
+					Task(taskToBeExecuted.getName() + " (Single Threaded)"), _taskToBeExecuted(taskToBeExecuted)
+			{
 
-	return 0;
-}
+			}
+			virtual ~SingleThreadTask()
+			{
 
+			}
+
+			SingleThreadTask(SingleThreadTask&&) = default;
+			SingleThreadTask(const SingleThreadTask&) = default;
+			SingleThreadTask& operator=(SingleThreadTask&&) = default;
+			SingleThreadTask& operator=(const SingleThreadTask&) = default;
+		private:
+			Task& _taskToBeExecuted;
+	};
+
+} /* namespace Elpida */
+
+#endif /* SRC_SINGLETHREADTASK_HPP_ */

@@ -1,0 +1,18 @@
+/*
+ * Config.hpp
+ *
+ *  Created on: 17 Μαρ 2018
+ *      Author: klapeto
+ */
+
+#ifndef SRC_CONFIG_HPP_IN_
+#define SRC_CONFIG_HPP_IN_
+
+#mesondefine _elpida_version_string
+#mesondefine _elpida_compiler_string
+
+#mesondefine _elpida_linux
+#mesondefine _elpida_windows
+
+
+#endif /* SRC_CONFIG_HPP_IN_ */

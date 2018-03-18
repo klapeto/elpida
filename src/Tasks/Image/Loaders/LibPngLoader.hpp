@@ -17,31 +17,44 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>
 *************************************************************************/
 
-#include <xmmintrin.h>
-#include <iostream>
+/*
+ * LibPngLoader.hpp
+ *
+ *  Created on: 15 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Config.hpp"
-#include "CpuInfo.hpp"
-#include "Utilities/TextRow.hpp"
-#include "Utilities/TextTable.hpp"
+#ifndef SRC_UTILITIES_LIBPNGLOADER_HPP_
+#define SRC_UTILITIES_LIBPNGLOADER_HPP_
 
-using namespace Elpida;
+#include "Tasks/Image/ImageLoader.hpp"
 
-int main(int argc, char** argv)
+namespace Elpida
 {
 
-	_mm_setcsr(_mm_getcsr() | 0x8040);
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	class LibPngLoader: public ImageLoader
+	{
+		public:
 
-	TextTable<2> infoTable = { TextColumn { "Elpida", 15 }, TextColumn { "", 15 } };
-	infoTable.addRow(TextRow<2> { "Version:", _elpida_version_string });
-	infoTable.addRow(TextRow<2> { "Build with:", _elpida_compiler_string });
-	infoTable.setPadding(4);
-	infoTable.setDrawBorders(true);
-	infoTable.exportTo(std::cout);
 
-	CpuInfo::getCpuInfo().exportTo(std::cout);
+			ImageLoader::ImageInfo loadToMemory(const std::string& path) const;
+			bool writeToFile(const std::string& path, const ImageInfo &image) const;
 
-	return 0;
-}
+			LibPngLoader()
+			{
 
+			}
+			~LibPngLoader()
+			{
+
+			}
+
+			LibPngLoader(LibPngLoader&&) = default;
+			LibPngLoader(const LibPngLoader&) = default;
+			LibPngLoader& operator=(LibPngLoader&&) = default;
+			LibPngLoader& operator=(const LibPngLoader&) = default;
+	};
+
+} /* namespace Elpida */
+
+#endif /* SRC_UTILITIES_LIBPNGLOADER_HPP_ */

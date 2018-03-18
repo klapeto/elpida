@@ -17,31 +17,46 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>
 *************************************************************************/
 
-#include <xmmintrin.h>
-#include <iostream>
+/*
+ * TaskThread.hpp
+ *
+ *  Created on: 17 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Config.hpp"
-#include "CpuInfo.hpp"
-#include "Utilities/TextRow.hpp"
-#include "Utilities/TextTable.hpp"
+#ifndef SRC_TASKTHREAD_HPP_
+#define SRC_TASKTHREAD_HPP_
 
-using namespace Elpida;
+#include <thread>
+#include <mutex>
 
-int main(int argc, char** argv)
+namespace Elpida
 {
+	class Task;
+	class TaskThread
+	{
+		public:
 
-	_mm_setcsr(_mm_getcsr() | 0x8040);
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+			void getReadyToStart();
+			void join();
 
-	TextTable<2> infoTable = { TextColumn { "Elpida", 15 }, TextColumn { "", 15 } };
-	infoTable.addRow(TextRow<2> { "Version:", _elpida_version_string });
-	infoTable.addRow(TextRow<2> { "Build with:", _elpida_compiler_string });
-	infoTable.setPadding(4);
-	infoTable.setDrawBorders(true);
-	infoTable.exportTo(std::cout);
+			TaskThread(Task& task, std::mutex& mutex, int affinity = -1);
+			virtual ~TaskThread();
 
-	CpuInfo::getCpuInfo().exportTo(std::cout);
+			TaskThread(TaskThread&&) = default;
+			TaskThread(const TaskThread&) = delete;
+			TaskThread& operator=(TaskThread&&) = default;
+			TaskThread& operator=(const TaskThread&) = delete;
+		private:
+			std::thread _runnerThread;
+			Task& _task;
+			std::mutex& _mutex;
+			int _affinity;
 
-	return 0;
-}
+			void runTask();
+			static void setCurrentThreadAffinity(int cpuId);
+	};
 
+} /* namespace Elpida */
+
+#endif /* SRC_TASKTHREAD_HPP_ */

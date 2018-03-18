@@ -17,31 +17,50 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>
 *************************************************************************/
 
-#include <xmmintrin.h>
-#include <iostream>
+/*
+ * PngLoader.hpp
+ *
+ *  Created on: 15 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Config.hpp"
-#include "CpuInfo.hpp"
-#include "Utilities/TextRow.hpp"
-#include "Utilities/TextTable.hpp"
+#ifndef SRC_UTILITIES_IMAGELOADER_HPP_
+#define SRC_UTILITIES_IMAGELOADER_HPP_
 
-using namespace Elpida;
+#include <string>
 
-int main(int argc, char** argv)
+namespace Elpida
 {
+	class ImageLoader
+	{
+		public:
 
-	_mm_setcsr(_mm_getcsr() | 0x8040);
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+			struct ImageInfo
+			{
+					size_t width;
+					size_t height;
+					int pixelSize;
+					unsigned char* data;
+			};
 
-	TextTable<2> infoTable = { TextColumn { "Elpida", 15 }, TextColumn { "", 15 } };
-	infoTable.addRow(TextRow<2> { "Version:", _elpida_version_string });
-	infoTable.addRow(TextRow<2> { "Build with:", _elpida_compiler_string });
-	infoTable.setPadding(4);
-	infoTable.setDrawBorders(true);
-	infoTable.exportTo(std::cout);
+			virtual ImageInfo loadToMemory(const std::string& path) const = 0;
+			virtual bool writeToFile(const std::string& path, const ImageInfo &image) const = 0;
 
-	CpuInfo::getCpuInfo().exportTo(std::cout);
+			ImageLoader()
+			{
 
-	return 0;
-}
+			}
+			virtual ~ImageLoader()
+			{
 
+			}
+
+			ImageLoader(ImageLoader&&) = default;
+			ImageLoader(const ImageLoader&) = default;
+			ImageLoader& operator=(ImageLoader&&) = default;
+			ImageLoader& operator=(const ImageLoader&) = default;
+	};
+
+} /* namespace Elpida */
+
+#endif /* SRC_UTILITIES_IMAGELOADER_HPP_ */

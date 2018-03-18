@@ -17,31 +17,54 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>
 *************************************************************************/
 
-#include <xmmintrin.h>
-#include <iostream>
+/*
+ * Pixel.hpp
+ *
+ *  Created on: 13 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Config.hpp"
-#include "CpuInfo.hpp"
-#include "Utilities/TextRow.hpp"
-#include "Utilities/TextTable.hpp"
+#ifndef SRC_TASKS_IMAGE_PIXEL_HPP_
+#define SRC_TASKS_IMAGE_PIXEL_HPP_
 
-using namespace Elpida;
+#include <type_traits>
 
-int main(int argc, char** argv)
+namespace Elpida
 {
 
-	_mm_setcsr(_mm_getcsr() | 0x8040);
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	template<typename T>
+	class Pixel
+	{
+			static_assert(std::is_arithmetic<T>::value, "Image requires an arithmetic template parameter");
+		public:
 
-	TextTable<2> infoTable = { TextColumn { "Elpida", 15 }, TextColumn { "", 15 } };
-	infoTable.addRow(TextRow<2> { "Version:", _elpida_version_string });
-	infoTable.addRow(TextRow<2> { "Build with:", _elpida_compiler_string });
-	infoTable.setPadding(4);
-	infoTable.setDrawBorders(true);
-	infoTable.exportTo(std::cout);
+			T R;
+			T G;
+			T B;
+			T A;
 
-	CpuInfo::getCpuInfo().exportTo(std::cout);
+			Pixel()
+			{
 
-	return 0;
-}
+			}
 
+			Pixel(T r, T g, T b, T a) :
+					R(r), G(g), B(b), A(a)
+			{
+
+			}
+
+			~Pixel()
+			{
+
+			}
+
+			Pixel(Pixel&&) = default;
+			Pixel(const Pixel&) = default;
+			Pixel& operator=(Pixel&&) = default;
+			Pixel& operator=(const Pixel&) = default;
+	};
+
+} /* namespace Elpida */
+
+#endif /* SRC_TASKS_IMAGE_PIXEL_HPP_ */

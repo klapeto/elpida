@@ -17,31 +17,53 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>
 *************************************************************************/
 
-#include <xmmintrin.h>
-#include <iostream>
+/*
+ * TaskBatch.hpp
+ *
+ *  Created on: 13 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Config.hpp"
-#include "CpuInfo.hpp"
-#include "Utilities/TextRow.hpp"
-#include "Utilities/TextTable.hpp"
+#ifndef SRC_TASKBATCH_HPP_
+#define SRC_TASKBATCH_HPP_
 
-using namespace Elpida;
+#include <string>
+#include <vector>
 
-int main(int argc, char** argv)
+namespace Elpida
 {
 
-	_mm_setcsr(_mm_getcsr() | 0x8040);
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	class Task;
 
-	TextTable<2> infoTable = { TextColumn { "Elpida", 15 }, TextColumn { "", 15 } };
-	infoTable.addRow(TextRow<2> { "Version:", _elpida_version_string });
-	infoTable.addRow(TextRow<2> { "Build with:", _elpida_compiler_string });
-	infoTable.setPadding(4);
-	infoTable.setDrawBorders(true);
-	infoTable.exportTo(std::cout);
+	class TaskBatch
+	{
+		public:
 
-	CpuInfo::getCpuInfo().exportTo(std::cout);
+			const std::string& getName() const
+			{
+				return _name;
+			}
 
-	return 0;
-}
 
+			TaskBatch(const std::string& name) :
+					_name(name)
+			{
+
+			}
+
+			virtual ~TaskBatch()
+			{
+
+			}
+
+			TaskBatch(TaskBatch&&) = default;
+			TaskBatch(const TaskBatch&) = default;
+			TaskBatch& operator=(TaskBatch&&) = default;
+			TaskBatch& operator=(const TaskBatch&) = default;
+		private:
+			std::string _name;
+	};
+
+} /* namespace Elpida */
+
+#endif /* SRC_TASKBATCH_HPP_ */
