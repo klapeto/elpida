@@ -47,8 +47,27 @@ core_sources = ['CpuFeature.cpp',
 				'SingleThreadTask.cpp',
 				'Task.cpp',
 				'TaskBatch.cpp',
-				'TaskThread.cpp']
+				'TaskMetrics.cpp',
+				'TaskThread.cpp',
+				'TaskThroutput.cpp',
+				'Timer.cpp']
 
 core = static_library('Core', 
 						core_sources,
 						include_directories : inc)
+						
+install_headers(['CpuFeature.hpp',
+				'CpuInfo.hpp',
+				'Exportable.hpp',
+				'MultiThreadTask.hpp',
+				'Runner.hpp',
+				'SingleThreadTask.hpp',
+				'Task.hpp',
+				'TaskBatch.hpp',
+				'TaskMetrics.hpp',
+				'TaskThread.hpp',
+				'TaskThroutput.hpp',
+				'Timer.hpp'],
+				subdir: 'Elpida')
+				
+

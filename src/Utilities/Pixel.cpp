@@ -18,13 +18,13 @@
 *************************************************************************/
 
 /*
- * Image.cpp
+ * Pixel.cpp
  *
- *  Created on: 8 Μαρ 2018
+ *  Created on: 13 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "Tasks/Image/Image.hpp"
+#include "Pixel.hpp"
 
 namespace Elpida
 {

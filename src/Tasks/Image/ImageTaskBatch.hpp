@@ -35,7 +35,7 @@ namespace Elpida
 	class ImageTaskBatch final: public TaskBatch
 	{
 		public:
-			ImageTaskBatch();
+			ImageTaskBatch(const std::string& inputImagePath, const std::string& outputImagePath);
 			~ImageTaskBatch();
 
 			ImageTaskBatch(ImageTaskBatch&&) = default;

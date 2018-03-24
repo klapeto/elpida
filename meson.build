@@ -12,14 +12,19 @@ gpp = meson.get_compiler('cpp')
 inc = include_directories('src')
 libsInclude = include_directories('libs')
 configuration_inc = include_directories('.')
+
 thread_dep = dependency('threads')
 
 subdir('libs')
 subdir('src')
 
 
-executable('elpida', 'src/main.cpp',
+elpida = library('elpida',
 			include_directories : [inc, configuration_inc],
-			objects: asmlib,
 			dependencies : thread_dep,
-			link_with: [core, imageLoader])
+			link_whole: [core, generalTasks, imageTasks, imageEncoders, utilities],
+			install: true)
+			
+executable('elpida', 'src/main.cpp',
+			link_with: elpida,
+			include_directories : [inc, configuration_inc])

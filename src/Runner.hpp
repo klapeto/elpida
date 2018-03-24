@@ -27,14 +27,13 @@
 #ifndef SRC_RUNNER_HPP_
 #define SRC_RUNNER_HPP_
 
-#include <string>
 #include <vector>
 
-#include "Task.hpp"
+#include "TaskBatch.hpp"
+#include "TaskMetrics.hpp"
 
 namespace Elpida
 {
-	class Task;
 
 	class Runner
 	{
@@ -46,8 +45,9 @@ namespace Elpida
 
 
 			static void setProcessPriority(ProcessPriority priority);
-
-			void executeTasks() const;
+			void executeTasks();
+			void addTaskBatch(TaskBatch&& batch);
+			void addTaskBatch(const TaskBatch& batch);
 
 			Runner();
 			~Runner();
@@ -57,7 +57,8 @@ namespace Elpida
 			Runner& operator=(Runner&&) = default;
 			Runner& operator=(const Runner&) = default;
 		private:
-			std::vector<Task*> _tasks;
+			std::vector<TaskBatch> _tasks;
+			TaskMetrics runTask(Task& task);
 	};
 
 } /* namespace Elpida */

@@ -18,40 +18,56 @@
  *************************************************************************/
 
 /*
- * MultiThreadTask.cpp
+ * PngLoader.hpp
  *
- *  Created on: 17 Μαρ 2018
+ *  Created on: 15 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "MultiThreadTask.hpp"
-#include "CpuInfo.hpp"
+#ifndef SRC_UTILITIES_IMAGEENCODER_HPP_
+#define SRC_UTILITIES_IMAGEENCODER_HPP_
+
+#include <cstddef>
+#include <string>
 
 namespace Elpida
 {
-
-	MultiThreadTask::MultiThreadTask(const std::string& name, bool strictAffinity) :
-			Task(name + "(Multi Threaded)"), _strictAffinity(strictAffinity)
+	class ImageEncoder
 	{
-	}
+		public:
 
-	void MultiThreadTask::addTask(Task& task)
-	{
-		static size_t cores = CpuInfo::getCpuInfo().getLogicalProcessors();
-
-		if (_tasksToBeExecuted.size() == cores)
-		{
-			_strictAffinity = false;
-			for (auto& task : _tasksToBeExecuted)
+			struct ImageDecodeInfo
 			{
-				task.setAffinity(-1);
-			}
-		}
-		_tasksToBeExecuted.push_back(TaskThread(task, _strictAffinity ? _tasksToBeExecuted.size() : -1));
-	}
+					unsigned char* data;
+					size_t width;
+					size_t height;
+					int pixelSize;
+			};
 
-	MultiThreadTask::~MultiThreadTask()
-	{
-	}
+			struct ImageEncodeInfo
+			{
+					unsigned char* data;
+					size_t dataSize;
+			};
+
+			virtual ImageDecodeInfo decode(unsigned char* data, size_t size) = 0;
+			virtual ImageEncodeInfo encode(size_t imageWidth, size_t imageHeight, unsigned char* inputData, size_t inputSize) = 0;
+
+			ImageEncoder()
+			{
+
+			}
+			virtual ~ImageEncoder()
+			{
+
+			}
+
+			ImageEncoder(ImageEncoder&&) = default;
+			ImageEncoder(const ImageEncoder&) = default;
+			ImageEncoder& operator=(ImageEncoder&&) = default;
+			ImageEncoder& operator=(const ImageEncoder&) = default;
+	};
 
 } /* namespace Elpida */
+
+#endif /* SRC_UTILITIES_IMAGEENCODER_HPP_ */

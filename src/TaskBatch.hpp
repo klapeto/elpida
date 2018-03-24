@@ -39,11 +39,15 @@ namespace Elpida
 	{
 		public:
 
+			const std::vector<Task*>& getTasks() const
+			{
+				return _tasks;
+			}
+
 			const std::string& getName() const
 			{
 				return _name;
 			}
-
 
 			TaskBatch(const std::string& name) :
 					_name(name)
@@ -60,8 +64,11 @@ namespace Elpida
 			TaskBatch(const TaskBatch&) = default;
 			TaskBatch& operator=(TaskBatch&&) = default;
 			TaskBatch& operator=(const TaskBatch&) = default;
+
 		private:
 			std::string _name;
+		protected:
+			std::vector<Task*> _tasks;
 	};
 
 } /* namespace Elpida */

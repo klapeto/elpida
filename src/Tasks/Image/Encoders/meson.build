@@ -16,8 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
-imageLoader_sources = ['LibPngLoader.cpp']
-imageLoader = static_library('ImageLoader', 
-						imageLoader_sources,
-						link_with: libpng,
+imageEncoders_sources = ['LibPngEncoder.cpp']
+
+imageEncoders = static_library('ImageEncoders', 
+						imageEncoders_sources,
+						link_whole: libpng,
 						include_directories : inc)
+						
+install_headers(['LibPngEncoder.hpp'],
+				subdir: 'Elpida/Tasks/Image/Encoders')

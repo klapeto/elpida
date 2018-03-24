@@ -1,21 +1,21 @@
 /**************************************************************************
-*   elpida - CPU benchmark tool
-*   
-*   Copyright (C) 2018  Ioannis Panagiotopoulos
-*   
-*   This program is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.
-*   
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*   
-*   You should have received a copy of the GNU General Public License
-*   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*************************************************************************/
+ *   elpida - CPU benchmark tool
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
 
 /*
  * Cpu.cpp
@@ -32,7 +32,10 @@
 #include <iomanip>
 #include <iostream>
 #include <unordered_map>
+#include <thread>
 
+#include "Timer.hpp"
+#include "TaskThread.hpp"
 #include "Utilities/TextColumn.hpp"
 #include "Utilities/TextTable.hpp"
 
@@ -111,8 +114,18 @@ namespace Elpida
 	std::string intelCacheTypes[] = { "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
 
 	CpuInfo::CpuInfo() :
-			_vendor(Vendor::Unknown), _model(-1), _family(-1), _baseFequency(0), _cacheLineSize(-1), _physicalCores(1), _logicalProcessors(
-					1), _maximumStandardFunction(0), _maximumExtendedFunction(0), _hyperThreading(false), _rdtscp(false)
+			_vendor(Vendor::Unknown),
+			_model(-1),
+			_family(-1),
+			_cacheLineSize(-1),
+			_physicalCores(1),
+			_logicalProcessors(1),
+			_maximumStandardFunction(0),
+			_maximumExtendedFunction(0),
+			_tscFrequency(0),
+			_tscTimeRatio(1.0),
+			_hyperThreading(false),
+			_rdtscp(false)
 	{
 
 		setPadding(4);
@@ -122,14 +135,16 @@ namespace Elpida
 			return;
 		}
 
-		unsigned eax, ebx, edx, ecx;
+		unsigned eax = 0, ebx = 0, ecx = 0, edx = 0;
 
 		__get_cpuid(0x0, &eax, &ebx, &ecx, &edx);
 		_maximumStandardFunction = eax;
 
 		__get_cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
 		_maximumExtendedFunction = eax;
-		_vendorString.append((char*) &ebx, vendorByteSize);
+		_vendorString.append((char*) &ebx, 4);
+		_vendorString.append((char*) &edx, 4);
+		_vendorString.append((char*) &ecx, 4);
 
 		if (_vendorString == "AuthenticAMD")
 		{
@@ -192,7 +207,7 @@ namespace Elpida
 
 		if (_rdtscp)
 		{
-			getCpuFrequency();
+			getTscFrequency();
 		}
 	}
 
@@ -209,7 +224,7 @@ namespace Elpida
 		output << "======================================" << _newLine;
 		out("Vendor:", _vendorString);
 		out("Model:", _processorBrand);
-		out("Base Frequency:", std::to_string(_baseFequency) + " MHz");
+		out("TSC Frequency:", std::to_string((size_t )_tscFrequency / 1000000) + " MHz");
 		out("ModelID:", _model);
 		out("Family:", _family);
 		out("Stepping:", _stepping);
@@ -249,23 +264,37 @@ namespace Elpida
 
 	}
 
-	void CpuInfo::getCpuFrequency()
+	void CpuInfo::getTscFrequency()
 	{
-		unsigned long long int startCycles, endCycles;
 
-		auto start = std::chrono::high_resolution_clock::now();
-		__asm__ volatile ( "mfence\n"
-				"rdtsc" : "=A" (startCycles));
+		unsigned cycles_high1, cycles_high2, cycles_low1, cycles_low2;
 
-		usleep(200);
+		size_t nowOverhead = Timer::getNowOverhead();
+		TaskThread::setCurrentThreadAffinity(0);
 
-		__asm__ volatile (
-				"rdtsc" : "=A" (endCycles));
-		auto end = std::chrono::high_resolution_clock::now();
+		auto start = Timer::now();
+		asm volatile ( "CPUID\n\t"
+				"RDTSC\n\t"
+				"mov %%edx, %0\n\t"
+				"mov %%eax, %1\n\t": "=r" (cycles_high1), "=r" (cycles_low1)::
+				"%rax", "%rbx", "%rcx", "%rdx");
 
-		auto microSeconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+		std::this_thread::sleep_for(std::chrono::microseconds(50));
 
-		_baseFequency = ((int) (endCycles - startCycles) / microSeconds.count());
+		asm volatile ( "RDTSCP\n\t"
+				"mov %%edx, %0\n\t"
+				"mov %%eax, %1\n\t"
+				"CPUID\n\t": "=r" (cycles_high2), "=r" (cycles_low2)::
+				"%rax", "%rbx", "%rcx", "%rdx");
+		auto end = Timer::now();
+
+		int64_t endCycles = ((int64_t) cycles_high2 << 32) | cycles_low2;
+		int64_t startCycles = ((int64_t) cycles_high1 << 32) | cycles_low1;
+
+		auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() - nowOverhead;
+
+		_tscFrequency = (((float) (endCycles - startCycles)) * 1000000000.f) / (float) nanoseconds;
+		_tscTimeRatio = (float) nanoseconds /((float) (endCycles - startCycles));
 
 	}
 
@@ -409,6 +438,7 @@ namespace Elpida
 		{
 			__get_cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
 			_turboBoost = featureCheck(edx, 9);
+			_invariantTsc = featureCheck(edx, 8);
 		}
 	}
 
@@ -528,7 +558,11 @@ namespace Elpida
 				_caches.push_back(tmpCache);
 				i++;
 			}
-
+		}
+		if (_maximumExtendedFunction >= 0x80000007)
+		{
+			__get_cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
+			_invariantTsc = featureCheck(edx, 8);
 		}
 
 	}

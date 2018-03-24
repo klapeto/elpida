@@ -65,6 +65,7 @@ libpng_sources = ['png.c',
 libpng = static_library('libpng', 
 						libpng_sources,
 						dependencies : m_dep,
-						link_with: zlib,
+						link_whole: zlib,
 						include_directories : zlibInclude,
-						c_args : ['-DHAVE_CONFIG_H', '-DHAVE_LIBZ'])
+						c_args : ['-DHAVE_CONFIG_H', '-DHAVE_LIBZ'],
+						install : true)

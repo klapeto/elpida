@@ -29,8 +29,6 @@
 
 #include "Task.hpp"
 #include "TaskThread.hpp"
-#include <mutex>
-#include <condition_variable>
 #include <vector>
 
 namespace Elpida
@@ -40,21 +38,21 @@ namespace Elpida
 	{
 		public:
 
-			void run()
+			inline void run()
 			{
-				std::unique_lock<std::mutex> lock(_mutex);
 				for (auto& task : _tasksToBeExecuted)
 				{
-					task.getReadyToStart();
+					task.start();
 				}
-				lock.unlock();
 				for (auto& task : _tasksToBeExecuted)
 				{
 					task.join();
 				}
 			}
 
-			MultiThreadTask(const std::vector<Task*>& tasks, bool strictAffinity);
+			void addTask(Task& task);
+
+			MultiThreadTask(const std::string& name, bool strictAffinity = false);
 			virtual ~MultiThreadTask();
 
 			MultiThreadTask(MultiThreadTask&&) = default;
@@ -62,7 +60,6 @@ namespace Elpida
 			MultiThreadTask& operator=(MultiThreadTask&&) = default;
 			MultiThreadTask& operator=(const MultiThreadTask&) = default;
 		private:
-			std::mutex _mutex;
 			std::vector<TaskThread> _tasksToBeExecuted;
 			bool _strictAffinity;
 	};

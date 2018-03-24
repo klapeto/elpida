@@ -16,4 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
-subdir('Loaders')
+subdir('Encoders')
+
+imageTasks_sources = ['GrayscaleAverage.cpp',
+						'ImageTaskBatch.cpp',
+						'PngDecoding.cpp',
+						'PngEncoding.cpp']
+
+imageTasks = static_library('ImageTasks', 
+							imageTasks_sources,
+							include_directories : inc)
+
+
+install_headers(['GrayscaleAverage.hpp',
+				'ImageTaskBatch.hpp',
+				'PngDecoding.hpp',
+				'PngEncoding.hpp'],
+				subdir: 'Elpida/Tasks/Image')
+

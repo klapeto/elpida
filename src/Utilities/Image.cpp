@@ -18,43 +18,15 @@
 *************************************************************************/
 
 /*
- * LibPngLoader.hpp
+ * Image.cpp
  *
- *  Created on: 15 Μαρ 2018
+ *  Created on: 8 Μαρ 2018
  *      Author: klapeto
  */
 
-#ifndef SRC_UTILITIES_LIBPNGLOADER_HPP_
-#define SRC_UTILITIES_LIBPNGLOADER_HPP_
-
-#include "Tasks/Image/ImageLoader.hpp"
+#include "Image.hpp"
 
 namespace Elpida
 {
 
-	class LibPngLoader: public ImageLoader
-	{
-		public:
-
-
-			ImageLoader::ImageInfo loadToMemory(const std::string& path) const;
-			bool writeToFile(const std::string& path, const ImageInfo &image) const;
-
-			LibPngLoader()
-			{
-
-			}
-			~LibPngLoader()
-			{
-
-			}
-
-			LibPngLoader(LibPngLoader&&) = default;
-			LibPngLoader(const LibPngLoader&) = default;
-			LibPngLoader& operator=(LibPngLoader&&) = default;
-			LibPngLoader& operator=(const LibPngLoader&) = default;
-	};
-
 } /* namespace Elpida */
-
-#endif /* SRC_UTILITIES_LIBPNGLOADER_HPP_ */

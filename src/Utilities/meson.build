@@ -16,11 +16,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
-utilities_sources = [	'ElpidaException.cpp',
-						'TextColumn.cpp',
-						'TextRow.cpp',
-						'TextTable.cpp']
+utilities_sources = ['ElpidaException.cpp',
+					'Image.cpp',
+					'ImageEncoder.cpp',
+					'Pixel.cpp',
+					'TextColumn.cpp',
+					'TextRow.cpp',
+					'TextTable.cpp',
+					'MemoryFile.cpp']
 
 utilities = static_library('Utilities', 
 						utilities_sources,
 						include_directories : inc)
+						
+install_headers(['ElpidaException.hpp',
+				'Image.hpp',
+				'ImageEncoder.hpp',
+				'Pixel.hpp',
+				'TextColumn.hpp',
+				'TextRow.hpp',
+				'TextTable.hpp',
+				'MemoryFile.hpp'],
+				subdir: 'Elpida/Utilities')

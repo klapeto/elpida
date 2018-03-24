@@ -38,8 +38,8 @@
 namespace Elpida
 {
 
-	TaskThread::TaskThread(Task& task, std::mutex& mutex, int affinity) :
-			_task(task), _mutex(mutex), _affinity(affinity)
+	TaskThread::TaskThread(Task& task, int affinity) :
+			_task(task), _affinity(affinity)
 	{
 	}
 
@@ -51,7 +51,7 @@ namespace Elpida
 		}
 	}
 
-	void TaskThread::getReadyToStart()
+	void TaskThread::start()
 	{
 		_runnerThread = std::thread(&TaskThread::runTask, this);
 	}
@@ -70,8 +70,6 @@ namespace Elpida
 		{
 			setCurrentThreadAffinity(_affinity);
 		}
-		std::unique_lock<std::mutex> lock(_mutex);
-		lock.unlock();
 		_task.run();
 	}
 

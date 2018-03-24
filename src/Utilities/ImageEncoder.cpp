@@ -18,49 +18,15 @@
 *************************************************************************/
 
 /*
- * PngLoader.hpp
+ * PngLoader.cpp
  *
  *  Created on: 15 Μαρ 2018
  *      Author: klapeto
  */
 
-#ifndef SRC_UTILITIES_IMAGELOADER_HPP_
-#define SRC_UTILITIES_IMAGELOADER_HPP_
-
-#include <string>
+#include "Utilities/ImageEncoder.hpp"
 
 namespace Elpida
 {
-	class ImageLoader
-	{
-		public:
-
-			struct ImageInfo
-			{
-					size_t width;
-					size_t height;
-					int pixelSize;
-					unsigned char* data;
-			};
-
-			virtual ImageInfo loadToMemory(const std::string& path) const = 0;
-			virtual bool writeToFile(const std::string& path, const ImageInfo &image) const = 0;
-
-			ImageLoader()
-			{
-
-			}
-			virtual ~ImageLoader()
-			{
-
-			}
-
-			ImageLoader(ImageLoader&&) = default;
-			ImageLoader(const ImageLoader&) = default;
-			ImageLoader& operator=(ImageLoader&&) = default;
-			ImageLoader& operator=(const ImageLoader&) = default;
-	};
 
 } /* namespace Elpida */
-
-#endif /* SRC_UTILITIES_IMAGELOADER_HPP_ */

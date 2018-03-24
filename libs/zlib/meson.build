@@ -17,4 +17,4 @@ zlib_sources = ['adler32.c',
 zlib = static_library('zlib', 
 						zlib_sources,
 						include_directories : libsInclude,
-						)
+						install : true)

@@ -18,15 +18,43 @@
 *************************************************************************/
 
 /*
- * Pixel.cpp
+ * LibPngLoader.hpp
  *
- *  Created on: 13 Μαρ 2018
+ *  Created on: 15 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "Tasks/Image/Pixel.hpp"
+#ifndef SRC_UTILITIES_LIBPNGLOADER_HPP_
+#define SRC_UTILITIES_LIBPNGLOADER_HPP_
+
+#include "Utilities/ImageEncoder.hpp"
 
 namespace Elpida
 {
 
+	class LibPngEncoder: public ImageEncoder
+	{
+		public:
+
+
+			ImageEncoder::ImageDecodeInfo decode(unsigned char* data, size_t size);
+			ImageEncoder::ImageEncodeInfo encode(size_t imageWidth, size_t imageHeight, unsigned char* inputData, size_t inputSize);
+
+			LibPngEncoder()
+			{
+
+			}
+			~LibPngEncoder()
+			{
+
+			}
+
+			LibPngEncoder(LibPngEncoder&&) = default;
+			LibPngEncoder(const LibPngEncoder&) = default;
+			LibPngEncoder& operator=(LibPngEncoder&&) = default;
+			LibPngEncoder& operator=(const LibPngEncoder&) = default;
+	};
+
 } /* namespace Elpida */
+
+#endif /* SRC_UTILITIES_LIBPNGLOADER_HPP_ */

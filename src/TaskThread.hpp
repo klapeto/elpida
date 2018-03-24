@@ -28,7 +28,6 @@
 #define SRC_TASKTHREAD_HPP_
 
 #include <thread>
-#include <mutex>
 
 namespace Elpida
 {
@@ -37,24 +36,35 @@ namespace Elpida
 	{
 		public:
 
-			void getReadyToStart();
+			int getAffinity() const
+			{
+				return _affinity;
+			}
+
+			void setAffinity(int affinity)
+			{
+				_affinity = affinity;
+			}
+
+			void start();
 			void join();
 
-			TaskThread(Task& task, std::mutex& mutex, int affinity = -1);
+			static void setCurrentThreadAffinity(int cpuId);
+
+			TaskThread(Task& task, int affinity = -1);
 			virtual ~TaskThread();
 
 			TaskThread(TaskThread&&) = default;
 			TaskThread(const TaskThread&) = delete;
 			TaskThread& operator=(TaskThread&&) = default;
 			TaskThread& operator=(const TaskThread&) = delete;
+
 		private:
 			std::thread _runnerThread;
 			Task& _task;
-			std::mutex& _mutex;
 			int _affinity;
 
 			void runTask();
-			static void setCurrentThreadAffinity(int cpuId);
 	};
 
 } /* namespace Elpida */

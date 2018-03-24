@@ -54,9 +54,19 @@ namespace Elpida
 				AMD, Intel, Unknown
 			};
 
-			int getBaseFequency() const
+			float getTscTimeRatio() const
 			{
-				return _baseFequency;
+				return _tscTimeRatio;
+			}
+
+			bool isInvariantTsc() const
+			{
+				return _invariantTsc;
+			}
+
+			int getTscFequency() const
+			{
+				return _tscFrequency;
 			}
 
 			int getCacheLineSize() const
@@ -143,20 +153,23 @@ namespace Elpida
 			int _model;
 			int _family;
 			int _stepping;
-			int _baseFequency;
 			int _cacheLineSize;
 			int _physicalCores;
 			int _logicalProcessors;
 			unsigned _maximumStandardFunction;
 			unsigned _maximumExtendedFunction;
+			unsigned _crystalClock;
+			float _tscFrequency;
+			float _tscTimeRatio;
 			bool _hyperThreading;
 			bool _rdtscp;
 			bool _turboBoost;
 			bool _turboBoost3;
+			bool _invariantTsc;
 
 			CpuInfo();
 			~CpuInfo();
-			void getCpuFrequency();
+			void getTscFrequency();
 			void getAMDFeatures();
 			void getIntelFeatures();
 

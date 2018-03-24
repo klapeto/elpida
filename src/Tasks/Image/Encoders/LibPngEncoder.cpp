@@ -24,21 +24,20 @@
  *      Author: klapeto
  */
 
-#include "Tasks/Image/Loaders/LibPngLoader.hpp"
+#include "Tasks/Image/Encoders/LibPngEncoder.hpp"
 
 #include "../libs/libpng/png.h"
 
 namespace Elpida
 {
 
-	ImageLoader::ImageInfo LibPngLoader::loadToMemory(const std::string& path) const
+	ImageEncoder::ImageDecodeInfo LibPngEncoder::decode(unsigned char* data, size_t size)
 	{
-
 		png_image img;
 		img.opaque = nullptr;
 		img.version = PNG_IMAGE_VERSION;
 
-		if (png_image_begin_read_from_file(&img, path.c_str()))
+		if (png_image_begin_read_from_memory(&img, data, size))
 		{
 			img.format = PNG_FORMAT_RGBA;
 
@@ -47,29 +46,44 @@ namespace Elpida
 			if (data == nullptr)
 			{
 				png_image_free(&img);
-				return { 0, 0, 0, nullptr };
+				return ImageEncoder::ImageDecodeInfo { nullptr, 0, 0, 0 };
 			}
 			png_image_finish_read(&img, nullptr, data, 0, nullptr);
 
-			ImageLoader::ImageInfo ret = { img.width, img.height, 4, data };
-
-			return ret;
+			return ImageEncoder::ImageDecodeInfo { data, img.width, img.height, 4 };
 
 		}
 		png_image_free(&img);
-		return { 0, 0, 0, nullptr };
+		return ImageEncoder::ImageDecodeInfo { nullptr, 0, 0, 0 };
 	}
 
-	bool LibPngLoader::writeToFile(const std::string& path, const ImageInfo &image) const
+	ImageEncoder::ImageEncodeInfo LibPngEncoder::encode(size_t imageWidth, size_t imageHeight, unsigned char* inputData,
+			size_t inputSize)
 	{
 		png_image img;
 		img.opaque = nullptr;
 		img.version = PNG_IMAGE_VERSION;
-		img.width = image.width;
-		img.height = image.height;
+		img.width = imageWidth;
+		img.height = imageHeight;
 		img.format = PNG_FORMAT_RGBA;
 
-		return png_image_write_to_file(&img, path.c_str(), 0, image.data, 0, nullptr);
+		size_t outputSize;
+
+		if (png_image_write_to_memory(&img, nullptr, &outputSize, 0, inputData, 0, nullptr))
+		{
+			auto outputBuffer = new unsigned char[outputSize];
+			if (outputBuffer == nullptr)
+			{
+				png_image_free(&img);
+				return ImageEncoder::ImageEncodeInfo { nullptr, 0 };
+			}
+			if (png_image_write_to_memory(&img, outputBuffer, &outputSize, 0, inputData, 0, nullptr))
+			{
+				return ImageEncoder::ImageEncodeInfo { outputBuffer, outputSize };
+			}
+		}
+		png_image_free(&img);
+		return ImageEncoder::ImageEncodeInfo { nullptr, 0 };
 	}
 
 } /* namespace Elpida */
