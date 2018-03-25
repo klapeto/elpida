@@ -43,55 +43,12 @@
 #define out(prefix, value)	output << std::left  <<std::setw(columnWidth) << prefix  << std::setw(columnWidth) << value << _newLine
 #define featureCheck(reg, bit) (((reg & (1 << bit)) != 0))
 #define getRegisterValue(reg, bitOffset, bits) ((reg >> bitOffset) & bits)
-#define addFeature(category, name, reg, bit) category.push_back( { name, _featuresNames[name], featureCheck(reg, bit) })
+#define addFeature(category, name, reg, bit) category.push_back( { name, FeaturesNames[name], featureCheck(reg, bit) })
 
 #define vendorByteSize 12
 
 namespace Elpida
 {
-
-	std::unordered_map<std::string, std::string> _featuresNames = {
-			{ "CMOV", "Conditional move instructions" },
-			{ "MMX", "MMX instructions support" },
-			{ "MmxExt", "AMD extensions to MMX instructions" },
-			{ "SSE", "SSE instructions support" },
-			{ "SSE2", "SSE2 instructions support" },
-			{ "SSE3", "SSE3 instructions support" },
-			{ "SSSE3", "Supplemental SSE3 instructions support" },
-			{ "SSE41", "SSE4.1 instructions support" },
-			{ "SSE42", "SSE4.2 instructions support" },
-			{ "SSE4A", "SSE4A instructions support" },
-			{ "FMA", "FMA instructions support" },
-			{ "FMA4", "Four-operand FMA instructions support" },
-			{ "AES", "AES instructions support" },
-			{ "AVX", "AVX instructions support" },
-			{ "AVX2", "AVX2 instructions support" },
-			{ "AVX512-F", "AVX512 Fountation" },
-			{ "AVX512-BW", "AVX-512 Byte and Word instructions support" },
-			{ "AVX512-DQ", "AVX-512 DWORD and QWORD instructions support" },
-			{ "AVX512-IFMA", "AVX-512 Integer FMA instructions support" },
-			{ "AVX512-PF", "AVX-512 Prefetch instructions support" },
-			{ "AVX512-ER", "AVX-512 Exp. and Recp. instructions support" },
-			{ "AVX512-CD", "AVX-512 Conflict Detection instructions support" },
-			{ "AVX512-VBMI", "AVX-512 Vector BMI instructions support" },
-			{ "AVX512-VBMI2", "AVX-512 Vector BMI2 instructions suppport" },
-			{ "AVX512-VNNI", "AVX-512 Vector Neural Network instructions support" },
-			{ "AVX512-4VNNIW", "AVX-512 4-register Neural Network instructions support" },
-			{ "AVX512-BITALG", "AVX-512 BITALG instructions support" },
-			{ "AVX512-VL", "AVX-512 Vector Length Extensions support" },
-			{ "AVX512-VPOPCNTDQ", "AVX-512 Vector Population Count D/Q support" },
-			{ "AVX512-4FMAPS", "AVX-512 4-register Multiply Accumulation Single precision support" },
-			{ "SHA", "Intel SHA extensions support" },
-			{ "VAES", "Vector AES instruction set (VEX-256/EVEX) support" },
-			{ "XOP", "Extended operation support" },
-			{ "3DNow", "3DNow! instruction support" },
-			{ "3DNowExt", "AMD extensions to 3DNow! instructions" },
-			{ "3DNowPrefetch", "PREFETCH and PREFETCHW instruction support" },
-			{ "BMI1", "Bit manipulation group 1 instruction support" },
-			{ "BMI2", "Bit manipulation group 2 instruction support" },
-			{ "ABM", "Advanced bit manipulation" },
-			{ "F16C", "Half-precision convert instruction support" },
-			{ "RDRAND", "RDRAND (HW RNG) instruction support" }, };
 
 	std::string amdCacheAssociativities[] = {
 			"Disabled",
@@ -440,6 +397,17 @@ namespace Elpida
 			_turboBoost = featureCheck(edx, 9);
 			_invariantTsc = featureCheck(edx, 8);
 		}
+	}
+
+	std::unordered_map<std::string, CpuFeature> CpuInfo::getInstructionSetSupport() const
+	{
+		std::unordered_map<std::string, CpuFeature> returnMap;
+
+		for (auto& feature : _instructionExtensions)
+		{
+			returnMap.emplace(feature.getName(), CpuFeature(feature));
+		}
+		return returnMap;
 	}
 
 	void CpuInfo::getIntelFeatures()

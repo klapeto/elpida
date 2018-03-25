@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 
 	Runner runner;
 
-	runner.addTaskBatch(ImageTaskBatch("resources/Images/shinobu_6000.png", "out.png"));
+	runner.addTaskBatch(ImageTaskBatch("resources/Images/arta.png", "out.png"));
 	runner.executeTasks();
 
 
