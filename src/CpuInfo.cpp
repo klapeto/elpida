@@ -236,7 +236,7 @@ namespace Elpida
 				"mov %%eax, %1\n\t": "=r" (cycles_high1), "=r" (cycles_low1)::
 				"%rax", "%rbx", "%rcx", "%rdx");
 
-		std::this_thread::sleep_for(std::chrono::microseconds(50));
+		std::this_thread::sleep_for(std::chrono::microseconds(1000));
 
 		asm volatile ( "RDTSCP\n\t"
 				"mov %%edx, %0\n\t"

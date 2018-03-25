@@ -3,7 +3,7 @@ if build_machine.cpu_family() == 'x86_64'
 		asmlib = files('libaelf64o.a')
 	else
 		if build_machine.system() == 'windows'
-			asmlib = files('libacof64o.a')
+			asmlib = files('libacof64o.lib')
 		endif
 	endif
 else
@@ -12,7 +12,7 @@ else
 			asmlib = files('libaelf32o.a')
 		else
 			if build_machine.system() == 'windows'
-				asmlib = files('libacof32o.a')
+				asmlib = files('libacof32o.lib')
 			endif
 		endif
 	endif

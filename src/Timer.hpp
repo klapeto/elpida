@@ -20,10 +20,7 @@ namespace Elpida
 
 			typedef std::chrono::high_resolution_clock Clock;
 
-			inline static Clock::time_point now()
-			{
-				return Clock::now();
-			}
+			static Clock::time_point now();
 
 			static int64_t getNowOverhead()
 			{
