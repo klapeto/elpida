@@ -38,76 +38,65 @@
 #include <Windows.h>
 #endif
 
-namespace Elpida
-{
+namespace Elpida {
 
-	Runner::Runner()
-	{
+    Runner::Runner() {
 
-	}
+    }
 
-	Runner::~Runner()
-	{
-	}
+    Runner::~Runner() {
+    }
 
-	void Runner::executeTasks()
-	{
-		for (auto& taskBatch : _tasks)
-		{
-			std::cout << "[*] Executing task batch: " << taskBatch.getName() << std::endl;
-			auto& tasks = taskBatch.getTasks();
+    void Runner::executeTasks() {
+        for (auto &taskBatch : _tasks) {
+            std::cout << "[*] Executing task batch: " << taskBatch.getName() << std::endl;
+            auto &tasks = taskBatch.getTasks();
 
-			for (auto task : tasks)
-			{
-				std::cout << "\t~> Executing sub-task: " << task->getName() << std::endl;
-				TaskMetrics metrics = runTask(*task);
-				TaskThroughput throutput = task->translateToThroutput(metrics);
-				std::cout << "\t\tDone: " << std::fixed << std::setprecision(2)
-						<< std::chrono::duration<double, std::milli>(metrics.getDuration()).count() << " ms "
-						<< throutput.getThroughputString() << std::endl;
-			}
-		}
-	}
+            for (auto task : tasks) {
+                std::cout << "\t~> Executing sub-task: " << task->getName() << std::endl;
+                TaskMetrics metrics = runTask(*task);
+                TaskThroughput throughput = task->translateToThroutput(metrics);
+                std::cout << "\t\tDone: " << std::fixed << std::setprecision(2)
+                          << std::chrono::duration<double, std::milli>(metrics.getDuration()).count() << " ms "
+                          << throughput.getThroughputString() << std::endl;
+            }
+        }
+    }
 
-	void Runner::addTaskBatch(TaskBatch&& batch)
-	{
-		_tasks.push_back(std::move(batch));
-	}
+    void Runner::addTaskBatch(TaskBatch &&batch) {
+        _tasks.push_back(std::move(batch));
+    }
 
-	void Runner::addTaskBatch(const TaskBatch& batch)
-	{
-		_tasks.push_back(batch);
-	}
+    void Runner::addTaskBatch(const TaskBatch &batch) {
+        _tasks.push_back(batch);
+    }
 
-	TaskMetrics Runner::runTask(Task& task)
-	{
+    TaskMetrics Runner::runTask(Task &task) {
+        auto start = Timer::now();
 
-		auto start = Timer::now();
-		task.run();
+        task.run();
 
-		auto end = Timer::now();
-		return TaskMetrics(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start), 0);
+        auto end = Timer::now();
+        return TaskMetrics(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start));
+    }
 
-	}
-
-	void Runner::setProcessPriority(ProcessPriority priority)
-	{
+    void Runner::setProcessPriority(ProcessPriority priority) {
 #if _elpida_linux
-		switch (priority)
-		{
-			case ProcessPriority::High:
-				setpriority(PRIO_PROCESS, 0, PRIO_MIN);
-				break;
-			default:
-				setpriority(PRIO_PROCESS, 0, 0);
-				break;
-		}
+        switch (priority)
+        {
+            case ProcessPriority::High:
+                setpriority(PRIO_PROCESS, 0, PRIO_MIN);
+                break;
+            default:
+                setpriority(PRIO_PROCESS, 0, 0);
+                break;
+        }
 #elif _elpida_windows
-		if(!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
-		{
-			std::cout << "Warning! Failed to set process priority: " << GetLastError() << std::endl;
-		}
+        if(!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
+        {
+            std::cout << "Warning! Failed to set process priority: " << GetLastError() << std::endl;
+        }
 #endif
-	}
+    }
 
 }/* namespace Elpida */

@@ -17,6 +17,7 @@ namespace Elpida
 	class WriteFile: public Task
 	{
 		public:
+
 			void run();
 			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const;
 
@@ -27,6 +28,7 @@ namespace Elpida
 			WriteFile(const WriteFile&) = default;
 			WriteFile& operator=(WriteFile&&) = default;
 			WriteFile& operator=(const WriteFile&) = default;
+
 		private:
 			std::string _outputPath;
 			unsigned char* const& _data;

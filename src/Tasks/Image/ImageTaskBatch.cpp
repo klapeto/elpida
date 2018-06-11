@@ -35,27 +35,35 @@ namespace Elpida
 {
 
 	ImageTaskBatch::ImageTaskBatch(const std::string& inputImage, const std::string& outputImage) :
-			TaskBatch("Image Tasks for: " + inputImage)
+			TaskBatch("Image Tasks for: " + inputImage), _inputFile(inputImage), _outputFile(outputImage)
 	{
-		auto readFile = new ReadFile(inputImage);
+		reconfigure();
+	}
+
+	ImageTaskBatch::~ImageTaskBatch()
+	{
+		destroyTasks();
+	}
+
+	void ImageTaskBatch::reconfigure()
+	{
+		destroyTasks();
+		createTasks();
+	}
+
+	void ImageTaskBatch::createTasks()
+	{
+		auto readFile = new ReadFile(_inputFile);
 		auto decoding = new PngDecoding(readFile->getFile().getData(), readFile->getFile().getSize());
 		auto grayScale = new GrayscaleAverage<unsigned char>(decoding->getImage(), decoding->getImage());
 		auto encoding = new PngEncoding(decoding->getImage());
-		auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), outputImage);
+		auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), _outputFile);
 
 		_tasks.push_back(readFile);
 		_tasks.push_back(decoding);
 		_tasks.push_back(grayScale);
 		_tasks.push_back(encoding);
 		_tasks.push_back(writeFile);
-	}
-
-	ImageTaskBatch::~ImageTaskBatch()
-	{
-		for (auto task : _tasks)
-		{
-			delete task;
-		}
 	}
 
 } /* namespace Elpida */

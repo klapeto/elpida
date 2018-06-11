@@ -11,7 +11,7 @@ namespace Elpida
 {
 
 	ReadFile::ReadFile(const std::string& filePath) :
-			Task("Read File: " + filePath),
+			Task("Read File: " + filePath, false),
 			_filePath(filePath)
 	{
 

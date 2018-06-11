@@ -9,7 +9,6 @@
 #define SRC_TASKMETRICS_HPP_
 
 #include <chrono>
-#include <cstddef>
 
 namespace Elpida
 {
@@ -19,11 +18,6 @@ namespace Elpida
 		public:
 
 			typedef std::chrono::duration<double, std::nano> Duration;
-
-			size_t getClockCycles() const
-			{
-				return _clockCycles;
-			}
 
 			const Duration& getDuration() const
 			{
@@ -35,15 +29,13 @@ namespace Elpida
 				return ((double) _duration.count() / (double) std::nano::den);
 			}
 
-			TaskMetrics() :
-					_clockCycles(0)
+			TaskMetrics()
 			{
 
 			}
 
-			TaskMetrics(const Duration& duration, size_t clockCycles) :
-					_duration(duration),
-					_clockCycles(clockCycles)
+			TaskMetrics(const Duration& duration) :
+					_duration(duration)
 			{
 
 			}
@@ -60,7 +52,6 @@ namespace Elpida
 
 		private:
 			Duration _duration;
-			size_t _clockCycles;
 	};
 
 } /* namespace Elpida */

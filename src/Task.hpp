@@ -38,6 +38,16 @@ namespace Elpida
 	{
 		public:
 
+			bool isToBeMeasured() const
+			{
+				return _toBeMeasured;
+			}
+
+			void setToBeMeasured(bool toBeMeasured)
+			{
+				_toBeMeasured = toBeMeasured;
+			}
+
 			inline const std::string& getName() const
 			{
 				return _name;
@@ -46,8 +56,8 @@ namespace Elpida
 			virtual void run() = 0;
 			virtual TaskThroughput translateToThroutput(const TaskMetrics& metrics) const = 0;
 
-			Task(const std::string& name) :
-					_name(name)
+			Task(const std::string& name, bool toBeMeasured = true) :
+					_name(name), _toBeMeasured(toBeMeasured)
 			{
 
 			}
@@ -60,8 +70,10 @@ namespace Elpida
 			Task(const Task&) = default;
 			Task& operator=(Task&&) = default;
 			Task& operator=(const Task&) = default;
+
 		private:
 			std::string _name;
+			bool _toBeMeasured;
 	};
 
 } /* namespace Elpida */

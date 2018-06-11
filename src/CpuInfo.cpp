@@ -193,15 +193,13 @@ namespace Elpida
 		output << _newLine << _newLine << "CPU Instructions Extensions:" << _newLine;
 
 		{
-			TextTable<3> outputTable = { TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported",
-					10) };
+			TextTable<3> outputTable = { TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
 
 			outputTable.setPadding(4);
 			for (auto instruction : _instructionExtensions)
 			{
 				outputTable.addRow(
-						{ instruction.getDescription(), instruction.getName(), (
-								instruction.isSupported() ? "true" : "false") });
+						{ instruction.getDescription(), instruction.getName(), (instruction.isSupported() ? "true" : "false") });
 			}
 			outputTable.exportTo(output);
 		}
