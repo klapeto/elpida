@@ -56,6 +56,10 @@ namespace Elpida
 			virtual void run() = 0;
 			virtual TaskThroughput translateToThroutput(const TaskMetrics& metrics) const = 0;
 
+			virtual void prepare() {
+
+			}
+
 			Task(const std::string& name, bool toBeMeasured = true) :
 					_name(name), _toBeMeasured(toBeMeasured)
 			{

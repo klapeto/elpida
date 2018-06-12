@@ -72,6 +72,8 @@ namespace Elpida {
     }
 
     TaskMetrics Runner::runTask(Task &task) {
+    	task.prepare();
+
         auto start = Timer::now();
 
         task.run();

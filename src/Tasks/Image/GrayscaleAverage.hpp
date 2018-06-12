@@ -46,33 +46,36 @@ namespace Elpida
 				Pixel<T>* targetData = _targetImage.getData();
 				for (size_t i = 0; i < size; ++i)
 				{
-					T newColor = (sourceData[i].R + sourceData[i].G + sourceData[i].B) / 3;
+					T newColor = (sourceData[i].R + sourceData[i].G + sourceData[i].B) / 3.0f;
 					targetData[i].R = newColor;
 					targetData[i].G = newColor;
 					targetData[i].B = newColor;
-					targetData[i].A = 255;
+					targetData[i].A = 1.0f;
 				}
 			}
 
 			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const
 			{
-				return TaskThroughput(TaskThroughput::getValueScale(((double)_sourceImage.getTotalSize()) / metrics.getSeconds()) + "Pixel/s");
+				return TaskThroughput(
+				        TaskThroughput::getValueScale(((double) _sourceImage.getTotalSize()) / metrics.getSeconds()) + "Pixel/s");
 			}
 
-			GrayscaleAverage(const Image<T>& sourceImage, Image<T>& targetImage) :
-					Task("Grayscale conversion (Average)"),
-					_sourceImage(sourceImage),
-					_targetImage(targetImage)
+			void prepare()
 			{
-				if (!sourceImage.isCompatibleWith(targetImage))
+				if (!_sourceImage.isCompatibleWith(_targetImage))
 				{
 					throw ElpidaException("Grayscale", "Images are not the same size!");
 				}
 			}
 
+			GrayscaleAverage(const Image<T>& sourceImage, Image<T>& targetImage) :
+					Task("Convert to Grayscale (Average)"), _sourceImage(sourceImage), _targetImage(targetImage)
+			{
+
+			}
+
 			GrayscaleAverage(Image<T> &image) :
-					_sourceImage(image),
-					_targetImage(image)
+					_sourceImage(image), _targetImage(image)
 			{
 
 			}

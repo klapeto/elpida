@@ -30,6 +30,9 @@
 #include "Tasks/Image/PngEncoding.hpp"
 #include "Tasks/General/ReadFile.hpp"
 #include "Tasks/General/WriteFile.hpp"
+#include "Tasks/Image/FloydSteinberg.hpp"
+#include "Tasks/Image/ConvertToFloat.hpp"
+#include "Tasks/Image/ConvertToUInt8.hpp"
 
 namespace Elpida
 {
@@ -55,13 +58,19 @@ namespace Elpida
 	{
 		auto readFile = new ReadFile(_inputFile);
 		auto decoding = new PngDecoding(readFile->getFile().getData(), readFile->getFile().getSize());
-		auto grayScale = new GrayscaleAverage<unsigned char>(decoding->getImage(), decoding->getImage());
-		auto encoding = new PngEncoding(decoding->getImage());
+		auto floatConvert = new ConvertToFloat<unsigned char>(decoding->getImage());
+		auto grayScale = new GrayscaleAverage<float>(floatConvert->getImage(), floatConvert->getImage());
+		auto floydSteinberg = new FloydSteinberg<float>(floatConvert->getImage(), floatConvert->getImage(), 0.5f);
+		auto intConvert = new ConvertToUInt8<float>(floatConvert->getImage());
+		auto encoding = new PngEncoding(intConvert->getImage());
 		auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), _outputFile);
 
 		_tasks.push_back(readFile);
 		_tasks.push_back(decoding);
+		_tasks.push_back(floatConvert);
 		_tasks.push_back(grayScale);
+		_tasks.push_back(floydSteinberg);
+		_tasks.push_back(intConvert);
 		_tasks.push_back(encoding);
 		_tasks.push_back(writeFile);
 	}

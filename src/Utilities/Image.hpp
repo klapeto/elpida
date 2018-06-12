@@ -31,6 +31,7 @@
 #include <iostream>
 #include <string>
 #include <type_traits>
+#include <cstring>
 
 #include "Pixel.hpp"
 #include "Exportable.hpp"
@@ -74,10 +75,9 @@ namespace Elpida
 				return _width;
 			}
 
-			template<typename R>
-			Image<R> && convertTo() const
+			Image<float> convertToFloat() const
 			{
-				return Image<R>(*this);
+				return Image<float>(*this);
 			}
 
 			template<typename oT>
@@ -101,20 +101,13 @@ namespace Elpida
 			}
 
 			Image() :
-					_data(nullptr),
-					_width(0),
-					_height(0),
-					_dataMustBeDeleted(false),
-					_dataIsNotAllocatedNormally(false)
+					_data(nullptr), _width(0), _height(0), _dataMustBeDeleted(false), _dataIsNotAllocatedNormally(false)
 			{
 
 			}
 
 			Image(size_t width, size_t height, bool initializeData = false) :
-					_width(width),
-					_height(height),
-					_dataMustBeDeleted(true),
-					_dataIsNotAllocatedNormally(false)
+					_width(width), _height(height), _dataMustBeDeleted(true), _dataIsNotAllocatedNormally(false)
 			{
 				_data = new Pixel<T> [_width * _height];
 				if (initializeData)
@@ -124,9 +117,7 @@ namespace Elpida
 			}
 
 			Image(const T* data, size_t width, size_t height, bool copyData = false) :
-					_width(width),
-					_height(height),
-					_dataIsNotAllocatedNormally(false)
+					_width(width), _height(height), _dataIsNotAllocatedNormally(false)
 			{
 
 				if (copyData)
@@ -143,7 +134,7 @@ namespace Elpida
 				}
 			}
 
-			Image(const Image& other) :
+			Image(const Image<T>& other) :
 					_data(nullptr),
 					_width(other._width),
 					_height(other._height),
@@ -153,9 +144,19 @@ namespace Elpida
 				copyImage(other);
 			}
 
-			Image(const Image<T>& other, size_t y, size_t height, bool copy = false) :
-					_dataMustBeDeleted(false),
+			template<typename R>
+			Image(const Image<R>& other) :
+					_data(nullptr),
+					_width(other.getWidth()),
+					_height(other.getHeight()),
+					_dataMustBeDeleted(true),
 					_dataIsNotAllocatedNormally(false)
+			{
+				copyImage(other);
+			}
+
+			Image(const Image<T>& other, size_t y, size_t height, bool copy = false) :
+					_dataMustBeDeleted(false), _dataIsNotAllocatedNormally(false)
 			{
 				if (y > other._height || y + height > other._height)
 				{
@@ -178,8 +179,24 @@ namespace Elpida
 				destroyCurrentData();
 			}
 
-			Image(Image<T> &&) = default;
-			Image<T>& operator=(Image<T> &&) = default;
+			Image(Image<T> && other) :
+					_data(nullptr), _width(0), _height(0), _dataMustBeDeleted(false), _dataIsNotAllocatedNormally(false)
+			{
+				moveImage(other);
+			}
+
+			Image<T>& operator=(Image<T> && other)
+			{
+				_data = other._data;
+				_width = other._width;
+				_height = other._height;
+				_dataMustBeDeleted = other._dataMustBeDeleted;
+				_dataIsNotAllocatedNormally = other._dataIsNotAllocatedNormally;
+				other._data = nullptr;
+				other._dataMustBeDeleted = false;
+				other._dataIsNotAllocatedNormally = false;
+				return *this;
+			}
 
 		private:
 			Pixel<T>* _data;
@@ -217,6 +234,18 @@ namespace Elpida
 					}
 				}
 				_data = nullptr;
+			}
+
+			void moveImage(Image<T> && other)
+			{
+				_data = other._data;
+				_width = other._width;
+				_height = other._height;
+				_dataMustBeDeleted = other._dataMustBeDeleted;
+				_dataIsNotAllocatedNormally = other._dataIsNotAllocatedNormally;
+				other._data = nullptr;
+				other._dataMustBeDeleted = false;
+				other._dataIsNotAllocatedNormally = false;
 			}
 	};
 

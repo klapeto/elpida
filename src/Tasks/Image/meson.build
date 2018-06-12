@@ -21,7 +21,10 @@ subdir('Encoders')
 imageTasks_sources = ['GrayscaleAverage.cpp',
 						'ImageTaskBatch.cpp',
 						'PngDecoding.cpp',
-						'PngEncoding.cpp']
+						'PngEncoding.cpp',
+						'FloydSteinberg.cpp',
+						'ConvertToFloat.cpp',
+						'ConvertToUInt8.cpp']
 
 imageTasks = static_library('ImageTasks', 
 							imageTasks_sources,
@@ -31,6 +34,9 @@ imageTasks = static_library('ImageTasks',
 install_headers(['GrayscaleAverage.hpp',
 				'ImageTaskBatch.hpp',
 				'PngDecoding.hpp',
-				'PngEncoding.hpp'],
+				'PngEncoding.hpp',
+				'FloydSteinberg.hpp',
+				'ConvertToFloat.hpp',
+                'ConvertToUInt8.hpp'],
 				subdir: 'Elpida/Tasks/Image')
 
