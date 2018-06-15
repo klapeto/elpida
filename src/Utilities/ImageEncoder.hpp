@@ -38,7 +38,7 @@ namespace Elpida
 
 			struct ImageDecodeInfo
 			{
-					unsigned char* data;
+					uint8_t* data;
 					size_t width;
 					size_t height;
 					int pixelSize;
@@ -46,12 +46,12 @@ namespace Elpida
 
 			struct ImageEncodeInfo
 			{
-					unsigned char* data;
+					uint8_t* data;
 					size_t dataSize;
 			};
 
-			virtual ImageDecodeInfo decode(unsigned char* data, size_t size) = 0;
-			virtual ImageEncodeInfo encode(size_t imageWidth, size_t imageHeight, unsigned char* inputData, size_t inputSize) = 0;
+			virtual ImageDecodeInfo decode(uint8_t* data, size_t size) = 0;
+			virtual ImageEncodeInfo encode(size_t imageWidth, size_t imageHeight, uint8_t* inputData, size_t inputSize) = 0;
 
 			ImageEncoder()
 			{

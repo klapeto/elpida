@@ -37,8 +37,8 @@ namespace Elpida
 		public:
 
 
-			ImageEncoder::ImageDecodeInfo decode(unsigned char* data, size_t size);
-			ImageEncoder::ImageEncodeInfo encode(size_t imageWidth, size_t imageHeight, unsigned char* inputData, size_t inputSize);
+			ImageEncoder::ImageDecodeInfo decode(uint8_t* data, size_t size);
+			ImageEncoder::ImageEncodeInfo encode(size_t imageWidth, size_t imageHeight, uint8_t* inputData, size_t inputSize);
 
 			LibPngEncoder()
 			{

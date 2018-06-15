@@ -44,7 +44,7 @@ namespace Elpida
 			}
 
 			void prepare() {
-				_convertedImage = std::move(Image<uint8_t>(_sourceImage.getWidth(), _sourceImage.getHeight()));
+				_convertedImage = Image<uint8_t>(_sourceImage.getWidth(), _sourceImage.getHeight());
 			}
 
 			ConvertToUInt8(const Image<T>& sourceImage) :

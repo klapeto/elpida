@@ -31,7 +31,7 @@
 namespace Elpida
 {
 
-	ImageEncoder::ImageDecodeInfo LibPngEncoder::decode(unsigned char* data, size_t size)
+	ImageEncoder::ImageDecodeInfo LibPngEncoder::decode(uint8_t* data, size_t size)
 	{
 		png_image img;
 		img.opaque = nullptr;
@@ -41,7 +41,7 @@ namespace Elpida
 		{
 			img.format = PNG_FORMAT_RGBA;
 
-			auto data = new unsigned char[PNG_IMAGE_SIZE(img)];
+			auto data = new uint8_t[PNG_IMAGE_SIZE(img)];
 
 			if (data == nullptr)
 			{
@@ -57,7 +57,7 @@ namespace Elpida
 		return ImageEncoder::ImageDecodeInfo { nullptr, 0, 0, 0 };
 	}
 
-	ImageEncoder::ImageEncodeInfo LibPngEncoder::encode(size_t imageWidth, size_t imageHeight, unsigned char* inputData,
+	ImageEncoder::ImageEncodeInfo LibPngEncoder::encode(size_t imageWidth, size_t imageHeight, uint8_t* inputData,
 			size_t inputSize)
 	{
 		png_image img;
@@ -71,7 +71,7 @@ namespace Elpida
 
 		if (png_image_write_to_memory(&img, nullptr, &outputSize, 0, inputData, 0, nullptr))
 		{
-			auto outputBuffer = new unsigned char[outputSize];
+			auto outputBuffer = new uint8_t[outputSize];
 			if (outputBuffer == nullptr)
 			{
 				png_image_free(&img);
