@@ -1,17 +1,6 @@
 @echo off
-set MSYS_FOLDER="msys2"
-echo %PROCESSOR_ARCHITECTURE% | find /i "x86" > nul
-if %errorlevel%==0 (
-    set MSYSTEM=MINGW32
-    set MINGW_FOLDER="mingw32"
-    set ARCH="i686"
-    set ARCH_BITS="32"
-) else (
-    set MSYSTEM=MINGW64
-    set MINGW_FOLDER="mingw64"
-    set ARCH="x86_64"
-    set ARCH_BITS="64"
-)
+
+call setVariables.cmd
 
 set INPUT_INSTALL_SCRIPT_TEMPLATE="msys2_autoInstall_template.js"
 set OUTPUT_INSTALL_SCRIPT="msys2_autoInstall.js"
@@ -30,6 +19,6 @@ echo Generating MSYS Install script...
 powershell.exe -nologo -noprofile -command "(Get-Content %INPUT_INSTALL_SCRIPT_TEMPLATE%) | ForEach-Object { $_ -replace '%INSTALL_SCRIPT_MSYS_FOLDER_PLACEHOLDER%', '%MSYS_FOLDER%' } | ForEach-Object { $_ -replace '%INSTALL_SCRIPT_ARCH_BITS_PLACEHOLDER%', '%ARCH_BITS%' } | ForEach-Object { $_ -replace '%INSTALL_SCRIPT_MSYS_VERSION_PLACEHOLDER%', '%MSYS_VERSION%' } | Set-Content %OUTPUT_INSTALL_SCRIPT%"
 echo Done!
 echo Extracting MSYS files...
-%MSYS_INSTALLATION_EXE% -v --script %OUTPUT_INSTALL_SCRIPT%51
+%MSYS_INSTALLATION_EXE% -v --script %OUTPUT_INSTALL_SCRIPT%
 echo Done!
 %MSYS_FOLDER%\usr\bin\bash.exe --login -c "pacman -Syuu --noconfirm"

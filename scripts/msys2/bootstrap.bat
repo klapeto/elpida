@@ -1,17 +1,6 @@
 @echo off
-set MSYS_FOLDER="msys2"
-echo %PROCESSOR_ARCHITECTURE% | find /i "x86" > nul
-if %errorlevel%==0 (
-    set MSYSTEM=MINGW32
-    set MINGW_FOLDER="mingw32"
-    set ARCH="i686"
-    set ARCH_BITS="32"
-) else (
-    set MSYSTEM=MINGW64
-    set MINGW_FOLDER="mingw64"
-    set ARCH="x86_64"
-    set ARCH_BITS="64"
-)
+
+call setVariables.cmd
 
 echo ====================================
 echo ^|                                  ^|
@@ -55,7 +44,8 @@ goto :choice
 :yes
 call getMSYS2.bat
 xcopy /f /e /y scripts\* %MSYS_FOLDER%
-%MSYS_FOLDER%\usr\bin\mintty.exe -h alw "/usr/bin/bash.exe" --login ../../bootstrap.sh %ARCH% %MINGW_FOLDER%
+%MSYS_FOLDER%\usr\bin\bash.exe --login  -c "../../bootstrap.sh %ARCH% %MINGW_FOLDER%"
+pause
 exit
 
 :no
