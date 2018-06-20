@@ -50,25 +50,12 @@
 namespace Elpida
 {
 
-	std::string amdCacheAssociativities[] = {
-			"Disabled",
-			"Direct mapped",
-			"2-Way",
-			"",
-			"4-Way",
-			"",
-			"8-Way",
-			"",
-			"16-Way",
-			"",
-			"32-Way",
-			"48-Way",
-			"64-Way",
-			"96-Way",
-			"128-Way",
-			"Fully" };
+	std::string amdCacheAssociativities[] =
+	{ "Disabled", "Direct mapped", "2-Way", "", "4-Way", "", "8-Way", "", "16-Way", "", "32-Way", "48-Way", "64-Way", "96-Way", "128-Way",
+	        "Fully" };
 
-	std::string intelCacheTypes[] = { "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
+	std::string intelCacheTypes[] =
+	{ "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
 
 	CpuInfo::CpuInfo() :
 			_vendor(Vendor::Unknown),
@@ -95,13 +82,22 @@ namespace Elpida
 		unsigned eax = 0, ebx = 0, ecx = 0, edx = 0;
 
 		__get_cpuid(0x0, &eax, &ebx, &ecx, &edx);
-		_maximumStandardFunction = eax;
 
-		__get_cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
-		_maximumExtendedFunction = eax;
-		_vendorString.append((char*) &ebx, 4);
-		_vendorString.append((char*) &edx, 4);
-		_vendorString.append((char*) &ecx, 4);
+		if (ebx != 0)
+		{
+			_maximumStandardFunction = eax;
+			_vendorString.append((char*) &ebx, 4);
+			_vendorString.append((char*) &edx, 4);
+			_vendorString.append((char*) &ecx, 4);
+		}
+		else
+		{
+			__get_cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
+			_maximumExtendedFunction = eax;
+			_vendorString.append((char*) &ebx, 4);
+			_vendorString.append((char*) &edx, 4);
+			_vendorString.append((char*) &ecx, 4);
+		}
 
 		if (_vendorString == "AuthenticAMD")
 		{
@@ -110,44 +106,6 @@ namespace Elpida
 		else if (_vendorString == "GenuineIntel")
 		{
 			_vendor = Vendor::Intel;
-		}
-
-		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
-
-		_stepping = ((eax >> 0) & 0xF);
-
-		{
-			unsigned model = (eax >> 4) & 0xF;
-			unsigned family = ((eax >> 8) & 0xF);
-			if (family == 15)
-			{
-				_family = family + ((eax >> 20) & 0xFF);
-				_model = model + (((eax >> 16) & 0x7) << 4);
-			}
-			else if (family == 6)
-			{
-				_family = family;
-				_model = model + (((eax >> 16) & 0x7) << 4);
-			}
-			else
-			{
-				_family = family;
-				_model = model;
-			}
-
-		}
-
-		__get_cpuid(0x0000001, &eax, &ebx, &ecx, &edx);
-
-		if (featureCheck(edx, 19))
-		{
-			_cacheLineSize = getRegisterValue(ebx, 8, 0xFF);
-		}
-
-		if (featureCheck(edx, 28))
-		{
-			_hyperThreading = true;
-			_logicalProcessors = getRegisterValue(ebx, 16, 0xFF);
 		}
 
 		switch (_vendor)
@@ -193,13 +151,14 @@ namespace Elpida
 		output << _newLine << _newLine << "CPU Instructions Extensions:" << _newLine;
 
 		{
-			TextTable<3> outputTable = { TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
+			TextTable<3> outputTable =
+			{ TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
 
 			outputTable.setPadding(4);
 			for (auto instruction : _instructionExtensions)
 			{
 				outputTable.addRow(
-						{ instruction.getDescription(), instruction.getName(), (instruction.isSupported() ? "true" : "false") });
+				{ instruction.getDescription(), instruction.getName(), (instruction.isSupported() ? "true" : "false") });
 			}
 			outputTable.exportTo(output);
 		}
@@ -249,13 +208,51 @@ namespace Elpida
 		auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() - nowOverhead;
 
 		_tscFrequency = (((float) (endCycles - startCycles)) * 1000000000.f) / (float) nanoseconds;
-		_tscTimeRatio = (float) nanoseconds /((float) (endCycles - startCycles));
+		_tscTimeRatio = (float) nanoseconds / ((float) (endCycles - startCycles));
 
 	}
 
 	void CpuInfo::getAMDFeatures()
 	{
 		unsigned eax, ebx, edx, ecx;
+
+		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+
+		_stepping = ((eax >> 0) & 0xF);
+
+		{
+			unsigned model = (eax >> 4) & 0xF;
+			unsigned family = ((eax >> 8) & 0xF);
+			if (family == 15)
+			{
+				_family = family + ((eax >> 20) & 0xFF);
+				_model = model + (((eax >> 16) & 0x7) << 4);
+			}
+			else if (family == 6)
+			{
+				_family = family;
+				_model = model + (((eax >> 16) & 0x7) << 4);
+			}
+			else
+			{
+				_family = family;
+				_model = model;
+			}
+
+		}
+
+		__get_cpuid(0x0000001, &eax, &ebx, &ecx, &edx);
+
+		if (featureCheck(edx, 19))
+		{
+			_cacheLineSize = getRegisterValue(ebx, 8, 0xFF);
+		}
+
+		if (featureCheck(edx, 28))
+		{
+			_hyperThreading = true;
+			_logicalProcessors = getRegisterValue(ebx, 16, 0xFF);
+		}
 
 		for (int i = 2; i <= 4; ++i)
 		{
@@ -411,16 +408,47 @@ namespace Elpida
 	void CpuInfo::getIntelFeatures()
 	{
 		unsigned eax, ebx, edx, ecx;
+
 		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
-		_rdtscp = featureCheck(edx, 4);
-		if (_hyperThreading)
+
+		_stepping = ((eax >> 0) & 0xF);
 		{
-			_logicalProcessors = getRegisterValue(edx, 16, 0xFF);
+			unsigned model = (eax >> 4) & 0xF;
+			unsigned family = ((eax >> 8) & 0xF);
+			if (family == 0xF)
+			{
+				_family = family + ((eax >> 20) & 0xFF);
+				_model = model + (((eax >> 16) & 0x7) << 4);
+			}
+			else if (family == 0x6 || family==0xF)
+			{
+				_family = family;
+				_model = model + (((eax >> 16) & 0x7) << 4);
+			}
+			else
+			{
+				_family = family;
+				_model = model;
+			}
+
+		}
+
+		if (featureCheck(edx, 19))
+		{
+			_cacheLineSize = getRegisterValue(ebx, 8, 0xFF);
+		}
+
+		if (featureCheck(edx, 28))
+		{
+			_hyperThreading = true;
+			_logicalProcessors = getRegisterValue(ebx, 16, 0xFF);
 		}
 		else
 		{
 			_logicalProcessors = _physicalCores;
 		}
+
+		_rdtscp = featureCheck(edx, 4);
 
 		addFeature(_instructionExtensions, "CMOV", edx, 15);
 		addFeature(_instructionExtensions, "MMX", edx, 23);
@@ -481,7 +509,7 @@ namespace Elpida
 
 		for (int i = 2; i <= 4; ++i)
 		{
-			__get_cpuid(0x80000002 + i, &eax, &ebx, &ecx, &edx);
+			__get_cpuid(0x80000000 + i, &eax, &ebx, &ecx, &edx);
 			_processorBrand.append((char*) (&eax), 4);
 			_processorBrand.append((char*) (&ebx), 4);
 			_processorBrand.append((char*) (&ecx), 4);
@@ -490,7 +518,7 @@ namespace Elpida
 
 		if (_maximumStandardFunction >= 0x6)
 		{
-			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
+			__get_cpuid(0x6, &eax, &ebx, &ecx, &edx);
 			_turboBoost = featureCheck(eax, 1);
 			_turboBoost3 = featureCheck(eax, 14);
 		}
@@ -513,10 +541,10 @@ namespace Elpida
 				Cache tmpCache;
 
 				tmpCache.name = "L" + std::to_string(getRegisterValue(eax, 5, 0x7)) + " "
-						+ intelCacheTypes[getRegisterValue(eax, 0, 0x1F) < 4 ? getRegisterValue(eax, 0, 0x1F) : 0];
+				        + intelCacheTypes[getRegisterValue(eax, 0, 0x1F) < 4 ? getRegisterValue(eax, 0, 0x1F) : 0];
 
 				tmpCache.size = (getRegisterValue(ebx, 22, 0x3FF) + 1) * (getRegisterValue(ebx, 12, 0x3FF) + 1)
-						* (getRegisterValue(ebx, 0, 0xFFF) + 1) * (getRegisterValue(ecx, 0, 0x7FFFFFFF) + 1);
+				        * (getRegisterValue(ebx, 0, 0xFFF) + 1) * (getRegisterValue(ecx, 0, 0x7FFFFFFF) + 1);
 
 				tmpCache.associativity = std::to_string((getRegisterValue(ebx, 22, 0x3FF) + 1)) + "-way";
 				tmpCache.linesPerTag = (getRegisterValue(ebx, 12, 0x3FF) + 1);
