@@ -5,7 +5,6 @@ if [ ! -d "elpida" ]; then
     exit    
 fi
 cd ~/elpida
-rm -r builddir
 meson builddir
 cd builddir
 ninja

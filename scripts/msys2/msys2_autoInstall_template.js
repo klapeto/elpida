@@ -18,6 +18,7 @@ function Controller()
 
 Controller.prototype.IntroductionPageCallback = function()
 {
+    // this is not portable. If people at MSYS decide to change the internal archive naming scheme, this will not work and will have be modified
     installer.performOperation("Extract", ["installer://com.msys2.root.base/__MSYS_VERSION__msys__ARCH_BITS__.7z", "__MSYS_FOLDER__"]);
     gui.clickButton(buttons.CancelButton);
 }
