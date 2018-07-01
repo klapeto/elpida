@@ -23,7 +23,9 @@ utilities_sources = ['ElpidaException.cpp',
 					'TextColumn.cpp',
 					'TextRow.cpp',
 					'TextTable.cpp',
-					'MemoryFile.cpp']
+					'MemoryFile.cpp',
+					'NonCopyable.cpp',
+					'Singleton.cpp']
 
 utilities = static_library('Utilities', 
 						utilities_sources,
@@ -36,5 +38,7 @@ install_headers(['ElpidaException.hpp',
 				'TextColumn.hpp',
 				'TextRow.hpp',
 				'TextTable.hpp',
-				'MemoryFile.hpp'],
+				'MemoryFile.hpp',
+				'NonCopyable.hpp',
+				'Singleton.hpp'],
 				subdir: 'Elpida/Utilities')

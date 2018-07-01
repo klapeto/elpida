@@ -3,6 +3,13 @@
 Elpida is a simple x86 CPU/Algorithm benchmarking library, aimed to be as transparent and as accurate as can be.
 To fully test the capabilities of the CPU, the benchmark is offered to be compiled the the specific architecture that it currently runs (eg. -march=native).
 
+## Contents
+
+* [Dependencies](#dependecies)
+* [Build for Windows 7+ (For simple users)](#build-for-windows-7-for-simple-users)
+* [Build for Windows 7+ (For advanced users)](#build-for-windows-7-for-advanced-users)
+* [Build for Linux (Debian Based, Fedora)](#build-for-linux-debian-based-fedora)
+
 ## Dependecies
 
 To be able to build elpida from sources you will need a small build system consisted of:
@@ -15,7 +22,7 @@ On Windows, Debian, Ubuntu and Fedora these dependencies are covered by the buil
 
 ## Build for Windows 7+ (For simple users)
 
-Currently on windows is only tested on with [MSYS2](https://www.msys2.org/ "MSYS2 is a software distro and building platform for Windows") building platform. To be able to build it, I provided some scripts that download and and creates the build environment required to build elpida. If you already have a MSYS2 installation on your system, you can go to [Build for Windows 7+ (For advanced users)](#Build-for-Windows-7+-(For-advanced-users))
+Currently on windows is only tested on with [MSYS2](https://www.msys2.org/ "MSYS2 is a software distro and building platform for Windows") building platform. To be able to build it, I provided some scripts that download and and creates the build environment required to build elpida. If you already have a MSYS2 installation on your system, you can go to [Build for Windows 7+ (For advanced users)](#build-for-windows-7-for-simple-users)
 
 Requirements:
 
@@ -88,8 +95,6 @@ cp scripts/msys2/scripts/*.sh .
 ## Build for Linux (Debian Based, Fedora)
 
 I provide some scripts for easier setup on Debian based and Fedora distributions.
-
-* First you need to download the elpida sources
 
 * If you already have git installed:
 

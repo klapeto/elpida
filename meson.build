@@ -15,16 +15,8 @@ configuration_inc = include_directories('.')
 
 thread_dep = dependency('threads')
 
+install_subdir('resources', install_dir : 'bin')
+
 subdir('libs')
 subdir('src')
-
-
-elpida = library('elpida',
-			include_directories : [inc, configuration_inc],
-			dependencies : thread_dep,
-			link_whole: [core, generalTasks, imageTasks, imageEncoders, utilities],
-			install: true)
-			
-executable('elpida', 'src/main.cpp',
-			link_with: elpida,
-			include_directories : [inc, configuration_inc])
+subdir('tools')

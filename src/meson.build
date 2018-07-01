@@ -69,5 +69,9 @@ install_headers(['CpuFeature.hpp',
 				'TaskThroughput.hpp',
 				'Timer.hpp'],
 				subdir: 'Elpida')
-				
 
+elpida = library('elpida',
+			include_directories : [inc, configuration_inc],
+			dependencies : thread_dep,
+			link_whole: [core, generalTasks, imageTasks, imageEncoders, utilities],
+			install: true)

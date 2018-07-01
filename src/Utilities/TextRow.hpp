@@ -1,5 +1,5 @@
 /**************************************************************************
-*   elpida - CPU benchmark tool
+*   Elpida - Benchmark library
 *   
 *   Copyright (C) 2018  Ioannis Panagiotopoulos
 *   

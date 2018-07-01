@@ -68,4 +68,4 @@ libpng = static_library('libpng',
 						link_whole: zlib,
 						include_directories : zlibInclude,
 						c_args : ['-DHAVE_CONFIG_H', '-DHAVE_LIBZ'],
-						install : true)
+						install : false)

@@ -1,21 +1,21 @@
 /**************************************************************************
- *   elpida - CPU benchmark tool
- *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <https://www.gnu.org/licenses/>
- *************************************************************************/
+*   Elpida - Benchmark library
+*   
+*   Copyright (C) 2018  Ioannis Panagiotopoulos
+*   
+*   This program is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.
+*   
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*   
+*   You should have received a copy of the GNU General Public License
+*   along with this program.  If not, see <https://www.gnu.org/licenses/>
+*************************************************************************/
 
 /*
  * Cpu.cpp
@@ -51,25 +51,27 @@ namespace Elpida
 {
 
 	std::string amdCacheAssociativities[] =
-	{ "Disabled", "Direct mapped", "2-Way", "", "4-Way", "", "8-Way", "", "16-Way", "", "32-Way", "48-Way", "64-Way", "96-Way", "128-Way",
-	        "Fully" };
+		{
+		        "Disabled", "Direct mapped", "2-Way", "", "4-Way", "", "8-Way", "", "16-Way", "", "32-Way", "48-Way", "64-Way", "96-Way",
+		        "128-Way", "Fully" };
 
 	std::string intelCacheTypes[] =
-	{ "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
+		{ "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
 
-	CpuInfo::CpuInfo() :
-			_vendor(Vendor::Unknown),
-			_model(-1),
-			_family(-1),
-			_cacheLineSize(-1),
-			_physicalCores(1),
-			_logicalProcessors(1),
-			_maximumStandardFunction(0),
-			_maximumExtendedFunction(0),
-			_tscFrequency(0),
-			_tscTimeRatio(1.0),
-			_hyperThreading(false),
-			_rdtscp(false)
+	CpuInfo::CpuInfo()
+			:
+			  _vendor(Vendor::Unknown),
+			  _model(-1),
+			  _family(-1),
+			  _cacheLineSize(-1),
+			  _physicalCores(1),
+			  _logicalProcessors(1),
+			  _maximumStandardFunction(0),
+			  _maximumExtendedFunction(0),
+			  _tscFrequency(0),
+			  _tscTimeRatio(1.0),
+			  _hyperThreading(false),
+			  _rdtscp(false)
 	{
 
 		setPadding(4);
@@ -89,6 +91,8 @@ namespace Elpida
 			_vendorString.append((char*) &ebx, 4);
 			_vendorString.append((char*) &edx, 4);
 			_vendorString.append((char*) &ecx, 4);
+			__get_cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
+			_maximumExtendedFunction = eax;
 		}
 		else
 		{
@@ -133,6 +137,13 @@ namespace Elpida
 
 	void CpuInfo::exportTo(std::ostream& output) const
 	{
+		exportBasicInfo(output);
+		exportInstructionSetSupportInfo(output);
+		exportCacheInfo(output);
+	}
+
+	void CpuInfo::exportBasicInfo(std::ostream& output) const
+	{
 		output << _newLine;
 		output << "======================================" << _newLine;
 		output << "CPU Info" << _newLine;
@@ -147,22 +158,26 @@ namespace Elpida
 		out("Turbo Boost:", (_turboBoost ? "true" : "false"));
 		out("Turbo Boost 3:", (_turboBoost3 ? "true" : "false"));
 		out("Logical Cores:", _logicalProcessors);
+	}
 
+	void CpuInfo::exportInstructionSetSupportInfo(std::ostream& output) const
+	{
 		output << _newLine << _newLine << "CPU Instructions Extensions:" << _newLine;
 
-		{
-			TextTable<3> outputTable =
+		TextTable<3> outputTable =
 			{ TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
 
-			outputTable.setPadding(4);
-			for (auto instruction : _instructionExtensions)
-			{
-				outputTable.addRow(
+		outputTable.setPadding(4);
+		for (auto instruction : _instructionExtensions)
+		{
+			outputTable.addRow(
 				{ instruction.getDescription(), instruction.getName(), (instruction.isSupported() ? "true" : "false") });
-			}
-			outputTable.exportTo(output);
 		}
+		outputTable.exportTo(output);
+	}
 
+	void CpuInfo::exportCacheInfo(std::ostream& output) const
+	{
 		output << _newLine << _newLine << "CPU Caches:" << _newLine << _newLine;
 
 		for (auto cache : _caches)
@@ -175,7 +190,6 @@ namespace Elpida
 			out("Line size: ", std::to_string(cache.lineSize) + " Bytes");
 			output << _newLine;
 		}
-
 	}
 
 	void CpuInfo::getTscFrequency()
@@ -420,7 +434,7 @@ namespace Elpida
 				_family = family + ((eax >> 20) & 0xFF);
 				_model = model + (((eax >> 16) & 0x7) << 4);
 			}
-			else if (family == 0x6 || family==0xF)
+			else if (family == 0x6 || family == 0xF)
 			{
 				_family = family;
 				_model = model + (((eax >> 16) & 0x7) << 4);

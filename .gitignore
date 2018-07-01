@@ -2,4 +2,9 @@
 /.project
 /.settings
 /builddir/**
-/**/*.o
+/install/**
+/.vscode
+/libs
+/libs/**/!meson.build
+/libs/**/!*.h.build
+*.[oa]
