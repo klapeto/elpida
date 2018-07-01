@@ -1,3 +1,5 @@
+@echo off
+
 REM **************************************************************************
 REM Elpida -  Benchmark library
 REM 
@@ -16,7 +18,6 @@ REM You should have received a copy of the GNU General Public License
 REM along with this program.  If not, see <https://www.gnu.org/licenses/>
 REM **************************************************************************
 
-@echo off
 set MSYS_FOLDER="msys2"
 echo %PROCESSOR_ARCHITECTURE% | find /i "x86" > nul
 if %errorlevel%==0 (

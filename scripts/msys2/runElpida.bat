@@ -1,3 +1,5 @@
+@echo off
+
 REM **************************************************************************
 REM Elpida -  Benchmark library
 REM 
@@ -15,8 +17,6 @@ REM
 REM You should have received a copy of the GNU General Public License
 REM along with this program.  If not, see <https://www.gnu.org/licenses/>
 REM **************************************************************************
-
-@echo off
 
 call setVariables.cmd
 
