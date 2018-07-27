@@ -58,7 +58,7 @@ namespace Elpida
 					{ "AES", "AES instructions support" },
 					{ "AVX", "AVX instructions support" },
 					{ "AVX2", "AVX2 instructions support" },
-					{ "AVX512-F", "AVX512 Fountation" },
+					{ "AVX512-F", "AVX512 Foundation" },
 					{ "AVX512-BW", "AVX-512 Byte and Word instructions support" },
 					{ "AVX512-DQ", "AVX-512 DWORD and QWORD instructions support" },
 					{ "AVX512-IFMA", "AVX-512 Integer FMA instructions support" },
@@ -84,6 +84,7 @@ namespace Elpida
 					{ "ABM", "Advanced bit manipulation" },
 					{ "F16C", "Half-precision convert instruction support" },
 					{ "RDRAND", "RDRAND (HW RNG) instruction support" },
+					{ "SGX", "Intel Software Guard Extensions BMI1" },
 			};
 
 			struct Cache

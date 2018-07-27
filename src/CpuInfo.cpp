@@ -164,8 +164,7 @@ namespace Elpida
 	{
 		output << _newLine << _newLine << "CPU Instructions Extensions:" << _newLine;
 
-		TextTable<3> outputTable =
-			{ TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
+		TextTable outputTable = { TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
 
 		outputTable.setPadding(4);
 		for (auto instruction : _instructionExtensions)
@@ -330,6 +329,7 @@ namespace Elpida
 		//addFeature(_instructionExtensions, "AVX512-VPOPCNTDQ", 0, 0);
 		//addFeature(_instructionExtensions, "AVX512-4FMAPS", 0, 0);
 		addFeature(_instructionExtensions, "SHA", 0, 0);
+		addFeature(_instructionExtensions, "SGX", 0, 0);
 		//addFeature(_instructionExtensions, "VAES", 0, 0);
 
 		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
@@ -507,6 +507,7 @@ namespace Elpida
 		//addFeature(_instructionExtensions, "AVX512-VPOPCNTDQ", ecx, 14);
 		//addFeature(_instructionExtensions, "AVX512-4FMAPS", edx, 3);
 		addFeature(_instructionExtensions, "SHA", ebx, 29);
+		addFeature(_instructionExtensions, "SGX", ebx, 2);
 		//addFeature(_instructionExtensions, "VAES", ecx, 9);
 
 		addFeature(_instructionExtensions, "XOP", 0, 0);
