@@ -4,7 +4,7 @@
 /builddir/**
 /install/**
 /.vscode
-/libs
-/libs/**/!meson.build
-/libs/**/!*.h.build
+/Libraries
+/Libraries/**/!meson.build
+/Libraries/**/!*.h.build
 *.[oa]

@@ -9,14 +9,31 @@ add_global_arguments('-fno-builtin', language : 'cpp')
 gcc = meson.get_compiler('c')
 gpp = meson.get_compiler('cpp')
 
-inc = include_directories('src')
-libsInclude = include_directories('libs')
-configuration_inc = include_directories('.')
+rootIncude = include_directories('.')
+libsInclude = include_directories('Libraries')
 
 thread_dep = dependency('threads')
 
-install_subdir('resources', install_dir : 'bin')
+if build_machine.system() == 'linux'
+	dl_dep = gpp.find_library('dl', required: true)
+else
+	if build_machine.system() == 'windows'
+		dl_dep = gpp.find_library('kernel32', required: true)
+	endif
+endif
 
-subdir('libs')
-subdir('src')
-subdir('tools')
+install_subdir('Resources', install_dir : 'bin/Elpida')
+
+installationPrefix = get_option('prefix')
+libraryInstallPath = join_paths(installationPrefix, get_option('libdir'))
+
+subdir('Libraries')
+subdir('Elpida')
+subdir('TaskBatches')
+subdir('Tools')
+
+enable_tests = true
+
+if enable_tests 
+	subdir('Tests')
+endif
