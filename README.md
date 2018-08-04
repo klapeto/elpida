@@ -33,7 +33,7 @@ The script will setup the environment in the folder you want. It will not instal
 
 To bootstrap the process do the following:
 
-1. Copy all files/folders from [scripts/msys2](scripts/msys2) to where you want to setup the environment.
+1. Copy all files/folders from [Scripts/MSYS2](Scripts/MSYS2) to where you want to setup the environment.
 2. Run the `bootstrap.bat` script. It will take some time until it finishes.
 
 Once it is finished, press any key to close the command line. From now on you will not have to run `bootstrap.bat` again.
@@ -104,7 +104,7 @@ git clone https://github.com/klapeto/elpida.git elpida
 
 * If you don't have git installed then download the sources from here and extract them where you want
 
-* Copy the scripts from the [scripts/linux](scripts/linux) folder to the source root:
+* Copy the scripts from the [Scripts/Linux](Scripts/Linux) folder to the source root:
 
 ``` bash
 cd elpida

@@ -42,7 +42,7 @@ echo script is run. Nothing is installed system-wise. MSYS2 is
 echo extracted with it's installation executable by modifying it's
 echo behaviour so that it just extracts the files here. This is done
 echo by calling it and providing a Javascript file that overrides
-echo some fucntions.
+echo some functions.
 echo This initial environment setup will take some time to download and
 echo and extract. After this, it will not be needed again. All you needed
 echo after this is running "runElpida.bat"
