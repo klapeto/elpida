@@ -1,7 +1,7 @@
 # Elpida
 
 Elpida is a simple x86 CPU/Algorithm benchmarking library, aimed to be as transparent and as accurate as can be.
-To fully test the capabilities of the CPU, the benchmark is offered to be compiled the the specific architecture that it currently runs (eg. -march=native).
+To fully test the capabilities of the CPU, the benchmark is offered to be compiled against the specific architecture that it currently runs (eg. -march=native).
 
 ## Contents
 

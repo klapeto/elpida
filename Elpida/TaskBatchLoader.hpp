@@ -52,6 +52,7 @@ namespace Elpida
 			Map<String, TaskBatch*> _loadedObjects;
 			Array<void*> _loadedHandles;
 			void loadLibraryAndGetTaskBatch(const String& path);
+			void* getFunctionAddress(const String& name);
 	};
 
 } /* namespace Elpida */
