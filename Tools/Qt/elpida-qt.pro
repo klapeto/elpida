@@ -24,14 +24,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp
+        Main.cpp \
+        MainWindow.cpp
 
 HEADERS += \
-        mainwindow.h
+        MainWindow.hpp
 
 FORMS += \
-        mainwindow.ui
+        MainWindow.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/release/ -lelpida
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/debug/ -lelpida
@@ -43,4 +43,4 @@ DEPENDPATH += $$PWD/../elpida/Elpida
 DISTFILES +=
 
 RESOURCES += \
-    images.qrc
+    Images.qrc

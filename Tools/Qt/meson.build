@@ -4,16 +4,16 @@ qt5_dep = dependency('qt5', modules: ['Widgets'], required : false)
 if qt5_dep.found()
 
 elpidaQt_sources = [
-	'main.cpp',
-	'mainwindow.cpp'
+	'Main.cpp',
+	'MainWindow.cpp'
 ]
 
 elpidaQt_includes = include_directories('.')
 
 processed = qt5.preprocess(
-  moc_headers : 'mainwindow.h',   # Only headers that need moc should be put here
-  ui_files    : 'mainwindow.ui',
-  qresources  : 'images.qrc',
+  moc_headers : 'MainWindow.hpp',
+  ui_files    : 'MainWindow.ui',
+  qresources  : 'Images.qrc',
 )
 
 executable('elpida-qt', sources: [elpidaQt_sources, processed],

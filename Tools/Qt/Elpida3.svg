@@ -10,9 +10,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="170.70775mm"
-   height="287.56448mm"
-   viewBox="0 0 170.70775 287.56448"
+   width="605"
+   height="1050"
+   viewBox="0 0 160.07292 277.81251"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
@@ -94,8 +94,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="-701.66953"
-     inkscape:cy="517.83367"
+     inkscape:cx="268.90467"
+     inkscape:cy="351.76879"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -112,7 +112,9 @@
      inkscape:measure-end="694.75,989.625"
      inkscape:snap-nodes="false"
      inkscape:snap-others="false"
-     showguides="false" />
+     showguides="false"
+     units="px"
+     scale-x="1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -129,11 +131,11 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="χρώματα"
-     transform="translate(-341.08607,8.2190457)">
+     transform="translate(-344.76315,-1.5329633)">
     <g
        id="g5430"
        clip-path="url(#clipPath5447)"
-       transform="matrix(1.4290839,0,0,1.4290839,-17.694736,-119.86261)">
+       transform="matrix(1.3999108,0,0,1.3999108,-10.268575,-111.71324)">
       <path
          sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccc"
          inkscape:connector-curvature="0"
