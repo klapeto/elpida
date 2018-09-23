@@ -1,4 +1,4 @@
-gtest_dep = gpp.find_library('gtest', required: true)
+gtest_dep = gpp.find_library('gtest', required: false)
 
 if gtest_dep.found()
 
