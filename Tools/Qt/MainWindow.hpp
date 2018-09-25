@@ -1,12 +1,15 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include <Elpida/TaskBatchLoader.hpp>
 #include <QMainWindow>
 
 namespace Ui
 {
 	class MainWindow;
+
 }
+class TaskBatchProperties;
 
 class MainWindow final: public QMainWindow
 {
@@ -24,7 +27,9 @@ class MainWindow final: public QMainWindow
 		void on_actionAbout_triggered();
 
 	private:
+		Elpida::TaskBatchLoader _tasksLoader;
 		Ui::MainWindow *_ui;
+		TaskBatchProperties* _taskBatchPropertiesDialog;
 		bool _fixedSizeSet;
 
 		void loadCpuInfo();

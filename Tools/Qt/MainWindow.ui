@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1517</width>
+    <width>1518</width>
     <height>1337</height>
    </rect>
   </property>
@@ -41,6 +41,9 @@
          </property>
          <property name="styleSheet">
           <string notr="true">background:transparent;</string>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tbCpuInfo">
           <attribute name="title">
@@ -921,45 +924,37 @@
           <attribute name="title">
            <string>Tasks</string>
           </attribute>
-          <widget class="QGroupBox" name="gbTasksList">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>100</width>
-             <height>30</height>
-            </rect>
-           </property>
-           <property name="title">
-            <string>Available Tasks</string>
-           </property>
-           <widget class="QTreeWidget" name="twTasks">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>100</width>
-              <height>30</height>
-             </rect>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background: rgb(240,244,255)</string>
-            </property>
-            <property name="columnCount">
-             <number>2</number>
-            </property>
-            <column>
-             <property name="text">
-              <string>Name</string>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QGroupBox" name="gbTasksList">
+             <property name="title">
+              <string>Available Tasks</string>
              </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Enabled</string>
-             </property>
-            </column>
-           </widget>
-          </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QTreeWidget" name="twTasks">
+                <property name="styleSheet">
+                 <string notr="true">background: rgb(240,244,255)</string>
+                </property>
+                <property name="columnCount">
+                 <number>2</number>
+                </property>
+                <column>
+                 <property name="text">
+                  <string>Name</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Enabled</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
          </widget>
          <widget class="QWidget" name="tbResults">
           <attribute name="title">
@@ -1026,7 +1021,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1517</width>
+     <width>1518</width>
      <height>39</height>
     </rect>
    </property>

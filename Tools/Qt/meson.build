@@ -5,14 +5,25 @@ if qt5_dep.found()
 
 elpidaQt_sources = [
 	'Main.cpp',
-	'MainWindow.cpp'
+	'MainWindow.cpp',
+	'TaskBatchProperties.cpp'
+]
+
+uiFiles = [
+	'MainWindow.ui', 
+	'TaskBatchProperties.ui'		
+]
+
+mocHeaders = [
+	'MainWindow.hpp',
+	'TaskBatchProperties.hpp'
 ]
 
 elpidaQt_includes = include_directories('.')
 
 processed = qt5.preprocess(
-  moc_headers : 'MainWindow.hpp',
-  ui_files    : 'MainWindow.ui',
+  moc_headers : mocHeaders,
+  ui_files    : uiFiles,
   qresources  : 'Images.qrc',
 )
 

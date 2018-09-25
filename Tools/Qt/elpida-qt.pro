@@ -25,13 +25,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         Main.cpp \
-        MainWindow.cpp
+        MainWindow.cpp \
+    TaskBatchProperties.cpp \
+    ImageTasksProperies.cpp
 
 HEADERS += \
-        MainWindow.hpp
+        MainWindow.hpp \
+    TaskBatchProperties.hpp \
+    ImageTasksProperies.hpp
 
 FORMS += \
-        MainWindow.ui
+        MainWindow.ui \
+    TaskBatchProperties.ui \
+    ImageTasksProperies.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/release/ -lelpida
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/debug/ -lelpida
@@ -44,3 +50,10 @@ DISTFILES +=
 
 RESOURCES += \
     Images.qrc
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../install/lib64/release/ -lelpida
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../install/lib64/debug/ -lelpida
+else:unix: LIBS += -L$$PWD/../../install/lib64/ -lelpida
+
+INCLUDEPATH += $$PWD/../..
+DEPENDPATH += $$PWD/../..

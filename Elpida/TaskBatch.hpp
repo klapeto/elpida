@@ -36,6 +36,7 @@ namespace Elpida
 	class Task;
 	class TaskBatchConfiguration;
 
+
 	class TaskBatch
 	{
 		public:

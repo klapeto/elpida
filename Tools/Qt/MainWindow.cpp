@@ -1,17 +1,25 @@
 #include "ui_MainWindow.h"
-#include "Elpida/CpuInfo.hpp"
-#include "Elpida/Task.hpp"
+#include <Elpida/CpuInfo.hpp>
+#include <Elpida/Task.hpp>
+#include <TaskBatches/Config.hpp>
+#include <Elpida/TaskBatch.hpp>
 
 #include <QMessageBox>
+#include <QTreeWidgetItem>
 #include "Tools/Qt/MainWindow.hpp"
+#include "TaskBatchProperties.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
 		: QMainWindow(parent), _ui(new Ui::MainWindow), _fixedSizeSet(false)
 {
 	_ui->setupUi(this);
+	_taskBatchPropertiesDialog = new TaskBatchProperties(_ui->centralWidget);
 
 	loadCpuInfo();
 	loadTaskInfo();
+	QTreeWidget::connect(_ui->twTasks, &QTreeWidget::itemDoubleClicked, [this](QTreeWidgetItem* item, int col){
+		_taskBatchPropertiesDialog->show();
+	});
 }
 
 void MainWindow::showEvent(QShowEvent *event)
@@ -117,5 +125,20 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::loadTaskInfo()
 {
-
+	_tasksLoader.loadFromFolder(_elpida_plugin_install_path);
+	auto& taskBatches = _tasksLoader.getBatches();
+	for (auto& taskBatch : taskBatches)
+	{
+		auto baseItem = new QTreeWidgetItem(_ui->twTasks);
+		baseItem->setText(0, QString(taskBatch.second->getName().c_str()));
+		baseItem->setText(1, QString("True"));
+		auto& tasks = taskBatch.second->getTasks();
+		size_t c = 0;
+		for (auto task : tasks)
+		{
+			auto taskItem = new QTreeWidgetItem(baseItem);
+			taskItem->setText(0, QString::number(c++));
+			taskItem->setText(1, QString(task->getName().c_str()));
+		}
+	}
 }
