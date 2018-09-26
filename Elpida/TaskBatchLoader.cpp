@@ -34,7 +34,6 @@
 
 #if _elpida_linux
 #include <dirent.h>
-#include <dlfcn.h>
 #define TASK_ENDING "Tasks.so"
 #elif _elpida_windows
 #define TASK_ENDING "Tasks.dll"
@@ -44,10 +43,6 @@
 
 namespace Elpida
 {
-
-#if _elpida_windows
-	static String GetWindowsError();
-#endif
 
 	TaskBatchLoader::TaskBatchLoader()
 	{
@@ -91,14 +86,14 @@ namespace Elpida
 
 #elif _elpida_windows
 		WIN32_FIND_DATA data;
-		HANDLE hFind = FindFirstFile((path + "/*Tasks.dll").c_str(), &data);      // DIRECTORY
+		HANDLE hFind = FindFirstFile((path + "/*Tasks.dll").c_str(), &data);
 
 		if (hFind != INVALID_HANDLE_VALUE)
 		{
 			do
 			{
 				loadLibraryAndGetTaskBatch(path + "/" + data.cFileName);
-			} while (FindNextFile(hFind, &data));
+			}while (FindNextFile(hFind, &data));
 			FindClose(hFind);
 		}
 
@@ -111,84 +106,29 @@ namespace Elpida
 		{
 			delete object.second;
 		}
-		for (auto handle : _loadedHandles)
-		{
-#if _elpida_linux
-			dlclose(handle);
-#elif _elpida_windows
-			FreeLibrary((HMODULE) handle);
-#endif
-		}
 	}
 
 	void TaskBatchLoader::loadLibraryAndGetTaskBatch(const String& path)
 	{
-		auto handle =
-#if _elpida_linux
-		        dlopen(path.c_str(), RTLD_LAZY);
-#elif _elpida_windows
-		        LoadLibrary(path.c_str());
-#endif
-		if (handle != nullptr)
+		try
 		{
-			TaskBatch* (*generator)() = (TaskBatch* (*)())
-#if _elpida_linux
-			dlsym(handle, "createTaskBatch");
-#elif _elpida_windows
-			GetProcAddress(handle, "createTaskBatch");
-#endif
-			if (generator != nullptr)
+			Plugin plugin = Plugin(path);
+			auto taskBatchCreator = plugin.getFunctionPointer<TaskBatch* (*)()>("createTaskBatch");
+			if (taskBatchCreator != nullptr)
 			{
-				TaskBatch* batch = generator();
-				_loadedObjects.emplace(batch->getName(), batch);
-				_loadedHandles.push_back(handle);
+				TaskBatch* taskBatch = taskBatchCreator();
+				_loadedObjects.emplace(taskBatch->getName(), taskBatch);
+				_loadedPlugins.push_back(std::move(plugin));
 			}
 			else
 			{
-				std::cout << "Failed to load: '" << path << "' -> entry function could not be found" << std::endl;
-#if _elpida_linux
-				dlclose(handle);
-#elif _elpida_windows
-				FreeLibrary(handle);
-#endif
-
+				std::cerr << "Failed to get function 'createTaskBatch' from '" + path + "' plugin";
 			}
 		}
-		else
+		catch (ElpidaException& e)
 		{
-			std::cout << "Failed to load: '" << path << "' -> " <<
-#if _elpida_linux
-			          dlerror()
-#elif _elpida_windows
-			          GetWindowsError()
-#endif
-			          << std::endl;
+			std::cerr << "Failed to load '" + path + "' plugin: " + e.getMessage();
 		}
 	}
-
-#if _elpida_windows
-	static String GetWindowsError()
-	{
-		LPVOID lpMsgBuf;
-		LPVOID lpDisplayBuf;
-		DWORD dw = GetLastError();
-
-		FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		              NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-
-		lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
-		                                   (lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
-		StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
-		                dw, lpMsgBuf);
-		String returnString((const char*)lpDisplayBuf);
-		LocalFree(lpMsgBuf);
-		LocalFree(lpDisplayBuf);
-
-		return returnString;
-	}
-#endif
 
 } /* namespace Elpida */

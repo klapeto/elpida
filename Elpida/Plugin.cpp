@@ -1,0 +1,93 @@
+/*
+ * Plugin.cpp
+ *
+ *  Created on: 26 Σεπ 2018
+ *      Author: klapeto
+ */
+
+#include "Elpida/Plugin.hpp"
+
+#include "Config.hpp"
+#include "Elpida/Exceptions/ElpidaException.hpp"
+
+#if _elpida_linux
+#include <dirent.h>
+#include <dlfcn.h>
+#elif _elpida_windows
+#include <Windows.h>
+#include <strsafe.h>
+#endif
+
+namespace Elpida
+{
+#if _elpida_windows
+	static String GetWindowsError();
+#endif
+
+	Plugin::Plugin(const String& libraryPath)
+	{
+		_handle =
+#if _elpida_linux
+		        dlopen(libraryPath.c_str(), RTLD_LAZY);
+#elif _elpida_windows
+		LoadLibrary(libraryPath.c_str());
+#endif
+		if (_handle == nullptr)
+		{
+			throw ElpidaException("Error loading plugin: '" + libraryPath + "' -> " +
+#if _elpida_linux
+			          dlerror());
+#elif _elpida_windows
+			GetWindowsError());
+#endif
+		}
+	}
+
+	Plugin::~Plugin()
+	{
+		if (_handle != nullptr){
+#if _elpida_linux
+		dlclose(_handle);
+#elif _elpida_windows
+		FreeLibrary((HMODULE) _handle);
+#endif
+		}
+	}
+
+	void* Plugin::getFunctionPointerImpl(const String& functionName) const
+	{
+		return _handle != nullptr ?
+	#if _elpida_linux
+				dlsym(_handle, functionName.c_str())
+	#elif _elpida_windows
+				GetProcAddress(_handle, functionName.c_str())
+	#endif
+				: nullptr;
+	}
+
+#if _elpida_windows
+	static String GetWindowsError()
+	{
+		LPVOID lpMsgBuf;
+		LPVOID lpDisplayBuf;
+		DWORD dw = GetLastError();
+
+		FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		              NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
+
+		lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
+		                                   (lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
+		StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
+		                dw, lpMsgBuf);
+		String returnString((const char*)lpDisplayBuf);
+		LocalFree(lpMsgBuf);
+		LocalFree(lpDisplayBuf);
+
+		return returnString;
+	}
+#endif
+
+} /* namespace Elpida */

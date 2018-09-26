@@ -17,7 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	loadCpuInfo();
 	loadTaskInfo();
-	QTreeWidget::connect(_ui->twTasks, &QTreeWidget::itemDoubleClicked, [this](QTreeWidgetItem* item, int col){
+	QTreeWidget::connect(_ui->twTasks, &QTreeWidget::itemDoubleClicked, [this](QTreeWidgetItem* item, int col)
+	{
 		_taskBatchPropertiesDialog->show();
 	});
 }

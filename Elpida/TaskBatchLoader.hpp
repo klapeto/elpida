@@ -30,6 +30,7 @@
 #include "Elpida/Types/Map.hpp"
 #include "Elpida/Types/Array.hpp"
 #include "Elpida/Types/String.hpp"
+#include "Elpida/Plugin.hpp"
 
 namespace Elpida
 {
@@ -50,7 +51,7 @@ namespace Elpida
 			~TaskBatchLoader();
 		private:
 			Map<String, TaskBatch*> _loadedObjects;
-			Array<void*> _loadedHandles;
+			Array<Plugin> _loadedPlugins;
 			void loadLibraryAndGetTaskBatch(const String& path);
 			void* getFunctionAddress(const String& name);
 	};

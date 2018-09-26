@@ -27,12 +27,14 @@ SOURCES += \
         Main.cpp \
         MainWindow.cpp \
     TaskBatchProperties.cpp \
-    ImageTasksProperies.cpp
+    ImageTasksProperies.cpp \
+    TaskBatchPageLoader.cpp
 
 HEADERS += \
         MainWindow.hpp \
     TaskBatchProperties.hpp \
-    ImageTasksProperies.hpp
+    ImageTasksProperies.hpp \
+    TaskBatchPageLoader.hpp
 
 FORMS += \
         MainWindow.ui \

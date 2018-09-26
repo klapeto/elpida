@@ -12,6 +12,8 @@ class TaskBatchProperties : public QDialog
 		Q_OBJECT
 
 	public:
+		void setPage(QWidget* widget);
+
 		explicit TaskBatchProperties(QWidget *parent = 0);
 		~TaskBatchProperties();
 
