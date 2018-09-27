@@ -28,5 +28,6 @@
 #define TASKBATCHES_CONFIG_HPP_IN_
 
 #mesondefine _elpida_plugin_install_path
+#mesondefine _elpida_qt_enabled
 
 #endif /* TASKBATCHES_CONFIG_HPP_IN_ */

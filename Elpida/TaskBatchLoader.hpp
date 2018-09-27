@@ -42,7 +42,12 @@ namespace Elpida
 			TaskBatch& getBatch(const String& name);
 			const Map<String, TaskBatch*>& getBatches() const
 			{
-				return _loadedObjects;
+			return _loadedObjects;
+			}
+
+			const Map<String, Plugin>& getLoadedPlugins() const
+			{
+				return _loadedPlugins;
 			}
 
 			void loadFromFolder(const String& path);
@@ -51,7 +56,7 @@ namespace Elpida
 			~TaskBatchLoader();
 		private:
 			Map<String, TaskBatch*> _loadedObjects;
-			Array<Plugin> _loadedPlugins;
+			Map<String, Plugin> _loadedPlugins;
 			void loadLibraryAndGetTaskBatch(const String& path);
 			void* getFunctionAddress(const String& name);
 	};

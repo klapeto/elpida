@@ -1,3 +1,22 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 #include "ui_MainWindow.h"
 #include <Elpida/CpuInfo.hpp>
 #include <Elpida/Task.hpp>
@@ -17,10 +36,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 	loadCpuInfo();
 	loadTaskInfo();
-	QTreeWidget::connect(_ui->twTasks, &QTreeWidget::itemDoubleClicked, [this](QTreeWidgetItem* item, int col)
-	{
-		_taskBatchPropertiesDialog->show();
-	});
+
+	_connections.push_back(
+	        QTreeWidget::connect(_ui->twTasks, &QTreeWidget::itemDoubleClicked, this, &MainWindow::onTwTaskBatchListDoubleClick));
 }
 
 void MainWindow::showEvent(QShowEvent *event)
@@ -32,6 +50,54 @@ void MainWindow::showEvent(QShowEvent *event)
 MainWindow::~MainWindow()
 {
 	delete _ui;
+	for (auto& pair : _createdPropetyPages)
+	{
+		if (pair.second != nullptr)
+		{
+			delete pair.second;
+		}
+	}
+}
+
+void MainWindow::onTwTaskBatchListDoubleClick(QTreeWidgetItem* item, int col)
+{
+	auto taskBatchName = item->text(0).toStdString();
+	auto pageItr = _createdPropetyPages.find(taskBatchName);
+	if (pageItr != _createdPropetyPages.end())
+	{
+		if (pageItr->second != nullptr)
+		{
+			_taskBatchPropertiesDialog->setPage(pageItr->second);
+			_taskBatchPropertiesDialog->show();
+		}
+		else
+		{
+			QMessageBox::information(_ui->centralWidget, "Task Batch Properties", "This task batch does not export properties",
+			                         QMessageBox::StandardButton::Ok);
+		}
+	}
+	else
+	{
+		auto& loadedPlugins = _tasksLoader.getLoadedPlugins();
+		auto batchPluginItr = loadedPlugins.find(taskBatchName);
+		if (batchPluginItr != loadedPlugins.end())
+		{
+			auto pageCtor = batchPluginItr->second.getFunctionPointer<QWidget* (*)()>("createPropertyPage");
+			if (pageCtor != nullptr)
+			{
+				auto page = pageCtor();
+				_createdPropetyPages.emplace(std::move(taskBatchName), page);
+				_taskBatchPropertiesDialog->setPage(page);
+				_taskBatchPropertiesDialog->show();
+			}
+			else
+			{
+				_createdPropetyPages.emplace(std::move(taskBatchName), nullptr);
+				QMessageBox::information(_ui->centralWidget, "Task Batch Properties", "This task batch does not export properties",
+				                         QMessageBox::StandardButton::Ok);
+			}
+		}
+	}
 }
 
 void MainWindow::loadCpuInfo(void)

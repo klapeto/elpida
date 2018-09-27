@@ -36,11 +36,35 @@ install_headers(['GrayscaleAverage.hpp',
 						'ConvertToUInt8.hpp'],
 				subdir: 'Elpida/TaskBatches/Image')
 
+
+if qt5_dep.found()
+
+	imageTasks_sources += [
+		'ImageTasksProperties.cpp'
+	]
+
+	uiFiles = [
+		'ImageTasksProperties.ui'	
+	]
+	
+	mocHeaders = [
+		'ImageTasksProperties.hpp'
+	]
+	
+	imageTasks_sources += qt5.preprocess(
+	  moc_headers : mocHeaders,
+	  ui_files    : uiFiles,
+	)
+endif
+
 imageTasks = library('ImageTasks', 
-							imageTasks_sources,
+							[imageTasks_sources],
 							link_whole:imageEncoders,
 							link_with: [elpida, generalTasks],
 							install_dir: pluginInstallDir,
+							dependencies: qt5_dep.found() ? qt5_dep : [],
 							install: true,
 							include_directories : [rootIncude])
+
+
 

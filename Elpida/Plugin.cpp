@@ -1,3 +1,22 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 /*
  * Plugin.cpp
  *
@@ -36,7 +55,7 @@ namespace Elpida
 		{
 			throw ElpidaException("Error loading plugin: '" + libraryPath + "' -> " +
 #if _elpida_linux
-			          dlerror());
+			        dlerror());
 #elif _elpida_windows
 			GetWindowsError());
 #endif
@@ -45,11 +64,12 @@ namespace Elpida
 
 	Plugin::~Plugin()
 	{
-		if (_handle != nullptr){
+		if (_handle != nullptr)
+		{
 #if _elpida_linux
-		dlclose(_handle);
+			dlclose(_handle);
 #elif _elpida_windows
-		FreeLibrary((HMODULE) _handle);
+			FreeLibrary((HMODULE) _handle);
 #endif
 		}
 	}
@@ -57,37 +77,39 @@ namespace Elpida
 	void* Plugin::getFunctionPointerImpl(const String& functionName) const
 	{
 		return _handle != nullptr ?
-	#if _elpida_linux
-				dlsym(_handle, functionName.c_str())
-	#elif _elpida_windows
-				GetProcAddress(_handle, functionName.c_str())
-	#endif
-				: nullptr;
+#if _elpida_linux
+		                            dlsym(_handle, functionName.c_str())
+#elif _elpida_windows
+		                                  GetProcAddress(_handle, functionName.c_str())
+#endif
+		                                  :
+		                            nullptr;
 	}
 
 #if _elpida_windows
-	static String GetWindowsError()
-	{
-		LPVOID lpMsgBuf;
-		LPVOID lpDisplayBuf;
-		DWORD dw = GetLastError();
+static String GetWindowsError()
+{
+	LPVOID lpMsgBuf;
+	LPVOID lpDisplayBuf;
+	DWORD dw = GetLastError();
 
-		FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		              NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
+	FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER |
+			FORMAT_MESSAGE_FROM_SYSTEM |
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
 
-		lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
-		                                   (lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
-		StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
-		                dw, lpMsgBuf);
-		String returnString((const char*)lpDisplayBuf);
-		LocalFree(lpMsgBuf);
-		LocalFree(lpDisplayBuf);
+	lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
+			(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
+	StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
+			dw, lpMsgBuf);
+	String returnString((const char*)lpDisplayBuf);
+	LocalFree(lpMsgBuf);
+	LocalFree(lpDisplayBuf);
 
-		return returnString;
-	}
+	return returnString;
+}
 #endif
 
-} /* namespace Elpida */
+}
+/* namespace Elpida */

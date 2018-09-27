@@ -118,7 +118,7 @@ namespace Elpida
 			{
 				TaskBatch* taskBatch = taskBatchCreator();
 				_loadedObjects.emplace(taskBatch->getName(), taskBatch);
-				_loadedPlugins.push_back(std::move(plugin));
+				_loadedPlugins.emplace(taskBatch->getName(), std::move(plugin));
 			}
 			else
 			{

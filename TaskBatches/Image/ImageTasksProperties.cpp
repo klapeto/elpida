@@ -17,28 +17,23 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef TASKBATCHPROPERTIES_HPP
-#define TASKBATCHPROPERTIES_HPP
+#include "TaskBatches/Image/ImageTasksProperties.hpp"
 
-#include <QDialog>
+#include "ui_ImageTasksProperties.h"
+#include <QFileDialog>
 
-namespace Ui
+ImageTasksProperties::ImageTasksProperties(QWidget *parent)
+		: QWidget(parent), ui(new Ui::ImageTasksProperties)
 {
-	class TaskBatchProperties;
+	ui->setupUi(this);
 }
 
-class TaskBatchProperties: public QDialog
+ImageTasksProperties::~ImageTasksProperties()
 {
-	Q_OBJECT
+	delete ui;
+}
 
-	public:
-		void setPage(QWidget* widget);
-
-		explicit TaskBatchProperties(QWidget *parent = 0);
-		~TaskBatchProperties();
-
-	private:
-		Ui::TaskBatchProperties *ui;
-};
-
-#endif // TASKBATCHPROPERTIES_HPP
+void ImageTasksProperties::on_pbSelectInput_clicked()
+{
+	auto filename = QFileDialog::getOpenFileName(this, "Open Png Image", "", "");
+}

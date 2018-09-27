@@ -25,9 +25,22 @@
  */
 
 #include "ImageTaskBatch.hpp"
+#include "TaskBatches/Config.hpp"
+
+#if _elpida_qt_enabled
+#include "TaskBatches/Image/ImageTasksProperties.hpp"
+#endif
 
 extern "C" Elpida::TaskBatch* createTaskBatch()
 {
 	return new Elpida::ImageTaskBatch();
 }
 
+#if _elpida_qt_enabled
+
+extern "C" QWidget* createPropertyPage()
+{
+	return new ImageTasksProperties();
+}
+
+#endif

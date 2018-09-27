@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ImageTasksProperties</class>
+ <widget class="QWidget" name="ImageTasksProperties">
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="lblInputFile">
+     <property name="text">
+      <string>Input Image:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="leInputImage"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="QPushButton" name="pbSelectInput">
+     <property name="text">
+      <string>Browse</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="chkOutputImage">
+     <property name="text">
+      <string>Output Image to:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="leOutputImage"/>
+   </item>
+   <item row="1" column="2">
+    <widget class="QPushButton" name="pbSelectOutput">
+     <property name="text">
+      <string>Browse</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

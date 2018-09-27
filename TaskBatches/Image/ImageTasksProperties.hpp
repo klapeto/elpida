@@ -17,28 +17,29 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef TASKBATCHPROPERTIES_HPP
-#define TASKBATCHPROPERTIES_HPP
+#ifndef IMAGETASKSPROPERIES_HPP
+#define IMAGETASKSPROPERIES_HPP
 
-#include <QDialog>
+#include <QWidget>
 
 namespace Ui
 {
-	class TaskBatchProperties;
+	class ImageTasksProperties;
 }
 
-class TaskBatchProperties: public QDialog
+class ImageTasksProperties: public QWidget
 {
 	Q_OBJECT
 
 	public:
-		void setPage(QWidget* widget);
+		explicit ImageTasksProperties(QWidget *parent = 0);
+		~ImageTasksProperties();
 
-		explicit TaskBatchProperties(QWidget *parent = 0);
-		~TaskBatchProperties();
+	private slots:
+		void on_pbSelectInput_clicked();
 
 	private:
-		Ui::TaskBatchProperties *ui;
+		Ui::ImageTasksProperties *ui;
 };
 
-#endif // TASKBATCHPROPERTIES_HPP
+#endif // IMAGETASKSPROPERIES_HPP

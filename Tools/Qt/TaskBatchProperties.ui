@@ -2,24 +2,12 @@
 <ui version="4.0">
  <class>TaskBatchProperties</class>
  <widget class="QDialog" name="TaskBatchProperties">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>936</width>
-    <height>684</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="gbTaskBatchContainer">
-     <property name="title">
-      <string>GroupBox</string>
-     </property>
-    </widget>
+    <widget class="QWidget" name="wTaskBatchPropertiesContainer" native="true"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

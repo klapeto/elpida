@@ -26,20 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         Main.cpp \
         MainWindow.cpp \
-    TaskBatchProperties.cpp \
-    ImageTasksProperies.cpp \
-    TaskBatchPageLoader.cpp
+    TaskBatchProperties.cpp
 
 HEADERS += \
         MainWindow.hpp \
-    TaskBatchProperties.hpp \
-    ImageTasksProperies.hpp \
-    TaskBatchPageLoader.hpp
+    TaskBatchProperties.hpp
 
 FORMS += \
         MainWindow.ui \
-    TaskBatchProperties.ui \
-    ImageTasksProperies.ui
+    TaskBatchProperties.ui 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/release/ -lelpida
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/debug/ -lelpida
