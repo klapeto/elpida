@@ -80,7 +80,7 @@ namespace Elpida
 #if _elpida_linux
 		                            dlsym(_handle, functionName.c_str())
 #elif _elpida_windows
-		                                  GetProcAddress(_handle, functionName.c_str())
+		                                 (void*) GetProcAddress((HMODULE)_handle, functionName.c_str())
 #endif
 		                                  :
 		                            nullptr;

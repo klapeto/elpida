@@ -27,6 +27,9 @@ install_subdir('Resources', install_dir : 'bin/Elpida')
 installationPrefix = get_option('prefix')
 libraryInstallPath = join_paths(installationPrefix, get_option('libdir'))
 
+qt5 = import('qt5')
+qt5_dep = dependency('qt5', modules: ['Widgets'])
+
 subdir('Libraries')
 subdir('Elpida')
 subdir('TaskBatches')
