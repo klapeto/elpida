@@ -314,24 +314,26 @@ namespace Elpida
 		}
 		addFeature(_instructionExtensions, "AVX2", ebx, 5);
 		// Not supported by AMD
-		addFeature(_instructionExtensions, "AVX512-F", 0, 0);
-		addFeature(_instructionExtensions, "AVX512-BW", 0, 0);
-		addFeature(_instructionExtensions, "AVX512-DQ", 0, 0);
-		addFeature(_instructionExtensions, "AVX512-IFMA", 0, 0);
-		addFeature(_instructionExtensions, "AVX512-PF", 0, 0);
-		addFeature(_instructionExtensions, "AVX512-ER", 0, 0);
-		addFeature(_instructionExtensions, "AVX512-CD", 0, 0);
-		addFeature(_instructionExtensions, "AVX512-VBMI", 0, 0);
-		//addFeature(_instructionExtensions, "AVX512-VBMI2", 0, 0);
-		//addFeature(_instructionExtensions, "AVX512-VNNI", 0, 0);
-		//addFeature(_instructionExtensions, "AVX512-4VNNIW", 0, 0);
-		//addFeature(_instructionExtensions, "AVX512-BITALG", 0, 0);
-		//addFeature(_instructionExtensions, "AVX512-VL", 0, 0);
-		//addFeature(_instructionExtensions, "AVX512-VPOPCNTDQ", 0, 0);
-		//addFeature(_instructionExtensions, "AVX512-4FMAPS", 0, 0);
-		addFeature(_instructionExtensions, "SHA", 0, 0);
-		addFeature(_instructionExtensions, "SGX", 0, 0);
-		//addFeature(_instructionExtensions, "VAES", 0, 0);
+		addFeature(_instructionExtensions, "AVX512-F", 0, 16);
+		addFeature(_instructionExtensions, "AVX512-BW", 0, 30);
+		addFeature(_instructionExtensions, "AVX512-VL", 0, 31);
+		addFeature(_instructionExtensions, "AVX512-DQ", 0, 17);
+		addFeature(_instructionExtensions, "AVX512-IFMA", 0, 21);
+		addFeature(_instructionExtensions, "AVX512-PF", 0, 26);
+		addFeature(_instructionExtensions, "AVX512-ER", 0, 27);
+		addFeature(_instructionExtensions, "AVX512-CD", 0, 28);
+		addFeature(_instructionExtensions, "AVX512-VBMI", 0, 1);
+		addFeature(_instructionExtensions, "AVX512-VBMI2", 0, 6);
+		addFeature(_instructionExtensions, "AVX512-VNNI", 0, 11);
+		addFeature(_instructionExtensions, "AVX512-4VNNIW", 0, 2);
+		addFeature(_instructionExtensions, "AVX512-BITALG", 0, 12);
+		addFeature(_instructionExtensions, "AVX512-VPOPCNTDQ", 0, 14);
+		addFeature(_instructionExtensions, "AVX512-VPCLMULQDQ", 0, 10);
+		addFeature(_instructionExtensions, "AVX512-4FMAPS", 0, 3);
+		addFeature(_instructionExtensions, "AVX512-GFNI", 0, 8);
+		addFeature(_instructionExtensions, "AVX512-VAES", 0, 9);
+		addFeature(_instructionExtensions, "SHA", 0, 29);
+		addFeature(_instructionExtensions, "SGX", 0, 2);
 
 		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "XOP", ecx, 11);
@@ -489,27 +491,28 @@ namespace Elpida
 			eax = ebx = ecx = edx = 0;
 		}
 
+		// https://software.intel.com/sites/default/files/managed/c5/15/architecture-instruction-set-extensions-programming-reference.pdf
 		addFeature(_instructionExtensions, "AVX2", ebx, 5);
 		addFeature(_instructionExtensions, "AVX512-F", ebx, 16);
 		addFeature(_instructionExtensions, "AVX512-BW", ebx, 30);
+		addFeature(_instructionExtensions, "AVX512-VL", ebx, 31);
 		addFeature(_instructionExtensions, "AVX512-DQ", ebx, 17);
 		addFeature(_instructionExtensions, "AVX512-IFMA", ebx, 21);
 		addFeature(_instructionExtensions, "AVX512-PF", ebx, 26);
 		addFeature(_instructionExtensions, "AVX512-ER", ebx, 27);
 		addFeature(_instructionExtensions, "AVX512-CD", ebx, 28);
 		addFeature(_instructionExtensions, "AVX512-VBMI", ecx, 1);
-
-		// The bellow are not written in intel documentation, seen on wikipedia (CPUID)
-		// its better to  disable for now
-		//addFeature(_instructionExtensions, "AVX512-VBMI2", ecx, 6);
-		//addFeature(_instructionExtensions, "AVX512-VNNI", ecx, 11);
-		//addFeature(_instructionExtensions, "AVX512-4VNNIW", edx, 2);
-		//addFeature(_instructionExtensions, "AVX512-BITALG", ecx, 12);
-		//addFeature(_instructionExtensions, "AVX512-VPOPCNTDQ", ecx, 14);
-		//addFeature(_instructionExtensions, "AVX512-4FMAPS", edx, 3);
+		addFeature(_instructionExtensions, "AVX512-VBMI2", ecx, 6);
+		addFeature(_instructionExtensions, "AVX512-VNNI", ecx, 11);
+		addFeature(_instructionExtensions, "AVX512-4VNNIW", edx, 2);
+		addFeature(_instructionExtensions, "AVX512-BITALG", ecx, 12);
+		addFeature(_instructionExtensions, "AVX512-VPOPCNTDQ", ecx, 14);
+		addFeature(_instructionExtensions, "AVX512-VPCLMULQDQ", ecx, 10);
+		addFeature(_instructionExtensions, "AVX512-4FMAPS", edx, 3);
+		addFeature(_instructionExtensions, "AVX512-GFNI", ecx, 8);
+		addFeature(_instructionExtensions, "AVX512-VAES", ecx, 9);
 		addFeature(_instructionExtensions, "SHA", ebx, 29);
 		addFeature(_instructionExtensions, "SGX", ebx, 2);
-		//addFeature(_instructionExtensions, "VAES", ecx, 9);
 
 		addFeature(_instructionExtensions, "XOP", 0, 0);
 		addFeature(_instructionExtensions, "3DNow", 0, 0);

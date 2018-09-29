@@ -67,15 +67,17 @@ namespace Elpida
 					{ "AVX512-ER", "AVX-512 Exp. and Recp. instructions support" },
 					{ "AVX512-CD", "AVX-512 Conflict Detection instructions support" },
 					{ "AVX512-VBMI", "AVX-512 Vector BMI instructions support" },
-					{ "AVX512-VBMI2", "AVX-512 Vector BMI2 instructions suppport" },
+					{ "AVX512-VBMI2", "AVX-512 Vector BMI2 instructions support" },
 					{ "AVX512-VNNI", "AVX-512 Vector Neural Network instructions support" },
 					{ "AVX512-4VNNIW", "AVX-512 4-register Neural Network instructions support" },
 					{ "AVX512-BITALG", "AVX-512 BITALG instructions support" },
-					{ "AVX512-VL", "AVX-512 Vector Length Extensions support" },
-					{ "AVX512-VPOPCNTDQ", "AVX-512 Vector Population Count D/Q support" },
-					{ "AVX512-4FMAPS", "AVX-512 4-register Multiply Accumulation Single precision support" },
+					{ "AVX512-VL", "AVX-512 Vector Length Extensions instructions support" },
+					{ "AVX512-VPOPCNTDQ", "AVX-512 Vector Population Count D/Q instructions support" },
+					{ "AVX512-VPCLMULQDQ", "AVX-512 CLMUL instruction set (VEX-256/EVEX) instructions support" },
+					{ "AVX512-4FMAPS", "AVX-512 4-register Multiply Accumulation Single precision instructions support" },
+					{ "AVX512-GFNI", "AVX-512 Galois Field instructions support" },
+					{ "AVX512-VAES", "AVX-512 AES instruction set (VEX-256/EVEX) instructions support" },
 					{ "SHA", "Intel SHA extensions support" },
-					{ "VAES", "Vector AES instruction set (VEX-256/EVEX) support" },
 					{ "XOP", "Extended operation support" },
 					{ "3DNow", "3DNow! instruction support" },
 					{ "3DNowExt", "AMD extensions to 3DNow! instructions" },
@@ -85,7 +87,7 @@ namespace Elpida
 					{ "ABM", "Advanced bit manipulation" },
 					{ "F16C", "Half-precision convert instruction support" },
 					{ "RDRAND", "RDRAND (HW RNG) instruction support" },
-					{ "SGX", "Intel Software Guard Extensions BMI1" }, };
+					{ "SGX", "Intel Software Guard Extensions BMI1 instructions support" }, };
 
 			struct Cache
 			{

@@ -59,6 +59,7 @@ class MainWindow final: public QMainWindow
 		void loadTaskInfo();
 
 		void onTwTaskBatchListDoubleClick(QTreeWidgetItem* item, int col);
+		void addMascot();
 };
 
 #endif // MAINWINDOW_HPP

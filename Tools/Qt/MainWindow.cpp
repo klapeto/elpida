@@ -37,8 +37,14 @@ MainWindow::MainWindow(QWidget *parent)
 	loadCpuInfo();
 	loadTaskInfo();
 
+	//addMascot();
 	_connections.push_back(
 	        QTreeWidget::connect(_ui->twTasks, &QTreeWidget::itemDoubleClicked, this, &MainWindow::onTwTaskBatchListDoubleClick));
+}
+
+void MainWindow::addMascot()
+{
+
 }
 
 void MainWindow::showEvent(QShowEvent *event)
@@ -148,6 +154,17 @@ void MainWindow::loadCpuInfo(void)
 	_ui->chkAbm->setChecked(instructions["ABM"].isSupported());
 	_ui->chkF16c->setChecked(instructions["F16C"].isSupported());
 	_ui->chkRdrand->setChecked(instructions["RDRAND"].isSupported());
+	_ui->chkAvx512Vbmi2->setChecked(instructions["AVX512-VBMI2"].isSupported());
+	_ui->chkAvx512Vl->setChecked(instructions["AVX512-VL"].isSupported());
+	_ui->chkAvx512Vnni->setChecked(instructions["AVX512-VNNI"].isSupported());
+	_ui->chkAvx5124vnniw->setChecked(instructions["AVX512-4VNNIW"].isSupported());
+	_ui->chkAvx512Bitalg->setChecked(instructions["AVX512-BITALG"].isSupported());
+	_ui->chkAvx512Vp1->setChecked(instructions["AVX512-VPOPCNTDQ"].isSupported());
+	_ui->chkAvx512Vp2->setChecked(instructions["AVX512-VPCLMULQDQ"].isSupported());
+	_ui->chkAvx5124fmaps->setChecked(instructions["AVX512-4FMAPS"].isSupported());
+	_ui->chkAvx512Gfni->setChecked(instructions["AVX512-GFNI"].isSupported());
+	_ui->chkAvx512Vaes->setChecked(instructions["AVX512-VAES"].isSupported());
+	_ui->chkSgx->setChecked(instructions["SGX"].isSupported());
 
 	auto caches = cpuInfo.getCaches();
 
