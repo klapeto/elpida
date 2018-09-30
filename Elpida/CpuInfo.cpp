@@ -568,7 +568,7 @@ namespace Elpida
 				tmpCache.associativity = std::to_string((getRegisterValue(ebx, 22, 0x3FF) + 1)) + "-way";
 				tmpCache.linesPerTag = (getRegisterValue(ebx, 12, 0x3FF) + 1);
 				tmpCache.lineSize = (getRegisterValue(ebx, 0, 0xFFF) + 1);
-				_caches.push_back(tmpCache);
+				_caches.push_back(std::move(tmpCache));
 				i++;
 			}
 		}

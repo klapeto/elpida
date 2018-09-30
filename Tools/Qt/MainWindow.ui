@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1778</width>
+    <height>779</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Elpida</string>
   </property>
@@ -36,8 +44,8 @@ border-image: default;</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="1" column="0">
             <widget class="QGroupBox" name="gbCpuInfo">
              <property name="title">
               <string>Cpu Information</string>
@@ -130,7 +138,7 @@ border-image: default;</string>
              </layout>
             </widget>
            </item>
-           <item>
+           <item row="2" column="0">
             <widget class="QGroupBox" name="gbCpuFreatures">
              <property name="title">
               <string>Cpu Features</string>
@@ -138,12 +146,6 @@ border-image: default;</string>
              <layout class="QGridLayout" name="gridLayout_4">
               <item row="11" column="2">
                <widget class="QCheckBox" name="chkAvx512Vnni">
-                <property name="toolTip">
-                 <string>AVX-512 Vector Neural Network instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Vector Neural Network instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-VNNI</string>
                 </property>
@@ -151,12 +153,6 @@ border-image: default;</string>
               </item>
               <item row="12" column="1">
                <widget class="QCheckBox" name="chkAvx512Vp2">
-                <property name="toolTip">
-                 <string>AVX-512 CLMUL instruction set (VEX-256/EVEX) instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 CLMUL instruction set (VEX-256/EVEX) instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-VPCLMULQDQ</string>
                 </property>
@@ -164,12 +160,6 @@ border-image: default;</string>
               </item>
               <item row="12" column="0">
                <widget class="QCheckBox" name="chkAvx512Vp1">
-                <property name="toolTip">
-                 <string>AVX-512 Vector Population Count D/Q instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Vector Population Count D/Q instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-VPOPCNTDQ</string>
                 </property>
@@ -177,12 +167,6 @@ border-image: default;</string>
               </item>
               <item row="11" column="3">
                <widget class="QCheckBox" name="chkAvx5124vnniw">
-                <property name="toolTip">
-                 <string>AVX-512 4-register Neural Network instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 4-register Neural Network instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-4VNNIW</string>
                 </property>
@@ -190,12 +174,6 @@ border-image: default;</string>
               </item>
               <item row="12" column="4">
                <widget class="QCheckBox" name="chkAvx512Vaes">
-                <property name="toolTip">
-                 <string>AVX-512 AES instruction set (VEX-256/EVEX) instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 AES instruction set (VEX-256/EVEX) instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-VAES</string>
                 </property>
@@ -203,12 +181,6 @@ border-image: default;</string>
               </item>
               <item row="10" column="4">
                <widget class="QCheckBox" name="chkAvx512Vl">
-                <property name="toolTip">
-                 <string>AVX-512 Vector Length Extensions instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Vector Length Extensions instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-VL</string>
                 </property>
@@ -216,12 +188,6 @@ border-image: default;</string>
               </item>
               <item row="10" column="1">
                <widget class="QCheckBox" name="chkAvx512pf">
-                <property name="toolTip">
-                 <string>AVX-512 Prefetch instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Prefetch instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-PF</string>
                 </property>
@@ -229,12 +195,6 @@ border-image: default;</string>
               </item>
               <item row="10" column="2">
                <widget class="QCheckBox" name="chkAvx512er">
-                <property name="toolTip">
-                 <string>AVX512 Exponential and Reciprocal instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX512 Exponential and Reciprocal instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-ER</string>
                 </property>
@@ -242,12 +202,6 @@ border-image: default;</string>
               </item>
               <item row="10" column="3">
                <widget class="QCheckBox" name="chkAvx512cd">
-                <property name="toolTip">
-                 <string>AVX-512 Conflict Detection instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Conflict Detection instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-CD</string>
                 </property>
@@ -262,12 +216,6 @@ border-image: default;</string>
               </item>
               <item row="17" column="3">
                <widget class="QCheckBox" name="chkF16c">
-                <property name="toolTip">
-                 <string>Half-precision convert instruction support</string>
-                </property>
-                <property name="statusTip">
-                 <string>Half-precision convert instruction support</string>
-                </property>
                 <property name="text">
                  <string>F16C</string>
                 </property>
@@ -275,12 +223,6 @@ border-image: default;</string>
               </item>
               <item row="6" column="1">
                <widget class="QCheckBox" name="chk3DNowext">
-                <property name="toolTip">
-                 <string>AMD extensions to 3DNow! instructions</string>
-                </property>
-                <property name="statusTip">
-                 <string>AMD extensions to 3DNow! instructions</string>
-                </property>
                 <property name="text">
                  <string>3DNow+</string>
                 </property>
@@ -288,12 +230,6 @@ border-image: default;</string>
               </item>
               <item row="5" column="4">
                <widget class="QCheckBox" name="chkXop">
-                <property name="toolTip">
-                 <string>Extended operation support</string>
-                </property>
-                <property name="statusTip">
-                 <string>Extended operation support</string>
-                </property>
                 <property name="text">
                  <string>XOP</string>
                 </property>
@@ -301,12 +237,6 @@ border-image: default;</string>
               </item>
               <item row="15" column="0">
                <widget class="QCheckBox" name="chkAes">
-                <property name="toolTip">
-                 <string>AES instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AES instructions support</string>
-                </property>
                 <property name="text">
                  <string>AES</string>
                 </property>
@@ -314,12 +244,6 @@ border-image: default;</string>
               </item>
               <item row="15" column="1">
                <widget class="QCheckBox" name="chkSha">
-                <property name="toolTip">
-                 <string>Intel SHA extensions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>Intel SHA extensions support</string>
-                </property>
                 <property name="text">
                  <string>SHA</string>
                 </property>
@@ -327,12 +251,6 @@ border-image: default;</string>
               </item>
               <item row="17" column="2">
                <widget class="QCheckBox" name="chkAbm">
-                <property name="toolTip">
-                 <string>Advanced bit manipulation</string>
-                </property>
-                <property name="statusTip">
-                 <string>Advanced bit manipulation</string>
-                </property>
                 <property name="text">
                  <string>ABM</string>
                 </property>
@@ -340,12 +258,6 @@ border-image: default;</string>
               </item>
               <item row="17" column="4">
                <widget class="QCheckBox" name="chkRdrand">
-                <property name="toolTip">
-                 <string>RDRAND (Hardware Random Number Generator) instruction support </string>
-                </property>
-                <property name="statusTip">
-                 <string>RDRAND (Hardware Random Number Generator) instruction support </string>
-                </property>
                 <property name="text">
                  <string>RDRAND</string>
                 </property>
@@ -353,12 +265,6 @@ border-image: default;</string>
               </item>
               <item row="9" column="4">
                <widget class="QCheckBox" name="chkAvx512dq">
-                <property name="toolTip">
-                 <string>AVX-512 DWORD and QWORD instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 DWORD and QWORD instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-DQ</string>
                 </property>
@@ -366,12 +272,6 @@ border-image: default;</string>
               </item>
               <item row="10" column="0">
                <widget class="QCheckBox" name="chkAvx512Fma">
-                <property name="toolTip">
-                 <string>AVX-512 Integer FMA instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Integer FMA instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-FMA</string>
                 </property>
@@ -379,12 +279,6 @@ border-image: default;</string>
               </item>
               <item row="9" column="0">
                <widget class="QCheckBox" name="chkAvx">
-                <property name="toolTip">
-                 <string>AVX2 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX2 instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX</string>
                 </property>
@@ -392,12 +286,6 @@ border-image: default;</string>
               </item>
               <item row="9" column="2">
                <widget class="QCheckBox" name="chkAvx512">
-                <property name="toolTip">
-                 <string>AVX-512 Fountation</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Fountation</string>
-                </property>
                 <property name="text">
                  <string>AVX512</string>
                 </property>
@@ -405,12 +293,6 @@ border-image: default;</string>
               </item>
               <item row="9" column="3">
                <widget class="QCheckBox" name="chkAvx512bw">
-                <property name="toolTip">
-                 <string>AVX-512 Byte and Word instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Byte and Word instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-BW</string>
                 </property>
@@ -418,12 +300,6 @@ border-image: default;</string>
               </item>
               <item row="5" column="1">
                <widget class="QCheckBox" name="chkSse4a">
-                <property name="toolTip">
-                 <string>SSE4A instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>SSE4A instructions support</string>
-                </property>
                 <property name="text">
                  <string>SSE4A</string>
                 </property>
@@ -445,12 +321,6 @@ border-image: default;</string>
               </item>
               <item row="2" column="1">
                <widget class="QCheckBox" name="chkMmx">
-                <property name="toolTip">
-                 <string>MMX instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>MMX instructions support</string>
-                </property>
                 <property name="text">
                  <string>MMX</string>
                 </property>
@@ -458,12 +328,6 @@ border-image: default;</string>
               </item>
               <item row="17" column="1">
                <widget class="QCheckBox" name="chkBmi2">
-                <property name="toolTip">
-                 <string>Bit manipulation group 2 instruction support</string>
-                </property>
-                <property name="statusTip">
-                 <string>Bit manipulation group 2 instruction support</string>
-                </property>
                 <property name="text">
                  <string>BMI2</string>
                 </property>
@@ -471,12 +335,6 @@ border-image: default;</string>
               </item>
               <item row="6" column="2">
                <widget class="QCheckBox" name="chk3DNowPre">
-                <property name="toolTip">
-                 <string>PREFETCH and PREFETCHW instruction support</string>
-                </property>
-                <property name="statusTip">
-                 <string>PREFETCH and PREFETCHW instruction support</string>
-                </property>
                 <property name="text">
                  <string>3DNowPrefetch</string>
                 </property>
@@ -491,12 +349,6 @@ border-image: default;</string>
               </item>
               <item row="4" column="4">
                <widget class="QCheckBox" name="chkSse41">
-                <property name="toolTip">
-                 <string>SSE4.1 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>SSE4.1 instructions support</string>
-                </property>
                 <property name="text">
                  <string>SSE4.1</string>
                 </property>
@@ -504,12 +356,6 @@ border-image: default;</string>
               </item>
               <item row="5" column="0">
                <widget class="QCheckBox" name="chkSse42">
-                <property name="toolTip">
-                 <string>SSE4.2 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>SSE4.2 instructions support</string>
-                </property>
                 <property name="text">
                  <string>SSE4.2</string>
                 </property>
@@ -517,12 +363,6 @@ border-image: default;</string>
               </item>
               <item row="4" column="2">
                <widget class="QCheckBox" name="chkSse3">
-                <property name="toolTip">
-                 <string>SSE3 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>SSE3 instructions support</string>
-                </property>
                 <property name="text">
                  <string>SSE3</string>
                 </property>
@@ -530,12 +370,6 @@ border-image: default;</string>
               </item>
               <item row="4" column="3">
                <widget class="QCheckBox" name="chkSsse3">
-                <property name="toolTip">
-                 <string>Supplemental SSE3 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>Supplemental SSE3 instructions support</string>
-                </property>
                 <property name="text">
                  <string>SSSE3</string>
                 </property>
@@ -543,12 +377,6 @@ border-image: default;</string>
               </item>
               <item row="5" column="2">
                <widget class="QCheckBox" name="chkFma">
-                <property name="toolTip">
-                 <string>FMA instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>FMA instructions support</string>
-                </property>
                 <property name="text">
                  <string>FMA</string>
                 </property>
@@ -556,12 +384,6 @@ border-image: default;</string>
               </item>
               <item row="5" column="3">
                <widget class="QCheckBox" name="chkFma4">
-                <property name="toolTip">
-                 <string>Four-operand FMA instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>Four-operand FMA instructions support</string>
-                </property>
                 <property name="text">
                  <string>FMA4</string>
                 </property>
@@ -569,12 +391,6 @@ border-image: default;</string>
               </item>
               <item row="2" column="0">
                <widget class="QCheckBox" name="chkCmov">
-                <property name="toolTip">
-                 <string>Conditional move instructions</string>
-                </property>
-                <property name="statusTip">
-                 <string>Conditional move instructions</string>
-                </property>
                 <property name="text">
                  <string>CMOV</string>
                 </property>
@@ -582,12 +398,6 @@ border-image: default;</string>
               </item>
               <item row="4" column="1">
                <widget class="QCheckBox" name="chkSse2">
-                <property name="toolTip">
-                 <string>SSE2 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>SSE2 instructions support</string>
-                </property>
                 <property name="text">
                  <string>SSE2</string>
                 </property>
@@ -602,12 +412,6 @@ border-image: default;</string>
               </item>
               <item row="9" column="1">
                <widget class="QCheckBox" name="chkAvx2">
-                <property name="toolTip">
-                 <string>AVX2 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX2 instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX2</string>
                 </property>
@@ -615,12 +419,6 @@ border-image: default;</string>
               </item>
               <item row="17" column="0">
                <widget class="QCheckBox" name="chkBmi1">
-                <property name="toolTip">
-                 <string>Bit manipulation group 1 instruction support</string>
-                </property>
-                <property name="statusTip">
-                 <string>Bit manipulation group 1 instruction support</string>
-                </property>
                 <property name="text">
                  <string>BMI1</string>
                 </property>
@@ -628,12 +426,6 @@ border-image: default;</string>
               </item>
               <item row="2" column="2">
                <widget class="QCheckBox" name="chkMmxExt">
-                <property name="toolTip">
-                 <string>AMD extensions to MMX instructions</string>
-                </property>
-                <property name="statusTip">
-                 <string>AMD extensions to MMX instructions</string>
-                </property>
                 <property name="text">
                  <string>MMX+</string>
                 </property>
@@ -641,12 +433,6 @@ border-image: default;</string>
               </item>
               <item row="4" column="0">
                <widget class="QCheckBox" name="chkSse">
-                <property name="toolTip">
-                 <string>SSE instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>SSE instructions support</string>
-                </property>
                 <property name="text">
                  <string>SSE</string>
                 </property>
@@ -654,12 +440,6 @@ border-image: default;</string>
               </item>
               <item row="6" column="0">
                <widget class="QCheckBox" name="chk3DNow">
-                <property name="toolTip">
-                 <string>3DNow! instruction support</string>
-                </property>
-                <property name="statusTip">
-                 <string>3DNow! instruction support</string>
-                </property>
                 <property name="text">
                  <string>3DNow</string>
                 </property>
@@ -688,12 +468,6 @@ border-image: default;</string>
               </item>
               <item row="11" column="0">
                <widget class="QCheckBox" name="chkAvx512vbmi">
-                <property name="toolTip">
-                 <string>AVX-512 Vector BMI instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Vector BMI instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-VBMI</string>
                 </property>
@@ -701,12 +475,6 @@ border-image: default;</string>
               </item>
               <item row="12" column="2">
                <widget class="QCheckBox" name="chkAvx5124fmaps">
-                <property name="toolTip">
-                 <string>AVX-512 4-register Multiply Accumulation Single precision instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 4-register Multiply Accumulation Single precision instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-4FMAPS</string>
                 </property>
@@ -714,12 +482,6 @@ border-image: default;</string>
               </item>
               <item row="12" column="3">
                <widget class="QCheckBox" name="chkAvx512Gfni">
-                <property name="toolTip">
-                 <string>AVX-512 Galois Field instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Galois Field instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-GFNI</string>
                 </property>
@@ -727,12 +489,6 @@ border-image: default;</string>
               </item>
               <item row="11" column="4">
                <widget class="QCheckBox" name="chkAvx512Bitalg">
-                <property name="toolTip">
-                 <string>AVX-512 BITALG instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 BITALG instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-BITALG</string>
                 </property>
@@ -740,12 +496,6 @@ border-image: default;</string>
               </item>
               <item row="11" column="1">
                <widget class="QCheckBox" name="chkAvx512Vbmi2">
-                <property name="toolTip">
-                 <string>AVX-512 Vector BMI2 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>AVX-512 Vector BMI2 instructions support</string>
-                </property>
                 <property name="text">
                  <string>AVX512-VBMI2</string>
                 </property>
@@ -753,12 +503,6 @@ border-image: default;</string>
               </item>
               <item row="15" column="2">
                <widget class="QCheckBox" name="chkSgx">
-                <property name="toolTip">
-                 <string>Intel Software Guard Extensions BMI1 instructions support</string>
-                </property>
-                <property name="statusTip">
-                 <string>Intel Software Guard Extensions BMI1 instructions support</string>
-                </property>
                 <property name="text">
                  <string>SGX</string>
                 </property>
@@ -767,273 +511,273 @@ border-image: default;</string>
              </layout>
             </widget>
            </item>
-           <item>
-            <widget class="QGroupBox" name="gbCaches">
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="gbCaches">
+          <property name="title">
+           <string>Caches</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="2" column="0" colspan="2">
+            <widget class="QGroupBox" name="gbL2">
              <property name="title">
-              <string>Caches</string>
+              <string>L2</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout_9">
-              <item row="2" column="0" colspan="2">
-               <widget class="QGroupBox" name="gbL2">
-                <property name="title">
-                 <string>L2</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_6">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="lblL2Size">
-                   <property name="text">
-                    <string>Size:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="lblL2SizeValue">
-                   <property name="text">
-                    <string>10</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="lblL2Assoc">
-                   <property name="text">
-                    <string>Associativity:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLabel" name="lblL2AssocValue">
-                   <property name="text">
-                    <string>5Way</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="lblL2Lpt">
-                   <property name="text">
-                    <string>Lines Per Tag:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLabel" name="lblL2LptValue">
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="lblL2Ls">
-                   <property name="text">
-                    <string>Line Size:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLabel" name="lblL2LsValue">
-                   <property name="text">
-                    <string>8</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
+             <layout class="QGridLayout" name="gridLayout_6">
               <item row="0" column="0">
-               <widget class="QGroupBox" name="gbL1Instruction">
-                <property name="title">
-                 <string>L1 (Instruction)</string>
+               <widget class="QLabel" name="lblL2Size">
+                <property name="text">
+                 <string>Size:</string>
                 </property>
-                <layout class="QGridLayout" name="gridLayout_7">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="lblL1InstSize">
-                   <property name="text">
-                    <string>Size:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="lblL1InstSizeValue">
-                   <property name="text">
-                    <string>10</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="lblL1InstAssoc">
-                   <property name="text">
-                    <string>Associativity:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLabel" name="lblL1InstAssocValue">
-                   <property name="text">
-                    <string>5Way</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="lblL1InstLpt">
-                   <property name="text">
-                    <string>Lines Per Tag:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLabel" name="lblL1InstLptValue">
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="lblL1InstLs">
-                   <property name="text">
-                    <string>Line Size:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLabel" name="lblL1InstLsValue">
-                   <property name="text">
-                    <string>8</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="3" column="0" colspan="2">
-               <widget class="QGroupBox" name="gbL3">
-                <property name="styleSheet">
-                 <string notr="true"/>
-                </property>
-                <property name="title">
-                 <string>L3</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_5">
-                 <item row="3" column="1">
-                  <widget class="QLabel" name="lblL3LsValue">
-                   <property name="text">
-                    <string>8</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="lblL3SizeValue">
-                   <property name="text">
-                    <string>10</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLabel" name="lblL3LptValue">
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="lblL3Ls">
-                   <property name="text">
-                    <string>Line Size:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="lblL3Assoc">
-                   <property name="text">
-                    <string>Associativity:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="lblL3Lpt">
-                   <property name="text">
-                    <string>Lines Per Tag:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="lblL3Size">
-                   <property name="text">
-                    <string>Size:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLabel" name="lblL3AssocValue">
-                   <property name="text">
-                    <string>5Way</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QGroupBox" name="gbL1Data">
-                <property name="title">
-                 <string>L1 (Data)</string>
+               <widget class="QLabel" name="lblL2SizeValue">
+                <property name="text">
+                 <string>10</string>
                 </property>
-                <layout class="QGridLayout" name="gridLayout_8">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="lblL1DataSize">
-                   <property name="text">
-                    <string>Size:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="lblL1DataSizeValue">
-                   <property name="text">
-                    <string>10</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="lblL1DataAssoc">
-                   <property name="text">
-                    <string>Associativity:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLabel" name="lblL1DataAssocValue">
-                   <property name="text">
-                    <string>5Way</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="lblL1DataLpt">
-                   <property name="text">
-                    <string>Lines Per Tag:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLabel" name="lblL1DataLptValue">
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="lblL1DataLs">
-                   <property name="text">
-                    <string>Line Size:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLabel" name="lblL1DataLsValue">
-                   <property name="text">
-                    <string>8</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="lblL2Assoc">
+                <property name="text">
+                 <string>Associativity:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="lblL2AssocValue">
+                <property name="text">
+                 <string>5Way</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="lblL2Lpt">
+                <property name="text">
+                 <string>Lines Per Tag:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="lblL2LptValue">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="lblL2Ls">
+                <property name="text">
+                 <string>Line Size:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="lblL2LsValue">
+                <property name="text">
+                 <string>8</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="gbL1Instruction">
+             <property name="title">
+              <string>L1 (Instruction)</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="0">
+               <widget class="QLabel" name="lblL1InstSize">
+                <property name="text">
+                 <string>Size:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="lblL1InstSizeValue">
+                <property name="text">
+                 <string>10</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="lblL1InstAssoc">
+                <property name="text">
+                 <string>Associativity:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="lblL1InstAssocValue">
+                <property name="text">
+                 <string>5Way</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="lblL1InstLpt">
+                <property name="text">
+                 <string>Lines Per Tag:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="lblL1InstLptValue">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="lblL1InstLs">
+                <property name="text">
+                 <string>Line Size:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="lblL1InstLsValue">
+                <property name="text">
+                 <string>8</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="2">
+            <widget class="QGroupBox" name="gbL3">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="title">
+              <string>L3</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="3" column="1">
+               <widget class="QLabel" name="lblL3LsValue">
+                <property name="text">
+                 <string>8</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="lblL3SizeValue">
+                <property name="text">
+                 <string>10</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="lblL3LptValue">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="lblL3Ls">
+                <property name="text">
+                 <string>Line Size:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="lblL3Assoc">
+                <property name="text">
+                 <string>Associativity:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="lblL3Lpt">
+                <property name="text">
+                 <string>Lines Per Tag:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="lblL3Size">
+                <property name="text">
+                 <string>Size:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="lblL3AssocValue">
+                <property name="text">
+                 <string>5Way</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QGroupBox" name="gbL1Data">
+             <property name="title">
+              <string>L1 (Data)</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_8">
+              <item row="0" column="0">
+               <widget class="QLabel" name="lblL1DataSize">
+                <property name="text">
+                 <string>Size:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="lblL1DataSizeValue">
+                <property name="text">
+                 <string>10</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="lblL1DataAssoc">
+                <property name="text">
+                 <string>Associativity:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="lblL1DataAssocValue">
+                <property name="text">
+                 <string>5Way</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="lblL1DataLpt">
+                <property name="text">
+                 <string>Lines Per Tag:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="lblL1DataLptValue">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="lblL1DataLs">
+                <property name="text">
+                 <string>Line Size:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="lblL1DataLsValue">
+                <property name="text">
+                 <string>8</string>
+                </property>
                </widget>
               </item>
              </layout>
@@ -1090,6 +834,14 @@ border-image: default;</string>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1778</width>
+     <height>39</height>
+    </rect>
+   </property>
    <property name="styleSheet">
     <string notr="true">background-image:url(:/BG-tile.svg);</string>
    </property>

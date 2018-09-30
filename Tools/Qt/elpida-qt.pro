@@ -26,7 +26,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         Main.cpp \
         MainWindow.cpp \
-    TaskBatchProperties.cpp
+    TaskBatchProperties.cpp \
+    StaticAspectRatioWidget.cpp
 
 HEADERS += \
         MainWindow.hpp \
