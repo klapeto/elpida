@@ -1,7 +1,7 @@
 # Elpida
 
 Elpida is a simple x86 CPU/Algorithm benchmarking library, aimed to be as transparent and as accurate as can be.
-To fully test the capabilities of the CPU, the benchmark is offered to be compiled against the specific architecture that it currently runs (eg. -march=native).
+To fully test the capabilities of the CPU, the benchmark is offered to be compiled against the specific architecture that it currently runs (eg. -march=native). Elpida is under development.
 
 ## Contents
 
@@ -17,6 +17,7 @@ To be able to build elpida from sources you will need a small build system consi
 * [Meson](https://mesonbuild.com "The Meson Build system")
 * [Ninja](https://ninja-build.org/ "Ninja, a small build system with a focus on speed")
 * [GCC](https://gcc.gnu.org "The GNU Compiler collection") for C++ that support c++11 (gcc 4.8+)
+* [Qt5](https://www.qt.io/) if you want the GUI frontend.
 
 On Windows, Debian, Ubuntu and Fedora these dependencies are covered by the build scripts, so you will not probably need to manually install them.
 
@@ -71,7 +72,7 @@ git pull
 * Copy scripts on sources root folder
 
 ``` bash
-cp scripts/msys2/scripts/*.sh .
+cp Scripts/MSYS2/bash/*.sh .
 ```
 
 * Get the libraries sources
@@ -108,7 +109,7 @@ git clone https://github.com/klapeto/elpida.git elpida
 
 ``` bash
 cd elpida
-cp scripts/linux/* .
+cp Scripts/Linux/* .
 chmod u+x ./*.sh
 ```
 
@@ -133,5 +134,11 @@ chmod u+x ./*.sh
 * Run elpida:
 
 ``` bash
-elpida/elpida
+install/bin/elpida-cli
+```
+
+or if you build the Qt frontend too
+
+``` bash
+install/bin/elpida-qt
 ```
