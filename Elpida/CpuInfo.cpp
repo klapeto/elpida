@@ -267,6 +267,10 @@ namespace Elpida
 			_hyperThreading = true;
 			_logicalProcessors = getRegisterValue(ebx, 16, 0xFF);
 		}
+		else
+		{
+			_logicalProcessors = 1;
+		}
 
 		for (int i = 2; i <= 4; ++i)
 		{
@@ -363,7 +367,16 @@ namespace Elpida
 		if (_maximumExtendedFunction >= 0x80000008)
 		{
 			__get_cpuid(0x80000008, &eax, &ebx, &ecx, &edx);
-			_physicalCores = getRegisterValue(ecx, 0, 0xFF) + 1;
+			unsigned apicIdCoreIdSize = getRegisterValue(ecx, 12, 0xF);
+			if (apicIdCoreIdSize != 0)
+			{
+				unsigned mask = (1 << apicIdCoreIdSize) - 1;
+				_physicalCores = (getRegisterValue(ecx, 0, 0xFF) & mask) + 1;
+			}
+			else
+			{
+				_physicalCores = getRegisterValue(ecx, 0, 0xFF) + 1;
+			}
 		}
 
 		if (_maximumExtendedFunction >= 0x80000005)

@@ -852,6 +852,9 @@ border-image: default;</string>
     <property name="title">
      <string>E&amp;lpida</string>
     </property>
+    <addaction name="actionRebuildTaskBatches"/>
+    <addaction name="actionReloadTaskBatches"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -882,6 +885,16 @@ border-image: default;</string>
   <action name="actionAbout">
    <property name="text">
     <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionRebuildTaskBatches">
+   <property name="text">
+    <string>Rebuild Task Batches</string>
+   </property>
+  </action>
+  <action name="actionReloadTaskBatches">
+   <property name="text">
+    <string>Reload Task Batches</string>
    </property>
   </action>
  </widget>
