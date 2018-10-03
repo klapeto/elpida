@@ -26,7 +26,7 @@
 
 #include "LibPngEncoder.hpp"
 
-#include "Libraries/libpng/png.h"
+#include "Libraries/libpng/libpng/png.h"
 
 namespace Elpida
 {

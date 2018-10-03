@@ -1,5 +1,3 @@
-zlibInclude = include_directories('zlib')
-libpngInclude = include_directories('libpng')
-subdir('AgnerFog')
 subdir('zlib')
 subdir('libpng')
+subdir('AgnerFog')

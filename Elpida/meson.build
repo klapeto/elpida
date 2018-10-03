@@ -79,3 +79,6 @@ elpida = library('elpida',
 			dependencies : [thread_dep, dl_dep],
 			link_whole: [core, utilities, exceptions],
 			install: true)
+
+elpidaDep = declare_dependency(include_directories : rootIncude,
+  link_with : elpida)

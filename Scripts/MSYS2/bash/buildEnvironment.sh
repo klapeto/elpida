@@ -28,7 +28,7 @@ pacman -S --noconfirm --needed git base-devel unzip mingw-w64-$1-toolchain mingw
 # ln -s /$2/bin/ninja /usr/bin/ninja.exe
 
 cd ~
-git clone https://github.com/klapeto/elpida.git elpida
+git clone https://gitlab.com/dev-hood/elpida/elpida.git elpida
 /downloadLibrariesSources.sh
 
 echo Done! You can close this window now and run "rebuildElpida.bat"
