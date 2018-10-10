@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>ImageTasksProperties</class>
  <widget class="QWidget" name="ImageTasksProperties">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>546</width>
+    <height>104</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>

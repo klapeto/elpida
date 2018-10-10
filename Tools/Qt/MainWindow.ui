@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1778</width>
-    <height>779</height>
-   </rect>
-  </property>
+ <class>Elpida::MainWindow</class>
+ <widget class="QMainWindow" name="Elpida::MainWindow">
   <property name="windowTitle">
    <string>Elpida</string>
   </property>
@@ -834,14 +826,6 @@ border-image: default;</string>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1778</width>
-     <height>39</height>
-    </rect>
-   </property>
    <property name="styleSheet">
     <string notr="true">background-image:url(:/BG-tile.svg);</string>
    </property>
@@ -889,12 +873,12 @@ border-image: default;</string>
   </action>
   <action name="actionRebuildTaskBatches">
    <property name="text">
-    <string>Rebuild Task Batches</string>
+    <string>&amp;Rebuild Task Batches</string>
    </property>
   </action>
   <action name="actionReloadTaskBatches">
    <property name="text">
-    <string>Reload Task Batches</string>
+    <string>Reload Task &amp;Batches</string>
    </property>
   </action>
  </widget>

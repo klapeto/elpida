@@ -104,7 +104,7 @@ namespace Elpida
 
 			{
 				auto batches = _batchLoader.getBatches();
-				for (auto batch : batches)
+				for (auto& batch : batches)
 				{
 					addCommand(new TaskBatchCommand(*batch.second));
 				}

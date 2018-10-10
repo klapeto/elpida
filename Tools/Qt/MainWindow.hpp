@@ -20,46 +20,54 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include <Elpida/TaskBatchLoader.hpp>
+#include "ElpidaManager.hpp"
 #include <Elpida/Types/Map.hpp>
+#include <Elpida/Types/Array.hpp>
 #include <QMainWindow>
 
-namespace Ui
-{
-	class MainWindow;
-
-}
-class TaskBatchProperties;
 class QTreeWidgetItem;
 
-class MainWindow final: public QMainWindow
+namespace Elpida
 {
-	Q_OBJECT
+	class QtTaskBatchWrapper;
+	class TaskBatchProperties;
 
-	public:
-		explicit MainWindow(QWidget *parent = 0);
-		~MainWindow();
+	namespace Ui
+	{
+		class MainWindow;
+	}  // namespace Ui
 
-	protected:
-		virtual void showEvent(QShowEvent *event) override;
 
-	private slots:
-		void on_actionExit_triggered();
-		void on_actionAbout_triggered();
+	class MainWindow final: public QMainWindow
+	{
+		Q_OBJECT
 
-	private:
-		Elpida::TaskBatchLoader _tasksLoader;
-		Elpida::Array<QMetaObject::Connection> _connections;
-		Elpida::Map<Elpida::String, QWidget*> _createdPropetyPages;
-		Ui::MainWindow *_ui;
-		TaskBatchProperties* _taskBatchPropertiesDialog;
-		bool _fixedSizeSet;
+		public:
+			explicit MainWindow(QWidget *parent = 0);
+			~MainWindow();
 
-		void loadCpuInfo();
-		void loadTaskInfo();
+		protected:
+			virtual void showEvent(QShowEvent *event) override;
 
-		void onTwTaskBatchListDoubleClick(QTreeWidgetItem* item, int col);
-		void addMascot();
-};
+		private slots:
+			void on_actionExit_triggered();
+			void on_actionAbout_triggered();
+
+		private:
+			ElpidaManager _elpidaManager;
+			Array<QMetaObject::Connection> _connections;
+			Map<Elpida::String, QtTaskBatchWrapper*> _createdPropetyPages;
+			Ui::MainWindow *_ui;
+			TaskBatchProperties* _taskBatchPropertiesDialog;
+			bool _fixedSizeSet;
+
+			void loadCpuInfo();
+			void loadTaskInfo();
+
+			void onTwTaskBatchListDoubleClick(QTreeWidgetItem* item, int col);
+			void addMascot();
+	};
+
+}  // namespace Elpida
 
 #endif // MAINWINDOW_HPP

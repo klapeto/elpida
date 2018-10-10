@@ -27,10 +27,11 @@
 #ifndef TOOLS_CLI_COMMANDREGISTRY_HPP_
 #define TOOLS_CLI_COMMANDREGISTRY_HPP_
 
+#include "Elpida/PluginLoader.hpp"
 #include "Elpida/Types/Map.hpp"
 #include "Elpida/Types/Array.hpp"
 #include "Elpida/Types/String.hpp"
-#include "Elpida/TaskBatchLoader.hpp"
+#include "TaskBatchLoader.hpp"
 
 namespace Elpida
 {

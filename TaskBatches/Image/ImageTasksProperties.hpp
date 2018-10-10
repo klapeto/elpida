@@ -20,26 +20,46 @@
 #ifndef IMAGETASKSPROPERIES_HPP
 #define IMAGETASKSPROPERIES_HPP
 
-#include <QWidget>
+#include "TaskBatches/Config.hpp"
+
+#if _elpida_qt_enabled
+#include "TaskBatches/QtTaskBatchWrapper.hpp"
+#include "ImageTaskBatch.hpp"
+#include <Elpida/Types/Array.hpp>
 
 namespace Ui
 {
 	class ImageTasksProperties;
 }
-
-class ImageTasksProperties: public QWidget
+namespace Elpida
 {
-	Q_OBJECT
 
-	public:
-		explicit ImageTasksProperties(QWidget *parent = 0);
-		~ImageTasksProperties();
+	class ImageTasksProperties final: public QtTaskBatchWrapper
+	{
+		Q_OBJECT
+		public:
 
-	private slots:
-		void on_pbSelectInput_clicked();
+			const TaskBatch& getTaskBatch() const
+			{
+				return _taskBatch;
+			}
 
-	private:
-		Ui::ImageTasksProperties *ui;
-};
+			ImageTasksProperties();
+			~ImageTasksProperties();
+
+		private slots:
+			void on_pbSelectInput_clicked();
+			void on_chkOutputImage_stateChanged(int state);
+
+		private:
+			Array<QMetaObject::Connection> _connections;
+			ImageTaskBatch _taskBatch;
+			String _inputImage;
+			String _outputImage;
+			Ui::ImageTasksProperties *_ui;
+			bool _outputEnabled;
+	};
+#endif
+}  // namespace Elpida
 
 #endif // IMAGETASKSPROPERIES_HPP

@@ -68,6 +68,7 @@ namespace Elpida
 		private:
 			String _inputFile;
 			String _outputFile;
+			bool _outputEnabled;
 
 			void createTasks();
 	};

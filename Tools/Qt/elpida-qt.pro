@@ -27,11 +27,13 @@ SOURCES += \
         Main.cpp \
         MainWindow.cpp \
     TaskBatchProperties.cpp \
-    StaticAspectRatioWidget.cpp
+    StaticAspectRatioWidget.cpp \
+    ElpidaManager.cpp
 
 HEADERS += \
         MainWindow.hpp \
-    TaskBatchProperties.hpp
+    TaskBatchProperties.hpp \
+    ElpidaManager.hpp
 
 FORMS += \
         MainWindow.ui \

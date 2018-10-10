@@ -28,8 +28,8 @@
 
 #include <iostream>
 
+#include "TaskBatchLoader.hpp"
 #include "Elpida/TaskBatch.hpp"
-#include "Elpida/TaskBatchLoader.hpp"
 
 namespace Elpida
 {

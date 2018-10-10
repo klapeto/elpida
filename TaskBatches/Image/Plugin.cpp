@@ -38,9 +38,9 @@ extern "C" Elpida::TaskBatch* createTaskBatch()
 
 #if _elpida_qt_enabled
 
-extern "C" QWidget* createPropertyPage()
+extern "C" Elpida::QtTaskBatchWrapper* createQtBatchWrapper()
 {
-	return new ImageTasksProperties();
+	return new Elpida::ImageTasksProperties();
 }
 
 #endif

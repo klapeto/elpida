@@ -31,10 +31,9 @@
 
 namespace Elpida
 {
-	class TaskBatchLoader;
-
 	namespace CLI
 	{
+		class TaskBatchLoader;
 
 		class ListBatches final: public InterpreterCommand
 		{

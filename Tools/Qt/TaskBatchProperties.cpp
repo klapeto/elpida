@@ -20,28 +20,35 @@
 #include "TaskBatchProperties.hpp"
 #include "ui_TaskBatchProperties.h"
 
-TaskBatchProperties::TaskBatchProperties(QWidget *parent)
-		: QDialog(parent), ui(new Ui::TaskBatchProperties)
+namespace Elpida
 {
-	ui->setupUi(this);
 
-}
+		TaskBatchProperties::TaskBatchProperties(QWidget *parent)
+				: QDialog(parent), ui(new Ui::TaskBatchProperties)
+		{
+			ui->setupUi(this);
 
-TaskBatchProperties::~TaskBatchProperties()
-{
-	delete ui;
-}
+		}
 
-void TaskBatchProperties::setPage(QWidget* widget)
-{
-	auto layout = (QVBoxLayout*) ui->wTaskBatchPropertiesContainer->layout();
-	if (layout == nullptr)
-	{
-		layout = new QVBoxLayout;
-		ui->wTaskBatchPropertiesContainer->setLayout(layout);
-	}
-	auto item = layout->itemAt(0);
-	layout->removeItem(item);
-	delete item;
-	layout->addWidget(widget, 0, 0);
-}
+		TaskBatchProperties::~TaskBatchProperties()
+		{
+			delete ui;
+		}
+
+		void TaskBatchProperties::setPage(QWidget* widget)
+		{
+			auto layout = (QVBoxLayout*) ui->wTaskBatchPropertiesContainer->layout();
+			if (layout == nullptr)
+			{
+				layout = new QVBoxLayout;
+				ui->wTaskBatchPropertiesContainer->setLayout(layout);
+			}
+			auto item = layout->itemAt(0);
+			layout->removeItem(item);
+			delete item;
+			layout->addWidget(widget, 0, 0);
+		}
+
+
+}  // namespace Elpida
+

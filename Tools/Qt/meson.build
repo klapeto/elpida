@@ -22,7 +22,8 @@ if qt5_dep.found()
 	elpidaQt_sources = [
 		'Main.cpp',
 		'MainWindow.cpp',
-		'TaskBatchProperties.cpp'
+		'TaskBatchProperties.cpp',
+		'ElpidaManager.cpp'
 	]
 	
 	uiFiles = [

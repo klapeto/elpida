@@ -24,43 +24,34 @@
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_TASKBATCHLOADER_HPP_
-#define ELPIDA_TASKBATCHLOADER_HPP_
+#ifndef ELPIDA_PLUGINLOADER_HPP_
+#define ELPIDA_PLUGINLOADER_HPP_
 
 #include "Elpida/Types/Map.hpp"
-#include "Elpida/Types/Array.hpp"
 #include "Elpida/Types/String.hpp"
 #include "Elpida/Plugin.hpp"
 
 namespace Elpida
 {
-	class TaskBatch;
 
-	class TaskBatchLoader
+	class PluginLoader
 	{
 		public:
-			TaskBatch& getBatch(const String& name);
-			const Map<String, TaskBatch*>& getBatches() const
-			{
-			return _loadedObjects;
-			}
-
 			const Map<String, Plugin>& getLoadedPlugins() const
 			{
 				return _loadedPlugins;
 			}
 
-			void loadFromFolder(const String& path);
+			virtual void loadFromFolder(const String& path);
 
-			TaskBatchLoader();
-			~TaskBatchLoader();
-		private:
-			Map<String, TaskBatch*> _loadedObjects;
+			PluginLoader();
+			virtual ~PluginLoader();
+		protected:
 			Map<String, Plugin> _loadedPlugins;
 			void loadLibraryAndGetTaskBatch(const String& path);
-			void* getFunctionAddress(const String& name);
+			void unloadEverything();
 	};
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_TASKBATCHLOADER_HPP_ */
+#endif /* ELPIDA_PLUGINLOADER_HPP_ */

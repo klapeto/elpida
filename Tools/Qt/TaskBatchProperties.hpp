@@ -22,23 +22,27 @@
 
 #include <QDialog>
 
-namespace Ui
+namespace Elpida
 {
-	class TaskBatchProperties;
-}
+	namespace Ui
+	{
+		class TaskBatchProperties;
+	}  // namespace Ui
 
-class TaskBatchProperties: public QDialog
-{
-	Q_OBJECT
+	class TaskBatchProperties: public QDialog
+	{
+		Q_OBJECT
 
-	public:
-		void setPage(QWidget* widget);
+		public:
+			void setPage(QWidget* widget);
 
-		explicit TaskBatchProperties(QWidget *parent = 0);
-		~TaskBatchProperties();
+			explicit TaskBatchProperties(QWidget *parent = 0);
+			~TaskBatchProperties();
 
-	private:
-		Ui::TaskBatchProperties *ui;
-};
+		private:
+			Ui::TaskBatchProperties *ui;
+	};
+
+}  // namespace Elpida
 
 #endif // TASKBATCHPROPERTIES_HPP

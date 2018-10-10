@@ -40,7 +40,7 @@ namespace Elpida
 {
 
 	ImageTaskBatch::ImageTaskBatch()
-			: TaskBatch("ImageTasks")
+			: TaskBatch("ImageTasks"), _outputEnabled(false)
 	{
 	}
 
@@ -57,7 +57,8 @@ namespace Elpida
 		_inputFile = parser.getArgument("i");
 		_outputFile = parser.getArgument("o");
 
-		if (_inputFile.size() > 0 && _outputFile.size() > 0)
+		_outputEnabled = _outputFile.size() > 0;
+		if (_inputFile.size() > 0)
 		{
 			destroyTasks();
 			createTasks();
@@ -77,7 +78,6 @@ namespace Elpida
 		auto floydSteinberg = new FloydSteinberg<Float32>(floatConvert->getImage(), floatConvert->getImage(), 0.5f);
 		auto intConvert = new ConvertToUInt8<Float32>(floatConvert->getImage());
 		auto encoding = new PngEncoding(intConvert->getImage());
-		auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), _outputFile);
 
 		_tasks.push_back(readFile);
 		_tasks.push_back(decoding);
@@ -86,7 +86,13 @@ namespace Elpida
 		_tasks.push_back(floydSteinberg);
 		_tasks.push_back(intConvert);
 		_tasks.push_back(encoding);
-		_tasks.push_back(writeFile);
+
+		if (_outputEnabled)
+		{
+			auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), _outputFile);
+			_tasks.push_back(writeFile);
+		}
+
 	}
 
 } /* namespace Elpida */

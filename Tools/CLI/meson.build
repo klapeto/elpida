@@ -3,6 +3,7 @@ cli_sources = [
 	'CLIOptions.cpp',
 	'Interpreter.cpp',
 	'InterpreterCommand.cpp',
+	'TaskBatchLoader.cpp',
 	'CommandRegistry.cpp',
 	'CommandNotFoundException.cpp',
 	'Commands/Quit.cpp',

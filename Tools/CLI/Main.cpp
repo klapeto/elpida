@@ -31,7 +31,7 @@
 #include "Elpida/Config.hpp"
 #include "TaskBatches/Config.hpp"
 #include "CommandRegistry.hpp"
-#include "Elpida/TaskBatchLoader.hpp"
+#include "Elpida/PluginLoader.hpp"
 #include "Elpida/Utilities/TextRow.hpp"
 #include "Elpida/Utilities/TextTable.hpp"
 

@@ -24,19 +24,18 @@
  *      Author: klapeto
  */
 
-#include "Elpida/TaskBatchLoader.hpp"
-
 #include <iostream>
 
 #include "Config.hpp"
 #include "Elpida/TaskBatch.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/PluginLoader.hpp"
 
 #if _elpida_linux
 #include <dirent.h>
-#define TASK_ENDING "Tasks.so"
+#define TASK_ENDING ".so"
 #elif _elpida_windows
-#define TASK_ENDING "Tasks.dll"
+#define TASK_ENDING ".dll"
 #include <Windows.h>
 #include <strsafe.h>
 #endif
@@ -44,26 +43,14 @@
 namespace Elpida
 {
 
-	TaskBatchLoader::TaskBatchLoader()
+	PluginLoader::PluginLoader()
 	{
 
 	}
 
-	TaskBatch& TaskBatchLoader::getBatch(const String& name)
+	void PluginLoader::loadFromFolder(const String& path)
 	{
-		auto itr = _loadedObjects.find(name);
-		if (itr != _loadedObjects.end())
-		{
-			return *itr->second;
-		}
-		else
-		{
-			throw ElpidaException("TaskBatchLoader", "'" + name + "' batch was not found or not loaded.");
-		}
-	}
-
-	void TaskBatchLoader::loadFromFolder(const String& path)
-	{
+		unloadEverything();
 #if _elpida_linux
 		DIR *dir;
 		dirent *dirent;
@@ -86,7 +73,7 @@ namespace Elpida
 
 #elif _elpida_windows
 		WIN32_FIND_DATA data;
-		HANDLE hFind = FindFirstFile((path + "/*Tasks.dll").c_str(), &data);
+		HANDLE hFind = FindFirstFile((path + "/*" + TASK_ENDING).c_str(), &data);
 
 		if (hFind != INVALID_HANDLE_VALUE)
 		{
@@ -100,35 +87,27 @@ namespace Elpida
 #endif
 	}
 
-	TaskBatchLoader::~TaskBatchLoader()
+	PluginLoader::~PluginLoader()
 	{
-		for (auto object : _loadedObjects)
-		{
-			delete object.second;
-		}
+
 	}
 
-	void TaskBatchLoader::loadLibraryAndGetTaskBatch(const String& path)
+	void PluginLoader::loadLibraryAndGetTaskBatch(const String& path)
 	{
 		try
 		{
 			Plugin plugin = Plugin(path);
-			auto taskBatchCreator = plugin.getFunctionPointer<TaskBatch* (*)()>("createTaskBatch");
-			if (taskBatchCreator != nullptr)
-			{
-				TaskBatch* taskBatch = taskBatchCreator();
-				_loadedObjects.emplace(taskBatch->getName(), taskBatch);
-				_loadedPlugins.emplace(taskBatch->getName(), std::move(plugin));
-			}
-			else
-			{
-				std::cerr << "Failed to get function 'createTaskBatch' from '" + path + "' plugin";
-			}
+			_loadedPlugins.emplace(path, std::move(plugin));
 		}
 		catch (ElpidaException& e)
 		{
 			std::cerr << "Failed to load '" + path + "' plugin: " + e.getMessage();
 		}
+	}
+
+	void PluginLoader::unloadEverything()
+	{
+		_loadedPlugins.clear();
 	}
 
 } /* namespace Elpida */
