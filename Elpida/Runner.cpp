@@ -52,6 +52,7 @@ namespace Elpida
 
 	void Runner::executeTasks()
 	{
+		_lastExecutionResults.clear();
 		for (auto taskBatch : _tasks)
 		{
 			auto& batchResult = _lastExecutionResults[taskBatch->getName()];

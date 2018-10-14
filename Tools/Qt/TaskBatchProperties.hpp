@@ -24,6 +24,7 @@
 
 namespace Elpida
 {
+	class QtTaskBatchWrapper;
 	namespace Ui
 	{
 		class TaskBatchProperties;
@@ -34,13 +35,16 @@ namespace Elpida
 		Q_OBJECT
 
 		public:
-			void setPage(QWidget* widget);
+			void setPage(QtTaskBatchWrapper* widget);
+
+			void accept() override;
 
 			explicit TaskBatchProperties(QWidget *parent = 0);
 			~TaskBatchProperties();
 
 		private:
-			Ui::TaskBatchProperties *ui;
+			Ui::TaskBatchProperties* _ui;
+			QtTaskBatchWrapper* _page;
 	};
 
 }  // namespace Elpida

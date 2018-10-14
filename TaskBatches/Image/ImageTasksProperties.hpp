@@ -45,6 +45,7 @@ namespace Elpida
 			}
 
 			void reconfigureTaskBatch();
+			void validateConfiguration();
 
 			ImageTasksProperties();
 			~ImageTasksProperties();

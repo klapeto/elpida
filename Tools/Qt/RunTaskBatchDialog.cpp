@@ -21,6 +21,7 @@
 #include "RunTaskBatchDialog.hpp"
 #include <Elpida/TaskBatch.hpp>
 #include <Elpida/Types/String.hpp>
+#include <Elpida/Exceptions/ElpidaException.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include <QMessageBox>
 #include <QTreeWidgetItem>
@@ -69,6 +70,7 @@ namespace Elpida
 
 	void RunTaskBatchDialog::on_pbRun_clicked()
 	{
+		_taskBatchRunner.clearTaskBatches();
 		auto selectedItems = _ui->lwTaskBatches->selectedItems();
 		if (selectedItems.size() > 0)
 		{
@@ -81,7 +83,17 @@ namespace Elpida
 					_taskBatchRunner.addTaskBatch(itr->second->getTaskBatch());
 				}
 			}
-			_taskBatchRunner.executeTasks();
+			try
+			{
+				_taskBatchRunner.executeTasks();
+			}
+			catch (ElpidaException& e)
+			{
+				QMessageBox::critical(_ui->pbRun, "Error", QString::fromStdString("Task batch runner produced error: " + e.getMessage()),
+				                      QMessageBox::StandardButton::Ok);
+				return;
+			}
+
 			auto& results = _taskBatchRunner.getLastExecutionResults();
 
 			for (auto& batchResult : results)
@@ -92,12 +104,20 @@ namespace Elpida
 				{
 					auto taskItem = new QTreeWidgetItem(batchItem);
 					taskItem->setText(0, QString::fromStdString(taskResults.first));
-					for (auto& taskResult : taskResults.second)
+					if (taskResults.second.size() == 1)
 					{
-						auto taskResultItem = new QTreeWidgetItem(taskItem);
-						taskResultItem->setText(0, QString::fromStdString(taskResult.getRunResult().getResultDescription()));
-						taskResultItem->setText(1, QString::fromStdString(taskResult.getPerSecond()));
+						taskItem->setText(1, QString::fromStdString(taskResults.second[0].getPerSecond()));
 					}
+					else
+					{
+						for (auto& taskResult : taskResults.second)
+						{
+							auto taskResultItem = new QTreeWidgetItem(taskItem);
+							taskResultItem->setText(0, QString::fromStdString(taskResult.getRunResult().getResultDescription()));
+							taskResultItem->setText(1, QString::fromStdString(taskResult.getPerSecond()));
+						}
+					}
+
 				}
 			}
 		}

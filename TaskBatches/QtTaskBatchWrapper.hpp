@@ -42,6 +42,7 @@ namespace Elpida
 		public:
 
 			virtual void reconfigureTaskBatch() = 0;
+			virtual void validateConfiguration() = 0;
 
 			QtTaskBatchWrapper(QWidget* parrent = nullptr)
 					: TaskBatchWrapper(), QWidget(parrent)

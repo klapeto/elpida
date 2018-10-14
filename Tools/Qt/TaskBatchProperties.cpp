@@ -18,35 +18,55 @@
  *************************************************************************/
 
 #include "TaskBatchProperties.hpp"
+#include <TaskBatches/QtTaskBatchWrapper.hpp>
+#include <Elpida/Exceptions/ElpidaException.hpp>
+#include <QMessageBox>
 #include "ui_TaskBatchProperties.h"
 
 namespace Elpida
 {
 
 	TaskBatchProperties::TaskBatchProperties(QWidget *parent)
-			: QDialog(parent), ui(new Ui::TaskBatchProperties)
+			: QDialog(parent), _ui(new Ui::TaskBatchProperties), _page(nullptr)
 	{
-		ui->setupUi(this);
+		_ui->setupUi(this);
 
 	}
 
 	TaskBatchProperties::~TaskBatchProperties()
 	{
-		delete ui;
+		delete _ui;
 	}
 
-	void TaskBatchProperties::setPage(QWidget* widget)
+	void TaskBatchProperties::setPage(QtTaskBatchWrapper* widget)
 	{
-		auto layout = (QVBoxLayout*) ui->wTaskBatchPropertiesContainer->layout();
+		auto layout = (QVBoxLayout*) _ui->wTaskBatchPropertiesContainer->layout();
 		if (layout == nullptr)
 		{
 			layout = new QVBoxLayout;
-			ui->wTaskBatchPropertiesContainer->setLayout(layout);
+			_ui->wTaskBatchPropertiesContainer->setLayout(layout);
 		}
 		auto item = layout->itemAt(0);
 		layout->removeItem(item);
 		delete item;
 		layout->addWidget(widget, 0, 0);
+		_page = widget;
+	}
+
+	void TaskBatchProperties::accept()
+	{
+		if (_page != nullptr)
+		{
+			try
+			{
+				_page->validateConfiguration();
+				QDialog::accept();
+			}
+			catch (ElpidaException& e)
+			{
+				QMessageBox::critical(_ui->wTaskBatchPropertiesContainer, "Error", QString::fromStdString(e.getMessage()), QMessageBox::StandardButton::Ok);
+			}
+		}
 	}
 
 }  // namespace Elpida

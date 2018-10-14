@@ -20,6 +20,7 @@
 #include "TaskBatches/Image/ImageTasksProperties.hpp"
 
 #include "ui_ImageTasksProperties.h"
+#include <Elpida/Exceptions/ElpidaException.hpp>
 #include <QFileDialog>
 #include <QCheckBox>
 
@@ -58,6 +59,18 @@ namespace Elpida
 		auto filename = QFileDialog::getSaveFileName(this, "Output Png Image", "", "Png Images (*.png)");
 		_outputImage = filename.toStdString();
 		_ui->leOutputImage->setText(filename);
+	}
+
+	void ImageTasksProperties::validateConfiguration()
+	{
+		if (_inputImage.size() == 0)
+		{
+			throw ElpidaException("Image Task Batch", "Cannot blank input filename");
+		}
+		if (_outputEnabled && _outputImage.size() == 0)
+		{
+			throw ElpidaException("Image Task Batch", "Cannot blank output filename when output is enabled");
+		}
 	}
 
 	void ImageTasksProperties::on_chkOutputImage_stateChanged(int state)
