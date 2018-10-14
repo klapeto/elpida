@@ -23,32 +23,31 @@
 namespace Elpida
 {
 
-		TaskBatchProperties::TaskBatchProperties(QWidget *parent)
-				: QDialog(parent), ui(new Ui::TaskBatchProperties)
+	TaskBatchProperties::TaskBatchProperties(QWidget *parent)
+			: QDialog(parent), ui(new Ui::TaskBatchProperties)
+	{
+		ui->setupUi(this);
+
+	}
+
+	TaskBatchProperties::~TaskBatchProperties()
+	{
+		delete ui;
+	}
+
+	void TaskBatchProperties::setPage(QWidget* widget)
+	{
+		auto layout = (QVBoxLayout*) ui->wTaskBatchPropertiesContainer->layout();
+		if (layout == nullptr)
 		{
-			ui->setupUi(this);
-
+			layout = new QVBoxLayout;
+			ui->wTaskBatchPropertiesContainer->setLayout(layout);
 		}
-
-		TaskBatchProperties::~TaskBatchProperties()
-		{
-			delete ui;
-		}
-
-		void TaskBatchProperties::setPage(QWidget* widget)
-		{
-			auto layout = (QVBoxLayout*) ui->wTaskBatchPropertiesContainer->layout();
-			if (layout == nullptr)
-			{
-				layout = new QVBoxLayout;
-				ui->wTaskBatchPropertiesContainer->setLayout(layout);
-			}
-			auto item = layout->itemAt(0);
-			layout->removeItem(item);
-			delete item;
-			layout->addWidget(widget, 0, 0);
-		}
-
+		auto item = layout->itemAt(0);
+		layout->removeItem(item);
+		delete item;
+		layout->addWidget(widget, 0, 0);
+	}
 
 }  // namespace Elpida
 

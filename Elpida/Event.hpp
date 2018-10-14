@@ -18,47 +18,61 @@
  *************************************************************************/
 
 /*
- * WriteFile.cpp
+ * ObjectEvent.hpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 13 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/WriteFile.hpp"
+#ifndef ELPIDA_EVENT_HPP_
+#define ELPIDA_EVENT_HPP_
 
-#include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Types/Float.hpp"
-#include "Elpida/Utilities/MemoryFile.hpp"
+#include "Elpida/Types/List.hpp"
+#include "Elpida/EventSubscription.hpp"
 
 namespace Elpida
 {
-	WriteFile::WriteFile(const RawDataPtr& data, const Size& size, const String& outputPath)
-			:
-			  Task("Write File: " + outputPath, false),
-			  _outputPath(outputPath),
-			  _runResult("Write rate", "bytes"),
-			  _data(data),
-			  _size(size)
 
+	template<typename T>
+	class Event
 	{
+		public:
+			typedef typename EventSubscription<T>::EventHandler EventHandler;
 
-	}
+			void raise(T& eventArguments)
+			{
+				for (const auto& subscriber : _subscribers)
+				{
+					subscriber(eventArguments);
+				}
+			}
 
-	WriteFile::~WriteFile()
-	{
+			EventSubscription<T>& subscribe(EventHandler handler)
+			{
+				auto itr = _subscribers.insert(EventSubscription<T>(*this), handler);
+				itr->setIterator(itr);
+				return *itr;
+			}
 
-	}
+			void unsubScribe(EventSubscription<T>& subscription)
+			{
+				_subscribers.remove(subscription.getIterator());
+			}
 
-	void WriteFile::run()
-	{
-		MemoryFile(_data, _size).writeToFile(_outputPath);
-	}
+			Event()
+			{
 
-	void WriteFile::calculateResults()
-	{
-		_runResult.setMeasuredValue(_size);
-		addResult(_runResult);
-	}
+			}
+			~Event()
+			{
+
+			}
+
+		private:
+			List<EventSubscription<T>> _subscribers;
+
+	};
 
 } /* namespace Elpida */
 
+#endif /* ELPIDA_EVENT_HPP_ */

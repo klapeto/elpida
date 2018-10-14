@@ -23,5 +23,6 @@ install_headers(['Array.hpp',
 				'Map.hpp',
 				'Primitives.hpp',
 				'RawData.hpp',
-				'String.hpp'],
+				'String.hpp',
+				'List.hpp'],
 				subdir: 'Elpida/Types')

@@ -28,7 +28,9 @@
 #define ELPIDA_RUNNER_HPP_
 
 #include "Elpida/TaskMetrics.hpp"
+#include "Elpida/TaskThroughput.hpp"
 #include "Elpida/Types/Array.hpp"
+#include "Elpida/Types/Map.hpp"
 
 namespace Elpida
 {
@@ -45,18 +47,30 @@ namespace Elpida
 			};
 
 			static void setProcessPriority(ProcessPriority priority);
+
 			void executeTasks();
-			void addTaskBatch(TaskBatch& batch);
+			void addTaskBatch(const TaskBatch& batch);
+
+			const Map<String, Map<String, Array<TaskThroughput>>>& getLastExecutionResults() const
+			{
+				return _lastExecutionResults;
+			}
+
+			void clearTaskBatches()
+			{
+				_tasks.clear();
+			}
 
 			Runner();
-			~Runner();
+			virtual ~Runner();
 
 			Runner(Runner&&) = default;
 			Runner(const Runner&) = default;
 			Runner& operator=(Runner&&) = default;
 			Runner& operator=(const Runner&) = default;
 		private:
-			Array<TaskBatch*> _tasks;
+			Map<String, Map<String, Array<TaskThroughput>>> _lastExecutionResults;
+			Array<const TaskBatch*> _tasks;
 			TaskMetrics runTask(Task& task);
 	};
 

@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Elpida::MainWindow</class>
  <widget class="QMainWindow" name="Elpida::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1782</width>
+    <height>804</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Elpida</string>
   </property>
@@ -826,6 +834,14 @@ border-image: default;</string>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1782</width>
+     <height>39</height>
+    </rect>
+   </property>
    <property name="styleSheet">
     <string notr="true">background-image:url(:/BG-tile.svg);</string>
    </property>
@@ -838,6 +854,7 @@ border-image: default;</string>
     </property>
     <addaction name="actionRebuildTaskBatches"/>
     <addaction name="actionReloadTaskBatches"/>
+    <addaction name="actionRunBatches"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -860,6 +877,7 @@ border-image: default;</string>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionRunBatches"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -879,6 +897,18 @@ border-image: default;</string>
   <action name="actionReloadTaskBatches">
    <property name="text">
     <string>Reload Task &amp;Batches</string>
+   </property>
+  </action>
+  <action name="actionRunBatches">
+   <property name="icon">
+    <iconset resource="Images.qrc">
+     <normaloff>:/PlayButton.svg</normaloff>:/PlayButton.svg</iconset>
+   </property>
+   <property name="text">
+    <string>R&amp;un Batches</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the Run Batches dialog</string>
    </property>
   </action>
  </widget>

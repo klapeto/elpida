@@ -30,15 +30,15 @@
 #include <type_traits>
 
 #include "Elpida/Task.hpp"
-#include "Elpida/TaskMetrics.hpp"
 #include "Elpida/Types/Float.hpp"
+#include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/Image.hpp"
 
 namespace Elpida
 {
 
 	template<typename T>
-	class FloydSteinberg: public Task
+	class FloydSteinberg final: public Task
 	{
 		public:
 
@@ -104,10 +104,10 @@ namespace Elpida
 				}
 			}
 
-			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const
+			void calculateResults()
 			{
-				return TaskThroughput(
-				        TaskThroughput::getValueScale(((Float64) _sourceImage.getTotalSize()) / metrics.getSeconds()) + "Pixel/s");
+				_runResult.setMeasuredValue(_sourceImage.getTotalSize());
+				addResult(_runResult);
 			}
 
 			FloydSteinberg(const Image<T>& sourceImage, Image<T>& targetImage, T threshold)
@@ -115,12 +115,13 @@ namespace Elpida
 					  Task("Floyd-Steinberg Dithering (threshold: " + std::to_string(threshold) + ")"),
 					  _sourceImage(sourceImage),
 					  _targetImage(targetImage),
+					  _runResult("Pixel process rate", "Pixels"),
 					  _threshold(threshold)
 			{
 
 			}
 
-			virtual ~FloydSteinberg()
+			~FloydSteinberg()
 			{
 
 			}
@@ -128,7 +129,7 @@ namespace Elpida
 		private:
 			const Image<T>& _sourceImage;
 			Image<T>& _targetImage;
-
+			TaskRunResult _runResult;
 			T _threshold;
 
 	};

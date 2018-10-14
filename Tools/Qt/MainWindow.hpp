@@ -31,6 +31,7 @@ namespace Elpida
 {
 	class QtTaskBatchWrapper;
 	class TaskBatchProperties;
+	class RunTaskBatchDialog;
 
 	namespace Ui
 	{
@@ -53,10 +54,13 @@ namespace Elpida
 			void on_actionExit_triggered();
 			void on_actionAbout_triggered();
 
+			void on_actionRunBatches_triggered();
+
 		private:
 			ElpidaManager _elpidaManager;
 			Array<QMetaObject::Connection> _connections;
 			Map<Elpida::String, QtTaskBatchWrapper*> _createdPropetyPages;
+			RunTaskBatchDialog *_runTaskBatchDialog;
 			Ui::MainWindow *_ui;
 			TaskBatchProperties* _taskBatchPropertiesDialog;
 			bool _fixedSizeSet;

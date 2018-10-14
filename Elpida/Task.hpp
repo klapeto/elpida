@@ -28,7 +28,9 @@
 #define ELPIDA_TASK_HPP_
 
 #include "Elpida/Types/String.hpp"
+#include "Elpida/Types/Array.hpp"
 #include "Elpida/TaskThroughput.hpp"
+#include "Elpida/TaskRunResult.hpp"
 
 namespace Elpida
 {
@@ -53,9 +55,18 @@ namespace Elpida
 				return _name;
 			}
 
-			virtual void run() = 0;
-			virtual TaskThroughput translateToThroutput(const TaskMetrics& metrics) const = 0;
+			const Array<const TaskRunResult*>& getLastRunResults() const
+			{
+				return _lastRunResults;
+			}
 
+			void clearResults()
+			{
+				_lastRunResults.clear();
+			}
+
+			virtual void run() = 0;
+			virtual void calculateResults() = 0;
 			virtual void prepare()
 			{
 
@@ -75,8 +86,13 @@ namespace Elpida
 			Task(const Task&) = default;
 			Task& operator=(Task&&) = default;
 			Task& operator=(const Task&) = default;
-
+		protected:
+			void addResult(const TaskRunResult& result)
+			{
+				_lastRunResults.push_back(&result);
+			}
 		private:
+			Array<const TaskRunResult*> _lastRunResults;
 			String _name;
 			bool _toBeMeasured;
 	};

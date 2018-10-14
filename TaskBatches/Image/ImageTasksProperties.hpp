@@ -44,11 +44,14 @@ namespace Elpida
 				return _taskBatch;
 			}
 
+			void reconfigureTaskBatch();
+
 			ImageTasksProperties();
 			~ImageTasksProperties();
 
 		private slots:
 			void on_pbSelectInput_clicked();
+			void on_pbSelectOutput_clicked();
 			void on_chkOutputImage_stateChanged(int state);
 
 		private:

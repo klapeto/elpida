@@ -53,11 +53,25 @@ namespace Elpida
 		_ui->leInputImage->setText(filename);
 	}
 
+	void ImageTasksProperties::on_pbSelectOutput_clicked()
+	{
+		auto filename = QFileDialog::getSaveFileName(this, "Output Png Image", "", "Png Images (*.png)");
+		_outputImage = filename.toStdString();
+		_ui->leOutputImage->setText(filename);
+	}
+
 	void ImageTasksProperties::on_chkOutputImage_stateChanged(int state)
 	{
 		_outputEnabled = (bool) state;
 		_ui->leOutputImage->setEnabled(_outputEnabled);
 		_ui->pbSelectOutput->setEnabled(_outputEnabled);
+	}
+
+	void Elpida::ImageTasksProperties::reconfigureTaskBatch()
+	{
+		_taskBatch.setInputFile(_inputImage);
+		_taskBatch.setOutputFile(_outputImage);
+		_taskBatch.reconfigure();
 	}
 
 }  // namespace Elpida

@@ -18,47 +18,15 @@
  *************************************************************************/
 
 /*
- * WriteFile.cpp
+ * OffThreadExecutor.cpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 13 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/WriteFile.hpp"
-
-#include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Types/Float.hpp"
-#include "Elpida/Utilities/MemoryFile.hpp"
+#include "Elpida/OffThreadExecutor.hpp"
 
 namespace Elpida
 {
-	WriteFile::WriteFile(const RawDataPtr& data, const Size& size, const String& outputPath)
-			:
-			  Task("Write File: " + outputPath, false),
-			  _outputPath(outputPath),
-			  _runResult("Write rate", "bytes"),
-			  _data(data),
-			  _size(size)
-
-	{
-
-	}
-
-	WriteFile::~WriteFile()
-	{
-
-	}
-
-	void WriteFile::run()
-	{
-		MemoryFile(_data, _size).writeToFile(_outputPath);
-	}
-
-	void WriteFile::calculateResults()
-	{
-		_runResult.setMeasuredValue(_size);
-		addResult(_runResult);
-	}
 
 } /* namespace Elpida */
-

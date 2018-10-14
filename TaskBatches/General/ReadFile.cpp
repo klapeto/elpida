@@ -33,9 +33,8 @@ namespace Elpida
 {
 
 	ReadFile::ReadFile(const String& filePath)
-			: Task("Read File: " + filePath, false), _filePath(filePath)
+			: Task("Read File: " + filePath, false), _runResult("Read rate", "Bytes"), _filePath(filePath)
 	{
-
 	}
 
 	ReadFile::~ReadFile()
@@ -43,14 +42,15 @@ namespace Elpida
 
 	}
 
+	void ReadFile::calculateResults()
+	{
+		_runResult.setMeasuredValue(_file.getSize());
+		addResult(_runResult);
+	}
+
 	void ReadFile::run()
 	{
 		_file.load(_filePath);
-	}
-
-	TaskThroughput ReadFile::translateToThroutput(const TaskMetrics& metrics) const
-	{
-		return TaskThroughput(TaskThroughput::getValueScale(((Float64) _file.getSize()) / metrics.getSeconds()) + "B/s");
 	}
 
 } /* namespace Elpida */

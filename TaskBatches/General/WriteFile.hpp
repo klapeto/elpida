@@ -39,7 +39,7 @@ namespace Elpida
 		public:
 
 			void run();
-			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const;
+			void calculateResults();
 
 			WriteFile(const RawDataPtr& data, const Size& size, const String& outputPath);
 			virtual ~WriteFile();
@@ -51,6 +51,7 @@ namespace Elpida
 
 		private:
 			String _outputPath;
+			TaskRunResult _runResult;
 			const RawDataPtr& _data;
 			const Size& _size;
 	};

@@ -43,7 +43,8 @@ namespace Elpida
 			{
 
 			}
-			~LibPngEncoder()
+
+			virtual ~LibPngEncoder()
 			{
 
 			}

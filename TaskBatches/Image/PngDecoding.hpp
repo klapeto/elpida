@@ -49,7 +49,7 @@ namespace Elpida
 			}
 
 			void run();
-			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const;
+			void calculateResults();
 
 			PngDecoding(const RawDataPtr& inputData, const Size& dataSize);
 			virtual ~PngDecoding();
@@ -60,6 +60,7 @@ namespace Elpida
 			PngDecoding& operator=(const PngDecoding&) = default;
 		private:
 			Image<RawData> _image;
+			TaskRunResult _runResult;
 			const RawDataPtr& _inputData;
 			const Size& _dataSize;
 	};

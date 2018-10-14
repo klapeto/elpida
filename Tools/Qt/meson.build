@@ -23,17 +23,20 @@ if qt5_dep.found()
 		'Main.cpp',
 		'MainWindow.cpp',
 		'TaskBatchProperties.cpp',
-		'ElpidaManager.cpp'
+		'ElpidaManager.cpp',
+		'RunTaskBatchDialog.cpp'
 	]
 	
 	uiFiles = [
 		'MainWindow.ui', 
-		'TaskBatchProperties.ui'		
+		'TaskBatchProperties.ui',
+		'RunTaskBatchDialog.ui'	
 	]
 	
 	mocHeaders = [
 		'MainWindow.hpp',
-		'TaskBatchProperties.hpp'
+		'TaskBatchProperties.hpp',
+		'RunTaskBatchDialog.hpp'
 	]
 	
 	elpidaQt_includes = include_directories('.')

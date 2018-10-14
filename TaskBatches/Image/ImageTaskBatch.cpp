@@ -87,7 +87,7 @@ namespace Elpida
 		_tasks.push_back(intConvert);
 		_tasks.push_back(encoding);
 
-		if (_outputEnabled)
+		if (_outputFile.size() > 0)
 		{
 			auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), _outputFile);
 			_tasks.push_back(writeFile);

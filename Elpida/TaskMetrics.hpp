@@ -28,6 +28,7 @@
 #define ELPIDA_TASKMETRICS_HPP_
 
 #include <chrono>
+#include "Elpida/Types/Float.hpp"
 
 namespace Elpida
 {
@@ -36,16 +37,21 @@ namespace Elpida
 	{
 		public:
 
-			typedef std::chrono::duration<double, std::nano> Duration;
+			typedef std::nano NanoSecond;
+			typedef std::micro MicroSecond;
+			typedef std::milli MilliSecond;
+			typedef std::ratio<1, 1> Second;
+			typedef std::chrono::duration<Float64> Duration;
 
 			const Duration& getDuration() const
 			{
 				return _duration;
 			}
 
-			double getSeconds() const
+			template<typename Division>
+			Float64 getSubdivision() const
 			{
-				return ((double) _duration.count() / (double) std::nano::den);
+				return (Float64) _duration.count() / (Float64) Division::den;
 			}
 
 			TaskMetrics()

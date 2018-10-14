@@ -56,6 +56,11 @@ namespace Elpida
 				_outputFile = outputFile;
 			}
 
+			void reconfigure()
+			{
+				createTasks();
+			}
+
 			void reconfigure(const String& inputData);
 
 			ImageTaskBatch();

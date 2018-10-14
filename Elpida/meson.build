@@ -53,7 +53,11 @@ core_sources = ['CpuFeature.cpp',
 				'Timer.cpp',
 				'PluginLoader.cpp',
 				'Plugin.cpp',
-				'TaskBatchWrapper.cpp']
+				'TaskBatchWrapper.cpp',
+				'OffThreadExecutor.cpp',
+				'Event.cpp',
+				'EventSubscription.cpp',
+				'TaskRunResult.cpp']
 
 core = static_library('Elpida', 
 						core_sources,
@@ -73,7 +77,11 @@ install_headers(['CpuFeature.hpp',
 				'Timer.hpp',
 				'PluginLoader.hpp',
 				'Plugin.hpp',
-				'TaskBatchWrapper.hpp'],
+				'TaskBatchWrapper.hpp',
+				'OffThreadExecutor.hpp',
+				'Event.hpp',
+				'EventSubscription.hpp',
+				'TaskRunResult.hpp'],
 				subdir: 'Elpida')
 
 elpida = library('elpida',

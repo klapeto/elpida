@@ -43,7 +43,7 @@ namespace Elpida
 			}
 
 			void run();
-			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const;
+			void calculateResults();
 
 			ReadFile(const String& filePath);
 			virtual ~ReadFile();
@@ -55,6 +55,7 @@ namespace Elpida
 
 		private:
 			MemoryFile _file;
+			TaskRunResult _runResult;
 			String _filePath;
 	};
 

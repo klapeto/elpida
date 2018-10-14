@@ -17,48 +17,45 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * WriteFile.cpp
- *
- *  Created on: 18 Μαρ 2018
- *      Author: klapeto
- */
+#ifndef ELPIDA_RUNTASKBATCHDIALOG_HPP
+#define ELPIDA_RUNTASKBATCHDIALOG_HPP
 
-#include "TaskBatches/General/WriteFile.hpp"
-
-#include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Types/Float.hpp"
-#include "Elpida/Utilities/MemoryFile.hpp"
+#include <QDialog>
+#include <Elpida/Types/String.hpp>
+#include <Elpida/Runner.hpp>
+#include <Elpida/Types/Map.hpp>
+#include <thread>
 
 namespace Elpida
 {
-	WriteFile::WriteFile(const RawDataPtr& data, const Size& size, const String& outputPath)
-			:
-			  Task("Write File: " + outputPath, false),
-			  _outputPath(outputPath),
-			  _runResult("Write rate", "bytes"),
-			  _data(data),
-			  _size(size)
 
+	class QtTaskBatchWrapper;
+
+	namespace Ui
 	{
-
+		class RunTaskBatchDialog;
 	}
 
-	WriteFile::~WriteFile()
+	class RunTaskBatchDialog final: public QDialog
 	{
+		Q_OBJECT
 
-	}
+		public:
+			explicit RunTaskBatchDialog(const Map<String, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent = nullptr);
+			~RunTaskBatchDialog();
 
-	void WriteFile::run()
-	{
-		MemoryFile(_data, _size).writeToFile(_outputPath);
-	}
+		private slots:
+			void on_pbRun_clicked();
 
-	void WriteFile::calculateResults()
-	{
-		_runResult.setMeasuredValue(_size);
-		addResult(_runResult);
-	}
+		private:
+			Runner _taskBatchRunner;
+			std::thread _runnerThread;
+			const Map<String, QtTaskBatchWrapper*>& _taskBatchList;
+			Ui::RunTaskBatchDialog *_ui;
 
-} /* namespace Elpida */
+			void onTaskBatchListModified();
 
+	};
+
+} // namespace Elpida
+#endif // ELPIDA_RUNTASKBATCHDIALOG_HPP

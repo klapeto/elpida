@@ -29,6 +29,7 @@
 
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 #include "TaskBatchProperties.hpp"
+#include "RunTaskBatchDialog.hpp"
 
 namespace Elpida
 {
@@ -39,8 +40,11 @@ namespace Elpida
 		_ui->setupUi(this);
 		_taskBatchPropertiesDialog = new TaskBatchProperties(_ui->centralWidget);
 
-		loadCpuInfo();
 		loadTaskInfo();
+		_runTaskBatchDialog = new RunTaskBatchDialog(_createdPropetyPages, _ui->centralWidget);
+
+		loadCpuInfo();
+
 
 		//addMascot();
 		_connections.push_back(
@@ -86,29 +90,6 @@ namespace Elpida
 				QMessageBox::information(_ui->centralWidget, "Task Batch Properties", "This task batch does not export properties",
 				                         QMessageBox::StandardButton::Ok);
 			}
-		}
-		else
-		{
-//			auto& loadedPlugins = _elpidaManager.getTaskBatchLoader().getLoadedPlugins();
-//			auto batchPluginItr = loadedPlugins.find(taskBatchName);
-//			if (batchPluginItr != loadedPlugins.end())
-//			{
-//				auto pageCtor = batchPluginItr->second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>(
-//				        "createConfigurationGenerator");
-//				if (pageCtor != nullptr)
-//				{
-//					auto page = pageCtor();
-//					_createdPropetyPages.emplace(std::move(taskBatchName), page);
-//					_taskBatchPropertiesDialog->setPage(page);
-//					_taskBatchPropertiesDialog->show();
-//				}
-//				else
-//				{
-//					_createdPropetyPages.emplace(std::move(taskBatchName), nullptr);
-//					QMessageBox::information(_ui->centralWidget, "Task Batch Properties", "This task batch does not export properties",
-//					                         QMessageBox::StandardButton::Ok);
-//				}
-//			}
 		}
 	}
 
@@ -220,10 +201,10 @@ namespace Elpida
 		auto& plugins = _elpidaManager.getPluginLoader().getLoadedPlugins();
 		for (auto& plugin : plugins)
 		{
-			auto baseItem = new QTreeWidgetItem(_ui->twTasks);
 			auto func = plugin.second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>("createQtBatchWrapper");
 			if (func != nullptr)
 			{
+				auto baseItem = new QTreeWidgetItem(_ui->twTasks);
 				auto prop = func();
 				auto& taskBatch = prop->getTaskBatch();
 				_createdPropetyPages.emplace(taskBatch.getName(), prop);
@@ -242,5 +223,12 @@ namespace Elpida
 		}
 	}
 
+	void MainWindow::on_actionRunBatches_triggered()
+	{
+		_runTaskBatchDialog->show();
+	}
+
+
 }  // namespace Elpida
+
 

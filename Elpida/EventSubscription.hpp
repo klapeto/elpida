@@ -18,47 +18,68 @@
  *************************************************************************/
 
 /*
- * WriteFile.cpp
+ * EventSubscription.hpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 13 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/WriteFile.hpp"
+#ifndef ELPIDA_EVENTSUBSCRIPTION_HPP_
+#define ELPIDA_EVENTSUBSCRIPTION_HPP_
 
-#include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Types/Float.hpp"
-#include "Elpida/Utilities/MemoryFile.hpp"
+#include "Elpida/Types/List.hpp"
 
 namespace Elpida
 {
-	WriteFile::WriteFile(const RawDataPtr& data, const Size& size, const String& outputPath)
-			:
-			  Task("Write File: " + outputPath, false),
-			  _outputPath(outputPath),
-			  _runResult("Write rate", "bytes"),
-			  _data(data),
-			  _size(size)
+	template<typename T>
+	class Event;
 
+	template<typename T>
+	class EventSubscription
 	{
+		public:
+			typedef void (*EventHandler)(T&);
 
-	}
+			void unsubscribe()
+			{
+				_owner.unsubScribe(*this);
+			}
 
-	WriteFile::~WriteFile()
-	{
+			~EventSubscription()
+			{
 
-	}
+			}
+		private:
+			typedef typename List<EventSubscription<T>>::iterator Iterator;
 
-	void WriteFile::run()
-	{
-		MemoryFile(_data, _size).writeToFile(_outputPath);
-	}
+			Iterator _iterator;
+			Event<T>& _owner;
+			EventHandler _handler;
 
-	void WriteFile::calculateResults()
-	{
-		_runResult.setMeasuredValue(_size);
-		addResult(_runResult);
-	}
+			EventSubscription(Event<T>& owner, EventHandler hanlder)
+					: _owner(owner), _handler(hanlder)
+			{
+
+			}
+
+			void setIterator(Iterator iterator)
+			{
+				_iterator = iterator;
+			}
+
+			Iterator getIterator() const
+			{
+				return _iterator;
+			}
+
+			void operator()(T& args) const
+			{
+				_handler(args);
+			}
+
+			friend class Event<T> ;
+	};
 
 } /* namespace Elpida */
 
+#endif /* ELPIDA_EVENTSUBSCRIPTION_HPP_ */

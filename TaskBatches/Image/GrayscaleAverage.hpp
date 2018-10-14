@@ -28,8 +28,8 @@
 #define TASKSBATCHES_IMAGE_GRAYSCALEAVERAGE_HPP_
 
 #include "Elpida/Task.hpp"
-#include "Elpida/TaskMetrics.hpp"
 #include "Elpida/Types/Float.hpp"
+#include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/Image.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
 
@@ -56,10 +56,10 @@ namespace Elpida
 				}
 			}
 
-			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const
+			void calculateResults()
 			{
-				return TaskThroughput(
-				        TaskThroughput::getValueScale(((Float64) _sourceImage.getTotalSize()) / metrics.getSeconds()) + "Pixel/s");
+				_runResult.setMeasuredValue(_sourceImage.getTotalSize());
+				addResult(_runResult);
 			}
 
 			void prepare()
@@ -71,13 +71,13 @@ namespace Elpida
 			}
 
 			GrayscaleAverage(const Image<T>& sourceImage, Image<T>& targetImage)
-					: Task("Convert to Grayscale (Average)"), _sourceImage(sourceImage), _targetImage(targetImage)
+					: Task("Convert to Grayscale (Average)"), _sourceImage(sourceImage), _targetImage(targetImage), _runResult("Pixel process rate", "Pixels")
 			{
 
 			}
 
 			GrayscaleAverage(Image<T> &image)
-					: _sourceImage(image), _targetImage(image)
+					: _sourceImage(image), _targetImage(image), _runResult("Pixel process rate", "Pixels")
 			{
 
 			}
@@ -90,6 +90,7 @@ namespace Elpida
 		private:
 			const Image<T> &_sourceImage;
 			Image<T> &_targetImage;
+			TaskRunResult _runResult;
 
 	};
 

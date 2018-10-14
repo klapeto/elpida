@@ -18,64 +18,77 @@
  *************************************************************************/
 
 /*
- * TaskThroughput.hpp
+ * TaskRunResult.hpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 14 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_TASKTHROUGHPUT_HPP_
-#define ELPIDA_TASKTHROUGHPUT_HPP_
+#ifndef ELPIDA_TASKRUNRESULT_HPP_
+#define ELPIDA_TASKRUNRESULT_HPP_
 
 #include "Elpida/Types/Float.hpp"
 #include "Elpida/Types/String.hpp"
-#include "Elpida/TaskMetrics.hpp"
-#include "Elpida/TaskRunResult.hpp"
 
 namespace Elpida
 {
 
-	class TaskThroughput
+	class TaskRunResult final
 	{
 		public:
-
-			static String getValueScale(Float64 value);
-
-			String getPerSecond() const
+			Float64 getMeasuredValue() const
 			{
-				return getValueScale(_runResult.getMeasuredValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>()) + _runResult.getMeasuredValueName() + "/s";
+				return _measuredValue;
 			}
 
-			const TaskRunResult& getRunResult() const
+			const String& getMeasuredValueName() const
 			{
-				return _runResult;
+				return _measuredValueName;
 			}
 
-			const TaskMetrics& getTaskMetrics() const
+			const String& getResultDescription() const
 			{
-				return _taskMetrics;
+				return _resultDescription;
 			}
 
-			TaskThroughput(const TaskRunResult& runResult, const TaskMetrics& taskMetrics)
-					: _runResult(runResult), _taskMetrics(taskMetrics)
+			void setResultDescription(const String& resultDescription)
+			{
+				_resultDescription = resultDescription;
+			}
+
+			void setMeasuredValue(Float64 measuredValue)
+			{
+				_measuredValue = measuredValue;
+			}
+
+			void setMeasuredValueName(const String& measuredValueName)
+			{
+				_measuredValueName = measuredValueName;
+			}
+
+			TaskRunResult()
+					: _measuredValueName("OPS"), _measuredValue(0.0)
 			{
 
 			}
-			virtual ~TaskThroughput()
+
+			TaskRunResult(const String& description, const String& measuredValueName)
+					: _measuredValueName(measuredValueName), _resultDescription(description), _measuredValue(0.0)
 			{
 
 			}
 
-			TaskThroughput(TaskThroughput&&) = default;
-			TaskThroughput(const TaskThroughput&) = default;
-			TaskThroughput& operator=(TaskThroughput&&) = default;
-			TaskThroughput& operator=(const TaskThroughput&) = default;
+			~TaskRunResult()
+			{
+
+			}
 		private:
-			TaskRunResult _runResult;
-			TaskMetrics _taskMetrics;
+			String _measuredValueName;
+			String _resultDescription;
+			Float64 _measuredValue;
 
 	};
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_TASKTHROUGHPUT_HPP_ */
+#endif /* ELPIDA_TASKRUNRESULT_HPP_ */

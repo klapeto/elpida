@@ -26,16 +26,11 @@
 
 #include "Elpida/Runner.hpp"
 
-#include <iostream>
-#include <iomanip>
-
 #include "Config.hpp"
 #include "Elpida/Task.hpp"
 #include "Elpida/Timer.hpp"
 #include "Elpida/CpuInfo.hpp"
 #include "Elpida/TaskBatch.hpp"
-#include "Elpida/TaskThroughput.hpp"
-
 
 #if _elpida_linux
 #include <sys/resource.h>
@@ -59,24 +54,27 @@ namespace Elpida
 	{
 		for (auto taskBatch : _tasks)
 		{
-			std::cout << "[*] Executing task batch: " << taskBatch->getName() << std::endl;
-
-			//taskBatch->reconfigure();
-
-			auto &tasks = taskBatch->getTasks();
+			auto& batchResult = _lastExecutionResults[taskBatch->getName()];
+			const auto& tasks = taskBatch->getTasks();
 			for (auto task : tasks)
 			{
-				std::cout << "\t~> Executing sub-task: " << task->getName() << std::endl;
+				task->clearResults();
+
 				TaskMetrics metrics = runTask(*task);
-				TaskThroughput throughput = task->translateToThroutput(metrics);
-				std::cout << "\t\tDone: " << std::fixed << std::setprecision(2)
-				          << std::chrono::duration<double, std::milli>(metrics.getDuration()).count() << " ms "
-				          << throughput.getThroughputString() << std::endl;
+				task->calculateResults();
+
+				auto& resultsToExport = batchResult[task->getName()];
+				const auto& results = task->getLastRunResults();
+				for (auto result : results)
+				{
+					resultsToExport.push_back(TaskThroughput(*result, metrics));
+				}
+
 			}
 		}
 	}
 
-	void Runner::addTaskBatch(TaskBatch &batch)
+	void Runner::addTaskBatch(const TaskBatch &batch)
 	{
 		_tasks.push_back(&batch);
 	}

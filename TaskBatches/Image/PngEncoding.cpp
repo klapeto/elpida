@@ -34,7 +34,12 @@ namespace Elpida
 {
 
 	PngEncoding::PngEncoding(const Image<RawData>& inputImage)
-			: Task("Png Encoding"), _inputImage(inputImage), _encodedData(nullptr), _encodedDataSize(0)
+			:
+			  Task("Png Encoding"),
+			  _runResult("Data process rate", "Bytes"),
+			  _inputImage(inputImage),
+			  _encodedData(nullptr),
+			  _encodedDataSize(0)
 	{
 	}
 
@@ -55,9 +60,10 @@ namespace Elpida
 		_encodedDataSize = encodeResult.dataSize;
 	}
 
-	TaskThroughput PngEncoding::translateToThroutput(const TaskMetrics& metrics) const
+	void PngEncoding::calculateResults()
 	{
-		return TaskThroughput(TaskThroughput::getValueScale(((Float64) _inputImage.getTotalSize() * 4) / metrics.getSeconds()) + "B/s");
+		_runResult.setMeasuredValue(_inputImage.getTotalSize() * 4);
+		addResult(_runResult);
 	}
 
 } /* namespace Elpida */

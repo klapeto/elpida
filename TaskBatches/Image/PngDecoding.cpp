@@ -34,7 +34,7 @@ namespace Elpida
 {
 
 	PngDecoding::PngDecoding(const RawDataPtr& inputData, const Size& dataSize)
-			: Task("Png Decoding"), _inputData(inputData), _dataSize(dataSize)
+			: Task("Png Decoding"), _runResult("Data process rate", "Bytes"), _inputData(inputData), _dataSize(dataSize)
 	{
 
 	}
@@ -51,9 +51,10 @@ namespace Elpida
 		_image.setData(decodeInfo.data, decodeInfo.width, decodeInfo.height, true);
 	}
 
-	TaskThroughput PngDecoding::translateToThroutput(const TaskMetrics& metrics) const
+	void PngDecoding::calculateResults()
 	{
-		return TaskThroughput(TaskThroughput::getValueScale(((Float64) _dataSize) / metrics.getSeconds()) + "B/s");
+		_runResult.setMeasuredValue(_dataSize);
+		addResult(_runResult);
 	}
 
 } /* namespace Elpida */

@@ -58,6 +58,11 @@ namespace Elpida
 
 			}
 
+			virtual void reconfigure()
+			{
+
+			}
+
 			TaskBatch(const String& name)
 					: _name(name)
 			{

@@ -28,15 +28,15 @@
 #define TASKSBATCHES_IMAGE_CONVERTTOFLOAT_HPP_
 
 #include "Elpida/Task.hpp"
-#include "Elpida/TaskMetrics.hpp"
 #include "Elpida/Types/Float.hpp"
+#include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/Image.hpp"
 
 namespace Elpida
 {
 
 	template<typename T, typename R = Float32>
-	class ConvertToFloat: public Task
+	class ConvertToFloat final: public Task
 	{
 		public:
 
@@ -59,10 +59,10 @@ namespace Elpida
 				}
 			}
 
-			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const
+			void calculateResults()
 			{
-				return TaskThroughput(
-				        TaskThroughput::getValueScale(((Float64) _sourceImage.getTotalSizeInBytes()) / metrics.getSeconds()) + "Bytes/s");
+				_runResult.setMeasuredValue(_sourceImage.getTotalSizeInBytes());
+				addResult(_runResult);
 			}
 
 			void prepare()
@@ -71,10 +71,11 @@ namespace Elpida
 			}
 
 			ConvertToFloat(const Image<T>& sourceImage)
-					: Task("Convert to Float"), _sourceImage(sourceImage)
+					: Task("Convert to Float"), _sourceImage(sourceImage), _runResult("Data convert rate", "Bytes")
 			{
 
 			}
+
 			~ConvertToFloat()
 			{
 
@@ -82,6 +83,7 @@ namespace Elpida
 		private:
 			const Image<T>& _sourceImage;
 			Image<R> _convertedImage;
+			TaskRunResult _runResult;
 	};
 
 } /* namespace Elpida */

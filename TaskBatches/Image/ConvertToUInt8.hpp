@@ -28,7 +28,7 @@
 #define TASKSBATCHES_IMAGE_CONVERTTOUINT8_HPP_
 
 #include "Elpida/Task.hpp"
-#include "Elpida/TaskMetrics.hpp"
+#include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Types/Float.hpp"
 #include "Elpida/Types/Integer.hpp"
 #include "Elpida/Utilities/Image.hpp"
@@ -36,7 +36,7 @@
 namespace Elpida
 {
 	template<typename T>
-	class ConvertToUInt8: public Task
+	class ConvertToUInt8 final: public Task
 	{
 		public:
 
@@ -59,10 +59,10 @@ namespace Elpida
 				}
 			}
 
-			TaskThroughput translateToThroutput(const TaskMetrics& metrics) const
+			void calculateResults()
 			{
-				return TaskThroughput(
-				        TaskThroughput::getValueScale(((Float64) _sourceImage.getTotalSizeInBytes()) / metrics.getSeconds()) + "Bytes/s");
+				_runResult.setMeasuredValue(_sourceImage.getTotalSizeInBytes());
+				addResult(_runResult);
 			}
 
 			void prepare()
@@ -71,10 +71,11 @@ namespace Elpida
 			}
 
 			ConvertToUInt8(const Image<T>& sourceImage)
-					: Task("Convert to Uint8"), _sourceImage(sourceImage)
+					: Task("Convert to Uint8"), _sourceImage(sourceImage), _runResult("Data covert rate", "Bytes")
 			{
 
 			}
+
 			~ConvertToUInt8()
 			{
 
@@ -82,6 +83,7 @@ namespace Elpida
 		private:
 			const Image<T>& _sourceImage;
 			Image<UInt8> _convertedImage;
+			TaskRunResult _runResult;
 	};
 
 } /* namespace Elpida */
