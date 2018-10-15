@@ -62,13 +62,17 @@ namespace Elpida
 				task->clearResults();
 
 				TaskMetrics metrics = runTask(*task);
-				task->calculateResults();
-
-				auto& resultsToExport = batchResult[task->getName()];
-				const auto& results = task->getLastRunResults();
-				for (auto result : results)
+				if (task->isToBeMeasured())
 				{
-					resultsToExport.push_back(TaskThroughput(*result, metrics));
+					task->calculateResults();
+
+					auto& resultsToExport = batchResult[task->getName()];
+					const auto& results = task->getLastRunResults();
+					for (auto result : results)
+					{
+						resultsToExport.push_back(TaskThroughput(*result, metrics));
+					}
+
 				}
 
 			}

@@ -72,6 +72,7 @@ namespace Elpida
 	void ImageTaskBatch::createTasks()
 	{
 		auto readFile = new ReadFile(_inputFile);
+		readFile->setToBeMeasured(false);
 		auto decoding = new PngDecoding(readFile->getFile().getData(), readFile->getFile().getSize());
 		auto floatConvert = new ConvertToFloat<RawData>(decoding->getImage());
 		auto grayScale = new GrayscaleAverage<Float32>(floatConvert->getImage(), floatConvert->getImage());
@@ -90,6 +91,7 @@ namespace Elpida
 		if (_outputFile.size() > 0)
 		{
 			auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), _outputFile);
+			writeFile->setToBeMeasured(false);
 			_tasks.push_back(writeFile);
 		}
 
