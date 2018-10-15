@@ -58,6 +58,7 @@ namespace Elpida
 
 			void reconfigure()
 			{
+				destroyTasks();
 				createTasks();
 			}
 
