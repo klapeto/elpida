@@ -18,15 +18,38 @@
  *************************************************************************/
 
 /*
- * TaskMeasurement.cpp
+ * MemoryTaskBatch.hpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/TaskThroughput.hpp"
+#ifndef TASKBATCHES_MEMORY_MEMORYTASKBATCH_HPP_
+#define TASKBATCHES_MEMORY_MEMORYTASKBATCH_HPP_
+
+#include <Elpida/TaskBatch.hpp>
 
 namespace Elpida
 {
 
+	class MemoryTaskBatch final: public TaskBatch
+	{
+		public:
+
+			void createTasks() const override;
+
+			MemoryTaskBatch()
+					: TaskBatch("Memory Bandwidth")
+			{
+
+			}
+
+			~MemoryTaskBatch()
+			{
+
+			}
+	};
+
 } /* namespace Elpida */
+
+#endif /* TASKBATCHES_MEMORY_MEMORYTASKBATCH_HPP_ */

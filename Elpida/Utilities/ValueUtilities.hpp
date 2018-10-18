@@ -18,15 +18,27 @@
  *************************************************************************/
 
 /*
- * TaskMeasurement.cpp
+ * ValueUtilities.hpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 19 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/TaskThroughput.hpp"
+#ifndef ELPIDA_UTILITIES_VALUEUTILITIES_HPP_
+#define ELPIDA_UTILITIES_VALUEUTILITIES_HPP_
+
+#include "Elpida/Types/Float.hpp"
+#include "Elpida/Types/String.hpp"
 
 namespace Elpida
 {
 
+	class ValueUtilities
+	{
+		public:
+			static String getValueScale(Float64 value);
+	};
+
 } /* namespace Elpida */
+
+#endif /* ELPIDA_UTILITIES_VALUEUTILITIES_HPP_ */

@@ -14,5 +14,6 @@ configure_file(	input: 'Config.hpp.in',
 				
 subdir('General')
 subdir('Image')
+subdir('Memory')
 				
 

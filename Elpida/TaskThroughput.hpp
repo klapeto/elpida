@@ -27,10 +27,10 @@
 #ifndef ELPIDA_TASKTHROUGHPUT_HPP_
 #define ELPIDA_TASKTHROUGHPUT_HPP_
 
-#include "Elpida/Types/Float.hpp"
 #include "Elpida/Types/String.hpp"
 #include "Elpida/TaskMetrics.hpp"
 #include "Elpida/TaskRunResult.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
 
 namespace Elpida
 {
@@ -39,11 +39,9 @@ namespace Elpida
 	{
 		public:
 
-			static String getValueScale(Float64 value);
-
 			String getPerSecond() const
 			{
-				return getValueScale(_runResult.getMeasuredValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>()) + _runResult.getMeasuredValueName() + "/s";
+				return ValueUtilities::getValueScale(_runResult.getMeasuredValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>()) + _runResult.getMeasuredValueName() + "/s";
 			}
 
 			const TaskRunResult& getRunResult() const

@@ -18,15 +18,16 @@
  *************************************************************************/
 
 /*
- * TaskMeasurement.cpp
+ * MemoryRead.cpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/TaskThroughput.hpp"
+#include "TaskBatches/Memory/MemoryRead.hpp"
 
 namespace Elpida
 {
 
 } /* namespace Elpida */
+

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# elpida - CPU benchmark tool
+# Elpida - Benchmark library
 # 
 # Copyright (C) 2018  Ioannis Panagiotopoulos
 # 
@@ -16,31 +16,42 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
-utilities_sources = ['Image.cpp',
-					'ImageEncoder.cpp',
-					'Pixel.cpp',
-					'TextColumn.cpp',
-					'TextRow.cpp',
-					'TextTable.cpp',
-					'MemoryFile.cpp',
-					'NonCopyable.cpp',
-					'Singleton.cpp',
-					'CommandParser.cpp',
-					'ValueUtilities.cpp']
+localCppArgs = ['-march=native', '-O3']
 
-utilities = static_library('Utilities', 
-						utilities_sources,
-						include_directories : rootIncude)
-						
-install_headers(['Image.hpp',
-				'ImageEncoder.hpp',
-				'Pixel.hpp',
-				'TextColumn.hpp',
-				'TextRow.hpp',
-				'TextTable.hpp',
-				'MemoryFile.hpp',
-				'NonCopyable.hpp',
-				'Singleton.hpp',
-				'CommandParser.hpp',
-				'ValueUtilities.hpp'],
-				subdir: 'Elpida/Utilities')
+memoryTasks_sources = ['Plugin.cpp',
+						'MemoryRead.cpp',
+						'MemoryTaskBatch.cpp']
+
+install_headers(['MemoryRead.cpp',
+				'MemoryTaskBatch.cpp'],
+				subdir: 'Elpida/TaskBatches/Memory')
+				
+if qt5_dep.found()
+
+	memoryTasks_sources += [
+		'MemoryTasksProperties.cpp'
+	]
+
+	uiFiles = [
+		
+	]
+	
+	mocHeaders = [
+		'MemoryTasksProperties.hpp'
+	]
+	
+	memoryTasks_sources += qt5.preprocess(
+	  moc_headers : mocHeaders,
+	  ui_files    : uiFiles,
+	)
+endif
+				
+memoryTasks = library('MemoryTasks', 
+							[memoryTasks_sources],
+							link_with: [elpida],
+							cpp_args: localCppArgs,
+							install_dir: pluginInstallDir,
+							dependencies: qt5_dep.found() ? qt5_dep : [],
+							install: true,
+							include_directories : [rootIncude])
+				
