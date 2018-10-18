@@ -58,7 +58,7 @@ namespace Elpida
 
 			void clearTaskBatches()
 			{
-				_tasks.clear();
+				_tasksBatches.clear();
 			}
 
 			Runner();
@@ -70,7 +70,7 @@ namespace Elpida
 			Runner& operator=(const Runner&) = default;
 		private:
 			Map<String, Map<String, Array<TaskThroughput>>> _lastExecutionResults;
-			Array<const TaskBatch*> _tasks;
+			Array<const TaskBatch*> _tasksBatches;
 			TaskMetrics runTask(Task& task);
 	};
 

@@ -36,7 +36,6 @@ namespace Elpida
 	class Task;
 	class TaskBatchConfiguration;
 
-
 	class TaskBatch
 	{
 		public:
@@ -53,12 +52,28 @@ namespace Elpida
 				return _name;
 			}
 
+			void prepare() const
+			{
+				destroyTasks();
+				createTasks();
+			}
+
+			void finalize() const
+			{
+				destroyTasks();
+			}
+
 			virtual void reconfigure(const String& inputData)
 			{
 
 			}
 
-			virtual void reconfigure()
+			virtual void onBeforeExecution() const
+			{
+
+			}
+
+			virtual void onAfterExcecution() const
 			{
 
 			}
@@ -71,7 +86,7 @@ namespace Elpida
 
 			virtual ~TaskBatch()
 			{
-
+				destroyTasks();
 			}
 
 			TaskBatch(TaskBatch&&) = default;
@@ -81,9 +96,14 @@ namespace Elpida
 
 		private:
 			String _name;
+			mutable Array<Task*> _tasks;
 		protected:
-			Array<Task*> _tasks;
-			void destroyTasks();
+			void addTask(Task* task) const
+			{
+				_tasks.push_back(task);
+			}
+			void destroyTasks() const;
+			virtual void createTasks() const = 0;
 	};
 
 } /* namespace Elpida */

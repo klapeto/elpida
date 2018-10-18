@@ -31,7 +31,7 @@
 namespace Elpida
 {
 
-	void TaskBatch::destroyTasks()
+	void TaskBatch::destroyTasks() const
 	{
 		for (auto task : _tasks)
 		{

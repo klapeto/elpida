@@ -33,9 +33,15 @@ namespace Elpida
 	{
 
 		public:
+
 			DummyBatch()
 					: TaskBatch("DummyTasks")
 			{
+			}
+		protected:
+			void createTasks() const
+			{
+
 			}
 	};
 	extern "C" TaskBatch* createTaskBatch()

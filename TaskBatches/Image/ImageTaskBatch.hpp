@@ -56,13 +56,7 @@ namespace Elpida
 				_outputFile = outputFile;
 			}
 
-			void reconfigure()
-			{
-				destroyTasks();
-				createTasks();
-			}
-
-			void reconfigure(const String& inputData);
+			void reconfigure(const String& inputData) override;
 
 			ImageTaskBatch();
 			~ImageTaskBatch();
@@ -76,7 +70,7 @@ namespace Elpida
 			String _outputFile;
 			bool _outputEnabled;
 
-			void createTasks();
+			void createTasks() const override;
 	};
 
 } /* namespace Elpida */

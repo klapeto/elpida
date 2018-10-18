@@ -53,9 +53,11 @@ namespace Elpida
 	void Runner::executeTasks()
 	{
 		_lastExecutionResults.clear();
-		for (auto taskBatch : _tasks)
+		for (auto taskBatch : _tasksBatches)
 		{
 			auto& batchResult = _lastExecutionResults[taskBatch->getName()];
+			taskBatch->prepare();
+			taskBatch->onBeforeExecution();
 			const auto& tasks = taskBatch->getTasks();
 			for (auto task : tasks)
 			{
@@ -72,16 +74,16 @@ namespace Elpida
 					{
 						resultsToExport.push_back(TaskThroughput(*result, metrics));
 					}
-
 				}
-
 			}
+			taskBatch->onAfterExcecution();
+			taskBatch->finalize();
 		}
 	}
 
 	void Runner::addTaskBatch(const TaskBatch &batch)
 	{
-		_tasks.push_back(&batch);
+		_tasksBatches.push_back(&batch);
 	}
 
 	TaskMetrics Runner::runTask(Task &task)
@@ -89,10 +91,11 @@ namespace Elpida
 		task.prepare();
 
 		auto start = Timer::now();
-
 		task.run();
-
 		auto end = Timer::now();
+
+		task.finalize();
+
 		return TaskMetrics(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start));
 	}
 

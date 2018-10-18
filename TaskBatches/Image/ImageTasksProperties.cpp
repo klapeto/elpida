@@ -84,7 +84,7 @@ namespace Elpida
 	{
 		_taskBatch.setInputFile(_inputImage);
 		_taskBatch.setOutputFile(_outputImage);
-		_taskBatch.reconfigure();
+		_taskBatch.onBeforeExecution();
 	}
 
 }  // namespace Elpida

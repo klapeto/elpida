@@ -46,7 +46,7 @@ namespace Elpida
 
 	ImageTaskBatch::~ImageTaskBatch()
 	{
-		destroyTasks();
+
 	}
 
 	void ImageTaskBatch::reconfigure(const String& inputData)
@@ -58,18 +58,13 @@ namespace Elpida
 		_outputFile = parser.getArgument("o");
 
 		_outputEnabled = _outputFile.size() > 0;
-		if (_inputFile.size() > 0)
-		{
-			destroyTasks();
-			createTasks();
-		}
-		else
+		if (_inputFile.size() == 0)
 		{
 			throw ElpidaException("ImageTaskBatch", "Attempted to reconfigure batch with either input or output file empty");
 		}
 	}
 
-	void ImageTaskBatch::createTasks()
+	void ImageTaskBatch::createTasks() const
 	{
 		auto readFile = new ReadFile(_inputFile);
 		readFile->setToBeMeasured(false);
@@ -80,19 +75,19 @@ namespace Elpida
 		auto intConvert = new ConvertToUInt8<Float32>(floatConvert->getImage());
 		auto encoding = new PngEncoding(intConvert->getImage());
 
-		_tasks.push_back(readFile);
-		_tasks.push_back(decoding);
-		_tasks.push_back(floatConvert);
-		_tasks.push_back(grayScale);
-		_tasks.push_back(floydSteinberg);
-		_tasks.push_back(intConvert);
-		_tasks.push_back(encoding);
+		addTask(readFile);
+		addTask(decoding);
+		addTask(floatConvert);
+		addTask(grayScale);
+		addTask(floydSteinberg);
+		addTask(intConvert);
+		addTask(encoding);
 
 		if (_outputFile.size() > 0)
 		{
 			auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), _outputFile);
 			writeFile->setToBeMeasured(false);
-			_tasks.push_back(writeFile);
+			addTask(writeFile);
 		}
 
 	}

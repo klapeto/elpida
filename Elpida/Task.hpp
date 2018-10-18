@@ -67,7 +67,13 @@ namespace Elpida
 
 			virtual void run() = 0;
 			virtual void calculateResults() = 0;
+
 			virtual void prepare()
+			{
+
+			}
+
+			virtual void finalize()
 			{
 
 			}
@@ -77,6 +83,7 @@ namespace Elpida
 			{
 
 			}
+
 			virtual ~Task()
 			{
 
