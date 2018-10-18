@@ -59,7 +59,7 @@ namespace Elpida
 		private:
 			ElpidaManager _elpidaManager;
 			Array<QMetaObject::Connection> _connections;
-			Map<Elpida::String, QtTaskBatchWrapper*> _createdPropetyPages;
+			Map<String, QtTaskBatchWrapper*> _createdPropetyPages;
 			RunTaskBatchDialog *_runTaskBatchDialog;
 			Ui::MainWindow *_ui;
 			TaskBatchProperties* _taskBatchPropertiesDialog;

@@ -31,6 +31,8 @@
 #include "TaskBatchProperties.hpp"
 #include "RunTaskBatchDialog.hpp"
 
+#define PAGE_CREATION_FUNCTION_NAME "createQtBatchWrapper"
+
 namespace Elpida
 {
 
@@ -44,7 +46,6 @@ namespace Elpida
 		_runTaskBatchDialog = new RunTaskBatchDialog(_createdPropetyPages, _ui->centralWidget);
 
 		loadCpuInfo();
-
 
 		//addMascot();
 		_connections.push_back(
@@ -153,31 +154,43 @@ namespace Elpida
 		_ui->chkAvx512Vaes->setChecked(instructions["AVX512-VAES"].isSupported());
 		_ui->chkSgx->setChecked(instructions["SGX"].isSupported());
 
-		auto caches = cpuInfo.getCaches();
+		const auto& caches = cpuInfo.getCaches();
 
-		auto cache = caches.at(0);	// L1 Inst
-		_ui->lblL1InstSizeValue->setText(QString::number(cache.size / 1000) + " KB");
-		_ui->lblL1InstAssocValue->setText(cache.associativity.c_str());
-		_ui->lblL1InstLptValue->setText(QString::number(cache.linesPerTag));
-		_ui->lblL1InstLsValue->setText(QString::number(cache.lineSize));
+		if (caches.size() > 0)
+		{
+			const auto& cache = caches[0];	// L1 Inst
+			_ui->lblL1InstSizeValue->setText(QString::number(cache.size / 1000) + " KB");
+			_ui->lblL1InstAssocValue->setText(cache.associativity.c_str());
+			_ui->lblL1InstLptValue->setText(QString::number(cache.linesPerTag));
+			_ui->lblL1InstLsValue->setText(QString::number(cache.lineSize));
+		}
 
-		cache = caches.at(1);	// L1 Data
-		_ui->lblL1DataSizeValue->setText(QString::number(cache.size / 1000) + " KB");
-		_ui->lblL1DataAssocValue->setText(cache.associativity.c_str());
-		_ui->lblL1DataLptValue->setText(QString::number(cache.linesPerTag));
-		_ui->lblL1DataLsValue->setText(QString::number(cache.lineSize));
+		if (caches.size() > 1)
+		{
+			const auto& cache = caches[1];	// L1 Data
+			_ui->lblL1DataSizeValue->setText(QString::number(cache.size / 1000) + " KB");
+			_ui->lblL1DataAssocValue->setText(cache.associativity.c_str());
+			_ui->lblL1DataLptValue->setText(QString::number(cache.linesPerTag));
+			_ui->lblL1DataLsValue->setText(QString::number(cache.lineSize));
+		}
 
-		cache = caches.at(2);	// L2
-		_ui->lblL2SizeValue->setText(QString::number(cache.size / 1000) + " KB");
-		_ui->lblL2AssocValue->setText(cache.associativity.c_str());
-		_ui->lblL2LptValue->setText(QString::number(cache.linesPerTag));
-		_ui->lblL2LsValue->setText(QString::number(cache.lineSize));
+		if (caches.size() > 2)
+		{
+			const auto& cache = caches[2];	// L2
+			_ui->lblL2SizeValue->setText(QString::number(cache.size / 1000) + " KB");
+			_ui->lblL2AssocValue->setText(cache.associativity.c_str());
+			_ui->lblL2LptValue->setText(QString::number(cache.linesPerTag));
+			_ui->lblL2LsValue->setText(QString::number(cache.lineSize));
+		}
 
-		cache = caches.at(3);	// L3
-		_ui->lblL3SizeValue->setText(QString::number(cache.size / 1000) + " KB");
-		_ui->lblL3AssocValue->setText(cache.associativity.c_str());
-		_ui->lblL3LptValue->setText(QString::number(cache.linesPerTag));
-		_ui->lblL3LsValue->setText(QString::number(cache.lineSize));
+		if (caches.size() > 3)
+		{
+			const auto& cache = caches[3];	// L3
+			_ui->lblL3SizeValue->setText(QString::number(cache.size / 1000) + " KB");
+			_ui->lblL3AssocValue->setText(cache.associativity.c_str());
+			_ui->lblL3LptValue->setText(QString::number(cache.linesPerTag));
+			_ui->lblL3LsValue->setText(QString::number(cache.lineSize));
+		}
 
 	}
 
@@ -196,12 +209,12 @@ namespace Elpida
 
 	void MainWindow::loadTaskInfo()
 	{
-		_elpidaManager.setPluginDirectory(_elpida_plugin_install_path);
+		_elpidaManager.setPluginDirectory("Elpida");
 		_elpidaManager.reloadPlugins();
 		auto& plugins = _elpidaManager.getPluginLoader().getLoadedPlugins();
 		for (auto& plugin : plugins)
 		{
-			auto func = plugin.second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>("createQtBatchWrapper");
+			auto func = plugin.second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>(PAGE_CREATION_FUNCTION_NAME);
 			if (func != nullptr)
 			{
 				auto baseItem = new QTreeWidgetItem(_ui->twTasks);
@@ -228,7 +241,5 @@ namespace Elpida
 		_runTaskBatchDialog->show();
 	}
 
-
 }  // namespace Elpida
-
 

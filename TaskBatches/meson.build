@@ -1,4 +1,4 @@
-pluginInstallDir = join_paths(libraryInstallPath, 'Elpida')
+pluginInstallDir = join_paths(binaryInstallPath, 'Elpida')
 
 conf_data = configuration_data()
 
