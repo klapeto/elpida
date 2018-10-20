@@ -39,7 +39,25 @@ namespace Elpida
 	{
 		public:
 
-			inline void run()
+			void prepare() override
+			{
+				createTasks();
+				for (auto& taskThread : _tasksToBeExecuted)
+				{
+					taskThread.getTask().prepare();
+				}
+			}
+
+			void finalize() override
+			{
+				for (auto& taskThread : _tasksToBeExecuted)
+				{
+					taskThread.getTask().finalize();
+				}
+				destroyTasks();
+			}
+
+			inline void run() override
 			{
 				for (auto& task : _tasksToBeExecuted)
 				{
@@ -51,8 +69,6 @@ namespace Elpida
 				}
 			}
 
-			void addTask(Task& task);
-
 			MultiThreadTask(const String& name, bool strictAffinity = false);
 			virtual ~MultiThreadTask();
 
@@ -60,9 +76,15 @@ namespace Elpida
 			MultiThreadTask(const MultiThreadTask&) = default;
 			MultiThreadTask& operator=(MultiThreadTask&&) = default;
 			MultiThreadTask& operator=(const MultiThreadTask&) = default;
+
+		protected:
+			virtual void createTasks() = 0;
+			void addTask(Task* task);
 		private:
+			Array<Task*> _createdTasks;
 			Array<TaskThread> _tasksToBeExecuted;
 			bool _strictAffinity;
+			void destroyTasks();
 	};
 
 } /* namespace Elpida */

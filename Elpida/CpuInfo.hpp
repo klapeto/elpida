@@ -38,7 +38,7 @@
 namespace Elpida
 {
 
-	class CpuInfo: public Exportable
+	class CpuInfo final: public Exportable
 	{
 		public:
 
@@ -240,7 +240,6 @@ namespace Elpida
 			void getTscFrequency();
 			void getAMDFeatures();
 			void getIntelFeatures();
-
 	};
 
 } /* namespace Elpida */

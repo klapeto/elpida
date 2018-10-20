@@ -57,7 +57,8 @@ core_sources = ['CpuFeature.cpp',
 				'OffThreadExecutor.cpp',
 				'Event.cpp',
 				'EventSubscription.cpp',
-				'TaskRunResult.cpp']
+				'TaskRunResult.cpp',
+				'MemoryInfo.cpp']
 
 core = static_library('Elpida', 
 						core_sources,
@@ -81,7 +82,8 @@ install_headers(['CpuFeature.hpp',
 				'OffThreadExecutor.hpp',
 				'Event.hpp',
 				'EventSubscription.hpp',
-				'TaskRunResult.hpp'],
+				'TaskRunResult.hpp',
+				'MemoryInfo.hpp'],
 				subdir: 'Elpida')
 
 elpida = library('elpida',

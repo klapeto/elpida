@@ -18,61 +18,73 @@
  *************************************************************************/
 
 /*
- * TaskThread.hpp
+ * AllocateMemory.hpp
  *
- *  Created on: 17 Μαρ 2018
+ *  Created on: 20 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_TASKTHREAD_HPP_
-#define ELPIDA_TASKTHREAD_HPP_
+#ifndef TASKBATCHES_GENERAL_ALLOCATEMEMORY_HPP_
+#define TASKBATCHES_GENERAL_ALLOCATEMEMORY_HPP_
 
-#include <thread>
+#include <Elpida/Task.hpp>
+#include <Elpida/Types/Primitives.hpp>
 
 namespace Elpida
 {
-	class Task;
 
-	class TaskThread
+	class AllocateMemory final: public Task
 	{
 		public:
 
-			int getAffinity() const
+			Size getSize() const
 			{
-				return _affinity;
+				return _size;
 			}
 
-			void setAffinity(int affinity)
+			void*& getData()
 			{
-				_affinity = affinity;
+				return _data;
 			}
 
-			Task& getTask()
+			unsigned int getAlignment() const
 			{
-				return _task;
+				return _alignment;
 			}
 
-			void start();
-			void join();
+			void setAlignment(unsigned int alignment)
+			{
+				_alignment = alignment;
+			}
 
-			static void setCurrentThreadAffinity(int cpuId);
+			void setSize(Size size)
+			{
+				_size = size;
+			}
 
-			TaskThread(Task& task, int affinity = -1);
-			virtual ~TaskThread();
+			void prepare() override
+			{
+				deallocate();
+			}
 
-			TaskThread(TaskThread&&) = default;
-			TaskThread(const TaskThread&) = delete;
-			TaskThread& operator=(TaskThread&&) = default;
-			TaskThread& operator=(const TaskThread&) = delete;
+			void finalize() override;
+
+			void run() override;
+			void calculateResults() override;
+
+			AllocateMemory(Size size, bool initialize = false, int alignment = -1);
+			~AllocateMemory();
 
 		private:
-			std::thread _runnerThread;
-			Task& _task;
-			int _affinity;
+			TaskRunResult _result;
+			Size _size;
+			void* _data;
+			int _alignment;
+			bool _initialize;
 
-			void runTask();
+			void deallocate();
 	};
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_TASKTHREAD_HPP_ */
+#endif /* TASKBATCHES_GENERAL_ALLOCATEMEMORY_HPP_ */

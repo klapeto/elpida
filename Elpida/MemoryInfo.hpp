@@ -18,61 +18,60 @@
  *************************************************************************/
 
 /*
- * TaskThread.hpp
+ * MemoryInfo.hpp
  *
- *  Created on: 17 Μαρ 2018
+ *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_TASKTHREAD_HPP_
-#define ELPIDA_TASKTHREAD_HPP_
+#ifndef ELPIDA_MEMORYINFO_HPP_
+#define ELPIDA_MEMORYINFO_HPP_
 
-#include <thread>
+#include "Elpida/Utilities/NonCopyable.hpp"
+#include "Elpida/Types/Primitives.hpp"
 
 namespace Elpida
 {
-	class Task;
 
-	class TaskThread
+	class MemoryInfo final: public NonCopyable
 	{
 		public:
 
-			int getAffinity() const
+			static MemoryInfo& getInfo()
 			{
-				return _affinity;
+				static MemoryInfo instance;
+				return instance;
 			}
 
-			void setAffinity(int affinity)
+			Size getMemorySize() const
 			{
-				_affinity = affinity;
+				return _memorySize;
 			}
 
-			Task& getTask()
+			Size getPageSize() const
 			{
-				return _task;
+				return _pageSize;
 			}
 
-			void start();
-			void join();
+			Size getAvailableFreeMemory() const;
 
-			static void setCurrentThreadAffinity(int cpuId);
-
-			TaskThread(Task& task, int affinity = -1);
-			virtual ~TaskThread();
-
-			TaskThread(TaskThread&&) = default;
-			TaskThread(const TaskThread&) = delete;
-			TaskThread& operator=(TaskThread&&) = default;
-			TaskThread& operator=(const TaskThread&) = delete;
-
+			~MemoryInfo()
+			{
+			}
 		private:
-			std::thread _runnerThread;
-			Task& _task;
-			int _affinity;
 
-			void runTask();
+			Size _memorySize;
+			Size _pageSize;
+
+			MemoryInfo()
+					: _memorySize(0), _pageSize(0)
+			{
+				getValues();
+			}
+
+			void getValues();
 	};
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_TASKTHREAD_HPP_ */
+#endif /* ELPIDA_MEMORYINFO_HPP_ */

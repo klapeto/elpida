@@ -18,53 +18,74 @@
  *************************************************************************/
 
 /*
- * MultiThreadTask.cpp
+ * AllocateMemory.cpp
  *
- *  Created on: 17 Μαρ 2018
+ *  Created on: 20 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/MultiThreadTask.hpp"
-
-#include "Elpida/CpuInfo.hpp"
+#include "TaskBatches/General/AllocateMemory.hpp"
+#include <Elpida/Config.hpp>
+#include <cstdlib>
+#include <cstring>
 
 namespace Elpida
 {
 
-	MultiThreadTask::MultiThreadTask(const String& name, bool strictAffinity)
-			: Task(name + "(Multi Threaded)"), _strictAffinity(strictAffinity)
+	AllocateMemory::AllocateMemory(Size size, bool initialize, int alignment)
+			:
+			  Task("Allocate Memory"),
+			  _result("Allocation Rate", "Bytes"),
+			  _size(size),
+			  _data(nullptr),
+			  _alignment(alignment),
+			  _initialize(initialize)
 	{
 	}
 
-	MultiThreadTask::~MultiThreadTask()
+	AllocateMemory::~AllocateMemory()
 	{
-		destroyTasks();
+		deallocate();
 	}
 
-	void MultiThreadTask::addTask(Task* task)
+	void AllocateMemory::run()
 	{
-		static Size cores = CpuInfo::getCpuInfo().getLogicalProcessors();
-
-		if (_tasksToBeExecuted.size() == cores)
+		if (_alignment > 0)
 		{
-			_strictAffinity = false;
-			for (auto& task : _tasksToBeExecuted)
-			{
-				task.setAffinity(-1);
-			}
+#if _elpida_linux
+			posix_memalign(&_data, _alignment, _size);
+#elif _elpida_windows
+			_data = aligned_alloc(_alignment, _size);
+#endif
 		}
-		_tasksToBeExecuted.push_back(TaskThread(*task, _strictAffinity ? _tasksToBeExecuted.size() : -1));
-		_createdTasks.push_back(task);
+		else
+		{
+			_data = malloc(_size);
+		}
 	}
 
-	void MultiThreadTask::destroyTasks()
+	void AllocateMemory::calculateResults()
 	{
-		_tasksToBeExecuted.clear();
-		for (auto task : _createdTasks)
+		_result = _size;
+		addResult(_result);
+	}
+
+	void AllocateMemory::finalize()
+	{
+		if (_initialize && _data != nullptr)
 		{
-			delete task;
+			memset(_data, 0, _size);
 		}
-		_createdTasks.clear();
+	}
+
+	void AllocateMemory::deallocate()
+	{
+		if (_data != nullptr)
+		{
+			free(_data);
+			_data = nullptr;
+		}
 	}
 
 } /* namespace Elpida */
+

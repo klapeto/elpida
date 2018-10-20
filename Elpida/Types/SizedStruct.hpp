@@ -18,61 +18,27 @@
  *************************************************************************/
 
 /*
- * TaskThread.hpp
+ * SizedStruct.hpp
  *
- *  Created on: 17 Μαρ 2018
+ *  Created on: 20 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_TASKTHREAD_HPP_
-#define ELPIDA_TASKTHREAD_HPP_
+#ifndef ELPIDA_TYPES_SIZEDSTRUCT_HPP_
+#define ELPIDA_TYPES_SIZEDSTRUCT_HPP_
 
-#include <thread>
+#include "Elpida/Types/Primitives.hpp"
+#include "Elpida/Types/Integer.hpp"
 
 namespace Elpida
 {
-	class Task;
 
-	class TaskThread
+	template<Size Bytes>
+	struct SizedStruct
 	{
-		public:
-
-			int getAffinity() const
-			{
-				return _affinity;
-			}
-
-			void setAffinity(int affinity)
-			{
-				_affinity = affinity;
-			}
-
-			Task& getTask()
-			{
-				return _task;
-			}
-
-			void start();
-			void join();
-
-			static void setCurrentThreadAffinity(int cpuId);
-
-			TaskThread(Task& task, int affinity = -1);
-			virtual ~TaskThread();
-
-			TaskThread(TaskThread&&) = default;
-			TaskThread(const TaskThread&) = delete;
-			TaskThread& operator=(TaskThread&&) = default;
-			TaskThread& operator=(const TaskThread&) = delete;
-
-		private:
-			std::thread _runnerThread;
-			Task& _task;
-			int _affinity;
-
-			void runTask();
+			Int8 value[Bytes];
 	};
 
-} /* namespace Elpida */
+}  // namespace Elpida
 
-#endif /* ELPIDA_TASKTHREAD_HPP_ */
+#endif /* ELPIDA_TYPES_SIZEDSTRUCT_HPP_ */

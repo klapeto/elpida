@@ -17,18 +17,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
+localCppArgs = ['-march=native', '-O3']
+
 generalTasks_sources = ['ReadFile.cpp', 
 						'WriteFile.cpp',
-						'Plugin.cpp']
+						'Plugin.cpp',
+						'AllocateMemory.cpp']
 
 generalTasks = library('GeneralTasks', 
 							generalTasks_sources,
 							link_with: elpida,
 							install: true,
+							cpp_args: localCppArgs,
 							install_dir: pluginInstallDir,
 							include_directories : rootIncude)
 							
-install_headers(['ReadFile.hpp', 
-				'WriteFile.hpp'],
+install_headers(['ReadFile.hpp',
+				'WriteFile.hpp',
+				'AllocateMemory.hpp'],
 				subdir: 'Elpida/TaskBatches/General')
 

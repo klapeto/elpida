@@ -32,7 +32,7 @@
 #include <Elpida/Types/Primitives.hpp>
 #include <Elpida/TaskRunResult.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
-#include <type_traits>
+#include <TaskBatches/General/AllocateMemory.hpp>
 
 namespace Elpida
 {
@@ -41,58 +41,27 @@ namespace Elpida
 	class MemoryRead final: public Task
 	{
 		public:
-
-			static_assert(std::is_trivially_constructible<T>::value);
-
-			volatile Int32*& getData() const
-			{
-				return _data;
-			}
-
-			Size getDataSize() const
-			{
-				return _dataSize;
-			}
-
-			void setDataSize(Size dataSize)
-			{
-				_dataSize = dataSize;
-			}
-
 			void run() override
 			{
-				for (Size i = 0; i < _dataSize; ++i)
+				for (Size i = 0; i < _arraySize; ++i)
 				{
-					volatile T dummy = _data[i];
+					volatile T d1 = _data[i];
 				}
 			}
 
 			void calculateResults() override
 			{
-				_runResult.setMeasuredValue(_dataSize * sizeof(T));
+				_runResult.setMeasuredValue(_arraySize * sizeof(T));
 				addResult(_runResult);
 			}
 
-			void prepare() override
-			{
-				_data = new T[_dataSize];
-			}
-
-			void finalize() override
-			{
-				if (_data != nullptr)
-				{
-					delete[] _data;
-					_data = nullptr;
-				}
-			}
-
-			MemoryRead(Size dataSize)
+			MemoryRead(AllocateMemory& allocateTask)
 					:
-					  Task("Read " + ValueUtilities::getValueScale(dataSize * sizeof(T)) + "B@" + std::to_string(sizeof(T)) + " Bytes/Read"),
+					  Task("Read " + ValueUtilities::getValueScale(allocateTask.getSize()) + "B@" + std::to_string(sizeof(T))
+					          + " Bytes/Read"),
 					  _runResult("Memory Read Bandwidth", "Bytes"),
-					  _dataSize(dataSize),
-					  _data(nullptr)
+					  _arraySize(allocateTask.getSize() / sizeof(T)),
+					  _data((T*&) allocateTask.getData())
 			{
 
 			}
@@ -103,8 +72,8 @@ namespace Elpida
 
 		private:
 			TaskRunResult _runResult;
-			Size _dataSize;
-			T* _data;
+			Size _arraySize;
+			T*& _data;
 	};
 
 } /* namespace Elpida */

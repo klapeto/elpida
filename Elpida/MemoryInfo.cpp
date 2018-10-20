@@ -18,61 +18,46 @@
  *************************************************************************/
 
 /*
- * TaskThread.hpp
+ * MemoryInfo.cpp
  *
- *  Created on: 17 Μαρ 2018
+ *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_TASKTHREAD_HPP_
-#define ELPIDA_TASKTHREAD_HPP_
-
-#include <thread>
+#include "Elpida/MemoryInfo.hpp"
+#include "Elpida/Config.hpp"
+#include <unistd.h>
 
 namespace Elpida
 {
-	class Task;
-
-	class TaskThread
+	Size MemoryInfo::getAvailableFreeMemory() const
 	{
-		public:
+#if _elpida_linux
+		return sysconf(_SC_AVPHYS_PAGES) * _pageSize;
+#elif _elpida_windows
+		MEMORYSTATUSEX memStatus;
+		memStatus.dwLength = sizeof(memStatus);
+		GlobalMemoryStatusEx(&memStatus);
+		return memStatus.ullAvailPhys;
+#endif
+	}
 
-			int getAffinity() const
-			{
-				return _affinity;
-			}
+	void MemoryInfo::getValues()
+	{
+#if _elpida_linux
+		_pageSize = sysconf(_SC_PAGESIZE);
+		_memorySize = sysconf(_SC_PHYS_PAGES) * _pageSize;
+#elif _elpida_windows
+		MEMORYSTATUSEX memStatus;
+		memStatus.dwLength = sizeof(memStatus);
+		GlobalMemoryStatusEx(&memStatus);
+		_memorySize = memStatus.ullTotalPhys;
 
-			void setAffinity(int affinity)
-			{
-				_affinity = affinity;
-			}
-
-			Task& getTask()
-			{
-				return _task;
-			}
-
-			void start();
-			void join();
-
-			static void setCurrentThreadAffinity(int cpuId);
-
-			TaskThread(Task& task, int affinity = -1);
-			virtual ~TaskThread();
-
-			TaskThread(TaskThread&&) = default;
-			TaskThread(const TaskThread&) = delete;
-			TaskThread& operator=(TaskThread&&) = default;
-			TaskThread& operator=(const TaskThread&) = delete;
-
-		private:
-			std::thread _runnerThread;
-			Task& _task;
-			int _affinity;
-
-			void runTask();
-	};
+		SYSTEM_INFO sysInfo;
+		GetNativeSystemInfo(&sysInfo);
+		_pageSize = sysInfo.dwPageSize;
+#endif
+	}
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_TASKTHREAD_HPP_ */

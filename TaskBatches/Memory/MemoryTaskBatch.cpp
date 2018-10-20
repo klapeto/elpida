@@ -25,29 +25,38 @@
  */
 
 #include "TaskBatches/Memory/MemoryTaskBatch.hpp"
+#include "MultiThreadMemoryRead.hpp"
 #include "MemoryRead.hpp"
-#include <Elpida/Types/Integer.hpp>
+#include "TaskBatches/General/AllocateMemory.hpp"
+#include <Elpida/Types/SizedStruct.hpp>
+#include <Elpida/CpuInfo.hpp>
+#include <Elpida/MemoryInfo.hpp>
 
 namespace Elpida
 {
-	template<Size N>
-	struct SizedStruct
-	{
-			Int8 x[N];
-	};
-
 	void MemoryTaskBatch::createTasks() const
 	{
-		addTask(new MemoryRead<SizedStruct<1>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<1> ))));
-		addTask(new MemoryRead<SizedStruct<2>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<2> ))));
-		addTask(new MemoryRead<SizedStruct<4>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<4> ))));
-		addTask(new MemoryRead<SizedStruct<8>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<8> ))));
-		addTask(new MemoryRead<SizedStruct<16>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<16> ))));
-		addTask(new MemoryRead<SizedStruct<32>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<32> ))));
-		addTask(new MemoryRead<SizedStruct<64>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<64> ))));
-		addTask(new MemoryRead<SizedStruct<128>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<128> ))));
-		addTask(new MemoryRead<SizedStruct<256>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<256> ))));
-		addTask(new MemoryRead<SizedStruct<512>>(((1024u * 1024 * 1024) / sizeof(SizedStruct<512> ))));
+		const Size cores= CpuInfo::getCpuInfo().getLogicalProcessors();
+		const auto& memoryInfo =MemoryInfo::getInfo();
+		const Size maxMemory = memoryInfo.getMemorySize() >> 1;
+		Size currentFreeMemory = memoryInfo.getAvailableFreeMemory();
+		Size memoryToBeUsed = maxMemory;
+
+		if (currentFreeMemory < maxMemory){
+			memoryToBeUsed = currentFreeMemory >> 1;
+		}
+		auto memory = new AllocateMemory(memoryToBeUsed, true, 64);
+		memory->setToBeMeasured(false);
+		addTask(memory);
+		addTask(new MemoryRead<SizedStruct<1>>(*memory));
+		addTask(new MemoryRead<SizedStruct<2>>(*memory));
+		addTask(new MemoryRead<SizedStruct<4>>(*memory));
+		addTask(new MemoryRead<SizedStruct<8>>(*memory));
+		addTask(new MemoryRead<SizedStruct<16>>(*memory));
+		addTask(new MemoryRead<SizedStruct<32>>(*memory));
+		addTask(new MemoryRead<SizedStruct<64>>(*memory));
+
+		//addTask(new MultiThreadMemoryRead((sz) / sizeof(SizedStruct<64>)));
 	}
 
 } /* namespace Elpida */
