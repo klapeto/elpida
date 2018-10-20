@@ -28,6 +28,10 @@
 #include "Elpida/Config.hpp"
 #include <unistd.h>
 
+#if _elpida_windows
+#include <windows.h>
+#endif
+
 namespace Elpida
 {
 	Size MemoryInfo::getAvailableFreeMemory() const

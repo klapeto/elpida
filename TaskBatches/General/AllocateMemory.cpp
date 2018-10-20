@@ -55,7 +55,7 @@ namespace Elpida
 #if _elpida_linux
 			posix_memalign(&_data, _alignment, _size);
 #elif _elpida_windows
-			_data = aligned_alloc(_alignment, _size);
+			_data = _aligned_malloc(_size, _alignment);
 #endif
 		}
 		else
@@ -82,7 +82,11 @@ namespace Elpida
 	{
 		if (_data != nullptr)
 		{
+#if _elpida_linux
 			free(_data);
+#elif _elpida_windows
+			_aligned_free(_data);
+#endif
 			_data = nullptr;
 		}
 	}

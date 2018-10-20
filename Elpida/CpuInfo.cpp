@@ -40,10 +40,6 @@
 #include "Elpida/Utilities/TextTable.hpp"
 #include "Elpida/Utilities/TextColumn.hpp"
 
-#if _elpida_windows
-#include <windows.h>
-#endif
-
 #define columnWidth 20
 #define out(prefix, value)	output << std::left  <<std::setw(columnWidth) << prefix  << std::setw(columnWidth) << value << _newLine
 #define featureCheck(reg, bit) (((reg & (1 << bit)) != 0))
