@@ -41,10 +41,12 @@ namespace Elpida
 
 			void prepare() override
 			{
+				_threadsShouldWake = false;
 				createTasks();
 				for (auto& taskThread : _tasksToBeExecuted)
 				{
 					taskThread.getTask().prepare();
+					taskThread.start();
 				}
 			}
 
@@ -59,10 +61,10 @@ namespace Elpida
 
 			inline void run() override
 			{
-				for (auto& task : _tasksToBeExecuted)
-				{
-					task.start();
-				}
+				std::unique_lock<std::mutex> lock(_mutex);
+				_threadsShouldWake = true;
+				lock.unlock();
+				_wakeNotifier.notify_all();
 				for (auto& task : _tasksToBeExecuted)
 				{
 					task.join();
@@ -83,6 +85,9 @@ namespace Elpida
 		private:
 			Array<Task*> _createdTasks;
 			Array<TaskThread> _tasksToBeExecuted;
+			std::mutex _mutex;
+			std::condition_variable _wakeNotifier;
+			bool _threadsShouldWake;
 			bool _strictAffinity;
 			void destroyTasks();
 	};

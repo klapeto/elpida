@@ -17,7 +17,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
-localCppArgs = ['-march=native', '-O3']
+#localCppArgs = ['-march=native', '-O3']
+localCppArgs = ['-march=native', '-Og']
+
 subdir('Encoders')
 
 imageTasks_sources = ['GrayscaleAverage.cpp',

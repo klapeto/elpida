@@ -32,41 +32,18 @@
 
 namespace Elpida
 {
+	class Memory;
 
 	class AllocateMemory final: public Task
 	{
 		public:
 
-			Size getSize() const
+			const Memory& getMemory() const
 			{
-				return _size;
+				return *_memory;
 			}
 
-			void*& getData()
-			{
-				return _data;
-			}
-
-			unsigned int getAlignment() const
-			{
-				return _alignment;
-			}
-
-			void setAlignment(unsigned int alignment)
-			{
-				_alignment = alignment;
-			}
-
-			void setSize(Size size)
-			{
-				_size = size;
-			}
-
-			void prepare() override
-			{
-				deallocate();
-			}
-
+			void prepare() override;
 			void finalize() override;
 
 			void run() override;
@@ -74,15 +51,10 @@ namespace Elpida
 
 			AllocateMemory(Size size, bool initialize = false, int alignment = -1);
 			~AllocateMemory();
-
 		private:
 			TaskRunResult _result;
-			Size _size;
-			void* _data;
-			int _alignment;
+			Memory* _memory;
 			bool _initialize;
-
-			void deallocate();
 	};
 
 } /* namespace Elpida */

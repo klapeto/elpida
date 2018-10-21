@@ -28,6 +28,7 @@
 #define ELPIDA_TASKTHREAD_HPP_
 
 #include <thread>
+#include <condition_variable>
 
 namespace Elpida
 {
@@ -57,7 +58,7 @@ namespace Elpida
 
 			static void setCurrentThreadAffinity(int cpuId);
 
-			TaskThread(Task& task, int affinity = -1);
+			TaskThread(Task& task, std::condition_variable& waitNotifier, std::mutex& mutex, const bool& shouldWake, int affinity = -1);
 			virtual ~TaskThread();
 
 			TaskThread(TaskThread&&) = default;
@@ -68,6 +69,9 @@ namespace Elpida
 		private:
 			std::thread _runnerThread;
 			Task& _task;
+			std::condition_variable& _waitNotifier;
+			std::mutex& _mutex;
+			const bool& _shouldWake;
 			int _affinity;
 
 			void runTask();

@@ -17,12 +17,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
-localCppArgs = ['-march=native', '-O3']
+#localCppArgs = ['-march=native', '-O3']
+localCppArgs = ['-march=native', '-Og']
 
 generalTasks_sources = ['ReadFile.cpp', 
 						'WriteFile.cpp',
 						'Plugin.cpp',
-						'AllocateMemory.cpp']
+						'AllocateMemory.cpp',
+						'Memory.cpp',
+						'AlignedMemory.cpp',
+						'UnalignedMemory.cpp']
 
 generalTasks = library('GeneralTasks', 
 							generalTasks_sources,
@@ -34,6 +38,9 @@ generalTasks = library('GeneralTasks',
 							
 install_headers(['ReadFile.hpp',
 				'WriteFile.hpp',
-				'AllocateMemory.hpp'],
+				'AllocateMemory.hpp',
+				'Memory.hpp',
+				'AlignedMemory.hpp',
+				'UnalignedMemory.hpp'],
 				subdir: 'Elpida/TaskBatches/General')
 

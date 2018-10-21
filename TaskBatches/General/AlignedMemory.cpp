@@ -18,45 +18,36 @@
  *************************************************************************/
 
 /*
- * MultiThreadMemoryRead.cpp
+ * AlignedMemory.cpp
  *
- *  Created on: 20 Οκτ 2018
+ *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MultiThreadMemoryRead.hpp"
-#include "MemoryRead.hpp"
-#include <Elpida/Types/SizedStruct.hpp>
-#include <Elpida/CpuInfo.hpp>
+#include "TaskBatches/General/AlignedMemory.hpp"
+#include <Elpida/Config.hpp>
+#include <cstdlib>
 
 namespace Elpida
 {
-	MultiThreadMemoryRead::MultiThreadMemoryRead(const Memory& memory)
-			:
-			  MultiThreadTask("Read " + ValueUtilities::getValueScale(memory.getSize()) + "B@64 Bytes/Read", true),
-			  _result("Memory Read Rate", "Bytes"),
-			  _memory(memory)
+
+	void AlignedMemory::allocateImpl()
 	{
+#if _elpida_linux
+		posix_memalign(&_pointer, _alignment, _size);
+#elif _elpida_windows
+		_pointer = _aligned_malloc(_size, _alignment);
+#endif
 	}
 
-	MultiThreadMemoryRead::~MultiThreadMemoryRead()
+	void AlignedMemory::deallocateImpl()
 	{
-	}
 
-	void MultiThreadMemoryRead::calculateResults()
-	{
-		addResult(_result);
-	}
-
-	void MultiThreadMemoryRead::createTasks()
-	{
-		auto cores = CpuInfo::getCpuInfo().getLogicalProcessors();
-		for (int i = 0; i < cores; ++i)
-		{
-			addTask(new MemoryRead<SizedStruct<64>>(_memory));
-		}
-		_result.setMeasuredValue(cores * _memory.getSize());
+#if _elpida_linux
+		free(_pointer);
+#elif _elpida_windows
+		_aligned_free(_pointer);
+#endif
 	}
 
 } /* namespace Elpida */
-

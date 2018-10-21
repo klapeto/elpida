@@ -32,7 +32,7 @@
 #include <Elpida/Types/Primitives.hpp>
 #include <Elpida/TaskRunResult.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
-#include <TaskBatches/General/AllocateMemory.hpp>
+#include <TaskBatches/General/Memory.hpp>
 
 namespace Elpida
 {
@@ -43,27 +43,26 @@ namespace Elpida
 		public:
 			void run() override
 			{
-				for (Size i = 0; i < _arraySize; ++i)
+				auto ptr = (T*)_memory.getPointer();
+				auto size = _memory.getSize() / sizeof(T);
+				for (Size i = 0; i < size; ++i)
 				{
-					volatile T d1 = _data[i];
+					volatile T d1 = ptr[i];
 				}
 			}
 
 			void calculateResults() override
 			{
-				_runResult.setMeasuredValue(_arraySize * sizeof(T));
 				addResult(_runResult);
 			}
 
-			MemoryRead(AllocateMemory& allocateTask)
+			MemoryRead(const Memory& memory)
 					:
-					  Task("Read " + ValueUtilities::getValueScale(allocateTask.getSize()) + "B@" + std::to_string(sizeof(T))
-					          + " Bytes/Read"),
+					  Task("Read " + ValueUtilities::getValueScale(memory.getSize()) + "B@" + std::to_string(sizeof(T)) + " Bytes/Read"),
 					  _runResult("Memory Read Bandwidth", "Bytes"),
-					  _arraySize(allocateTask.getSize() / sizeof(T)),
-					  _data((T*&) allocateTask.getData())
+					  _memory(memory)
 			{
-
+				_runResult.setMeasuredValue(_memory.getSize());
 			}
 			~MemoryRead()
 			{
@@ -72,8 +71,7 @@ namespace Elpida
 
 		private:
 			TaskRunResult _runResult;
-			Size _arraySize;
-			T*& _data;
+			const Memory& _memory;
 	};
 
 } /* namespace Elpida */

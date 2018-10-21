@@ -31,9 +31,16 @@
 #include <Elpida/Types/SizedStruct.hpp>
 #include <Elpida/CpuInfo.hpp>
 #include <Elpida/MemoryInfo.hpp>
+#include <Elpida/TaskThread.hpp>
 
 namespace Elpida
 {
+
+	void MemoryTaskBatch::onBeforeExecution() const
+	{
+		//TaskThread::setCurrentThreadAffinity(1);
+	}
+
 	void MemoryTaskBatch::createTasks() const
 	{
 		const Size cores= CpuInfo::getCpuInfo().getLogicalProcessors();
@@ -48,15 +55,9 @@ namespace Elpida
 		auto memory = new AllocateMemory(memoryToBeUsed, true, 64);
 		memory->setToBeMeasured(false);
 		addTask(memory);
-		addTask(new MemoryRead<SizedStruct<1>>(*memory));
-		addTask(new MemoryRead<SizedStruct<2>>(*memory));
-		addTask(new MemoryRead<SizedStruct<4>>(*memory));
-		addTask(new MemoryRead<SizedStruct<8>>(*memory));
-		addTask(new MemoryRead<SizedStruct<16>>(*memory));
-		addTask(new MemoryRead<SizedStruct<32>>(*memory));
-		addTask(new MemoryRead<SizedStruct<64>>(*memory));
-
-		//addTask(new MultiThreadMemoryRead((sz) / sizeof(SizedStruct<64>)));
+		addTask(new MemoryRead<SizedStruct<32>>(memory->getMemory()));
+		addTask(new MemoryRead<SizedStruct<64>>(memory->getMemory()));
+		addTask(new MultiThreadMemoryRead(memory->getMemory()));
 	}
 
 } /* namespace Elpida */

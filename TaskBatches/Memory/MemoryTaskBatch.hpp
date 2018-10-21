@@ -36,6 +36,7 @@ namespace Elpida
 	{
 		public:
 
+			void onBeforeExecution() const override;
 			void createTasks() const override;
 
 			MemoryTaskBatch()

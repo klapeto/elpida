@@ -26,6 +26,8 @@
 
 #include "TaskBatches/General/AllocateMemory.hpp"
 #include <Elpida/Config.hpp>
+#include "AlignedMemory.hpp"
+#include "UnalignedMemory.hpp"
 #include <cstdlib>
 #include <cstring>
 
@@ -33,61 +35,53 @@ namespace Elpida
 {
 
 	AllocateMemory::AllocateMemory(Size size, bool initialize, int alignment)
-			:
-			  Task("Allocate Memory"),
-			  _result("Allocation Rate", "Bytes"),
-			  _size(size),
-			  _data(nullptr),
-			  _alignment(alignment),
-			  _initialize(initialize)
+			: Task("Allocate Memory"), _result("Allocation Rate", "Bytes"), _initialize(initialize)
 	{
+		if (alignment > 0)
+		{
+			_memory = new AlignedMemory(size, alignment);
+		}
+		else
+		{
+			_memory = new UnalignedMemory(size);
+		}
 	}
 
 	AllocateMemory::~AllocateMemory()
 	{
-		deallocate();
+		if (_memory != nullptr)
+		{
+			delete _memory;
+		}
 	}
 
 	void AllocateMemory::run()
 	{
-		if (_alignment > 0)
-		{
-#if _elpida_linux
-			posix_memalign(&_data, _alignment, _size);
-#elif _elpida_windows
-			_data = _aligned_malloc(_size, _alignment);
-#endif
-		}
-		else
-		{
-			_data = malloc(_size);
-		}
+		_memory->allocate();
 	}
 
 	void AllocateMemory::calculateResults()
 	{
-		_result = _size;
+		if (_memory != nullptr)
+		{
+			_result = _memory->getSize();
+		}
 		addResult(_result);
+	}
+
+	void AllocateMemory::prepare()
+	{
+		if (_memory != nullptr)
+		{
+			_memory->deallocate();
+		}
 	}
 
 	void AllocateMemory::finalize()
 	{
-		if (_initialize && _data != nullptr)
+		if (_initialize && _memory != nullptr)
 		{
-			memset(_data, 0, _size);
-		}
-	}
-
-	void AllocateMemory::deallocate()
-	{
-		if (_data != nullptr)
-		{
-#if _elpida_linux
-			free(_data);
-#elif _elpida_windows
-			_aligned_free(_data);
-#endif
-			_data = nullptr;
+			memset(_memory->getPointer(), 0, _memory->getSize());
 		}
 	}
 

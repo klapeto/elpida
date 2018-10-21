@@ -18,45 +18,37 @@
  *************************************************************************/
 
 /*
- * MultiThreadMemoryRead.cpp
+ * UnalignedMemory.hpp
  *
- *  Created on: 20 Οκτ 2018
+ *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MultiThreadMemoryRead.hpp"
-#include "MemoryRead.hpp"
-#include <Elpida/Types/SizedStruct.hpp>
-#include <Elpida/CpuInfo.hpp>
+#ifndef TASKBATCHES_GENERAL_UNALIGNEDMEMORY_HPP_
+#define TASKBATCHES_GENERAL_UNALIGNEDMEMORY_HPP_
+
+#include "TaskBatches/General/Memory.hpp"
 
 namespace Elpida
 {
-	MultiThreadMemoryRead::MultiThreadMemoryRead(const Memory& memory)
-			:
-			  MultiThreadTask("Read " + ValueUtilities::getValueScale(memory.getSize()) + "B@64 Bytes/Read", true),
-			  _result("Memory Read Rate", "Bytes"),
-			  _memory(memory)
-	{
-	}
 
-	MultiThreadMemoryRead::~MultiThreadMemoryRead()
+	class UnalignedMemory final: public Memory
 	{
-	}
+		public:
+			UnalignedMemory(Size size)
+					: Memory(size)
+			{
 
-	void MultiThreadMemoryRead::calculateResults()
-	{
-		addResult(_result);
-	}
-
-	void MultiThreadMemoryRead::createTasks()
-	{
-		auto cores = CpuInfo::getCpuInfo().getLogicalProcessors();
-		for (int i = 0; i < cores; ++i)
-		{
-			addTask(new MemoryRead<SizedStruct<64>>(_memory));
-		}
-		_result.setMeasuredValue(cores * _memory.getSize());
-	}
+			}
+			~UnalignedMemory()
+			{
+				deallocate();
+			}
+		protected:
+			void allocateImpl() override;
+			void deallocateImpl() override;
+	};
 
 } /* namespace Elpida */
 
+#endif /* TASKBATCHES_GENERAL_UNALIGNEDMEMORY_HPP_ */
