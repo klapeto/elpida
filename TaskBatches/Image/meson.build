@@ -18,7 +18,7 @@
 #-------------------------------------------------------------------------------
 
 #localCppArgs = ['-march=native', '-O3']
-localCppArgs = ['-march=native', '-Og']
+localCppArgs = ['-march=native', '-O0']
 
 subdir('Encoders')
 

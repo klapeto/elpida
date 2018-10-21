@@ -48,6 +48,7 @@ namespace Elpida
 				for (Size i = 0; i < size; ++i)
 				{
 					volatile T d1 = ptr[i];
+					(void)d1;	// Avoid compiler warnings
 				}
 			}
 

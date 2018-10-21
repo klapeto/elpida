@@ -25,13 +25,13 @@
  */
 
 #include "TaskBatches/Memory/MemoryTaskBatch.hpp"
-#include "MultiThreadMemoryRead.hpp"
 #include "MemoryRead.hpp"
 #include "TaskBatches/General/AllocateMemory.hpp"
 #include <Elpida/Types/SizedStruct.hpp>
 #include <Elpida/CpuInfo.hpp>
 #include <Elpida/MemoryInfo.hpp>
 #include <Elpida/TaskThread.hpp>
+#include "TaskBatches/Memory/MultiThreadMemoryChunksRead.hpp"
 
 namespace Elpida
 {
@@ -57,7 +57,7 @@ namespace Elpida
 		addTask(memory);
 		addTask(new MemoryRead<SizedStruct<32>>(memory->getMemory()));
 		addTask(new MemoryRead<SizedStruct<64>>(memory->getMemory()));
-		addTask(new MultiThreadMemoryRead(memory->getMemory()));
+		addTask(new MultiThreadMemoryChunksRead<SizedStruct<64>>(memory->getMemory(), cores));
 	}
 
 } /* namespace Elpida */

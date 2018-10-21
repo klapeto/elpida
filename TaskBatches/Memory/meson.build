@@ -17,16 +17,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 #localCppArgs = ['-march=native', '-O3', '-funroll-loops']
-localCppArgs = ['-march=native', '-Og']
+localCppArgs = ['-march=native', '-O0']
 
 memoryTasks_sources = ['Plugin.cpp',
 						'MemoryRead.cpp',
 						'MemoryTaskBatch.cpp',
-						'MultiThreadMemoryRead.cpp']
+						'MultiThreadMemoryChunksRead.cpp']
 
 install_headers(['MemoryRead.cpp',
 				'MemoryTaskBatch.cpp',
-				'MultiThreadMemoryRead.hpp'],
+				'MultiThreadMemoryChunksRead.hpp'],
 				subdir: 'Elpida/TaskBatches/Memory')
 				
 if qt5_dep.found()

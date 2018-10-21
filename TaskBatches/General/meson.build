@@ -18,7 +18,7 @@
 #-------------------------------------------------------------------------------
 
 #localCppArgs = ['-march=native', '-O3']
-localCppArgs = ['-march=native', '-Og']
+localCppArgs = ['-march=native', '-O0']
 
 generalTasks_sources = ['ReadFile.cpp', 
 						'WriteFile.cpp',
@@ -26,7 +26,8 @@ generalTasks_sources = ['ReadFile.cpp',
 						'AllocateMemory.cpp',
 						'Memory.cpp',
 						'AlignedMemory.cpp',
-						'UnalignedMemory.cpp']
+						'UnalignedMemory.cpp',
+						'MemoryChunk.cpp']
 
 generalTasks = library('GeneralTasks', 
 							generalTasks_sources,
@@ -41,6 +42,7 @@ install_headers(['ReadFile.hpp',
 				'AllocateMemory.hpp',
 				'Memory.hpp',
 				'AlignedMemory.hpp',
-				'UnalignedMemory.hpp'],
+				'UnalignedMemory.hpp',
+				'MemoryChunk.hpp'],
 				subdir: 'Elpida/TaskBatches/General')
 

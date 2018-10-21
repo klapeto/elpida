@@ -18,39 +18,16 @@
  *************************************************************************/
 
 /*
- * MultiThreadMemoryRead.hpp
+ * MultiThreadMemoryChunksRead.cpp
  *
  *  Created on: 20 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_
-#define TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_
-
-#include <Elpida/MultiThreadTask.hpp>
-#include <Elpida/Types/Array.hpp>
-#include <Elpida/Types/Primitives.hpp>
+#include "TaskBatches/Memory/MultiThreadMemoryChunksRead.hpp"
 
 namespace Elpida
 {
-	class Memory;
-
-	class MultiThreadMemoryRead: public MultiThreadTask
-	{
-		public:
-
-			void calculateResults();
-
-			MultiThreadMemoryRead(const Memory& memory);
-			virtual ~MultiThreadMemoryRead();
-
-		protected:
-			void createTasks();
-		private:
-			TaskRunResult _result;
-			const Memory& _memory;
-	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_ */

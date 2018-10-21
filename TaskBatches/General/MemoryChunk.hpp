@@ -18,45 +18,59 @@
  *************************************************************************/
 
 /*
- * MultiThreadMemoryRead.cpp
+ * MemoryChunk.hpp
  *
- *  Created on: 20 Οκτ 2018
+ *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MultiThreadMemoryRead.hpp"
-#include "MemoryRead.hpp"
-#include <Elpida/Types/SizedStruct.hpp>
-#include <Elpida/CpuInfo.hpp>
+#ifndef TASKBATCHES_GENERAL_MEMORYCHUNK_HPP_
+#define TASKBATCHES_GENERAL_MEMORYCHUNK_HPP_
+
+#include "TaskBatches/General/Memory.hpp"
+#include <Elpida/Types/Array.hpp>
+#include <Elpida/Utilities/NonCopyable.hpp>
 
 namespace Elpida
 {
-	MultiThreadMemoryRead::MultiThreadMemoryRead(const Memory& memory)
-			:
-			  MultiThreadTask("Read " + ValueUtilities::getValueScale(memory.getSize()) + "B@64 Bytes/Read", true),
-			  _result("Memory Read Rate", "Bytes"),
-			  _memory(memory)
-	{
-	}
 
-	MultiThreadMemoryRead::~MultiThreadMemoryRead()
+	class MemoryChunk final: public Memory
 	{
-	}
+		public:
 
-	void MultiThreadMemoryRead::calculateResults()
-	{
-		addResult(_result);
-	}
+			static Array<MemoryChunk> breakToChunks(const Memory& memory, Size chunks);
 
-	void MultiThreadMemoryRead::createTasks()
-	{
-		auto cores = CpuInfo::getCpuInfo().getLogicalProcessors();
-		for (int i = 0; i < cores; ++i)
-		{
-			addTask(new MemoryRead<SizedStruct<64>>(_memory));
-		}
-		_result.setMeasuredValue(cores * _memory.getSize());
-	}
+			void allocateImpl() override
+			{
+				_pointer = _ptr;
+			}
+
+			void deallocateImpl() override
+			{
+				_pointer = nullptr;
+			}
+
+			MemoryChunk(void* pointer, Size size)
+					: Memory(size), _ptr(pointer)
+			{
+				_pointer = _ptr;
+			}
+
+			~MemoryChunk()
+			{
+				_pointer = nullptr;
+			}
+
+			MemoryChunk(MemoryChunk&& other)
+					: Memory(std::move(other))
+			{
+				this->_ptr = other._ptr;
+				other._ptr = nullptr;
+			}
+		private:
+			void* _ptr;
+	};
 
 } /* namespace Elpida */
 
+#endif /* TASKBATCHES_GENERAL_MEMORYCHUNK_HPP_ */
