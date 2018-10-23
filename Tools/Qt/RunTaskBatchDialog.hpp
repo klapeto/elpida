@@ -24,7 +24,7 @@
 #include <Elpida/Types/String.hpp>
 #include <Elpida/Runner.hpp>
 #include <Elpida/Types/Map.hpp>
-#include <thread>
+#include <Elpida/OffThreadExecutor.hpp>
 
 namespace Elpida
 {
@@ -49,12 +49,13 @@ namespace Elpida
 
 		private:
 			Runner _taskBatchRunner;
-			std::thread _runnerThread;
+			OffThreadExecutor _taskRunnerThread;
 			const Map<String, QtTaskBatchWrapper*>& _taskBatchList;
 			Ui::RunTaskBatchDialog *_ui;
 
 			void onTaskBatchListModified();
-
+			void appendResults();
+			void runTaskBatchesAndAppendResults();
 	};
 
 } // namespace Elpida

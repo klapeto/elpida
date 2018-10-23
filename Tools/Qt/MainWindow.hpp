@@ -23,6 +23,7 @@
 #include "ElpidaManager.hpp"
 #include <Elpida/Types/Map.hpp>
 #include <Elpida/Types/Array.hpp>
+#include <Elpida/OffThreadExecutor.hpp>
 #include <QMainWindow>
 
 class QTreeWidgetItem;
@@ -63,6 +64,7 @@ namespace Elpida
 			RunTaskBatchDialog *_runTaskBatchDialog;
 			Ui::MainWindow *_ui;
 			TaskBatchProperties* _taskBatchPropertiesDialog;
+			OffThreadExecutor _offThreadExecutor;
 			bool _fixedSizeSet;
 
 			void loadCpuInfo();

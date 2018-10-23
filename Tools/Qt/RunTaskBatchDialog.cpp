@@ -68,62 +68,80 @@ namespace Elpida
 
 	}
 
+	void RunTaskBatchDialog::appendResults()
+	{
+		auto& results = _taskBatchRunner.getLastExecutionResults();
+		for (auto& batchResult : results)
+		{
+			auto batchItem = new QTreeWidgetItem(_ui->twResults);
+			batchItem->setText(0, QString::fromStdString(batchResult.first));
+			for (auto& taskResults : batchResult.second)
+			{
+				auto taskItem = new QTreeWidgetItem(batchItem);
+				taskItem->setText(0, QString::fromStdString(taskResults.first));
+				if (taskResults.second.size() == 1)
+				{
+					taskItem->setText(1, QString::fromStdString(taskResults.second[0].getPerSecond()));
+				}
+				else
+				{
+					for (auto& taskResult : taskResults.second)
+					{
+						auto taskResultItem = new QTreeWidgetItem(taskItem);
+						taskResultItem->setText(0, QString::fromStdString(taskResult.getRunResult().getResultDescription()));
+						taskResultItem->setText(1, QString::fromStdString(taskResult.getPerSecond()));
+					}
+				}
+			}
+		}
+	}
+
+	void RunTaskBatchDialog::runTaskBatchesAndAppendResults()
+	{
+		try
+		{
+			_taskBatchRunner.executeTasks();
+		}
+		catch (ElpidaException& e)
+		{
+			QMessageBox::critical(_ui->pbRun, "Error", QString::fromStdString("Task batch runner produced error: " + e.getMessage()),
+			                      QMessageBox::StandardButton::Ok);
+		}
+		appendResults();
+	}
+
 	void RunTaskBatchDialog::on_pbRun_clicked()
 	{
-		_taskBatchRunner.clearTaskBatches();
-		auto selectedItems = _ui->lwTaskBatches->selectedItems();
-		if (selectedItems.size() > 0)
+		if (!_taskRunnerThread.isRunning())
 		{
-			for (auto item : selectedItems)
+			_taskBatchRunner.clearTaskBatches();
+			auto selectedItems = _ui->lwTaskBatches->selectedItems();
+			if (selectedItems.size() > 0)
 			{
-				auto itr = _taskBatchList.find(item->text().toStdString());
-				if (itr != _taskBatchList.end())
+				for (auto item : selectedItems)
 				{
-					itr->second->reconfigureTaskBatch();
-					_taskBatchRunner.addTaskBatch(itr->second->getTaskBatch());
+					auto itr = _taskBatchList.find(item->text().toStdString());
+					if (itr != _taskBatchList.end())
+					{
+						itr->second->reconfigureTaskBatch();
+						_taskBatchRunner.addTaskBatch(itr->second->getTaskBatch());
+					}
 				}
-			}
-			try
-			{
-				_taskBatchRunner.executeTasks();
-			}
-			catch (ElpidaException& e)
-			{
-				QMessageBox::critical(_ui->pbRun, "Error", QString::fromStdString("Task batch runner produced error: " + e.getMessage()),
-				                      QMessageBox::StandardButton::Ok);
-				return;
-			}
 
-			auto& results = _taskBatchRunner.getLastExecutionResults();
-
-			for (auto& batchResult : results)
-			{
-				auto batchItem = new QTreeWidgetItem(_ui->twResults);
-				batchItem->setText(0, QString::fromStdString(batchResult.first));
-				for (auto& taskResults : batchResult.second)
+				_taskRunnerThread.run([this]()
 				{
-					auto taskItem = new QTreeWidgetItem(batchItem);
-					taskItem->setText(0, QString::fromStdString(taskResults.first));
-					if (taskResults.second.size() == 1)
-					{
-						taskItem->setText(1, QString::fromStdString(taskResults.second[0].getPerSecond()));
-					}
-					else
-					{
-						for (auto& taskResult : taskResults.second)
-						{
-							auto taskResultItem = new QTreeWidgetItem(taskItem);
-							taskResultItem->setText(0, QString::fromStdString(taskResult.getRunResult().getResultDescription()));
-							taskResultItem->setText(1, QString::fromStdString(taskResult.getPerSecond()));
-						}
-					}
-
-				}
+					runTaskBatchesAndAppendResults();
+					_taskRunnerThread.detach();
+				});
+			}
+			else
+			{
+				QMessageBox::warning(_ui->pbRun, "Error", "No Task batches were selected.", QMessageBox::StandardButton::Ok);
 			}
 		}
 		else
 		{
-			QMessageBox::warning(_ui->pbRun, "Error", "No Task batches were selected.", QMessageBox::StandardButton::Ok);
+			QMessageBox::warning(_ui->pbRun, "Error", "A Task batch is already running.", QMessageBox::StandardButton::Ok);
 		}
 	}
 

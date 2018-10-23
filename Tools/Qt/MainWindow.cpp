@@ -40,21 +40,21 @@ namespace Elpida
 			: QMainWindow(parent), _ui(new Ui::MainWindow), _fixedSizeSet(false)
 	{
 		_ui->setupUi(this);
+
 		_taskBatchPropertiesDialog = new TaskBatchProperties(_ui->centralWidget);
 
 		loadTaskInfo();
 		_runTaskBatchDialog = new RunTaskBatchDialog(_createdPropetyPages, _ui->centralWidget);
 
 		loadCpuInfo();
-
 		//addMascot();
+
 		_connections.push_back(
 		        QTreeWidget::connect(_ui->twTasks, &QTreeWidget::itemDoubleClicked, this, &MainWindow::onTwTaskBatchListDoubleClick));
 	}
 
 	void MainWindow::addMascot()
 	{
-
 	}
 
 	void MainWindow::showEvent(QShowEvent *event)

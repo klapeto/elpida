@@ -50,7 +50,7 @@ if qt5_dep.found()
 	executable('elpida-qt', sources: [elpidaQt_sources, processed],
 				link_with: elpida,
 				include_directories : [rootIncude, elpidaQt_includes],
-				dependencies : qt5_dep,
+				dependencies : [qt5_dep, thread_dep],
 				gui_app: true,
 				build_rpath: libraryInstallPath + ':' + pluginInstallDir,
 				install_rpath: libraryInstallPath + ':' + pluginInstallDir,
