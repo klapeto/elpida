@@ -20,7 +20,7 @@
 #ifndef ELPIDAMANAGER_HPP
 #define ELPIDAMANAGER_HPP
 
-#include <string>
+#include <sstream>
 
 #include <Elpida/PluginLoader.hpp>
 #include <Elpida/Types/String.hpp>
@@ -33,6 +33,11 @@ namespace Elpida
 	class ElpidaManager final: NonCopyable
 	{
 		public:
+
+			String getLog() const
+			{
+				return _log.str();
+			}
 
 			void setPluginDirectory(const String& directory)
 			{
@@ -51,6 +56,7 @@ namespace Elpida
 		private:
 			PluginLoader _batchLoader;
 			String _batchesDirectory;
+			std::stringstream _log;
 	};
 }
 

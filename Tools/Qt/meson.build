@@ -24,19 +24,22 @@ if qt5_dep.found()
 		'MainWindow.cpp',
 		'TaskBatchProperties.cpp',
 		'ElpidaManager.cpp',
-		'RunTaskBatchDialog.cpp'
+		'RunTaskBatchDialog.cpp',
+		'LogsDialog.cpp'
 	]
 	
 	uiFiles = [
 		'MainWindow.ui', 
 		'TaskBatchProperties.ui',
-		'RunTaskBatchDialog.ui'	
+		'RunTaskBatchDialog.ui',
+		'LogsDialog.ui'
 	]
 	
 	mocHeaders = [
 		'MainWindow.hpp',
 		'TaskBatchProperties.hpp',
-		'RunTaskBatchDialog.hpp'
+		'RunTaskBatchDialog.hpp',
+		'LogsDialog.hpp'
 	]
 	
 	elpidaQt_includes = include_directories('.')
@@ -52,9 +55,10 @@ if qt5_dep.found()
 				include_directories : [rootIncude, elpidaQt_includes],
 				dependencies : [qt5_dep, thread_dep],
 				gui_app: true,
-				build_rpath: libraryInstallPath + ':' + pluginInstallDir,
-				install_rpath: libraryInstallPath + ':' + pluginInstallDir,
+				build_rpath: libraryInstallPath + ':' + pluginInstallDir + ':' + binaryInstallPath,
+				install_rpath: libraryInstallPath + ':' + pluginInstallDir + ':' + binaryInstallPath,
 				install: true)
+				
 else
 	warning('Qt5 was not found. The Qt front end will not be built.')
 endif	

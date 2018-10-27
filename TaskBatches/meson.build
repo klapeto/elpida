@@ -12,6 +12,8 @@ configure_file(	input: 'Config.hpp.in',
 				output : 'Config.hpp',
 				configuration : conf_data)
 				
+install_data('plugins', install_dir : pluginInstallDir)
+				
 subdir('General')
 subdir('Image')
 subdir('Memory')

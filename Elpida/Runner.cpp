@@ -59,10 +59,18 @@ namespace Elpida
 			taskBatch->prepare();
 			taskBatch->onBeforeExecution();
 			const auto& tasks = taskBatch->getTasks();
+			{
+				EventArguments::BatchStart evArgs
+					{ taskBatch->getName(), tasks.size() };
+				batchStart.raise(evArgs);
+			}
 			for (auto task : tasks)
 			{
 				task->clearResults();
-
+				{
+					EventArguments::TaskStart evArgs { task->getName() };
+					taskStart.raise(evArgs);
+				}
 				TaskMetrics metrics = runTask(*task);
 				if (task->isToBeMeasured())
 				{
@@ -78,6 +86,13 @@ namespace Elpida
 			}
 			taskBatch->onAfterExcecution();
 			taskBatch->finalize();
+			{
+				EventArguments::BatchEnd evArgs {
+					taskBatch->getName(),
+					batchResult
+				};
+				batchEnd.raise(evArgs);
+			}
 		}
 	}
 

@@ -30,6 +30,7 @@
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 #include "TaskBatchProperties.hpp"
 #include "RunTaskBatchDialog.hpp"
+#include "LogsDialog.hpp"
 
 #define PAGE_CREATION_FUNCTION_NAME "createQtBatchWrapper"
 
@@ -45,6 +46,8 @@ namespace Elpida
 
 		loadTaskInfo();
 		_runTaskBatchDialog = new RunTaskBatchDialog(_createdPropetyPages, _ui->centralWidget);
+
+		_logsDialog = new LogsDialog(_ui->centralWidget);
 
 		loadCpuInfo();
 		//addMascot();
@@ -209,36 +212,50 @@ namespace Elpida
 
 	void MainWindow::loadTaskInfo()
 	{
-		_elpidaManager.setPluginDirectory("Elpida");
-		_elpidaManager.reloadPlugins();
-		auto& plugins = _elpidaManager.getPluginLoader().getLoadedPlugins();
-		for (auto& plugin : plugins)
+		try
 		{
-			auto func = plugin.second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>(PAGE_CREATION_FUNCTION_NAME);
-			if (func != nullptr)
+			_elpidaManager.setPluginDirectory("./Elpida");
+			_elpidaManager.reloadPlugins();
+			auto& plugins = _elpidaManager.getPluginLoader().getLoadedPlugins();
+			for (auto& plugin : plugins)
 			{
-				auto baseItem = new QTreeWidgetItem(_ui->twTasks);
-				auto prop = func();
-				auto& taskBatch = prop->getTaskBatch();
-				_createdPropetyPages.emplace(taskBatch.getName(), prop);
-				baseItem->setText(0, QString(taskBatch.getName().c_str()));
-				baseItem->setText(1, QString("True"));
-				auto& tasks = taskBatch.getTasks();
-				size_t c = 0;
-				for (auto task : tasks)
+				auto func = plugin.second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>(PAGE_CREATION_FUNCTION_NAME);
+				if (func != nullptr)
 				{
-					auto taskItem = new QTreeWidgetItem(baseItem);
-					taskItem->setText(0, QString::number(c++));
-					taskItem->setText(1, QString(task->getName().c_str()));
+					auto baseItem = new QTreeWidgetItem(_ui->twTasks);
+					auto prop = func();
+					auto& taskBatch = prop->getTaskBatch();
+					_createdPropetyPages.emplace(taskBatch.getName(), prop);
+					baseItem->setText(0, QString(taskBatch.getName().c_str()));
+					baseItem->setText(1, QString("True"));
+					auto& tasks = taskBatch.getTasks();
+					size_t c = 0;
+					for (auto task : tasks)
+					{
+						auto taskItem = new QTreeWidgetItem(baseItem);
+						taskItem->setText(0, QString::number(c++));
+						taskItem->setText(1, QString(task->getName().c_str()));
+					}
 				}
-			}
 
+			}
 		}
+		catch (ElpidaException& e)
+		{
+			QMessageBox::critical(_ui->centralWidget, "Error", QString::fromStdString(e.getMessage()), QMessageBox::StandardButton::Ok);
+		}
+
 	}
 
 	void MainWindow::on_actionRunBatches_triggered()
 	{
 		_runTaskBatchDialog->show();
+	}
+
+	void Elpida::MainWindow::on_actionShowLogs_triggered()
+	{
+		_logsDialog->setLogsText(_elpidaManager.getLog());
+		_logsDialog->show();
 	}
 
 }  // namespace Elpida

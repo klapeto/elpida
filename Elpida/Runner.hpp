@@ -29,8 +29,11 @@
 
 #include "Elpida/TaskMetrics.hpp"
 #include "Elpida/TaskThroughput.hpp"
+#include "Elpida/Types/Primitives.hpp"
 #include "Elpida/Types/Array.hpp"
 #include "Elpida/Types/Map.hpp"
+
+#include "Elpida/Event.hpp"
 
 namespace Elpida
 {
@@ -45,6 +48,28 @@ namespace Elpida
 			{
 				Normal, High,
 			};
+
+			struct EventArguments
+			{
+					struct BatchStart
+					{
+							const String& name;
+							Size numberOfTasks;
+					};
+					struct TaskStart
+					{
+							const String& name;
+					};
+					struct BatchEnd
+					{
+							const String& name;
+							const Map<String, Array<TaskThroughput>>& results;
+					};
+			};
+
+			Event<const EventArguments::BatchStart&> batchStart;
+			Event<const EventArguments::TaskStart&> taskStart;
+			Event<const EventArguments::BatchEnd&> batchEnd;
 
 			static void setProcessPriority(ProcessPriority priority);
 

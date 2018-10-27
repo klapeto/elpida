@@ -53,9 +53,12 @@ namespace Elpida
 #endif
 		if (_handle == nullptr)
 		{
-			throw ElpidaException("Error loading plugin: '" + libraryPath + "' -> " +
 #if _elpida_linux
-			        dlerror());
+			auto errorMessage = dlerror();
+#endif
+			throw ElpidaException("Plugin", "Error loading plugin: '" + libraryPath + "' -> " +
+#if _elpida_linux
+			        (errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
 #elif _elpida_windows
 			GetWindowsError());
 #endif
@@ -80,7 +83,7 @@ namespace Elpida
 #if _elpida_linux
 		                            dlsym(_handle, functionName.c_str())
 #elif _elpida_windows
-		                                 (void*) GetProcAddress((HMODULE)_handle, functionName.c_str())
+		                                  (void*) GetProcAddress((HMODULE)_handle, functionName.c_str())
 #endif
 		                                  :
 		                            nullptr;

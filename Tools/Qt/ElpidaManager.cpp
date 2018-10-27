@@ -19,16 +19,21 @@
 
 #include "ElpidaManager.hpp"
 #include "Elpida/Exceptions/IOException.hpp"
+#include <iostream>
 
 namespace Elpida
 {
 	ElpidaManager::ElpidaManager()
 	{
-
+		std::cerr.rdbuf(_log.rdbuf());
+		std::cout.rdbuf(_log.rdbuf());
 	}
 
 	ElpidaManager::~ElpidaManager()
 	{
+		std::cout.rdbuf(nullptr);
+		std::cerr.rdbuf(nullptr);
+		_log.flush();
 	}
 
 	void ElpidaManager::reloadPlugins()

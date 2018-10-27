@@ -43,12 +43,12 @@ namespace Elpida
 			}
 
 			virtual void loadFromFolder(const String& path);
+			void loadPlugin(const String& path);
 
 			PluginLoader();
 			virtual ~PluginLoader();
 		protected:
 			Map<String, Plugin> _loadedPlugins;
-			void loadLibraryAndGetTaskBatch(const String& path);
 			void unloadEverything();
 	};
 

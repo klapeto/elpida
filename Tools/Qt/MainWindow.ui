@@ -855,6 +855,7 @@ border-image: default;</string>
     <addaction name="actionRebuildTaskBatches"/>
     <addaction name="actionReloadTaskBatches"/>
     <addaction name="actionRunBatches"/>
+    <addaction name="actionShowLogs"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -909,6 +910,14 @@ border-image: default;</string>
    </property>
    <property name="toolTip">
     <string>Open the Run Batches dialog</string>
+   </property>
+  </action>
+  <action name="actionShowLogs">
+   <property name="text">
+    <string>Show Logs</string>
+   </property>
+   <property name="toolTip">
+    <string>Shows the Logs Dialog</string>
    </property>
   </action>
  </widget>

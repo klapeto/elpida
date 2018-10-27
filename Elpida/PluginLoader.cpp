@@ -30,15 +30,17 @@
 #include "Elpida/TaskBatch.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/PluginLoader.hpp"
+#include "Elpida/Utilities/FileSystem.hpp"
+#include <fstream>
+#include <algorithm>
 
 #if _elpida_linux
-#include <dirent.h>
 #define TASK_ENDING ".so"
 #elif _elpida_windows
 #define TASK_ENDING ".dll"
-#include <Windows.h>
-#include <strsafe.h>
 #endif
+
+#define LOAD_ORDER_FILE "plugins"
 
 namespace Elpida
 {
@@ -51,40 +53,44 @@ namespace Elpida
 	void PluginLoader::loadFromFolder(const String& path)
 	{
 		unloadEverything();
-#if _elpida_linux
-		DIR *dir;
-		dirent *dirent;
-		if ((dir = opendir(path.c_str())) != nullptr)
+
+		Array<String> loadFilenames;
+
+		FileSystem::iterateDirectory(path, [&loadFilenames](const String& filePath)
 		{
-			while ((dirent = readdir(dir)) != nullptr)
+			if (filePath.find(TASK_ENDING) != std::string::npos)
 			{
-				String fileName(dirent->d_name);
-				if (fileName.find(TASK_ENDING) != String::npos)
+				loadFilenames.push_back(filePath);
+			}
+		});
+
+		std::ifstream orderFile(path + PATH_SEPERATOR + LOAD_ORDER_FILE);
+		if (orderFile.good())
+		{
+			String line;
+			auto pred = [&line](const String& val)
+			{	return val.find(line + TASK_ENDING) != String::npos;};
+			while (std::getline(orderFile, line))
+			{
+				auto itr = std::find_if(loadFilenames.begin(), loadFilenames.end(), pred);
+				if (itr != loadFilenames.end())
 				{
-					loadLibraryAndGetTaskBatch(path + "/" + fileName);
+					if (FileSystem::fileExists(*itr))
+					{
+						loadPlugin(*itr);
+					}
+					else
+					{
+						std::cerr << "Failed to open referenced plugin '" + line << std::endl;
+					}
+				}
+				else
+				{
+					std::cerr << "A plugin referenced on 'plugins' file was not found: " + line << std::endl;
 				}
 			}
-			closedir(dir);
+			orderFile.close();
 		}
-		else
-		{
-			throw ElpidaException("TaskBatchLoader", "'" + path + "' directory could not be opened.");
-		}
-
-#elif _elpida_windows
-		WIN32_FIND_DATA data;
-		HANDLE hFind = FindFirstFile((path + "/*" + TASK_ENDING).c_str(), &data);
-
-		if (hFind != INVALID_HANDLE_VALUE)
-		{
-			do
-			{
-				loadLibraryAndGetTaskBatch(path + "/" + data.cFileName);
-			}while (FindNextFile(hFind, &data));
-			FindClose(hFind);
-		}
-
-#endif
 	}
 
 	PluginLoader::~PluginLoader()
@@ -92,7 +98,7 @@ namespace Elpida
 
 	}
 
-	void PluginLoader::loadLibraryAndGetTaskBatch(const String& path)
+	void PluginLoader::loadPlugin(const String& path)
 	{
 		try
 		{
@@ -101,7 +107,7 @@ namespace Elpida
 		}
 		catch (ElpidaException& e)
 		{
-			std::cerr << "Failed to load '" + path + "' plugin: " + e.getMessage();
+			std::cerr << "Error: " + e.getMessage() << std::endl;
 		}
 	}
 
