@@ -18,7 +18,7 @@
  *************************************************************************/
 
 /*
- * ObjectEvent.hpp
+ * Event.hpp
  *
  *  Created on: 13 Οκτ 2018
  *      Author: klapeto
@@ -29,34 +29,39 @@
 
 #include "Elpida/Types/List.hpp"
 #include "Elpida/EventSubscription.hpp"
+#include <mutex>
 
 namespace Elpida
 {
 
-	template<typename T>
-	class Event
+	template<typename ... T>
+	class Event final
 	{
 		public:
-			typedef typename EventSubscription<T>::EventHandler EventHandler;
+			typedef typename EventSubscription<T...>::EventHandler EventHandler;
 
-			void raise(T& eventArguments)
+			void raise(T ... eventArguments)
 			{
+				std::lock_guard<std::mutex> lock(_mutex);
 				for (const auto& subscriber : _subscribers)
 				{
-					subscriber(eventArguments);
+					subscriber(eventArguments...);
 				}
 			}
 
-			EventSubscription<T>& subscribe(EventHandler handler)
+			template<typename TCallbable>
+			EventSubscription<T...>& subscribe(TCallbable handler)
 			{
-				auto itr = _subscribers.insert(EventSubscription<T>(*this), handler);
+				std::lock_guard<std::mutex> lock(_mutex);
+				auto itr = _subscribers.insert(_subscribers.end(), EventSubscription<T...>(*this, EventHandler(handler)));
 				itr->setIterator(itr);
 				return *itr;
 			}
 
-			void unsubScribe(EventSubscription<T>& subscription)
+			void unsubScribe(EventSubscription<T...>& subscription)
 			{
-				_subscribers.remove(subscription.getIterator());
+				std::lock_guard<std::mutex> lock(_mutex);
+				_subscribers.erase(subscription.getIterator());
 			}
 
 			Event()
@@ -65,11 +70,13 @@ namespace Elpida
 			}
 			~Event()
 			{
-
+				std::lock_guard<std::mutex> lock(_mutex);
+				_subscribers.clear();
 			}
 
 		private:
-			List<EventSubscription<T>> _subscribers;
+			std::mutex _mutex;
+			List<EventSubscription<T...>> _subscribers;
 
 	};
 

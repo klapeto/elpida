@@ -28,21 +28,29 @@
 #define ELPIDA_EVENTSUBSCRIPTION_HPP_
 
 #include "Elpida/Types/List.hpp"
+#include "Elpida/Utilities/NonCopyable.hpp"
+#include <functional>
 
 namespace Elpida
 {
-	template<typename T>
+	template<typename ... T>
 	class Event;
 
-	template<typename T>
-	class EventSubscription
+	template<typename ... T>
+	class EventSubscription: public NonCopyable
 	{
 		public:
-			typedef void (*EventHandler)(T&);
+
+			typedef std::function<void(T...)> EventHandler;
 
 			void unsubscribe()
 			{
 				_owner.unsubScribe(*this);
+			}
+
+			EventSubscription(EventSubscription<T...> && other)
+					: _iterator(std::move(other._iterator)), _owner(other._owner), _handler(other._handler)
+			{
 			}
 
 			~EventSubscription()
@@ -50,13 +58,13 @@ namespace Elpida
 
 			}
 		private:
-			typedef typename List<EventSubscription<T>>::iterator Iterator;
+			typedef typename List<EventSubscription<T...>>::iterator Iterator;
 
 			Iterator _iterator;
-			Event<T>& _owner;
+			Event<T...>& _owner;
 			EventHandler _handler;
 
-			EventSubscription(Event<T>& owner, EventHandler hanlder)
+			EventSubscription(Event<T...>& owner, EventHandler&& hanlder)
 					: _owner(owner), _handler(hanlder)
 			{
 
@@ -72,12 +80,12 @@ namespace Elpida
 				return _iterator;
 			}
 
-			void operator()(T& args) const
+			void operator()(T ... args) const
 			{
-				_handler(args);
+				_handler(args...);
 			}
 
-			friend class Event<T> ;
+			friend class Event<T...> ;
 	};
 
 } /* namespace Elpida */
