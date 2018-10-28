@@ -214,7 +214,7 @@ namespace Elpida
 	{
 		try
 		{
-			_elpidaManager.setPluginDirectory("./Elpida4");
+			_elpidaManager.setPluginDirectory("./Elpida");
 			_elpidaManager.reloadPlugins();
 			auto& plugins = _elpidaManager.getPluginLoader().getLoadedPlugins();
 			for (auto& plugin : plugins)

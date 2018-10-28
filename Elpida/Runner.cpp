@@ -42,6 +42,7 @@ namespace Elpida
 {
 
 	Runner::Runner()
+			: _mustStop(false)
 	{
 
 	}
@@ -52,20 +53,22 @@ namespace Elpida
 
 	void Runner::executeTasks()
 	{
+		_mustStop = false;
 		_lastExecutionResults.clear();
 		for (auto taskBatch : _tasksBatches)
 		{
+			if (_mustStop) break;
 			auto& batchResult = _lastExecutionResults[taskBatch->getName()];
 			taskBatch->prepare();
 			taskBatch->onBeforeExecution();
 			const auto& tasks = taskBatch->getTasks();
 			{
-				EventArguments::BatchStart evArgs
-					{ taskBatch->getName(), tasks.size() };
+				EventArguments::BatchStart evArgs { taskBatch->getName(), tasks.size() };
 				batchStart.raise(evArgs);
 			}
 			for (auto task : tasks)
 			{
+				if (_mustStop) break;
 				task->clearResults();
 				{
 					EventArguments::TaskStart evArgs { task->getName() };
@@ -87,10 +90,7 @@ namespace Elpida
 			taskBatch->onAfterExcecution();
 			taskBatch->finalize();
 			{
-				EventArguments::BatchEnd evArgs {
-					taskBatch->getName(),
-					batchResult
-				};
+				EventArguments::BatchEnd evArgs { taskBatch->getName(), batchResult };
 				batchEnd.raise(evArgs);
 			}
 		}

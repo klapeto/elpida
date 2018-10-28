@@ -43,5 +43,26 @@ namespace Elpida
 		}
 	}
 
+	void Logger::appendLogType(LogType type, std::ostream& out)
+	{
+		out << '[';
+		switch (type)
+		{
+			case LogType::Info:
+				out << "Info";
+				break;
+			case LogType::Warning:
+				out << "Warning";
+				break;
+			case LogType::Error:
+				out << "Error";
+				break;
+			default:
+				out << "?????";
+				break;
+		}
+		out << "] -> ";
+	}
+
 } /* namespace Elpida */
 

@@ -32,8 +32,16 @@ namespace Elpida
 	RunTaskBatchDialog::RunTaskBatchDialog(const Map<String, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent)
 			: QDialog(parent), _taskBatchList(taskBatchList), _ui(new Ui::RunTaskBatchDialog)
 	{
+		_runningText = "<span style=\" color:#b50000;\">Running</span>";
+		_readyText = "<span style=\"color:#008d09;\">Ready</span>";
 		_ui->setupUi(this);
 		onTaskBatchListModified();
+		_taskBatchRunner.taskStart.subscribe([this](const Runner::EventArguments::TaskStart& args)
+		{	onTaskStart(args);});
+		_taskBatchRunner.batchStart.subscribe([this](const Runner::EventArguments::BatchStart& args)
+		{	onTaskBatchStart(args);});
+		_taskBatchRunner.batchEnd.subscribe([this](const Runner::EventArguments::BatchEnd& args)
+		{	onTaskBatchEnd(args);});
 	}
 
 	RunTaskBatchDialog::~RunTaskBatchDialog()
@@ -114,6 +122,8 @@ namespace Elpida
 	{
 		if (!_taskRunnerThread.isRunning())
 		{
+			_ui->lblSatusValue->setText(_runningText);
+			_ui->pbStop->setEnabled(true);
 			_taskBatchRunner.clearTaskBatches();
 			auto selectedItems = _ui->lwTaskBatches->selectedItems();
 			if (selectedItems.size() > 0)
@@ -131,6 +141,9 @@ namespace Elpida
 				_taskRunnerThread.run([this]()
 				{
 					runTaskBatchesAndAppendResults();
+					_ui->pbStop->setEnabled(false);
+					_ui->lblSatusValue->setText(_readyText);
+					_ui->taskBatchRunProgress->setValue(0);
 					_taskRunnerThread.detach();
 				});
 			}
@@ -145,5 +158,31 @@ namespace Elpida
 		}
 	}
 
-} // namespace Elpida
+	void RunTaskBatchDialog::onTaskStart(const Runner::EventArguments::TaskStart& args)
+	{
+		_ui->lblCurrentTaskName->setText(QString::fromStdString(args.name));
+		_ui->taskBatchRunProgress->setValue(_ui->taskBatchRunProgress->value() + 1);
+	}
 
+	void RunTaskBatchDialog::onTaskBatchStart(const Runner::EventArguments::BatchStart& args)
+	{
+		_ui->lblCurrentTaskBatchName->setText(QString::fromStdString(args.name));
+		_ui->lblCurrentTaskName->setText(QString("N/A"));
+		_ui->taskBatchRunProgress->setValue(0);
+		_ui->taskBatchRunProgress->setMaximum(args.numberOfTasks);
+	}
+
+	void RunTaskBatchDialog::onTaskBatchEnd(const Runner::EventArguments::BatchEnd& args)
+	{
+		auto str = QString("N/A");
+		_ui->lblCurrentTaskBatchName->setText(str);
+		_ui->lblCurrentTaskName->setText(str);
+	}
+
+	void RunTaskBatchDialog::on_pbStop_clicked()
+	{
+		_taskBatchRunner.stop();
+	}
+
+
+} // namespace Elpida

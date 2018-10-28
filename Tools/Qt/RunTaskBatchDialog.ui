@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Elpida::RunTaskBatchDialog</class>
  <widget class="QDialog" name="Elpida::RunTaskBatchDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>970</width>
+    <height>723</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Run Task Batches</string>
   </property>
@@ -66,31 +74,45 @@
       <string>Run Details</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="lblCurrentTaskBatch">
         <property name="text">
          <string>Current Task Batch:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QLabel" name="lblCurrentTaskName">
         <property name="text">
          <string>N/A</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="lblCurrentTask">
         <property name="text">
          <string>Current Task:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="1" column="1">
        <widget class="QLabel" name="lblCurrentTaskBatchName">
         <property name="text">
          <string>N/A</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblStatus">
+        <property name="text">
+         <string>Status:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="lblSatusValue">
+        <property name="text">
+         <string>&lt;span style=&quot;color:#008d09;&quot;&gt;Ready&lt;/span&gt;</string>
         </property>
        </widget>
       </item>

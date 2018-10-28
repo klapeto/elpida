@@ -47,15 +47,23 @@ namespace Elpida
 		private slots:
 			void on_pbRun_clicked();
 
-		private:
+            void on_pbStop_clicked();
+
+    private:
 			Runner _taskBatchRunner;
 			OffThreadExecutor _taskRunnerThread;
 			const Map<String, QtTaskBatchWrapper*>& _taskBatchList;
+			QString _runningText;
+			QString _readyText;
 			Ui::RunTaskBatchDialog *_ui;
 
 			void onTaskBatchListModified();
 			void appendResults();
 			void runTaskBatchesAndAppendResults();
+
+			void onTaskBatchStart(const Runner::EventArguments::BatchStart& args);
+			void onTaskStart(const Runner::EventArguments::TaskStart& args);
+			void onTaskBatchEnd(const Runner::EventArguments::BatchEnd& args);
 	};
 
 } // namespace Elpida

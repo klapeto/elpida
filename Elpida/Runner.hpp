@@ -75,6 +75,10 @@ namespace Elpida
 
 			void executeTasks();
 			void addTaskBatch(const TaskBatch& batch);
+			void stop()
+			{
+				_mustStop = true;
+			}
 
 			const Map<String, Map<String, Array<TaskThroughput>>>& getLastExecutionResults() const
 			{
@@ -96,6 +100,7 @@ namespace Elpida
 		private:
 			Map<String, Map<String, Array<TaskThroughput>>> _lastExecutionResults;
 			Array<const TaskBatch*> _tasksBatches;
+			bool _mustStop;
 			TaskMetrics runTask(Task& task);
 	};
 

@@ -68,23 +68,7 @@ namespace Elpida
 					{
 						appendTimestamp(out);
 					}
-					out << '[';
-					switch (type)
-					{
-						case LogType::Info:
-							out << "Info";
-							break;
-						case LogType::Warning:
-							out << "Warning";
-							break;
-						case LogType::Error:
-							out << "Error";
-							break;
-						default:
-							out << "?????";
-							break;
-					}
-					out << "] -> ";
+					appendLogType(type, out);
 					log(args...);
 				}
 			}
@@ -115,7 +99,8 @@ namespace Elpida
 
 			}
 
-			void appendTimestamp(std::ostream& out);
+			void static appendTimestamp(std::ostream& out);
+			void static appendLogType(LogType type, std::ostream& out);
 
 			friend class Singleton<Logger> ;
 	};
