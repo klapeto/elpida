@@ -31,6 +31,7 @@
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/PluginLoader.hpp"
 #include "Elpida/Utilities/FileSystem.hpp"
+#include "Elpida/Utilities/Logger.hpp"
 #include <fstream>
 #include <algorithm>
 
@@ -68,8 +69,7 @@ namespace Elpida
 		if (orderFile.good())
 		{
 			String line;
-			auto pred = [&line](const String& val)
-			{	return val.find(line + TASK_ENDING) != String::npos;};
+			auto pred = [&line](const String& val){	return val.find(line + TASK_ENDING) != String::npos;};
 			while (std::getline(orderFile, line))
 			{
 				auto itr = std::find_if(loadFilenames.begin(), loadFilenames.end(), pred);
@@ -81,15 +81,19 @@ namespace Elpida
 					}
 					else
 					{
-						std::cerr << "Failed to open referenced plugin '" + line << std::endl;
+						Logger::getInstance().log(Logger::LogType::Warning, "Failed to open referenced plugin '", line, '\'');
 					}
 				}
 				else
 				{
-					std::cerr << "A plugin referenced on 'plugins' file was not found: " + line << std::endl;
+					Logger::getInstance().log(Logger::LogType::Warning, "A plugin referenced on 'plugins' file was not found: ", line);
 				}
 			}
 			orderFile.close();
+		}
+		else
+		{
+			Logger::getInstance().log(Logger::LogType::Error,"'", LOAD_ORDER_FILE, "' file inside '", path, "' was not found. Elpida does not know which plugins to load.");
 		}
 	}
 
@@ -107,7 +111,7 @@ namespace Elpida
 		}
 		catch (ElpidaException& e)
 		{
-			std::cerr << "Error: " + e.getMessage() << std::endl;
+			Logger::getInstance().log(Logger::LogType::Error, e.getMessage());
 		}
 	}
 

@@ -37,7 +37,7 @@ namespace Elpida
 	{
 		public:
 
-			static T& getInstance()
+			static inline T& getInstance()
 			{
 				static T instance;
 				return instance;

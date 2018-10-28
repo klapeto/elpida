@@ -104,7 +104,7 @@ namespace Elpida
 		_ui->lblModelValue->setText(cpuInfo.getProcessorBrand().c_str());
 		_ui->lblFamilyValue->setText(QString::number(cpuInfo.getFamily()));
 		_ui->lblSteppingValue->setText(QString::number(cpuInfo.getStepping()));
-		_ui->lblTscFreqValue->setText(QString::number(cpuInfo.getTscFequency() / 1000000000.0f, 'g', 3) + QString(" GHZ"));
+		_ui->lblTscFreqValue->setText(QString::number(cpuInfo.getTscFequency() / std::giga::num, 'g', 3) + QString(" GHZ"));
 		_ui->lblLogicalCoresValue->setText(QString::number(cpuInfo.getLogicalProcessors()));
 		_ui->chkHyperthreading->setChecked(cpuInfo.isHyperThreading());
 		_ui->chkTurbo->setChecked(cpuInfo.isTurboBoost());
@@ -214,7 +214,7 @@ namespace Elpida
 	{
 		try
 		{
-			_elpidaManager.setPluginDirectory("./Elpida");
+			_elpidaManager.setPluginDirectory("./Elpida4");
 			_elpidaManager.reloadPlugins();
 			auto& plugins = _elpidaManager.getPluginLoader().getLoadedPlugins();
 			for (auto& plugin : plugins)

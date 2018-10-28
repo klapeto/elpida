@@ -28,53 +28,49 @@
 
 #include <iomanip>
 #include <sstream>
+#include <ratio>
 
 namespace Elpida
 {
 	String ValueUtilities::getValueScale(Float64 value)
 	{
 		std::ostringstream returnString;
-		if (value < 1000.0)
+		if (value < std::kilo::num)
 		{
 			returnString << std::fixed << std::setprecision(2) << value;
 			return returnString.str();
 		}
 
-		if (value < 1000000.0)
+		if (value < std::mega::num)
 		{
-			returnString << std::fixed << std::setprecision(2) << value / 1000.0 << " K";
+			returnString << std::fixed << std::setprecision(2) << value / std::kilo::num << " K";
 			return returnString.str();
 		}
 
-		if (value < 1000000000.0)
+		if (value < std::giga::num)
 		{
-			returnString << std::fixed << std::setprecision(2) << value / 1000000.0 << " M";
+			returnString << std::fixed << std::setprecision(2) << value / std::mega::num << " M";
 			return returnString.str();
 		}
 
-		if (value < 1000000000000.0)
+		if (value < std::tera::num)
 		{
-			returnString << std::fixed << std::setprecision(2) << value / 1000000000.0 << " G";
+			returnString << std::fixed << std::setprecision(2) << value / std::giga::num << " G";
 			return returnString.str();
 		}
 
-		if (value < 1000000000000000.0)
+		if (value < std::peta::num)
 		{
-			returnString << std::fixed << std::setprecision(2) << value / 1000000000000.0 << " T";
+			returnString << std::fixed << std::setprecision(2) << value / std::tera::num << " T";
 			return returnString.str();
 		}
 
-		if (value < 1000000000000000000.0)
+		if (value < std::exa::num)
 		{
-			returnString << std::fixed << std::setprecision(2) << value / 1000000000000000.0 << " P";
+			returnString << std::fixed << std::setprecision(2) << value / std::peta::num << " P";
 			return returnString.str();
 		}
-		if (value < 1000000000000000000000.0)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / 1000000000000000000.0 << " P";
-			return returnString.str();
-		}
-		returnString << std::fixed << std::setprecision(2) << value / 1000000000000000000000.0 << " Z";
+		returnString << std::fixed << std::setprecision(2) << value / std::exa::num << " E";
 		return returnString.str();
 	}
 } /* namespace Elpida */

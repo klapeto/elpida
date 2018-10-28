@@ -17,24 +17,31 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include "ElpidaManager.hpp"
+/*
+ * Logger.cpp
+ *
+ *  Created on: 28 Οκτ 2018
+ *      Author: klapeto
+ */
+
 #include "Elpida/Utilities/Logger.hpp"
+#include <iomanip>
 
 namespace Elpida
 {
-	ElpidaManager::ElpidaManager()
+
+	void Logger::appendTimestamp(std::ostream& out)
 	{
-		Logger::getInstance().setOutput(_log);
+		time_t tim;
+		time(&tim);
+		tm* time = localtime(&tim);
+		if (time != nullptr)
+		{
+			out << '[' << std::setfill('0') << std::setw(2) << time->tm_mday << "/" << std::setfill('0') << std::setw(2) << 1 + time->tm_mon << "/"
+			    << 1900 + time->tm_year << " " << std::setfill('0') << std::setw(2) << time->tm_hour << ":" << std::setfill('0')
+			    << std::setw(2) << time->tm_min << ":" << std::setfill('0') << std::setw(2) << time->tm_sec << "] ";
+		}
 	}
 
-	ElpidaManager::~ElpidaManager()
-	{
-		_log.flush();
-	}
-
-	void ElpidaManager::reloadPlugins()
-	{
-		_batchLoader.loadFromFolder(_batchesDirectory);
-	}
-}
+} /* namespace Elpida */
 

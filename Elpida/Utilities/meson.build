@@ -27,7 +27,8 @@ utilities_sources = ['Image.cpp',
 					'Singleton.cpp',
 					'CommandParser.cpp',
 					'ValueUtilities.cpp',
-					'FileSystem.cpp']
+					'FileSystem.cpp',
+					'Logger.cpp']
 
 utilities = static_library('Utilities', 
 						utilities_sources,
@@ -44,5 +45,6 @@ install_headers(['Image.hpp',
 				'Singleton.hpp',
 				'CommandParser.hpp',
 				'ValueUtilities.hpp',
-				'FileSystem.hpp'],
+				'FileSystem.hpp',
+				'Logger.hpp'],
 				subdir: 'Elpida/Utilities')
