@@ -29,19 +29,26 @@
 namespace Elpida
 {
 
+
 	RunTaskBatchDialog::RunTaskBatchDialog(const Map<String, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent)
 			: QDialog(parent), _taskBatchList(taskBatchList), _ui(new Ui::RunTaskBatchDialog)
 	{
 		_runningText = "<span style=\" color:#b50000;\">Running</span>";
 		_readyText = "<span style=\"color:#008d09;\">Ready</span>";
+		_na = "N/A";
 		_ui->setupUi(this);
 		onTaskBatchListModified();
-		_taskBatchRunner.taskStart.subscribe([this](const Runner::EventArguments::TaskStart& args)
-		{	onTaskStart(args);});
-		_taskBatchRunner.batchStart.subscribe([this](const Runner::EventArguments::BatchStart& args)
-		{	onTaskBatchStart(args);});
-		_taskBatchRunner.batchEnd.subscribe([this](const Runner::EventArguments::BatchEnd& args)
-		{	onTaskBatchEnd(args);});
+
+
+		QPushButton::connect(this, &RunTaskBatchDialog::onTaskBatchStart, this, &RunTaskBatchDialog::updateForTaskBatchBegin);
+		QPushButton::connect(this, &RunTaskBatchDialog::onTaskStart, this, &RunTaskBatchDialog::updateForTaskBegin);
+		QPushButton::connect(this, &RunTaskBatchDialog::onTaskBatchEnd, this, &RunTaskBatchDialog::updateForTaskBatchEnd);
+		QPushButton::connect(this, &RunTaskBatchDialog::onSessionBegin, this, &RunTaskBatchDialog::updateForSessionBegin);
+		QPushButton::connect(this, &RunTaskBatchDialog::onSessionEnd, this, &RunTaskBatchDialog::updateForSessionEnd);
+
+		_taskBatchRunner.taskStart.subscribe([this](const Runner::EventArguments::TaskStart& args) { emit onTaskStart(QString::fromStdString(args.name));});
+		_taskBatchRunner.batchStart.subscribe([this](const Runner::EventArguments::BatchStart& args) { emit onTaskBatchStart(QString::fromStdString(args.name), args.numberOfTasks);});
+		_taskBatchRunner.batchEnd.subscribe([this](const Runner::EventArguments::BatchEnd& args) { emit onTaskBatchEnd(QString::fromStdString(args.name));});
 	}
 
 	RunTaskBatchDialog::~RunTaskBatchDialog()
@@ -104,7 +111,39 @@ namespace Elpida
 		}
 	}
 
-	void RunTaskBatchDialog::runTaskBatchesAndAppendResults()
+	void RunTaskBatchDialog::updateForTaskBatchBegin(const QString& name, int size)
+	{
+		_ui->taskBatchRunProgress->setMaximum(size);
+		_ui->lblCurrentTaskBatchName->setText(name);
+	}
+
+	void RunTaskBatchDialog::updateForTaskBegin(const QString& name)
+	{
+		_ui->taskBatchRunProgress->setValue(_ui->taskBatchRunProgress->value() + 1);
+		_ui->lblCurrentTaskName->setText(name);
+	}
+
+	void RunTaskBatchDialog::updateForTaskBatchEnd(const QString& name)
+	{
+		_ui->taskBatchRunProgress->setValue(0);
+	}
+
+	void RunTaskBatchDialog::updateForSessionBegin()
+	{
+		_ui->lblSatusValue->setText(_runningText);
+		_ui->pbStop->setEnabled(true);
+	}
+
+	void RunTaskBatchDialog::updateForSessionEnd()
+	{
+		_ui->lblSatusValue->setText(_readyText);
+		_ui->lblCurrentTaskName->setText(_na);
+		_ui->lblCurrentTaskBatchName->setText(_na);
+		_ui->pbStop->setEnabled(false);
+		appendResults();
+	}
+
+	void RunTaskBatchDialog::runTaskBatches()
 	{
 		try
 		{
@@ -115,7 +154,6 @@ namespace Elpida
 			QMessageBox::critical(_ui->pbRun, "Error", QString::fromStdString("Task batch runner produced error: " + e.getMessage()),
 			                      QMessageBox::StandardButton::Ok);
 		}
-		appendResults();
 	}
 
 	void RunTaskBatchDialog::on_pbRun_clicked()
@@ -140,10 +178,9 @@ namespace Elpida
 
 				_taskRunnerThread.run([this]()
 				{
-					runTaskBatchesAndAppendResults();
-					_ui->pbStop->setEnabled(false);
-					_ui->lblSatusValue->setText(_readyText);
-					_ui->taskBatchRunProgress->setValue(0);
+					emit onSessionBegin();
+					runTaskBatches();
+					emit onSessionEnd();
 					_taskRunnerThread.detach();
 				});
 			}
@@ -156,27 +193,6 @@ namespace Elpida
 		{
 			QMessageBox::warning(_ui->pbRun, "Error", "A Task batch is already running.", QMessageBox::StandardButton::Ok);
 		}
-	}
-
-	void RunTaskBatchDialog::onTaskStart(const Runner::EventArguments::TaskStart& args)
-	{
-		_ui->lblCurrentTaskName->setText(QString::fromStdString(args.name));
-		_ui->taskBatchRunProgress->setValue(_ui->taskBatchRunProgress->value() + 1);
-	}
-
-	void RunTaskBatchDialog::onTaskBatchStart(const Runner::EventArguments::BatchStart& args)
-	{
-		_ui->lblCurrentTaskBatchName->setText(QString::fromStdString(args.name));
-		_ui->lblCurrentTaskName->setText(QString("N/A"));
-		_ui->taskBatchRunProgress->setValue(0);
-		_ui->taskBatchRunProgress->setMaximum(args.numberOfTasks);
-	}
-
-	void RunTaskBatchDialog::onTaskBatchEnd(const Runner::EventArguments::BatchEnd& args)
-	{
-		auto str = QString("N/A");
-		_ui->lblCurrentTaskBatchName->setText(str);
-		_ui->lblCurrentTaskName->setText(str);
 	}
 
 	void RunTaskBatchDialog::on_pbStop_clicked()

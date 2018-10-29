@@ -18,11 +18,30 @@
  *************************************************************************/
 
 #include <QApplication>
-
+#include <Elpida/Config.hpp>
 #include "Tools/Qt/MainWindow.hpp"
+
+#if _elpida_linux
+#include <execinfo.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+void segFaultHandler(int sig)
+{
+	void *array[20];
+	size_t size = backtrace(array, 20);
+
+	backtrace_symbols_fd(array, size, STDERR_FILENO);
+	exit(1);
+}
+#endif
 
 int main(int argc, char *argv[])
 {
+#if _elpida_linux
+	signal(SIGSEGV, segFaultHandler);
+#endif
 	QApplication application(argc, argv);
 	Elpida::MainWindow mainWindow;
 	mainWindow.show();
