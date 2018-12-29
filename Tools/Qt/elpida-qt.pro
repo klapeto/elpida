@@ -29,21 +29,21 @@ SOURCES += \
     TaskBatchProperties.cpp \
     StaticAspectRatioWidget.cpp \
     ElpidaManager.cpp \
-    RunTaskBatchDialog.cpp \
-    LogsDialog.cpp
+    LogsDialog.cpp \
+    TaskBatchesWidget.cpp
 
 HEADERS += \
         MainWindow.hpp \
     TaskBatchProperties.hpp \
     ElpidaManager.hpp \
-    RunTaskBatchDialog.hpp \
-    LogsDialog.hpp
+    LogsDialog.hpp \
+    TaskBatchesWidget.hpp
 
 FORMS += \
         MainWindow.ui \
     TaskBatchProperties.ui \ 
-    RunTaskBatchDialog.ui \
-    LogsDialog.ui
+    LogsDialog.ui \
+    TaskBatchesWidget.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/release/ -lelpida
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/debug/ -lelpida

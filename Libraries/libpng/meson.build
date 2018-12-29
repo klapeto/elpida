@@ -18,7 +18,9 @@ endif
 command = run_command('cp', 'libpng/scripts/pnglibconf.h.prebuilt', 'libpng/pnglibconf.h')
 if command.returncode() != 0
    error('Failded to copy file' + command.stderr().strip())
-endif 
+endif
+
+localCppArgs = ['-march=native', '-O3', '-funroll-loops']
 
 cdata = configuration_data()
 check_headers = [
@@ -86,5 +88,6 @@ libpng = static_library('libpng',
 						dependencies : m_dep,
 						link_whole: zlib,
 						include_directories : zlibInclude,
-						c_args : ['-DHAVE_CONFIG_H', '-DHAVE_LIBZ'],
+						c_args : ['-DHAVE_CONFIG_H', '-DHAVE_LIBZ', localCppArgs],
+						cpp_args: localCppArgs,
 						install : false)

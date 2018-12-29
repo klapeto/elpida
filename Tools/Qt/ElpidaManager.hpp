@@ -30,6 +30,8 @@
 
 namespace Elpida
 {
+	class QtTaskBatchWrapper;
+
 	class ElpidaManager final: NonCopyable
 	{
 		public:
@@ -49,11 +51,19 @@ namespace Elpida
 				return _batchLoader;
 			}
 
-			void reloadPlugins();
+			const Map<String, QtTaskBatchWrapper*>& getCreatedTaskBatches() const
+			{
+				return _createdTaskBatches;
+			}
+
+			void reloadTaskBatches();
+			void destroyTaskBatches();
 
 			ElpidaManager();
 			~ElpidaManager();
+
 		private:
+			Map<String, QtTaskBatchWrapper*> _createdTaskBatches;
 			PluginLoader _batchLoader;
 			String _batchesDirectory;
 			std::stringstream _log;

@@ -18,7 +18,11 @@
  *************************************************************************/
 
 #include "ElpidaManager.hpp"
-#include "Elpida/Utilities/Logger.hpp"
+#include <Elpida/Utilities/Logger.hpp>
+#include <Elpida/TaskBatch.hpp>
+#include <TaskBatches/QtTaskBatchWrapper.hpp>
+
+constexpr const char* PAGE_CREATION_FUNCTION_NAME = "createQtBatchWrapper";
 
 namespace Elpida
 {
@@ -27,14 +31,39 @@ namespace Elpida
 		Logger::getInstance().setOutput(_log);
 	}
 
+
 	ElpidaManager::~ElpidaManager()
 	{
 		_log.flush();
+		destroyTaskBatches();
 	}
 
-	void ElpidaManager::reloadPlugins()
+	void ElpidaManager::destroyTaskBatches()
 	{
+		for (auto& pair : _createdTaskBatches)
+		{
+			if (pair.second != nullptr)
+			{
+				delete pair.second;
+			}
+		}
+		_createdTaskBatches.clear();
+	}
+
+	void ElpidaManager::reloadTaskBatches()
+	{
+		destroyTaskBatches();
 		_batchLoader.loadFromFolder(_batchesDirectory);
+		auto& loaded = _batchLoader.getLoadedPlugins();
+		for (auto& plugin : loaded)
+		{
+			auto func = plugin.second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>(PAGE_CREATION_FUNCTION_NAME);
+			if (func != nullptr)
+			{
+				auto prop = func();
+				auto& taskBatch = prop->getTaskBatch();
+				_createdTaskBatches.emplace(taskBatch.getName(), prop);
+			}
+		}
 	}
 }
-

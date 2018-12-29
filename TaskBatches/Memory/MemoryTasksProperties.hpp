@@ -52,6 +52,7 @@ namespace Elpida
 			}
 
 			MemoryTasksProperties()
+					: QtTaskBatchWrapper(false)
 			{
 
 			}

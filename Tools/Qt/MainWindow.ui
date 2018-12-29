@@ -792,42 +792,7 @@ border-image: default;</string>
        <attribute name="title">
         <string>Tasks</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QGroupBox" name="gbTasksList">
-          <property name="title">
-           <string>Available Tasks</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QTreeWidget" name="twTasks">
-             <property name="styleSheet">
-              <string notr="true">background: rgb(240,244,255)</string>
-             </property>
-             <property name="columnCount">
-              <number>2</number>
-             </property>
-             <column>
-              <property name="text">
-               <string>Name</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Enabled</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tbResults">
-       <attribute name="title">
-        <string>Results</string>
-       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2"/>
       </widget>
      </widget>
     </item>
@@ -854,7 +819,6 @@ border-image: default;</string>
     </property>
     <addaction name="actionRebuildTaskBatches"/>
     <addaction name="actionReloadTaskBatches"/>
-    <addaction name="actionRunBatches"/>
     <addaction name="actionShowLogs"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -878,7 +842,6 @@ border-image: default;</string>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionRunBatches"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -914,7 +877,7 @@ border-image: default;</string>
   </action>
   <action name="actionShowLogs">
    <property name="text">
-    <string>Show Logs</string>
+    <string>&amp;Show Logs</string>
    </property>
    <property name="toolTip">
     <string>Shows the Logs Dialog</string>

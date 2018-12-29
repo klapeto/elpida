@@ -64,7 +64,7 @@ namespace Elpida
 
 			}
 
-			~ElpidaException()
+			virtual ~ElpidaException()
 			{
 
 			}

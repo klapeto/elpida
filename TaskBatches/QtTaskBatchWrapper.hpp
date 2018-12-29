@@ -44,15 +44,23 @@ namespace Elpida
 			virtual void reconfigureTaskBatch() = 0;
 			virtual void validateConfiguration() = 0;
 
-			QtTaskBatchWrapper(QWidget* parrent = nullptr)
-					: TaskBatchWrapper(), QWidget(parrent)
+			bool hasProperties() const
 			{
-
+				return _hasProperties;
 			}
+
 			virtual ~QtTaskBatchWrapper()
 			{
 
 			}
+		protected:
+			QtTaskBatchWrapper(bool hasProperties, QWidget* parrent = nullptr)
+					: TaskBatchWrapper(), QWidget(parrent), _hasProperties(hasProperties)
+			{
+
+			}
+		private:
+			bool _hasProperties;
 	};
 
 } /* namespace Elpida */

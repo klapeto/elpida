@@ -43,12 +43,13 @@ namespace Elpida
 		public:
 			void run() override
 			{
-				auto ptr = (T*)_memory.getPointer();
+				volatile auto ptr = (T*) _memory.getPointer();
 				auto size = _memory.getSize() / sizeof(T);
+
 				for (Size i = 0; i < size; ++i)
 				{
 					volatile T d1 = ptr[i];
-					(void)d1;	// Avoid compiler warnings
+					(void) d1;	// Avoid compiler warnings
 				}
 			}
 
@@ -65,6 +66,7 @@ namespace Elpida
 			{
 				_runResult.setMeasuredValue(_memory.getSize());
 			}
+
 			~MemoryRead()
 			{
 				finalize();

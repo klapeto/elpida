@@ -15,6 +15,8 @@ else
 	endif
 endif
 
+localCppArgs = ['-march=native', '-O3', '-funroll-loops']
+
 zlib = static_library('zlib', 
 						['zlib/adler32.c',
 						'zlib/compress.c',
@@ -31,6 +33,8 @@ zlib = static_library('zlib',
 						'zlib/trees.c',
 						'zlib/uncompr.c',
 						'zlib/zutil.c'],
+						cpp_args: localCppArgs,
+						c_args: localCppArgs,
 						install : false)
 						
 zlibInclude = include_directories('zlib')

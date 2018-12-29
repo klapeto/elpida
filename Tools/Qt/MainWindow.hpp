@@ -32,7 +32,7 @@ namespace Elpida
 {
 	class QtTaskBatchWrapper;
 	class TaskBatchProperties;
-	class RunTaskBatchDialog;
+	class TaskBatchesWidget;
 	class LogsDialog;
 
 	namespace Ui
@@ -56,25 +56,19 @@ namespace Elpida
 			void on_actionExit_triggered();
 			void on_actionAbout_triggered();
 
-			void on_actionRunBatches_triggered();
-
 			void on_actionShowLogs_triggered();
 
 		private:
 			ElpidaManager _elpidaManager;
 			Array<QMetaObject::Connection> _connections;
-			Map<String, QtTaskBatchWrapper*> _createdPropetyPages;
-			RunTaskBatchDialog* _runTaskBatchDialog;
+			TaskBatchesWidget* _taskBatchesWidget;
 			LogsDialog* _logsDialog;
 			Ui::MainWindow *_ui;
-			TaskBatchProperties* _taskBatchPropertiesDialog;
 			OffThreadExecutor _offThreadExecutor;
 			bool _fixedSizeSet;
 
 			void loadCpuInfo();
-			void loadTaskInfo();
 
-			void onTwTaskBatchListDoubleClick(QTreeWidgetItem* item, int col);
 			void addMascot();
 	};
 

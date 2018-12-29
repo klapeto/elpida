@@ -49,7 +49,8 @@ namespace Elpida
 		Size currentFreeMemory = memoryInfo.getAvailableFreeMemory();
 		Size memoryToBeUsed = maxMemory;
 
-		if (currentFreeMemory < maxMemory){
+		if (currentFreeMemory < maxMemory)
+		{
 			memoryToBeUsed = currentFreeMemory >> 1;
 		}
 		auto memory = new AllocateMemory(memoryToBeUsed, true, 64);

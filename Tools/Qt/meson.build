@@ -24,21 +24,21 @@ if qt5_dep.found()
 		'MainWindow.cpp',
 		'TaskBatchProperties.cpp',
 		'ElpidaManager.cpp',
-		'RunTaskBatchDialog.cpp',
+		'TaskBatchesWidget.cpp',
 		'LogsDialog.cpp'
 	]
 	
 	uiFiles = [
 		'MainWindow.ui', 
 		'TaskBatchProperties.ui',
-		'RunTaskBatchDialog.ui',
+		'TaskBatchesWidget.ui',
 		'LogsDialog.ui'
 	]
 	
 	mocHeaders = [
 		'MainWindow.hpp',
 		'TaskBatchProperties.hpp',
-		'RunTaskBatchDialog.hpp',
+		'TaskBatchesWidget.hpp',
 		'LogsDialog.hpp'
 	]
 	
