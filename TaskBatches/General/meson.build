@@ -17,9 +17,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
-#localCppArgs = ['-march=native', '-O3']
-localCppArgs = ['-march=native', '-O0']
-
 generalTasks_sources = ['ReadFile.cpp', 
 						'WriteFile.cpp',
 						'Plugin.cpp',
@@ -33,7 +30,7 @@ generalTasks = library('GeneralTasks',
 							generalTasks_sources,
 							link_with: elpida,
 							install: true,
-							cpp_args: localCppArgs,
+							cpp_args: defaultCppArgs,
 							install_dir: pluginInstallDir,
 							include_directories : rootIncude)
 							

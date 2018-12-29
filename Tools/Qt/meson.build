@@ -54,6 +54,7 @@ if qt5_dep.found()
 				link_with: elpida,
 				include_directories : [rootIncude, elpidaQt_includes],
 				dependencies : [qt5_dep, thread_dep],
+				cpp_args: defaultCppArgs,
 				gui_app: true,
 				build_rpath: libraryInstallPath + ':' + pluginInstallDir + ':' + binaryInstallPath,
 				install_rpath: libraryInstallPath + ':' + pluginInstallDir + ':' + binaryInstallPath,

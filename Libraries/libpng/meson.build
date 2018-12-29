@@ -20,8 +20,6 @@ if command.returncode() != 0
    error('Failded to copy file' + command.stderr().strip())
 endif
 
-localCppArgs = ['-march=native', '-O3', '-funroll-loops']
-
 cdata = configuration_data()
 check_headers = [
   ['HAVE_DLFCN_H', 'dlfcn.h'],
@@ -88,6 +86,6 @@ libpng = static_library('libpng',
 						dependencies : m_dep,
 						link_whole: zlib,
 						include_directories : zlibInclude,
-						c_args : ['-DHAVE_CONFIG_H', '-DHAVE_LIBZ', localCppArgs],
-						cpp_args: localCppArgs,
+						c_args : ['-DHAVE_CONFIG_H', '-DHAVE_LIBZ', defaultCppArgs],
+						cpp_args: defaultCppArgs,
 						install : false)

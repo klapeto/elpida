@@ -86,6 +86,10 @@ namespace Elpida
 						resultsToExport.push_back(TaskThroughput(*result, metrics));
 					}
 				}
+				{
+					EventArguments::TaskEnd evArgs { taskBatch->getName() };
+					taskEnd.raise(evArgs);
+				}
 			}
 			taskBatch->onAfterExcecution();
 			taskBatch->finalize();

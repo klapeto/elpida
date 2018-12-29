@@ -60,6 +60,11 @@ namespace Elpida
 					{
 							const String& name;
 					};
+
+					struct TaskEnd
+					{
+							const String& name;
+					};
 					struct BatchEnd
 					{
 							const String& name;
@@ -69,6 +74,7 @@ namespace Elpida
 
 			Event<const EventArguments::BatchStart&> batchStart;
 			Event<const EventArguments::TaskStart&> taskStart;
+			Event<const EventArguments::TaskEnd&> taskEnd;
 			Event<const EventArguments::BatchEnd&> batchEnd;
 
 			static void setProcessPriority(ProcessPriority priority);

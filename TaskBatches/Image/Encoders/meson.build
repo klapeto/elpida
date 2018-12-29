@@ -20,7 +20,7 @@ imageEncoders_sources = ['LibPngEncoder.cpp']
 
 imageEncoders = static_library('ImageEncoders', 
 						imageEncoders_sources,
-						cpp_args: localCppArgs,
+						cpp_args: defaultCppArgs,
 						link_whole: libpng,
 						link_with: elpida,
 						include_directories : rootIncude)

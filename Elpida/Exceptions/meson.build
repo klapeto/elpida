@@ -23,6 +23,7 @@ exception_sources = ['ElpidaException.cpp',
 
 exceptions = static_library('Exceptions', 
 						exception_sources,
+						cpp_args: defaultCppArgs,
 						include_directories : rootIncude)
 						
 install_headers(['ElpidaException.hpp',

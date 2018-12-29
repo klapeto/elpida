@@ -19,7 +19,8 @@
 #-------------------------------------------------------------------------------
 
 cd ~/elpida
-git clean -fd
+git reset --hard
+git clean -ffdx :/
 git checkout master
 git pull
 /buildEnvironment.sh $1 $2

@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
+
 conf_data = configuration_data()
 
 conf_data.set('_elpida_compiler_string', '"' + gpp.get_id() + ' ' + gpp.version() + '"')
@@ -62,6 +63,7 @@ core_sources = ['CpuFeature.cpp',
 
 core = static_library('Elpida', 
 						core_sources,
+						cpp_args: defaultCppArgs,
 						include_directories : rootIncude)
 						
 install_headers(['CpuFeature.hpp',
@@ -90,6 +92,7 @@ elpida = library('elpida',
 			include_directories : [rootIncude],
 			dependencies : [thread_dep, dl_dep],
 			link_whole: [core, utilities, exceptions],
+			cpp_args: defaultCppArgs,
 			install: true)
 
 elpidaDep = declare_dependency(include_directories : rootIncude,

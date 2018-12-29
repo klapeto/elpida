@@ -33,6 +33,7 @@ namespace Elpida
 			void updateForSessionBegin();
 			void updateForTaskBatchBegin(const QString& name, int size);
 			void updateForTaskBegin(const QString& name);
+			void updateForTaskEnd(const QString& name);
 			void updateForTaskBatchEnd(const QString& name);
 			void updateForSessionEnd();
 
@@ -55,6 +56,7 @@ namespace Elpida
 			void onSessionBegin();
 			void onTaskBatchStart(const QString& name, int size);
 			void onTaskStart(const QString& name);
+			void onTaskEnd(const QString& name);
 			void onTaskBatchEnd(const QString& name);
 			void onSessionEnd();
 		private slots:

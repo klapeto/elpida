@@ -24,16 +24,30 @@ namespace Elpida
 
 		QPushButton::connect(this, &TaskBatchesWidget::onTaskBatchStart, this, &TaskBatchesWidget::updateForTaskBatchBegin);
 		QPushButton::connect(this, &TaskBatchesWidget::onTaskStart, this, &TaskBatchesWidget::updateForTaskBegin);
+		QPushButton::connect(this, &TaskBatchesWidget::onTaskEnd, this, &TaskBatchesWidget::updateForTaskEnd);
 		QPushButton::connect(this, &TaskBatchesWidget::onTaskBatchEnd, this, &TaskBatchesWidget::updateForTaskBatchEnd);
 		QPushButton::connect(this, &TaskBatchesWidget::onSessionBegin, this, &TaskBatchesWidget::updateForSessionBegin);
 		QPushButton::connect(this, &TaskBatchesWidget::onSessionEnd, this, &TaskBatchesWidget::updateForSessionEnd);
 
 		_taskBatchRunner.taskStart.subscribe([this](const Runner::EventArguments::TaskStart& args)
-		{	emit onTaskStart(QString::fromStdString(args.name));});
+		{
+			emit onTaskStart(QString::fromStdString(args.name));
+		});
+
+		_taskBatchRunner.taskEnd.subscribe([this](const Runner::EventArguments::TaskEnd& args)
+		{
+			emit onTaskEnd(QString::fromStdString(args.name));
+		});
+
 		_taskBatchRunner.batchStart.subscribe([this](const Runner::EventArguments::BatchStart& args)
-		{	emit onTaskBatchStart(QString::fromStdString(args.name), args.numberOfTasks);});
+		{
+			emit onTaskBatchStart(QString::fromStdString(args.name), args.numberOfTasks);
+		});
+
 		_taskBatchRunner.batchEnd.subscribe([this](const Runner::EventArguments::BatchEnd& args)
-		{	emit onTaskBatchEnd(QString::fromStdString(args.name));});
+		{
+			emit onTaskBatchEnd(QString::fromStdString(args.name));
+		});
 	}
 
 	TaskBatchesWidget::~TaskBatchesWidget()
@@ -64,7 +78,6 @@ namespace Elpida
 				_ui->lwTaskBatches->removeItemWidget(_ui->lwTaskBatches->item(i));
 			}
 		}
-
 	}
 
 	void TaskBatchesWidget::appendResults()
@@ -103,8 +116,12 @@ namespace Elpida
 
 	void TaskBatchesWidget::updateForTaskBegin(const QString& name)
 	{
-		_ui->taskBatchRunProgress->setValue(_ui->taskBatchRunProgress->value() + 1);
 		_ui->lblCurrentTaskName->setText(name);
+	}
+
+	void TaskBatchesWidget::updateForTaskEnd(const QString& name)
+	{
+		_ui->taskBatchRunProgress->setValue(_ui->taskBatchRunProgress->value() + 1);
 	}
 
 	void TaskBatchesWidget::updateForTaskBatchEnd(const QString& name)
@@ -144,12 +161,12 @@ namespace Elpida
 	{
 		if (!_taskRunnerThread.isRunning())
 		{
-			_ui->lblSatusValue->setText(_runningText);
-			_ui->pbStop->setEnabled(true);
 			_taskBatchRunner.clearTaskBatches();
 			auto selectedItems = _ui->lwTaskBatches->selectedItems();
 			if (selectedItems.size() > 0)
 			{
+				_ui->lblSatusValue->setText(_runningText);
+				_ui->pbStop->setEnabled(true);
 				for (auto item : selectedItems)
 				{
 					auto itr = _taskBatchList.find(item->text().toStdString());
@@ -165,8 +182,9 @@ namespace Elpida
 							QMessageBox::critical(
 							        this,
 							        "Error",
-							        QString::fromStdString("A task batch was not configured properly: '" + itr->second->getTaskBatch().getName() + "'. Error: "
-							                + e.getMessage()),
+							        QString::fromStdString(
+							                "A task batch was not configured properly: '" + itr->second->getTaskBatch().getName()
+							                        + "'. Error: " + e.getMessage()),
 							        QMessageBox::StandardButton::Ok);
 						}
 						_taskBatchRunner.addTaskBatch(itr->second->getTaskBatch());

@@ -32,6 +32,7 @@ utilities_sources = ['Image.cpp',
 
 utilities = static_library('Utilities', 
 						utilities_sources,
+						cpp_args: defaultCppArgs,
 						include_directories : rootIncude)
 						
 install_headers(['Image.hpp',

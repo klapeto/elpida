@@ -28,6 +28,14 @@ installationPrefix = get_option('prefix')
 libraryInstallPath = join_paths(installationPrefix, get_option('libdir'))
 binaryInstallPath = join_paths(installationPrefix, get_option('bindir'))
 
+enable_optimizations = false
+
+if enable_optimizations
+	defaultCppArgs = ['-march=native', '-O3', '-funroll-loops']
+else
+	defaultCppArgs = ['-march=native', '-Og', '-g3']
+endif
+
 qt5 = import('qt5')
 qt5_dep = dependency('qt5', modules: ['Widgets'], required: false)
 

@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
-#localCppArgs = ['-march=native', '-O3', '-funroll-loops']
-localCppArgs = ['-march=native', '-O0']
 
 memoryTasks_sources = ['Plugin.cpp',
 						'MemoryRead.cpp',
@@ -52,7 +50,7 @@ endif
 memoryTasks = library('MemoryTasks', 
 							[memoryTasks_sources],
 							link_with: [elpida, generalTasks],
-							cpp_args: localCppArgs,
+							cpp_args: defaultCppArgs,
 							install_dir: pluginInstallDir,
 							dependencies: qt5_dep.found() ? qt5_dep : [],
 							install: true,

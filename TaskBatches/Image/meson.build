@@ -17,9 +17,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
-#localCppArgs = ['-march=native', '-O3']
-localCppArgs = ['-march=native', '-O0']
-
 subdir('Encoders')
 
 imageTasks_sources = ['GrayscaleAverage.cpp',
@@ -65,7 +62,7 @@ imageTasks = library('ImageTasks',
 							[imageTasks_sources],
 							link_whole: imageEncoders,
 							link_with: [elpida, generalTasks],
-							cpp_args: localCppArgs,
+							cpp_args: defaultCppArgs,
 							install_dir: pluginInstallDir,
 							dependencies: qt5_dep.found() ? qt5_dep : [],
 							install: true,
