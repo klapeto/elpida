@@ -186,6 +186,7 @@ namespace Elpida
 							                "A task batch was not configured properly: '" + itr->second->getTaskBatch().getName()
 							                        + "'. Error: " + e.getMessage()),
 							        QMessageBox::StandardButton::Ok);
+							continue;
 						}
 						_taskBatchRunner.addTaskBatch(itr->second->getTaskBatch());
 					}
