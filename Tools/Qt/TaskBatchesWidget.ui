@@ -10,17 +10,11 @@
     <height>480</height>
    </rect>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background: rgb(240,244,255)</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="hrLists">
      <item>
       <widget class="QGroupBox" name="gbTaskBatches">
-       <property name="styleSheet">
-        <string notr="true">background:transparent;</string>
-       </property>
        <property name="title">
         <string>Available Task Batches</string>
        </property>
@@ -33,18 +27,12 @@
      </item>
      <item>
       <widget class="QGroupBox" name="gbResults">
-       <property name="styleSheet">
-        <string notr="true">background:transparent;</string>
-       </property>
        <property name="title">
         <string>Results</string>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QTreeWidget" name="twResults">
-          <property name="styleSheet">
-           <string notr="true">background: rgb(240,244,255)</string>
-          </property>
           <column>
            <property name="text">
             <string>Name</string>
@@ -64,9 +52,6 @@
    </item>
    <item>
     <widget class="QGroupBox" name="bgRunDetails">
-     <property name="styleSheet">
-      <string notr="true">background:transparent;</string>
-     </property>
      <property name="title">
       <string>Run Details</string>
      </property>
@@ -118,9 +103,6 @@
    </item>
    <item>
     <widget class="QProgressBar" name="taskBatchRunProgress">
-     <property name="styleSheet">
-      <string notr="true">background:transparent;</string>
-     </property>
      <property name="value">
       <number>0</number>
      </property>

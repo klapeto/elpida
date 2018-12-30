@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>Elpida::MainWindow</class>
  <widget class="QMainWindow" name="Elpida::MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1782</width>
-    <height>812</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Elpida</string>
   </property>
@@ -17,17 +9,36 @@
    <iconset resource="Images.qrc">
     <normaloff>:/Elpida-icon.svg</normaloff>:/Elpida-icon.svg</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget{
+	background-color:  rgb(229,232,253);
+}
+
+QGroupBox {
+	border: 1px solid rgb(179, 179, 179);
+	margin-top: 3ex;
+}
+
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top center; 
+}
+
+QCheckBox::indicator {
+	border: 1px solid rgb(179, 179, 179);
+}
+
+QCheckBox::indicator:checked {
+	background-color: rgb(155, 195, 255);
+}</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
-    <string notr="true">background-image: url(:/BG-tile.svg)</string>
+    <string notr="true"/>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
      <widget class="QTabWidget" name="tbwMain">
-      <property name="styleSheet">
-       <string notr="true">background:transparent;
-border-image: default;</string>
-      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -138,7 +149,7 @@ border-image: default;</string>
              </layout>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <widget class="QGroupBox" name="gbCpuFreatures">
              <property name="title">
               <string>Cpu Features</string>
@@ -803,17 +814,11 @@ border-image: default;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1782</width>
+     <width>1660</width>
      <height>39</height>
     </rect>
    </property>
-   <property name="styleSheet">
-    <string notr="true">background-image:url(:/BG-tile.svg);</string>
-   </property>
    <widget class="QMenu" name="menuElpida">
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
     <property name="title">
      <string>E&amp;lpida</string>
     </property>
@@ -833,9 +838,6 @@ border-image: default;</string>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
-   <property name="styleSheet">
-    <string notr="true">background-image:url(:/BG-tile.svg);</string>
-   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>

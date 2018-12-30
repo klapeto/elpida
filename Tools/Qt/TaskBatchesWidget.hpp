@@ -1,3 +1,22 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 #ifndef TASKBATCHESWIDGET_HPP
 #define TASKBATCHESWIDGET_HPP
 
@@ -27,15 +46,7 @@ namespace Elpida
 			~TaskBatchesWidget();
 
 		public slots:
-			void on_pbRun_clicked();
-			void on_pbStop_clicked();
-
-			void updateForSessionBegin();
-			void updateForTaskBatchBegin(const QString& name, int size);
-			void updateForTaskBegin(const QString& name);
-			void updateForTaskEnd(const QString& name);
-			void updateForTaskBatchEnd(const QString& name);
-			void updateForSessionEnd();
+			void onTaskBatchListModified();
 
 		private:
 			Runner _taskBatchRunner;
@@ -48,7 +59,6 @@ namespace Elpida
 			Ui::TaskBatchesWidget *_ui;
 			TaskBatchProperties* _taskBatchPropertiesDialog;
 
-			void onTaskBatchListModified();
 			void appendResults();
 			void runTaskBatches();
 
@@ -59,8 +69,17 @@ namespace Elpida
 			void onTaskEnd(const QString& name);
 			void onTaskBatchEnd(const QString& name);
 			void onSessionEnd();
+
 		private slots:
-			void on_lwTaskBatches_itemDoubleClicked(QListWidgetItem *item);
+			void on_pbRun_clicked();
+			void on_pbStop_clicked();
+			void onListItemButtonClicked(const QString& name);
+			void updateForSessionBegin();
+			void updateForTaskBatchBegin(const QString& name, int size);
+			void updateForTaskBegin(const QString& name);
+			void updateForTaskEnd(const QString& name);
+			void updateForTaskBatchEnd(const QString& name);
+			void updateForSessionEnd();
 	};
 
 } // namespace Elpida

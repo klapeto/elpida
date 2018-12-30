@@ -25,6 +25,7 @@ if qt5_dep.found()
 		'TaskBatchProperties.cpp',
 		'ElpidaManager.cpp',
 		'TaskBatchesWidget.cpp',
+		'ListItemWithButton.cpp',
 		'LogsDialog.cpp'
 	]
 	
@@ -32,6 +33,7 @@ if qt5_dep.found()
 		'MainWindow.ui', 
 		'TaskBatchProperties.ui',
 		'TaskBatchesWidget.ui',
+		'ListItemWithButton.ui',
 		'LogsDialog.ui'
 	]
 	
@@ -39,6 +41,7 @@ if qt5_dep.found()
 		'MainWindow.hpp',
 		'TaskBatchProperties.hpp',
 		'TaskBatchesWidget.hpp',
+		'ListItemWithButton.hpp',
 		'LogsDialog.hpp'
 	]
 	

@@ -22,7 +22,7 @@
 #include <Elpida/TaskBatch.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 
-constexpr const char* PAGE_CREATION_FUNCTION_NAME = "createQtBatchWrapper";
+constexpr const char* PageCreationFunctionName = "createQtBatchWrapper";
 
 namespace Elpida
 {
@@ -57,7 +57,7 @@ namespace Elpida
 		auto& loaded = _batchLoader.getLoadedPlugins();
 		for (auto& plugin : loaded)
 		{
-			auto func = plugin.second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>(PAGE_CREATION_FUNCTION_NAME);
+			auto func = plugin.second.getFunctionPointer<Elpida::QtTaskBatchWrapper* (*)()>(PageCreationFunctionName);
 			if (func != nullptr)
 			{
 				auto prop = func();

@@ -4,5 +4,6 @@
         <file>BG-tile.svg</file>
         <file>Elpida-icon.svg</file>
         <file>PlayButton.svg</file>
+        <file>Wrench.svg</file>
     </qresource>
 </RCC>

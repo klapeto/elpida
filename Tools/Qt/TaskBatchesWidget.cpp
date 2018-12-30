@@ -1,6 +1,26 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 #include "ui_TaskBatchesWidget.h"
 #include "TaskBatchesWidget.hpp"
 #include "TaskBatchProperties.hpp"
+#include "ListItemWithButton.hpp"
 #include <Elpida/TaskBatch.hpp>
 #include <Elpida/Types/String.hpp>
 #include <Elpida/Exceptions/ElpidaException.hpp>
@@ -60,14 +80,26 @@ namespace Elpida
 		int childrenSize = _ui->lwTaskBatches->count(), c = 0;
 		for (auto& taskBatch : _taskBatchList)
 		{
-			auto item = _ui->lwTaskBatches->item(c++);
+			auto item = static_cast<QListWidgetItem*>(_ui->lwTaskBatches->item(c++));
 			if (item != nullptr)
 			{
-				((QListWidgetItem*) item)->setText(QString::fromStdString(taskBatch.second->getTaskBatch().getName()));
+				auto wrapper = static_cast<ListItemWithButton*>(_ui->lwTaskBatches->itemWidget(item));
+				if (wrapper != nullptr)
+				{
+					wrapper->setText(QString::fromStdString(taskBatch.second->getTaskBatch().getName()));
+				}
+				else
+				{
+					item->setText(QString::fromStdString(taskBatch.second->getTaskBatch().getName()));
+				}
 			}
 			else
 			{
-				new QListWidgetItem(QString::fromStdString(taskBatch.second->getTaskBatch().getName()), _ui->lwTaskBatches);
+				item = new QListWidgetItem(_ui->lwTaskBatches);
+				auto wrapper = new ListItemWithButton(QString::fromStdString(taskBatch.second->getTaskBatch().getName()));
+				_ui->lwTaskBatches->setItemWidget(item, wrapper);
+				item->setSizeHint(wrapper->sizeHint());
+				QWidget::connect(wrapper, &ListItemWithButton::buttonClicked, this, &TaskBatchesWidget::onListItemButtonClicked);
 			}
 		}
 
@@ -169,7 +201,17 @@ namespace Elpida
 				_ui->pbStop->setEnabled(true);
 				for (auto item : selectedItems)
 				{
-					auto itr = _taskBatchList.find(item->text().toStdString());
+					std::string name;
+					auto wrapper = static_cast<ListItemWithButton*>(_ui->lwTaskBatches->itemWidget(item));
+					if (wrapper != nullptr)
+					{
+						name = wrapper->getText().toStdString();
+					}
+					else
+					{
+						name = item->text().toStdString();
+					}
+					auto itr = _taskBatchList.find(name);
 					if (itr != _taskBatchList.end())
 					{
 						try
@@ -216,10 +258,9 @@ namespace Elpida
 		_taskBatchRunner.stop();
 	}
 
-	void TaskBatchesWidget::on_lwTaskBatches_itemDoubleClicked(QListWidgetItem *item)
+	void TaskBatchesWidget::onListItemButtonClicked(const QString& name)
 	{
-		auto taskBatchName = item->text().toStdString();
-		auto pageItr = _taskBatchList.find(taskBatchName);
+		auto pageItr = _taskBatchList.find(name.toStdString());
 		if (pageItr != _taskBatchList.end())
 		{
 			if (pageItr->second != nullptr && pageItr->second->hasProperties())
@@ -236,4 +277,3 @@ namespace Elpida
 	}
 
 } // namespace Elpida
-
