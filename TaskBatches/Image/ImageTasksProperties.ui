@@ -2,9 +2,6 @@
 <ui version="4.0">
  <class>ImageTasksProperties</class>
  <widget class="QWidget" name="ImageTasksProperties">
-  <property name="windowTitle">
-   <string>Form</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="lblDescription">

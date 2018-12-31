@@ -13,22 +13,12 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background-image: url(:/BG-tile.svg)</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" name="wTaskBatchPropertiesContainer" native="true">
-     <property name="styleSheet">
-      <string notr="true">background:transparent;</string>
-     </property>
-    </widget>
+    <widget class="QWidget" name="wTaskBatchPropertiesContainer" native="true"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="styleSheet">
-      <string notr="true">background:transparent;</string>
-     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

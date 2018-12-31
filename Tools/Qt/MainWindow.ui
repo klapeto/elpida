@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Elpida::MainWindow</class>
  <widget class="QMainWindow" name="Elpida::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1660</width>
+    <height>737</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Elpida</string>
   </property>
@@ -10,10 +18,16 @@
     <normaloff>:/Elpida-icon.svg</normaloff>:/Elpida-icon.svg</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget{
+   <string notr="true">/*============ QWidget ============*/
+QWidget {
 	background-color:  rgb(229,232,253);
 }
 
+QWidget :disabled {
+	background-color: rgb(199, 202, 226);
+}
+/*==================================*/
+/*============ QGroupBox ============*/
 QGroupBox {
 	border: 1px solid rgb(179, 179, 179);
 	margin-top: 3ex;
@@ -23,14 +37,74 @@ QGroupBox::title {
 	subcontrol-origin: margin;
 	subcontrol-position: top center; 
 }
-
+/*==================================*/
+/*============ QCheckBox ============*/
 QCheckBox::indicator {
 	border: 1px solid rgb(179, 179, 179);
 }
 
+QCheckBox::indicator:hover, QCheckBox::indicator:hover:unchecked {
+	background-color: rgb(221, 219, 243);
+}
+
+QCheckBox::indicator:checked:hover  {
+	background-color:rgb(110, 122, 231);
+}
+
+QCheckBox::indicator:pressed,  QCheckBox::indicator:unchecked:pressed, QPushButton:disabled {
+	background-color: rgb(199, 202, 226);
+} QCheckBox::indicator:checked:pressed {
+	background-color: rgb(137, 142, 226);
+}
+
 QCheckBox::indicator:checked {
 	background-color: rgb(155, 195, 255);
-}</string>
+}
+/*==================================*/
+/*============ QPushButton ============*/
+QPushButton {
+	border: 1px solid rgb(158, 159, 238);
+	background-color: rgb(203, 199, 247);
+	min-width: 5em;
+}
+
+QPushButton:hover {
+	background-color: rgb(221, 219, 243);
+}
+
+QPushButton:pressed  {
+	background-color: rgb(137, 142, 226);
+}
+
+QPushButton:flat {
+	border: none; 
+}
+
+QPushButton:default {
+	border-color: rgb(84, 115, 202); 
+}
+/*==================================*/
+/*============ QToolButton ============*/
+QToolButton {
+	border: 1px solid rgb(158, 159, 238);
+	background-color:rgb(214, 217, 243);
+	padding: 2px;
+}
+
+QToolButton:hover {
+	background-color: rgb(229, 229, 245);
+}
+
+QToolButton:pressed  {
+	background-color: rgb(137, 142, 226);
+}
+/*==================================*/
+/*============ QLineEdit ============*/
+QLineEdit {
+	border: 1px solid rgb(179, 179, 179);
+	background-color: rgb(244, 243, 255);
+}
+/*==================================*/</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
