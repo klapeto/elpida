@@ -17,54 +17,31 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * Plugin.hpp
- *
- *  Created on: 26 Σεπ 2018
- *      Author: klapeto
- */
+#ifndef TESTS_FILESYSTEM_TEST_CPP_
+#define TESTS_FILESYSTEM_TEST_CPP_
 
-#ifndef ELPIDA_PLUGIN_HPP_
-#define ELPIDA_PLUGIN_HPP_
+#include <gtest/gtest.h>
+#include <Elpida/Utilities/FileSystem.hpp>
 
-#include "Elpida/Types/String.hpp"
+using namespace Elpida;
 
-namespace Elpida
+TEST(FileSystemTests, ConcatPathsTest)
 {
-	class Plugin
-	{
-		private:
-			void* getFunctionPointerImpl(const String& functionName) const;
-		public:
+#if _elpida_linux
+	ASSERT_STREQ(FileSystem::concatPaths("usr", "share").c_str(), "usr/share");
+	ASSERT_STREQ(FileSystem::concatPaths("/usr", "share").c_str(), "/usr/share");
+	ASSERT_STREQ(FileSystem::concatPaths("./Elpida", "share").c_str(), "./Elpida/share");
+#else
+	ASSERT_STREQ(FileSystem::concatPaths("C:", "Users").c_str(), "C:\Users");
+	ASSERT_STREQ(FileSystem::concatPaths("C:", "Users","klapeto").c_str(), "C:\Users\klapeto");
+	ASSERT_STREQ(FileSystem::concatPaths("klapeto", "Documents").c_str(), "klapeto\Documents");
+#endif
+}
 
-			template<typename T>
-			inline T getFunctionPointer(const String& functionName) const
-			{
-				return (T) getFunctionPointerImpl(functionName);
-			}
+int main(int argc, char** argv)
+{
+	testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+}
 
-			Plugin(const String& libraryPath);
-			~Plugin();
-		private:
-			void* _handle;
-		public:
-
-			Plugin(const Plugin&) = delete;
-			Plugin& operator=(const Plugin&) = delete;
-
-			Plugin(Plugin&& other)
-			{
-				this->_handle = other._handle;
-				other._handle = nullptr;
-			}
-			Plugin& operator=(Plugin&& other)
-			{
-				this->_handle = other._handle;
-				other._handle = nullptr;
-				return *this;
-			}
-	};
-
-} /* namespace Elpida */
-
-#endif /* ELPIDA_PLUGIN_HPP_ */
+#endif /* TESTS_FILESYSTEM_TEST_CPP_ */

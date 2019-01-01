@@ -1,3 +1,22 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 /*
  * FileSystem.hpp
  *
@@ -9,14 +28,10 @@
 #define ELPIDA_UTILITIES_FILESYSTEM_HPP_
 
 #include <functional>
+#include <sstream>
 #include "Elpida/Types/String.hpp"
+#include "Elpida/Types/Primitives.hpp"
 #include "Elpida/Config.hpp"
-
-#if _elpida_linux
-#define PATH_SEPERATOR '/'
-#elif _elpida_windows
-#define PATH_SEPERATOR '\\'
-#endif
 
 namespace Elpida
 {
@@ -24,8 +39,47 @@ namespace Elpida
 	class FileSystem
 	{
 		public:
+#if _elpida_linux
+			static constexpr char PathSeperator = '/';
+#elif _elpida_windows
+			static constexpr char PathSeperator = '\\';
+#endif
+
 			static void iterateDirectory(const String& directory, std::function<void(const String&)> func);
 			static bool fileExists(const String& file);
+
+			template<typename ... T>
+			static String concatPaths(T ... args)
+			{
+				std::ostringstream buffer;
+				concatPathsImlFirst(buffer, args...);
+				return buffer.str();
+			}
+		private:
+			template<typename T, typename ... Rest>
+			static void concatPathsImlFirst(std::ostringstream& buffer, T arg, Rest ... rest)
+			{
+				buffer << arg;
+				concatPathsIml(buffer, rest...);
+			}
+
+			template<typename T, typename ... Rest>
+			static void concatPathsIml(std::ostringstream& buffer, T arg, Rest ... rest)
+			{
+				buffer << PathSeperator << arg;
+				concatPathsIml(buffer, rest...);
+			}
+
+			template<typename T>
+			static void concatPathsIml(std::ostringstream& buffer, T arg)
+			{
+				buffer << PathSeperator << arg;
+			}
+
+			static inline void concatPathsIml(std::ostringstream& buffer)
+			{
+
+			}
 	};
 
 } /* namespace Elpida */

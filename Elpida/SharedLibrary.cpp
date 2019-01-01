@@ -18,13 +18,13 @@
  *************************************************************************/
 
 /*
- * Plugin.cpp
+ * SharedLibrary.cpp
  *
  *  Created on: 26 Σεπ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/Plugin.hpp"
+#include "Elpida/SharedLibrary.hpp"
 
 #include "Config.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
@@ -43,7 +43,7 @@ namespace Elpida
 	static String GetWindowsError();
 #endif
 
-	Plugin::Plugin(const String& libraryPath)
+	SharedLibrary::SharedLibrary(const String& libraryPath)
 	{
 		_handle =
 #if _elpida_linux
@@ -58,14 +58,14 @@ namespace Elpida
 #endif
 			throw ElpidaException("Plugin", "Error loading plugin: '" + libraryPath + "' -> " +
 #if _elpida_linux
-			        (errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
+			                              (errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
 #elif _elpida_windows
 			GetWindowsError());
 #endif
 		}
 	}
 
-	Plugin::~Plugin()
+	SharedLibrary::~SharedLibrary()
 	{
 		if (_handle != nullptr)
 		{
@@ -77,7 +77,7 @@ namespace Elpida
 		}
 	}
 
-	void* Plugin::getFunctionPointerImpl(const String& functionName) const
+	void* SharedLibrary::getFunctionPointerImpl(const String& functionName) const
 	{
 		return _handle != nullptr ?
 #if _elpida_linux

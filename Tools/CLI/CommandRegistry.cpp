@@ -47,7 +47,7 @@ namespace Elpida
 
 		CommandRegistry::CommandRegistry(const String& batchesPath)
 		{
-			_batchLoader.loadFromFolder(batchesPath);
+			_batchLoader.loadFromFolder(batchesPath, "plugins");
 			populateRegistry();
 		}
 

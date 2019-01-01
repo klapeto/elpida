@@ -22,11 +22,11 @@
 
 #include <sstream>
 
-#include <Elpida/PluginLoader.hpp>
 #include <Elpida/Types/String.hpp>
 #include <Elpida/Utilities/NonCopyable.hpp>
 #include <Elpida/Types/Map.hpp>
 #include <Elpida/Types/Array.hpp>
+#include "Elpida/SharedLibraryLoader.hpp"
 
 namespace Elpida
 {
@@ -36,17 +36,17 @@ namespace Elpida
 	{
 		public:
 
-			String getLog() const
+			String getLogDump() const
 			{
 				return _log.str();
 			}
 
-			void setPluginDirectory(const String& directory)
+			void setTaskBatchesDirectory(const String& directory)
 			{
 				_batchesDirectory = directory;
 			}
 
-			const PluginLoader& getPluginLoader() const
+			const SharedLibraryLoader& getLibraryLoader() const
 			{
 				return _batchLoader;
 			}
@@ -56,16 +56,26 @@ namespace Elpida
 				return _createdTaskBatches;
 			}
 
+			const String& getTaskBatchesOrderFile() const
+			{
+				return _batchesOrderFile;
+			}
+
+			void setTaskBatchesOrderFile(const String& batchesOrderFile)
+			{
+				_batchesOrderFile = batchesOrderFile;
+			}
+
 			void reloadTaskBatches();
 			void destroyTaskBatches();
 
 			ElpidaManager();
 			~ElpidaManager();
-
 		private:
 			Map<String, QtTaskBatchWrapper*> _createdTaskBatches;
-			PluginLoader _batchLoader;
+			SharedLibraryLoader _batchLoader;
 			String _batchesDirectory;
+			String _batchesOrderFile;
 			std::stringstream _log;
 	};
 }

@@ -33,11 +33,13 @@ enable_optimizations = false
 if enable_optimizations
 	defaultCppArgs = ['-march=native', '-O3', '-funroll-loops']
 else
-	defaultCppArgs = ['-march=native', '-Og', '-g3']
+	defaultCppArgs = ['-O0', '-g3']
 endif
 
 qt5 = import('qt5')
 qt5_dep = dependency('qt5', modules: ['Widgets'], required: false)
+
+pluginInstallDir = join_paths(binaryInstallPath, 'Elpida')
 
 subdir('Libraries')
 subdir('Elpida')

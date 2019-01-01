@@ -18,36 +18,51 @@
  *************************************************************************/
 
 /*
- * TaskBatchCommand.hpp
+ * SharedLibrary.hpp
  *
- *  Created on: 29 Ιουλ 2018
+ *  Created on: 26 Σεπ 2018
  *      Author: klapeto
  */
 
-#ifndef TOOLS_CLI_COMMANDS_TASKBATCHCOMMAND_HPP_
-#define TOOLS_CLI_COMMANDS_TASKBATCHCOMMAND_HPP_
+#ifndef ELPIDA_SHAREDLIBRARY_HPP_
+#define ELPIDA_SHAREDLIBRARY_HPP_
 
-#include "InterpreterCommand.hpp"
+#include "Elpida/Types/String.hpp"
 
 namespace Elpida
 {
-	class TaskBatch;
-	namespace CLI
+
+	class SharedLibrary final
 	{
-		class TaskBatchCommand final: public InterpreterCommand
-		{
-			public:
+		public:
 
-				void execute(Interpreter& executor, const CommandParser& commandParser, const CommandRegistry& commandRegistry) const;
+			template<typename T>
+			inline T getFunctionPointer(const String& functionName) const
+			{
+				return (T) getFunctionPointerImpl(functionName);
+			}
 
-				TaskBatchCommand(TaskBatch& taskBatch);
-				~TaskBatchCommand();
+			SharedLibrary(const String& libraryPath);
+			SharedLibrary(const SharedLibrary&) = delete;
+			SharedLibrary& operator=(const SharedLibrary&) = delete;
 
-			private:
-				TaskBatch& _taskBatch;
-		};
+			SharedLibrary(SharedLibrary&& other)
+			{
+				this->_handle = other._handle;
+				other._handle = nullptr;
+			}
+			SharedLibrary& operator=(SharedLibrary&& other)
+			{
+				this->_handle = other._handle;
+				other._handle = nullptr;
+				return *this;
+			}
 
-	} /* namespace CLI */
+			~SharedLibrary();
+		private:
+			void* _handle;
+			void* getFunctionPointerImpl(const String& functionName) const;
+	};
 } /* namespace Elpida */
 
-#endif /* TOOLS_CLI_COMMANDS_TASKBATCHCOMMAND_HPP_ */
+#endif /* ELPIDA_SHAREDLIBRARY_HPP_ */

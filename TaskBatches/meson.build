@@ -1,5 +1,3 @@
-pluginInstallDir = join_paths(binaryInstallPath, 'Elpida')
-
 conf_data = configuration_data()
 
 conf_data.set('_elpida_plugin_install_path', '"' + pluginInstallDir + '"')
@@ -17,5 +15,3 @@ install_data('plugins', install_dir : pluginInstallDir)
 subdir('General')
 subdir('Image')
 subdir('Memory')
-				
-

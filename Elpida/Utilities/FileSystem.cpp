@@ -1,3 +1,22 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 /*
  * FileSystem.cpp
  *
@@ -12,6 +31,7 @@
 
 #if _elpida_linux
 #include <dirent.h>
+#include <sys/stat.h>
 #elif _elpida_windows
 #include <Windows.h>
 #include <strsafe.h>
@@ -28,7 +48,7 @@ namespace Elpida
 		{
 			while ((dirent = readdir(dir)) != nullptr)
 			{
-				func(directory + PATH_SEPERATOR + dirent->d_name);
+				func(concatPaths(directory, dirent->d_name));
 			}
 			closedir(dir);
 		}
@@ -39,28 +59,28 @@ namespace Elpida
 
 #elif _elpida_windows
 		WIN32_FIND_DATA data;
-		HANDLE hFind = FindFirstFile((directory + PATH_SEPERATOR + "*").c_str(), &data);
+		HANDLE hFind = FindFirstFile(concatPaths((directory, "*").c_str(), &data);
 
-		if (hFind != INVALID_HANDLE_VALUE)
-		{
-			do
-			{
-				func(directory + PATH_SEPERATOR + data.cFileName);
-			}while (FindNextFile(hFind, &data));
-			FindClose(hFind);
-		}
+				if (hFind != INVALID_HANDLE_VALUE)
+				{
+					do
+					{
+						func(concatPaths(directory, data.cFileName));
+					}while (FindNextFile(hFind, &data));
+					FindClose(hFind);
+				}
 
 #endif
 	}
 
 	bool FileSystem::fileExists(const String& file)
 	{
-		std::ifstream fp(file);
-		if (fp.good())
-		{
-			fp.close();
-			return true;
-		}
-		return false;
+#if _elpida_linux
+		struct stat dummy;
+		return stat(file.c_str(), &dummy) == 0;
+#elif _elpida_windows
+		auto attrib = GetFileAttributes(file.c_str());
+		return attrib != INVALID_FILE_ATTRIBUTES;
+#endif
 	}
 } /* namespace Elpida */

@@ -16,6 +16,12 @@ if gtest_dep.found()
 				include_directories : [rootIncude])
 	test('Event Tests', testExec)
 	
+	testExec = executable('FileSystem.Tests', 'FileSystem.Test.cpp',
+				link_with: elpida,
+				dependencies: [gtest_dep, thread_dep],
+				include_directories : [rootIncude])
+	test('FileSystem Tests', testExec)
+	
 else
 	message('Google Test was not found. Tests will not be built.')
 endif

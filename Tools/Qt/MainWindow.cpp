@@ -40,7 +40,8 @@ namespace Elpida
 	{
 		_ui->setupUi(this);
 
-		_elpidaManager.setPluginDirectory("./Elpida");
+		_elpidaManager.setTaskBatchesDirectory("./Elpida");
+		_elpidaManager.setTaskBatchesOrderFile("./Elpida/plugins");
 		_elpidaManager.reloadTaskBatches();
 		_taskBatchesWidget = new TaskBatchesWidget(_elpidaManager.getCreatedTaskBatches());
 		_ui->tbTasks->layout()->addWidget(_taskBatchesWidget);
@@ -180,7 +181,7 @@ namespace Elpida
 
 	void Elpida::MainWindow::on_actionShowLogs_triggered()
 	{
-		_logsDialog->setLogsText(_elpidaManager.getLog());
+		_logsDialog->setLogsText(_elpidaManager.getLogDump());
 		_logsDialog->show();
 	}
 

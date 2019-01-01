@@ -18,40 +18,42 @@
  *************************************************************************/
 
 /*
- * PluginLoader.hpp
+ * SharedLibraryLoader.hpp
  *
  *  Created on: 2 Ιουλ 2018
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_PLUGINLOADER_HPP_
-#define ELPIDA_PLUGINLOADER_HPP_
+#ifndef ELPIDA_SHAREDLIBRARYLOADER_HPP_
+#define ELPIDA_SHAREDLIBRARYLOADER_HPP_
 
+#include "Elpida/SharedLibrary.hpp"
 #include "Elpida/Types/Map.hpp"
 #include "Elpida/Types/String.hpp"
-#include "Elpida/Plugin.hpp"
 
 namespace Elpida
 {
 
-	class PluginLoader
+	class SharedLibraryLoader
 	{
 		public:
-			const Map<String, Plugin>& getLoadedPlugins() const
+			const Map<String, SharedLibrary>& getLoadedPlugins() const
 			{
-				return _loadedPlugins;
+				return _loadedLibraries;
 			}
 
-			virtual void loadFromFolder(const String& path);
-			void loadPlugin(const String& path);
+			virtual void loadFromFolder(const String& path, const String& orderFile = String());
+			void load(const String& path);
+			void unload(const String& path);
 
-			PluginLoader();
-			virtual ~PluginLoader();
+			SharedLibraryLoader();
+			virtual ~SharedLibraryLoader();
+
 		protected:
-			Map<String, Plugin> _loadedPlugins;
+			Map<String, SharedLibrary> _loadedLibraries;
 			void unloadEverything();
 	};
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_PLUGINLOADER_HPP_ */
+#endif /* ELPIDA_SHAREDLIBRARYLOADER_HPP_ */
