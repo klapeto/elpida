@@ -59,7 +59,7 @@ namespace Elpida
 
 #elif _elpida_windows
 		WIN32_FIND_DATA data;
-		HANDLE hFind = FindFirstFile(concatPaths((directory, "*").c_str(), &data);
+		HANDLE hFind = FindFirstFile(concatPaths(directory, "*").c_str(), &data);
 
 				if (hFind != INVALID_HANDLE_VALUE)
 				{

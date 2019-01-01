@@ -32,9 +32,9 @@ TEST(FileSystemTests, ConcatPathsTest)
 	ASSERT_STREQ(FileSystem::concatPaths("/usr", "share").c_str(), "/usr/share");
 	ASSERT_STREQ(FileSystem::concatPaths("./Elpida", "share").c_str(), "./Elpida/share");
 #else
-	ASSERT_STREQ(FileSystem::concatPaths("C:", "Users").c_str(), "C:\Users");
-	ASSERT_STREQ(FileSystem::concatPaths("C:", "Users","klapeto").c_str(), "C:\Users\klapeto");
-	ASSERT_STREQ(FileSystem::concatPaths("klapeto", "Documents").c_str(), "klapeto\Documents");
+	ASSERT_STREQ(FileSystem::concatPaths("C:", "Users").c_str(), "C:\\Users");
+	ASSERT_STREQ(FileSystem::concatPaths("C:", "Users","klapeto").c_str(), "C:\\Users\\klapeto");
+	ASSERT_STREQ(FileSystem::concatPaths("klapeto", "Documents").c_str(), "klapeto\\Documents");
 #endif
 }
 
