@@ -36,7 +36,6 @@
 
 namespace Elpida
 {
-	template<typename T>
 	class MultiThreadMemoryChunksRead: public MultiThreadTask
 	{
 		public:
@@ -49,7 +48,7 @@ namespace Elpida
 			MultiThreadMemoryChunksRead(const Memory& memory, Size numberOfThreads)
 					:
 					  MultiThreadTask(
-					          "Read " + ValueUtilities::getValueScale(memory.getSize()) + "B@" + std::to_string(sizeof(T)) + " Bytes/Read",
+					          "Read " + ValueUtilities::getValueScale(memory.getSize()) + "B@ 8 Bytes/Read",
 					          true),
 					  _totalBandwidth("Total Read Bandwidth", "Bytes"),
 					  _numberOfThreads(numberOfThreads),
@@ -67,7 +66,7 @@ namespace Elpida
 				_chunks = MemoryChunk::breakToChunks(_memory, _numberOfThreads);
 				for (const auto& chunk : _chunks)
 				{
-					addTask(new MemoryRead<T>(chunk));
+					addTask(new MemoryRead(chunk, std::chrono::milliseconds(2000)));
 				}
 				_totalBandwidth.setMeasuredValue(_memory.getSize());
 			}

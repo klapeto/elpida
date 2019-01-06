@@ -27,7 +27,6 @@
 #include "TaskBatches/Memory/MemoryTaskBatch.hpp"
 #include "MemoryRead.hpp"
 #include "TaskBatches/General/AllocateMemory.hpp"
-#include <Elpida/Types/SizedStruct.hpp>
 #include <Elpida/CpuInfo.hpp>
 #include <Elpida/MemoryInfo.hpp>
 #include <Elpida/TaskThread.hpp>
@@ -36,29 +35,27 @@
 namespace Elpida
 {
 
+	constexpr int MemoryTaskBatch::workingSetSize[];
+
 	void MemoryTaskBatch::onBeforeExecution() const
 	{
 		//TaskThread::setCurrentThreadAffinity(1);
 	}
 
-	void MemoryTaskBatch::createTasks() const
+	void MemoryTaskBatch::addMemoryReadTask(Size size) const
 	{
-		const Size cores= CpuInfo::getCpuInfo().getLogicalProcessors();
-		const auto& memoryInfo =MemoryInfo::getInfo();
-		const Size maxMemory = memoryInfo.getMemorySize() >> 1;
-		Size currentFreeMemory = memoryInfo.getAvailableFreeMemory();
-		Size memoryToBeUsed = maxMemory;
-
-		if (currentFreeMemory < maxMemory)
-		{
-			memoryToBeUsed = currentFreeMemory >> 1;
-		}
-		auto memory = new AllocateMemory(memoryToBeUsed, true, 64);
+		auto memory = new AllocateMemory(size, true, 16);
 		memory->setToBeMeasured(false);
 		addTask(memory);
-		addTask(new MemoryRead<SizedStruct<32>>(memory->getMemory()));
-		addTask(new MemoryRead<SizedStruct<64>>(memory->getMemory()));
-		addTask(new MultiThreadMemoryChunksRead<SizedStruct<64>>(memory->getMemory(), cores));
+		addTask(new MemoryRead(memory->getMemory(), std::chrono::milliseconds(2000)));
+	}
+
+	void MemoryTaskBatch::createTasks() const
+	{
+		for (auto size : workingSetSize)
+		{
+			addMemoryReadTask(size);
+		}
 	}
 
 } /* namespace Elpida */

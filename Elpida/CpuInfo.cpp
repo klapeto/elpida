@@ -309,7 +309,7 @@ namespace Elpida
 		addFeature(_instructionExtensions, "AES", ecx, 25);
 		addFeature(_instructionExtensions, "AVX", ecx, 28);
 
-		if (_maximumStandardFunction >= 7)
+		if (_maximumStandardFunction >= 0x7)
 		{
 			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
 		}
@@ -337,7 +337,7 @@ namespace Elpida
 		addFeature(_instructionExtensions, "AVX512-4FMAPS", 0, 3);
 		addFeature(_instructionExtensions, "AVX512-GFNI", 0, 8);
 		addFeature(_instructionExtensions, "AVX512-VAES", 0, 9);
-		addFeature(_instructionExtensions, "SHA", 0, 29);
+		addFeature(_instructionExtensions, "SHA", ebx, 29);
 		addFeature(_instructionExtensions, "SGX", 0, 2);
 
 		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
@@ -346,7 +346,7 @@ namespace Elpida
 		addFeature(_instructionExtensions, "3DNowExt", edx, 30);
 		addFeature(_instructionExtensions, "3DNowPrefetch", ecx, 8);
 
-		if (_maximumStandardFunction >= 7)
+		if (_maximumStandardFunction >= 0x7)
 		{
 			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
 		}
@@ -563,7 +563,7 @@ namespace Elpida
 
 			while (true)
 			{
-				__asm__ volatile ("movl %0, %%ecx;"
+				asm volatile ("mov ecx, %0;"
 						:
 						: "r" (i));
 

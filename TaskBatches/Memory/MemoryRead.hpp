@@ -33,23 +33,60 @@
 #include <Elpida/TaskRunResult.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <TaskBatches/General/Memory.hpp>
+#include <smmintrin.h>
 
 namespace Elpida
 {
-
-	template<typename T>
 	class MemoryRead final: public Task
 	{
 		public:
 			void run() override
 			{
-				volatile auto ptr = (T*) _memory.getPointer();
-				auto size = _memory.getSize() / sizeof(T);
-
-				for (Size i = 0; i < size; ++i)
+				register auto ptr = (char*) _memory.getPointer();
+				register auto start = ptr;
+				register auto end = start + _memory.getSize();
+				register auto itterations = _itterations;
+				for (register auto i = 0ul; i < itterations; ++i)
 				{
-					volatile T d1 = ptr[i];
-					(void) d1;	// Avoid compiler warnings
+					ptr = start;
+					while (ptr < end)
+					{
+#if __x86_64__
+						asm("mov rax, [%0];"
+								"mov rax, [%0 + 8];"
+								"mov rax, [%0 + 16];"
+								"mov rax, [%0 + 24];"
+								"mov rax, [%0 + 32];"
+								"mov rax, [%0 + 40];"
+								"mov rax, [%0 + 48];"
+								"mov rax, [%0 + 56];"
+								"mov rax, [%0 + 64];"
+								"mov rax, [%0 + 72];"
+								"mov rax, [%0 + 80];"
+								"mov rax, [%0 + 88];"
+								"mov rax, [%0 + 96];"
+								"mov rax, [%0 + 104];"
+								"mov rax, [%0 + 112];"
+								"mov rax, [%0 + 120];"
+								"mov rax, [%0 + 128];"
+								"mov rax, [%0 + 136];"
+								"mov rax, [%0 + 144];"
+								"mov rax, [%0 + 152];"
+								"mov rax, [%0 + 160];"
+								"mov rax, [%0 + 168];"
+								"mov rax, [%0 + 176];"
+								"mov rax, [%0 + 184];"
+								"mov rax, [%0 + 192];"
+								"mov rax, [%0 + 200];"
+								"mov rax, [%0 + 208];"
+								"mov rax, [%0 + 216];"
+								"mov rax, [%0 + 224];"
+								"mov rax, [%0 + 232];"
+								"mov rax, [%0 + 240];"
+								"mov rax, [%0 + 248];"::"r"(ptr));
+#endif
+						ptr += 256;
+					}
 				}
 			}
 
@@ -58,13 +95,14 @@ namespace Elpida
 				addResult(_runResult);
 			}
 
-			MemoryRead(const Memory& memory)
+			MemoryRead(const Memory& memory, std::chrono::milliseconds duration)
 					:
-					  Task("Read " + ValueUtilities::getValueScale(memory.getSize()) + "B@" + std::to_string(sizeof(T)) + " Bytes/Read"),
+					  Task("Read " + ValueUtilities::getValueScale(memory.getSize()) + "B @8 Bytes/Read"),
 					  _runResult("Memory Read Bandwidth", "Bytes"),
 					  _memory(memory)
 			{
-				_runResult.setMeasuredValue(_memory.getSize());
+				_itterations = (duration.count() / _secondsPerMov) / memory.getSize();
+				_runResult.setMeasuredValue(_memory.getSize() * _itterations);
 			}
 
 			~MemoryRead()
@@ -75,6 +113,8 @@ namespace Elpida
 		private:
 			TaskRunResult _runResult;
 			const Memory& _memory;
+			unsigned long _itterations;
+			static constexpr double _secondsPerMov = 10.0 / 1000000000.0;// rough estimate, to be passed on construction later once we find the latency
 	};
 
 } /* namespace Elpida */

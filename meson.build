@@ -31,9 +31,9 @@ binaryInstallPath = join_paths(installationPrefix, get_option('bindir'))
 enable_optimizations = false
 
 if enable_optimizations
-	defaultCppArgs = ['-march=native', '-O3', '-funroll-loops']
+	defaultCppArgs = ['-march=native', '-O3', '-funroll-loops', '-msse3', '-msse4.1', '-masm=intel']
 else
-	defaultCppArgs = ['-O0', '-g3']
+	defaultCppArgs = ['-O0', '-g3', '-msse3', '-msse4.1', '-masm=intel']
 endif
 
 qt5 = import('qt5')

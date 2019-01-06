@@ -28,6 +28,7 @@
 #define TASKBATCHES_MEMORY_MEMORYTASKBATCH_HPP_
 
 #include <Elpida/TaskBatch.hpp>
+#include <Elpida/Types/Primitives.hpp>
 
 namespace Elpida
 {
@@ -35,6 +36,33 @@ namespace Elpida
 	class MemoryTaskBatch final: public TaskBatch
 	{
 		public:
+
+			enum WorkingSetSize
+			{
+				B_128 = 128,
+				B_256 = 256,
+				B_512 = 512,
+				KB_1 = 1024,
+				KB_2 = KB_1 * 2,
+				KB_4 = KB_1 * 4,
+				KB_8 = KB_1 * 8,
+				KB_16 = KB_1 * 16,
+				KB_32 = KB_1 * 32,
+				KB_64 = KB_1 * 64,
+				KB_128 = KB_1 * 128,
+				KB_256 = KB_1 * 256,
+				KB_512 = KB_1 * 512,
+				MB_1 = KB_1 * 1024,
+				MB_2 = MB_1 * 2,
+				MB_4 = MB_1 * 4,
+				MB_8 = MB_1 * 8,
+				MB_16 = MB_1 * 16,
+				MB_32 = MB_1 * 32,
+				MB_64 = MB_1 * 64,
+				MB_128 = MB_1 * 128,
+				MB_256 = MB_1 * 256,
+				MB_512 = MB_1 * 512,
+			};
 
 			void onBeforeExecution() const override;
 			void createTasks() const override;
@@ -49,6 +77,34 @@ namespace Elpida
 			{
 
 			}
+
+		private:
+			void addMemoryReadTask(Size size) const;
+			static constexpr int workingSetSize[] = {
+			        B_128,
+			        B_256,
+			        B_512,
+			        KB_1,
+			        KB_2,
+			        KB_4,
+			        KB_8,
+			        KB_16,
+			        KB_32,
+			        KB_64,
+			        KB_128,
+			        KB_256,
+			        KB_512,
+			        MB_1,
+			        MB_2,
+			        MB_4,
+			        MB_8,
+			        MB_16,
+			        MB_32,
+			        MB_64,
+			        MB_128,
+			        MB_256,
+			        MB_512
+			};
 	};
 
 } /* namespace Elpida */
