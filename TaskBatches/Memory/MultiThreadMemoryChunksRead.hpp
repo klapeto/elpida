@@ -64,11 +64,14 @@ namespace Elpida
 			void createTasks()
 			{
 				_chunks = MemoryChunk::breakToChunks(_memory, _numberOfThreads);
+				auto itterations = 0ul;
 				for (const auto& chunk : _chunks)
 				{
-					addTask(new MemoryRead(chunk, std::chrono::milliseconds(2000)));
+					auto mem = new MemoryRead(chunk, std::chrono::milliseconds(500));
+					itterations += mem->getItterations();
+					addTask(mem);
 				}
-				_totalBandwidth.setMeasuredValue(_memory.getSize());
+				_totalBandwidth.setMeasuredValue(_memory.getSize() * itterations);
 			}
 		private:
 			TaskRunResult _totalBandwidth;

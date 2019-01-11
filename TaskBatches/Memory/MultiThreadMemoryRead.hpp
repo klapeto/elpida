@@ -18,54 +18,57 @@
  *************************************************************************/
 
 /*
- * MultiThreadTask.cpp
+ * MultiThreadMemoryRead.hpp
  *
- *  Created on: 17 Μαρ 2018
+ *  Created on: 7 Ιαν 2019
  *      Author: klapeto
  */
 
-#include "Elpida/MultiThreadTask.hpp"
+#ifndef TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_
+#define TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_
 
-#include "Elpida/CpuInfo.hpp"
+#include <Elpida/MultiThreadTask.hpp>
 
 namespace Elpida
 {
+	class Memory;
 
-	MultiThreadTask::MultiThreadTask(const String& name, bool strictAffinity)
-			: Task(name + "(Multi Threaded)"), _threadsShouldWake(false), _strictAffinity(strictAffinity)
+	class MultiThreadMemoryRead: MultiThreadTask
 	{
-	}
-
-	MultiThreadTask::~MultiThreadTask()
-	{
-		destroyTasks();
-	}
-
-	void MultiThreadTask::addTask(Task* task)
-	{
-		static Size cores = CpuInfo::getCpuInfo().getLogicalProcessors();
-
-		if (_tasksToBeExecuted.size() == cores)
-		{
-			_strictAffinity = false;
-			for (auto& task : _tasksToBeExecuted)
+		private:
+			struct MemoryBlock
 			{
-				task.setAffinity(-1);
-			}
-		}
-		_tasksToBeExecuted.push_back(
-		        TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, _strictAffinity ? _tasksToBeExecuted.size() : -1));
-		_createdTasks.push_back(task);
-	}
+					const Memory* memory;
+					int affinity;
+			};
+		public:
 
-	void MultiThreadTask::destroyTasks()
-	{
-		_tasksToBeExecuted.clear();
-		for (auto task : _createdTasks)
-		{
-			delete task;
-		}
-		_createdTasks.clear();
-	}
+			void calculateResults() override
+			{
+				addResult(_totalBandwidth);
+			}
+
+			void addMemoryBlock(const Memory& memory, int affinity = -1)
+			{
+				_blocks.push_back( { &memory, affinity });
+
+			}
+
+			MultiThreadMemoryRead()
+					: MultiThreadTask("Read 8 Bytes/Read", true)
+			{
+
+			}
+			~MultiThreadMemoryRead()
+			{
+
+			}
+		private:
+			Array<MemoryBlock> _blocks;
+			TaskRunResult _totalBandwidth;
+
+	};
 
 } /* namespace Elpida */
+
+#endif /* TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_ */

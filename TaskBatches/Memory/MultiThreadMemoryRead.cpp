@@ -18,54 +18,15 @@
  *************************************************************************/
 
 /*
- * MultiThreadTask.cpp
+ * MultiThreadMemoryRead.cpp
  *
- *  Created on: 17 Μαρ 2018
+ *  Created on: 7 Ιαν 2019
  *      Author: klapeto
  */
 
-#include "Elpida/MultiThreadTask.hpp"
-
-#include "Elpida/CpuInfo.hpp"
+#include "TaskBatches/Memory/MultiThreadMemoryRead.hpp"
 
 namespace Elpida
 {
-
-	MultiThreadTask::MultiThreadTask(const String& name, bool strictAffinity)
-			: Task(name + "(Multi Threaded)"), _threadsShouldWake(false), _strictAffinity(strictAffinity)
-	{
-	}
-
-	MultiThreadTask::~MultiThreadTask()
-	{
-		destroyTasks();
-	}
-
-	void MultiThreadTask::addTask(Task* task)
-	{
-		static Size cores = CpuInfo::getCpuInfo().getLogicalProcessors();
-
-		if (_tasksToBeExecuted.size() == cores)
-		{
-			_strictAffinity = false;
-			for (auto& task : _tasksToBeExecuted)
-			{
-				task.setAffinity(-1);
-			}
-		}
-		_tasksToBeExecuted.push_back(
-		        TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, _strictAffinity ? _tasksToBeExecuted.size() : -1));
-		_createdTasks.push_back(task);
-	}
-
-	void MultiThreadTask::destroyTasks()
-	{
-		_tasksToBeExecuted.clear();
-		for (auto task : _createdTasks)
-		{
-			delete task;
-		}
-		_createdTasks.clear();
-	}
 
 } /* namespace Elpida */

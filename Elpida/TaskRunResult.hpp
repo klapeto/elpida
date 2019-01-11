@@ -71,6 +71,11 @@ namespace Elpida
 				_measuredValue = value;
 			}
 
+			void operator+=(Float64 value)
+			{
+				_measuredValue += value;
+			}
+
 			TaskRunResult()
 					: _measuredValueName("OPS"), _measuredValue(0.0)
 			{

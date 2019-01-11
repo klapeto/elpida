@@ -44,7 +44,7 @@ namespace Elpida
 
 	void MemoryTaskBatch::addMemoryReadTask(Size size) const
 	{
-		auto memory = new AllocateMemory(size, true, 16);
+		auto memory = new AllocateMemory(size, true, sizeof(void*) * 16);
 		memory->setToBeMeasured(false);
 		addTask(memory);
 		addTask(new MemoryRead(memory->getMemory(), std::chrono::milliseconds(2000)));

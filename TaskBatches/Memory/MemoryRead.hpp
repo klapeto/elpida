@@ -42,52 +42,57 @@ namespace Elpida
 		public:
 			void run() override
 			{
-				register auto ptr = (char*) _memory.getPointer();
+				register auto ptr = (long*) _memory.getPointer();
 				register auto start = ptr;
-				register auto end = start + _memory.getSize();
+				register auto end = (long*)((unsigned long)start + _memory.getSize());
 				register auto itterations = _itterations;
+				register auto x = (long)0;
 				for (register auto i = 0ul; i < itterations; ++i)
 				{
 					ptr = start;
 					while (ptr < end)
 					{
-#if __x86_64__
-						asm("mov rax, [%0];"
-								"mov rax, [%0 + 8];"
-								"mov rax, [%0 + 16];"
-								"mov rax, [%0 + 24];"
-								"mov rax, [%0 + 32];"
-								"mov rax, [%0 + 40];"
-								"mov rax, [%0 + 48];"
-								"mov rax, [%0 + 56];"
-								"mov rax, [%0 + 64];"
-								"mov rax, [%0 + 72];"
-								"mov rax, [%0 + 80];"
-								"mov rax, [%0 + 88];"
-								"mov rax, [%0 + 96];"
-								"mov rax, [%0 + 104];"
-								"mov rax, [%0 + 112];"
-								"mov rax, [%0 + 120];"
-								"mov rax, [%0 + 128];"
-								"mov rax, [%0 + 136];"
-								"mov rax, [%0 + 144];"
-								"mov rax, [%0 + 152];"
-								"mov rax, [%0 + 160];"
-								"mov rax, [%0 + 168];"
-								"mov rax, [%0 + 176];"
-								"mov rax, [%0 + 184];"
-								"mov rax, [%0 + 192];"
-								"mov rax, [%0 + 200];"
-								"mov rax, [%0 + 208];"
-								"mov rax, [%0 + 216];"
-								"mov rax, [%0 + 224];"
-								"mov rax, [%0 + 232];"
-								"mov rax, [%0 + 240];"
-								"mov rax, [%0 + 248];"::"r"(ptr));
-#endif
-						ptr += 256;
+						x = *ptr;
+						x = *(ptr + 1);
+						x = *(ptr + 2);
+						x = *(ptr + 3);
+						x = *(ptr + 4);
+						x = *(ptr + 5);
+						x = *(ptr + 6);
+						x = *(ptr + 7);
+						x = *(ptr + 8);
+						x = *(ptr + 9);
+						x = *(ptr + 10);
+						x = *(ptr + 11);
+						x = *(ptr +	12);
+						x = *(ptr + 13);
+						x = *(ptr + 14);
+						x = *(ptr + 15);
+						x = *(ptr + 16);
+						x = *(ptr + 17);
+						x = *(ptr + 18);
+						x = *(ptr + 19);
+						x = *(ptr + 20);
+						x = *(ptr + 21);
+						x = *(ptr + 22);
+						x = *(ptr + 23);
+						x = *(ptr + 24);
+						x = *(ptr + 25);
+						x = *(ptr + 26);
+						x = *(ptr + 27);
+						x = *(ptr + 28);
+						x = *(ptr + 29);
+						x = *(ptr + 30);
+						x = *(ptr + 31);
+						ptr += 32;
 					}
 				}
+				auto dummy = x;
+			}
+
+			unsigned long getItterations() const
+			{
+				return _itterations;
 			}
 
 			void calculateResults() override

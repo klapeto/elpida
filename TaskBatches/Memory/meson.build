@@ -20,11 +20,13 @@
 memoryTasks_sources = ['Plugin.cpp',
 						'MemoryRead.cpp',
 						'MemoryTaskBatch.cpp',
-						'MultiThreadMemoryChunksRead.cpp']
+						'MultiThreadMemoryChunksRead.cpp',
+						'MultiThreadMemoryRead.cpp']
 
 install_headers(['MemoryRead.cpp',
 				'MemoryTaskBatch.cpp',
-				'MultiThreadMemoryChunksRead.hpp'],
+				'MultiThreadMemoryChunksRead.hpp',
+				'MultiThreadMemoryRead.hpp'],
 				subdir: 'Elpida/TaskBatches/Memory')
 				
 if qt5_dep.found()
