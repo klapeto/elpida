@@ -28,7 +28,7 @@ namespace Elpida
 {
 
 	ImageTasksProperties::ImageTasksProperties()
-			: QtTaskBatchWrapper(true), _ui(new Ui::ImageTasksProperties), _outputEnabled(false)
+			: QtTaskBatchWrapper(true, false), _ui(new Ui::ImageTasksProperties), _outputEnabled(false)
 	{
 		_ui->setupUi(this);
 		_ui->leOutputImage->setEnabled(_outputEnabled);

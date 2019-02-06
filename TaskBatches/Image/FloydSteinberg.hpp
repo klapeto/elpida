@@ -106,7 +106,7 @@ namespace Elpida
 
 			void calculateResults()
 			{
-				_runResult.setMeasuredValue(_sourceImage.getTotalSize());
+				_runResult.setOriginalValue(_sourceImage.getTotalSize());
 				addResult(_runResult);
 			}
 

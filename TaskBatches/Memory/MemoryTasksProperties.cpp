@@ -26,7 +26,63 @@
 
 #include "TaskBatches/Memory/MemoryTasksProperties.hpp"
 
+#include "Elpida/Types/List.hpp"
+
+#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QLogValueAxis>
+#include <QtCharts/QValueAxis>
+
 namespace Elpida
 {
+	MemoryTasksProperties::MemoryTasksProperties()
+			: QtTaskBatchWrapper(false, true), _chart(new QtCharts::QChart())
+	{
+		_chart->setTitle("Memory Read Bandwidth");
+		_xAxis = new QtCharts::QLogValueAxis();
+		_xAxis->setTitleText("Working Set Size");
+		_xAxis->setLabelFormat("%.0f B");
+		_xAxis->setBase(8);
+		_xAxis->setMinorTickCount(-1);
+		_chart->addAxis(_xAxis, Qt::AlignBottom);
+
+		_yAxis = new QtCharts::QValueAxis();
+		_yAxis->setTitleText("Bandwidth");
+		_yAxis->setLabelFormat("%.0f GB/s");
+		_chart->addAxis(_yAxis, Qt::AlignLeft);
+	}
+
+	MemoryTasksProperties::~MemoryTasksProperties()
+	{
+		delete _chart;
+		delete _xAxis;
+		delete _yAxis;
+	}
+
+	void MemoryTasksProperties::updateResultsChartData(const Map<String, Array<TaskThroughput>>& results)
+	{
+		_chart->removeAllSeries();
+		auto series = new QtCharts::QLineSeries();
+		auto ordered = List<const TaskThroughput*>();
+
+		for (auto& result : results)
+		{
+			ordered.push_back(&result.second.at(0));
+		}
+		ordered.sort([](const TaskThroughput* a, const TaskThroughput* b)
+		{
+			return a->getRunResult().getOriginalValue() < b->getRunResult().getOriginalValue();
+		});
+
+		for (auto& result : ordered)
+		{
+			series->append(result->getRunResult().getOriginalValue(), result->getRatePerSecond() /  (double)std::giga::num);
+		}
+		_chart->addSeries(series);
+		series->attachAxis(_yAxis);
+		series->attachAxis(_xAxis);
+		_yAxis->setMin(0);
+	}
 
 } /* namespace Elpida */
+

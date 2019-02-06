@@ -38,10 +38,14 @@ namespace Elpida
 	class TaskThroughput
 	{
 		public:
-
-			String getPerSecond() const
+			Float64 getRatePerSecond() const
 			{
-				return ValueUtilities::getValueScale(_runResult.getMeasuredValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>()) + _runResult.getMeasuredValueName() + "/s";
+				return _runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>();
+			}
+
+			String getRatePerSecondString() const
+			{
+				return ValueUtilities::getValueScaleString(_runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>()) + _runResult.getValueTypeName() + "/s";
 			}
 
 			const TaskRunResult& getRunResult() const
@@ -71,7 +75,6 @@ namespace Elpida
 		private:
 			TaskRunResult _runResult;
 			TaskMetrics _taskMetrics;
-
 	};
 
 } /* namespace Elpida */

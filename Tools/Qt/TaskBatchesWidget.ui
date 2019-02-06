@@ -2,36 +2,39 @@
 <ui version="4.0">
  <class>Elpida::TaskBatchesWidget</class>
  <widget class="QWidget" name="Elpida::TaskBatchesWidget">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>640</width>
-    <height>480</height>
-   </rect>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="hrLists">
-     <item>
-      <widget class="QGroupBox" name="gbTaskBatches">
-       <property name="title">
-        <string>Available Task Batches</string>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QListWidget" name="lwTaskBatches"/>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="gbResults">
-       <property name="title">
-        <string>Results</string>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QGroupBox" name="gbTaskBatches">
+      <property name="title">
+       <string>Available Task Batches</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QListWidget" name="lwTaskBatches"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QGroupBox" name="gbResults">
+      <property name="title">
+       <string>Results</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QSplitter" name="splitter_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <widget class="QtCharts::QChartView" name="wChart"/>
          <widget class="QTreeWidget" name="twResults">
           <column>
            <property name="text">
@@ -44,11 +47,11 @@
            </property>
           </column>
          </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
    <item>
     <widget class="QGroupBox" name="bgRunDetails">
@@ -56,13 +59,6 @@
       <string>Run Details</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QLabel" name="lblCurrentTaskBatch">
-        <property name="text">
-         <string>Current Task Batch:</string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
        <widget class="QLabel" name="lblCurrentTaskName">
         <property name="text">
@@ -74,6 +70,13 @@
        <widget class="QLabel" name="lblCurrentTask">
         <property name="text">
          <string>Current Task:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblCurrentTaskBatch">
+        <property name="text">
+         <string>Current Task Batch:</string>
         </property>
        </widget>
       </item>
@@ -144,6 +147,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtCharts::QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">QtCharts/QChartView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

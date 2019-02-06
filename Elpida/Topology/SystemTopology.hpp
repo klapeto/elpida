@@ -17,38 +17,42 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include <QApplication>
-#include <Elpida/Config.hpp>
-#include "Tools/Qt/MainWindow.hpp"
+/*
+ * SystemTopology.hpp
+ *
+ *  Created on: 12 Ιαν 2019
+ *      Author: klapeto
+ */
 
-#if _elpida_linux
-#include <execinfo.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
+#ifndef ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
+#define ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
 
-void segFaultHandler(int sig)
+namespace Elpida
 {
-	void *array[20];
-	size_t size = backtrace(array, 20);
 
-	backtrace_symbols_fd(array, size, STDERR_FILENO);
-	exit(1);
-}
-#endif
+	class ProcessorNode;
 
+	class SystemTopology final
+	{
+		public:
+			unsigned int getDepth() const
+			{
+				return _depth;
+			}
 
+			const ProcessorNode* getRoot() const
+			{
+				return _root;
+			}
 
-int main(int argc, char *argv[])
-{
-#if _elpida_linux
-	signal(SIGSEGV, segFaultHandler);
-#endif
+			SystemTopology();
+			~SystemTopology();
+		private:
+			ProcessorNode* _root;
+			unsigned int _depth;
+			void reload();
+	};
 
-	Elpida::ElpidaManager elpidaManager;
-	QApplication application(argc, argv);
-	Elpida::MainWindow mainWindow(elpidaManager);
-	mainWindow.show();
+} /* namespace Elpida */
 
-	return application.exec();
-}
+#endif /* ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_ */

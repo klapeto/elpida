@@ -22,10 +22,14 @@
 #include <Elpida/Task.hpp>
 #include <TaskBatches/Config.hpp>
 #include <Elpida/TaskBatch.hpp>
+#include <Elpida/Topology/SystemTopology.hpp>
+#include <Elpida/Topology/ProcessorNode.hpp>
 
 #include <QMessageBox>
 #include <QTreeWidgetItem>
+#include <QVBoxLayout>
 #include "Tools/Qt/MainWindow.hpp"
+#include "Tools/Qt/TopologyWidget.hpp"
 
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 #include "TaskBatchProperties.hpp"
@@ -35,8 +39,8 @@
 namespace Elpida
 {
 
-	MainWindow::MainWindow(QWidget *parent)
-			: QMainWindow(parent), _ui(new Ui::MainWindow), _fixedSizeSet(false)
+	MainWindow::MainWindow(ElpidaManager& elpidaManager, QWidget *parent)
+			: QMainWindow(parent), _elpidaManager(elpidaManager), _ui(new Ui::MainWindow), _fixedSizeSet(false)
 	{
 		_ui->setupUi(this);
 
@@ -49,6 +53,8 @@ namespace Elpida
 		_logsDialog = new LogsDialog(_ui->centralWidget);
 
 		loadCpuInfo();
+		_ui->saToplogyArea->setLayout(new QVBoxLayout);
+		_ui->saToplogyArea->layout()->addWidget(new TopologyWidget);
 		//addMascot();
 	}
 
@@ -59,7 +65,7 @@ namespace Elpida
 	void MainWindow::showEvent(QShowEvent *event)
 	{
 		QMainWindow::showEvent(event);
-		setFixedSize(sizeHint());
+		//setFixedSize(sizeHint());
 	}
 
 	MainWindow::~MainWindow()
@@ -186,4 +192,3 @@ namespace Elpida
 	}
 
 }  // namespace Elpida
-

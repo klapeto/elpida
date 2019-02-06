@@ -27,6 +27,7 @@
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include <QMessageBox>
 #include <QListWidgetItem>
+#include <QtCharts/QChartView>
 
 namespace Elpida
 {
@@ -39,8 +40,11 @@ namespace Elpida
 		_na = "N/A";
 		_ui->setupUi(this);
 		_taskBatchPropertiesDialog = new TaskBatchProperties(this);
-
+		_initialChart = _ui->wChart->chart();
+		_ui->wChart->setRenderHint(QPainter::Antialiasing);
+		_initialChart->setTitle("No Data");
 		onTaskBatchListModified();
+		_ui->splitter_2->setStretchFactor(0, 1);
 
 		QPushButton::connect(this, &TaskBatchesWidget::onTaskBatchStart, this, &TaskBatchesWidget::updateForTaskBatchBegin);
 		QPushButton::connect(this, &TaskBatchesWidget::onTaskStart, this, &TaskBatchesWidget::updateForTaskBegin);
@@ -72,6 +76,7 @@ namespace Elpida
 
 	TaskBatchesWidget::~TaskBatchesWidget()
 	{
+		_ui->wChart->setChart(_initialChart);
 		delete _ui;
 	}
 
@@ -119,13 +124,14 @@ namespace Elpida
 		{
 			auto batchItem = new QTreeWidgetItem(_ui->twResults);
 			batchItem->setText(0, QString::fromStdString(batchResult.first));
+			_cachedResults.emplace(batchItem, batchResult.second);
 			for (auto& taskResults : batchResult.second)
 			{
 				auto taskItem = new QTreeWidgetItem(batchItem);
 				taskItem->setText(0, QString::fromStdString(taskResults.first));
 				if (taskResults.second.size() == 1)
 				{
-					taskItem->setText(1, QString::fromStdString(taskResults.second[0].getPerSecond()));
+					taskItem->setText(1, QString::fromStdString(taskResults.second[0].getRatePerSecondString()));
 				}
 				else
 				{
@@ -133,7 +139,7 @@ namespace Elpida
 					{
 						auto taskResultItem = new QTreeWidgetItem(taskItem);
 						taskResultItem->setText(0, QString::fromStdString(taskResult.getRunResult().getResultDescription()));
-						taskResultItem->setText(1, QString::fromStdString(taskResult.getPerSecond()));
+						taskResultItem->setText(1, QString::fromStdString(taskResult.getRatePerSecondString()));
 					}
 				}
 			}
@@ -276,4 +282,30 @@ namespace Elpida
 		}
 	}
 
+	void TaskBatchesWidget::on_twResults_itemClicked(QTreeWidgetItem *item, int column)
+	{
+		auto pageItr = _taskBatchList.find(item->text(0).toStdString());
+		if (pageItr != _taskBatchList.end())
+		{
+			if (pageItr->second->hasResultChart())
+			{
+				auto resultItr = _cachedResults.find(item);
+				if (resultItr != _cachedResults.end())
+				{
+					pageItr->second->updateResultsChartData(resultItr->second);
+					_ui->wChart->setChart(pageItr->second->getResultsChartContainer());
+				}
+			}
+			else
+			{
+				_ui->wChart->setChart(_initialChart);
+			}
+		}
+		else
+		{
+			_ui->wChart->setChart(_initialChart);
+		}
+	}
+
 } // namespace Elpida
+

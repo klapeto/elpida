@@ -53,7 +53,7 @@ namespace Elpida
 
 	void PngDecoding::calculateResults()
 	{
-		_runResult.setMeasuredValue(_dataSize);
+		_runResult.setOriginalValue(_dataSize);
 		addResult(_runResult);
 	}
 

@@ -44,7 +44,7 @@ namespace Elpida
 
 	void ReadFile::calculateResults()
 	{
-		_runResult.setMeasuredValue(_file.getSize());
+		_runResult.setOriginalValue(_file.getSize());
 		addResult(_runResult);
 	}
 

@@ -34,6 +34,7 @@ namespace Elpida
 	class TaskBatchProperties;
 	class TaskBatchesWidget;
 	class LogsDialog;
+	class TopologyWidget;
 
 	namespace Ui
 	{
@@ -46,7 +47,7 @@ namespace Elpida
 		Q_OBJECT
 
 		public:
-			explicit MainWindow(QWidget *parent = nullptr);
+			explicit MainWindow(ElpidaManager& elpidaManager, QWidget *parent = nullptr);
 			~MainWindow();
 
 		protected:
@@ -59,10 +60,11 @@ namespace Elpida
 			void on_actionShowLogs_triggered();
 
 		private:
-			ElpidaManager _elpidaManager;
+			ElpidaManager& _elpidaManager;
 			Array<QMetaObject::Connection> _connections;
 			TaskBatchesWidget* _taskBatchesWidget;
 			LogsDialog* _logsDialog;
+			TopologyWidget* _topologyWidget;
 			Ui::MainWindow *_ui;
 			OffThreadExecutor _offThreadExecutor;
 			bool _fixedSizeSet;

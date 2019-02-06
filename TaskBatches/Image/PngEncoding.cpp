@@ -62,7 +62,7 @@ namespace Elpida
 
 	void PngEncoding::calculateResults()
 	{
-		_runResult.setMeasuredValue(_inputImage.getTotalSize() * 4);
+		_runResult.setOriginalValue(_inputImage.getTotalSize() * 4);
 		addResult(_runResult);
 	}
 

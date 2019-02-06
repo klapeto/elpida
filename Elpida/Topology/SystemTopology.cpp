@@ -17,38 +17,44 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include <QApplication>
-#include <Elpida/Config.hpp>
-#include "Tools/Qt/MainWindow.hpp"
+/*
+ * SystemTopology.cpp
+ *
+ *  Created on: 12 Ιαν 2019
+ *      Author: klapeto
+ */
 
-#if _elpida_linux
-#include <execinfo.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "Elpida/Topology/SystemTopology.hpp"
+#include <Elpida/Topology/ProcessorNode.hpp>
+#include <hwloc.h>
 
-void segFaultHandler(int sig)
+namespace Elpida
 {
-	void *array[20];
-	size_t size = backtrace(array, 20);
+	SystemTopology::SystemTopology()
+			: _root(nullptr)
+	{
+		reload();
+	}
 
-	backtrace_symbols_fd(array, size, STDERR_FILENO);
-	exit(1);
-}
-#endif
+	SystemTopology::~SystemTopology()
+	{
+		delete _root;
+	}
 
+	void SystemTopology::reload()
+	{
+		if (_root != nullptr)
+		{
+			delete _root;
+		}
+		hwloc_topology_t topo;
+		hwloc_topology_init(&topo);
+		hwloc_topology_set_all_types_filter(topo, HWLOC_TYPE_FILTER_KEEP_ALL);
+		hwloc_topology_load(topo);
+		_root = new ProcessorNode(hwloc_get_root_obj(topo));
 
+		hwloc_topology_destroy(topo);
+	}
 
-int main(int argc, char *argv[])
-{
-#if _elpida_linux
-	signal(SIGSEGV, segFaultHandler);
-#endif
+} /* namespace Elpida */
 
-	Elpida::ElpidaManager elpidaManager;
-	QApplication application(argc, argv);
-	Elpida::MainWindow mainWindow(elpidaManager);
-	mainWindow.show();
-
-	return application.exec();
-}

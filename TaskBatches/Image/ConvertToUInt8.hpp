@@ -61,7 +61,7 @@ namespace Elpida
 
 			void calculateResults()
 			{
-				_runResult.setMeasuredValue(_sourceImage.getTotalSizeInBytes());
+				_runResult.setOriginalValue(_sourceImage.getTotalSizeInBytes());
 				addResult(_runResult);
 			}
 

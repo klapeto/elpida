@@ -37,7 +37,7 @@ else
 endif
 
 qt5 = import('qt5')
-qt5_dep = dependency('qt5', modules: ['Widgets'], required: false)
+qt5_dep = dependency('qt5', modules: ['Widgets', 'Charts'], required: false)
 
 pluginInstallDir = join_paths(binaryInstallPath, 'Elpida')
 

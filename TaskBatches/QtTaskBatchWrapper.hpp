@@ -31,7 +31,16 @@
 #if _elpida_qt_enabled
 
 #include "Elpida/TaskBatchWrapper.hpp"
+#include "Elpida/TaskThroughput.hpp"
+#include "Elpida/Types/String.hpp"
+#include "Elpida/Types/Map.hpp"
+#include "Elpida/Types/Array.hpp"
+
 #include <QWidget>
+
+namespace QtCharts {
+	class QChart;
+}  // namespace QtCharts
 
 namespace Elpida
 {
@@ -44,9 +53,24 @@ namespace Elpida
 			virtual void reconfigureTaskBatch() = 0;
 			virtual void validateConfiguration() = 0;
 
+			virtual QtCharts::QChart* getResultsChartContainer()
+			{
+				return nullptr;
+			}
+
+			virtual void updateResultsChartData(const Map<String, Array<TaskThroughput>>& results)
+			{
+
+			}
+
 			bool hasProperties() const
 			{
 				return _hasProperties;
+			}
+
+			bool hasResultChart() const
+			{
+				return _hasResultCharts;
 			}
 
 			virtual ~QtTaskBatchWrapper()
@@ -54,13 +78,14 @@ namespace Elpida
 
 			}
 		protected:
-			QtTaskBatchWrapper(bool hasProperties, QWidget* parrent = nullptr)
-					: TaskBatchWrapper(), QWidget(parrent), _hasProperties(hasProperties)
+			QtTaskBatchWrapper(bool hasProperties, bool hasResultCharts, QWidget* parrent = nullptr)
+					: TaskBatchWrapper(), QWidget(parrent), _hasProperties(hasProperties), _hasResultCharts(hasResultCharts)
 			{
 
 			}
 		private:
 			bool _hasProperties;
+			bool _hasResultCharts;
 	};
 
 } /* namespace Elpida */

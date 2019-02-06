@@ -56,7 +56,7 @@ namespace Elpida
 
 	void WriteFile::calculateResults()
 	{
-		_runResult.setMeasuredValue(_size);
+		_runResult.setOriginalValue(_size);
 		addResult(_runResult);
 	}
 

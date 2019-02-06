@@ -36,7 +36,7 @@ namespace Elpida
 	class ValueUtilities
 	{
 		public:
-			static String getValueScale(Float64 value);
+			static String getValueScaleString(Float64 value);
 	};
 
 } /* namespace Elpida */

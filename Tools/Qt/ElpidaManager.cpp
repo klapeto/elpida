@@ -31,7 +31,6 @@ namespace Elpida
 		Logger::getInstance().setOutput(_log);
 	}
 
-
 	ElpidaManager::~ElpidaManager()
 	{
 		_log.flush();

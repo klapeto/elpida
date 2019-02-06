@@ -48,7 +48,7 @@ namespace Elpida
 			MultiThreadMemoryChunksRead(const Memory& memory, Size numberOfThreads)
 					:
 					  MultiThreadTask(
-					          "Read " + ValueUtilities::getValueScale(memory.getSize()) + "B@ 8 Bytes/Read",
+					          "Read " + ValueUtilities::getValueScaleString(memory.getSize()) + "B@ 8 Bytes/Read",
 					          true),
 					  _totalBandwidth("Total Read Bandwidth", "Bytes"),
 					  _numberOfThreads(numberOfThreads),
@@ -71,7 +71,7 @@ namespace Elpida
 					itterations += mem->getItterations();
 					addTask(mem);
 				}
-				_totalBandwidth.setMeasuredValue(_memory.getSize() * itterations);
+				_totalBandwidth.setOriginalValue(_memory.getSize() * itterations);
 			}
 		private:
 			TaskRunResult _totalBandwidth;

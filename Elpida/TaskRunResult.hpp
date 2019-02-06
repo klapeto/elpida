@@ -36,14 +36,20 @@ namespace Elpida
 	class TaskRunResult final
 	{
 		public:
-			Float64 getMeasuredValue() const
+
+			Float64 getActualValue() const
 			{
-				return _measuredValue;
+				return _originalValue * _multiplier;
 			}
 
-			const String& getMeasuredValueName() const
+			Float64 getOriginalValue() const
 			{
-				return _measuredValueName;
+				return _originalValue;
+			}
+
+			const String& getValueTypeName() const
+			{
+				return _valueTypeName;
 			}
 
 			const String& getResultDescription() const
@@ -56,34 +62,48 @@ namespace Elpida
 				_resultDescription = resultDescription;
 			}
 
-			void setMeasuredValue(Float64 measuredValue)
+			void setOriginalValue(Float64 originalValue)
 			{
-				_measuredValue = measuredValue;
+				_originalValue = originalValue;
 			}
 
-			void setMeasuredValueName(const String& measuredValueName)
+			void setValueName(const String& valueName)
 			{
-				_measuredValueName = measuredValueName;
+				_valueTypeName = valueName;
+			}
+
+			Float64 getMultiplier() const
+			{
+				return _multiplier;
+			}
+
+			void setMultiplier(Float64 multiplier)
+			{
+				_multiplier = multiplier;
 			}
 
 			void operator=(Float64 value)
 			{
-				_measuredValue = value;
+				_originalValue = value;
 			}
 
 			void operator+=(Float64 value)
 			{
-				_measuredValue += value;
+				_originalValue += value;
 			}
 
 			TaskRunResult()
-					: _measuredValueName("OPS"), _measuredValue(0.0)
+					: _valueTypeName("OPS"), _originalValue(0.0), _multiplier(1.0)
 			{
 
 			}
 
-			TaskRunResult(const String& description, const String& measuredValueName)
-					: _measuredValueName(measuredValueName), _resultDescription(description), _measuredValue(0.0)
+			TaskRunResult(const String& description, const String& valueTypeName, Float64 multiplier = 1.0)
+					:
+					  _valueTypeName(valueTypeName),
+					  _resultDescription(description),
+					  _originalValue(0.0),
+					  _multiplier(multiplier)
 			{
 
 			}
@@ -92,11 +112,12 @@ namespace Elpida
 			{
 
 			}
-		private:
-			String _measuredValueName;
-			String _resultDescription;
-			Float64 _measuredValue;
 
+		private:
+			String _valueTypeName;
+			String _resultDescription;
+			Float64 _originalValue;
+			Float64 _multiplier;
 	};
 
 } /* namespace Elpida */

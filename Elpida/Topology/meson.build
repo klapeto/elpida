@@ -1,6 +1,5 @@
-#!/bin/bash
 #-------------------------------------------------------------------------------
-# Elpida - Benchmark library
+# elpida - CPU benchmark tool
 # 
 # Copyright (C) 2018  Ioannis Panagiotopoulos
 # 
@@ -17,13 +16,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
+topology_sources = ['SystemTopology.cpp',
+					'ProcessorNode.cpp']
+					
+topologyHeaders = ['SystemTopology.hpp',
+					'ProcessorNode.hpp'
+				]
 
-if [ -f /etc/lsb-release ]; then
-    #Debian
-    sudo apt install git g++ meson ninja-build unzip libgtest-dev libnuma-dev
-elif [ -f /etc/redhat-release ]; then
-    # Fedora
-    sudo dnf install git gcc-c++ meson ninja-build unzip gtest-devel libnuma-devel
-else
-	echo This linux distribution is unsupported by this script. You have to manually install these packages: git g++ 4.8+ meson ninja unzip
-fi
+topology = static_library('Topology', 
+						topology_sources,
+						cpp_args: defaultCppArgs,
+						link_whole: hwloc,
+						include_directories : [rootIncude, hwlocInclude])
+						
+install_headers(topologyHeaders,
+				subdir: 'Elpida/Topology')

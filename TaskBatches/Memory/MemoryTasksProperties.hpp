@@ -30,10 +30,18 @@
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 #include "MemoryTaskBatch.hpp"
 
+namespace QtCharts
+{
+	class QChartView;
+	class QChart;
+	class QLogValueAxis;
+	class QValueAxis;
+}  // namespace QtCharts
+
 namespace Elpida
 {
 
-	class MemoryTasksProperties: public QtTaskBatchWrapper
+	class MemoryTasksProperties final: public QtTaskBatchWrapper
 	{
 		public:
 
@@ -51,18 +59,21 @@ namespace Elpida
 
 			}
 
-			MemoryTasksProperties()
-					: QtTaskBatchWrapper(false)
+			QtCharts::QChart*  getResultsChartContainer() override
 			{
-
-			}
-			~MemoryTasksProperties()
-			{
-
+				return _chart;
 			}
 
+			void updateResultsChartData(const Map<String, Array<TaskThroughput>>& results) override;
+
+			MemoryTasksProperties();
+			~MemoryTasksProperties();
 		private:
 			MemoryTaskBatch _taskBatch;
+			QtCharts::QChart* _chart;
+			QtCharts::QLogValueAxis* _xAxis;
+			QtCharts::QValueAxis* _yAxis;
+
 	};
 
 } /* namespace Elpida */

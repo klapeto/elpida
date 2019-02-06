@@ -39,6 +39,7 @@ configure_file(	input: 'Config.hpp.in',
 subdir('Exceptions')
 subdir('Types')
 subdir('Utilities')
+subdir('Topology')
 
 core_sources = ['CpuFeature.cpp',
 				'CpuInfo.cpp',
@@ -61,7 +62,7 @@ core_sources = ['CpuFeature.cpp',
 				'TaskRunResult.cpp',
 				'MemoryInfo.cpp']
 
-core = static_library('Elpida', 
+core = static_library('Elpida',
 						core_sources,
 						cpp_args: defaultCppArgs,
 						include_directories : rootIncude)
@@ -91,7 +92,7 @@ install_headers(['CpuFeature.hpp',
 elpida = library('elpida',
 			include_directories : [rootIncude],
 			dependencies : [thread_dep, dl_dep],
-			link_whole: [core, utilities, exceptions],
+			link_whole: [core, utilities, exceptions, topology],
 			cpp_args: defaultCppArgs,
 			install: true)
 

@@ -32,7 +32,7 @@
 
 namespace Elpida
 {
-	String ValueUtilities::getValueScale(Float64 value)
+	String ValueUtilities::getValueScaleString(Float64 value)
 	{
 		std::ostringstream returnString;
 		if (value < std::kilo::num)

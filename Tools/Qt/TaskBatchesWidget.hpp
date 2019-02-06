@@ -24,9 +24,16 @@
 #include <Elpida/Types/String.hpp>
 #include <Elpida/Runner.hpp>
 #include <Elpida/Types/Map.hpp>
+#include <Elpida/TaskThroughput.hpp>
 #include <Elpida/OffThreadExecutor.hpp>
 
-class QListWidgetItem;
+class QTreeWidgetItem;
+namespace QtCharts
+{
+	class QChart;
+	class QChartView;
+}  // namespace QtCharts
+
 
 namespace Elpida
 {
@@ -58,6 +65,8 @@ namespace Elpida
 			const Map<String, QtTaskBatchWrapper*>& _taskBatchList;
 			Ui::TaskBatchesWidget *_ui;
 			TaskBatchProperties* _taskBatchPropertiesDialog;
+			QtCharts::QChart* _initialChart;
+			Map<QTreeWidgetItem*, Map<String, Array<TaskThroughput>>> _cachedResults;
 
 			void appendResults();
 			void runTaskBatches();
@@ -73,6 +82,7 @@ namespace Elpida
 		private slots:
 			void on_pbRun_clicked();
 			void on_pbStop_clicked();
+			void on_twResults_itemClicked(QTreeWidgetItem *item, int column);
 			void onListItemButtonClicked(const QString& name);
 			void updateForSessionBegin();
 			void updateForTaskBatchBegin(const QString& name, int size);
@@ -80,7 +90,7 @@ namespace Elpida
 			void updateForTaskEnd(const QString& name);
 			void updateForTaskBatchEnd(const QString& name);
 			void updateForSessionEnd();
-	};
+    };
 
 } // namespace Elpida
 

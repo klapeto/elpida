@@ -26,7 +26,8 @@ if qt5_dep.found()
 		'ElpidaManager.cpp',
 		'TaskBatchesWidget.cpp',
 		'ListItemWithButton.cpp',
-		'LogsDialog.cpp'
+		'LogsDialog.cpp',
+		'TopologyWidget.cpp'
 	]
 	
 	uiFiles = [
@@ -34,7 +35,8 @@ if qt5_dep.found()
 		'TaskBatchProperties.ui',
 		'TaskBatchesWidget.ui',
 		'ListItemWithButton.ui',
-		'LogsDialog.ui'
+		'LogsDialog.ui',
+		'TopologyWidget.ui'
 	]
 	
 	mocHeaders = [
@@ -42,7 +44,8 @@ if qt5_dep.found()
 		'TaskBatchProperties.hpp',
 		'TaskBatchesWidget.hpp',
 		'ListItemWithButton.hpp',
-		'LogsDialog.hpp'
+		'LogsDialog.hpp',
+		'TopologyWidget.hpp'
 	]
 	
 	elpidaQt_includes = include_directories('.')

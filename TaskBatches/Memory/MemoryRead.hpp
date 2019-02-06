@@ -102,12 +102,13 @@ namespace Elpida
 
 			MemoryRead(const Memory& memory, std::chrono::milliseconds duration)
 					:
-					  Task("Read " + ValueUtilities::getValueScale(memory.getSize()) + "B @8 Bytes/Read"),
-					  _runResult("Memory Read Bandwidth", "Bytes"),
+					  Task("Read " + ValueUtilities::getValueScaleString(memory.getSize()) + "B @8 Bytes/Read"),
+					  _runResult(ValueUtilities::getValueScaleString(memory.getSize()) + "B", "Bytes"),
 					  _memory(memory)
 			{
 				_itterations = (duration.count() / _secondsPerMov) / memory.getSize();
-				_runResult.setMeasuredValue(_memory.getSize() * _itterations);
+				_runResult.setOriginalValue(_memory.getSize());
+				_runResult.setMultiplier(_itterations);
 			}
 
 			~MemoryRead()

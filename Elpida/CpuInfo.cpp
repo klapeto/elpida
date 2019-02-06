@@ -204,17 +204,17 @@ namespace Elpida
 		auto start = Timer::now();
 		asm volatile ( "CPUID\n\t"
 				"RDTSC\n\t"
-				"mov %%edx, %0\n\t"
-				"mov %%eax, %1\n\t": "=r" (cycles_high1), "=r" (cycles_low1)::
-				"%rax", "%rbx", "%rcx", "%rdx");
+				"mov %0, edx\n\t"
+				"mov %1, eax\n\t": "=r" (cycles_high1), "=r" (cycles_low1)::
+				"rax", "rbx", "rcx", "rdx");
 
 		std::this_thread::sleep_for(std::chrono::microseconds(1000));
 
 		asm volatile ( "RDTSCP\n\t"
-				"mov %%edx, %0\n\t"
-				"mov %%eax, %1\n\t"
+				"mov %0, edx\n\t"
+				"mov %1, eax\n\t"
 				"CPUID\n\t": "=r" (cycles_high2), "=r" (cycles_low2)::
-				"%rax", "%rbx", "%rcx", "%rdx");
+				"rax", "rbx", "rcx", "rdx");
 		auto end = Timer::now();
 
 		int64_t endCycles = ((int64_t) cycles_high2 << 32) | cycles_low2;
