@@ -53,8 +53,8 @@ namespace Elpida
 		_logsDialog = new LogsDialog(_ui->centralWidget);
 
 		loadCpuInfo();
-		_ui->saToplogyArea->setLayout(new QVBoxLayout);
-		_ui->saToplogyArea->layout()->addWidget(new TopologyWidget);
+		_ui->wTopology->setLayout(new QVBoxLayout);
+		_ui->wTopology->layout()->addWidget(new TopologyWidget);
 		//addMascot();
 	}
 

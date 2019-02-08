@@ -42,11 +42,11 @@ namespace Elpida
 		public:
 			void run() override
 			{
-				register auto ptr = (long*) _memory.getPointer();
+				register auto ptr = (int64_t*) _memory.getPointer();
 				register auto start = ptr;
-				register auto end = (long*)((unsigned long)start + _memory.getSize());
+				register auto end = (int64_t*)((int64_t)start + _memory.getSize());
 				register auto itterations = _itterations;
-				register auto x = (long)0;
+				register auto x = (int64_t)0;
 				for (register auto i = 0ul; i < itterations; ++i)
 				{
 					ptr = start;
