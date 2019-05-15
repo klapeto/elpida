@@ -32,8 +32,8 @@ namespace Elpida
 
 	static constexpr const char* UnknownOsIndexStr = "[No Index]";
 
-	ProcessorNode::ProcessorNode(void* node)
-			: _type(Type::Unknown), _value(0)
+	ProcessorNode::ProcessorNode(ProcessorNode* parrent, void* node)
+			: _type(Type::Unknown), _value(0), _parrent(parrent)
 	{
 		switch (((hwloc_obj_t) node)->type)
 		{
@@ -171,14 +171,29 @@ namespace Elpida
 		{
 			if (memChild != nullptr)
 			{
-				_children.push_back(ProcessorNode(memChild));
+				_memoryChildren.push_back(ProcessorNode(this, memChild));
 			}
 			memChild = memChild->next_sibling;
 		}
 
 		for (auto i = 0u; i < ((hwloc_obj_t) node)->arity; ++i)
 		{
-			_children.push_back(ProcessorNode(((hwloc_obj_t) node)->children[i]));
+			_children.push_back(ProcessorNode(this, ((hwloc_obj_t) node)->children[i]));
+		}
+	}
+
+	void ProcessorNode::loadSiblings()
+	{
+		for (auto& child : _children)
+		{
+			for (auto& child2 : _children)
+			{
+				if (&child != &child2)
+				{
+					child.addSibling(child2);
+				}
+			}
+			child.loadSiblings();
 		}
 	}
 

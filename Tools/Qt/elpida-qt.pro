@@ -31,7 +31,8 @@ SOURCES += \
     ElpidaManager.cpp \
     LogsDialog.cpp \
     TaskBatchesWidget.cpp \
-    ListItemWithButton.cpp
+    ListItemWithButton.cpp \
+    TopologyWidget.cpp
 
 HEADERS += \
         MainWindow.hpp \
@@ -39,14 +40,16 @@ HEADERS += \
     ElpidaManager.hpp \
     LogsDialog.hpp \
     TaskBatchesWidget.hpp \
-    ListItemWithButton.hpp
+    ListItemWithButton.hpp \
+    TopologyWidget.hpp
 
 FORMS += \
         MainWindow.ui \
     TaskBatchProperties.ui \ 
     LogsDialog.ui \
     TaskBatchesWidget.ui \
-    ListItemWithButton.ui
+    ListItemWithButton.ui \
+    TopologyWidget.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/release/ -lelpida
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/debug/ -lelpida

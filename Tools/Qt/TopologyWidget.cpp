@@ -9,6 +9,8 @@
 #include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 
+#include <cmath>
+
 namespace Elpida
 {
 
@@ -103,7 +105,7 @@ namespace Elpida
 		auto widget = new QWidget();
 		auto label = new QLabel();
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-		auto layout = node.getChildren().size() > 1 ? (QLayout*) new QHBoxLayout : (QLayout*) new QVBoxLayout;
+		auto layout = node.getChildren().size() > 1 ? (QLayout*) new QVBoxLayout : (QLayout*) new QVBoxLayout;
 		widget->setLayout(layout);
 		layout->addWidget(label);
 		label->setText(QString::fromStdString(node.getName() + ": " + ValueUtilities::getValueScaleString(node.getValue()) + "B"));
@@ -166,23 +168,68 @@ namespace Elpida
 		return new QLabel(QString::fromStdString(node.getName()));
 	}
 
-	static QWidget* appendChildren(const Elpida::ProcessorNode& node, QWidget* parrent)
+	static QWidget* appendChildren(const Elpida::ProcessorNode& node)
 	{
-		auto item = getWidget(node);
-		for (auto& child : node.getChildren())
+		const auto& children = node.getChildren();
+		unsigned maxChildren = 0;
+		for (auto sibling : node.getSiblings())
 		{
-			item->layout()->addWidget(appendChildren(child, item));
+			if (sibling->getChildren().size() > maxChildren)
+			{
+				maxChildren = sibling->getChildren().size();
+			}
 		}
+		if (children.size() > maxChildren)
+		{
+			maxChildren = children.size();
+		}
+		int maxColumns = std::ceil(sqrt(maxChildren));
+		//int maxColumns = node.getType() != ProcessorNode::Type::Group ? std::ceil(sqrt(maxChildren)) : 1;
+		auto currColumn = 0;
+		auto currRow = 0;
+		auto item = getWidget(node);
+
+		auto rootLayout = new QGridLayout;
+		if (node.getMemoryChildren().size() > 0)
+		{
+			for (auto& memChild : node.getMemoryChildren())
+			{
+				rootLayout->addWidget(getNumaWidget(memChild), currRow++, 0, 1, maxColumns);
+			}
+		}
+
+		for (auto& child : children)
+		{
+			rootLayout->addWidget(appendChildren(child), currRow, currColumn);
+			if (++currColumn >= maxColumns)
+			{
+				++currRow;
+				currColumn = 0;
+			}
+		}
+
+		if (children.size() < maxChildren)
+		{
+			for (size_t i = 0; i < maxChildren - children.size(); i++)
+			{
+				rootLayout->addItem(new QSpacerItem(50, 50, QSizePolicy::Expanding, QSizePolicy::Expanding), currRow, currColumn);
+				if (++currColumn >= maxColumns)
+				{
+					++currRow;
+					currColumn = 0;
+				}
+			}
+		}
+
+		((QBoxLayout*) item->layout())->addLayout(rootLayout);
 		return item;
 	}
 
 	void TopologyWidget::loadTopology()
 	{
 		Elpida::SystemTopology top;
-		auto system = new QGroupBox();
-		system->setTitle(QString::fromStdString(top.getRoot()->getName()));
 		QLayout* layout = new QHBoxLayout();
-		layout->addWidget(appendChildren(*top.getRoot(), system));
+		layout->addWidget(appendChildren(*top.getRoot()));
 		setLayout(layout);
 	}
 

@@ -61,6 +61,16 @@ namespace Elpida
 				return _children;
 			}
 
+			const Array<ProcessorNode*>& getSiblings() const
+			{
+				return _siblings;
+			}
+
+			const Array<ProcessorNode>& getMemoryChildren() const
+			{
+				return _memoryChildren;
+			}
+
 			const String& getName() const
 			{
 				return _name;
@@ -81,14 +91,21 @@ namespace Elpida
 			}
 
 		private:
-			ProcessorNode(void* node);	// Evil casting to avoid header inclusion
+			ProcessorNode(ProcessorNode* parrent, void* node);	// Evil casting to avoid header inclusion
+
+			void addSibling(ProcessorNode& node)
+			{
+				_siblings.push_back(&node);
+			}
 
 			String _name;
 			Type _type;
 			Size _value;
+			ProcessorNode* _parrent;
 
-			//Array<ProcessorNode> _memoryChildren;
 			Array<ProcessorNode> _children;
+			Array<ProcessorNode> _memoryChildren;
+			Array<ProcessorNode*> _siblings;
 			void loadMachine(void* node);
 			void loadPackage(void* node);
 			void loadNumaNode(void* node);
@@ -98,6 +115,7 @@ namespace Elpida
 			void loadExecutionUnit(void* node);
 
 			void loadChildren(void* node);
+			void loadSiblings();
 			friend class SystemTopology;
 	};
 
