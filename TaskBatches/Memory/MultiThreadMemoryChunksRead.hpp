@@ -31,8 +31,8 @@
 #include <Elpida/Types/Array.hpp>
 #include "TaskBatches/General/MemoryChunk.hpp"
 #include <Elpida/CpuInfo.hpp>
-#include "MemoryRead.hpp"
 #include <Elpida/Types/Primitives.hpp>
+#include "TaskBatches/Memory/MemoryReadCached.hpp"
 
 namespace Elpida
 {
@@ -47,9 +47,7 @@ namespace Elpida
 
 			MultiThreadMemoryChunksRead(const Memory& memory, Size numberOfThreads)
 					:
-					  MultiThreadTask(
-					          "Read " + ValueUtilities::getValueScaleString(memory.getSize()) + "B@ 8 Bytes/Read",
-					          true),
+					  MultiThreadTask("Read " + ValueUtilities::getValueScaleString(memory.getSize()) + "B@ 8 Bytes/Read", true),
 					  _totalBandwidth("Total Read Bandwidth", "Bytes"),
 					  _numberOfThreads(numberOfThreads),
 					  _memory(memory)
@@ -67,8 +65,11 @@ namespace Elpida
 				auto itterations = 0ul;
 				for (const auto& chunk : _chunks)
 				{
-					auto mem = new MemoryRead(chunk, std::chrono::milliseconds(500));
-					itterations += mem->getItterations();
+					auto mem = new MemoryReadCached(chunk, std::chrono::milliseconds(2000));
+					if (itterations == 0ul)
+					{
+						itterations = mem->getItterations();
+					}
 					addTask(mem);
 				}
 				_totalBandwidth.setOriginalValue(_memory.getSize() * itterations);

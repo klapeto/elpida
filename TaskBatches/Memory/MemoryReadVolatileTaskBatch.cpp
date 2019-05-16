@@ -18,44 +18,27 @@
  *************************************************************************/
 
 /*
- * MemoryTaskBatch.cpp
+ * MemoryReadVolatileTaskBatch.cpp
  *
- *  Created on: 18 Οκτ 2018
+ *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MemoryTaskBatch.hpp"
-#include "MemoryRead.hpp"
+#include "TaskBatches/Memory/MemoryReadVolatileTaskBatch.hpp"
 #include "TaskBatches/General/AllocateMemory.hpp"
+#include "TaskBatches/Memory/MemoryReadVolatile.hpp"
 #include <Elpida/CpuInfo.hpp>
-#include <Elpida/MemoryInfo.hpp>
-#include <Elpida/TaskThread.hpp>
-#include "TaskBatches/Memory/MultiThreadMemoryChunksRead.hpp"
 
 namespace Elpida
 {
 
-	constexpr int MemoryTaskBatch::workingSetSize[];
-
-	void MemoryTaskBatch::onBeforeExecution() const
-	{
-		//TaskThread::setCurrentThreadAffinity(1);
-	}
-
-	void MemoryTaskBatch::addMemoryReadTask(Size size) const
+	void MemoryReadVolatileTaskBatch::addMemoryReadTask(Size size) const
 	{
 		auto memory = new AllocateMemory(size, true, sizeof(void*) * 16);
 		memory->setToBeMeasured(false);
 		addTask(memory);
-		addTask(new MemoryRead(memory->getMemory(), std::chrono::milliseconds(2000)));
-	}
-
-	void MemoryTaskBatch::createTasks() const
-	{
-		for (auto size : workingSetSize)
-		{
-			addMemoryReadTask(size);
-		}
+		addTask(new MemoryReadVolatile(memory->getMemory(), std::chrono::milliseconds(2000)));
 	}
 
 } /* namespace Elpida */
+

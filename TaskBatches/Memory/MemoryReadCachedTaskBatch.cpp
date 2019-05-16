@@ -18,16 +18,43 @@
  *************************************************************************/
 
 /*
- * MemoryRead.cpp
+ * MemoryTaskBatch.cpp
  *
  *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MemoryRead.hpp"
+#include "TaskBatches/Memory/MemoryReadCachedTaskBatch.hpp"
+
+#include "TaskBatches/General/AllocateMemory.hpp"
+#include <Elpida/CpuInfo.hpp>
+#include "TaskBatches/Memory/MemoryReadCached.hpp"
+#include "TaskBatches/Memory/MultiThreadMemoryChunksRead.hpp"
 
 namespace Elpida
 {
 
-} /* namespace Elpida */
+	constexpr int MemoryReadCachedTaskBatch::workingSetSize[];
 
+	void MemoryReadCachedTaskBatch::onBeforeExecution() const
+	{
+		//TaskThread::setCurrentThreadAffinity(1);
+	}
+
+	void MemoryReadCachedTaskBatch::addMemoryReadTask(Size size) const
+	{
+		auto memory = new AllocateMemory(size, true, sizeof(void*) * 16);
+		memory->setToBeMeasured(false);
+		addTask(memory);
+		addTask(new MemoryReadCached(memory->getMemory(), std::chrono::milliseconds(2000)));
+	}
+
+	void MemoryReadCachedTaskBatch::createTasks() const
+	{
+		for (auto size : workingSetSize)
+		{
+			addMemoryReadTask(size);
+		}
+	}
+
+} /* namespace Elpida */

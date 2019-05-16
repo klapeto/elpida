@@ -18,28 +18,36 @@
  *************************************************************************/
 
 /*
- * MemoryTasksProperties.hpp
+ * MemoryTasksPropertiesWithChart.hpp
  *
- *  Created on: 16 Μαΐ 2019
+ *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
-#define TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
+#ifndef TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIESWITHCHART_HPP_
+#define TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIESWITHCHART_HPP_
 
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
+
+namespace QtCharts
+{
+	class QChartView;
+	class QChart;
+	class QLogValueAxis;
+	class QValueAxis;
+	class QCategoryAxis;
+}  // namespace QtCharts
 
 namespace Elpida
 {
 
-	template<typename T>
-	class MemoryTasksProperties final: public QtTaskBatchWrapper
+	class MemoryTasksPropertiesWithChart final: public QtTaskBatchWrapper
 	{
 		public:
 
 			const TaskBatch& getTaskBatch() const
 			{
-				return _taskBatch;
+				return *_taskBatch;
 			}
 
 			void reconfigureTaskBatch()
@@ -51,20 +59,23 @@ namespace Elpida
 
 			}
 
-			MemoryTasksProperties(T&& batch)
-					:QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
+			QtCharts::QChart* getResultsChartContainer() override
 			{
-
+				return _chart;
 			}
 
-			~MemoryTasksProperties()
-			{
+			void updateResultsChartData(const Map<String, Array<TaskThroughput>>& results) override;
 
-			}
+			MemoryTasksPropertiesWithChart(TaskBatch* taskBatch);
+			~MemoryTasksPropertiesWithChart();
 		private:
-			T _taskBatch;
+			TaskBatch* _taskBatch;
+			QtCharts::QChart* _chart;
+			QtCharts::QCategoryAxis* _xAxis;
+			QtCharts::QValueAxis* _yAxis;
+
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_ */
+#endif /* TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIESWITHCHART_HPP_ */

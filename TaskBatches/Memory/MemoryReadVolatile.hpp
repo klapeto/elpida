@@ -18,35 +18,30 @@
  *************************************************************************/
 
 /*
- * MemoryRead.hpp
+ * MemoryReadVolatile.hpp
  *
- *  Created on: 18 Οκτ 2018
+ *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYREAD_HPP_
-#define TASKBATCHES_MEMORY_MEMORYREAD_HPP_
+#ifndef TASKBATCHES_MEMORY_MEMORYREADVOLATILE_HPP_
+#define TASKBATCHES_MEMORY_MEMORYREADVOLATILE_HPP_
 
-#include <Elpida/Task.hpp>
-#include <Elpida/Types/Integer.hpp>
-#include <Elpida/Types/Primitives.hpp>
-#include <Elpida/TaskRunResult.hpp>
-#include <Elpida/Utilities/ValueUtilities.hpp>
-#include <TaskBatches/General/Memory.hpp>
-#include <smmintrin.h>
+#include "MemoryReadCached.hpp"
 
 namespace Elpida
 {
-	class MemoryRead final: public Task
+
+	class MemoryReadVolatile final: public MemoryReadCached
 	{
 		public:
-			void run() override
+			virtual void run() override
 			{
-				register auto ptr = (int64_t*) _memory.getPointer();
+				volatile auto ptr = (int64_t*) _memory.getPointer();
 				register auto start = ptr;
-				register auto end = (int64_t*)((int64_t)start + _memory.getSize());
+				register auto end = (int64_t*) ((int64_t) start + _memory.getSize());
 				register auto itterations = _itterations;
-				register auto x = (int64_t)0;
+				register auto x = (int64_t) 0;
 				for (register auto i = 0ul; i < itterations; ++i)
 				{
 					ptr = start;
@@ -64,7 +59,7 @@ namespace Elpida
 						x = *(ptr + 9);
 						x = *(ptr + 10);
 						x = *(ptr + 11);
-						x = *(ptr +	12);
+						x = *(ptr + 12);
 						x = *(ptr + 13);
 						x = *(ptr + 14);
 						x = *(ptr + 15);
@@ -90,39 +85,17 @@ namespace Elpida
 				auto dummy = x;
 			}
 
-			unsigned long getItterations() const
+			MemoryReadVolatile(const Memory& memory, std::chrono::milliseconds duration)
+					: MemoryReadCached(memory, duration)
 			{
-				return _itterations;
-			}
 
-			void calculateResults() override
+			}
+			~MemoryReadVolatile()
 			{
-				addResult(_runResult);
-			}
 
-			MemoryRead(const Memory& memory, std::chrono::milliseconds duration)
-					:
-					  Task("Read " + ValueUtilities::getValueScaleString(memory.getSize()) + "B @8 Bytes/Read"),
-					  _runResult(ValueUtilities::getValueScaleString(memory.getSize()) + "B", "Bytes"),
-					  _memory(memory)
-			{
-				_itterations = (duration.count() / _secondsPerMov) / memory.getSize();
-				_runResult.setOriginalValue(_memory.getSize());
-				_runResult.setMultiplier(_itterations);
 			}
-
-			~MemoryRead()
-			{
-				finalize();
-			}
-
-		private:
-			TaskRunResult _runResult;
-			const Memory& _memory;
-			unsigned long _itterations;
-			static constexpr double _secondsPerMov = 10.0 / 1000000000.0;// rough estimate, to be passed on construction later once we find the latency
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYREAD_HPP_ */
+#endif /* TASKBATCHES_MEMORY_MEMORYREADVOLATILE_HPP_ */

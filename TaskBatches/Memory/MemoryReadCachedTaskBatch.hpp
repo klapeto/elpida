@@ -18,14 +18,14 @@
  *************************************************************************/
 
 /*
- * MemoryTaskBatch.hpp
+ * MemoryReadCachedTaskBatch.hpp
  *
  *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYTASKBATCH_HPP_
-#define TASKBATCHES_MEMORY_MEMORYTASKBATCH_HPP_
+#ifndef TASKBATCHES_MEMORY_MEMORYREADCACHEDTASKBATCH_HPP_
+#define TASKBATCHES_MEMORY_MEMORYREADCACHEDTASKBATCH_HPP_
 
 #include <Elpida/TaskBatch.hpp>
 #include <Elpida/Types/Primitives.hpp>
@@ -33,7 +33,7 @@
 namespace Elpida
 {
 
-	class MemoryTaskBatch final: public TaskBatch
+	class MemoryReadCachedTaskBatch : public TaskBatch
 	{
 		public:
 
@@ -67,19 +67,26 @@ namespace Elpida
 			void onBeforeExecution() const override;
 			void createTasks() const override;
 
-			MemoryTaskBatch()
-					: TaskBatch("Memory Bandwidth")
+			MemoryReadCachedTaskBatch()
+					: TaskBatch("Memory Read (Single Thread/Cached)")
 			{
 
 			}
 
-			~MemoryTaskBatch()
+			MemoryReadCachedTaskBatch(const String& name)
+					: TaskBatch(name)
 			{
 
 			}
 
-		private:
-			void addMemoryReadTask(Size size) const;
+			virtual ~MemoryReadCachedTaskBatch()
+			{
+
+			}
+
+		protected:
+			virtual void addMemoryReadTask(Size size) const;
+
 			static constexpr int workingSetSize[] = {
 			        B_128,
 			        B_256,
@@ -105,8 +112,9 @@ namespace Elpida
 			        MB_256,
 			        MB_512
 			};
+
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYTASKBATCH_HPP_ */
+#endif /* TASKBATCHES_MEMORY_MEMORYREADCACHEDTASKBATCH_HPP_ */

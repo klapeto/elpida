@@ -18,21 +18,28 @@
 #-------------------------------------------------------------------------------
 
 memoryTasks_sources = ['Plugin.cpp',
-						'MemoryRead.cpp',
-						'MemoryTaskBatch.cpp',
+						'MemoryReadCached.cpp',
+						'MemoryReadVolatile.cpp',
+						'MemoryReadCachedTaskBatch.cpp',
 						'MultiThreadMemoryChunksRead.cpp',
+						'MemoryReadVolatileTaskBatch.cpp',
+						'MultithreadMemoryChunksReadCachedTaskBatch.cpp',
 						'MultiThreadMemoryRead.cpp']
 
-install_headers(['MemoryRead.cpp',
-				'MemoryTaskBatch.cpp',
+install_headers(['MemoryReadCached.hpp',
+				'MemoryReadVolatile.hpp',
+				'MemoryReadCachedTaskBatch.hpp',
 				'MultiThreadMemoryChunksRead.hpp',
+				'MemoryReadVolatileTaskBatch.hpp',
+				'MultithreadMemoryChunksReadCachedTaskBatch.hpp',
 				'MultiThreadMemoryRead.hpp'],
 				subdir: 'Elpida/TaskBatches/Memory')
 				
 if qt5_dep.found()
 
 	memoryTasks_sources += [
-		'MemoryTasksProperties.cpp'
+		'MemoryTasksProperties.cpp',
+		'MemoryTasksPropertiesWithChart.cpp'
 	]
 
 	uiFiles = [
@@ -40,7 +47,8 @@ if qt5_dep.found()
 	]
 	
 	mocHeaders = [
-		'MemoryTasksProperties.hpp'
+		'MemoryTasksProperties.hpp',
+		'MemoryTasksPropertiesWithChart.hpp'
 	]
 	
 	memoryTasks_sources += qt5.preprocess(

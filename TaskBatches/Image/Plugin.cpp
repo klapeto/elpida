@@ -43,4 +43,10 @@ extern "C" Elpida::QtTaskBatchWrapper* createQtBatchWrapper()
 	return new Elpida::ImageTasksProperties();
 }
 
+extern "C" Elpida::Array<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
+{
+	return new Elpida::Array<Elpida::QtTaskBatchWrapper*> { new Elpida::ImageTasksProperties() };
+}
+
+
 #endif

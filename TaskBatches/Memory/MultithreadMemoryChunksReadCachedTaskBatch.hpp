@@ -18,53 +18,37 @@
  *************************************************************************/
 
 /*
- * MemoryTasksProperties.hpp
+ * MultithreadMemoryChunksReadCachedTaskBatch.hpp
  *
  *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
-#define TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
+#ifndef TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_
+#define TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_
 
-#include "TaskBatches/QtTaskBatchWrapper.hpp"
+#include <Elpida/TaskBatch.hpp>
+#include <Elpida/Types/Primitives.hpp>
 
 namespace Elpida
 {
 
-	template<typename T>
-	class MemoryTasksProperties final: public QtTaskBatchWrapper
+	class MultithreadMemoryChunksReadCachedTaskBatch: public TaskBatch
 	{
 		public:
+			void createTasks() const override;
 
-			const TaskBatch& getTaskBatch() const
-			{
-				return _taskBatch;
-			}
-
-			void reconfigureTaskBatch()
-			{
-
-			}
-			void validateConfiguration()
+			MultithreadMemoryChunksReadCachedTaskBatch()
+					: TaskBatch("Memory Read (Multi Thread/Chunked/Cached)")
 			{
 
 			}
 
-			MemoryTasksProperties(T&& batch)
-					:QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
+			virtual ~MultithreadMemoryChunksReadCachedTaskBatch()
 			{
-
 			}
-
-			~MemoryTasksProperties()
-			{
-
-			}
-		private:
-			T _taskBatch;
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_ */
+#endif /* TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_ */

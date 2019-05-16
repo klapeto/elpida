@@ -18,53 +18,29 @@
  *************************************************************************/
 
 /*
- * MemoryTasksProperties.hpp
+ * MultithreadMemoryChunksReadCached.cpp
  *
  *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
-#define TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
+#include "TaskBatches/Memory/MultithreadMemoryChunksReadCachedTaskBatch.hpp"
 
-#include "TaskBatches/QtTaskBatchWrapper.hpp"
+#include "TaskBatches/General/AllocateMemory.hpp"
+#include "TaskBatches/Memory/MultiThreadMemoryChunksRead.hpp"
+#include <Elpida/CpuInfo.hpp>
 
 namespace Elpida
 {
 
-	template<typename T>
-	class MemoryTasksProperties final: public QtTaskBatchWrapper
+	void MultithreadMemoryChunksReadCachedTaskBatch::createTasks() const
 	{
-		public:
-
-			const TaskBatch& getTaskBatch() const
-			{
-				return _taskBatch;
-			}
-
-			void reconfigureTaskBatch()
-			{
-
-			}
-			void validateConfiguration()
-			{
-
-			}
-
-			MemoryTasksProperties(T&& batch)
-					:QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
-			{
-
-			}
-
-			~MemoryTasksProperties()
-			{
-
-			}
-		private:
-			T _taskBatch;
-	};
+		constexpr int size = 512 * (1024 * 1024);
+		auto memory = new AllocateMemory(size, true, sizeof(void*) * 16);
+		memory->setToBeMeasured(false);
+		addTask(memory);
+		addTask(new MultiThreadMemoryChunksRead(memory->getMemory(), CpuInfo::getCpuInfo().getPhysicalCores()));
+	}
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_ */

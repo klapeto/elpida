@@ -18,53 +18,36 @@
  *************************************************************************/
 
 /*
- * MemoryTasksProperties.hpp
+ * MemoryReadVolatileTaskBatch.hpp
  *
  *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
-#define TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
+#ifndef TASKBATCHES_MEMORY_MEMORYREADVOLATILETASKBATCH_HPP_
+#define TASKBATCHES_MEMORY_MEMORYREADVOLATILETASKBATCH_HPP_
 
-#include "TaskBatches/QtTaskBatchWrapper.hpp"
+#include "MemoryReadCachedTaskBatch.hpp"
 
 namespace Elpida
 {
 
-	template<typename T>
-	class MemoryTasksProperties final: public QtTaskBatchWrapper
+	class MemoryReadVolatileTaskBatch final: public MemoryReadCachedTaskBatch
 	{
 		public:
-
-			const TaskBatch& getTaskBatch() const
-			{
-				return _taskBatch;
-			}
-
-			void reconfigureTaskBatch()
-			{
-
-			}
-			void validateConfiguration()
+			MemoryReadVolatileTaskBatch()
+					: MemoryReadCachedTaskBatch("Memory Read (Single Thread/Volatile)")
 			{
 
 			}
 
-			MemoryTasksProperties(T&& batch)
-					:QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
+			~MemoryReadVolatileTaskBatch()
 			{
-
 			}
-
-			~MemoryTasksProperties()
-			{
-
-			}
-		private:
-			T _taskBatch;
+		protected:
+			void addMemoryReadTask(Size size) const override;
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_ */
+#endif /* TASKBATCHES_MEMORY_MEMORYREADVOLATILETASKBATCH_HPP_ */
