@@ -65,8 +65,6 @@ namespace Elpida
 			  _model(-1),
 			  _family(-1),
 			  _cacheLineSize(-1),
-			  _physicalCores(1),
-			  _logicalProcessors(1),
 			  _maximumStandardFunction(0),
 			  _maximumExtendedFunction(0),
 			  _tscFrequency(0),
@@ -158,7 +156,6 @@ namespace Elpida
 		out("Hyper Threading:", (_hyperThreading ? "true" : "false"));
 		out("Turbo Boost:", (_turboBoost ? "true" : "false"));
 		out("Turbo Boost 3:", (_turboBoost3 ? "true" : "false"));
-		out("Logical Cores:", _logicalProcessors);
 	}
 
 	void CpuInfo::exportInstructionSetSupportInfo(std::ostream& output) const
@@ -266,11 +263,6 @@ namespace Elpida
 		if (featureCheck(edx, 28))
 		{
 			_hyperThreading = true;
-			_logicalProcessors = getRegisterValue(ebx, 16, 0xFF);
-		}
-		else
-		{
-			_logicalProcessors = 1;
 		}
 
 		for (int i = 2; i <= 4; ++i)
@@ -365,21 +357,6 @@ namespace Elpida
 		addFeature(_instructionExtensions, "F16C", ecx, 29);
 		addFeature(_instructionExtensions, "RDRAND", ecx, 30);
 
-		if (_maximumExtendedFunction >= 0x80000008)
-		{
-			__get_cpuid(0x80000008, &eax, &ebx, &ecx, &edx);
-			unsigned apicIdCoreIdSize = getRegisterValue(ecx, 12, 0xF);
-			if (apicIdCoreIdSize != 0)
-			{
-				unsigned mask = (1 << apicIdCoreIdSize) - 1;
-				_physicalCores = (getRegisterValue(ecx, 0, 0xFF) & mask) + 1;
-			}
-			else
-			{
-				_physicalCores = getRegisterValue(ecx, 0, 0xFF) + 1;
-			}
-		}
-
 		if (_maximumExtendedFunction >= 0x80000005)
 		{
 
@@ -472,11 +449,6 @@ namespace Elpida
 		if (featureCheck(edx, 28))
 		{
 			_hyperThreading = true;
-			_logicalProcessors = getRegisterValue(ebx, 16, 0xFF);
-		}
-		else
-		{
-			_logicalProcessors = _physicalCores;
 		}
 
 		_rdtscp = featureCheck(edx, 4);
@@ -563,11 +535,9 @@ namespace Elpida
 
 			while (true)
 			{
-				asm volatile ("mov ecx, %0;"
-						:
-						: "r" (i));
-
-				__get_cpuid(0x4, &eax, &ebx, &ecx, &edx);
+				asm volatile("cpuid;"
+						: "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+						: "0"(0x4), "1"(0), "2"(i), "3"(0));
 
 				if (getRegisterValue(eax, 0, 0x1F) == 0) break;
 

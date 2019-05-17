@@ -138,19 +138,9 @@ namespace Elpida
 				return _instructionExtensions;
 			}
 
-			int getLogicalProcessors() const
-			{
-				return _logicalProcessors;
-			}
-
 			int getModel() const
 			{
 				return _model;
-			}
-
-			int getPhysicalCores() const
-			{
-				return _physicalCores;
 			}
 
 			const String& getProcessorBrand() const
@@ -223,8 +213,6 @@ namespace Elpida
 			int _family;
 			int _stepping;
 			int _cacheLineSize;
-			int _physicalCores;
-			int _logicalProcessors;
 			unsigned _maximumStandardFunction;
 			unsigned _maximumExtendedFunction;
 			unsigned _crystalClock;

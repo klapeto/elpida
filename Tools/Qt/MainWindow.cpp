@@ -19,6 +19,7 @@
 
 #include "ui_MainWindow.h"
 #include <Elpida/CpuInfo.hpp>
+#include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Task.hpp>
 #include <TaskBatches/Config.hpp>
 #include <Elpida/TaskBatch.hpp>
@@ -81,7 +82,7 @@ namespace Elpida
 		_ui->lblFamilyValue->setText(QString::number(cpuInfo.getFamily()));
 		_ui->lblSteppingValue->setText(QString::number(cpuInfo.getStepping()));
 		_ui->lblTscFreqValue->setText(QString::number(cpuInfo.getTscFequency() / std::giga::num, 'g', 3) + QString(" GHZ"));
-		_ui->lblLogicalCoresValue->setText(QString::number(cpuInfo.getLogicalProcessors()));
+		_ui->lblLogicalCoresValue->setText(QString::number(SystemTopology::getTopology().getTotalLogicalCores()));
 		_ui->chkHyperthreading->setChecked(cpuInfo.isHyperThreading());
 		_ui->chkTurbo->setChecked(cpuInfo.isTurboBoost());
 		_ui->chkTurbo3->setChecked(cpuInfo.isTurboBoost3());

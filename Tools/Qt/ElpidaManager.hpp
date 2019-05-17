@@ -26,7 +26,7 @@
 #include <Elpida/Utilities/NonCopyable.hpp>
 #include <Elpida/Types/Map.hpp>
 #include <Elpida/Types/Array.hpp>
-#include "Elpida/SharedLibraryLoader.hpp"
+#include <Elpida/SharedLibraryLoader.hpp>
 
 namespace Elpida
 {

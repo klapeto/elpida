@@ -26,7 +26,7 @@
 
 #include "Elpida/MultiThreadTask.hpp"
 
-#include "Elpida/CpuInfo.hpp"
+#include "Elpida/Topology/SystemTopology.hpp"
 
 namespace Elpida
 {
@@ -43,7 +43,7 @@ namespace Elpida
 
 	void MultiThreadTask::addTask(Task* task)
 	{
-		static Size cores = CpuInfo::getCpuInfo().getLogicalProcessors();
+		static Size cores = SystemTopology::getTopology().getTotalLogicalCores();
 
 		if (_tasksToBeExecuted.size() == cores)
 		{

@@ -28,7 +28,7 @@
 
 #include "TaskBatches/General/AllocateMemory.hpp"
 #include "TaskBatches/Memory/MultiThreadMemoryChunksRead.hpp"
-#include <Elpida/CpuInfo.hpp>
+#include <Elpida/Topology/SystemTopology.hpp>
 
 namespace Elpida
 {
@@ -39,7 +39,7 @@ namespace Elpida
 		auto memory = new AllocateMemory(size, true, sizeof(void*) * 16);
 		memory->setToBeMeasured(false);
 		addTask(memory);
-		addTask(new MultiThreadMemoryChunksRead(memory->getMemory(), CpuInfo::getCpuInfo().getPhysicalCores()));
+		addTask(new MultiThreadMemoryChunksRead(memory->getMemory(), SystemTopology::getTopology().getTotalLogicalCores()));
 	}
 
 } /* namespace Elpida */

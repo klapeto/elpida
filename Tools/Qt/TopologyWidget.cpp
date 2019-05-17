@@ -227,7 +227,7 @@ namespace Elpida
 
 	void TopologyWidget::loadTopology()
 	{
-		Elpida::SystemTopology top;
+		auto& top = Elpida::SystemTopology::getTopology();
 		QLayout* layout = new QHBoxLayout();
 		layout->addWidget(appendChildren(*top.getRoot()));
 		setLayout(layout);

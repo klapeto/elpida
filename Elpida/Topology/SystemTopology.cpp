@@ -54,6 +54,24 @@ namespace Elpida
 		_root = new ProcessorNode(nullptr, hwloc_get_root_obj(topo));
 		_root->loadSiblings();	// Now its safe to attempt to recursively load all siblings
 		hwloc_topology_destroy(topo);
+		accumulateCores(*_root);
+	}
+
+	void SystemTopology::accumulateCores(ProcessorNode& node)
+	{
+		for (auto child : node.getChildren()){
+			switch (child.getType()) {
+				case ProcessorNode::Type::ExecutionUnit:
+					_totalLogicalCores++;
+					break;
+				case ProcessorNode::Type::Core:
+					_totalPhysicalCores++;
+					break;
+				default:
+					break;
+			}
+			accumulateCores(child);
+		}
 	}
 
 } /* namespace Elpida */
