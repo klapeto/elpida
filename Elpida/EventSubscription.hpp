@@ -27,7 +27,7 @@
 #ifndef ELPIDA_EVENTSUBSCRIPTION_HPP_
 #define ELPIDA_EVENTSUBSCRIPTION_HPP_
 
-#include "Elpida/Types/List.hpp"
+#include <list>
 #include "Elpida/Utilities/NonCopyable.hpp"
 #include <functional>
 
@@ -58,7 +58,7 @@ namespace Elpida
 
 			}
 		private:
-			typedef typename List<EventSubscription<T...>>::iterator Iterator;
+			typedef typename std::list<EventSubscription<T...>>::iterator Iterator;
 
 			Iterator _iterator;
 			Event<T...>& _owner;

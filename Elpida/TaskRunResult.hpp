@@ -27,8 +27,7 @@
 #ifndef ELPIDA_TASKRUNRESULT_HPP_
 #define ELPIDA_TASKRUNRESULT_HPP_
 
-#include "Elpida/Types/Float.hpp"
-#include "Elpida/Types/String.hpp"
+#include <string>
 
 namespace Elpida
 {
@@ -37,57 +36,57 @@ namespace Elpida
 	{
 		public:
 
-			Float64 getActualValue() const
+			double getActualValue() const
 			{
 				return _originalValue * _multiplier;
 			}
 
-			Float64 getOriginalValue() const
+			double getOriginalValue() const
 			{
 				return _originalValue;
 			}
 
-			const String& getValueTypeName() const
+			const std::string& getValueTypeName() const
 			{
 				return _valueTypeName;
 			}
 
-			const String& getResultDescription() const
+			const std::string& getResultDescription() const
 			{
 				return _resultDescription;
 			}
 
-			void setResultDescription(const String& resultDescription)
+			void setResultDescription(const std::string& resultDescription)
 			{
 				_resultDescription = resultDescription;
 			}
 
-			void setOriginalValue(Float64 originalValue)
+			void setOriginalValue(double originalValue)
 			{
 				_originalValue = originalValue;
 			}
 
-			void setValueName(const String& valueName)
+			void setValueName(const std::string& valueName)
 			{
 				_valueTypeName = valueName;
 			}
 
-			Float64 getMultiplier() const
+			double getMultiplier() const
 			{
 				return _multiplier;
 			}
 
-			void setMultiplier(Float64 multiplier)
+			void setMultiplier(double multiplier)
 			{
 				_multiplier = multiplier;
 			}
 
-			void operator=(Float64 value)
+			void operator=(double value)
 			{
 				_originalValue = value;
 			}
 
-			void operator+=(Float64 value)
+			void operator+=(double value)
 			{
 				_originalValue += value;
 			}
@@ -102,12 +101,12 @@ namespace Elpida
 				return _custom;
 			}
 
-			Float64 getTestedDataValue() const
+			double getTestedDataValue() const
 			{
 				return _testedDataValue;
 			}
 
-			void setTestedDataValue(Float64 testedDataValue)
+			void setTestedDataValue(double testedDataValue)
 			{
 				_testedDataValue = testedDataValue;
 			}
@@ -118,7 +117,7 @@ namespace Elpida
 
 			}
 
-			TaskRunResult(const String& description, const String& valueTypeName, Float64 multiplier = 1.0)
+			TaskRunResult(const std::string& description, const std::string& valueTypeName, double multiplier = 1.0)
 					:
 					  _valueTypeName(valueTypeName),
 					  _resultDescription(description),
@@ -136,11 +135,11 @@ namespace Elpida
 			}
 
 		private:
-			String _valueTypeName;
-			String _resultDescription;
-			Float64 _originalValue;
-			Float64 _multiplier;
-			Float64 _testedDataValue;
+			std::string _valueTypeName;
+			std::string _resultDescription;
+			double _originalValue;
+			double _multiplier;
+			double _testedDataValue;
 			bool _custom;
 	};
 

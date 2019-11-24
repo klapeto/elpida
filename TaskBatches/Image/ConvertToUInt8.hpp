@@ -27,30 +27,33 @@
 #ifndef TASKSBATCHES_IMAGE_CONVERTTOUINT8_HPP_
 #define TASKSBATCHES_IMAGE_CONVERTTOUINT8_HPP_
 
+#include <cstdint>
+#include <cstddef>
+
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Types/Float.hpp"
-#include "Elpida/Types/Integer.hpp"
 #include "Elpida/Utilities/Image.hpp"
 
 namespace Elpida
 {
+	class TaskMetrics;
+
 	template<typename T>
 	class ConvertToUInt8 final: public Task
 	{
 		public:
 
-			Image<UInt8>& getImage()
+			Image<uint8_t>& getImage()
 			{
 				return _convertedImage;
 			}
 
 			void run()
 			{
-				Size size = _sourceImage.getTotalSize();
-				Pixel<UInt8>* converted = _convertedImage.getData();
+				std::size_t size = _sourceImage.getTotalSize();
+				Pixel<uint8_t>* converted = _convertedImage.getData();
 				Pixel<T>* source = _sourceImage.getData();
-				for (Size i = 0; i < size; ++i)
+				for (std::size_t i = 0; i < size; ++i)
 				{
 					converted[i].R = source[i].R * 255;
 					converted[i].G = source[i].G * 255;
@@ -67,7 +70,7 @@ namespace Elpida
 
 			void prepare()
 			{
-				_convertedImage = Image<UInt8>(_sourceImage.getWidth(), _sourceImage.getHeight());
+				_convertedImage = Image<uint8_t>(_sourceImage.getWidth(), _sourceImage.getHeight());
 			}
 
 			ConvertToUInt8(const Image<T>& sourceImage)
@@ -82,7 +85,7 @@ namespace Elpida
 			}
 		private:
 			const Image<T>& _sourceImage;
-			Image<UInt8> _convertedImage;
+			Image<uint8_t> _convertedImage;
 			TaskRunResult _runResult;
 	};
 

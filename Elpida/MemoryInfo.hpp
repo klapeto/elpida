@@ -27,8 +27,9 @@
 #ifndef ELPIDA_MEMORYINFO_HPP_
 #define ELPIDA_MEMORYINFO_HPP_
 
+#include <cstddef>
+
 #include "Elpida/Utilities/NonCopyable.hpp"
-#include "Elpida/Types/Primitives.hpp"
 
 namespace Elpida
 {
@@ -43,25 +44,25 @@ namespace Elpida
 				return instance;
 			}
 
-			Size getMemorySize() const
+			std::size_t getMemorySize() const
 			{
 				return _memorySize;
 			}
 
-			Size getPageSize() const
+			std::size_t getPageSize() const
 			{
 				return _pageSize;
 			}
 
-			Size getAvailableFreeMemory() const;
+			std::size_t getAvailableFreeMemory() const;
 
 			~MemoryInfo()
 			{
 			}
 		private:
 
-			Size _memorySize;
-			Size _pageSize;
+			std::size_t _memorySize;
+			std::size_t _pageSize;
 
 			MemoryInfo()
 					: _memorySize(0), _pageSize(0)

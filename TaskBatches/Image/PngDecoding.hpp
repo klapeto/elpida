@@ -27,24 +27,29 @@
 #ifndef TASKSBATCHES_IMAGE_PNGDECODING_HPP_
 #define TASKSBATCHES_IMAGE_PNGDECODING_HPP_
 
+#include <cstddef>
+
 #include "Elpida/Task.hpp"
-#include "Elpida/Types/RawData.hpp"
+#include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/Image.hpp"
-#include <Elpida/TaskRunResult.hpp>
 
 namespace Elpida
 {
+	class TaskMetrics;
 
 	class PngDecoding: public Task
 	{
 		public:
 
-			const Image<RawData>& getImage() const
+			typedef unsigned char Data;
+			typedef Data* DataPtr;
+
+			const Image<Data>& getImage() const
 			{
 				return _image;
 			}
 
-			Image<RawData>& getImage()
+			Image<Data>& getImage()
 			{
 				return _image;
 			}
@@ -52,7 +57,7 @@ namespace Elpida
 			void run();
 			void calculateResults(const TaskMetrics& metrics);
 
-			PngDecoding(const RawDataPtr& inputData, const Size& dataSize);
+			PngDecoding(const DataPtr& inputData, const std::size_t& dataSize);
 			virtual ~PngDecoding();
 
 			PngDecoding(PngDecoding&&) = default;
@@ -60,10 +65,10 @@ namespace Elpida
 			PngDecoding& operator=(PngDecoding&&) = default;
 			PngDecoding& operator=(const PngDecoding&) = default;
 		private:
-			Image<RawData> _image;
+			Image<Data> _image;
 			TaskRunResult _runResult;
-			const RawDataPtr& _inputData;
-			const Size& _dataSize;
+			const DataPtr& _inputData;
+			const std::size_t& _dataSize;
 	};
 
 } /* namespace Elpida */

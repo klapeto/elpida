@@ -27,7 +27,7 @@
 #ifndef ELPIDA_SHAREDLIBRARY_HPP_
 #define ELPIDA_SHAREDLIBRARY_HPP_
 
-#include "Elpida/Types/String.hpp"
+#include <string>
 
 namespace Elpida
 {
@@ -37,12 +37,12 @@ namespace Elpida
 		public:
 
 			template<typename T>
-			inline T getFunctionPointer(const String& functionName) const
+			inline T getFunctionPointer(const std::string& functionName) const
 			{
 				return (T) getFunctionPointerImpl(functionName);
 			}
 
-			SharedLibrary(const String& libraryPath);
+			SharedLibrary(const std::string& libraryPath);
 			SharedLibrary(const SharedLibrary&) = delete;
 			SharedLibrary& operator=(const SharedLibrary&) = delete;
 
@@ -61,7 +61,7 @@ namespace Elpida
 			~SharedLibrary();
 		private:
 			void* _handle;
-			void* getFunctionPointerImpl(const String& functionName) const;
+			void* getFunctionPointerImpl(const std::string& functionName) const;
 	};
 } /* namespace Elpida */
 

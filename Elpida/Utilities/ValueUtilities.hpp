@@ -27,8 +27,7 @@
 #ifndef ELPIDA_UTILITIES_VALUEUTILITIES_HPP_
 #define ELPIDA_UTILITIES_VALUEUTILITIES_HPP_
 
-#include "Elpida/Types/Float.hpp"
-#include "Elpida/Types/String.hpp"
+#include <string>
 
 namespace Elpida
 {
@@ -36,7 +35,7 @@ namespace Elpida
 	class ValueUtilities
 	{
 		public:
-			static String getValueScaleString(Float64 value);
+			static std::string getValueScaleString(double value);
 	};
 
 } /* namespace Elpida */

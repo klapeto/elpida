@@ -26,7 +26,11 @@
 
 #include "Elpida/Utilities/CommandParser.hpp"
 
-#include "Elpida/Exceptions/ParserException.hpp"
+#include <cstddef>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace Elpida
 {
@@ -35,23 +39,23 @@ namespace Elpida
 		return c == ' ' || c == '\t' || c == '\n';
 	}
 
-	const String& CommandParser::getArgument(const String& name) const
+	const std::string& CommandParser::getArgument(const std::string& name) const
 	{
 		auto itr = _namedArguments.find(name);
 		return itr != _namedArguments.end() ? itr->second : _notFound;
 	}
 
-	bool CommandParser::argumentExists(const String& name) const
+	bool CommandParser::argumentExists(const std::string& name) const
 	{
 		return _namedArguments.find(name) != _namedArguments.end() ? true : false;
 	}
 
-	const String& CommandParser::getArgument(Index index) const
+	const std::string& CommandParser::getArgument(std::size_t index) const
 	{
 		return index < _unamedArguments.size() ? _unamedArguments[index] : _notFound;
 	}
 
-	void Elpida::CommandParser::parseCommand(const String& input)
+	void Elpida::CommandParser::parseCommand(const std::string& input)
 	{
 		_unamedArguments.clear();
 		_namedArguments.clear();
@@ -75,14 +79,14 @@ namespace Elpida
 				while (*argumentNameEnd != '=' && !isWhiteSpace(*argumentNameEnd) && *argumentNameEnd)
 					argumentNameEnd++;
 
-				String argumentName = String(argumentNameStart, argumentNameEnd);
+				std::string argumentName = std::string(argumentNameStart, argumentNameEnd);
 				switch (*argumentNameEnd)
 				{
 					case '=':
 						argumentNameStart = ++argumentNameEnd;
 						while (!isWhiteSpace(*argumentNameEnd) && *argumentNameEnd)
 							argumentNameEnd++;
-						_namedArguments.emplace(argumentName, String(argumentNameStart, argumentNameEnd));
+						_namedArguments.emplace(argumentName, std::string(argumentNameStart, argumentNameEnd));
 						break;
 					case 0:
 					case ' ':
@@ -94,7 +98,7 @@ namespace Elpida
 			{
 				if (back != front)
 				{
-					_unamedArguments.push_back(String(back, front));
+					_unamedArguments.push_back(std::string(back, front));
 				}
 			}
 

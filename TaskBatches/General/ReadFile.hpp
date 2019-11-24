@@ -27,12 +27,15 @@
 #ifndef TASKBATCHES_GENERAL_READFILE_HPP_
 #define TASKBATCHES_GENERAL_READFILE_HPP_
 
+#include <string>
+
 #include "Elpida/Task.hpp"
+#include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/MemoryFile.hpp"
-#include <Elpida/TaskRunResult.hpp>
 
 namespace Elpida
 {
+	class TaskMetrics;
 
 	class ReadFile: public Task
 	{
@@ -46,7 +49,7 @@ namespace Elpida
 			void run();
 			void calculateResults(const TaskMetrics& metrics);
 
-			ReadFile(const String& filePath);
+			ReadFile(const std::string& filePath);
 			virtual ~ReadFile();
 
 			ReadFile(ReadFile&&) = default;
@@ -57,7 +60,7 @@ namespace Elpida
 		private:
 			MemoryFile _file;
 			TaskRunResult _runResult;
-			String _filePath;
+			std::string _filePath;
 	};
 
 } /* namespace Elpida */

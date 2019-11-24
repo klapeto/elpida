@@ -37,6 +37,7 @@
 #include "TaskBatchesWidget.hpp"
 #include "LogsDialog.hpp"
 #include "MascotWidget.hpp"
+#include "ElpidaManager.hpp"
 
 namespace Elpida
 {

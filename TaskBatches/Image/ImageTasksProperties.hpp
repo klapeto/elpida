@@ -20,12 +20,14 @@
 #ifndef IMAGETASKSPROPERIES_HPP
 #define IMAGETASKSPROPERIES_HPP
 
+#include <string>
+#include <vector>
+
 #include "TaskBatches/Config.hpp"
 
 #if _elpida_qt_enabled
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 #include "ImageTaskBatch.hpp"
-#include <Elpida/Types/Array.hpp>
 
 namespace Ui
 {
@@ -56,10 +58,10 @@ namespace Elpida
 			void on_chkOutputImage_stateChanged(int state);
 
 		private:
-			Array<QMetaObject::Connection> _connections;
+			std::vector<QMetaObject::Connection> _connections;
 			ImageTaskBatch _taskBatch;
-			String _inputImage;
-			String _outputImage;
+			std::string _inputImage;
+			std::string _outputImage;
 			Ui::ImageTasksProperties *_ui;
 			bool _outputEnabled;
 	};

@@ -24,14 +24,17 @@
  *      Author: klapeto
  */
 
-#include "LibPngEncoder.hpp"
+#include "TaskBatches/Image/Encoders/LibPngEncoder.hpp"
+
+#include <cstdint>
 
 #include "Libraries/libpng/libpng/png.h"
+#include "Libraries/libpng/libpng/pngconf.h"
 
 namespace Elpida
 {
 
-	ImageEncoder::ImageDecodeInfo LibPngEncoder::decode(RawDataPtr data, Size size)
+	ImageEncoder::ImageDecodeInfo LibPngEncoder::decode(unsigned char* data, std::size_t size)
 	{
 		png_image img;
 		img.opaque = nullptr;
@@ -41,7 +44,7 @@ namespace Elpida
 		{
 			img.format = PNG_FORMAT_RGBA;
 
-			auto data = new UInt8[PNG_IMAGE_SIZE(img)];
+			auto data = new unsigned char[PNG_IMAGE_SIZE(img)];
 
 			if (data == nullptr)
 			{
@@ -60,7 +63,7 @@ namespace Elpida
 			{ nullptr, 0, 0, 0 };
 	}
 
-	ImageEncoder::ImageEncodeInfo LibPngEncoder::encode(Size imageWidth, Size imageHeight, RawDataPtr inputData, Size inputSize)
+	ImageEncoder::ImageEncodeInfo LibPngEncoder::encode(std::size_t imageWidth, std::size_t imageHeight, unsigned char* inputData, std::size_t inputSize)
 	{
 		png_image img;
 		img.opaque = nullptr;

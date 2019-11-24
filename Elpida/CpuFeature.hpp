@@ -27,7 +27,7 @@
 #ifndef ELPIDA_CPUFEATURE_HPP_
 #define ELPIDA_CPUFEATURE_HPP_
 
-#include "Elpida/Types/String.hpp"
+#include <string>
 
 namespace Elpida
 {
@@ -36,12 +36,12 @@ namespace Elpida
 	{
 		public:
 
-			const String& getName() const
+			const std::string& getName() const
 			{
 				return _name;
 			}
 
-			const String& getDescription() const
+			const std::string& getDescription() const
 			{
 				return _description;
 			}
@@ -62,7 +62,7 @@ namespace Elpida
 
 			}
 
-			CpuFeature(const String& name, const String& description, bool supported = false)
+			CpuFeature(const std::string& name, const std::string& description, bool supported = false)
 					: _name(name), _description(description), _supported(supported)
 			{
 
@@ -78,8 +78,8 @@ namespace Elpida
 			CpuFeature& operator=(const CpuFeature&) = default;
 
 		private:
-			String _name;
-			String _description;
+			std::string _name;
+			std::string _description;
 			bool _supported;
 	};
 

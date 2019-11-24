@@ -27,9 +27,10 @@
 #ifndef TASKBATCHES_GENERAL_MEMORY_HPP_
 #define TASKBATCHES_GENERAL_MEMORY_HPP_
 
-#include <Elpida/Types/Primitives.hpp>
-#include <Elpida/Utilities/NonCopyable.hpp>
+#include <cstddef>
 #include <mutex>
+
+#include "Elpida/Utilities/NonCopyable.hpp"
 
 namespace Elpida
 {
@@ -42,12 +43,12 @@ namespace Elpida
 				return _pointer;
 			}
 
-			Size getSize() const
+			std::size_t getSize() const
 			{
 				return _size;
 			}
 
-			void setSize(Size size)
+			void setSize(std::size_t size)
 			{
 				_size = size;
 			}
@@ -72,7 +73,7 @@ namespace Elpida
 				}
 			}
 
-			Memory(Size size)
+			Memory(std::size_t size)
 					: _size(size), _pointer(nullptr)
 			{
 
@@ -95,7 +96,7 @@ namespace Elpida
 		private:
 			std::mutex _mutex;
 		protected:
-			Size _size;
+			std::size_t _size;
 			void* _pointer;
 
 			virtual void allocateImpl() = 0;

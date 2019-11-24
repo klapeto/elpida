@@ -27,9 +27,9 @@
 #ifndef ELPIDA_TOPOLOGY_PROCESSORNODE_HPP_
 #define ELPIDA_TOPOLOGY_PROCESSORNODE_HPP_
 
-#include <Elpida/Types/Array.hpp>
-#include <Elpida/Types/Primitives.hpp>
-#include <Elpida/Types/String.hpp>
+#include <cstddef>
+#include <string>
+#include <vector>
 
 namespace Elpida
 {
@@ -61,22 +61,22 @@ namespace Elpida
 				return _osIndex;
 			}
 
-			const Array<ProcessorNode>& getChildren() const
+			const std::vector<ProcessorNode>& getChildren() const
 			{
 				return _children;
 			}
 
-			const Array<ProcessorNode*>& getSiblings() const
+			const std::vector<ProcessorNode*>& getSiblings() const
 			{
 				return _siblings;
 			}
 
-			const Array<ProcessorNode>& getMemoryChildren() const
+			const std::vector<ProcessorNode>& getMemoryChildren() const
 			{
 				return _memoryChildren;
 			}
 
-			const String& getName() const
+			const std::string& getName() const
 			{
 				return _name;
 			}
@@ -86,7 +86,7 @@ namespace Elpida
 				return _type;
 			}
 
-			Size getValue() const
+			std::size_t getValue() const
 			{
 				return _value;
 			}
@@ -103,15 +103,15 @@ namespace Elpida
 				_siblings.push_back(&node);
 			}
 
-			String _name;
+			std::string _name;
 			Type _type;
-			Size _value;
+			std::size_t _value;
 			unsigned int _osIndex;
 			ProcessorNode* _parrent;
 
-			Array<ProcessorNode> _children;
-			Array<ProcessorNode> _memoryChildren;
-			Array<ProcessorNode*> _siblings;
+			std::vector<ProcessorNode> _children;
+			std::vector<ProcessorNode> _memoryChildren;
+			std::vector<ProcessorNode*> _siblings;
 			void loadMachine(void* node);
 			void loadPackage(void* node);
 			void loadNumaNode(void* node);

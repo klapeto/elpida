@@ -27,9 +27,11 @@
 #ifndef TASKBATCHES_GENERAL_ALLOCATEMEMORY_HPP_
 #define TASKBATCHES_GENERAL_ALLOCATEMEMORY_HPP_
 
-#include <Elpida/Task.hpp>
-#include <Elpida/TaskRunResult.hpp>
-#include <Elpida/Types/Primitives.hpp>
+#include <cstddef>
+
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskMetrics.hpp"
+#include "Elpida/TaskRunResult.hpp"
 
 namespace Elpida
 {
@@ -50,8 +52,8 @@ namespace Elpida
 			void run() override;
 			void calculateResults(const TaskMetrics& metrics) override;
 
-			AllocateMemory(Size size, bool initialize = false, int numaNode = -1);
-			AllocateMemory(Size size, int processorAffinity, bool initialize = false);
+			AllocateMemory(std::size_t size, bool initialize = false, int numaNode = -1);
+			AllocateMemory(std::size_t size, int processorAffinity, bool initialize = false);
 			~AllocateMemory();
 		private:
 			TaskRunResult _result;

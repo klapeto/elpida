@@ -27,12 +27,11 @@
 #include "TaskBatches/General/WriteFile.hpp"
 
 #include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Types/Float.hpp"
 #include "Elpida/Utilities/MemoryFile.hpp"
 
 namespace Elpida
 {
-	WriteFile::WriteFile(const RawDataPtr& data, const Size& size, const String& outputPath)
+	WriteFile::WriteFile(const DataPtr& data, const std::size_t& size, const std::string& outputPath)
 			:
 			  Task("Write File: " + outputPath, false),
 			  _outputPath(outputPath),

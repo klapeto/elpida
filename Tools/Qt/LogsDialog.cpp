@@ -29,7 +29,7 @@ namespace Elpida
 		_ui->setupUi(this);
 	}
 
-	void LogsDialog::setLogsText(const String& text)
+	void LogsDialog::setLogsText(const std::string& text)
 	{
 		_ui->tbLogs->setText(QString::fromStdString(text));
 	}

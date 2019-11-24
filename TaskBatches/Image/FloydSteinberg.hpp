@@ -27,15 +27,16 @@
 #ifndef TASKSBATCHES_IMAGE_FLOYDSTEINBERG_HPP_
 #define TASKSBATCHES_IMAGE_FLOYDSTEINBERG_HPP_
 
-#include <type_traits>
+#include <cstddef>
 
 #include "Elpida/Task.hpp"
-#include "Elpida/Types/Float.hpp"
 #include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/Image.hpp"
 
 namespace Elpida
 {
+
+	class TaskMetrics;
 
 	template<typename T>
 	class FloydSteinberg final: public Task
@@ -46,15 +47,15 @@ namespace Elpida
 
 			void run()
 			{
-				Size width = _targetImage.getWidth();
-				Size height = _targetImage.getHeight();
+				std::size_t width = _targetImage.getWidth();
+				std::size_t height = _targetImage.getHeight();
 				Pixel<T>* sourceData = _sourceImage.getData();
 				Pixel<T>* targetData = _targetImage.getData();
-				for (Size y = 0; y < height; ++y)
+				for (std::size_t y = 0; y < height; ++y)
 				{
-					for (Size x = 0; x < width; ++x)
+					for (std::size_t x = 0; x < width; ++x)
 					{
-						Size index = (y * width) + x;
+						std::size_t index = (y * width) + x;
 
 						T newColorR = sourceData[index].R < _threshold ? 0.0 : 1.0;
 						T newColorG = sourceData[index].G < _threshold ? 0.0 : 1.0;

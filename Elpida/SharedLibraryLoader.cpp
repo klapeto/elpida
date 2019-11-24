@@ -24,16 +24,18 @@
  *      Author: klapeto
  */
 
-#include <iostream>
+#include "Elpida/SharedLibraryLoader.hpp"
+
+#include <algorithm>
+#include <fstream>
+#include <utility>
+#include <vector>
 
 #include "Config.hpp"
-#include "Elpida/TaskBatch.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Utilities/FileSystem.hpp"
 #include "Elpida/Utilities/Logger.hpp"
-#include <fstream>
-#include <algorithm>
-#include "Elpida/SharedLibraryLoader.hpp"
+#include "Elpida/Utilities/Singleton.hpp"
 
 #if _elpida_linux
 constexpr const char* LibraryExtension = ".so";
@@ -49,13 +51,13 @@ namespace Elpida
 
 	}
 
-	void SharedLibraryLoader::loadFromFolder(const String& path, const String& orderFile)
+	void SharedLibraryLoader::loadFromFolder(const std::string& path, const std::string& orderFile)
 	{
 		unloadEverything();
 
-		Array<String> loadFilenames;
+		std::vector<std::string> loadFilenames;
 
-		FileSystem::iterateDirectory(path, [&loadFilenames](const String& filePath)
+		FileSystem::iterateDirectory(path, [&loadFilenames](const std::string& filePath)
 		{
 			if (filePath.find(LibraryExtension) != std::string::npos)
 			{
@@ -68,9 +70,9 @@ namespace Elpida
 			std::ifstream orderFileStream(orderFile, std::ios::in);
 			if (orderFileStream.good())
 			{
-				String line;
-				auto pred = [&line](const String& val)
-				{	return val.find(line + LibraryExtension) != String::npos;};
+				std::string line;
+				auto pred = [&line](const std::string& val)
+				{	return val.find(line + LibraryExtension) != std::string::npos;};
 				while (std::getline(orderFileStream, line))
 				{
 					auto itr = std::find_if(loadFilenames.begin(), loadFilenames.end(), pred);
@@ -110,7 +112,7 @@ namespace Elpida
 
 	}
 
-	void SharedLibraryLoader::load(const String& path)
+	void SharedLibraryLoader::load(const std::string& path)
 	{
 		try
 		{
@@ -122,7 +124,7 @@ namespace Elpida
 		}
 	}
 
-	void SharedLibraryLoader::unload(const String& path)
+	void SharedLibraryLoader::unload(const std::string& path)
 	{
 		_loadedLibraries.erase(path);
 	}

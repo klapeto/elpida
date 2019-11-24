@@ -27,6 +27,8 @@
 #ifndef TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILETASKBATCH_HPP_
 #define TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILETASKBATCH_HPP_
 
+#include <cstddef>
+
 #include "TaskBatches/Memory/Read/Cached/MemoryReadCachedTaskBatch.hpp"
 
 namespace Elpida
@@ -45,7 +47,7 @@ namespace Elpida
 			{
 			}
 		protected:
-			void addMemoryReadTask(Size size) const override;
+			void addMemoryReadTask(std::size_t size) const override;
 	};
 
 } /* namespace Elpida */

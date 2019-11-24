@@ -26,13 +26,14 @@
 
 #include "TaskBatches/Memory/Read/Cached/MemoryReadCachedTaskBatch.hpp"
 
+#include <initializer_list>
+
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskAffinity.hpp"
+#include "Elpida/Topology/SystemTopology.hpp"
 #include "TaskBatches/General/AllocateMemory.hpp"
-#include <Elpida/CpuInfo.hpp>
-#include <Elpida/MemoryInfo.hpp>
-#include <Elpida/TaskAffinity.hpp>
-#include <Elpida/Topology/SystemTopology.hpp>
+#include "TaskBatches/General/Memory.hpp"
 #include "TaskBatches/Memory/Read/Cached/MemoryReadCached.hpp"
-#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
 #include "TaskBatches/Memory/WorkingSetSizes.hpp"
 
 namespace Elpida
@@ -42,7 +43,7 @@ namespace Elpida
 		//TaskThread::setCurrentThreadAffinity(1);
 	}
 
-	void MemoryReadCachedTaskBatch::addMemoryReadTask(Size size) const
+	void MemoryReadCachedTaskBatch::addMemoryReadTask(std::size_t size) const
 	{
 		auto affinity = TaskAffinity { 1 };
 		auto memory = new AllocateMemory(size, true, SystemTopology::getNumaNodeOfProcessor(1));

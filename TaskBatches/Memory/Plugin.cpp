@@ -24,8 +24,9 @@
  *      Author: klapeto
  */
 
+#include <vector>
+
 #include "TaskBatches/Config.hpp"
-#include <Elpida/Types/Array.hpp>
 #include "TaskBatches/Memory/MemoryLatencyTaskBatch.hpp"
 #include "TaskBatches/Memory/MemoryLatency.hpp"
 #include "TaskBatches/Memory/Read/Cached/MemoryReadCachedTaskBatch.hpp"
@@ -50,9 +51,9 @@ extern "C" Elpida::QtTaskBatchWrapper* createQtBatchWrapper()
 	return new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadCachedTaskBatch);
 }
 
-extern "C" Elpida::Array<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
+extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
 {
-	return new Elpida::Array<Elpida::QtTaskBatchWrapper*> {
+	return new std::vector<Elpida::QtTaskBatchWrapper*> {
 		new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadCachedTaskBatch),
 		new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadVolatileTaskBatch),
 		new Elpida::MemoryTasksProperties<Elpida::MultithreadMemoryChunksReadTaskBatch>(Elpida::MultithreadMemoryChunksReadTaskBatch()),

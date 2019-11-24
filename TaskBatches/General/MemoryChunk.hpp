@@ -27,9 +27,10 @@
 #ifndef TASKBATCHES_GENERAL_MEMORYCHUNK_HPP_
 #define TASKBATCHES_GENERAL_MEMORYCHUNK_HPP_
 
+#include <cstddef>
+#include <vector>
+
 #include "TaskBatches/General/Memory.hpp"
-#include <Elpida/Types/Array.hpp>
-#include <Elpida/Utilities/NonCopyable.hpp>
 
 namespace Elpida
 {
@@ -38,7 +39,7 @@ namespace Elpida
 	{
 		public:
 
-			static Array<MemoryChunk> breakToChunks(const Memory& memory, Size chunks);
+			static std::vector<MemoryChunk> breakToChunks(const Memory& memory, std::size_t chunks);
 
 			void allocateImpl() override
 			{
@@ -50,7 +51,7 @@ namespace Elpida
 				_pointer = nullptr;
 			}
 
-			MemoryChunk(void* pointer, Size size)
+			MemoryChunk(void* pointer, std::size_t size)
 					: Memory(size), _ptr(pointer)
 			{
 				_pointer = _ptr;

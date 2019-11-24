@@ -26,8 +26,11 @@
 
 #include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
 
+#include <cstddef>
+#include <unordered_map>
+
+#include "Elpida/Topology/SystemTopology.hpp"
 #include "TaskBatches/General/NumaAllocatePerThread.hpp"
-#include <Elpida/Topology/SystemTopology.hpp>
 #include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
 
 namespace Elpida
@@ -35,7 +38,7 @@ namespace Elpida
 
 	void MultithreadMemoryChunksReadTaskBatch::createTasks() const
 	{
-		constexpr Size size = 64ul * (1024 * 1024);	// 64MB
+		constexpr std::size_t size = 64ul * (1024 * 1024);	// 64MB
 		auto memory = new NumaAllocatePerThread(size);
 		memory->setToBeMeasured(false);
 		addTask(memory);

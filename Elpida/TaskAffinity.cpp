@@ -7,13 +7,15 @@
 
 #include "Elpida/TaskAffinity.hpp"
 
-#include "Elpida/Topology/SystemTopology.hpp"
+#include <initializer_list>
+
 #include "Elpida/Topology/ProcessorNode.hpp"
+#include "Elpida/Topology/SystemTopology.hpp"
 
 namespace Elpida
 {
 
-	static const ProcessorNode* findNode(const Array<ProcessorNode>& nodes, int processor)
+	static const ProcessorNode* findNode(const std::vector<ProcessorNode>& nodes, int processor)
 	{
 		for (const auto& node : nodes)
 		{

@@ -25,7 +25,7 @@
  */
 
 #include "TaskBatches/General/AlignedMemory.hpp"
-#include <Elpida/Config.hpp>
+#include "Elpida/Config.hpp"
 #include <cstdlib>
 #include <cstring>
 

@@ -27,15 +27,18 @@
 #ifndef TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREAD_HPP_
 #define TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREAD_HPP_
 
-#include <Elpida/MultiThreadTask.hpp>
-#include <Elpida/Types/Array.hpp>
-#include "TaskBatches/General/MemoryChunk.hpp"
-#include <Elpida/CpuInfo.hpp>
-#include <Elpida/Types/Primitives.hpp>
+#include <cstddef>
+#include <unordered_map>
+#include <utility>
+
+#include "Elpida/MultiThreadTask.hpp"
+#include "Elpida/TaskRunResult.hpp"
 #include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatile.hpp"
 
 namespace Elpida
 {
+	class TaskMetrics;
+
 	class MultiThreadMemoryChunksRead: public MultiThreadTask
 	{
 		public:
@@ -45,9 +48,7 @@ namespace Elpida
 				addResult(_totalBandwidth);
 			}
 
-
-
-			MultiThreadMemoryChunksRead(const Map<int, Memory*>& memory, Size numberOfThreads)
+			MultiThreadMemoryChunksRead(const std::unordered_map<int, Memory*>& memory, std::size_t numberOfThreads)
 					:
 					  MultiThreadTask("Read @ 8 Bytes/Read"),
 					  _totalBandwidth("Total Read Bandwidth", "Bytes"),
@@ -81,8 +82,8 @@ namespace Elpida
 			}
 		private:
 			TaskRunResult _totalBandwidth;
-			Size _numberOfThreads;
-			const Map<int, Memory*>& _memory;
+			std::size_t _numberOfThreads;
+			const std::unordered_map<int, Memory*>& _memory;
 	};
 
 } /* namespace Elpida */

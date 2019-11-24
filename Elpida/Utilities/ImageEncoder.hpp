@@ -27,8 +27,7 @@
 #ifndef ELPIDA_UTILITIES_IMAGEENCODER_HPP_
 #define ELPIDA_UTILITIES_IMAGEENCODER_HPP_
 
-#include "Elpida/Types/RawData.hpp"
-#include "Elpida/Types/Primitives.hpp"
+#include <cstddef>
 
 namespace Elpida
 {
@@ -38,20 +37,21 @@ namespace Elpida
 
 			struct ImageDecodeInfo
 			{
-					RawDataPtr data;
-					Size width;
-					Size height;
+					unsigned char* data;
+					std::size_t width;
+					std::size_t height;
 					int pixelSize;
 			};
 
 			struct ImageEncodeInfo
 			{
-					RawDataPtr data;
-					Size dataSize;
+					unsigned char* data;
+					std::size_t dataSize;
 			};
 
-			virtual ImageDecodeInfo decode(RawDataPtr data, Size size) = 0;
-			virtual ImageEncodeInfo encode(Size imageWidth, Size imageHeight, RawDataPtr inputData, Size inputSize) = 0;
+			virtual ImageDecodeInfo decode(unsigned char* data, std::size_t size) = 0;
+			virtual ImageEncodeInfo encode(std::size_t imageWidth, std::size_t imageHeight, unsigned char* inputData,
+			                               std::size_t inputSize) = 0;
 
 			ImageEncoder()
 			{

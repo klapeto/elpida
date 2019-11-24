@@ -28,9 +28,11 @@
 #define TESTS_EVENT_TEST_CPP_
 
 #include "Elpida/Event.hpp"
-#include "Elpida/EventSubscription.hpp"
-#include "Elpida/Types/String.hpp"
+
 #include <gtest/gtest.h>
+#include <string>
+
+#include "Elpida/EventSubscription.hpp"
 
 using namespace Elpida;
 
@@ -50,10 +52,10 @@ TEST(EventTests, SimpleEventInt)
 
 TEST(EventTests, SimpleEventString)
 {
-	Event<const String&> event;
+	Event<const std::string&> event;
 	int val = 0;
-	String raisedValue = "Hello";
-	event.subscribe([&val, &raisedValue](const String& x)
+	std::string raisedValue = "Hello";
+	event.subscribe([&val, &raisedValue](const std::string& x)
 	{
 		ASSERT_EQ(x, raisedValue);
 		val = 5;

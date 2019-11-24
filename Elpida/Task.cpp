@@ -25,6 +25,7 @@
  */
 
 #include "Elpida/Task.hpp"
+
 #include "Elpida/TaskThread.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 

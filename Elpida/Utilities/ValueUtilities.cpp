@@ -27,12 +27,12 @@
 #include "Elpida/Utilities/ValueUtilities.hpp"
 
 #include <iomanip>
-#include <sstream>
 #include <ratio>
+#include <sstream>
 
 namespace Elpida
 {
-	String ValueUtilities::getValueScaleString(Float64 value)
+	std::string ValueUtilities::getValueScaleString(double value)
 	{
 		std::ostringstream returnString;
 		if (value < std::kilo::num)

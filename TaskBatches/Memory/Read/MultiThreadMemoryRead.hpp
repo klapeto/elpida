@@ -27,14 +27,17 @@
 #ifndef TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYREAD_HPP_
 #define TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYREAD_HPP_
 
-#include <Elpida/MultiThreadTask.hpp>
-#include <Elpida/TaskRunResult.hpp>
+#include <vector>
+
+#include "Elpida/MultiThreadTask.hpp"
+#include "Elpida/TaskRunResult.hpp"
 
 namespace Elpida
 {
 	class Memory;
+	class TaskMetrics;
 
-	class MultiThreadMemoryRead: MultiThreadTask
+	class MultiThreadMemoryRead: public MultiThreadTask
 	{
 		private:
 			struct MemoryBlock
@@ -65,7 +68,7 @@ namespace Elpida
 
 			}
 		private:
-			Array<MemoryBlock> _blocks;
+			std::vector<MemoryBlock> _blocks;
 			TaskRunResult _totalBandwidth;
 
 	};

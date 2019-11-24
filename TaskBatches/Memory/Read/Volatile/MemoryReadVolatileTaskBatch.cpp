@@ -26,13 +26,15 @@
 
 #include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatileTaskBatch.hpp"
 
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskBatch.hpp"
 #include "TaskBatches/General/AllocateMemory.hpp"
 #include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatile.hpp"
 
 namespace Elpida
 {
 
-	void MemoryReadVolatileTaskBatch::addMemoryReadTask(Size size) const
+	void MemoryReadVolatileTaskBatch::addMemoryReadTask(std::size_t size) const
 	{
 		auto memory = new AllocateMemory(size, true, 1);
 		memory->setToBeMeasured(false);

@@ -1,2 +1,1 @@
-subdir('CLI')
 subdir('Qt')

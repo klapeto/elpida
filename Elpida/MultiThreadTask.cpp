@@ -26,12 +26,10 @@
 
 #include "Elpida/MultiThreadTask.hpp"
 
-#include "Elpida/Topology/SystemTopology.hpp"
-
 namespace Elpida
 {
 
-	MultiThreadTask::MultiThreadTask(const String& name)
+	MultiThreadTask::MultiThreadTask(const std::string& name)
 			: Task(name + "(Multi Threaded)"), _threadsShouldWake(false)
 	{
 	}

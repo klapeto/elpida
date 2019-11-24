@@ -21,12 +21,12 @@
 #define ELPIDAMANAGER_HPP
 
 #include <sstream>
+#include <string>
+#include <unordered_map>
 
-#include <Elpida/Types/String.hpp>
-#include <Elpida/Utilities/NonCopyable.hpp>
-#include <Elpida/Types/Map.hpp>
-#include <Elpida/Types/Array.hpp>
-#include <Elpida/SharedLibraryLoader.hpp>
+#include "Elpida/SharedLibraryLoader.hpp"
+#include "Elpida/Utilities/NonCopyable.hpp"
+#include "TaskBatches/QtTaskBatchWrapper.hpp"
 
 namespace Elpida
 {
@@ -36,12 +36,12 @@ namespace Elpida
 	{
 		public:
 
-			String getLogDump() const
+			std::string getLogDump() const
 			{
 				return _log.str();
 			}
 
-			void setTaskBatchesDirectory(const String& directory)
+			void setTaskBatchesDirectory(const std::string& directory)
 			{
 				_batchesDirectory = directory;
 			}
@@ -51,17 +51,17 @@ namespace Elpida
 				return _batchLoader;
 			}
 
-			const Map<String, QtTaskBatchWrapper*>& getCreatedTaskBatches() const
+			const std::unordered_map<std::string, QtTaskBatchWrapper*>& getCreatedTaskBatches() const
 			{
 				return _createdTaskBatches;
 			}
 
-			const String& getTaskBatchesOrderFile() const
+			const std::string& getTaskBatchesOrderFile() const
 			{
 				return _batchesOrderFile;
 			}
 
-			void setTaskBatchesOrderFile(const String& batchesOrderFile)
+			void setTaskBatchesOrderFile(const std::string& batchesOrderFile)
 			{
 				_batchesOrderFile = batchesOrderFile;
 			}
@@ -72,10 +72,10 @@ namespace Elpida
 			ElpidaManager();
 			~ElpidaManager();
 		private:
-			Map<String, QtTaskBatchWrapper*> _createdTaskBatches;
+			std::unordered_map<std::string, QtTaskBatchWrapper*> _createdTaskBatches;
 			SharedLibraryLoader _batchLoader;
-			String _batchesDirectory;
-			String _batchesOrderFile;
+			std::string _batchesDirectory;
+			std::string _batchesOrderFile;
 			std::stringstream _log;
 	};
 }

@@ -26,19 +26,14 @@
 
 #include "Elpida/CpuInfo.hpp"
 
+#include <cstdint>
 #include <cpuid.h>
-#include <unistd.h>
 #include <chrono>
-#include <iomanip>
-#include <iostream>
-#include <unordered_map>
-#include <thread>
+#include <utility>
+#include <cstddef>
 
-#include "Config.hpp"
-#include "Elpida/Timer.hpp"
 #include "Elpida/TaskThread.hpp"
-#include "Elpida/Utilities/TextTable.hpp"
-#include "Elpida/Utilities/TextColumn.hpp"
+#include "Elpida/Timer.hpp"
 
 #define columnWidth 20
 #define out(prefix, value)	output << std::left  <<std::setw(columnWidth) << prefix  << std::setw(columnWidth) << value << _newLine
@@ -51,7 +46,7 @@
 namespace Elpida
 {
 
-	String amdCacheAssociativities[] = {
+	std::string amdCacheAssociativities[] = {
 	        "Disabled",
 	        "Direct mapped",
 	        "2-Way",
@@ -69,7 +64,7 @@ namespace Elpida
 	        "128-Way",
 	        "Fully" };
 
-	String intelCacheTypes[] = { "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
+	std::string intelCacheTypes[] = { "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
 
 	CpuInfo::CpuInfo()
 			:
@@ -84,8 +79,6 @@ namespace Elpida
 			  _hyperThreading(false),
 			  _rdtscp(false)
 	{
-
-		setPadding(4);
 
 		if (__get_cpuid_max(0, nullptr) == 0)
 		{
@@ -144,60 +137,6 @@ namespace Elpida
 	CpuInfo::~CpuInfo()
 	{
 
-	}
-
-	void CpuInfo::exportTo(std::ostream& output) const
-	{
-		exportBasicInfo(output);
-		exportInstructionSetSupportInfo(output);
-		exportCacheInfo(output);
-	}
-
-	void CpuInfo::exportBasicInfo(std::ostream& output) const
-	{
-		output << _newLine;
-		output << "======================================" << _newLine;
-		output << "CPU Info" << _newLine;
-		output << "======================================" << _newLine;
-		out("Vendor:", _vendorString);
-		out("Model:", _processorBrand);
-		out("TSC Frequency:", std::to_string((size_t )_tscFrequency / 1000000) + " MHz");
-		out("ModelID:", _model);
-		out("Family:", _family);
-		out("Stepping:", _stepping);
-		out("Hyper Threading:", (_hyperThreading ? "true" : "false"));
-		out("Turbo Boost:", (_turboBoost ? "true" : "false"));
-		out("Turbo Boost 3:", (_turboBoost3 ? "true" : "false"));
-	}
-
-	void CpuInfo::exportInstructionSetSupportInfo(std::ostream& output) const
-	{
-		output << _newLine << _newLine << "CPU Instructions Extensions:" << _newLine;
-
-		TextTable outputTable = { TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
-
-		outputTable.setPadding(4);
-		for (auto instruction : _instructionExtensions)
-		{
-			outputTable.addRow( { instruction.getDescription(), instruction.getName(), (instruction.isSupported() ? "true" : "false") });
-		}
-		outputTable.exportTo(output);
-	}
-
-	void CpuInfo::exportCacheInfo(std::ostream& output) const
-	{
-		output << _newLine << _newLine << "CPU Caches:" << _newLine << _newLine;
-
-		for (auto cache : _caches)
-		{
-			out(cache.name, "");
-			out("-------------------------", "");
-			out("Size: ", std::to_string(cache.size / 1000) + " KB");
-			out("Associativity: ", cache.associativity);
-			out("Lines per tag: ", cache.linesPerTag);
-			out("Line size: ", std::to_string(cache.lineSize) + " Bytes");
-			output << _newLine;
-		}
 	}
 
 	void CpuInfo::getTscFrequency()
@@ -412,9 +351,9 @@ namespace Elpida
 		}
 	}
 
-	Map<String, CpuFeature> CpuInfo::getInstructionSetSupport() const
+	std::unordered_map<std::string, CpuFeature> CpuInfo::getInstructionSetSupport() const
 	{
-		Map<String, CpuFeature> returnMap;
+		std::unordered_map<std::string, CpuFeature> returnMap;
 
 		for (auto& feature : _instructionExtensions)
 		{

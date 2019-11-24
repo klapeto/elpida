@@ -27,8 +27,8 @@
 #ifndef ELPIDA_TASKBATCH_HPP_
 #define ELPIDA_TASKBATCH_HPP_
 
-#include "Elpida/Types/Array.hpp"
-#include "Elpida/Types/String.hpp"
+#include <string>
+#include <vector>
 
 namespace Elpida
 {
@@ -42,12 +42,12 @@ namespace Elpida
 
 			typedef TaskBatch* (*TaskBatchGenerator)();
 
-			const Array<Task*>& getTasks() const
+			const std::vector<Task*>& getTasks() const
 			{
 				return _tasks;
 			}
 
-			const String& getName() const
+			const std::string& getName() const
 			{
 				return _name;
 			}
@@ -63,7 +63,7 @@ namespace Elpida
 				destroyTasks();
 			}
 
-			virtual void reconfigure(const String& inputData)
+			virtual void reconfigure(const std::string& inputData)
 			{
 
 			}
@@ -78,7 +78,7 @@ namespace Elpida
 
 			}
 
-			TaskBatch(const String& name)
+			TaskBatch(const std::string& name)
 					: _name(name)
 			{
 
@@ -95,8 +95,8 @@ namespace Elpida
 			TaskBatch& operator=(const TaskBatch&) = default;
 
 		private:
-			String _name;
-			mutable Array<Task*> _tasks;
+			std::string _name;
+			mutable std::vector<Task*> _tasks;
 		protected:
 			void addTask(Task* task) const
 			{

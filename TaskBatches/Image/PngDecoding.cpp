@@ -24,16 +24,16 @@
  *      Author: klapeto
  */
 
-#include "PngDecoding.hpp"
+#include "TaskBatches/Image/PngDecoding.hpp"
 
 #include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Types/Float.hpp"
-#include "Encoders/LibPngEncoder.hpp"
+#include "Elpida/Utilities/ImageEncoder.hpp"
+#include "TaskBatches/Image/Encoders/LibPngEncoder.hpp"
 
 namespace Elpida
 {
 
-	PngDecoding::PngDecoding(const RawDataPtr& inputData, const Size& dataSize)
+	PngDecoding::PngDecoding(const DataPtr& inputData, const std::size_t& dataSize)
 			: Task("Png Decoding"), _runResult("Data process rate", "Bytes"), _inputData(inputData), _dataSize(dataSize)
 	{
 
@@ -47,7 +47,7 @@ namespace Elpida
 	void PngDecoding::run()
 	{
 		LibPngEncoder encoder;
-		auto decodeInfo = encoder.decode((RawDataPtr) _inputData, (Size) _dataSize);
+		auto decodeInfo = encoder.decode((DataPtr) _inputData, (std::size_t) _dataSize);
 		_image.setData(decodeInfo.data, decodeInfo.width, decodeInfo.height, true);
 	}
 

@@ -27,9 +27,8 @@
 #ifndef ELPIDA_UTILITIES_MEMORYFILE_HPP_
 #define ELPIDA_UTILITIES_MEMORYFILE_HPP_
 
-#include "Elpida/Types/String.hpp"
-#include "Elpida/Types/RawData.hpp"
-#include "Elpida/Types/Primitives.hpp"
+#include <cstddef>
+#include <string>
 
 namespace Elpida
 {
@@ -38,22 +37,25 @@ namespace Elpida
 	{
 		public:
 
-			const RawDataPtr& getData() const
+			typedef unsigned char Data;
+			typedef Data* DataPtr;
+
+			const DataPtr& getData() const
 			{
 				return _data;
 			}
 
-			const Size& getSize() const
+			const std::size_t& getSize() const
 			{
 				return _size;
 			}
 
-			void load(const String& path);
-			void writeToFile(const String& path) const;
+			void load(const std::string& path);
+			void writeToFile(const std::string& path) const;
 
 			MemoryFile();
-			MemoryFile(Size size);
-			MemoryFile(void* data, Size size);
+			MemoryFile(std::size_t size);
+			MemoryFile(void* data, std::size_t size);
 			virtual ~MemoryFile();
 
 			MemoryFile(MemoryFile&&) = default;
@@ -61,8 +63,8 @@ namespace Elpida
 			MemoryFile& operator=(MemoryFile&&) = default;
 			MemoryFile& operator=(const MemoryFile&) = default;
 		private:
-			RawDataPtr _data;
-			Size _size;
+			DataPtr _data;
+			std::size_t _size;
 			bool _deleteData;
 	};
 

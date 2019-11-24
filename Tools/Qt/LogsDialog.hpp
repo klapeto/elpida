@@ -20,8 +20,9 @@
 #ifndef ELPIDA_LOGSDIALOG_HPP
 #define ELPIDA_LOGSDIALOG_HPP
 
-#include <QDialog>
-#include "Elpida/Types/String.hpp"
+#include <qdialog.h>
+#include <qobjectdefs.h>
+#include <string>
 
 namespace Elpida
 {
@@ -36,7 +37,7 @@ namespace Elpida
 		Q_OBJECT
 
 		public:
-			void setLogsText(const String& text);
+			void setLogsText(const std::string& text);
 
 			explicit LogsDialog(QWidget *parent = 0);
 			~LogsDialog();

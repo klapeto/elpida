@@ -20,11 +20,16 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include "ElpidaManager.hpp"
-#include <Elpida/Types/Map.hpp>
-#include <Elpida/Types/Array.hpp>
-#include <Elpida/OffThreadExecutor.hpp>
-#include <QMainWindow>
+#include <qmainwindow.h>
+#include <qobjectdefs.h>
+#include <vector>
+
+#include "Elpida/OffThreadExecutor.hpp"
+
+namespace Elpida
+{
+	class ElpidaManager;
+} /* namespace Elpida */
 
 class QTreeWidgetItem;
 
@@ -61,7 +66,7 @@ namespace Elpida
 
 		private:
 			ElpidaManager& _elpidaManager;
-			Array<QMetaObject::Connection> _connections;
+			std::vector<QMetaObject::Connection> _connections;
 			TaskBatchesWidget* _taskBatchesWidget;
 			LogsDialog* _logsDialog;
 			TopologyWidget* _topologyWidget;

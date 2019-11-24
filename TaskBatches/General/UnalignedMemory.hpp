@@ -27,6 +27,8 @@
 #ifndef TASKBATCHES_GENERAL_UNALIGNEDMEMORY_HPP_
 #define TASKBATCHES_GENERAL_UNALIGNEDMEMORY_HPP_
 
+#include <cstddef>
+
 #include "TaskBatches/General/Memory.hpp"
 
 namespace Elpida
@@ -35,7 +37,7 @@ namespace Elpida
 	class UnalignedMemory final: public Memory
 	{
 		public:
-			UnalignedMemory(Size size)
+			UnalignedMemory(std::size_t size)
 					: Memory(size)
 			{
 

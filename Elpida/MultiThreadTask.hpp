@@ -27,10 +27,13 @@
 #ifndef ELPIDA_MULTITHREADTASK_HPP_
 #define ELPIDA_MULTITHREADTASK_HPP_
 
+#include <condition_variable>
+#include <mutex>
+#include <string>
+#include <vector>
+
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskThread.hpp"
-#include "Elpida/Types/Array.hpp"
-#include "Elpida/Types/String.hpp"
 
 namespace Elpida
 {
@@ -71,7 +74,7 @@ namespace Elpida
 				}
 			}
 
-			MultiThreadTask(const String& name);
+			MultiThreadTask(const std::string& name);
 			virtual ~MultiThreadTask();
 
 			MultiThreadTask(MultiThreadTask&&) = default;
@@ -83,8 +86,8 @@ namespace Elpida
 			virtual void createTasks() = 0;
 			void addTask(Task* task, int affinity = -1);
 		private:
-			Array<Task*> _createdTasks;
-			Array<TaskThread> _tasksToBeExecuted;
+			std::vector<Task*> _createdTasks;
+			std::vector<TaskThread> _tasksToBeExecuted;
 			std::mutex _mutex;
 			std::condition_variable _wakeNotifier;
 			bool _threadsShouldWake;

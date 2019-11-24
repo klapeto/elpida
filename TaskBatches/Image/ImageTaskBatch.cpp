@@ -24,17 +24,21 @@
  *      Author: klapeto
  */
 
-#include "ImageTaskBatch.hpp"
+#include "TaskBatches/Image/ImageTaskBatch.hpp"
 
-#include "PngEncoding.hpp"
-#include "PngDecoding.hpp"
-#include "ConvertToFloat.hpp"
-#include "ConvertToUInt8.hpp"
-#include "FloydSteinberg.hpp"
-#include "GrayscaleAverage.hpp"
+#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/Task.hpp"
 #include "Elpida/Utilities/CommandParser.hpp"
+#include "Elpida/Utilities/Image.hpp"
+#include "Elpida/Utilities/MemoryFile.hpp"
 #include "TaskBatches/General/ReadFile.hpp"
 #include "TaskBatches/General/WriteFile.hpp"
+#include "TaskBatches/Image/ConvertToFloat.hpp"
+#include "TaskBatches/Image/ConvertToUInt8.hpp"
+#include "TaskBatches/Image/FloydSteinberg.hpp"
+#include "TaskBatches/Image/GrayscaleAverage.hpp"
+#include "TaskBatches/Image/PngDecoding.hpp"
+#include "TaskBatches/Image/PngEncoding.hpp"
 
 namespace Elpida
 {
@@ -49,7 +53,7 @@ namespace Elpida
 
 	}
 
-	void ImageTaskBatch::reconfigure(const String& inputData)
+	void ImageTaskBatch::reconfigure(const std::string& inputData)
 	{
 		CommandParser parser;
 		parser.parseCommand(inputData);
@@ -69,10 +73,10 @@ namespace Elpida
 		auto readFile = new ReadFile(_inputFile);
 		readFile->setToBeMeasured(false);
 		auto decoding = new PngDecoding(readFile->getFile().getData(), readFile->getFile().getSize());
-		auto floatConvert = new ConvertToFloat<RawData>(decoding->getImage());
-		auto grayScale = new GrayscaleAverage<Float32>(floatConvert->getImage(), floatConvert->getImage());
-		auto floydSteinberg = new FloydSteinberg<Float32>(floatConvert->getImage(), floatConvert->getImage(), 0.5f);
-		auto intConvert = new ConvertToUInt8<Float32>(floatConvert->getImage());
+		auto floatConvert = new ConvertToFloat<unsigned char>(decoding->getImage());
+		auto grayScale = new GrayscaleAverage<float>(floatConvert->getImage(), floatConvert->getImage());
+		auto floydSteinberg = new FloydSteinberg<float>(floatConvert->getImage(), floatConvert->getImage(), 0.5f);
+		auto intConvert = new ConvertToUInt8<float>(floatConvert->getImage());
 		auto encoding = new PngEncoding(intConvert->getImage());
 
 		addTask(readFile);

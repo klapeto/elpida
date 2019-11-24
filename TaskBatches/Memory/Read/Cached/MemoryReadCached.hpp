@@ -27,15 +27,18 @@
 #ifndef TASKBATCHES_MEMORY_READ_CACHED_MEMORYREADCACHED_HPP_
 #define TASKBATCHES_MEMORY_READ_CACHED_MEMORYREADCACHED_HPP_
 
-#include <Elpida/Task.hpp>
-#include <Elpida/Types/Integer.hpp>
-#include <Elpida/Types/Primitives.hpp>
-#include <Elpida/TaskRunResult.hpp>
-#include <Elpida/Utilities/ValueUtilities.hpp>
-#include <TaskBatches/General/Memory.hpp>
+#include <cstdint>
+#include <string>
+
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
+#include "TaskBatches/General/Memory.hpp"
 
 namespace Elpida
 {
+	class TaskMetrics;
+
 	template<typename T = int64_t>
 	class MemoryReadCached: public Task
 	{
@@ -108,7 +111,7 @@ namespace Elpida
 					  _runResult(ValueUtilities::getValueScaleString(memory.getSize()) + "B", "Bytes"),
 					  _memory(memory)
 			{
-				_iterations = _iterationConstant / (Float64)_memory.getSize();
+				_iterations = _iterationConstant / (double)_memory.getSize();
 				_runResult.setOriginalValue(_memory.getSize());
 				_runResult.setTestedDataValue(_memory.getSize());
 				_runResult.setMultiplier(_iterations);
@@ -125,7 +128,7 @@ namespace Elpida
 			const Memory& _memory;
 			unsigned long _iterations;
 		private:
-			static constexpr Float64 _iterationConstant = 100000000000; // rough estimate
+			static constexpr double _iterationConstant = 100000000000; // rough estimate
 	};
 
 } /* namespace Elpida */

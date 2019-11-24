@@ -34,7 +34,7 @@
 
 namespace Elpida
 {
-	Size MemoryInfo::getAvailableFreeMemory() const
+	std::size_t MemoryInfo::getAvailableFreeMemory() const
 	{
 #if _elpida_linux
 		return sysconf(_SC_AVPHYS_PAGES) * _pageSize;

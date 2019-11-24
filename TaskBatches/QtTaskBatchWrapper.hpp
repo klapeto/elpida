@@ -32,11 +32,11 @@
 
 #include "Elpida/TaskBatchWrapper.hpp"
 #include "Elpida/TaskThroughput.hpp"
-#include "Elpida/Types/String.hpp"
-#include "Elpida/Types/Map.hpp"
-#include "Elpida/Types/Array.hpp"
 
 #include <QWidget>
+#include <vector>
+#include <string>
+#include <unordered_map>
 
 namespace QtCharts {
 	class QChart;
@@ -58,7 +58,7 @@ namespace Elpida
 				return nullptr;
 			}
 
-			virtual void updateResultsChartData(const Map<String, Array<TaskThroughput>>& results)
+			virtual void updateResultsChartData(const std::unordered_map<std::string, std::vector<TaskThroughput>>& results)
 			{
 
 			}

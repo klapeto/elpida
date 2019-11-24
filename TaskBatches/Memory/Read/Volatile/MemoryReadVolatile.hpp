@@ -27,6 +27,7 @@
 #ifndef TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILE_HPP_
 #define TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILE_HPP_
 
+#include <cstdint>
 #include "TaskBatches/Memory/Read/Cached/MemoryReadCached.hpp"
 
 namespace Elpida

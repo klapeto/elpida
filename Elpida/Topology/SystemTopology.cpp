@@ -25,10 +25,10 @@
  */
 
 #include "Elpida/Topology/SystemTopology.hpp"
-#include <Elpida/Topology/ProcessorNode.hpp>
-#include <hwloc.h>
 
 #include "Elpida/Config.hpp"
+#include "Elpida/Topology/ProcessorNode.hpp"
+#include <hwloc.h>
 
 #ifdef _elpida_linux
 #include <numa.h>

@@ -20,12 +20,17 @@
 #ifndef TASKBATCHESWIDGET_HPP
 #define TASKBATCHESWIDGET_HPP
 
-#include <QWidget>
-#include <Elpida/Types/String.hpp>
-#include <Elpida/Runner.hpp>
-#include <Elpida/Types/Map.hpp>
-#include <Elpida/TaskThroughput.hpp>
-#include <Elpida/OffThreadExecutor.hpp>
+#include <qobjectdefs.h>
+#include <qstring.h>
+#include <qtreewidget.h>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "Elpida/OffThreadExecutor.hpp"
+#include "Elpida/Runner.hpp"
+#include "Elpida/TaskThroughput.hpp"
+#include "TaskBatches/QtTaskBatchWrapper.hpp"
 
 class QTreeWidgetItem;
 namespace QtCharts
@@ -49,7 +54,7 @@ namespace Elpida
 	{
 		Q_OBJECT
 		public:
-			explicit TaskBatchesWidget(const Map<String, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent = nullptr);
+			explicit TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent = nullptr);
 			~TaskBatchesWidget();
 
 		public slots:
@@ -62,11 +67,11 @@ namespace Elpida
 			QString _runningText;
 			QString _readyText;
 			QString _na;
-			const Map<String, QtTaskBatchWrapper*>& _taskBatchList;
+			const std::unordered_map<std::string, QtTaskBatchWrapper*>& _taskBatchList;
 			Ui::TaskBatchesWidget *_ui;
 			TaskBatchProperties* _taskBatchPropertiesDialog;
 			QtCharts::QChart* _initialChart;
-			Map<QTreeWidgetItem*, Map<String, Array<TaskThroughput>>> _cachedResults;
+			std::unordered_map<QTreeWidgetItem*, std::unordered_map<std::string, std::vector<TaskThroughput>>> _cachedResults;
 
 			void appendResults();
 			void runTaskBatches();

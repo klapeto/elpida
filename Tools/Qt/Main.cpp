@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <Elpida/Config.hpp>
 #include "Tools/Qt/MainWindow.hpp"
+#include "Tools/Qt/ElpidaManager.hpp"
 
 #if _elpida_linux
 #include <execinfo.h>

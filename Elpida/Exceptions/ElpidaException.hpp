@@ -28,7 +28,7 @@
 #define ELPIDA_EXCEPTIONS_ELPIDAEXCEPTION_HPP_
 
 #include <exception>
-#include "Elpida/Types/String.hpp"
+#include <string>
 
 namespace Elpida
 {
@@ -37,7 +37,7 @@ namespace Elpida
 	{
 		public:
 
-			const String& getMessage() const
+			const std::string& getMessage() const
 			{
 				return _message;
 			}
@@ -52,13 +52,13 @@ namespace Elpida
 
 			}
 
-			ElpidaException(const String& what)
+			ElpidaException(const std::string& what)
 					: _what(what)
 			{
 
 			}
 
-			ElpidaException(const String& what, const String& message)
+			ElpidaException(const std::string& what, const std::string& message)
 					: _what(what), _message(message)
 			{
 
@@ -75,8 +75,8 @@ namespace Elpida
 			ElpidaException& operator=(const ElpidaException&) = default;
 
 		protected:
-			String _what;
-			String _message;
+			std::string _what;
+			std::string _message;
 	};
 
 } /* namespace Elpida */

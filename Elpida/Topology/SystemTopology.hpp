@@ -27,7 +27,7 @@
 #ifndef ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
 #define ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
 
-#include "Elpida/Types/Primitives.hpp"
+#include <cstddef>
 
 namespace Elpida
 {
@@ -37,7 +37,7 @@ namespace Elpida
 	class SystemTopology final
 	{
 		public:
-			Size getDepth() const
+			std::size_t getDepth() const
 			{
 				return _depth;
 			}
@@ -47,12 +47,12 @@ namespace Elpida
 				return _root;
 			}
 
-			Size getTotalLogicalCores() const
+			std::size_t getTotalLogicalCores() const
 			{
 				return _totalLogicalCores;
 			}
 
-			Size getTotalPhysicalCores() const
+			std::size_t getTotalPhysicalCores() const
 			{
 				return _totalPhysicalCores;
 			}
@@ -68,9 +68,9 @@ namespace Elpida
 			~SystemTopology();
 		private:
 			ProcessorNode* _root;
-			Size _depth;
-			Size _totalLogicalCores;
-			Size _totalPhysicalCores;
+			std::size_t _depth;
+			std::size_t _totalLogicalCores;
+			std::size_t _totalPhysicalCores;
 
 			SystemTopology();
 			void reload();

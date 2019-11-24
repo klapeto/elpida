@@ -27,19 +27,18 @@
 #ifndef SRC_TASKS_IMAGE_IMAGE_HPP_
 #define SRC_TASKS_IMAGE_IMAGE_HPP_
 
-#include <cstring>
+#include <cstddef>
 #include <iostream>
+#include <string.h>
 
-#include "Elpida/Exportable.hpp"
-#include "Elpida/Utilities/Pixel.hpp"
-#include "Elpida/Types/Primitives.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/Utilities/Pixel.hpp"
 
 namespace Elpida
 {
 
 	template<typename T = unsigned char>
-	class Image: public Exportable
+	class Image
 	{
 		public:
 
@@ -48,12 +47,12 @@ namespace Elpida
 				output.write((const char*) _data, _width * _height * sizeof(Pixel<T> ));
 			}
 
-			Size getTotalSize() const
+			std::size_t getTotalSize() const
 			{
 				return _width * _height;
 			}
 
-			Size getTotalSizeInBytes() const
+			std::size_t getTotalSizeInBytes() const
 			{
 				return _width * _height * sizeof(Pixel<T> );
 			}
@@ -63,12 +62,12 @@ namespace Elpida
 				return _data;
 			}
 
-			Size getHeight() const
+			std::size_t getHeight() const
 			{
 				return _height;
 			}
 
-			Size getWidth() const
+			std::size_t getWidth() const
 			{
 				return _width;
 			}
@@ -79,7 +78,7 @@ namespace Elpida
 				return other._width == this->_width && other._height == this->_height;
 			}
 
-			void setData(T* data, Size width, Size height, bool aquireOwnership = false)
+			void setData(T* data, std::size_t width, std::size_t height, bool aquireOwnership = false)
 			{
 				_data = (Pixel<T>*) data;
 				_width = width;
@@ -88,7 +87,7 @@ namespace Elpida
 				_dataIsNotAllocatedNormally = true;
 			}
 
-			inline Pixel<T>& getPixel(Index x, Index y)
+			inline Pixel<T>& getPixel(std::size_t x, std::size_t y)
 			{
 				return _data[(y * _width) + x];
 			}
@@ -99,7 +98,7 @@ namespace Elpida
 
 			}
 
-			Image(Size width, Size height, bool initializeData = false)
+			Image(std::size_t width, std::size_t height, bool initializeData = false)
 					: _width(width), _height(height), _dataMustBeDeleted(true), _dataIsNotAllocatedNormally(false)
 			{
 				if (width > 0 && height > 0){
@@ -114,7 +113,7 @@ namespace Elpida
 				}
 			}
 
-			Image(const T* data, Size width, Size height, bool copyData = false)
+			Image(const T* data, std::size_t width, std::size_t height, bool copyData = false)
 					: _width(width), _height(height), _dataIsNotAllocatedNormally(false)
 			{
 				if (width > 0 && height > 0){
@@ -161,7 +160,7 @@ namespace Elpida
 				copyImage(other);
 			}
 
-			Image(const Image<T>& other, Index y, Size height, bool copy = false)
+			Image(const Image<T>& other, std::size_t y, std::size_t height, bool copy = false)
 					: _dataMustBeDeleted(false), _dataIsNotAllocatedNormally(false)
 			{
 				if (y > other._height || y + height > other._height)
@@ -206,16 +205,16 @@ namespace Elpida
 
 		private:
 			Pixel<T>* _data;
-			Size _width;
-			Size _height;
+			std::size_t _width;
+			std::size_t _height;
 			bool _dataMustBeDeleted;
 			bool _dataIsNotAllocatedNormally;
 
 			void copyImage(const Image& other)
 			{
 				_data = new Pixel<T> [_width * _height];
-				Size thisSize = _width * _height;
-				for (Size i = 0; i < thisSize; ++i)
+				std::size_t thisSize = _width * _height;
+				for (std::size_t i = 0; i < thisSize; ++i)
 				{
 					_data[i].R = (T) (other._data[i].R);
 					_data[i].G = (T) (other._data[i].G);

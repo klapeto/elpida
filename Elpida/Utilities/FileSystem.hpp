@@ -29,8 +29,8 @@
 
 #include <functional>
 #include <sstream>
-#include "Elpida/Types/String.hpp"
-#include "Elpida/Types/Primitives.hpp"
+#include <string>
+
 #include "Elpida/Config.hpp"
 
 namespace Elpida
@@ -45,11 +45,11 @@ namespace Elpida
 			static constexpr char PathSeperator = '\\';
 #endif
 
-			static void iterateDirectory(const String& directory, std::function<void(const String&)> func);
-			static bool fileExists(const String& file);
+			static void iterateDirectory(const std::string& directory, std::function<void(const std::string&)> func);
+			static bool fileExists(const std::string& file);
 
 			template<typename ... T>
-			static String concatPaths(T ... args)
+			static std::string concatPaths(T ... args)
 			{
 				std::ostringstream buffer;
 				concatPathsImlFirst(buffer, args...);

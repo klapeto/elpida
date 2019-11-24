@@ -27,10 +27,10 @@
 #ifndef ELPIDA_UTILITIES_COMMANDPARSER_HPP_
 #define ELPIDA_UTILITIES_COMMANDPARSER_HPP_
 
-#include "Elpida/Types/Map.hpp"
-#include "Elpida/Types/Array.hpp"
-#include "Elpida/Types/String.hpp"
-#include "Elpida/Types/Primitives.hpp"
+#include <cstddef>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace Elpida
 {
@@ -38,21 +38,21 @@ namespace Elpida
 	class CommandParser
 	{
 		public:
-			bool argumentExists(const String& name) const;
-			const String& getArgument(const String& name) const;
-			const String& getArgument(Index index) const;
+			bool argumentExists(const std::string& name) const;
+			const std::string& getArgument(const std::string& name) const;
+			const std::string& getArgument(std::size_t index) const;
 
-			const Map<String, String>& getNamedArguments() const
+			const std::unordered_map<std::string, std::string>& getNamedArguments() const
 			{
 				return _namedArguments;
 			}
 
-			const Array<String>& getUnamedArguments() const
+			const std::vector<std::string>& getUnamedArguments() const
 			{
 				return _unamedArguments;
 			}
 
-			void parseCommand(const String& input);
+			void parseCommand(const std::string& input);
 
 			CommandParser()
 					: _notFound("")
@@ -63,9 +63,9 @@ namespace Elpida
 			{
 			}
 		private:
-			Array<String> _unamedArguments;
-			Map<String, String> _namedArguments;
-			String _notFound;
+			std::vector<std::string> _unamedArguments;
+			std::unordered_map<std::string, std::string> _namedArguments;
+			std::string _notFound;
 	};
 
 } /* namespace Elpida */

@@ -25,18 +25,19 @@
  */
 
 #include "TaskBatches/General/AllocateMemory.hpp"
-#include <Elpida/Config.hpp>
-#include <Elpida/Exceptions/ElpidaException.hpp>
-#include <Elpida/Topology/SystemTopology.hpp>
-#include "AlignedMemory.hpp"
-#include "NumaMemory.hpp"
-#include <cstdlib>
+
+#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/Topology/SystemTopology.hpp"
+#include "TaskBatches/General/AlignedMemory.hpp"
+#include "TaskBatches/General/Memory.hpp"
+#include "TaskBatches/General/NumaMemory.hpp"
+
 #include <cstring>
 
 namespace Elpida
 {
 
-	AllocateMemory::AllocateMemory(Size size, bool initialize, int numaNode)
+	AllocateMemory::AllocateMemory(std::size_t size, bool initialize, int numaNode)
 			: Task("Allocate Memory"), _result("Allocation Rate", "Bytes"), _numaNode(numaNode), _initialize(initialize)
 	{
 		if (_numaNode == -1)
@@ -49,7 +50,7 @@ namespace Elpida
 		}
 	}
 
-	AllocateMemory::AllocateMemory(Size size, int processorAffinity, bool initialize)
+	AllocateMemory::AllocateMemory(std::size_t size, int processorAffinity, bool initialize)
 			: Task("Allocate Memory"), _result("Allocation Rate", "Bytes"), _initialize(initialize)
 	{
 		if (processorAffinity < 0)

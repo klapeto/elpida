@@ -49,7 +49,7 @@ namespace Elpida
 		auto& loaded = _batchLoader.getLoadedPlugins();
 		for (auto& plugin : loaded)
 		{
-			auto func = plugin.second.getFunctionPointer<Elpida::Array<Elpida::QtTaskBatchWrapper*>* (*)()>(PageCreationFunctionName);
+			auto func = plugin.second.getFunctionPointer<std::vector<Elpida::QtTaskBatchWrapper*>* (*)()>(PageCreationFunctionName);
 			if (func != nullptr)
 			{
 				auto batchesArray = func();

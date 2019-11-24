@@ -27,13 +27,13 @@
 #ifndef ELPIDA_RUNNER_HPP_
 #define ELPIDA_RUNNER_HPP_
 
-#include "Elpida/TaskMetrics.hpp"
-#include "Elpida/TaskThroughput.hpp"
-#include "Elpida/Types/Primitives.hpp"
-#include "Elpida/Types/Array.hpp"
-#include "Elpida/Types/Map.hpp"
+#include <cstddef>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "Elpida/Event.hpp"
+#include "Elpida/TaskThroughput.hpp"
 
 namespace Elpida
 {
@@ -53,22 +53,22 @@ namespace Elpida
 			{
 					struct BatchStart
 					{
-							const String& name;
-							Size numberOfTasks;
+							const std::string& name;
+							std::size_t numberOfTasks;
 					};
 					struct TaskStart
 					{
-							const String& name;
+							const std::string& name;
 					};
 
 					struct TaskEnd
 					{
-							const String& name;
+							const std::string& name;
 					};
 					struct BatchEnd
 					{
-							const String& name;
-							const Map<String, Array<TaskThroughput>>& results;
+							const std::string& name;
+							const std::unordered_map<std::string, std::vector<TaskThroughput>>& results;
 					};
 			};
 
@@ -86,7 +86,7 @@ namespace Elpida
 				_mustStop = true;
 			}
 
-			const Map<String, Map<String, Array<TaskThroughput>>>& getLastExecutionResults() const
+			const std::unordered_map<std::string, std::unordered_map<std::string, std::vector<TaskThroughput>>>& getLastExecutionResults() const
 			{
 				return _lastExecutionResults;
 			}
@@ -104,8 +104,8 @@ namespace Elpida
 			Runner& operator=(Runner&&) = default;
 			Runner& operator=(const Runner&) = default;
 		private:
-			Map<String, Map<String, Array<TaskThroughput>>> _lastExecutionResults;
-			Array<const TaskBatch*> _tasksBatches;
+			std::unordered_map<std::string, std::unordered_map<std::string, std::vector<TaskThroughput>>> _lastExecutionResults;
+			std::vector<const TaskBatch*> _tasksBatches;
 			bool _mustStop;
 			TaskMetrics runTask(Task& task);
 	};

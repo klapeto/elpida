@@ -27,9 +27,10 @@
 #ifndef ELPIDA_SHAREDLIBRARYLOADER_HPP_
 #define ELPIDA_SHAREDLIBRARYLOADER_HPP_
 
+#include <string>
+#include <unordered_map>
+
 #include "Elpida/SharedLibrary.hpp"
-#include "Elpida/Types/Map.hpp"
-#include "Elpida/Types/String.hpp"
 
 namespace Elpida
 {
@@ -37,20 +38,20 @@ namespace Elpida
 	class SharedLibraryLoader
 	{
 		public:
-			const Map<String, SharedLibrary>& getLoadedPlugins() const
+			const std::unordered_map<std::string, SharedLibrary>& getLoadedPlugins() const
 			{
 				return _loadedLibraries;
 			}
 
-			virtual void loadFromFolder(const String& path, const String& orderFile = String());
-			void load(const String& path);
-			void unload(const String& path);
+			virtual void loadFromFolder(const std::string& path, const std::string& orderFile = std::string());
+			void load(const std::string& path);
+			void unload(const std::string& path);
 
 			SharedLibraryLoader();
 			virtual ~SharedLibraryLoader();
 
 		protected:
-			Map<String, SharedLibrary> _loadedLibraries;
+			std::unordered_map<std::string, SharedLibrary> _loadedLibraries;
 			void unloadEverything();
 	};
 

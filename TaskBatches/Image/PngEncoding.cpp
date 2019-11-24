@@ -27,13 +27,12 @@
 #include "PngEncoding.hpp"
 
 #include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Types/Float.hpp"
 #include "Encoders/LibPngEncoder.hpp"
 
 namespace Elpida
 {
 
-	PngEncoding::PngEncoding(const Image<RawData>& inputImage)
+	PngEncoding::PngEncoding(const Image<Data>& inputImage)
 			:
 			  Task("Png Encoding"),
 			  _runResult("Data process rate", "Bytes"),
@@ -54,7 +53,7 @@ namespace Elpida
 	void PngEncoding::run()
 	{
 		LibPngEncoder encoder;
-		auto encodeResult = encoder.encode(_inputImage.getWidth(), _inputImage.getHeight(), (RawDataPtr) _inputImage.getData(),
+		auto encodeResult = encoder.encode(_inputImage.getWidth(), _inputImage.getHeight(), (DataPtr) _inputImage.getData(),
 		                                   _inputImage.getTotalSizeInBytes());
 		_encodedData = encodeResult.data;
 		_encodedDataSize = encodeResult.dataSize;

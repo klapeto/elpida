@@ -27,14 +27,17 @@
 #ifndef TASKSBATCHES_IMAGE_GRAYSCALEAVERAGE_HPP_
 #define TASKSBATCHES_IMAGE_GRAYSCALEAVERAGE_HPP_
 
+#include <cstddef>
+
+#include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Task.hpp"
-#include "Elpida/Types/Float.hpp"
 #include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/Image.hpp"
-#include "Elpida/Exceptions/ElpidaException.hpp"
 
 namespace Elpida
 {
+	class TaskMetrics;
+
 	template<typename T>
 	class GrayscaleAverage: public Task
 	{
@@ -43,10 +46,10 @@ namespace Elpida
 
 			void run()
 			{
-				Size size = _targetImage.getTotalSize();
+				std::size_t size = _targetImage.getTotalSize();
 				Pixel<T>* sourceData = _sourceImage.getData();
 				Pixel<T>* targetData = _targetImage.getData();
-				for (Size i = 0; i < size; ++i)
+				for (std::size_t i = 0; i < size; ++i)
 				{
 					T newColor = (sourceData[i].R + sourceData[i].G + sourceData[i].B) / 3.0;
 					targetData[i].R = newColor;

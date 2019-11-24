@@ -39,14 +39,14 @@ namespace Elpida
 
 	}
 
-	MemoryFile::MemoryFile(Size size)
+	MemoryFile::MemoryFile(std::size_t size)
 			: _size(size), _deleteData(true)
 	{
-		_data = new RawData[_size];
+		_data = new Data[_size];
 	}
 
-	MemoryFile::MemoryFile(void* data, Size size)
-			: _data((unsigned char*) data), _size(size), _deleteData(false)
+	MemoryFile::MemoryFile(void* data, std::size_t size)
+			: _data((DataPtr) data), _size(size), _deleteData(false)
 	{
 
 	}
@@ -59,7 +59,7 @@ namespace Elpida
 		}
 	}
 
-	void MemoryFile::load(const String& path)
+	void MemoryFile::load(const std::string& path)
 	{
 		if (_data != nullptr && _deleteData)
 		{
@@ -73,7 +73,7 @@ namespace Elpida
 			_size = file.tellg();
 			file.seekg(0, file.beg);
 
-			_data = new RawData[_size];
+			_data = new Data[_size];
 			file.read((char*) _data, _size);
 			file.close();
 		}
@@ -83,7 +83,7 @@ namespace Elpida
 		}
 	}
 
-	void MemoryFile::writeToFile(const String& path) const
+	void MemoryFile::writeToFile(const std::string& path) const
 	{
 		std::ofstream file(path, std::ofstream::binary);
 		if (file.good())

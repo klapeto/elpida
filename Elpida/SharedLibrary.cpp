@@ -43,7 +43,7 @@ namespace Elpida
 	static String GetWindowsError();
 #endif
 
-	SharedLibrary::SharedLibrary(const String& libraryPath)
+	SharedLibrary::SharedLibrary(const std::string& libraryPath)
 	{
 		_handle =
 #if _elpida_linux
@@ -77,7 +77,7 @@ namespace Elpida
 		}
 	}
 
-	void* SharedLibrary::getFunctionPointerImpl(const String& functionName) const
+	void* SharedLibrary::getFunctionPointerImpl(const std::string& functionName) const
 	{
 		return _handle != nullptr ?
 #if _elpida_linux

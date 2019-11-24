@@ -27,15 +27,18 @@
 #ifndef TASKSBATCHES_IMAGE_CONVERTTOFLOAT_HPP_
 #define TASKSBATCHES_IMAGE_CONVERTTOFLOAT_HPP_
 
+#include <cstddef>
+
 #include "Elpida/Task.hpp"
-#include "Elpida/Types/Float.hpp"
 #include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/Image.hpp"
 
 namespace Elpida
 {
 
-	template<typename T, typename R = Float32>
+	class TaskMetrics;
+
+	template<typename T, typename R = float>
 	class ConvertToFloat final: public Task
 	{
 		public:
@@ -47,10 +50,10 @@ namespace Elpida
 
 			void run()
 			{
-				Size size = _sourceImage.getTotalSize();
+				std::size_t size = _sourceImage.getTotalSize();
 				Pixel<T>* sourceData = _sourceImage.getData();
 				Pixel<R>* convertedData = _convertedImage.getData();
-				for (Size i = 0; i < size; ++i)
+				for (std::size_t i = 0; i < size; ++i)
 				{
 					convertedData[i].R = sourceData[i].R / (R) 255.0;
 					convertedData[i].G = sourceData[i].G / (R) 255.0;

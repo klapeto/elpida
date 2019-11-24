@@ -27,10 +27,9 @@
 #ifndef ELPIDA_UTILITIES_LOGGER_HPP_
 #define ELPIDA_UTILITIES_LOGGER_HPP_
 
-#include "Elpida/Utilities/Singleton.hpp"
-#include "Elpida/Types/String.hpp"
-
 #include <ostream>
+
+#include "Elpida/Utilities/Singleton.hpp"
 
 namespace Elpida
 {

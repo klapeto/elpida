@@ -27,6 +27,11 @@
 #ifndef TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIESWITHCHART_HPP_
 #define TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIESWITHCHART_HPP_
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "Elpida/TaskThroughput.hpp"
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 
 namespace QtCharts
@@ -64,7 +69,7 @@ namespace Elpida
 				return _chart;
 			}
 
-			void updateResultsChartData(const Map<String, Array<TaskThroughput>>& results) override;
+			void updateResultsChartData(const std::unordered_map<std::string, std::vector<TaskThroughput>>& results) override;
 
 			MemoryTasksPropertiesWithChart(TaskBatch* taskBatch);
 			virtual ~MemoryTasksPropertiesWithChart();
@@ -76,8 +81,8 @@ namespace Elpida
 		protected:
 			struct ChartValues
 			{
-					Float64 yValue;
-					String xCategory;
+					double yValue;
+					std::string xCategory;
 			};
 
 			virtual void configureXAxis(QtCharts::QCategoryAxis* xAxis) = 0;

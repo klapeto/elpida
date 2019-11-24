@@ -27,12 +27,11 @@
 #include "TaskBatches/General/ReadFile.hpp"
 
 #include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Types/Float.hpp"
 
 namespace Elpida
 {
 
-	ReadFile::ReadFile(const String& filePath)
+	ReadFile::ReadFile(const std::string& filePath)
 			: Task("Read File: " + filePath, false), _runResult("Read rate", "Bytes"), _filePath(filePath)
 	{
 	}

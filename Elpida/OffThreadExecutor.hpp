@@ -24,11 +24,12 @@
  *      Author: klapeto
  */
 
-#include <thread>
-#include "Elpida/Exceptions/ElpidaException.hpp"
-
 #ifndef ELPIDA_OFFTHREADEXECUTOR_HPP_
 #define ELPIDA_OFFTHREADEXECUTOR_HPP_
+
+#include <thread>
+
+#include "Elpida/Exceptions/ElpidaException.hpp"
 
 namespace Elpida
 {

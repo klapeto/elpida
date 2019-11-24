@@ -28,21 +28,20 @@
 #define ELPIDA_CPUINFO_HPP_
 
 #include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-#include "Elpida/Types/Map.hpp"
 #include "Elpida/CpuFeature.hpp"
-#include "Elpida/Exportable.hpp"
-#include "Elpida/Types/Array.hpp"
-#include "Elpida/Types/String.hpp"
 
 namespace Elpida
 {
 
-	class CpuInfo final: public Exportable
+	class CpuInfo final
 	{
 		public:
 
-			Map<String, String> FeaturesNames =
+			std::unordered_map<std::string, std::string> FeaturesNames =
 				{
 					{ "CMOV", "Conditional move instructions" },
 					{ "MMX", "MMX instructions support" },
@@ -91,8 +90,8 @@ namespace Elpida
 
 			struct Cache
 			{
-					String name;
-					String associativity;
+					std::string name;
+					std::string associativity;
 					int size;
 					int linesPerTag;
 					int lineSize;
@@ -133,7 +132,7 @@ namespace Elpida
 				return _hyperThreading;
 			}
 
-			const Array<CpuFeature>& getInstructionExtensions() const
+			const std::vector<CpuFeature>& getInstructionExtensions() const
 			{
 				return _instructionExtensions;
 			}
@@ -143,7 +142,7 @@ namespace Elpida
 				return _model;
 			}
 
-			const String& getProcessorBrand() const
+			const std::string& getProcessorBrand() const
 			{
 				return _processorBrand;
 			}
@@ -163,7 +162,7 @@ namespace Elpida
 				return _vendor;
 			}
 
-			const String& getVendorString() const
+			const std::string& getVendorString() const
 			{
 				return _vendorString;
 			}
@@ -178,16 +177,12 @@ namespace Elpida
 				return _turboBoost3;
 			}
 
-			const Array<Cache>& getCaches() const
+			const std::vector<Cache>& getCaches() const
 			{
 				return _caches;
 			}
 
-			Map<String, CpuFeature> getInstructionSetSupport() const;
-			void exportTo(std::ostream& output) const;
-			void exportBasicInfo(std::ostream& output) const;
-			void exportInstructionSetSupportInfo(std::ostream& output) const;
-			void exportCacheInfo(std::ostream& output) const;
+			std::unordered_map<std::string, CpuFeature> getInstructionSetSupport() const;
 
 			static const CpuInfo& getCpuInfo()
 			{
@@ -202,10 +197,10 @@ namespace Elpida
 
 			~CpuInfo();
 		private:
-			Array<CpuFeature> _instructionExtensions;
-			Array<Cache> _caches;
-			String _vendorString;
-			String _processorBrand;
+			std::vector<CpuFeature> _instructionExtensions;
+			std::vector<Cache> _caches;
+			std::string _vendorString;
+			std::string _processorBrand;
 
 			Vendor _vendor;
 

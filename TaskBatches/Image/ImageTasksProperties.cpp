@@ -19,10 +19,17 @@
 
 #include "TaskBatches/Image/ImageTasksProperties.hpp"
 
+#include <qcheckbox.h>
+#include <qfiledialog.h>
+#include <qlineedit.h>
+#include <qobject.h>
+#include <qobjectdefs.h>
+#include <qpushbutton.h>
+#include <qstring.h>
+
 #include "ui_ImageTasksProperties.h"
-#include <Elpida/Exceptions/ElpidaException.hpp>
-#include <QFileDialog>
-#include <QCheckBox>
+#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/TaskBatch.hpp"
 
 namespace Elpida
 {

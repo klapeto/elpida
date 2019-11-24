@@ -27,7 +27,9 @@
 #ifndef TASKSBATCHES_IMAGE_IMAGETASKBATCH_HPP_
 #define TASKSBATCHES_IMAGE_IMAGETASKBATCH_HPP_
 
-#include <Elpida/TaskBatch.hpp>
+#include <string>
+
+#include "Elpida/TaskBatch.hpp"
 
 namespace Elpida
 {
@@ -36,27 +38,27 @@ namespace Elpida
 	{
 		public:
 
-			const String& getInputFile() const
+			const std::string& getInputFile() const
 			{
 				return _inputFile;
 			}
 
-			void setInputFile(const String& inputFile)
+			void setInputFile(const std::string& inputFile)
 			{
 				_inputFile = inputFile;
 			}
 
-			const String& getOutputFile() const
+			const std::string& getOutputFile() const
 			{
 				return _outputFile;
 			}
 
-			void setOutputFile(const String& outputFile)
+			void setOutputFile(const std::string& outputFile)
 			{
 				_outputFile = outputFile;
 			}
 
-			void reconfigure(const String& inputData) override;
+			void reconfigure(const std::string& inputData) override;
 
 			ImageTaskBatch();
 			~ImageTaskBatch();
@@ -66,8 +68,8 @@ namespace Elpida
 			ImageTaskBatch& operator=(ImageTaskBatch&&) = default;
 			ImageTaskBatch& operator=(const ImageTaskBatch&) = default;
 		private:
-			String _inputFile;
-			String _outputFile;
+			std::string _inputFile;
+			std::string _outputFile;
 			bool _outputEnabled;
 
 			void createTasks() const override;

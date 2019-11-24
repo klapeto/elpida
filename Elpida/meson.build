@@ -37,16 +37,13 @@ configure_file(	input: 'Config.hpp.in',
 				configuration : conf_data)
 
 subdir('Exceptions')
-subdir('Types')
 subdir('Utilities')
 subdir('Topology')
 
 core_sources = ['CpuFeature.cpp',
 				'CpuInfo.cpp',
-				'Exportable.cpp', 
 				'MultiThreadTask.cpp',
 				'Runner.cpp',
-				'SingleThreadTask.cpp',
 				'Task.cpp',
 				'TaskBatch.cpp',
 				'TaskMetrics.cpp',
@@ -70,10 +67,8 @@ core = static_library('Elpida',
 						
 install_headers(['CpuFeature.hpp',
 				'CpuInfo.hpp',
-				'Exportable.hpp',
 				'MultiThreadTask.hpp',
 				'Runner.hpp',
-				'SingleThreadTask.hpp',
 				'Task.hpp',
 				'TaskBatch.hpp',
 				'TaskMetrics.hpp',

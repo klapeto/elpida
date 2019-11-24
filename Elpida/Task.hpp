@@ -27,8 +27,9 @@
 #ifndef ELPIDA_TASK_HPP_
 #define ELPIDA_TASK_HPP_
 
-#include "Elpida/Types/String.hpp"
-#include "Elpida/Types/Array.hpp"
+#include <string>
+#include <vector>
+
 #include "Elpida/TaskAffinity.hpp"
 
 namespace Elpida
@@ -50,12 +51,12 @@ namespace Elpida
 				_toBeMeasured = toBeMeasured;
 			}
 
-			inline const String& getName() const
+			inline const std::string& getName() const
 			{
 				return _name;
 			}
 
-			const Array<const TaskRunResult*>& getLastRunResults() const
+			const std::vector<const TaskRunResult*>& getLastRunResults() const
 			{
 				return _lastRunResults;
 			}
@@ -90,7 +91,7 @@ namespace Elpida
 				_affinity = std::move(affinity);
 			}
 
-			Task(const String& name, bool toBeMeasured = true)
+			Task(const std::string& name, bool toBeMeasured = true)
 					: _name(name), _toBeMeasured(toBeMeasured)
 			{
 
@@ -113,8 +114,8 @@ namespace Elpida
 				_lastRunResults.push_back(&result);
 			}
 		private:
-			Array<const TaskRunResult*> _lastRunResults;
-			String _name;
+			std::vector<const TaskRunResult*> _lastRunResults;
+			std::string _name;
 			bool _toBeMeasured;
 	};
 

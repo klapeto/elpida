@@ -27,8 +27,7 @@
 #ifndef TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_
 #define TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_
 
-#include <Elpida/TaskBatch.hpp>
-#include <Elpida/Types/Primitives.hpp>
+#include "Elpida/TaskBatch.hpp"
 
 namespace Elpida
 {

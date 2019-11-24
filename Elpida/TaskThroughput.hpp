@@ -27,7 +27,8 @@
 #ifndef ELPIDA_TASKTHROUGHPUT_HPP_
 #define ELPIDA_TASKTHROUGHPUT_HPP_
 
-#include "Elpida/Types/String.hpp"
+#include <string>
+
 #include "Elpida/TaskMetrics.hpp"
 #include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
@@ -38,18 +39,18 @@ namespace Elpida
 	class TaskThroughput
 	{
 		public:
-			Float64 getRatePerSecond() const
+			double getRatePerSecond() const
 			{
 				return _runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>();
 			}
 
-			String getRatePerSecondString() const
+			std::string getRatePerSecondString() const
 			{
 				return ValueUtilities::getValueScaleString(_runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>())
 				        + _runResult.getValueTypeName() + "/s";
 			}
 
-			String getUniversalString() const
+			std::string getUniversalString() const
 			{
 				if (!_runResult.isCustom())
 				{
@@ -61,7 +62,7 @@ namespace Elpida
 				}
 			}
 
-			String getUniversalSuffix() const
+			std::string getUniversalSuffix() const
 			{
 				if (!_runResult.isCustom())
 				{
@@ -73,7 +74,7 @@ namespace Elpida
 				}
 			}
 
-			Float64 getUniversalValue() const
+			double getUniversalValue() const
 			{
 				if (!_runResult.isCustom())
 				{

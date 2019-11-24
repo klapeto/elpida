@@ -27,6 +27,8 @@
 #ifndef ELPIDA_EXCEPTIONS_OUTOFRANGEEXCEPTION_HPP_
 #define ELPIDA_EXCEPTIONS_OUTOFRANGEEXCEPTION_HPP_
 
+#include <string>
+
 #include "Elpida/Exceptions/ElpidaException.hpp"
 
 namespace Elpida
@@ -41,13 +43,13 @@ namespace Elpida
 
 			}
 
-			OutOfRangeException(const String& what)
+			OutOfRangeException(const std::string& what)
 					: ElpidaException(what)
 			{
 
 			}
 
-			OutOfRangeException(const String& what, const String& message)
+			OutOfRangeException(const std::string& what, const std::string& message)
 					: ElpidaException(what, message)
 			{
 

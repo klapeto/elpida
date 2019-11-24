@@ -27,6 +27,8 @@
 #ifndef SRC_UTILITIES_LIBPNGLOADER_HPP_
 #define SRC_UTILITIES_LIBPNGLOADER_HPP_
 
+#include <cstddef>
+
 #include "Elpida/Utilities/ImageEncoder.hpp"
 
 namespace Elpida
@@ -36,8 +38,8 @@ namespace Elpida
 	{
 		public:
 
-			ImageEncoder::ImageDecodeInfo decode(RawDataPtr data, Size size);
-			ImageEncoder::ImageEncodeInfo encode(Size imageWidth, Size imageHeight, RawDataPtr inputData, Size inputSize);
+			ImageEncoder::ImageDecodeInfo decode(unsigned char* data, std::size_t size);
+			ImageEncoder::ImageEncodeInfo encode(std::size_t imageWidth, std::size_t imageHeight, unsigned char* inputData, std::size_t inputSize);
 
 			LibPngEncoder()
 			{

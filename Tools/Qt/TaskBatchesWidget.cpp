@@ -22,7 +22,6 @@
 #include "TaskBatchProperties.hpp"
 #include "ListItemWithButton.hpp"
 #include <Elpida/TaskBatch.hpp>
-#include <Elpida/Types/String.hpp>
 #include <Elpida/Exceptions/ElpidaException.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include <QMessageBox>
@@ -32,7 +31,7 @@
 namespace Elpida
 {
 
-	TaskBatchesWidget::TaskBatchesWidget(const Map<String, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent)
+	TaskBatchesWidget::TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent)
 			: QWidget(parent), _taskBatchList(taskBatchList), _ui(new Ui::TaskBatchesWidget)
 	{
 		_runningText = "<span style=\" color:#b50000;\">Running</span>";

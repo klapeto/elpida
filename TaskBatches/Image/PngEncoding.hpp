@@ -27,10 +27,12 @@
 #ifndef TASKSBATCHES_IMAGE_PNGENCODING_HPP_
 #define TASKSBATCHES_IMAGE_PNGENCODING_HPP_
 
-#include <Elpida/Task.hpp>
-#include <Elpida/Types/RawData.hpp>
-#include <Elpida/Utilities/Image.hpp>
-#include <Elpida/TaskRunResult.hpp>
+#include <cstddef>
+
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskMetrics.hpp"
+#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/Utilities/Image.hpp"
 
 namespace Elpida
 {
@@ -38,12 +40,15 @@ namespace Elpida
 	class PngEncoding: public Task
 	{
 		public:
-			const RawDataPtr& getEncodedData() const
+			typedef unsigned char Data;
+			typedef Data* DataPtr;
+
+			const DataPtr& getEncodedData() const
 			{
 				return _encodedData;
 			}
 
-			const Size& getEncodedDataSize() const
+			const std::size_t& getEncodedDataSize() const
 			{
 				return _encodedDataSize;
 			}
@@ -51,7 +56,7 @@ namespace Elpida
 			void run();
 			void calculateResults(const TaskMetrics& metrics);
 
-			PngEncoding(const Image<RawData>& inputImage);
+			PngEncoding(const Image<Data>& inputImage);
 			virtual ~PngEncoding();
 
 			PngEncoding(PngEncoding&&) = default;
@@ -61,9 +66,9 @@ namespace Elpida
 
 		private:
 			TaskRunResult _runResult;
-			const Image<RawData>& _inputImage;
-			RawDataPtr _encodedData;
-			Size _encodedDataSize;
+			const Image<Data>& _inputImage;
+			DataPtr _encodedData;
+			std::size_t _encodedDataSize;
 	};
 
 } /* namespace Elpida */

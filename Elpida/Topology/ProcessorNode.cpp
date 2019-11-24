@@ -25,6 +25,10 @@
  */
 
 #include "Elpida/Topology/ProcessorNode.hpp"
+
+#include <string>
+#include <vector>
+
 #include <hwloc.h>
 
 namespace Elpida
@@ -72,9 +76,9 @@ namespace Elpida
 		loadChildren(node);
 	}
 
-	static String getStringFromOsIndex(unsigned int osIndex)
+	static std::string getStringFromOsIndex(unsigned int osIndex)
 	{
-		return ((osIndex != HWLOC_UNKNOWN_INDEX ) ? std::to_string(osIndex) : String(UnknownOsIndexStr));
+		return ((osIndex != HWLOC_UNKNOWN_INDEX ) ? std::to_string(osIndex) : std::string(UnknownOsIndexStr));
 	}
 
 	void ProcessorNode::loadMachine(void* node)

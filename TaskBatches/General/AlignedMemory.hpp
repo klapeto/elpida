@@ -27,6 +27,8 @@
 #ifndef TASKBATCHES_GENERAL_ALIGNEDMEMORY_HPP_
 #define TASKBATCHES_GENERAL_ALIGNEDMEMORY_HPP_
 
+#include <cstddef>
+
 #include "TaskBatches/General/Memory.hpp"
 
 namespace Elpida
@@ -45,7 +47,7 @@ namespace Elpida
 				_alignment = alignment;
 			}
 
-			AlignedMemory(Size size, unsigned int alignment)
+			AlignedMemory(std::size_t size, unsigned int alignment)
 					: Memory(size), _alignment(alignment)
 			{
 			}

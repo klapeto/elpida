@@ -26,13 +26,18 @@
 
 #include "TaskBatches/Memory/Ui/MemoryTasksPropertiesWithChart.hpp"
 
-#include "Elpida/Types/List.hpp"
+#include <qnamespace.h>
+#include <qstring.h>
+#include <QtCharts/qcategoryaxis.h>
+#include <QtCharts/qchart.h>
+#include <QtCharts/qlineseries.h>
+#include <list>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QLogValueAxis>
-#include <QtCharts/QValueAxis>
-#include <QtCharts/QCategoryAxis>
+#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/TaskThroughput.hpp"
 
 namespace Elpida
 {
@@ -54,7 +59,7 @@ namespace Elpida
 		delete _yAxis;
 	}
 
-	void MemoryTasksPropertiesWithChart::updateResultsChartData(const Map<String, Array<TaskThroughput>>& results)
+	void MemoryTasksPropertiesWithChart::updateResultsChartData(const std::unordered_map<std::string, std::vector<TaskThroughput>>& results)
 	{
 		_chart->removeAllSeries();
 
@@ -63,7 +68,7 @@ namespace Elpida
 		configureYAxis(_yAxis);
 
 		auto series = new QtCharts::QLineSeries();
-		auto ordered = List<const TaskThroughput*>();
+		auto ordered = std::list<const TaskThroughput*>();
 
 		for (auto& result : results)
 		{

@@ -1,3 +1,22 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 /*
  * MemoryLatency.hpp
  *
@@ -8,16 +27,14 @@
 #ifndef TASKBATCHES_MEMORY_MEMORYLATENCY_HPP_
 #define TASKBATCHES_MEMORY_MEMORYLATENCY_HPP_
 
-#include <Elpida/Task.hpp>
-#include <Elpida/Types/Integer.hpp>
-#include <Elpida/Types/Primitives.hpp>
-#include <Elpida/TaskRunResult.hpp>
-#include <Elpida/TaskMetrics.hpp>
-#include <Elpida/Utilities/ValueUtilities.hpp>
-#include <TaskBatches/General/Memory.hpp>
+#include <bits/stdint-intn.h>
+#include <string>
 
-#include <chrono>
-#include <Elpida/Timer.hpp>
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskMetrics.hpp"
+#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
+#include "TaskBatches/General/Memory.hpp"
 
 namespace Elpida
 {
@@ -85,7 +102,7 @@ namespace Elpida
 			{
 				auto size = _itterations * _memory.getSize();
 				auto time = metrics.getSubdivision<TaskMetrics::NanoSecond>();
-				_runResult.setOriginalValue((Float64) time / (Float64) size);
+				_runResult.setOriginalValue((double) time / (double) size);
 				_runResult.setCustom(true);
 				_runResult.setMultiplier(1000);
 				_runResult.setTestedDataValue(_memory.getSize());
@@ -96,7 +113,7 @@ namespace Elpida
 			MemoryLatency(const Memory& memory)
 					: Task("Memory Read latency: " + ValueUtilities::getValueScaleString(memory.getSize()) + "B"), _memory(memory)
 			{
-				_itterations = _itterationConstant / (Float64) _memory.getSize();
+				_itterations = _itterationConstant / (double) _memory.getSize();
 			}
 
 			virtual ~MemoryLatency()
@@ -110,7 +127,7 @@ namespace Elpida
 			const Memory& _memory;
 			unsigned long _itterations;
 		private:
-			static constexpr Float64 _itterationConstant = 100000000000; // rough estimate, to be passed on construction later once we find the latency
+			static constexpr double _itterationConstant = 100000000000; // rough estimate, to be passed on construction later once we find the latency
 	};
 
 } /* namespace Elpida */

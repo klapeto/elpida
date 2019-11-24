@@ -27,8 +27,10 @@
 #ifndef TASKBATCHES_MEMORY_READ_CACHED_MEMORYREADCACHEDTASKBATCH_HPP_
 #define TASKBATCHES_MEMORY_READ_CACHED_MEMORYREADCACHEDTASKBATCH_HPP_
 
-#include <Elpida/TaskBatch.hpp>
-#include <Elpida/Types/Primitives.hpp>
+#include <cstddef>
+#include <string>
+
+#include "Elpida/TaskBatch.hpp"
 
 namespace Elpida
 {
@@ -45,7 +47,7 @@ namespace Elpida
 
 			}
 
-			MemoryReadCachedTaskBatch(const String& name)
+			MemoryReadCachedTaskBatch(const std::string& name)
 					: TaskBatch(name)
 			{
 
@@ -57,7 +59,7 @@ namespace Elpida
 			}
 
 		protected:
-			virtual void addMemoryReadTask(Size size) const;
+			virtual void addMemoryReadTask(std::size_t size) const;
 	};
 
 } /* namespace Elpida */

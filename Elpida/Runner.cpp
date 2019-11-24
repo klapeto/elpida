@@ -26,11 +26,14 @@
 
 #include "Elpida/Runner.hpp"
 
+#include <chrono>
+
 #include "Config.hpp"
 #include "Elpida/Task.hpp"
-#include "Elpida/Timer.hpp"
-#include "Elpida/CpuInfo.hpp"
 #include "Elpida/TaskBatch.hpp"
+#include "Elpida/TaskMetrics.hpp"
+#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/Timer.hpp"
 
 #if _elpida_linux
 #include <sys/resource.h>

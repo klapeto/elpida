@@ -27,9 +27,9 @@
 #ifndef ELPIDA_EVENT_HPP_
 #define ELPIDA_EVENT_HPP_
 
-#include "Elpida/Types/List.hpp"
 #include "Elpida/EventSubscription.hpp"
 #include <mutex>
+#include <list>
 
 namespace Elpida
 {
@@ -76,7 +76,7 @@ namespace Elpida
 
 		private:
 			std::mutex _mutex;
-			List<EventSubscription<T...>> _subscribers;
+			std::list<EventSubscription<T...>> _subscribers;
 
 	};
 

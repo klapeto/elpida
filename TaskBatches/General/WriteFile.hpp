@@ -27,22 +27,27 @@
 #ifndef TASKBATCHES_GENERAL_WRITEFILE_HPP_
 #define TASKBATCHES_GENERAL_WRITEFILE_HPP_
 
+#include <cstddef>
+#include <string>
+
 #include "Elpida/Task.hpp"
-#include "Elpida/Types/RawData.hpp"
-#include "Elpida/Types/Primitives.hpp"
-#include <Elpida/TaskRunResult.hpp>
+#include "Elpida/TaskRunResult.hpp"
 
 namespace Elpida
 {
+	class TaskMetrics;
 
 	class WriteFile: public Task
 	{
 		public:
 
+			typedef unsigned char Data;
+			typedef Data* DataPtr;
+
 			void run();
 			void calculateResults(const TaskMetrics& metrics);
 
-			WriteFile(const RawDataPtr& data, const Size& size, const String& outputPath);
+			WriteFile(const DataPtr& data, const std::size_t& size, const std::string& outputPath);
 			virtual ~WriteFile();
 
 			WriteFile(WriteFile&&) = default;
@@ -51,10 +56,10 @@ namespace Elpida
 			WriteFile& operator=(const WriteFile&) = default;
 
 		private:
-			String _outputPath;
+			std::string _outputPath;
 			TaskRunResult _runResult;
-			const RawDataPtr& _data;
-			const Size& _size;
+			const DataPtr& _data;
+			const std::size_t& _size;
 	};
 
 } /* namespace Elpida */

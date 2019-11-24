@@ -27,6 +27,8 @@
 #ifndef ELPIDA_EXCEPTIONS_PARSEREXCEPTION_HPP_
 #define ELPIDA_EXCEPTIONS_PARSEREXCEPTION_HPP_
 
+#include <string>
+
 #include "Elpida/Exceptions/ElpidaException.hpp"
 
 namespace Elpida
@@ -41,13 +43,13 @@ namespace Elpida
 
 			}
 
-			ParserException(const String& what)
+			ParserException(const std::string& what)
 					: ElpidaException(what)
 			{
 
 			}
 
-			ParserException(const String& what, const String& message)
+			ParserException(const std::string& what, const std::string& message)
 					: ElpidaException(what, message)
 			{
 

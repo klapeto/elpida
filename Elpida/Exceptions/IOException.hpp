@@ -27,6 +27,8 @@
 #ifndef ELPIDA_EXCEPTIONS_IOEXCEPTION_HPP_
 #define ELPIDA_EXCEPTIONS_IOEXCEPTION_HPP_
 
+#include <string>
+
 #include "Elpida/Exceptions/ElpidaException.hpp"
 
 namespace Elpida
@@ -41,13 +43,13 @@ namespace Elpida
 
 			}
 
-			IOException(const String& what)
+			IOException(const std::string& what)
 					: ElpidaException(what)
 			{
 
 			}
 
-			IOException(const String& what, const String& message)
+			IOException(const std::string& what, const std::string& message)
 					: ElpidaException(what, message)
 			{
 

@@ -39,7 +39,7 @@
 
 namespace Elpida
 {
-	void FileSystem::iterateDirectory(const String& directory, std::function<void(const String&)> func)
+	void FileSystem::iterateDirectory(const std::string& directory, std::function<void(const std::string&)> func)
 	{
 #if _elpida_linux
 		DIR *dir;
@@ -73,7 +73,7 @@ namespace Elpida
 #endif
 	}
 
-	bool FileSystem::fileExists(const String& file)
+	bool FileSystem::fileExists(const std::string& file)
 	{
 #if _elpida_linux
 		struct stat dummy;
