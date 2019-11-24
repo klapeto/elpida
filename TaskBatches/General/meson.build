@@ -24,12 +24,15 @@ generalTasks_sources = ['ReadFile.cpp',
 						'Memory.cpp',
 						'AlignedMemory.cpp',
 						'UnalignedMemory.cpp',
-						'MemoryChunk.cpp']
+						'MemoryChunk.cpp',
+						'NumaMemory.cpp',
+						'NumaAllocatePerThread.cpp']
 
 generalTasks = library('GeneralTasks', 
 							generalTasks_sources,
 							link_with: elpida,
 							install: true,
+							dependencies: [numa_dep],
 							cpp_args: defaultCppArgs,
 							install_dir: pluginInstallDir,
 							include_directories : rootIncude)
@@ -40,6 +43,8 @@ install_headers(['ReadFile.hpp',
 				'Memory.hpp',
 				'AlignedMemory.hpp',
 				'UnalignedMemory.hpp',
-				'MemoryChunk.hpp'],
+				'MemoryChunk.hpp',
+				'NumaMemory.cpp',
+				'NumaAllocatePerThread.cpp'],
 				subdir: 'Elpida/TaskBatches/General')
 

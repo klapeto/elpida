@@ -18,15 +18,16 @@
  *************************************************************************/
 
 /*
- * MemoryTasksProperties.cpp
+ * MultiThreadMemoryChunksRead.cpp
  *
- *  Created on: 16 Μαΐ 2019
+ *  Created on: 20 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MemoryTasksProperties.hpp"
+#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
 
 namespace Elpida
 {
 
 } /* namespace Elpida */
+

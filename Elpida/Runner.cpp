@@ -77,7 +77,7 @@ namespace Elpida
 				TaskMetrics metrics = runTask(*task);
 				if (task->isToBeMeasured())
 				{
-					task->calculateResults();
+					task->calculateResults(metrics);
 
 					auto& resultsToExport = batchResult[task->getName()];
 					const auto& results = task->getLastRunResults();
@@ -108,7 +108,7 @@ namespace Elpida
 	TaskMetrics Runner::runTask(Task &task)
 	{
 		task.prepare();
-
+		task.applyAffinity();
 		auto start = Timer::now();
 		task.run();
 		auto end = Timer::now();

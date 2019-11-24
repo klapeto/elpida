@@ -18,31 +18,37 @@
  *************************************************************************/
 
 /*
- * MemoryReadVolatile.hpp
+ * MemoryReadCached.hpp
  *
- *  Created on: 16 Μαΐ 2019
+ *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYREADVOLATILE_HPP_
-#define TASKBATCHES_MEMORY_MEMORYREADVOLATILE_HPP_
+#ifndef TASKBATCHES_MEMORY_READ_CACHED_MEMORYREADCACHED_HPP_
+#define TASKBATCHES_MEMORY_READ_CACHED_MEMORYREADCACHED_HPP_
 
-#include "MemoryReadCached.hpp"
+#include <Elpida/Task.hpp>
+#include <Elpida/Types/Integer.hpp>
+#include <Elpida/Types/Primitives.hpp>
+#include <Elpida/TaskRunResult.hpp>
+#include <Elpida/Utilities/ValueUtilities.hpp>
+#include <TaskBatches/General/Memory.hpp>
 
 namespace Elpida
 {
-
-	class MemoryReadVolatile final: public MemoryReadCached
+	template<typename T = int64_t>
+	class MemoryReadCached: public Task
 	{
 		public:
+
 			virtual void run() override
 			{
-				volatile auto ptr = (int64_t*) _memory.getPointer();
+				register auto ptr = (T*) _memory.getPointer();
 				register auto start = ptr;
-				register auto end = (int64_t*) ((int64_t) start + _memory.getSize());
-				register auto itterations = _itterations;
-				register auto x = (int64_t) 0;
-				for (register auto i = 0ul; i < itterations; ++i)
+				register auto end = (T *) ((T) start + _memory.getSize());
+				register auto iterations = _iterations;
+				register auto x = T();
+				for (register auto i = 0ul; i < iterations; ++i)
 				{
 					ptr = start;
 					while (ptr < end)
@@ -85,17 +91,43 @@ namespace Elpida
 				auto dummy = x;
 			}
 
-			MemoryReadVolatile(const Memory& memory, std::chrono::milliseconds duration)
-					: MemoryReadCached(memory, duration)
+			unsigned long getIterations() const
 			{
-
+				return _iterations;
 			}
-			~MemoryReadVolatile()
+
+			void calculateResults(const TaskMetrics& metrics) override
 			{
-
+				addResult(_runResult);
 			}
+
+			MemoryReadCached(const Memory& memory)
+					:
+					  Task("Read " + ValueUtilities::getValueScaleString(memory.getSize()) + "B @" + std::to_string(sizeof(T))
+					          + " Bytes/Read"),
+					  _runResult(ValueUtilities::getValueScaleString(memory.getSize()) + "B", "Bytes"),
+					  _memory(memory)
+			{
+				_iterations = _iterationConstant / (Float64)_memory.getSize();
+				_runResult.setOriginalValue(_memory.getSize());
+				_runResult.setTestedDataValue(_memory.getSize());
+				_runResult.setMultiplier(_iterations);
+			}
+
+			virtual ~MemoryReadCached()
+			{
+				finalize();
+			}
+
+		private:
+			TaskRunResult _runResult;
+		protected:
+			const Memory& _memory;
+			unsigned long _iterations;
+		private:
+			static constexpr Float64 _iterationConstant = 100000000000; // rough estimate
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYREADVOLATILE_HPP_ */
+#endif /* TASKBATCHES_MEMORY_READ_CACHED_MEMORYREADCACHED_HPP_ */

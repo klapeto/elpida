@@ -18,53 +18,58 @@
  *************************************************************************/
 
 /*
- * MemoryTasksProperties.hpp
+ * MultiThreadMemoryRead.hpp
  *
- *  Created on: 16 Μαΐ 2019
+ *  Created on: 7 Ιαν 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
-#define TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_
+#ifndef TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYREAD_HPP_
+#define TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYREAD_HPP_
 
-#include "TaskBatches/QtTaskBatchWrapper.hpp"
+#include <Elpida/MultiThreadTask.hpp>
+#include <Elpida/TaskRunResult.hpp>
 
 namespace Elpida
 {
+	class Memory;
 
-	template<typename T>
-	class MemoryTasksProperties final: public QtTaskBatchWrapper
+	class MultiThreadMemoryRead: MultiThreadTask
 	{
+		private:
+			struct MemoryBlock
+			{
+					const Memory* memory;
+					int affinity;
+			};
 		public:
 
-			const TaskBatch& getTaskBatch() const
+			void calculateResults(const TaskMetrics& metrics) override
 			{
-				return _taskBatch;
+				addResult(_totalBandwidth);
 			}
 
-			void reconfigureTaskBatch()
+			void addMemoryBlock(const Memory& memory, int affinity = -1)
 			{
-
-			}
-			void validateConfiguration()
-			{
+				_blocks.push_back( { &memory, affinity });
 
 			}
 
-			MemoryTasksProperties(T&& batch)
-					:QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
+			MultiThreadMemoryRead()
+					: MultiThreadTask("Read 8 Bytes/Read")
 			{
 
 			}
-
-			~MemoryTasksProperties()
+			~MultiThreadMemoryRead()
 			{
 
 			}
 		private:
-			T _taskBatch;
+			Array<MemoryBlock> _blocks;
+			TaskRunResult _totalBandwidth;
+
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIES_HPP_ */
+#endif /* TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYREAD_HPP_ */

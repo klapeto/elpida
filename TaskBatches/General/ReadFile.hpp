@@ -29,6 +29,7 @@
 
 #include "Elpida/Task.hpp"
 #include "Elpida/Utilities/MemoryFile.hpp"
+#include <Elpida/TaskRunResult.hpp>
 
 namespace Elpida
 {
@@ -43,7 +44,7 @@ namespace Elpida
 			}
 
 			void run();
-			void calculateResults();
+			void calculateResults(const TaskMetrics& metrics);
 
 			ReadFile(const String& filePath);
 			virtual ~ReadFile();

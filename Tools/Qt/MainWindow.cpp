@@ -36,6 +36,7 @@
 #include "TaskBatchProperties.hpp"
 #include "TaskBatchesWidget.hpp"
 #include "LogsDialog.hpp"
+#include "MascotWidget.hpp"
 
 namespace Elpida
 {

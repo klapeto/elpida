@@ -92,8 +92,28 @@ namespace Elpida
 				_originalValue += value;
 			}
 
+			void setCustom(bool custom)
+			{
+				_custom = custom;
+			}
+
+			bool isCustom() const
+			{
+				return _custom;
+			}
+
+			Float64 getTestedDataValue() const
+			{
+				return _testedDataValue;
+			}
+
+			void setTestedDataValue(Float64 testedDataValue)
+			{
+				_testedDataValue = testedDataValue;
+			}
+
 			TaskRunResult()
-					: _valueTypeName("OPS"), _originalValue(0.0), _multiplier(1.0)
+					: _valueTypeName("OPS"), _originalValue(0.0), _multiplier(1.0), _testedDataValue(0.0), _custom(false)
 			{
 
 			}
@@ -103,7 +123,9 @@ namespace Elpida
 					  _valueTypeName(valueTypeName),
 					  _resultDescription(description),
 					  _originalValue(0.0),
-					  _multiplier(multiplier)
+					  _multiplier(multiplier),
+					  _testedDataValue(0.0),
+					  _custom(false)
 			{
 
 			}
@@ -118,6 +140,8 @@ namespace Elpida
 			String _resultDescription;
 			Float64 _originalValue;
 			Float64 _multiplier;
+			Float64 _testedDataValue;
+			bool _custom;
 	};
 
 } /* namespace Elpida */

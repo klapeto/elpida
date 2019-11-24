@@ -51,7 +51,7 @@ namespace Elpida
 			template<typename Division>
 			Float64 getSubdivision() const
 			{
-				return (Float64) _duration.count() / (Float64) Division::den;
+				return ((Float64)Division::den * _duration.count()) / (Float64) Division::num;
 			}
 
 			TaskMetrics()

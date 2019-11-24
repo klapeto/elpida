@@ -26,13 +26,16 @@
 
 #include "TaskBatches/Config.hpp"
 #include <Elpida/Types/Array.hpp>
-#include "TaskBatches/Memory/MemoryReadCachedTaskBatch.hpp"
-#include "TaskBatches/Memory/MemoryReadVolatileTaskBatch.hpp"
-#include "TaskBatches/Memory/MultithreadMemoryChunksReadCachedTaskBatch.hpp"
+#include "TaskBatches/Memory/MemoryLatencyTaskBatch.hpp"
+#include "TaskBatches/Memory/MemoryLatency.hpp"
+#include "TaskBatches/Memory/Read/Cached/MemoryReadCachedTaskBatch.hpp"
+#include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
+#include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatileTaskBatch.hpp"
 
 #if _elpida_qt_enabled
-#include "TaskBatches/Memory/MemoryTasksPropertiesWithChart.hpp"
-#include "TaskBatches/Memory/MemoryTasksProperties.hpp"
+#include "TaskBatches/Memory/Ui/MemoryBandwidthChart.hpp"
+#include "TaskBatches/Memory/Ui/MemoryTasksProperties.hpp"
+#include "TaskBatches/Memory/Ui/MemoryLatencyChart.hpp"
 #endif
 
 extern "C" Elpida::TaskBatch* createTaskBatch()
@@ -44,15 +47,16 @@ extern "C" Elpida::TaskBatch* createTaskBatch()
 
 extern "C" Elpida::QtTaskBatchWrapper* createQtBatchWrapper()
 {
-	return new Elpida::MemoryTasksPropertiesWithChart(new Elpida::MemoryReadCachedTaskBatch);
+	return new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadCachedTaskBatch);
 }
 
 extern "C" Elpida::Array<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
 {
 	return new Elpida::Array<Elpida::QtTaskBatchWrapper*> {
-		new Elpida::MemoryTasksPropertiesWithChart(new Elpida::MemoryReadCachedTaskBatch),
-		new Elpida::MemoryTasksPropertiesWithChart(new Elpida::MemoryReadVolatileTaskBatch),
-		new Elpida::MemoryTasksProperties<Elpida::MultithreadMemoryChunksReadCachedTaskBatch>(Elpida::MultithreadMemoryChunksReadCachedTaskBatch())
+		new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadCachedTaskBatch),
+		new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadVolatileTaskBatch),
+		new Elpida::MemoryTasksProperties<Elpida::MultithreadMemoryChunksReadTaskBatch>(Elpida::MultithreadMemoryChunksReadTaskBatch()),
+		new Elpida::MemoryLatencyChart(new Elpida::MemoryLatencyTaskBatch)
 	};
 }
 

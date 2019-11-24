@@ -41,7 +41,7 @@ namespace QtCharts
 namespace Elpida
 {
 
-	class MemoryTasksPropertiesWithChart final: public QtTaskBatchWrapper
+	class MemoryTasksPropertiesWithChart: public QtTaskBatchWrapper
 	{
 		public:
 
@@ -67,13 +67,23 @@ namespace Elpida
 			void updateResultsChartData(const Map<String, Array<TaskThroughput>>& results) override;
 
 			MemoryTasksPropertiesWithChart(TaskBatch* taskBatch);
-			~MemoryTasksPropertiesWithChart();
+			virtual ~MemoryTasksPropertiesWithChart();
 		private:
 			TaskBatch* _taskBatch;
 			QtCharts::QChart* _chart;
 			QtCharts::QCategoryAxis* _xAxis;
 			QtCharts::QValueAxis* _yAxis;
+		protected:
+			struct ChartValues
+			{
+					Float64 yValue;
+					String xCategory;
+			};
 
+			virtual void configureXAxis(QtCharts::QCategoryAxis* xAxis) = 0;
+			virtual void configureYAxis(QtCharts::QValueAxis* yAxis) = 0;
+			virtual void configureChart(QtCharts::QChart* chart) = 0;
+			virtual ChartValues getChartValuesFromTaskThroughput(const TaskThroughput& throughput) = 0;
 	};
 
 } /* namespace Elpida */

@@ -28,6 +28,14 @@
 #include <Elpida/Topology/ProcessorNode.hpp>
 #include <hwloc.h>
 
+#include "Elpida/Config.hpp"
+
+#ifdef _elpida_linux
+#include <numa.h>
+#else
+#include <windows.h>
+#endif
+
 namespace Elpida
 {
 	SystemTopology::SystemTopology()
@@ -59,8 +67,10 @@ namespace Elpida
 
 	void SystemTopology::accumulateCores(ProcessorNode& node)
 	{
-		for (auto child : node.getChildren()){
-			switch (child.getType()) {
+		for (auto child : node.getChildren())
+		{
+			switch (child.getType())
+			{
 				case ProcessorNode::Type::ExecutionUnit:
 					_totalLogicalCores++;
 					break;
@@ -72,6 +82,18 @@ namespace Elpida
 			}
 			accumulateCores(child);
 		}
+	}
+
+	int SystemTopology::getNumaNodeOfProcessor(int processorId)
+	{
+#if _elpida_linux
+		return numa_node_of_cpu(processorId);
+#else
+		UCHAR NodeNumber;
+
+		GetNumaProcessorNode(i, &NodeNumber);
+		return NodeNumber;
+#endif
 	}
 
 } /* namespace Elpida */

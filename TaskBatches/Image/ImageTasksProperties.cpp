@@ -63,6 +63,8 @@ namespace Elpida
 
 	void ImageTasksProperties::validateConfiguration()
 	{
+		_inputImage = _ui->leInputImage->text().toStdString();
+		_outputImage = _ui->leOutputImage->text().toStdString();
 		if (_inputImage.size() == 0)
 		{
 			throw ElpidaException("Image Task Batch", "Cannot blank input filename");

@@ -25,9 +25,27 @@
  */
 
 #include "Elpida/Task.hpp"
+#include "Elpida/TaskThread.hpp"
+#include "Elpida/Topology/ProcessorNode.hpp"
 
 namespace Elpida
 {
+	void Task::applyAffinity()
+	{
+		if (_affinity.isSet())
+		{
+			auto nodes = _affinity.getProcessorNodes();
+			if (nodes.size() > 0)
+			{
+				auto id = nodes[0]->getOsIndex();
+				if (id >= 0)
+				{
+					TaskThread::setCurrentThreadAffinity((int) id);
+				}
+			}
+
+		}
+	}
 
 } /* namespace Elpida */
 

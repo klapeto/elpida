@@ -24,15 +24,15 @@
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREAD_HPP_
-#define TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREAD_HPP_
+#ifndef TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREAD_HPP_
+#define TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREAD_HPP_
 
 #include <Elpida/MultiThreadTask.hpp>
 #include <Elpida/Types/Array.hpp>
 #include "TaskBatches/General/MemoryChunk.hpp"
 #include <Elpida/CpuInfo.hpp>
 #include <Elpida/Types/Primitives.hpp>
-#include "TaskBatches/Memory/MemoryReadCached.hpp"
+#include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatile.hpp"
 
 namespace Elpida
 {
@@ -40,18 +40,21 @@ namespace Elpida
 	{
 		public:
 
-			void calculateResults() override
+			void calculateResults(const TaskMetrics& metrics) override
 			{
 				addResult(_totalBandwidth);
 			}
 
-			MultiThreadMemoryChunksRead(const Memory& memory, Size numberOfThreads)
+
+
+			MultiThreadMemoryChunksRead(const Map<int, Memory*>& memory, Size numberOfThreads)
 					:
-					  MultiThreadTask("Read " + ValueUtilities::getValueScaleString(memory.getSize()) + "B@ 8 Bytes/Read", true),
+					  MultiThreadTask("Read @ 8 Bytes/Read"),
 					  _totalBandwidth("Total Read Bandwidth", "Bytes"),
 					  _numberOfThreads(numberOfThreads),
 					  _memory(memory)
 			{
+
 			}
 			virtual ~MultiThreadMemoryChunksRead()
 			{
@@ -61,26 +64,27 @@ namespace Elpida
 		protected:
 			void createTasks()
 			{
-				_chunks = MemoryChunk::breakToChunks(_memory, _numberOfThreads);
-				auto itterations = 0ul;
-				for (const auto& chunk : _chunks)
+				auto iterations = 0ul;
+				auto totalSize = 0ul;
+				auto cpu = 0ul;
+				for (const auto& chunk : _memory)
 				{
-					auto mem = new MemoryReadCached(chunk, std::chrono::milliseconds(2000));
-					if (itterations == 0ul)
+					totalSize += chunk.second->getSize();
+					auto mem = new MemoryReadVolatile<>(*chunk.second);
+					if (iterations == 0ul)
 					{
-						itterations = mem->getItterations();
+						iterations = mem->getIterations();
 					}
-					addTask(mem);
+					addTask(mem, chunk.first);
 				}
-				_totalBandwidth.setOriginalValue(_memory.getSize() * itterations);
+				_totalBandwidth.setOriginalValue(totalSize * iterations);
 			}
 		private:
 			TaskRunResult _totalBandwidth;
-			Array<MemoryChunk> _chunks;
 			Size _numberOfThreads;
-			const Memory& _memory;
+			const Map<int, Memory*>& _memory;
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREAD_HPP_ */
+#endif /* TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREAD_HPP_ */

@@ -18,16 +18,15 @@
  *************************************************************************/
 
 /*
- * MemoryRead.cpp
+ * MultiThreadMemoryRead.cpp
  *
- *  Created on: 18 Οκτ 2018
+ *  Created on: 7 Ιαν 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MemoryReadCached.hpp"
+#include "TaskBatches/Memory/Read/MultiThreadMemoryRead.hpp"
 
 namespace Elpida
 {
 
 } /* namespace Elpida */
-

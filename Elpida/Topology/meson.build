@@ -26,6 +26,7 @@ topologyHeaders = ['SystemTopology.hpp',
 topology = static_library('Topology', 
 						topology_sources,
 						cpp_args: defaultCppArgs,
+						dependencies: numa_dep,
 						link_whole: hwloc,
 						include_directories : [rootIncude, hwlocInclude])
 						

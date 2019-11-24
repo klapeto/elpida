@@ -57,6 +57,8 @@ namespace Elpida
 				return _totalPhysicalCores;
 			}
 
+			static int getNumaNodeOfProcessor(int processorId);
+
 			static const SystemTopology& getTopology()
 			{
 				static SystemTopology topo;

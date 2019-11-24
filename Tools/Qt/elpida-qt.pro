@@ -32,7 +32,8 @@ SOURCES += \
     LogsDialog.cpp \
     TaskBatchesWidget.cpp \
     ListItemWithButton.cpp \
-    TopologyWidget.cpp
+    TopologyWidget.cpp \
+    MascotWidget.cpp
 
 HEADERS += \
         MainWindow.hpp \
@@ -41,7 +42,8 @@ HEADERS += \
     LogsDialog.hpp \
     TaskBatchesWidget.hpp \
     ListItemWithButton.hpp \
-    TopologyWidget.hpp
+    TopologyWidget.hpp \
+    MascotWidget.hpp
 
 FORMS += \
         MainWindow.ui \

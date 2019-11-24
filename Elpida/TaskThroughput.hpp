@@ -45,7 +45,44 @@ namespace Elpida
 
 			String getRatePerSecondString() const
 			{
-				return ValueUtilities::getValueScaleString(_runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>()) + _runResult.getValueTypeName() + "/s";
+				return ValueUtilities::getValueScaleString(_runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>())
+				        + _runResult.getValueTypeName() + "/s";
+			}
+
+			String getUniversalString() const
+			{
+				if (!_runResult.isCustom())
+				{
+					return getRatePerSecondString();
+				}
+				else
+				{
+					return std::to_string(_runResult.getActualValue()) + _runResult.getValueTypeName();
+				}
+			}
+
+			String getUniversalSuffix() const
+			{
+				if (!_runResult.isCustom())
+				{
+					return "/s";
+				}
+				else
+				{
+					return _runResult.getValueTypeName();
+				}
+			}
+
+			Float64 getUniversalValue() const
+			{
+				if (!_runResult.isCustom())
+				{
+					return _runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>();
+				}
+				else
+				{
+					return _runResult.getActualValue();
+				}
 			}
 
 			const TaskRunResult& getRunResult() const

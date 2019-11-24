@@ -27,9 +27,10 @@
 #ifndef TASKSBATCHES_IMAGE_PNGENCODING_HPP_
 #define TASKSBATCHES_IMAGE_PNGENCODING_HPP_
 
-#include "Elpida/Task.hpp"
-#include "Elpida/Types/RawData.hpp"
-#include "Elpida/Utilities/Image.hpp"
+#include <Elpida/Task.hpp>
+#include <Elpida/Types/RawData.hpp>
+#include <Elpida/Utilities/Image.hpp>
+#include <Elpida/TaskRunResult.hpp>
 
 namespace Elpida
 {
@@ -48,7 +49,7 @@ namespace Elpida
 			}
 
 			void run();
-			void calculateResults();
+			void calculateResults(const TaskMetrics& metrics);
 
 			PngEncoding(const Image<RawData>& inputImage);
 			virtual ~PngEncoding();

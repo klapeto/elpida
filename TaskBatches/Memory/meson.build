@@ -18,28 +18,39 @@
 #-------------------------------------------------------------------------------
 
 memoryTasks_sources = ['Plugin.cpp',
-						'MemoryReadCached.cpp',
-						'MemoryReadVolatile.cpp',
-						'MemoryReadCachedTaskBatch.cpp',
-						'MultiThreadMemoryChunksRead.cpp',
-						'MemoryReadVolatileTaskBatch.cpp',
-						'MultithreadMemoryChunksReadCachedTaskBatch.cpp',
-						'MultiThreadMemoryRead.cpp']
+						join_paths('Read', 'Cached', 'MemoryReadCached.cpp'),
+						join_paths('Read', 'Cached', 'MemoryReadCachedTaskBatch.cpp'),
+						join_paths('Read', 'Volatile', 'MemoryReadVolatile.cpp'),
+						join_paths('Read', 'Volatile', 'MemoryReadVolatileTaskBatch.cpp'),
+						join_paths('Read', 'MultiThreadMemoryChunksRead.cpp'),
+						join_paths('Read', 'MultithreadMemoryChunksReadTaskBatch.cpp'),
+						join_paths('Read', 'MultithreadMemoryChunksReadTaskBatch.cpp'),
+						join_paths('Read', 'MultiThreadMemoryRead.cpp'),
+						'WorkingSetSizes.cpp',
+						'MemoryLatency.cpp',
+						'MemoryLatencyTaskBatch.cpp']
 
-install_headers(['MemoryReadCached.hpp',
-				'MemoryReadVolatile.hpp',
-				'MemoryReadCachedTaskBatch.hpp',
-				'MultiThreadMemoryChunksRead.hpp',
-				'MemoryReadVolatileTaskBatch.hpp',
-				'MultithreadMemoryChunksReadCachedTaskBatch.hpp',
-				'MultiThreadMemoryRead.hpp'],
+install_headers([
+				join_paths('Read', 'Cached', 'MemoryReadCached.hpp'),
+				join_paths('Read', 'Cached', 'MemoryReadCachedTaskBatch.hpp'),
+				join_paths('Read', 'Volatile', 'MemoryReadVolatile.hpp'),
+				join_paths('Read', 'Volatile', 'MemoryReadVolatileTaskBatch.hpp'),
+				join_paths('Read', 'MultiThreadMemoryChunksRead.hpp'),
+				join_paths('Read', 'MultithreadMemoryChunksReadTaskBatch.hpp'),
+				join_paths('Read', 'MultithreadMemoryChunksReadTaskBatch.hpp'),
+				join_paths('Read', 'MultiThreadMemoryRead.hpp'),
+				'MemoryLatency.hpp',
+				'WorkingSetSizes.hpp',
+				'MemoryLatencyTaskBatch.hpp'],
 				subdir: 'Elpida/TaskBatches/Memory')
 				
 if qt5_dep.found()
 
 	memoryTasks_sources += [
-		'MemoryTasksProperties.cpp',
-		'MemoryTasksPropertiesWithChart.cpp'
+		join_paths('Ui', 'MemoryTasksProperties.cpp'),
+		join_paths('Ui', 'MemoryTasksPropertiesWithChart.cpp'),
+		join_paths('Ui', 'MemoryBandwidthChart.cpp'),
+		join_paths('Ui', 'MemoryLatencyChart.cpp'),
 	]
 
 	uiFiles = [
@@ -47,8 +58,10 @@ if qt5_dep.found()
 	]
 	
 	mocHeaders = [
-		'MemoryTasksProperties.hpp',
-		'MemoryTasksPropertiesWithChart.hpp'
+		join_paths('Ui', 'MemoryTasksProperties.hpp'),
+		join_paths('Ui', 'MemoryTasksPropertiesWithChart.hpp'),
+		join_paths('Ui', 'MemoryBandwidthChart.hpp'),
+		join_paths('Ui', 'MemoryLatencyChart.hpp'),
 	]
 	
 	memoryTasks_sources += qt5.preprocess(
@@ -60,7 +73,7 @@ endif
 memoryTasks = library('MemoryTasks', 
 							[memoryTasks_sources],
 							link_with: [elpida, generalTasks],
-							cpp_args: defaultCppArgs,
+							cpp_args: ['-masm=att', '-march=native', '-O0'],
 							install_dir: pluginInstallDir,
 							dependencies: qt5_dep.found() ? qt5_dep : [],
 							install: true,

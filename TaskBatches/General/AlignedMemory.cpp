@@ -27,6 +27,7 @@
 #include "TaskBatches/General/AlignedMemory.hpp"
 #include <Elpida/Config.hpp>
 #include <cstdlib>
+#include <cstring>
 
 namespace Elpida
 {
@@ -38,6 +39,7 @@ namespace Elpida
 #elif _elpida_windows
 		_pointer = _aligned_malloc(_size, _alignment);
 #endif
+		memset(_pointer, 0, _size);
 	}
 
 	void AlignedMemory::deallocateImpl()

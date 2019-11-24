@@ -39,13 +39,6 @@ namespace Elpida
 
 	void ElpidaManager::destroyTaskBatches()
 	{
-		for (auto& pair : _createdTaskBatches)
-		{
-			if (pair.second != nullptr)
-			{
-				delete pair.second;
-			}
-		}
 		_createdTaskBatches.clear();
 	}
 

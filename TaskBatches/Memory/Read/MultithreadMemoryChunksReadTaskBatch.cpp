@@ -18,57 +18,29 @@
  *************************************************************************/
 
 /*
- * MultiThreadMemoryRead.hpp
+ * MultithreadMemoryChunksReadCached.cpp
  *
- *  Created on: 7 Ιαν 2019
+ *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_
-#define TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_
+#include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
 
-#include <Elpida/MultiThreadTask.hpp>
+#include "TaskBatches/General/NumaAllocatePerThread.hpp"
+#include <Elpida/Topology/SystemTopology.hpp>
+#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
 
 namespace Elpida
 {
-	class Memory;
 
-	class MultiThreadMemoryRead: MultiThreadTask
+	void MultithreadMemoryChunksReadTaskBatch::createTasks() const
 	{
-		private:
-			struct MemoryBlock
-			{
-					const Memory* memory;
-					int affinity;
-			};
-		public:
-
-			void calculateResults() override
-			{
-				addResult(_totalBandwidth);
-			}
-
-			void addMemoryBlock(const Memory& memory, int affinity = -1)
-			{
-				_blocks.push_back( { &memory, affinity });
-
-			}
-
-			MultiThreadMemoryRead()
-					: MultiThreadTask("Read 8 Bytes/Read", true)
-			{
-
-			}
-			~MultiThreadMemoryRead()
-			{
-
-			}
-		private:
-			Array<MemoryBlock> _blocks;
-			TaskRunResult _totalBandwidth;
-
-	};
+		constexpr Size size = 64ul * (1024 * 1024);	// 64MB
+		auto memory = new NumaAllocatePerThread(size);
+		memory->setToBeMeasured(false);
+		addTask(memory);
+		addTask(new MultiThreadMemoryChunksRead(memory->getAllocatedMemoryRegions(), SystemTopology::getTopology().getTotalLogicalCores()));
+	}
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MULTITHREADMEMORYREAD_HPP_ */

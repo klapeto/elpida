@@ -18,16 +18,29 @@
  *************************************************************************/
 
 /*
- * MultiThreadMemoryChunksRead.cpp
+ * MultithreadMemoryChunksReadCached.cpp
  *
- *  Created on: 20 Οκτ 2018
+ *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MultiThreadMemoryChunksRead.hpp"
+#include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadCachedTaskBatch.hpp"
+
+#include "TaskBatches/General/AllocateMemory.hpp"
+#include <Elpida/Topology/SystemTopology.hpp>
+#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
 
 namespace Elpida
 {
+
+	void MultithreadMemoryChunksReadCachedTaskBatch::createTasks() const
+	{
+		constexpr int size = 512 * (1024 * 1024);
+		auto memory = new AllocateMemory(size, true, sizeof(void*) * 16);
+		memory->setToBeMeasured(false);
+		addTask(memory);
+		addTask(new MultiThreadMemoryChunksRead(memory->getMemory(), SystemTopology::getTopology().getTotalLogicalCores()));
+	}
 
 } /* namespace Elpida */
 

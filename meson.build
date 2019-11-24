@@ -16,9 +16,11 @@ thread_dep = dependency('threads')
 
 if build_machine.system() == 'linux'
 	dl_dep = gpp.find_library('dl', required: true)
+	numa_dep = gpp.find_library('numa', required: true)
 else
 	if build_machine.system() == 'windows'
 		dl_dep = gpp.find_library('kernel32', required: true)
+		numa_dep = dl_dep
 	endif
 endif
 
@@ -38,6 +40,7 @@ endif
 
 qt5 = import('qt5')
 qt5_dep = dependency('qt5', modules: ['Widgets', 'Charts'], required: false)
+
 
 pluginInstallDir = join_paths(binaryInstallPath, 'Elpida')
 

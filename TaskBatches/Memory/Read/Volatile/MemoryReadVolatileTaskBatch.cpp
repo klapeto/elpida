@@ -18,15 +18,27 @@
  *************************************************************************/
 
 /*
- * MemoryReadVolatile.cpp
+ * MemoryReadVolatileTaskBatch.cpp
  *
  *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MemoryReadVolatile.hpp"
+#include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatileTaskBatch.hpp"
+
+#include "TaskBatches/General/AllocateMemory.hpp"
+#include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatile.hpp"
 
 namespace Elpida
 {
 
+	void MemoryReadVolatileTaskBatch::addMemoryReadTask(Size size) const
+	{
+		auto memory = new AllocateMemory(size, true, 1);
+		memory->setToBeMeasured(false);
+		addTask(memory);
+		addTask(new MemoryReadVolatile<>(memory->getMemory()));
+	}
+
 } /* namespace Elpida */
+

@@ -56,7 +56,7 @@ namespace Elpida
 				}
 			}
 
-			void calculateResults()
+			void calculateResults(const TaskMetrics& metrics)
 			{
 				_runResult.setOriginalValue(_sourceImage.getTotalSize());
 				addResult(_runResult);

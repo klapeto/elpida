@@ -18,36 +18,37 @@
  *************************************************************************/
 
 /*
- * MemoryReadVolatileTaskBatch.hpp
+ * MultithreadMemoryChunksReadCachedTaskBatch.hpp
  *
  *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYREADVOLATILETASKBATCH_HPP_
-#define TASKBATCHES_MEMORY_MEMORYREADVOLATILETASKBATCH_HPP_
+#ifndef TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_
+#define TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_
 
-#include "MemoryReadCachedTaskBatch.hpp"
+#include <Elpida/TaskBatch.hpp>
+#include <Elpida/Types/Primitives.hpp>
 
 namespace Elpida
 {
 
-	class MemoryReadVolatileTaskBatch final: public MemoryReadCachedTaskBatch
+	class MultithreadMemoryChunksReadCachedTaskBatch: public TaskBatch
 	{
 		public:
-			MemoryReadVolatileTaskBatch()
-					: MemoryReadCachedTaskBatch("Memory Read (Single Thread/Volatile)")
+			void createTasks() const override;
+
+			MultithreadMemoryChunksReadCachedTaskBatch()
+					: TaskBatch("Memory Read (Multi Thread/Chunked/Cached)")
 			{
 
 			}
 
-			~MemoryReadVolatileTaskBatch()
+			virtual ~MultithreadMemoryChunksReadCachedTaskBatch()
 			{
 			}
-		protected:
-			void addMemoryReadTask(Size size) const override;
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYREADVOLATILETASKBATCH_HPP_ */
+#endif /* TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_ */

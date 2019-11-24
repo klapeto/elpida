@@ -51,13 +51,25 @@
 namespace Elpida
 {
 
-	String amdCacheAssociativities[] =
-		{
-		        "Disabled", "Direct mapped", "2-Way", "", "4-Way", "", "8-Way", "", "16-Way", "", "32-Way", "48-Way", "64-Way", "96-Way",
-		        "128-Way", "Fully" };
+	String amdCacheAssociativities[] = {
+	        "Disabled",
+	        "Direct mapped",
+	        "2-Way",
+	        "",
+	        "4-Way",
+	        "",
+	        "8-Way",
+	        "",
+	        "16-Way",
+	        "",
+	        "32-Way",
+	        "48-Way",
+	        "64-Way",
+	        "96-Way",
+	        "128-Way",
+	        "Fully" };
 
-	String intelCacheTypes[] =
-		{ "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
+	String intelCacheTypes[] = { "No Cache", "Data Cache", "Instruction Cache", "Unified Cache" };
 
 	CpuInfo::CpuInfo()
 			:
@@ -162,14 +174,12 @@ namespace Elpida
 	{
 		output << _newLine << _newLine << "CPU Instructions Extensions:" << _newLine;
 
-		TextTable outputTable =
-			{ TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
+		TextTable outputTable = { TextColumn("Description", 50), TextColumn("Short", 15), TextColumn("Supported", 10) };
 
 		outputTable.setPadding(4);
 		for (auto instruction : _instructionExtensions)
 		{
-			outputTable.addRow(
-				{ instruction.getDescription(), instruction.getName(), (instruction.isSupported() ? "true" : "false") });
+			outputTable.addRow( { instruction.getDescription(), instruction.getName(), (instruction.isSupported() ? "true" : "false") });
 		}
 		outputTable.exportTo(output);
 	}

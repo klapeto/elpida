@@ -7,3 +7,4 @@
 /Libraries/**/!meson.build
 /Libraries/**/!*.h.build
 *.[oa]
+/.idea/

@@ -26,24 +26,41 @@
 
 #include "TaskBatches/General/AllocateMemory.hpp"
 #include <Elpida/Config.hpp>
+#include <Elpida/Exceptions/ElpidaException.hpp>
+#include <Elpida/Topology/SystemTopology.hpp>
 #include "AlignedMemory.hpp"
-#include "UnalignedMemory.hpp"
+#include "NumaMemory.hpp"
 #include <cstdlib>
 #include <cstring>
 
 namespace Elpida
 {
 
-	AllocateMemory::AllocateMemory(Size size, bool initialize, int alignment)
-			: Task("Allocate Memory"), _result("Allocation Rate", "Bytes"), _initialize(initialize)
+	AllocateMemory::AllocateMemory(Size size, bool initialize, int numaNode)
+			: Task("Allocate Memory"), _result("Allocation Rate", "Bytes"), _numaNode(numaNode), _initialize(initialize)
 	{
-		if (alignment > 0)
+		if (_numaNode == -1)
 		{
-			_memory = new AlignedMemory(size, alignment);
+			_memory = new AlignedMemory(size, sizeof(void*) * 16);
 		}
 		else
 		{
-			_memory = new UnalignedMemory(size);
+			_memory = new NumaMemory(size, _numaNode);
+		}
+	}
+
+	AllocateMemory::AllocateMemory(Size size, int processorAffinity, bool initialize)
+			: Task("Allocate Memory"), _result("Allocation Rate", "Bytes"), _initialize(initialize)
+	{
+		if (processorAffinity < 0)
+		{
+			_numaNode = -1;
+			_memory = new AlignedMemory(size, sizeof(void*) * 16);
+		}
+		else
+		{
+			_numaNode = SystemTopology::getNumaNodeOfProcessor(processorAffinity);
+			_memory = new NumaMemory(size, _numaNode);
 		}
 	}
 
@@ -60,7 +77,7 @@ namespace Elpida
 		_memory->allocate();
 	}
 
-	void AllocateMemory::calculateResults()
+	void AllocateMemory::calculateResults(const TaskMetrics& metrics)
 	{
 		if (_memory != nullptr)
 		{
@@ -79,7 +96,11 @@ namespace Elpida
 
 	void AllocateMemory::finalize()
 	{
-		if (_initialize && _memory != nullptr)
+		if (_memory == nullptr || _memory->getPointer() == nullptr)
+		{
+			throw ElpidaException("Memory Allocation failed");
+		}
+		if (_initialize)
 		{
 			memset(_memory->getPointer(), 0, _memory->getSize());
 		}

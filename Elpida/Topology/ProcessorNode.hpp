@@ -56,6 +56,11 @@ namespace Elpida
 				Unknown
 			};
 
+			unsigned int getOsIndex() const
+			{
+				return _osIndex;
+			}
+
 			const Array<ProcessorNode>& getChildren() const
 			{
 				return _children;
@@ -101,6 +106,7 @@ namespace Elpida
 			String _name;
 			Type _type;
 			Size _value;
+			unsigned int _osIndex;
 			ProcessorNode* _parrent;
 
 			Array<ProcessorNode> _children;

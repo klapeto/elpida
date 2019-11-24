@@ -30,6 +30,7 @@
 #include "Elpida/Task.hpp"
 #include "Elpida/Types/RawData.hpp"
 #include "Elpida/Utilities/Image.hpp"
+#include <Elpida/TaskRunResult.hpp>
 
 namespace Elpida
 {
@@ -49,7 +50,7 @@ namespace Elpida
 			}
 
 			void run();
-			void calculateResults();
+			void calculateResults(const TaskMetrics& metrics);
 
 			PngDecoding(const RawDataPtr& inputData, const Size& dataSize);
 			virtual ~PngDecoding();

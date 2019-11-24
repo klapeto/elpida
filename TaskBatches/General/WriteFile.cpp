@@ -54,7 +54,7 @@ namespace Elpida
 		MemoryFile(_data, _size).writeToFile(_outputPath);
 	}
 
-	void WriteFile::calculateResults()
+	void WriteFile::calculateResults(const TaskMetrics& metrics)
 	{
 		_runResult.setOriginalValue(_size);
 		addResult(_runResult);

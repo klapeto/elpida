@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MemoryTasksPropertiesWithChart.hpp"
+#include "TaskBatches/Memory/Ui/MemoryTasksPropertiesWithChart.hpp"
 
 #include "Elpida/Types/List.hpp"
 
@@ -39,14 +39,11 @@ namespace Elpida
 	MemoryTasksPropertiesWithChart::MemoryTasksPropertiesWithChart(TaskBatch* taskBatch)
 			: QtTaskBatchWrapper(false, true), _taskBatch(taskBatch), _chart(new QtCharts::QChart())
 	{
-		_chart->setTitle("Memory Read Bandwidth");
+
 		_xAxis = new QtCharts::QCategoryAxis();
-		_xAxis->setTitleText("Working Set Size");
 		_chart->addAxis(_xAxis, Qt::AlignBottom);
 
 		_yAxis = new QtCharts::QValueAxis();
-		_yAxis->setTitleText("Bandwidth");
-		_yAxis->setLabelFormat("%.0f GB/s");
 		_chart->addAxis(_yAxis, Qt::AlignLeft);
 	}
 
@@ -60,6 +57,11 @@ namespace Elpida
 	void MemoryTasksPropertiesWithChart::updateResultsChartData(const Map<String, Array<TaskThroughput>>& results)
 	{
 		_chart->removeAllSeries();
+
+		configureChart(_chart);
+		configureXAxis(_xAxis);
+		configureYAxis(_yAxis);
+
 		auto series = new QtCharts::QLineSeries();
 		auto ordered = List<const TaskThroughput*>();
 
@@ -69,17 +71,18 @@ namespace Elpida
 		}
 		ordered.sort([](const TaskThroughput* a, const TaskThroughput* b)
 		{
-			return a->getRunResult().getOriginalValue() < b->getRunResult().getOriginalValue();
+			return a->getRunResult().getTestedDataValue() < b->getRunResult().getTestedDataValue();
 		});
 
 		_xAxis->setLabelsPosition(QtCharts::QCategoryAxis::AxisLabelsPositionOnValue);
-		_xAxis->setMax(ordered.size()-1);
+		_xAxis->setMax(ordered.size() - 1);
 		_xAxis->setMin(0);
 		auto c = 0;
-		for (auto& result : ordered)
+		for (auto result : ordered)
 		{
-			series->append(c, result->getRatePerSecond() / (double)std::giga::num);
-			_xAxis->append(QString::fromStdString(ValueUtilities::getValueScaleString(result->getRunResult().getOriginalValue())), c++);
+			auto values = getChartValuesFromTaskThroughput(*result);
+			series->append(c, values.yValue);
+			_xAxis->append(QString::fromStdString(values.xCategory), c++);
 		}
 
 		_chart->addSeries(series);

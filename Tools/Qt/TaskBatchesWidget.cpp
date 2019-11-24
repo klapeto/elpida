@@ -131,7 +131,7 @@ namespace Elpida
 				taskItem->setText(0, QString::fromStdString(taskResults.first));
 				if (taskResults.second.size() == 1)
 				{
-					taskItem->setText(1, QString::fromStdString(taskResults.second[0].getRatePerSecondString()));
+					taskItem->setText(1, QString::fromStdString(taskResults.second[0].getUniversalString()));
 				}
 				else
 				{
@@ -139,7 +139,7 @@ namespace Elpida
 					{
 						auto taskResultItem = new QTreeWidgetItem(taskItem);
 						taskResultItem->setText(0, QString::fromStdString(taskResult.getRunResult().getResultDescription()));
-						taskResultItem->setText(1, QString::fromStdString(taskResult.getRatePerSecondString()));
+						taskResultItem->setText(1, QString::fromStdString(taskResult.getUniversalString()));
 					}
 				}
 			}

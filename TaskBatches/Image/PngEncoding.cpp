@@ -60,7 +60,7 @@ namespace Elpida
 		_encodedDataSize = encodeResult.dataSize;
 	}
 
-	void PngEncoding::calculateResults()
+	void PngEncoding::calculateResults(const TaskMetrics& metrics)
 	{
 		_runResult.setOriginalValue(_inputImage.getTotalSize() * 4);
 		addResult(_runResult);

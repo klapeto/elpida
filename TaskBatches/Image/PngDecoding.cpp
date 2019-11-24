@@ -51,7 +51,7 @@ namespace Elpida
 		_image.setData(decodeInfo.data, decodeInfo.width, decodeInfo.height, true);
 	}
 
-	void PngDecoding::calculateResults()
+	void PngDecoding::calculateResults(const TaskMetrics& metrics)
 	{
 		_runResult.setOriginalValue(_dataSize);
 		addResult(_runResult);

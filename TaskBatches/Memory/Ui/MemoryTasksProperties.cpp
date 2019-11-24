@@ -18,37 +18,15 @@
  *************************************************************************/
 
 /*
- * MultithreadMemoryChunksReadCachedTaskBatch.hpp
+ * MemoryTasksProperties.cpp
  *
  *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_
-#define TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_
-
-#include <Elpida/TaskBatch.hpp>
-#include <Elpida/Types/Primitives.hpp>
+#include "TaskBatches/Memory/Ui/MemoryTasksProperties.hpp"
 
 namespace Elpida
 {
 
-	class MultithreadMemoryChunksReadCachedTaskBatch: public TaskBatch
-	{
-		public:
-			void createTasks() const override;
-
-			MultithreadMemoryChunksReadCachedTaskBatch()
-					: TaskBatch("Memory Read (Multi Thread/Chunked/Cached)")
-			{
-
-			}
-
-			virtual ~MultithreadMemoryChunksReadCachedTaskBatch()
-			{
-			}
-	};
-
 } /* namespace Elpida */
-
-#endif /* TASKBATCHES_MEMORY_MULTITHREADMEMORYCHUNKSREADCACHEDTASKBATCH_HPP_ */

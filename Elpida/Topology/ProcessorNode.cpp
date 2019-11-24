@@ -72,29 +72,31 @@ namespace Elpida
 		loadChildren(node);
 	}
 
+	static String getStringFromOsIndex(unsigned int osIndex)
+	{
+		return ((osIndex != HWLOC_UNKNOWN_INDEX ) ? std::to_string(osIndex) : String(UnknownOsIndexStr));
+	}
+
 	void ProcessorNode::loadMachine(void* node)
 	{
 		_type = Type::Machine;
-		_name = "Machine: "
-		        + ((((hwloc_obj_t) node)->os_index != HWLOC_UNKNOWN_INDEX ) ?
-		                std::to_string(((hwloc_obj_t) node)->os_index) : String(UnknownOsIndexStr));
+		_osIndex = ((hwloc_obj_t) node)->os_index;
+		_name = "Machine: " + getStringFromOsIndex(_osIndex);
 	}
 
 	void ProcessorNode::loadPackage(void* node)
 	{
 		_type = Type::Package;
-		_name = "Package: "
-		        + ((((hwloc_obj_t) node)->os_index != HWLOC_UNKNOWN_INDEX ) ?
-		                std::to_string(((hwloc_obj_t) node)->os_index) : String(UnknownOsIndexStr));
+		_osIndex = ((hwloc_obj_t) node)->os_index;
+		_name = "Package: " + getStringFromOsIndex(_osIndex);
 	}
 
 	void ProcessorNode::loadNumaNode(void* node)
 	{
 		_type = Type::NumaNode;
 		_value = ((hwloc_obj_t) node)->attr->numanode.local_memory;
-		_name = "Numa Node: "
-		        + ((((hwloc_obj_t) node)->os_index != HWLOC_UNKNOWN_INDEX ) ?
-		                std::to_string(((hwloc_obj_t) node)->os_index) : String(UnknownOsIndexStr));
+		_osIndex = ((hwloc_obj_t) node)->os_index;
+		_name = "Numa Node: " + getStringFromOsIndex(_osIndex);
 	}
 
 	void ProcessorNode::loadGroup(void* node)
@@ -106,9 +108,8 @@ namespace Elpida
 	void ProcessorNode::loadCore(void* node)
 	{
 		_type = Type::Core;
-		_name = "Core: "
-		        + ((((hwloc_obj_t) node)->os_index != HWLOC_UNKNOWN_INDEX ) ?
-		                std::to_string(((hwloc_obj_t) node)->os_index) : String(UnknownOsIndexStr));
+		_osIndex = ((hwloc_obj_t) node)->os_index;
+		_name = "Core: " + getStringFromOsIndex(_osIndex);
 	}
 
 	void ProcessorNode::loadCache(void* node)
@@ -159,9 +160,8 @@ namespace Elpida
 	void ProcessorNode::loadExecutionUnit(void* node)
 	{
 		_type = Type::ExecutionUnit;
-		_name = "EU: "
-		        + ((((hwloc_obj_t) node)->os_index != HWLOC_UNKNOWN_INDEX ) ?
-		                std::to_string(((hwloc_obj_t) node)->os_index) : String(UnknownOsIndexStr));
+		_osIndex = ((hwloc_obj_t) node)->os_index;
+		_name = "EU: " + getStringFromOsIndex(_osIndex);
 	}
 
 	void ProcessorNode::loadChildren(void* node)

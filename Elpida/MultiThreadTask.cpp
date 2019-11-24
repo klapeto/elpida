@@ -31,8 +31,8 @@
 namespace Elpida
 {
 
-	MultiThreadTask::MultiThreadTask(const String& name, bool strictAffinity)
-			: Task(name + "(Multi Threaded)"), _threadsShouldWake(false), _strictAffinity(strictAffinity)
+	MultiThreadTask::MultiThreadTask(const String& name)
+			: Task(name + "(Multi Threaded)"), _threadsShouldWake(false)
 	{
 	}
 
@@ -41,20 +41,9 @@ namespace Elpida
 		destroyTasks();
 	}
 
-	void MultiThreadTask::addTask(Task* task)
+	void MultiThreadTask::addTask(Task* task, int affinity)
 	{
-		static Size cores = SystemTopology::getTopology().getTotalLogicalCores();
-
-		if (_tasksToBeExecuted.size() == cores)
-		{
-			_strictAffinity = false;
-			for (auto& task : _tasksToBeExecuted)
-			{
-				task.setAffinity(-1);
-			}
-		}
-		_tasksToBeExecuted.push_back(
-		        TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, _strictAffinity ? _tasksToBeExecuted.size() : -1));
+		_tasksToBeExecuted.push_back(TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, affinity));
 		_createdTasks.push_back(task);
 	}
 

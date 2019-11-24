@@ -18,43 +18,36 @@
  *************************************************************************/
 
 /*
- * MemoryTaskBatch.cpp
+ * MemoryReadVolatileTaskBatch.hpp
  *
- *  Created on: 18 Οκτ 2018
+ *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/MemoryReadCachedTaskBatch.hpp"
+#ifndef TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILETASKBATCH_HPP_
+#define TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILETASKBATCH_HPP_
 
-#include "TaskBatches/General/AllocateMemory.hpp"
-#include <Elpida/CpuInfo.hpp>
-#include "TaskBatches/Memory/MemoryReadCached.hpp"
-#include "TaskBatches/Memory/MultiThreadMemoryChunksRead.hpp"
+#include "TaskBatches/Memory/Read/Cached/MemoryReadCachedTaskBatch.hpp"
 
 namespace Elpida
 {
 
-	constexpr int MemoryReadCachedTaskBatch::workingSetSize[];
-
-	void MemoryReadCachedTaskBatch::onBeforeExecution() const
+	class MemoryReadVolatileTaskBatch final: public MemoryReadCachedTaskBatch
 	{
-		//TaskThread::setCurrentThreadAffinity(1);
-	}
+		public:
+			MemoryReadVolatileTaskBatch()
+					: MemoryReadCachedTaskBatch("Memory Read (Single Thread/Volatile)")
+			{
 
-	void MemoryReadCachedTaskBatch::addMemoryReadTask(Size size) const
-	{
-		auto memory = new AllocateMemory(size, true, sizeof(void*) * 16);
-		memory->setToBeMeasured(false);
-		addTask(memory);
-		addTask(new MemoryReadCached(memory->getMemory(), std::chrono::milliseconds(2000)));
-	}
+			}
 
-	void MemoryReadCachedTaskBatch::createTasks() const
-	{
-		for (auto size : workingSetSize)
-		{
-			addMemoryReadTask(size);
-		}
-	}
+			~MemoryReadVolatileTaskBatch()
+			{
+			}
+		protected:
+			void addMemoryReadTask(Size size) const override;
+	};
 
 } /* namespace Elpida */
+
+#endif /* TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILETASKBATCH_HPP_ */

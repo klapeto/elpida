@@ -71,7 +71,7 @@ namespace Elpida
 				}
 			}
 
-			MultiThreadTask(const String& name, bool strictAffinity = false);
+			MultiThreadTask(const String& name);
 			virtual ~MultiThreadTask();
 
 			MultiThreadTask(MultiThreadTask&&) = default;
@@ -81,14 +81,13 @@ namespace Elpida
 
 		protected:
 			virtual void createTasks() = 0;
-			void addTask(Task* task);
+			void addTask(Task* task, int affinity = -1);
 		private:
 			Array<Task*> _createdTasks;
 			Array<TaskThread> _tasksToBeExecuted;
 			std::mutex _mutex;
 			std::condition_variable _wakeNotifier;
 			bool _threadsShouldWake;
-			bool _strictAffinity;
 			void destroyTasks();
 	};
 

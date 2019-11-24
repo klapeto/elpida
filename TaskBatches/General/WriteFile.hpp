@@ -30,6 +30,7 @@
 #include "Elpida/Task.hpp"
 #include "Elpida/Types/RawData.hpp"
 #include "Elpida/Types/Primitives.hpp"
+#include <Elpida/TaskRunResult.hpp>
 
 namespace Elpida
 {
@@ -39,7 +40,7 @@ namespace Elpida
 		public:
 
 			void run();
-			void calculateResults();
+			void calculateResults(const TaskMetrics& metrics);
 
 			WriteFile(const RawDataPtr& data, const Size& size, const String& outputPath);
 			virtual ~WriteFile();

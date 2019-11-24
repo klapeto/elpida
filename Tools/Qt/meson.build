@@ -27,7 +27,8 @@ if qt5_dep.found()
 		'TaskBatchesWidget.cpp',
 		'ListItemWithButton.cpp',
 		'LogsDialog.cpp',
-		'TopologyWidget.cpp'
+		'TopologyWidget.cpp',
+		'MascotWidget.cpp'
 	]
 	
 	uiFiles = [
@@ -45,7 +46,8 @@ if qt5_dep.found()
 		'TaskBatchesWidget.hpp',
 		'ListItemWithButton.hpp',
 		'LogsDialog.hpp',
-		'TopologyWidget.hpp'
+		'TopologyWidget.hpp',
+		'MascotWidget.hpp'
 	]
 	
 	elpidaQt_includes = include_directories('.')

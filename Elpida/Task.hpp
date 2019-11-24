@@ -29,12 +29,12 @@
 
 #include "Elpida/Types/String.hpp"
 #include "Elpida/Types/Array.hpp"
-#include "Elpida/TaskThroughput.hpp"
-#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/TaskAffinity.hpp"
 
 namespace Elpida
 {
 	class TaskMetrics;
+	class TaskRunResult;
 
 	class Task
 	{
@@ -66,7 +66,9 @@ namespace Elpida
 			}
 
 			virtual void run() = 0;
-			virtual void calculateResults() = 0;
+			virtual void calculateResults(const TaskMetrics& metrics) = 0;
+
+			virtual void applyAffinity();
 
 			virtual void prepare()
 			{
@@ -76,6 +78,16 @@ namespace Elpida
 			virtual void finalize()
 			{
 
+			}
+
+			void setAffinity(const TaskAffinity& affinity)
+			{
+				_affinity = affinity;
+			}
+
+			void setAffinity(TaskAffinity&& affinity)
+			{
+				_affinity = std::move(affinity);
 			}
 
 			Task(const String& name, bool toBeMeasured = true)
@@ -94,6 +106,8 @@ namespace Elpida
 			Task& operator=(Task&&) = default;
 			Task& operator=(const Task&) = default;
 		protected:
+			TaskAffinity _affinity;
+
 			void addResult(const TaskRunResult& result)
 			{
 				_lastRunResults.push_back(&result);

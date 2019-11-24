@@ -27,7 +27,7 @@
 #ifndef TASKSBATCHES_IMAGE_IMAGETASKBATCH_HPP_
 #define TASKSBATCHES_IMAGE_IMAGETASKBATCH_HPP_
 
-#include "Elpida/TaskBatch.hpp"
+#include <Elpida/TaskBatch.hpp>
 
 namespace Elpida
 {
