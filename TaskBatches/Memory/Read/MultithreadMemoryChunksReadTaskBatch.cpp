@@ -30,15 +30,24 @@
 #include <unordered_map>
 
 #include "Elpida/Topology/SystemTopology.hpp"
+#include "Elpida/CpuInfo.hpp"
 #include "TaskBatches/General/NumaAllocatePerThread.hpp"
 #include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
+
+#include <algorithm>
 
 namespace Elpida
 {
 
 	void MultithreadMemoryChunksReadTaskBatch::createTasks() const
 	{
-		constexpr std::size_t size = 64ul * (1024 * 1024);	// 64MB
+		constexpr auto cacheSizeMul = 2ul;
+
+		const auto& caches = CpuInfo::getCpuInfo().getCaches();
+		auto size = std::max_element(caches.begin(), caches.end(), [](const CpuInfo::Cache& a, const CpuInfo::Cache& b){
+			return a.size < b.size;
+		})->size * cacheSizeMul;
+
 		auto memory = new NumaAllocatePerThread(size);
 		memory->setToBeMeasured(false);
 		addTask(memory);
