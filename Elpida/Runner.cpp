@@ -77,6 +77,10 @@ namespace Elpida
 					EventArguments::TaskStart evArgs { task->getName() };
 					taskStart.raise(evArgs);
 				}
+				if (_taskAffinity.isSet())
+				{
+					task->setAffinity(_taskAffinity);
+				}
 				TaskMetrics metrics = runTask(*task);
 				if (task->isToBeMeasured())
 				{

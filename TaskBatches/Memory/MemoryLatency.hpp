@@ -27,8 +27,9 @@
 #ifndef TASKBATCHES_MEMORY_MEMORYLATENCY_HPP_
 #define TASKBATCHES_MEMORY_MEMORYLATENCY_HPP_
 
-#include <bits/stdint-intn.h>
+#include <cstdint>
 #include <string>
+#include <random>
 
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskMetrics.hpp"
@@ -43,6 +44,23 @@ namespace Elpida
 	class MemoryLatency: public Task
 	{
 		public:
+
+			virtual void prepare() override
+			{
+				std::srand(std::time(nullptr));
+				//std::random_device rd;
+				//std::mt19937 gen(rd());
+				auto size = _memory.getSize();
+
+				//std::uniform_int_distribution<T> uniform(0, size - 1);
+
+				auto ptr = (T*) _memory.getPointer();
+				for (std::size_t i; i < size; ++i)
+				{
+					ptr[i] = std::rand() / ((RAND_MAX + 1u) / (size - 1));
+				}
+			}
+
 			virtual void run() override
 			{
 				volatile auto ptr = (T*) _memory.getPointer();
@@ -50,46 +68,90 @@ namespace Elpida
 				register auto end = (T*) ((T) start + _memory.getSize());
 				register auto itterations = _itterations;
 				register auto x = T();
+
 				for (register auto i = 0ul; i < itterations; ++i)
 				{
 					ptr = start;
 					while (ptr < end)
 					{
-						x = *ptr;
-						x = *(ptr + 1);
-						x = *(ptr + 2);
-						x = *(ptr + 3);
-						x = *(ptr + 4);
-						x = *(ptr + 5);
-						x = *(ptr + 6);
-						x = *(ptr + 7);
-						x = *(ptr + 8);
-						x = *(ptr + 9);
-						x = *(ptr + 10);
-						x = *(ptr + 11);
-						x = *(ptr + 12);
-						x = *(ptr + 13);
-						x = *(ptr + 14);
-						x = *(ptr + 15);
-						x = *(ptr + 16);
-						x = *(ptr + 17);
-						x = *(ptr + 18);
-						x = *(ptr + 19);
-						x = *(ptr + 20);
-						x = *(ptr + 21);
-						x = *(ptr + 22);
-						x = *(ptr + 23);
-						x = *(ptr + 24);
-						x = *(ptr + 25);
-						x = *(ptr + 26);
-						x = *(ptr + 27);
-						x = *(ptr + 28);
-						x = *(ptr + 29);
-						x = *(ptr + 30);
-						x = *(ptr + 31);
+						x = ptr[*ptr];
+						x = ptr[*(ptr + 1)];
+						x = ptr[*(ptr + 2)];
+						x = ptr[*(ptr + 3)];
+						x = ptr[*(ptr + 4)];
+						x = ptr[*(ptr + 5)];
+						x = ptr[*(ptr + 6)];
+						x = ptr[*(ptr + 7)];
+						x = ptr[*(ptr + 8)];
+						x = ptr[*(ptr + 9)];
+						x = ptr[*(ptr + 10)];
+						x = ptr[*(ptr + 11)];
+						x = ptr[*(ptr + 12)];
+						x = ptr[*(ptr + 13)];
+						x = ptr[*(ptr + 14)];
+						x = ptr[*(ptr + 15)];
+						x = ptr[*(ptr + 16)];
+						x = ptr[*(ptr + 17)];
+						x = ptr[*(ptr + 18)];
+						x = ptr[*(ptr + 19)];
+						x = ptr[*(ptr + 20)];
+						x = ptr[*(ptr + 21)];
+						x = ptr[*(ptr + 22)];
+						x = ptr[*(ptr + 23)];
+						x = ptr[*(ptr + 24)];
+						x = ptr[*(ptr + 25)];
+						x = ptr[*(ptr + 26)];
+						x = ptr[*(ptr + 27)];
+						x = ptr[*(ptr + 28)];
+						x = ptr[*(ptr + 29)];
+						x = ptr[*(ptr + 30)];
+						x = ptr[*(ptr + 31)];
 						ptr += 32;
+
 					}
+
 				}
+
+//				for (register auto i = 0ul; i < itterations; ++i)
+//				{
+//					ptr = start;
+//					while (ptr < end)
+//					{
+//						x = *ptr;
+//						x = *(ptr + 1);
+//						x = *(ptr + 2);
+//						x = *(ptr + 3);
+//						x = *(ptr + 4);
+//						x = *(ptr + 5);
+//						x = *(ptr + 6);
+//						x = *(ptr + 7);
+//						x = *(ptr + 8);
+//						x = *(ptr + 9);
+//						x = *(ptr + 10);
+//						x = *(ptr + 11);
+//						x = *(ptr + 12);
+//						x = *(ptr + 13);
+//						x = *(ptr + 14);
+//						x = *(ptr + 15);
+//						x = *(ptr + 16);
+//						x = *(ptr + 17);
+//						x = *(ptr + 18);
+//						x = *(ptr + 19);
+//						x = *(ptr + 20);
+//						x = *(ptr + 21);
+//						x = *(ptr + 22);
+//						x = *(ptr + 23);
+//						x = *(ptr + 24);
+//						x = *(ptr + 25);
+//						x = *(ptr + 26);
+//						x = *(ptr + 27);
+//						x = *(ptr + 28);
+//						x = *(ptr + 29);
+//						x = *(ptr + 30);
+//						x = *(ptr + 31);
+//						ptr += 32;
+//					}
+//				}
 				auto dummy = x;
 			}
 
@@ -113,7 +175,7 @@ namespace Elpida
 			MemoryLatency(const Memory& memory)
 					: Task("Memory Read latency: " + ValueUtilities::getValueScaleString(memory.getSize()) + "B"), _memory(memory)
 			{
-				_itterations = _itterationConstant / (double) _memory.getSize();
+				_itterations = _iterationConstant / (double) _memory.getSize();
 			}
 
 			virtual ~MemoryLatency()
@@ -127,7 +189,7 @@ namespace Elpida
 			const Memory& _memory;
 			unsigned long _itterations;
 		private:
-			static constexpr double _itterationConstant = 100000000000; // rough estimate, to be passed on construction later once we find the latency
+			static constexpr double _iterationConstant = 100000000000; // rough estimate, to be passed on construction later once we find the latency
 	};
 
 } /* namespace Elpida */

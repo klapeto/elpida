@@ -37,6 +37,17 @@ namespace Elpida
 	class NumaMemory final: public Memory
 	{
 		public:
+
+			int getNode() const
+			{
+				return _node;
+			}
+
+			void setNode(int node)
+			{
+				_node = node;
+			}
+
 			NumaMemory(std::size_t size, int node)
 					: Memory(size), _node(node)
 			{

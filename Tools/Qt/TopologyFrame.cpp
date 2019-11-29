@@ -17,56 +17,65 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * TaskTopology.cpp
- *
- *  Created on: 16 Νοε 2019
- *      Author: klapeto
- */
-
-#include "Elpida/TaskAffinity.hpp"
-
-#include <initializer_list>
-
-#include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/Topology/SystemTopology.hpp"
+#include "TopologyFrame.hpp"
+#include "ui_TopologyFrame.h"
 
 namespace Elpida
 {
 
-	static const ProcessorNode* findNode(const std::vector<ProcessorNode>& nodes, int processor)
+	TopologyFrame::TopologyFrame(const ProcessorNode& node)
+			:
+			  QFrame(nullptr),
+			  _node(node),
+			  ui(new Ui::TopologyFrame),
+			  _checkBox(nullptr),
+			  _clickAble(true),
+			  _mouseDown(false),
+			  _mouseOver(false)
 	{
-		for (const auto& node : nodes)
-		{
-			if (node.getType() != ProcessorNode::Type::ExecutionUnit)
-			{
-				auto childNode = findNode(node.getChildren(), processor);
-				if (childNode != nullptr)
-				{
-					return childNode;
-				}
-			}
-			else if (node.getOsIndex() == processor)
-			{
-				return &node;
-			}
-		}
-		return nullptr;
+		ui->setupUi(this);
 	}
 
-	TaskAffinity::TaskAffinity(std::initializer_list<int> processors)
+	TopologyFrame::~TopologyFrame()
 	{
-		const auto& topology = SystemTopology::getTopology();
+		delete ui;
+	}
 
-		for (int i : processors)
+	void TopologyFrame::mousePressEvent(QMouseEvent* event)
+	{
+		if (_clickAble)
 		{
-			auto node = findNode(topology.getRoot()->getChildren(), i);
-			if (node != nullptr)
-			{
-				_nodes.push_back(node);
-			}
+			_mouseDown = true;
+			setStyleSheet(_clickedStyle);
 		}
 	}
 
-} /* namespace Elpida */
+	void TopologyFrame::mouseReleaseEvent(QMouseEvent* event)
+	{
+		if (_clickAble)
+		{
+			_mouseDown = false;
+			setStyleSheet(_mouseOverStyle);
+			emit clicked(this);
+		}
+	}
 
+	void TopologyFrame::enterEvent(QEvent* event)
+	{
+		if (_clickAble)
+		{
+			_mouseOver = true;
+			setStyleSheet(_mouseOverStyle);
+		}
+	}
+
+	void TopologyFrame::leaveEvent(QEvent* event)
+	{
+		if (_clickAble)
+		{
+			_mouseOver = false;
+			setStyleSheet(_defaultStyle);
+		}
+	}
+
+} // namespace Elpida

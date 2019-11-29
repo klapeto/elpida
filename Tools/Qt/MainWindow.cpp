@@ -50,14 +50,18 @@ namespace Elpida
 		_elpidaManager.setTaskBatchesDirectory("./Elpida");
 		_elpidaManager.setTaskBatchesOrderFile("./Elpida/plugins");
 		_elpidaManager.reloadTaskBatches();
-		_taskBatchesWidget = new TaskBatchesWidget(_elpidaManager.getCreatedTaskBatches());
+
+		_ui->wTopology->setLayout(new QVBoxLayout);
+		auto topologyWidget = new TopologyWidget;
+		_ui->wTopology->layout()->addWidget(topologyWidget);
+
+		_taskBatchesWidget = new TaskBatchesWidget(_elpidaManager.getCreatedTaskBatches(), topologyWidget->getAffinity());
 		_ui->tbTasks->layout()->addWidget(_taskBatchesWidget);
 
 		_logsDialog = new LogsDialog(_ui->centralWidget);
 
 		loadCpuInfo();
-		_ui->wTopology->setLayout(new QVBoxLayout);
-		_ui->wTopology->layout()->addWidget(new TopologyWidget);
+
 		//addMascot();
 	}
 

@@ -46,6 +46,8 @@ namespace Elpida
 				return *_memory;
 			}
 
+
+			void applyAffinity() override;
 			void prepare() override;
 			void finalize() override;
 
@@ -53,13 +55,16 @@ namespace Elpida
 			void calculateResults(const TaskMetrics& metrics) override;
 
 			AllocateMemory(std::size_t size, bool initialize = false, int numaNode = -1);
+			AllocateMemory(std::size_t size, bool initialize = false, bool respectNumaAffinity = false);
 			AllocateMemory(std::size_t size, int processorAffinity, bool initialize = false);
 			~AllocateMemory();
 		private:
 			TaskRunResult _result;
 			Memory* _memory;
+			std::size_t _size;
 			int _numaNode;
 			bool _initialize;
+			bool _respectNumaAffinity;
 	};
 
 } /* namespace Elpida */

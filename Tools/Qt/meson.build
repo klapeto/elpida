@@ -28,7 +28,8 @@ if qt5_dep.found()
 		'ListItemWithButton.cpp',
 		'LogsDialog.cpp',
 		'TopologyWidget.cpp',
-		'MascotWidget.cpp'
+		'MascotWidget.cpp',
+		'TopologyFrame.cpp'
 	]
 	
 	uiFiles = [
@@ -37,7 +38,8 @@ if qt5_dep.found()
 		'TaskBatchesWidget.ui',
 		'ListItemWithButton.ui',
 		'LogsDialog.ui',
-		'TopologyWidget.ui'
+		'TopologyWidget.ui',
+		'TopologyFrame.ui'
 	]
 	
 	mocHeaders = [
@@ -47,7 +49,8 @@ if qt5_dep.found()
 		'ListItemWithButton.hpp',
 		'LogsDialog.hpp',
 		'TopologyWidget.hpp',
-		'MascotWidget.hpp'
+		'MascotWidget.hpp',
+		'TopologyFrame.hpp'
 	]
 	
 	elpidaQt_includes = include_directories('.')

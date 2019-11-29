@@ -33,7 +33,8 @@ SOURCES += \
     TaskBatchesWidget.cpp \
     ListItemWithButton.cpp \
     TopologyWidget.cpp \
-    MascotWidget.cpp
+    MascotWidget.cpp \
+    TopologyFrame.cpp
 
 HEADERS += \
         MainWindow.hpp \
@@ -43,7 +44,8 @@ HEADERS += \
     TaskBatchesWidget.hpp \
     ListItemWithButton.hpp \
     TopologyWidget.hpp \
-    MascotWidget.hpp
+    MascotWidget.hpp \
+    TopologyFrame.hpp
 
 FORMS += \
         MainWindow.ui \
@@ -51,7 +53,8 @@ FORMS += \
     LogsDialog.ui \
     TaskBatchesWidget.ui \
     ListItemWithButton.ui \
-    TopologyWidget.ui
+    TopologyWidget.ui \
+    TopologyFrame.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/release/ -lelpida
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/debug/ -lelpida

@@ -31,8 +31,8 @@
 namespace Elpida
 {
 
-	TaskBatchesWidget::TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent)
-			: QWidget(parent), _taskBatchList(taskBatchList), _ui(new Ui::TaskBatchesWidget)
+	TaskBatchesWidget::TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList,const TaskAffinity& affinity, QWidget *parent)
+			: QWidget(parent), _taskBatchList(taskBatchList), _ui(new Ui::TaskBatchesWidget), _affinity(affinity)
 	{
 		_runningText = "<span style=\" color:#b50000;\">Running</span>";
 		_readyText = "<span style=\"color:#008d09;\">Ready</span>";
@@ -239,6 +239,7 @@ namespace Elpida
 					}
 				}
 
+				_taskBatchRunner.setTaskAffinity(_affinity);
 				_taskRunnerThread.run([this]()
 				{
 					emit onSessionBegin();

@@ -44,6 +44,7 @@ namespace Elpida
 {
 	class QtTaskBatchWrapper;
 	class TaskBatchProperties;
+	class TaskAffinity;
 
 	namespace Ui
 	{
@@ -54,7 +55,7 @@ namespace Elpida
 	{
 		Q_OBJECT
 		public:
-			explicit TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList, QWidget *parent = nullptr);
+			explicit TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList,const TaskAffinity& affinity, QWidget *parent = nullptr);
 			~TaskBatchesWidget();
 
 		public slots:
@@ -64,6 +65,8 @@ namespace Elpida
 			Runner _taskBatchRunner;
 			OffThreadExecutor _taskRunnerThread;
 
+
+
 			QString _runningText;
 			QString _readyText;
 			QString _na;
@@ -71,6 +74,8 @@ namespace Elpida
 			Ui::TaskBatchesWidget *_ui;
 			TaskBatchProperties* _taskBatchPropertiesDialog;
 			QtCharts::QChart* _initialChart;
+			const TaskAffinity& _affinity;
+
 			std::unordered_map<QTreeWidgetItem*, std::unordered_map<std::string, std::vector<TaskThroughput>>> _cachedResults;
 
 			void appendResults();

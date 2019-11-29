@@ -34,6 +34,7 @@
 
 #include "Elpida/Event.hpp"
 #include "Elpida/TaskThroughput.hpp"
+#include "Elpida/TaskAffinity.hpp"
 
 namespace Elpida
 {
@@ -96,6 +97,11 @@ namespace Elpida
 				_tasksBatches.clear();
 			}
 
+			void setTaskAffinity(const TaskAffinity& taskAffinity)
+			{
+				_taskAffinity = taskAffinity;
+			}
+
 			Runner();
 			virtual ~Runner();
 
@@ -106,6 +112,7 @@ namespace Elpida
 		private:
 			std::unordered_map<std::string, std::unordered_map<std::string, std::vector<TaskThroughput>>> _lastExecutionResults;
 			std::vector<const TaskBatch*> _tasksBatches;
+			TaskAffinity _taskAffinity;
 			bool _mustStop;
 			TaskMetrics runTask(Task& task);
 	};
