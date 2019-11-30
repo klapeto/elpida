@@ -37,6 +37,7 @@
 
 namespace Elpida
 {
+	class TaskFactory;
 
 	class MultiThreadTask: public Task
 	{
@@ -74,7 +75,7 @@ namespace Elpida
 				}
 			}
 
-			MultiThreadTask(const std::string& name);
+			MultiThreadTask(const std::string& name, const TaskFactory& taskFactory);
 			virtual ~MultiThreadTask();
 
 			MultiThreadTask(MultiThreadTask&&) = default;
@@ -83,13 +84,14 @@ namespace Elpida
 			MultiThreadTask& operator=(const MultiThreadTask&) = default;
 
 		protected:
-			virtual void createTasks() = 0;
-			void addTask(Task* task, int affinity = -1);
+			virtual void createTasks();
+			void addTask(Task* task, unsigned int affinity = -1);
 		private:
 			std::vector<Task*> _createdTasks;
 			std::vector<TaskThread> _tasksToBeExecuted;
 			std::mutex _mutex;
 			std::condition_variable _wakeNotifier;
+			const TaskFactory& _taskFactory;
 			bool _threadsShouldWake;
 			void destroyTasks();
 	};

@@ -38,7 +38,7 @@ namespace Elpida
 	{
 		public:
 
-			int getAffinity() const
+			unsigned int getAffinity() const
 			{
 				return _affinity;
 			}
@@ -56,9 +56,9 @@ namespace Elpida
 			void start();
 			void join();
 
-			static void setCurrentThreadAffinity(int cpuId);
+			static void setCurrentThreadAffinity(unsigned int cpuId);
 
-			TaskThread(Task& task, std::condition_variable& waitNotifier, std::mutex& mutex, const bool& shouldWake, int affinity = -1);
+			TaskThread(Task& task, std::condition_variable& waitNotifier, std::mutex& mutex, const bool& shouldWake, unsigned int affinity);
 			virtual ~TaskThread();
 
 			TaskThread(TaskThread&&) = default;
@@ -72,7 +72,7 @@ namespace Elpida
 			std::condition_variable& _waitNotifier;
 			std::mutex& _mutex;
 			const bool& _shouldWake;
-			int _affinity;
+			unsigned int _affinity;
 
 			void runTask();
 	};

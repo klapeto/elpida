@@ -28,6 +28,7 @@
 #define ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
 
 #include <cstddef>
+#include <vector>
 
 namespace Elpida
 {
@@ -37,6 +38,11 @@ namespace Elpida
 	class SystemTopology final
 	{
 		public:
+			const std::vector<const ProcessorNode*>& getAllProcessors() const
+			{
+				return _allProcessors;
+			}
+
 			std::size_t getDepth() const
 			{
 				return _depth;
@@ -66,15 +72,18 @@ namespace Elpida
 			}
 
 			~SystemTopology();
+
 		private:
+			std::vector<const ProcessorNode*> _allProcessors;
 			ProcessorNode* _root;
+
 			std::size_t _depth;
 			std::size_t _totalLogicalCores;
 			std::size_t _totalPhysicalCores;
 
 			SystemTopology();
 			void reload();
-			void accumulateCores(ProcessorNode& node);
+			void accumulateCores(const ProcessorNode& node);
 	};
 
 } /* namespace Elpida */

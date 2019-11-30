@@ -48,10 +48,7 @@ namespace Elpida
 			return a.size < b.size;
 		})->size * cacheSizeMul;
 
-		auto memory = new NumaAllocatePerThread(size);
-		memory->setToBeMeasured(false);
-		addTask(memory);
-		addTask(new MultiThreadMemoryChunksRead(memory->getAllocatedMemoryRegions(), SystemTopology::getTopology().getTotalLogicalCores()));
+		addTask(new MultiThreadMemoryChunksRead(8*1024*1024));
 	}
 
 } /* namespace Elpida */

@@ -21,12 +21,13 @@
 #define ELPIDA_TOPOLOGYWIDGET_HPP
 
 #include <QWidget>
+#include <vector>
 #include "Elpida/TaskAffinity.hpp"
 
 namespace Elpida
 {
-
 	class TopologyFrame;
+	class ProcessorNode;
 
 	namespace Ui
 	{
@@ -51,6 +52,7 @@ namespace Elpida
 			TaskAffinity _affinity;
 			Ui::TopologyWidget* _ui;
 			TopologyFrame* _rootFrame;
+			std::vector<const ProcessorNode*> _selectedNodes;
 
 			void loadTopology();
 			TopologyFrame* getMachineWidget(const Elpida::ProcessorNode& node);
@@ -69,6 +71,7 @@ namespace Elpida
 
 		public slots:
 			void onElementClick(const TopologyFrame* node);
+			void onClearPressed();
 	};
 
 } // namespace Elpida

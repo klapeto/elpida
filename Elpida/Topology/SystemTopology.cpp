@@ -65,14 +65,15 @@ namespace Elpida
 		accumulateCores(*_root);
 	}
 
-	void SystemTopology::accumulateCores(ProcessorNode& node)
+	void SystemTopology::accumulateCores(const ProcessorNode& node)
 	{
-		for (auto child : node.getChildren())
+		for (const auto& child : node.getChildren())
 		{
 			switch (child.getType())
 			{
 				case ProcessorNode::Type::ExecutionUnit:
 					_totalLogicalCores++;
+					_allProcessors.push_back(&child);
 					break;
 				case ProcessorNode::Type::Core:
 					_totalPhysicalCores++;

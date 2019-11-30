@@ -122,13 +122,13 @@ namespace Elpida
 				finalize();
 			}
 
-		private:
-			TaskRunResult _runResult;
 		protected:
+			TaskRunResult _runResult;
 			const Memory& _memory;
 			unsigned long _iterations;
-		private:
+
 			static constexpr double _iterationConstant = 100000000000; // rough estimate
+
 	};
 
 } /* namespace Elpida */

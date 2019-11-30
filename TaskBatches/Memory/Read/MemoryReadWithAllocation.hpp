@@ -24,55 +24,46 @@
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYREAD_HPP_
-#define TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYREAD_HPP_
+#ifndef TASKBATCHES_MEMORY_READ_MEMORYREADWITHALLOCATION_HPP_
+#define TASKBATCHES_MEMORY_READ_MEMORYREADWITHALLOCATION_HPP_
 
 #include <vector>
 
-#include "Elpida/MultiThreadTask.hpp"
+#include "TaskBatches/Memory/Read/Cached/MemoryReadCached.hpp"
+#include "TaskBatches/General/NumaMemory.hpp"
 #include "Elpida/TaskRunResult.hpp"
 
 namespace Elpida
 {
-	class Memory;
-	class TaskMetrics;
 
-	class MultiThreadMemoryRead: public MultiThreadTask
+	class MemoryReadWithAllocation: public MemoryReadCached<>
 	{
-		private:
-			struct MemoryBlock
-			{
-					const Memory* memory;
-					int affinity;
-			};
 		public:
 
-			void calculateResults(const TaskMetrics& metrics) override
+			virtual void prepare() override
 			{
-				addResult(_totalBandwidth);
+				_memory.allocate();
 			}
 
-			void addMemoryBlock(const Memory& memory, int affinity = -1)
+			virtual void finalize() override
 			{
-				_blocks.push_back( { &memory, affinity });
-
+				_memory.deallocate();
 			}
 
-			MultiThreadMemoryRead()
-					: MultiThreadTask("Read 8 Bytes/Read")
+			MemoryReadWithAllocation(std::size_t size, unsigned int affinity)
+					: MemoryReadCached(_memory), _memory(size, affinity)
 			{
-
+				_iterations = _iterationConstant / (double)size;
 			}
-			~MultiThreadMemoryRead()
+
+			virtual ~MemoryReadWithAllocation()
 			{
 
 			}
 		private:
-			std::vector<MemoryBlock> _blocks;
-			TaskRunResult _totalBandwidth;
-
+			NumaMemory _memory;
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYREAD_HPP_ */
+#endif /* TASKBATCHES_MEMORY_READ_MEMORYREADWITHALLOCATION_HPP_ */

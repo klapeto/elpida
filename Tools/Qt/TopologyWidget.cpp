@@ -26,6 +26,7 @@
 #include <QLabel>
 #include <QCheckBox>
 #include <QPushButton>
+#include <algorithm>
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
@@ -289,7 +290,12 @@ namespace Elpida
 	{
 		auto& top = Elpida::SystemTopology::getTopology();
 		QLayout* layout = new QHBoxLayout();
+
+		auto button = new QPushButton("Clear");
+		button->connect(button, &QPushButton::pressed, this, &TopologyWidget::onClearPressed);
+
 		_rootFrame = appendChildren(*top.getRoot());
+		layout->addWidget(button);
 		layout->addWidget(_rootFrame);
 		setLayout(layout);
 	}
@@ -330,26 +336,23 @@ namespace Elpida
 			if (checkBox != nullptr)
 			{
 				checkBox->setChecked(true);
-				nodesAccumulator.push_back(&frame->getProcessorNode());
+
+				if (std::none_of(nodesAccumulator.begin(), nodesAccumulator.end(), [&](const ProcessorNode* nd) {return &frame->getProcessorNode() == nd;}))
+				{
+					nodesAccumulator.push_back(&frame->getProcessorNode());
+				}
 			}
 		}
 	}
 
 	void TopologyWidget::onElementClick(const TopologyFrame* node)
 	{
-		const auto& childs = _rootFrame->getChildren();
-		for (auto child : childs)
-		{
-			clearChildrenState(child);
-		}
-
-		auto nodes = std::vector<const ProcessorNode*>();
 		if (node->getProcessorNode().getType() != ProcessorNode::Type::ExecutionUnit)
 		{
 			const auto& childs = node->getChildren();
 			for (auto child : childs)
 			{
-				appendAffinity(child, nodes);
+				appendAffinity(child, _selectedNodes);
 			}
 		}
 		else
@@ -358,10 +361,24 @@ namespace Elpida
 			if (checkBox != nullptr)
 			{
 				checkBox->setChecked(true);
-				nodes.push_back(&node->getProcessorNode());
+
+				if (std::none_of(_selectedNodes.begin(), _selectedNodes.end(), [&](const ProcessorNode* nd) {return &node->getProcessorNode() == nd;}))
+				{
+					_selectedNodes.push_back(&node->getProcessorNode());
+				}
 			}
 		}
-		_affinity = TaskAffinity(nodes);
+		_affinity = TaskAffinity(_selectedNodes);
+	}
+
+	void TopologyWidget::onClearPressed()
+	{
+		const auto& childs = _rootFrame->getChildren();
+		for (auto child : childs)
+		{
+			clearChildrenState(child);
+		}
+		_selectedNodes.clear();
 	}
 
 } // namespace Elpida

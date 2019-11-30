@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/Read/MultiThreadMemoryRead.hpp"
+#include "TaskBatches/Memory/Read/MemoryReadWithAllocation.hpp"
 
 namespace Elpida
 {

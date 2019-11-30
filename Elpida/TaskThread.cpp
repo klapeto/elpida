@@ -40,7 +40,7 @@
 namespace Elpida
 {
 
-	TaskThread::TaskThread(Task& task, std::condition_variable& waitNotifier, std::mutex& mutex, const bool& shouldWake, int affinity)
+	TaskThread::TaskThread(Task& task, std::condition_variable& waitNotifier, std::mutex& mutex, const bool& shouldWake, unsigned int affinity)
 			: _task(task), _waitNotifier(waitNotifier), _mutex(mutex), _shouldWake(shouldWake), _affinity(affinity)
 	{
 	}
@@ -68,10 +68,7 @@ namespace Elpida
 
 	void TaskThread::runTask()
 	{
-		if (_affinity != -1)
-		{
-			setCurrentThreadAffinity(_affinity);
-		}
+		setCurrentThreadAffinity(_affinity);
 		std::unique_lock<std::mutex> lock(_mutex);
 		while (!_shouldWake)
 		{
@@ -81,7 +78,7 @@ namespace Elpida
 		_task.run();
 	}
 
-	void TaskThread::setCurrentThreadAffinity(int cpuId)
+	void TaskThread::setCurrentThreadAffinity(unsigned int cpuId)
 	{
 #if _elpida_linux
 		cpu_set_t mask;

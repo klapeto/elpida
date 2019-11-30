@@ -25,12 +25,15 @@
  */
 
 #include "Elpida/MultiThreadTask.hpp"
+#include "Elpida/Topology/SystemTopology.hpp"
+#include "Elpida/TaskFactory.hpp"
+#include "Elpida/Topology/ProcessorNode.hpp"
 
 namespace Elpida
 {
 
-	MultiThreadTask::MultiThreadTask(const std::string& name)
-			: Task(name + "(Multi Threaded)"), _threadsShouldWake(false)
+	MultiThreadTask::MultiThreadTask(const std::string& name, const TaskFactory& taskFactory)
+			: Task(name + "(Multi Threaded)"), _taskFactory(taskFactory), _threadsShouldWake(false)
 	{
 	}
 
@@ -39,10 +42,19 @@ namespace Elpida
 		destroyTasks();
 	}
 
-	void MultiThreadTask::addTask(Task* task, int affinity)
+	void MultiThreadTask::addTask(Task* task, unsigned int affinity)
 	{
 		_tasksToBeExecuted.push_back(TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, affinity));
 		_createdTasks.push_back(task);
+	}
+
+	void MultiThreadTask::createTasks()
+	{
+		auto& processors = _affinity.isSet() ? _affinity.getProcessorNodes() : SystemTopology::getTopology().getAllProcessors();
+		for (auto processor : processors)
+		{
+			addTask(_taskFactory.create(*processor), processor->getOsIndex());
+		}
 	}
 
 	void MultiThreadTask::destroyTasks()

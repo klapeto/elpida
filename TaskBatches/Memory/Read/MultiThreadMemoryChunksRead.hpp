@@ -33,7 +33,7 @@
 
 #include "Elpida/MultiThreadTask.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatile.hpp"
+#include "TaskBatches/Memory/Read/MemoryReadWithAllocationTaskFactory.hpp"
 
 namespace Elpida
 {
@@ -43,17 +43,13 @@ namespace Elpida
 	{
 		public:
 
-			void calculateResults(const TaskMetrics& metrics) override
-			{
-				addResult(_totalBandwidth);
-			}
+			void calculateResults(const TaskMetrics& metrics) override;
 
-			MultiThreadMemoryChunksRead(const std::unordered_map<int, Memory*>& memory, std::size_t numberOfThreads)
+			MultiThreadMemoryChunksRead(std::size_t sizePerThread)
 					:
-					  MultiThreadTask("Read @ 8 Bytes/Read"),
-					  _totalBandwidth("Total Read Bandwidth", "Bytes"),
-					  _numberOfThreads(numberOfThreads),
-					  _memory(memory)
+					  MultiThreadTask("Read @ 8 Bytes/Read", _taskFactory),
+					  _taskFactory(sizePerThread),
+					  _totalBandwidth("Total Read Bandwidth", "Bytes")
 			{
 
 			}
@@ -61,29 +57,9 @@ namespace Elpida
 			{
 
 			}
-
-		protected:
-			void createTasks()
-			{
-				auto iterations = 0ul;
-				auto totalSize = 0ul;
-				auto cpu = 0ul;
-				for (const auto& chunk : _memory)
-				{
-					totalSize += chunk.second->getSize();
-					auto mem = new MemoryReadVolatile<>(*chunk.second);
-					if (iterations == 0ul)
-					{
-						iterations = mem->getIterations();
-					}
-					addTask(mem, chunk.first);
-				}
-				_totalBandwidth.setOriginalValue(totalSize * iterations);
-			}
 		private:
+			MemoryReadWithAllocationTaskFactory _taskFactory;
 			TaskRunResult _totalBandwidth;
-			std::size_t _numberOfThreads;
-			const std::unordered_map<int, Memory*>& _memory;
 	};
 
 } /* namespace Elpida */
