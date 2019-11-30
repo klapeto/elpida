@@ -38,7 +38,7 @@ namespace Elpida
 			void createTasks() const override;
 
 			MultithreadMemoryChunksReadTaskBatch()
-					: TaskBatch("Memory Read (Multi Thread/Chunked)")
+					: TaskBatch("Memory Read Bandwidth")
 			{
 
 			}

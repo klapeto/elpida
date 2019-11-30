@@ -18,15 +18,40 @@
  *************************************************************************/
 
 /*
- * MemoryReadVolatile.cpp
+ * MemoryLatencyTaskBatch.hpp
  *
- *  Created on: 16 Μαΐ 2019
+ *  Created on: 19 Μαΐ 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatile.hpp"
+#ifndef TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCYTASKBATCH_HPP_
+#define TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCYTASKBATCH_HPP_
+
+#include <cstddef>
+
+#include "Elpida/TaskBatch.hpp"
 
 namespace Elpida
 {
 
+	class MemoryLatencyTaskBatch final: public TaskBatch
+	{
+		public:
+
+			void createTasks() const override;
+
+			MemoryLatencyTaskBatch()
+					: TaskBatch("Memory Latency")
+			{
+
+			}
+			~MemoryLatencyTaskBatch()
+			{
+			}
+		private:
+			void addMemoryLatencyTask(std::size_t size) const;
+	};
+
 } /* namespace Elpida */
+
+#endif /* TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCYTASKBATCH_HPP_ */

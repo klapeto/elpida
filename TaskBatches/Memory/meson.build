@@ -18,30 +18,22 @@
 #-------------------------------------------------------------------------------
 
 memoryTasks_sources = ['Plugin.cpp',
-						join_paths('Read', 'Cached', 'MemoryReadCached.cpp'),
-						join_paths('Read', 'Cached', 'MemoryReadCachedTaskBatch.cpp'),
-						join_paths('Read', 'Volatile', 'MemoryReadVolatile.cpp'),
-						join_paths('Read', 'Volatile', 'MemoryReadVolatileTaskBatch.cpp'),
+						join_paths('Read', 'MemoryRead.cpp'),
 						join_paths('Read', 'MultiThreadMemoryChunksRead.cpp'),
 						join_paths('Read', 'MultithreadMemoryChunksReadTaskBatch.cpp'),
-						join_paths('Read', 'MemoryReadWithAllocation.cpp'),
-						join_paths('Read', 'MemoryReadWithAllocationTaskFactory.cpp'),
-						'WorkingSetSizes.cpp',
-						'MemoryLatency.cpp',
-						'MemoryLatencyTaskBatch.cpp']
+						join_paths('Read', 'MemoryReadTaskFactory.cpp'),
+						join_paths('Latency', 'MemoryLatency.cpp'),
+						join_paths('Latency', 'MemoryLatencyTaskBatch.cpp'),
+						'WorkingSetSizes.cpp']
 
 install_headers([
-				join_paths('Read', 'Cached', 'MemoryReadCached.hpp'),
-				join_paths('Read', 'Cached', 'MemoryReadCachedTaskBatch.hpp'),
-				join_paths('Read', 'Volatile', 'MemoryReadVolatile.hpp'),
-				join_paths('Read', 'Volatile', 'MemoryReadVolatileTaskBatch.hpp'),
+				join_paths('Read', 'MemoryRead.hpp'),
 				join_paths('Read', 'MultiThreadMemoryChunksRead.hpp'),
 				join_paths('Read', 'MultithreadMemoryChunksReadTaskBatch.hpp'),
-				join_paths('Read', 'MemoryReadWithAllocation.hpp'),
-				join_paths('Read', 'MemoryReadWithAllocationTaskFactory.hpp'),
-				'MemoryLatency.hpp',
-				'WorkingSetSizes.hpp',
-				'MemoryLatencyTaskBatch.hpp'],
+				join_paths('Read', 'MemoryReadTaskFactory.hpp'),
+				join_paths('Latency', 'MemoryLatency.hpp'),
+				join_paths('Latency', 'MemoryLatencyTaskBatch.hpp'),
+				'WorkingSetSizes.hpp'],
 				subdir: 'Elpida/TaskBatches/Memory')
 				
 if qt5_dep.found()

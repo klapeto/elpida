@@ -18,32 +18,49 @@
  *************************************************************************/
 
 /*
- * MemoryReadVolatile.hpp
+ * MemoryReadCached.hpp
  *
- *  Created on: 16 Μαΐ 2019
+ *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILE_HPP_
-#define TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILE_HPP_
+#ifndef TASKBATCHES_MEMORY_READ_MEMORYREAD_HPP_
+#define TASKBATCHES_MEMORY_READ_MEMORYREAD_HPP_
 
 #include <cstdint>
-#include "TaskBatches/Memory/Read/Cached/MemoryReadCached.hpp"
+#include <string>
+
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
+#include "TaskBatches/General/NumaMemory.hpp"
 
 namespace Elpida
 {
+	class TaskMetrics;
 
 	template<typename T = int64_t>
-	class MemoryReadVolatile final: public MemoryReadCached<T>
+	class MemoryRead final: public Task
 	{
 		public:
 
-			virtual void run() override
+			void prepare() override
 			{
-				volatile auto ptr = (T*) this->_memory.getPointer();
+				_memory.allocate();
+			}
+
+			void finalize() override
+			{
+				_memory.deallocate();
+			}
+
+			void run() override
+			{
+				register auto ptr = (T*) _memory.getPointer();
 				register auto start = ptr;
-				register auto end = (T *) ((T) start + this->_memory.getSize());
-				register auto iterations = this->_iterations;
+				register auto end = (T *) ((T) start + _memory.getSize());
+				register auto iterations = _iterations;
 				register auto x = T();
 				for (register auto i = 0ul; i < iterations; ++i)
 				{
@@ -88,18 +105,43 @@ namespace Elpida
 				auto dummy = x;
 			}
 
-			MemoryReadVolatile(const Memory& memory)
-					: MemoryReadCached<T>(memory)
+			unsigned long getIterations() const
 			{
-
+				return _iterations;
 			}
 
-			virtual ~MemoryReadVolatile()
+			void calculateResults(const TaskMetrics& metrics) override
 			{
-
+				addResult(_runResult);
 			}
+
+			MemoryRead(std::size_t size, unsigned int affinity)
+					:
+					  Task("Read " + ValueUtilities::getValueScaleString(size) + "B @" + std::to_string(sizeof(T)) + " Bytes/Read"),
+					  _runResult(ValueUtilities::getValueScaleString(size) + "B", "Bytes"),
+					  _memory(size, affinity)
+			{
+				if (size % (32 * sizeof(T)) != 0) throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
+				_iterations = _iterationConstant / (double) _memory.getSize();
+				_runResult.setOriginalValue(_memory.getSize());
+				_runResult.setTestedDataValue(_memory.getSize());
+				_runResult.setMultiplier(_iterations);
+			}
+
+			virtual ~MemoryRead()
+			{
+				finalize();
+			}
+
+		protected:
+			TaskRunResult _runResult;
+			NumaMemory _memory;
+			unsigned long _iterations;
+
+			static constexpr double _iterationConstant = 100000000000; // rough estimate
+
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_READ_VOLATILE_MEMORYREADVOLATILE_HPP_ */
+#endif /* TASKBATCHES_MEMORY_READ_MEMORYREAD_HPP_ */

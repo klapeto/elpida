@@ -48,7 +48,7 @@ namespace Elpida
 			return a.size < b.size;
 		})->size * cacheSizeMul;
 
-		addTask(new MultiThreadMemoryChunksRead(8*1024*1024));
+		addTask(new MultiThreadMemoryChunksRead<int64_t>(8*1024*1024));
 	}
 
 } /* namespace Elpida */

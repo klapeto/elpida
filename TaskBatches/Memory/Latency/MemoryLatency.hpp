@@ -24,8 +24,8 @@
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_MEMORYLATENCY_HPP_
-#define TASKBATCHES_MEMORY_MEMORYLATENCY_HPP_
+#ifndef TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCY_HPP_
+#define TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCY_HPP_
 
 #include <cstdint>
 #include <string>
@@ -194,4 +194,4 @@ namespace Elpida
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_MEMORYLATENCY_HPP_ */
+#endif /* TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCY_HPP_ */

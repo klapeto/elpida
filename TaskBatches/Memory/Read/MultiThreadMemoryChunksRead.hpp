@@ -33,17 +33,30 @@
 
 #include "Elpida/MultiThreadTask.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "TaskBatches/Memory/Read/MemoryReadWithAllocationTaskFactory.hpp"
+#include "TaskBatches/Memory/Read/MemoryReadTaskFactory.hpp"
 
 namespace Elpida
 {
 	class TaskMetrics;
 
+	template<typename T>
 	class MultiThreadMemoryChunksRead: public MultiThreadTask
 	{
 		public:
 
-			void calculateResults(const TaskMetrics& metrics) override;
+			void calculateResults(const TaskMetrics& metrics) override
+			{
+				std::size_t totalItterations = 1;
+				auto& tasks = _taskFactory.getCreatedTasks();
+				if (tasks.size() > 0)
+				{
+					totalItterations = (*tasks.begin())->getIterations();
+				}
+				_totalBandwidth.setOriginalValue(_taskFactory.getSizePerTask() * tasks.size());
+				_totalBandwidth.setMultiplier(totalItterations);
+				addResult(_totalBandwidth);
+				_taskFactory.resetCreatedTasks();
+			}
 
 			MultiThreadMemoryChunksRead(std::size_t sizePerThread)
 					:
@@ -58,7 +71,7 @@ namespace Elpida
 
 			}
 		private:
-			MemoryReadWithAllocationTaskFactory _taskFactory;
+			MemoryReadTaskFactory<T> _taskFactory;
 			TaskRunResult _totalBandwidth;
 	};
 

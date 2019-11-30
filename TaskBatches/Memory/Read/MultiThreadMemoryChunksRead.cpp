@@ -25,22 +25,8 @@
  */
 
 #include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
-#include "TaskBatches/Memory/Read/MemoryReadWithAllocation.hpp"
 
 namespace Elpida
 {
-	void MultiThreadMemoryChunksRead::calculateResults(const TaskMetrics& metrics)
-	{
-		std::size_t totalItterations = 1;
-		auto& tasks = _taskFactory.getCreatedTasks();
-		if (tasks.size() > 0)
-		{
-			totalItterations = (*tasks.begin())->getIterations();
-		}
-		_totalBandwidth.setOriginalValue(_taskFactory.getSizePerTask() * tasks.size());
-		_totalBandwidth.setMultiplier(totalItterations);
-		addResult(_totalBandwidth);
-		_taskFactory.resetCreatedTasks();
-	}
 } /* namespace Elpida */
 

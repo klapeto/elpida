@@ -27,11 +27,9 @@
 #include <vector>
 
 #include "TaskBatches/Config.hpp"
-#include "TaskBatches/Memory/MemoryLatencyTaskBatch.hpp"
-#include "TaskBatches/Memory/MemoryLatency.hpp"
-#include "TaskBatches/Memory/Read/Cached/MemoryReadCachedTaskBatch.hpp"
+#include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
+#include "TaskBatches/Memory/Latency/MemoryLatencyTaskBatch.hpp"
 #include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
-#include "TaskBatches/Memory/Read/Volatile/MemoryReadVolatileTaskBatch.hpp"
 
 #if _elpida_qt_enabled
 #include "TaskBatches/Memory/Ui/MemoryBandwidthChart.hpp"
@@ -39,23 +37,11 @@
 #include "TaskBatches/Memory/Ui/MemoryLatencyChart.hpp"
 #endif
 
-extern "C" Elpida::TaskBatch* createTaskBatch()
-{
-	return new Elpida::MemoryReadCachedTaskBatch();
-}
-
 #if _elpida_qt_enabled
-
-extern "C" Elpida::QtTaskBatchWrapper* createQtBatchWrapper()
-{
-	return new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadCachedTaskBatch);
-}
 
 extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
 {
 	return new std::vector<Elpida::QtTaskBatchWrapper*> {
-		new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadCachedTaskBatch),
-		new Elpida::MemoryBandwidthChart(new Elpida::MemoryReadVolatileTaskBatch),
 		new Elpida::MemoryTasksProperties<Elpida::MultithreadMemoryChunksReadTaskBatch>(Elpida::MultithreadMemoryChunksReadTaskBatch()),
 		new Elpida::MemoryLatencyChart(new Elpida::MemoryLatencyTaskBatch)
 	};

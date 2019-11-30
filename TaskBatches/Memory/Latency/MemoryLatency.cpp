@@ -18,15 +18,15 @@
  *************************************************************************/
 
 /*
- * MemoryRead.cpp
+ * MemoryLatench.cpp
  *
- *  Created on: 18 Οκτ 2018
+ *  Created on: 19 Μαΐ 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/Read/Cached/MemoryReadCached.hpp"
+#include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
 
-namespace Elpida {
+namespace Elpida
+{
 
 } /* namespace Elpida */
-
