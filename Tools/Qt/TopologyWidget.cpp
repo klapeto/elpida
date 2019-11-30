@@ -320,14 +320,14 @@ namespace Elpida
 		}
 	}
 
-	void TopologyWidget::appendAffinity(TopologyFrame* frame, std::vector<const ProcessorNode*>& nodesAccumulator)
+	void TopologyWidget::appendAffinity(TopologyFrame* frame)
 	{
 		if (frame->getProcessorNode().getType() != ProcessorNode::Type::ExecutionUnit)
 		{
 			const auto& childs = frame->getChildren();
 			for (auto child : childs)
 			{
-				appendAffinity(child, nodesAccumulator);
+				appendAffinity(child);
 			}
 		}
 		else
@@ -337,9 +337,10 @@ namespace Elpida
 			{
 				checkBox->setChecked(true);
 
-				if (std::none_of(nodesAccumulator.begin(), nodesAccumulator.end(), [&](const ProcessorNode* nd) {return &frame->getProcessorNode() == nd;}))
+				if (std::none_of(_selectedNodes.begin(), _selectedNodes.end(), [&](const ProcessorNode* nd)
+				{	return &frame->getProcessorNode() == nd;}))
 				{
-					nodesAccumulator.push_back(&frame->getProcessorNode());
+					_selectedNodes.push_front(&frame->getProcessorNode());
 				}
 			}
 		}
@@ -352,7 +353,7 @@ namespace Elpida
 			const auto& childs = node->getChildren();
 			for (auto child : childs)
 			{
-				appendAffinity(child, _selectedNodes);
+				appendAffinity(child);
 			}
 		}
 		else
@@ -360,11 +361,18 @@ namespace Elpida
 			auto checkBox = node->getCheckBox();
 			if (checkBox != nullptr)
 			{
-				checkBox->setChecked(true);
-
-				if (std::none_of(_selectedNodes.begin(), _selectedNodes.end(), [&](const ProcessorNode* nd) {return &node->getProcessorNode() == nd;}))
+				if (checkBox->isChecked())
 				{
-					_selectedNodes.push_back(&node->getProcessorNode());
+					checkBox->setChecked(false);
+					_selectedNodes.remove(&node->getProcessorNode());
+				}
+				else
+				{
+					checkBox->setChecked(true);
+					if (std::none_of(_selectedNodes.begin(), _selectedNodes.end(), [&](const ProcessorNode* nd) {return &node->getProcessorNode() == nd;}))
+					{
+						_selectedNodes.push_front(&node->getProcessorNode());
+					}
 				}
 			}
 		}

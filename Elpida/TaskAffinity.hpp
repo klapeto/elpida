@@ -28,6 +28,7 @@
 #define ELPIDA_TASKAFFINITY_HPP_
 
 #include <vector>
+#include <forward_list>
 
 namespace Elpida
 {
@@ -53,8 +54,9 @@ namespace Elpida
 
 			TaskAffinity(std::initializer_list<int> processors);
 
-			TaskAffinity(const std::vector<const ProcessorNode*>& nodesToUse)
-					: _nodes(nodesToUse)
+			template<typename T>
+			TaskAffinity(const T& nodesToUse)
+					: _nodes(nodesToUse.begin(), nodesToUse.end())
 			{
 
 			}
