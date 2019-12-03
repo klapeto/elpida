@@ -26,75 +26,7 @@
 
 #include "TaskBatches/Memory/Ui/MemoryTasksPropertiesWithChart.hpp"
 
-#include <qnamespace.h>
-#include <qstring.h>
-#include <QtCharts/qcategoryaxis.h>
-#include <QtCharts/qchart.h>
-#include <QtCharts/qlineseries.h>
-#include <list>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "Elpida/TaskRunResult.hpp"
-#include "Elpida/TaskThroughput.hpp"
-
 namespace Elpida
 {
-	MemoryTasksPropertiesWithChart::MemoryTasksPropertiesWithChart(TaskBatch* taskBatch)
-			: QtTaskBatchWrapper(false, true), _taskBatch(taskBatch), _chart(new QtCharts::QChart())
-	{
-
-		_xAxis = new QtCharts::QCategoryAxis();
-		_chart->addAxis(_xAxis, Qt::AlignBottom);
-
-		_yAxis = new QtCharts::QValueAxis();
-		_chart->addAxis(_yAxis, Qt::AlignLeft);
-	}
-
-	MemoryTasksPropertiesWithChart::~MemoryTasksPropertiesWithChart()
-	{
-		delete _chart;
-		delete _xAxis;
-		delete _yAxis;
-	}
-
-	void MemoryTasksPropertiesWithChart::updateResultsChartData(const std::unordered_map<std::string, std::vector<TaskThroughput>>& results)
-	{
-		_chart->removeAllSeries();
-
-		configureChart(_chart);
-		configureXAxis(_xAxis);
-		configureYAxis(_yAxis);
-
-		auto series = new QtCharts::QLineSeries();
-		auto ordered = std::list<const TaskThroughput*>();
-
-		for (auto& result : results)
-		{
-			ordered.push_back(&result.second.at(0));
-		}
-		ordered.sort([](const TaskThroughput* a, const TaskThroughput* b)
-		{
-			return a->getRunResult().getTestedDataValue() < b->getRunResult().getTestedDataValue();
-		});
-
-		_xAxis->setLabelsPosition(QtCharts::QCategoryAxis::AxisLabelsPositionOnValue);
-		_xAxis->setMax(ordered.size() - 1);
-		_xAxis->setMin(0);
-		auto c = 0;
-		for (auto result : ordered)
-		{
-			auto values = getChartValuesFromTaskThroughput(*result);
-			series->append(c, values.yValue);
-			_xAxis->append(QString::fromStdString(values.xCategory), c++);
-		}
-
-		_chart->addSeries(series);
-		series->attachAxis(_yAxis);
-		series->attachAxis(_xAxis);
-		_yAxis->setMin(0);
-	}
 
 } /* namespace Elpida */
-

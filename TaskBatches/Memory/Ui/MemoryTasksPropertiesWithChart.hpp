@@ -27,10 +27,19 @@
 #ifndef TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIESWITHCHART_HPP_
 #define TASKBATCHES_MEMORY_MEMORYTASKSPROPERTIESWITHCHART_HPP_
 
+#include <qstring.h>
+#include <QtCharts/qcategoryaxis.h>
+#include <QtCharts/qchart.h>
+#include <QtCharts/qlineseries.h>
+#include <QtCharts/qvalueaxis.h>
+#include <list>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
+#include "Elpida/TaskBatch.hpp"
+#include "Elpida/TaskRunResult.hpp"
 #include "Elpida/TaskThroughput.hpp"
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 
@@ -46,11 +55,12 @@ namespace QtCharts
 namespace Elpida
 {
 
+	template<typename T>
 	class MemoryTasksPropertiesWithChart: public QtTaskBatchWrapper
 	{
 		public:
 
-			const TaskBatch& getTaskBatch() const
+			const T& getTaskBatch() const
 			{
 				return *_taskBatch;
 			}
@@ -69,16 +79,69 @@ namespace Elpida
 				return _chart;
 			}
 
-			void updateResultsChartData(const std::unordered_map<std::string, std::vector<TaskThroughput>>& results) override;
+			void updateResultsChartData(const std::unordered_map<std::string, std::vector<TaskThroughput>>& results) override
+			{
+				_chart->removeAllSeries();
 
-			MemoryTasksPropertiesWithChart(TaskBatch* taskBatch);
-			virtual ~MemoryTasksPropertiesWithChart();
+				configureChart(_chart);
+				configureXAxis(_xAxis);
+				configureYAxis(_yAxis);
+
+				auto series = new QtCharts::QLineSeries();
+				auto ordered = std::list<const TaskThroughput*>();
+
+				for (auto& result : results)
+				{
+					ordered.push_back(&result.second.at(0));
+				}
+				ordered.sort([](const TaskThroughput* a, const TaskThroughput* b)
+				{
+					return a->getRunResult().getTestedDataValue() < b->getRunResult().getTestedDataValue();
+				});
+
+				_xAxis->setLabelsPosition(QtCharts::QCategoryAxis::AxisLabelsPositionOnValue);
+				_xAxis->setMax(ordered.size() - 1);
+				_xAxis->setMin(0);
+				auto c = 0;
+				for (auto result : ordered)
+				{
+					auto values = getChartValuesFromTaskThroughput(*result);
+					series->append(c, values.yValue);
+					_xAxis->append(QString::fromStdString(values.xCategory), c++);
+				}
+
+				_chart->addSeries(series);
+				series->attachAxis(_yAxis);
+				series->attachAxis(_xAxis);
+				_yAxis->setMin(0);
+			}
+
+			MemoryTasksPropertiesWithChart(T* taskBatch)
+					: MemoryTasksPropertiesWithChart(taskBatch, false)
+			{
+
+			}
+			virtual ~MemoryTasksPropertiesWithChart()
+			{
+				delete _chart;
+			}
 		private:
-			TaskBatch* _taskBatch;
 			QtCharts::QChart* _chart;
 			QtCharts::QCategoryAxis* _xAxis;
 			QtCharts::QValueAxis* _yAxis;
 		protected:
+			T* _taskBatch;
+
+			MemoryTasksPropertiesWithChart(T* taskBatch, bool hasProperties)
+					: QtTaskBatchWrapper(hasProperties, true), _chart(new QtCharts::QChart()), _taskBatch(taskBatch)
+			{
+				_xAxis = new QtCharts::QCategoryAxis();
+				_chart->addAxis(_xAxis, Qt::AlignBottom);
+
+				_yAxis = new QtCharts::QValueAxis();
+				_chart->addAxis(_yAxis, Qt::AlignLeft);
+			}
+
 			struct ChartValues
 			{
 					double yValue;

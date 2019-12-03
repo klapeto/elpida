@@ -35,10 +35,31 @@ namespace Elpida
 	class MultithreadMemoryChunksReadTaskBatch: public TaskBatch
 	{
 		public:
+
+			bool isAutoConfigureSizes() const
+			{
+				return _autoConfigureSizes;
+			}
+
+			void setAutoConfigureSizes(bool autoConfigureSizes)
+			{
+				_autoConfigureSizes = autoConfigureSizes;
+			}
+
+			std::size_t getSizePerThread() const
+			{
+				return _sizePerThread;
+			}
+
+			void setSizePerThread(std::size_t sizePerThread)
+			{
+				_sizePerThread = sizePerThread;
+			}
+
 			void createTasks() const override;
 
 			MultithreadMemoryChunksReadTaskBatch()
-					: TaskBatch("Memory Read Bandwidth")
+					: TaskBatch("Memory Read Bandwidth"), _sizePerThread(256), _autoConfigureSizes(true)
 			{
 
 			}
@@ -46,6 +67,9 @@ namespace Elpida
 			virtual ~MultithreadMemoryChunksReadTaskBatch()
 			{
 			}
+		private:
+			std::size_t _sizePerThread;
+			bool _autoConfigureSizes;
 	};
 
 } /* namespace Elpida */

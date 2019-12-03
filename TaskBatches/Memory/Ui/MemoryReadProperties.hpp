@@ -18,34 +18,45 @@
  *************************************************************************/
 
 /*
- * Plugin.cpp
+ * MemoryReadProperties.hpp
  *
- *  Created on: 18 Οκτ 2018
+ *  Created on: 1 Δεκ 2019
  *      Author: klapeto
  */
 
-#include <vector>
+#ifndef TASKBATCHES_MEMORY_UI_MEMORYREADPROPERTIES_HPP_
+#define TASKBATCHES_MEMORY_UI_MEMORYREADPROPERTIES_HPP_
 
-#include "TaskBatches/Config.hpp"
-#include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
-#include "TaskBatches/Memory/Latency/MemoryLatencyTaskBatch.hpp"
+#include "TaskBatches/Memory/Ui/MemoryBandwidthChart.hpp"
 #include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
 
-#if _elpida_qt_enabled
-#include "TaskBatches/Memory/Ui/MemoryBandwidthChart.hpp"
-#include "TaskBatches/Memory/Ui/MemoryTasksProperties.hpp"
-#include "TaskBatches/Memory/Ui/MemoryLatencyChart.hpp"
-#include "TaskBatches/Memory/Ui/MemoryReadProperties.hpp"
-#endif
-
-#if _elpida_qt_enabled
-
-extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
+namespace Ui
 {
-	return new std::vector<Elpida::QtTaskBatchWrapper*> {
-		new Elpida::MemoryReadProperties(new Elpida::MultithreadMemoryChunksReadTaskBatch()),
-		new Elpida::MemoryLatencyChart(new Elpida::MemoryLatencyTaskBatch)
-	};
+	class MemoryReadProperties;
 }
 
-#endif
+namespace Elpida
+{
+
+	class MemoryReadProperties final: public MemoryBandwidthChart<MultithreadMemoryChunksReadTaskBatch>
+	{
+		Q_OBJECT
+
+		public:
+			void reconfigureTaskBatch() override;
+			void validateConfiguration() override;
+
+			MemoryReadProperties(MultithreadMemoryChunksReadTaskBatch* taskBatch);
+			~MemoryReadProperties();
+		private:
+			std::vector<QMetaObject::Connection> _connections;
+			Ui::MemoryReadProperties* _ui;
+			std::size_t _sizePerThread;
+			bool _autoConfigureSizes;
+		public slots:
+			void chkAutomaticSize_stateChanged(int state);
+	};
+
+} /* namespace Elpida */
+
+#endif /* TASKBATCHES_MEMORY_UI_MEMORYREADPROPERTIES_HPP_ */

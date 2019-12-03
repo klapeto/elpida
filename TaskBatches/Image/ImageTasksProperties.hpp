@@ -46,8 +46,8 @@ namespace Elpida
 				return _taskBatch;
 			}
 
-			void reconfigureTaskBatch();
-			void validateConfiguration();
+			void reconfigureTaskBatch() override;
+			void validateConfiguration() override;
 
 			ImageTasksProperties();
 			~ImageTasksProperties();

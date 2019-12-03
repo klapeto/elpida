@@ -32,21 +32,48 @@
 namespace Elpida
 {
 
-	class MemoryBandwidthChart final: public MemoryTasksPropertiesWithChart
+	template<typename T>
+	class MemoryBandwidthChart: public MemoryTasksPropertiesWithChart<T>
 	{
 		public:
-			MemoryBandwidthChart(TaskBatch* taskBatch)
-					: MemoryTasksPropertiesWithChart(taskBatch)
+			MemoryBandwidthChart(T* taskBatch)
+					: MemoryTasksPropertiesWithChart<T>(taskBatch)
 			{
 			}
-			~MemoryBandwidthChart()
+			virtual ~MemoryBandwidthChart()
 			{
 			}
 		protected:
-			void configureXAxis(QtCharts::QCategoryAxis* xAxis) override;
-			void configureYAxis(QtCharts::QValueAxis* yAxis) override;
-			void configureChart(QtCharts::QChart* chart) override;
-			ChartValues getChartValuesFromTaskThroughput(const TaskThroughput& throughput) override;
+			MemoryBandwidthChart(T* taskBatch, bool hasProperties)
+					: MemoryTasksPropertiesWithChart<T>(taskBatch, hasProperties)
+			{
+
+			}
+
+			void configureXAxis(QtCharts::QCategoryAxis* xAxis) override
+			{
+				xAxis->setTitleText("Working Set Size");
+			}
+
+			void configureYAxis(QtCharts::QValueAxis* yAxis) override
+			{
+				yAxis->setTitleText("Bandwidth");
+				yAxis->setLabelFormat("%.0f GB/s");
+			}
+
+			void configureChart(QtCharts::QChart* chart) override
+			{
+				chart->setTitle("Memory Read Bandwidth");
+			}
+
+			typename Elpida::MemoryTasksPropertiesWithChart<T>::ChartValues getChartValuesFromTaskThroughput(const TaskThroughput& throughput) override
+			{
+				return
+				{
+					throughput.getRatePerSecond() / (double)std::giga::num,
+					ValueUtilities::getValueScaleString(throughput.getRunResult().getTestedDataValue())
+				};
+			}
 	};
 
 } /* namespace Elpida */

@@ -28,15 +28,16 @@
 #define TASKBATCHES_MEMORY_UI_MEMORYLATENCYCHART_HPP_
 
 #include "TaskBatches/Memory/Ui/MemoryTasksPropertiesWithChart.hpp"
+#include "TaskBatches/Memory/Latency/MemoryLatencyTaskBatch.hpp"
 
 namespace Elpida
 {
 
-	class MemoryLatencyChart final: public MemoryTasksPropertiesWithChart
+	class MemoryLatencyChart final: public MemoryTasksPropertiesWithChart<MemoryLatencyTaskBatch>
 	{
 		public:
-			MemoryLatencyChart(TaskBatch* taskBatch)
-					: MemoryTasksPropertiesWithChart(taskBatch)
+			MemoryLatencyChart(MemoryLatencyTaskBatch* taskBatch)
+					: MemoryTasksPropertiesWithChart<MemoryLatencyTaskBatch>(taskBatch)
 			{
 			}
 			~MemoryLatencyChart()

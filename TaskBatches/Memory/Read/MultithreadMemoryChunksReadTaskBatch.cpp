@@ -41,14 +41,7 @@ namespace Elpida
 
 	void MultithreadMemoryChunksReadTaskBatch::createTasks() const
 	{
-		constexpr auto cacheSizeMul = 2ul;
-
-		const auto& caches = CpuInfo::getCpuInfo().getCaches();
-		auto size = std::max_element(caches.begin(), caches.end(), [](const CpuInfo::Cache& a, const CpuInfo::Cache& b){
-			return a.size < b.size;
-		})->size * cacheSizeMul;
-
-		addTask(new MultiThreadMemoryChunksRead<int64_t>(8*1024*1024));
+		addTask(new MultiThreadMemoryChunksRead<int64_t>(_sizePerThread));
 	}
 
 } /* namespace Elpida */

@@ -43,10 +43,11 @@ if qt5_dep.found()
 		join_paths('Ui', 'MemoryTasksPropertiesWithChart.cpp'),
 		join_paths('Ui', 'MemoryBandwidthChart.cpp'),
 		join_paths('Ui', 'MemoryLatencyChart.cpp'),
+		join_paths('Ui', 'MemoryReadProperties.cpp'),
 	]
 
 	uiFiles = [
-		
+		join_paths('Ui', 'MemoryReadProperties.ui'),
 	]
 	
 	mocHeaders = [
@@ -54,6 +55,7 @@ if qt5_dep.found()
 		join_paths('Ui', 'MemoryTasksPropertiesWithChart.hpp'),
 		join_paths('Ui', 'MemoryBandwidthChart.hpp'),
 		join_paths('Ui', 'MemoryLatencyChart.hpp'),
+		join_paths('Ui', 'MemoryReadProperties.hpp'),
 	]
 	
 	memoryTasks_sources += qt5.preprocess(

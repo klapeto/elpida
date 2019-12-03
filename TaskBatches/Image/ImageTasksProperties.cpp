@@ -56,14 +56,14 @@ namespace Elpida
 
 	void ImageTasksProperties::on_pbSelectInput_clicked()
 	{
-		auto filename = QFileDialog::getOpenFileName(this, "Open Png Image", "", "Png Images (*.png)");
+		auto filename = QFileDialog::getOpenFileName(nullptr, "Open Png Image", "", "Png Images (*.png)");
 		_inputImage = filename.toStdString();
 		_ui->leInputImage->setText(filename);
 	}
 
 	void ImageTasksProperties::on_pbSelectOutput_clicked()
 	{
-		auto filename = QFileDialog::getSaveFileName(this, "Output Png Image", "", "Png Images (*.png)");
+		auto filename = QFileDialog::getSaveFileName(nullptr, "Output Png Image", "", "Png Images (*.png)");
 		_outputImage = filename.toStdString();
 		_ui->leOutputImage->setText(filename);
 	}

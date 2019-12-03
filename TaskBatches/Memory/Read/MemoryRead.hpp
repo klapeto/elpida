@@ -105,6 +105,11 @@ namespace Elpida
 				auto dummy = x;
 			}
 
+			std::size_t getMemorySize() const
+			{
+				return _memory.getSize();
+			}
+
 			unsigned long getIterations() const
 			{
 				return _iterations;
