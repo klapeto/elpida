@@ -92,7 +92,7 @@ namespace Elpida
 #else
 		UCHAR NodeNumber;
 
-		GetNumaProcessorNode(i, &NodeNumber);
+		GetNumaProcessorNode(processorId, &NodeNumber);
 		return NodeNumber;
 #endif
 	}
