@@ -35,12 +35,13 @@
 #elif _elpida_windows
 #include <Windows.h>
 #include <strsafe.h>
+#include <string>
 #endif
 
 namespace Elpida
 {
 #if _elpida_windows
-	static String GetWindowsError();
+	static std::string GetWindowsError();
 #endif
 
 	SharedLibrary::SharedLibrary(const std::string& libraryPath)
@@ -90,7 +91,7 @@ namespace Elpida
 	}
 
 #if _elpida_windows
-static String GetWindowsError()
+static std::string GetWindowsError()
 {
 	LPVOID lpMsgBuf;
 	LPVOID lpDisplayBuf;
@@ -106,7 +107,7 @@ static String GetWindowsError()
 			(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
 	StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
 			dw, lpMsgBuf);
-	String returnString((const char*)lpDisplayBuf);
+	std::string returnString((const char*)lpDisplayBuf);
 	LocalFree(lpMsgBuf);
 	LocalFree(lpDisplayBuf);
 

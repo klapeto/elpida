@@ -39,6 +39,7 @@
 #include <sys/resource.h>
 #elif _elpida_windows
 #include <Windows.h>
+#include <iostream>
 #endif
 
 namespace Elpida
