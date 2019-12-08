@@ -1,3 +1,22 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 /*
  * MemoryReadWithAllocationTaskFactory.hpp
  *
@@ -15,20 +34,9 @@
 
 namespace Elpida
 {
-	template<typename T>
 	class MemoryReadTaskFactory final: public TaskFactory
 	{
 		public:
-
-			const std::vector<MemoryRead<T>*>& getCreatedTasks() const
-			{
-				return _createdTasks;
-			}
-
-			void resetCreatedTasks()
-			{
-				_createdTasks.clear();
-			}
 
 			std::size_t getSizePerTask() const
 			{
@@ -37,24 +45,48 @@ namespace Elpida
 
 			Task* create(const ProcessorNode& processorAffinity) const override
 			{
-				auto task = new MemoryRead<>(_sizePerTask, processorAffinity.getOsIndex());
-				_createdTasks.push_back(task);
+				std::size_t size = 0;
+				if (_autoConfigure)
+				{
+					// fuck
+				}
+				else
+				{
+					size = _sizePerTask;
+				}
+
+				auto task = new MemoryRead(size, processorAffinity.getOsIndex());
+				_totalSize += size * task->getIterations();
 				return task;
 			}
 
+			std::size_t getTotalSize() const
+			{
+				return _totalSize;
+			}
+
+
 			MemoryReadTaskFactory(std::size_t sizePerTask)
-					: _sizePerTask(sizePerTask)
+					: _sizePerTask(sizePerTask), _totalSize(0), _autoConfigure(false)
 			{
 
 			}
+
+			MemoryReadTaskFactory()
+					: _sizePerTask(0), _totalSize(0), _autoConfigure(true)
+			{
+
+			}
+
 			~MemoryReadTaskFactory()
 			{
 
 			}
 
 		private:
-			mutable std::vector<MemoryRead<T>*> _createdTasks;
 			std::size_t _sizePerTask;
+			mutable std::size_t _totalSize;
+			bool _autoConfigure;
 	};
 
 } /* namespace Elpida */

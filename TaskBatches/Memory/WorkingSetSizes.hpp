@@ -24,11 +24,23 @@
  *      Author: klapeto
  */
 
+#include <cstdint>
+
 #ifndef TASKBATCHES_MEMORY_WORKINGSETSIZES_HPP_
 #define TASKBATCHES_MEMORY_WORKINGSETSIZES_HPP_
 
 namespace Elpida
 {
+
+	typedef
+#if __x86_64__ || _M_AMD64
+	int64_t
+#elif __i386__ || __i386 || _X86_
+	int32_t
+#else
+#error Elipda currently only supports X86-64 and X86 achritectures
+#endif
+	RegisterSize;
 
 	class WorkingSetSizes
 	{

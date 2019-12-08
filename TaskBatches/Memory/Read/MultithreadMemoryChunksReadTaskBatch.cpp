@@ -41,7 +41,7 @@ namespace Elpida
 
 	void MultithreadMemoryChunksReadTaskBatch::createTasks() const
 	{
-		addTask(new MultiThreadMemoryChunksRead<int64_t>(_sizePerThread));
+		addTask(new MultiThreadMemoryChunksRead(_sizePerThread));
 	}
 
 } /* namespace Elpida */

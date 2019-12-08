@@ -35,12 +35,12 @@
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 #include "TaskBatches/General/NumaMemory.hpp"
+#include "TaskBatches/Memory/WorkingSetSizes.hpp"
 
 namespace Elpida
 {
 	class TaskMetrics;
 
-	template<typename T = int64_t>
 	class MemoryRead final: public Task
 	{
 		public:
@@ -57,11 +57,11 @@ namespace Elpida
 
 			void run() override
 			{
-				register auto ptr = (T*) _memory.getPointer();
+				register auto ptr = (RegisterSize*) _memory.getPointer();
 				register auto start = ptr;
-				register auto end = (T *) ((T) start + _memory.getSize());
+				register auto end = (RegisterSize *) ((RegisterSize) start + _memory.getSize());
 				register auto iterations = _iterations;
-				register auto x = T();
+				register auto x = RegisterSize();
 				for (register auto i = 0ul; i < iterations; ++i)
 				{
 					ptr = start;
@@ -122,11 +122,11 @@ namespace Elpida
 
 			MemoryRead(std::size_t size, unsigned int affinity)
 					:
-					  Task("Read " + ValueUtilities::getValueScaleString(size) + "B @" + std::to_string(sizeof(T)) + " Bytes/Read"),
+					  Task("Read " + ValueUtilities::getValueScaleString(size) + "B @" + std::to_string(sizeof(RegisterSize)) + " Bytes/Read"),
 					  _runResult(ValueUtilities::getValueScaleString(size) + "B", "Bytes"),
 					  _memory(size, affinity)
 			{
-				if (size % (32 * sizeof(T)) != 0) throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
+				if (size % (32 * sizeof(RegisterSize)) != 0) throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
 				_iterations = _iterationConstant / (double) _memory.getSize();
 				_runResult.setOriginalValue(_memory.getSize());
 				_runResult.setTestedDataValue(_memory.getSize());
