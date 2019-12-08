@@ -35,7 +35,7 @@
 namespace Elpida
 {
 
-#ifdef ELPIDA_WIDOWS
+#ifdef ELPIDA_WINDOWS
 	static inline LARGE_INTEGER getPreformanceFrequency()
 	{
 		LARGE_INTEGER frequency;
@@ -48,7 +48,7 @@ namespace Elpida
 	{
 #ifdef ELPIDA_LINUX
 		return Timer::Clock::now();
-#elif ELPIDA_WINDOWS
+#else
 		static LARGE_INTEGER frequency = getPreformanceFrequency();
 		LARGE_INTEGER time;
 		QueryPerformanceCounter(&time);

@@ -28,7 +28,7 @@
 #include "Elpida/Config.hpp"
 #include <unistd.h>
 
-#if ELPIDA_WINDOWS
+#ifdef ELPIDA_WINDOWS
 #include <windows.h>
 #endif
 

@@ -40,7 +40,7 @@
 
 namespace Elpida
 {
-#if ELPIDA_WINDOWS
+#ifdef ELPIDA_WINDOWS
 	static std::string GetWindowsError();
 #endif
 

@@ -4,5 +4,5 @@
 /install/**
 /.vscode
 *.[oa]
-
+/.idea/**
 /cmake-build-debug/**
