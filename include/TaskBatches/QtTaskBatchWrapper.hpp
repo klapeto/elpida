@@ -27,8 +27,7 @@
 #ifndef TASKBATCHES_QTTASKBATCHWRAPPER_HPP_
 #define TASKBATCHES_QTTASKBATCHWRAPPER_HPP_
 
-#include "TaskBatches/Config.hpp"
-#if _elpida_qt_enabled
+#include "Config.hpp"
 
 #include "Elpida/TaskBatchWrapper.hpp"
 #include "Elpida/TaskThroughput.hpp"
@@ -89,6 +88,4 @@ namespace Elpida
 	};
 
 } /* namespace Elpida */
-
-#endif
 #endif /* TASKBATCHES_QTTASKBATCHWRAPPER_HPP_ */

@@ -26,19 +26,16 @@
 
 #include <vector>
 
-#include "TaskBatches/Config.hpp"
+#include "Config.hpp"
 #include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
 #include "TaskBatches/Memory/Latency/MemoryLatencyTaskBatch.hpp"
 #include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
 
-#if _elpida_qt_enabled
 #include "TaskBatches/Memory/Ui/MemoryBandwidthChart.hpp"
 #include "TaskBatches/Memory/Ui/MemoryTasksProperties.hpp"
 #include "TaskBatches/Memory/Ui/MemoryLatencyChart.hpp"
 #include "TaskBatches/Memory/Ui/MemoryReadProperties.hpp"
-#endif
 
-#if _elpida_qt_enabled
 
 extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
 {
@@ -47,5 +44,3 @@ extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
 		new Elpida::MemoryLatencyChart(new Elpida::MemoryLatencyTaskBatch)
 	};
 }
-
-#endif

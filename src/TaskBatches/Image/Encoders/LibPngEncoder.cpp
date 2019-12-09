@@ -28,8 +28,7 @@
 
 #include <cstdint>
 
-#include "Libraries/libpng/libpng/png.h"
-#include "Libraries/libpng/libpng/pngconf.h"
+#include "png.h"
 
 namespace Elpida
 {

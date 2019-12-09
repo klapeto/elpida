@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "FloydSteinberg.hpp"
+#include "TaskBatches/Image/FloydSteinberg.hpp"
 
 namespace Elpida
 {

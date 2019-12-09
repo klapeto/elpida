@@ -26,7 +26,7 @@
 
 #include "TaskBatches/General/NumaMemory.hpp"
 #include <Elpida/Config.hpp>
-#ifdef _elpida_linux
+#ifdef ELPIDA_LINUX
 #include <numa.h>
 #else
 #include <windows.h>
@@ -37,7 +37,7 @@ namespace Elpida
 
 	void NumaMemory::allocateImpl()
 	{
-#ifdef _elpida_linux	
+#ifdef ELPIDA_LINUX
 		_pointer = numa_alloc_onnode(_size, _node);
 #else		
 		_pointer =VirtualAllocExNuma(
@@ -54,7 +54,7 @@ namespace Elpida
 
 	void NumaMemory::deallocateImpl()
 	{
-#ifdef _elpida_linux
+#ifdef ELPIDA_LINUX
 		numa_free(_pointer, _size);
 #else
 		VirtualFree(_pointer,0, MEM_RELEASE);

@@ -51,7 +51,7 @@ target_link_libraries(elpida hwloc)
 if (UNIX)
     find_library(numa REQUIRED)
     find_library(dl REQUIRED)
-    find_package(threads)
+    find_library(threads REQUIRED)
     target_link_libraries(elpida numa dl threads)
 endif()
 

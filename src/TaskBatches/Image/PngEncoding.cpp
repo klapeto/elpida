@@ -24,10 +24,10 @@
  *      Author: klapeto
  */
 
-#include "PngEncoding.hpp"
+#include "TaskBatches/Image/PngEncoding.hpp"
 
 #include "Elpida/TaskMetrics.hpp"
-#include "Encoders/LibPngEncoder.hpp"
+#include "TaskBatches/Image/Encoders/LibPngEncoder.hpp"
 
 namespace Elpida
 {

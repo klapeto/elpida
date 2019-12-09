@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "ConvertToUInt8.hpp"
+#include "TaskBatches/Image/ConvertToUInt8.hpp"
 
 namespace Elpida
 {

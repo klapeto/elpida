@@ -23,9 +23,8 @@
 #include <string>
 #include <vector>
 
-#include "TaskBatches/Config.hpp"
+#include "Config.hpp"
 
-#if _elpida_qt_enabled
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 #include "ImageTaskBatch.hpp"
 
@@ -65,7 +64,6 @@ namespace Elpida
 			Ui::ImageTasksProperties *_ui;
 			bool _outputEnabled;
 	};
-#endif
 }  // namespace Elpida
 
 #endif // IMAGETASKSPROPERIES_HPP

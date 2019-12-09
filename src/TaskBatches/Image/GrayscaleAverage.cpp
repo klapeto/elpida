@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "GrayscaleAverage.hpp"
+#include "TaskBatches/Image/GrayscaleAverage.hpp"
 
 namespace Elpida
 {

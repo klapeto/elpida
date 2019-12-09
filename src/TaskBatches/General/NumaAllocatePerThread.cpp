@@ -30,7 +30,7 @@
 #include "Elpida/Config.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
 
-#ifdef _elpida_linux
+#ifdef ELPIDA_LINUX
 #include <numa.h>
 #else
 #include <windows.h>
@@ -40,7 +40,7 @@ namespace Elpida
 {
 	void NumaAllocatePerThread::prepare()
 	{
-#ifdef _elpida_linux
+#ifdef ELPIDA_LINUX
 		auto threads = numa_num_configured_cpus();
 		for (auto i = 0; i < threads; ++i)
 		{
