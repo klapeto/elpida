@@ -121,7 +121,7 @@ include(ExternalProject)
 
 set(HWLOC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/hwloc)
 set(HWLOC_BIN ${CMAKE_CURRENT_BINARY_DIR}/hwloc)
-set(HWLOC_STATIC_LIB ${HWLOC_BIN}/lib/libhwloc.a)
+set(HWLOC_STATIC_LIB ${HWLOC_BIN}/lib/libhwloc.so)
 set(HWLOC_INCLUDES ${HWLOC_BIN}/include)
 
 file(MAKE_DIRECTORY ${HWLOC_INCLUDES})
@@ -131,14 +131,14 @@ ExternalProject_Add(
         PREFIX ${HWLOC_BIN}
         SOURCE_DIR ${HWLOC_DIR}
         DOWNLOAD_COMMAND cd ${HWLOC_DIR} && git clean -dfX && ${HWLOC_DIR}/autogen.sh
-        CONFIGURE_COMMAND ${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN} --enable-static=yes --disable-shared
+        CONFIGURE_COMMAND ${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN}
+#        CONFIGURE_COMMAND ${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN} --enable-static=yes --disable-shared LDFLAGS=-static
         BUILD_COMMAND make
         INSTALL_COMMAND make install
         BUILD_BYPRODUCTS ${HWLOC_STATIC_LIB}
 )
 
-add_library(hwloc STATIC IMPORTED GLOBAL)
-
+add_library(hwloc SHARED IMPORTED GLOBAL)
 add_dependencies(hwloc libhwloc)
 
 set_target_properties(hwloc PROPERTIES IMPORTED_LOCATION ${HWLOC_STATIC_LIB})

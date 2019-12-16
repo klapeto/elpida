@@ -21,7 +21,6 @@
 #include <Elpida/CpuInfo.hpp>
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Task.hpp>
-#include <TaskBatches/Config.hpp>
 #include <Elpida/TaskBatch.hpp>
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Topology/ProcessorNode.hpp>
@@ -29,8 +28,8 @@
 #include <QMessageBox>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
-#include "Tools/Qt/MainWindow.hpp"
-#include "Tools/Qt/TopologyWidget.hpp"
+#include "MainWindow.hpp"
+#include "TopologyWidget.hpp"
 
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 #include "TaskBatchProperties.hpp"

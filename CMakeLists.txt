@@ -18,6 +18,7 @@ endif()
 # Build External Libraries
 add_subdirectory(extern)
 add_subdirectory(src)
+add_subdirectory(apps)
 
 #target_include_directories(Elpida PUBLIC "${PROJECT_SOURCE_DIR}")
 

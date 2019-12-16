@@ -20,7 +20,7 @@
 
 echo Downloading required packages
 pacman -Syuu --noconfirm
-pacman -S --noconfirm --needed git base-devel unzip mingw-w64-$1-toolchain mingw-w64-$1-python3 mingw-w64-$1-ninja mingw-w64-$1-meson mingw-w64-$1-gtest
+pacman -S --noconfirm --needed git base-devel mingw-w64-$1-toolchain mingw-w64-$1-cmake
 # git clone https://github.com/mesonbuild/meson.git
 # cd meson
 # python3 setup.py install
@@ -28,7 +28,7 @@ pacman -S --noconfirm --needed git base-devel unzip mingw-w64-$1-toolchain mingw
 # ln -s /$2/bin/ninja /usr/bin/ninja.exe
 
 cd ~
-git clone https://gitlab.com/dev-hood/elpida/elpida.git elpida
+git clone --recursive https://gitlab.com/dev-hood/elpida/elpida.git elpida
 /downloadLibrariesSources.sh
 
 echo Done! You can close this window now and run "rebuildElpida.bat"

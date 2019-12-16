@@ -45,15 +45,17 @@ set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 configure_file("${ELPIDA_INCLUDE_DIR}/Elpida/Config.hpp.in" "Elpida/Config.hpp")
 
-add_library(elpida ${ELPIDA_SOURCES})
-target_link_libraries(elpida hwloc)
+add_library(elpida SHARED ${ELPIDA_SOURCES})
 
 if (UNIX)
+    include(FindThreads)
     find_library(numa REQUIRED)
     find_library(dl REQUIRED)
-    find_library(threads REQUIRED)
-    target_link_libraries(elpida numa dl threads)
+    find_package(Threads)
+    target_link_libraries(elpida numa dl ${CMAKE_THREAD_LIBS_INIT})
 endif()
+
+target_link_libraries(elpida hwloc)
 
 target_include_directories(elpida PUBLIC "${ELPIDA_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
 

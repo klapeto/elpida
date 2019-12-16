@@ -18,11 +18,11 @@
  *************************************************************************/
 
 #include <QApplication>
-#include <Elpida/Config.hpp>
-#include "Tools/Qt/MainWindow.hpp"
-#include "Tools/Qt/ElpidaManager.hpp"
+#include "Elpida/Config.hpp"
+#include "MainWindow.hpp"
+#include "ElpidaManager.hpp"
 
-#if _elpida_linux
+#ifdef ELPIDA_LINUX
 #include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -42,7 +42,7 @@ void segFaultHandler(int sig)
 
 int main(int argc, char *argv[])
 {
-#if _elpida_linux
+#ifdef ELPIDA_LINUX
 	signal(SIGSEGV, segFaultHandler);
 #endif
 

@@ -27,8 +27,6 @@
 #ifndef TASKBATCHES_QTTASKBATCHWRAPPER_HPP_
 #define TASKBATCHES_QTTASKBATCHWRAPPER_HPP_
 
-#include "Config.hpp"
-
 #include "Elpida/TaskBatchWrapper.hpp"
 #include "Elpida/TaskThroughput.hpp"
 

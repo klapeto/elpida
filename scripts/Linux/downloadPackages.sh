@@ -20,10 +20,10 @@
 
 if [ -f /etc/lsb-release ]; then
     #Debian
-    sudo apt install git g++ meson ninja-build unzip libgtest-dev libnuma-dev automake libtool pkg-config qtbase5-dev libqt5charts5-dev
+    sudo apt install git g++ cmake libgtest-dev libnuma-dev automake libtool pkg-config qtbase5-dev libqt5charts5-dev
 elif [ -f /etc/redhat-release ]; then
     # Fedora
-    sudo dnf install git gcc-c++ meson ninja-build unzip gtest-devel libnuma-devel automake libtool pkg-config
+    sudo dnf install git gcc-c++ cmake gtest-devel libnuma-devel automake libtool pkg-config
 else
-	echo This linux distribution is unsupported by this script. You have to manually install these packages: git g++ 4.8+ meson ninja unzip automake libtool pkg-config
+	echo This linux distribution is unsupported by this script. You have to manually install these packages: git g++ 4.8+ cmake automake libtool pkg-config
 fi
