@@ -139,32 +139,31 @@ namespace Elpida
 
 	}
 
+	static inline unsigned long rdtscp()
+	{
+		unsigned long a, d, c;
+		__asm__ volatile("rdtscp" : "=a" (a), "=d" (d), "=c" (c));
+		return (a | (d << 32));
+	}
+
 	void CpuInfo::getTscFrequency()
 	{
 
-		unsigned cycles_high1, cycles_high2, cycles_low1, cycles_low2;
 
 		size_t nowOverhead = Timer::getNowOverhead();
 		TaskThread::setCurrentThreadAffinity(0);
 
-		auto start = Timer::now();
-		asm volatile ( "CPUID\n\t"
-				"RDTSC\n\t"
-				"mov %0, edx\n\t"
-				"mov %1, eax\n\t": "=r" (cycles_high1), "=r" (cycles_low1)::
-				"rax", "rbx", "rcx", "rdx");
+		unsigned long startCycles = 0;
+		unsigned long endCycles = 0;
 
+		auto start = Timer::now();
+
+		startCycles = rdtscp();
 		std::this_thread::sleep_for(std::chrono::microseconds(1000));
 
-		asm volatile ( "RDTSCP\n\t"
-				"mov %0, edx\n\t"
-				"mov %1, eax\n\t"
-				"CPUID\n\t": "=r" (cycles_high2), "=r" (cycles_low2)::
-				"rax", "rbx", "rcx", "rdx");
-		auto end = Timer::now();
+		endCycles = rdtscp();
 
-		int64_t endCycles = ((int64_t) cycles_high2 << 32) | cycles_low2;
-		int64_t startCycles = ((int64_t) cycles_high1 << 32) | cycles_low1;
+		auto end = Timer::now();
 
 		auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() - nowOverhead;
 

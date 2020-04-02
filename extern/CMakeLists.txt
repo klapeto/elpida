@@ -2,6 +2,7 @@
 #  Zlib/Libpng
 #  Modified version of the: https://github.com/awstanley/deps-zlib-libpng
 #===================================================================================
+PROJECT(deps_zlib_libpng C)
 # zlib/png integration hack - removes all the errors related to export
 # (zlib doesn't export; libpng wants to; in this case we don't care).
 SET(SKIP_INSTALL_EXPORT TRUE)
@@ -132,7 +133,7 @@ ExternalProject_Add(
         SOURCE_DIR ${HWLOC_DIR}
         DOWNLOAD_COMMAND cd ${HWLOC_DIR} && git clean -dfX && ${HWLOC_DIR}/autogen.sh
         CONFIGURE_COMMAND ${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN}
-#        CONFIGURE_COMMAND ${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN} --enable-static=yes --disable-shared LDFLAGS=-static
+#        CONFIGURE_COMMAND sh -c "${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN} --enable-static=yes --disable-shared LDFLAGS=-static"
         BUILD_COMMAND make
         INSTALL_COMMAND make install
         BUILD_BYPRODUCTS ${HWLOC_STATIC_LIB}
@@ -141,6 +142,7 @@ ExternalProject_Add(
 add_library(hwloc SHARED IMPORTED GLOBAL)
 add_dependencies(hwloc libhwloc)
 
+message(${HWLOC_STATIC_LIB})
 set_target_properties(hwloc PROPERTIES IMPORTED_LOCATION ${HWLOC_STATIC_LIB})
 set_target_properties(hwloc PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${HWLOC_INCLUDES})
 #===================================================================================
