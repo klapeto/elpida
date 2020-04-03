@@ -19,7 +19,7 @@ GET_DIRECTORY_PROPERTY(
         CMAKE_CURRENT_BINARY_DIR
 )
 
-OPTION(PNG_LINK_ZLIB_STATIC "Use a static zlib library for libpng builds" ON)
+OPTION(PNG_LINK_ZLIB_STATIC "Use a static zlib library for libpng builds" OFF)
 
 # not needed, but paranoia for the future.
 GET_DIRECTORY_PROPERTY(
@@ -83,7 +83,6 @@ GET_DIRECTORY_PROPERTY(
         PNG_LIB_NAME
 )
 
-
 SET(ZLIB_DIRECTORY ${ZLIB_DIRECTORY} PARENT_SCOPE)
 SET(ZLIB_BUILD_DIRECTORY ${ZLIB_BUILD_DIRECTORY} PARENT_SCOPE)
 SET(ZLIB_STATIC zlibstatic PARENT_SCOPE)
@@ -111,6 +110,7 @@ ELSE ()
             ${LIBPNG_BUILD_DIRECTORY}
             )
 ENDIF ()
+
 #===================================================================================
 #===================================================================================
 
@@ -142,7 +142,6 @@ ExternalProject_Add(
 add_library(hwloc SHARED IMPORTED GLOBAL)
 add_dependencies(hwloc libhwloc)
 
-message(${HWLOC_STATIC_LIB})
 set_target_properties(hwloc PROPERTIES IMPORTED_LOCATION ${HWLOC_STATIC_LIB})
 set_target_properties(hwloc PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${HWLOC_INCLUDES})
 #===================================================================================

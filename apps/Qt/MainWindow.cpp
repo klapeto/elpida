@@ -41,20 +41,33 @@
 namespace Elpida
 {
 
-	MainWindow::MainWindow(ElpidaManager& elpidaManager, QWidget *parent)
-			: QMainWindow(parent), _elpidaManager(elpidaManager), _ui(new Ui::MainWindow), _fixedSizeSet(false)
+	MainWindow::MainWindow(ElpidaManager& elpidaManager, QWidget* parent)
+		: QMainWindow(parent), _elpidaManager(elpidaManager), _ui(new Ui::MainWindow), _fixedSizeSet(false)
 	{
 		_ui->setupUi(this);
 
-		_elpidaManager.setTaskBatchesDirectory("./Elpida");
-		_elpidaManager.setTaskBatchesOrderFile("./Elpida/plugins");
-		_elpidaManager.reloadTaskBatches();
+		_elpidaManager.setTaskBatchesDirectory("./Tasks");
+		_elpidaManager.setTaskBatchesOrderFile("./Tasks/plugins");
+
+		try
+		{
+			_elpidaManager.reloadTaskBatches();
+		}
+		catch (const ElpidaException& e)
+		{
+			QMessageBox::critical(
+				this,
+				"Error",
+				QString::fromStdString("Failed to load task batches:" + e.getMessage()),
+				QMessageBox::StandardButton::Ok);
+		}
 
 		_ui->wTopology->setLayout(new QVBoxLayout);
 		auto topologyWidget = new TopologyWidget;
 		_ui->wTopology->layout()->addWidget(topologyWidget);
 
-		_taskBatchesWidget = new TaskBatchesWidget(_elpidaManager.getCreatedTaskBatches(), topologyWidget->getAffinity());
+		_taskBatchesWidget = new TaskBatchesWidget(_elpidaManager.getCreatedTaskBatches(),
+			topologyWidget->getAffinity());
 		_ui->tbTasks->layout()->addWidget(_taskBatchesWidget);
 
 		_logsDialog = new LogsDialog(_ui->centralWidget);
@@ -68,7 +81,7 @@ namespace Elpida
 	{
 	}
 
-	void MainWindow::showEvent(QShowEvent *event)
+	void MainWindow::showEvent(QShowEvent* event)
 	{
 		QMainWindow::showEvent(event);
 		//setFixedSize(sizeHint());
@@ -86,7 +99,8 @@ namespace Elpida
 		_ui->lblModelValue->setText(cpuInfo.getProcessorBrand().c_str());
 		_ui->lblFamilyValue->setText(QString::number(cpuInfo.getFamily()));
 		_ui->lblSteppingValue->setText(QString::number(cpuInfo.getStepping()));
-		_ui->lblTscFreqValue->setText(QString::number(cpuInfo.getTscFequency() / std::giga::num, 'g', 3) + QString(" GHZ"));
+		_ui->lblTscFreqValue->setText(
+			QString::number(cpuInfo.getTscFequency() / std::giga::num, 'g', 3) + QString(" GHZ"));
 		_ui->lblLogicalCoresValue->setText(QString::number(SystemTopology::getTopology().getTotalLogicalCores()));
 		_ui->chkHyperthreading->setChecked(cpuInfo.isHyperThreading());
 		_ui->chkTurbo->setChecked(cpuInfo.isTurboBoost());
@@ -143,7 +157,7 @@ namespace Elpida
 
 		if (caches.size() > 0)
 		{
-			const auto& cache = caches[0];	// L1 Inst
+			const auto& cache = caches[0];    // L1 Inst
 			_ui->lblL1InstSizeValue->setText(QString::number(cache.size / 1000) + " KB");
 			_ui->lblL1InstAssocValue->setText(cache.associativity.c_str());
 			_ui->lblL1InstLptValue->setText(QString::number(cache.linesPerTag));
@@ -152,7 +166,7 @@ namespace Elpida
 
 		if (caches.size() > 1)
 		{
-			const auto& cache = caches[1];	// L1 Data
+			const auto& cache = caches[1];    // L1 Data
 			_ui->lblL1DataSizeValue->setText(QString::number(cache.size / 1000) + " KB");
 			_ui->lblL1DataAssocValue->setText(cache.associativity.c_str());
 			_ui->lblL1DataLptValue->setText(QString::number(cache.linesPerTag));
@@ -161,7 +175,7 @@ namespace Elpida
 
 		if (caches.size() > 2)
 		{
-			const auto& cache = caches[2];	// L2
+			const auto& cache = caches[2];    // L2
 			_ui->lblL2SizeValue->setText(QString::number(cache.size / 1000) + " KB");
 			_ui->lblL2AssocValue->setText(cache.associativity.c_str());
 			_ui->lblL2LptValue->setText(QString::number(cache.linesPerTag));
@@ -170,7 +184,7 @@ namespace Elpida
 
 		if (caches.size() > 3)
 		{
-			const auto& cache = caches[3];	// L3
+			const auto& cache = caches[3];    // L3
 			_ui->lblL3SizeValue->setText(QString::number(cache.size / 1000) + " KB");
 			_ui->lblL3AssocValue->setText(cache.associativity.c_str());
 			_ui->lblL3LptValue->setText(QString::number(cache.linesPerTag));
@@ -186,9 +200,9 @@ namespace Elpida
 	void MainWindow::on_actionAbout_triggered()
 	{
 		QMessageBox::about(
-		        _ui->centralWidget,
-		        "About: Elpida",
-		        "Elpida is an open source x86 Cpu/Algorithm benchmarking tool. It is released under the General Public License v3 (GPL v3). More info at: https://github.com/klapeto/elpida");
+			_ui->centralWidget,
+			"About: Elpida",
+			"Elpida is an open source x86 Cpu/Algorithm benchmarking tool. It is released under the General Public License v3 (GPL v3). More info at: https://github.com/klapeto/elpida");
 	}
 
 	void Elpida::MainWindow::on_actionShowLogs_triggered()

@@ -21,6 +21,7 @@
 #include <Elpida/Utilities/Logger.hpp>
 #include <Elpida/TaskBatch.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
+#include <Elpida/Exceptions/ElpidaException.hpp>
 
 constexpr const char* PageCreationFunctionName = "createQtBatchWrappers";
 
@@ -46,10 +47,12 @@ namespace Elpida
 	{
 		destroyTaskBatches();
 		_batchLoader.loadFromFolder(_batchesDirectory, _batchesOrderFile);
-		auto& loaded = _batchLoader.getLoadedPlugins();
+		const auto& loaded = _batchLoader.getLoadedPlugins();
+
 		for (auto& plugin : loaded)
 		{
-			auto func = plugin.second.getFunctionPointer<std::vector<Elpida::QtTaskBatchWrapper*>* (*)()>(PageCreationFunctionName);
+			auto func = plugin.second.getFunctionPointer<std::vector<Elpida::QtTaskBatchWrapper*>* (*)()>(
+				PageCreationFunctionName);
 			if (func != nullptr)
 			{
 				auto batchesArray = func();

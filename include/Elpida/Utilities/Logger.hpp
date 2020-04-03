@@ -69,6 +69,7 @@ namespace Elpida
 					}
 					appendLogType(type, out);
 					log(args...);
+					(*_output) << std::endl;
 				}
 			}
 

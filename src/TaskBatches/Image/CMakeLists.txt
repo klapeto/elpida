@@ -21,7 +21,9 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-add_library(imageTasks ${IMAGE_TASKS_SOURCES})
+add_library(imageTasks MODULE ${IMAGE_TASKS_SOURCES})
 
 target_include_directories(imageTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(imageTasks elpida generalTasks Qt5::Widgets libpng)
+target_link_libraries(imageTasks elpida generalTasks Qt5::Widgets png)
+
+install(TARGETS imageTasks DESTINATION Elpida/Tasks)

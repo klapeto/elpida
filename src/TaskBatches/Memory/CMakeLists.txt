@@ -26,7 +26,9 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-add_library(memoryTasks ${MEMORY_TASKS_SOURCES})
+add_library(memoryTasks MODULE ${MEMORY_TASKS_SOURCES})
 
 target_include_directories(memoryTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 target_link_libraries(memoryTasks elpida generalTasks Qt5::Widgets Qt5::Charts)
+
+install(TARGETS memoryTasks DESTINATION Elpida/Tasks)

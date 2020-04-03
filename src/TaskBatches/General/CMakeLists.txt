@@ -10,6 +10,8 @@ set(GENERAL_TASKS_SOURCES
         UnalignedMemory.cpp
         WriteFile.cpp)
 
-add_library(generalTasks ${GENERAL_TASKS_SOURCES})
+add_library(generalTasks SHARED ${GENERAL_TASKS_SOURCES})
 target_include_directories(generalTasks PUBLIC "${ELPIDA_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(generalTasks elpida)
+
+install(TARGETS generalTasks DESTINATION Elpida/Tasks)
