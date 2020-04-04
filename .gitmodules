@@ -1,0 +1,9 @@
+[submodule "extern/hwloc"]
+	path = extern/hwloc
+	url = https://github.com/open-mpi/hwloc.git
+[submodule "extern/zlib"]
+	path = extern/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "extern/libpng"]
+	path = extern/libpng
+	url = https://github.com/glennrp/libpng.git
