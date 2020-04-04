@@ -1,3 +1,7 @@
+project(MemoryTasks VERSION 0.0.1
+        DESCRIPTION "Memory Tasks for Elpida"
+        LANGUAGES CXX C)
+
 set(MEMORY_TASKS_SOURCES
         Plugin.cpp
         WorkingSetSizes.cpp
@@ -13,6 +17,8 @@ set(MEMORY_TASKS_SOURCES
         Ui/MemoryTasksProperties.cpp
         Ui/MemoryTasksPropertiesWithChart.cpp
         Ui/MemoryReadProperties.ui
+
+        ${CMAKE_SOURCE_DIR}/include/TaskBatches/Memory/Ui/MemoryReadProperties.hpp
         )
 
 
@@ -22,13 +28,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-if(CMAKE_VERSION VERSION_LESS "3.7.0")
+if (CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
+endif ()
 
 add_library(memoryTasks MODULE ${MEMORY_TASKS_SOURCES})
 
 target_include_directories(memoryTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 target_link_libraries(memoryTasks elpida Qt5::Widgets Qt5::Charts)
-
-install(TARGETS memoryTasks DESTINATION lib)

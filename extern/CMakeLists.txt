@@ -57,6 +57,8 @@ INCLUDE_DIRECTORIES(
         ${LIBPNG_BUILD_DIRECTORY}
 )
 
+set(PNG_BUILD_ZLIB ON CACHE BOOL "Internal Zlib" FORCE)
+
 ADD_SUBDIRECTORY(${LIBPNG_DIRECTORY})
 
 GET_DIRECTORY_PROPERTY(
@@ -120,9 +122,23 @@ ENDIF ()
 
 include(ExternalProject)
 
+include(ProcessorCount)
+ProcessorCount(N)
+if(NOT N EQUAL 0)
+    set(N 1)
+endif()
+
 set(HWLOC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/hwloc)
 set(HWLOC_BIN ${CMAKE_CURRENT_BINARY_DIR}/hwloc)
-set(HWLOC_STATIC_LIB ${HWLOC_BIN}/lib/libhwloc.so)
+
+if (UNIX)
+    set(HWLOC_LIB ${HWLOC_BIN}/lib/libhwloc.so)
+else ()
+    set(HWLOC_LIB ${HWLOC_BIN}/bin/libhwloc-15.dll)
+endif ()
+
+set(HWLOC_IMPLIB ${HWLOC_BIN}/lib/libhwloc${CMAKE_IMPORT_LIBRARY_SUFFIX})
+
 set(HWLOC_INCLUDES ${HWLOC_BIN}/include)
 
 file(MAKE_DIRECTORY ${HWLOC_INCLUDES})
@@ -133,16 +149,19 @@ ExternalProject_Add(
         SOURCE_DIR ${HWLOC_DIR}
         DOWNLOAD_COMMAND cd ${HWLOC_DIR} && git clean -dfX && ${HWLOC_DIR}/autogen.sh
         CONFIGURE_COMMAND ${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN}
-#        CONFIGURE_COMMAND sh -c "${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN} --enable-static=yes --disable-shared LDFLAGS=-static"
-        BUILD_COMMAND make
+        #        CONFIGURE_COMMAND sh -c "${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN} --enable-static=yes --disable-shared LDFLAGS=-static"
+        BUILD_COMMAND make install -j${N}
         INSTALL_COMMAND make install
-        BUILD_BYPRODUCTS ${HWLOC_STATIC_LIB}
+        BUILD_BYPRODUCTS ${HWLOC_LIB} ${HWLOC_IMPLIB}
 )
 
 add_library(hwloc SHARED IMPORTED GLOBAL)
 add_dependencies(hwloc libhwloc)
 
-set_target_properties(hwloc PROPERTIES IMPORTED_LOCATION ${HWLOC_STATIC_LIB})
-set_target_properties(hwloc PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${HWLOC_INCLUDES})
+set_target_properties(hwloc PROPERTIES
+        IMPORTED_LOCATION ${HWLOC_LIB}
+        IMPORTED_IMPLIB ${HWLOC_IMPLIB}
+        INTERFACE_INCLUDE_DIRECTORIES ${HWLOC_INCLUDES}
+        )
 #===================================================================================
 #===================================================================================

@@ -23,8 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "Config.hpp"
-
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 #include "ImageTaskBatch.hpp"
 
@@ -35,34 +33,34 @@ namespace Ui
 namespace Elpida
 {
 
-	class ImageTasksProperties final: public QtTaskBatchWrapper
+	class ImageTasksProperties final : public QtTaskBatchWrapper
 	{
-		Q_OBJECT
-		public:
+	Q_OBJECT
+	public:
 
-			const TaskBatch& getTaskBatch() const
-			{
-				return _taskBatch;
-			}
+		const TaskBatch& getTaskBatch() const
+		{
+			return _taskBatch;
+		}
 
-			void reconfigureTaskBatch() override;
-			void validateConfiguration() override;
+		void reconfigureTaskBatch() override;
+		void validateConfiguration() override;
 
-			ImageTasksProperties();
-			~ImageTasksProperties();
+		ImageTasksProperties();
+		~ImageTasksProperties();
 
-		private slots:
-			void on_pbSelectInput_clicked();
-			void on_pbSelectOutput_clicked();
-			void on_chkOutputImage_stateChanged(int state);
+	private slots:
+		void on_pbSelectInput_clicked();
+		void on_pbSelectOutput_clicked();
+		void on_chkOutputImage_stateChanged(int state);
 
-		private:
-			std::vector<QMetaObject::Connection> _connections;
-			ImageTaskBatch _taskBatch;
-			std::string _inputImage;
-			std::string _outputImage;
-			Ui::ImageTasksProperties *_ui;
-			bool _outputEnabled;
+	private:
+		std::vector<QMetaObject::Connection> _connections;
+		ImageTaskBatch _taskBatch;
+		std::string _inputImage;
+		std::string _outputImage;
+		Ui::ImageTasksProperties* _ui;
+		bool _outputEnabled;
 	};
 }  // namespace Elpida
 

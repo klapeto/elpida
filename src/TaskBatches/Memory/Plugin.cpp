@@ -26,12 +26,10 @@
 
 #include <vector>
 
-#include "Config.hpp"
 #include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
 #include "TaskBatches/Memory/Latency/MemoryLatencyTaskBatch.hpp"
 #include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
 
-#include "TaskBatches/Memory/Ui/MemoryBandwidthChart.hpp"
 #include "TaskBatches/Memory/Ui/MemoryTasksProperties.hpp"
 #include "TaskBatches/Memory/Ui/MemoryLatencyChart.hpp"
 #include "TaskBatches/Memory/Ui/MemoryReadProperties.hpp"

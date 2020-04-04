@@ -15,6 +15,8 @@ else()
     message(FATAL_ERROR "Only Linux and Windows (msys) are supported at the moment")
 endif()
 
+set(CMAKE_MODULE_LINKER_FLAGS -Wl,--no-undefined)
+
 # Build External Libraries
 add_subdirectory(extern)
 add_subdirectory(src)

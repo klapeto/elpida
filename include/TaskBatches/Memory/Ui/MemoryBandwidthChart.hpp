@@ -33,47 +33,47 @@ namespace Elpida
 {
 
 	template<typename T>
-	class MemoryBandwidthChart: public MemoryTasksPropertiesWithChart<T>
+	class MemoryBandwidthChart : public MemoryTasksPropertiesWithChart<T>
 	{
-		public:
-			MemoryBandwidthChart(T* taskBatch)
-					: MemoryTasksPropertiesWithChart<T>(taskBatch)
-			{
-			}
-			virtual ~MemoryBandwidthChart()
-			{
-			}
-		protected:
-			MemoryBandwidthChart(T* taskBatch, bool hasProperties)
-					: MemoryTasksPropertiesWithChart<T>(taskBatch, hasProperties)
-			{
+	public:
+		MemoryBandwidthChart(T* taskBatch)
+			: MemoryTasksPropertiesWithChart<T>(taskBatch)
+		{
+		}
+		virtual ~MemoryBandwidthChart()
+		{
+		}
+	protected:
+		MemoryBandwidthChart(T* taskBatch, bool hasProperties)
+			: MemoryTasksPropertiesWithChart<T>(taskBatch, hasProperties)
+		{
 
-			}
+		}
 
-			void configureXAxis(QtCharts::QCategoryAxis* xAxis) override
-			{
-				xAxis->setTitleText("Working Set Size");
-			}
+		void configureXAxis(QtCharts::QCategoryAxis* xAxis) override
+		{
+			xAxis->setTitleText("Working Set Size");
+		}
 
-			void configureYAxis(QtCharts::QValueAxis* yAxis) override
-			{
-				yAxis->setTitleText("Bandwidth");
-				yAxis->setLabelFormat("%.0f GB/s");
-			}
+		void configureYAxis(QtCharts::QValueAxis* yAxis) override
+		{
+			yAxis->setTitleText("Bandwidth");
+			yAxis->setLabelFormat("%.0f GB/s");
+		}
 
-			void configureChart(QtCharts::QChart* chart) override
-			{
-				chart->setTitle("Memory Read Bandwidth");
-			}
+		void configureChart(QtCharts::QChart* chart) override
+		{
+			chart->setTitle("Memory Read Bandwidth");
+		}
 
-			typename Elpida::MemoryTasksPropertiesWithChart<T>::ChartValues getChartValuesFromTaskThroughput(const TaskThroughput& throughput) override
-			{
-				return
+		typename Elpida::MemoryTasksPropertiesWithChart<T>::ChartValues getChartValuesFromTaskThroughput(const TaskThroughput& throughput) override
+		{
+			return
 				{
 					throughput.getRatePerSecond() / (double)std::giga::num,
 					ValueUtilities::getValueScaleString(throughput.getRunResult().getTestedDataValue())
 				};
-			}
+		}
 	};
 
 } /* namespace Elpida */

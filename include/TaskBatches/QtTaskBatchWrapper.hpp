@@ -35,7 +35,8 @@
 #include <string>
 #include <unordered_map>
 
-namespace QtCharts {
+namespace QtCharts
+{
 	class QChart;
 }  // namespace QtCharts
 
@@ -43,46 +44,46 @@ namespace Elpida
 {
 	class TaskBatch;
 
-	class QtTaskBatchWrapper: public TaskBatchWrapper, public QWidget
+	class QtTaskBatchWrapper : public TaskBatchWrapper, public QWidget
 	{
-		public:
+	public:
 
-			virtual void reconfigureTaskBatch() = 0;
-			virtual void validateConfiguration() = 0;
+		virtual void reconfigureTaskBatch() = 0;
+		virtual void validateConfiguration() = 0;
 
-			virtual QtCharts::QChart* getResultsChartContainer()
-			{
-				return nullptr;
-			}
+		virtual QtCharts::QChart* getResultsChartContainer()
+		{
+			return nullptr;
+		}
 
-			virtual void updateResultsChartData(const std::unordered_map<std::string, std::vector<TaskThroughput>>& results)
-			{
+		virtual void updateResultsChartData(const std::unordered_map<std::string, std::vector<TaskThroughput>>& results)
+		{
 
-			}
+		}
 
-			bool hasProperties() const
-			{
-				return _hasProperties;
-			}
+		bool hasProperties() const
+		{
+			return _hasProperties;
+		}
 
-			bool hasResultChart() const
-			{
-				return _hasResultCharts;
-			}
+		bool hasResultChart() const
+		{
+			return _hasResultCharts;
+		}
 
-			virtual ~QtTaskBatchWrapper()
-			{
+		virtual ~QtTaskBatchWrapper()
+		{
 
-			}
-		protected:
-			QtTaskBatchWrapper(bool hasProperties, bool hasResultCharts, QWidget* parrent = nullptr)
-					: TaskBatchWrapper(), QWidget(parrent), _hasProperties(hasProperties), _hasResultCharts(hasResultCharts)
-			{
+		}
+	protected:
+		QtTaskBatchWrapper(bool hasProperties, bool hasResultCharts, QWidget* parrent = nullptr)
+			: TaskBatchWrapper(), QWidget(parrent), _hasProperties(hasProperties), _hasResultCharts(hasResultCharts)
+		{
 
-			}
-		private:
-			bool _hasProperties;
-			bool _hasResultCharts;
+		}
+	private:
+		bool _hasProperties;
+		bool _hasResultCharts;
 	};
 
 } /* namespace Elpida */

@@ -38,23 +38,23 @@ namespace Ui
 namespace Elpida
 {
 
-	class MemoryReadProperties final: public MemoryBandwidthChart<MultithreadMemoryChunksReadTaskBatch>
+	class MemoryReadProperties final : public MemoryBandwidthChart<MultithreadMemoryChunksReadTaskBatch>
 	{
-		Q_OBJECT
+	Q_OBJECT
 
-		public:
-			void reconfigureTaskBatch() override;
-			void validateConfiguration() override;
+	public:
+		void reconfigureTaskBatch() override;
+		void validateConfiguration() override;
 
-			MemoryReadProperties(MultithreadMemoryChunksReadTaskBatch* taskBatch);
-			~MemoryReadProperties();
-		private:
-			std::vector<QMetaObject::Connection> _connections;
-			Ui::MemoryReadProperties* _ui;
-			std::size_t _sizePerThread;
-			bool _autoConfigureSizes;
-		public slots:
-			void chkAutomaticSize_stateChanged(int state);
+		MemoryReadProperties(MultithreadMemoryChunksReadTaskBatch* taskBatch);
+		~MemoryReadProperties();
+	private:
+		std::vector<QMetaObject::Connection> _connections;
+		Ui::MemoryReadProperties* _ui;
+		std::size_t _sizePerThread;
+		bool _autoConfigureSizes;
+	public slots:
+		void chkAutomaticSize_stateChanged(int state);
 	};
 
 } /* namespace Elpida */

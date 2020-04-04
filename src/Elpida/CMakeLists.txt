@@ -68,5 +68,3 @@ endif()
 target_link_libraries(elpida hwloc)
 
 target_include_directories(elpida PUBLIC "${ELPIDA_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
-
-install(TARGETS elpida)

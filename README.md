@@ -14,10 +14,9 @@ To fully test the capabilities of the CPU, the benchmark is offered to be compil
 
 To be able to build elpida from sources you will need a small build system consisted of:
 
-* [Meson](https://mesonbuild.com "The Meson Build system")
-* [Ninja](https://ninja-build.org/ "Ninja, a small build system with a focus on speed")
+* [Cmake](https://cmake.org/ "CMAKE Build system")
 * [GCC](https://gcc.gnu.org "The GNU Compiler collection") for C++ that support c++11 (gcc 4.8+)
-* [Qt5](https://www.qt.io/) if you want the GUI frontend.
+* [Qt5](https://www.qt.io/) For the GUI frontend.
 
 On Windows, Debian, Ubuntu and Fedora these dependencies are covered by the build scripts, so you will not probably need to manually install them.
 

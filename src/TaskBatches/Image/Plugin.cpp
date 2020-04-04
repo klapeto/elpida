@@ -25,7 +25,6 @@
  */
 
 #include "TaskBatches/Image/ImageTaskBatch.hpp"
-#include "Config.hpp"
 #include "TaskBatches/Image/ImageTasksProperties.hpp"
 
 

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(ImageTasks LANGUAGES CXX)
+project(ImageTasks  VERSION 0.0.1
+        DESCRIPTION "Image Tasks for Elpida"
+        LANGUAGES CXX C)
 
 set(IMAGE_TASKS_SOURCES
         ConvertToFloat.cpp
@@ -13,7 +15,11 @@ set(IMAGE_TASKS_SOURCES
         PngEncoding.cpp
         Plugin.cpp
         Encoders/LibPngEncoder.cpp
-        ImageTasksProperties.ui)
+        ImageTasksProperties.ui
+
+        ${CMAKE_SOURCE_DIR}/include/TaskBatches/Image/ImageTasksProperties.hpp
+        )
+
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
@@ -29,5 +35,3 @@ add_library(imageTasks MODULE ${IMAGE_TASKS_SOURCES})
 
 target_include_directories(imageTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 target_link_libraries(imageTasks elpida Qt5::Widgets png)
-
-#install(TARGETS imageTasks EXPORT imageTasksConfig)

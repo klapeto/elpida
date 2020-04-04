@@ -21,28 +21,24 @@
 
 #include <qcheckbox.h>
 #include <qfiledialog.h>
-#include <qlineedit.h>
 #include <qobject.h>
 #include <qobjectdefs.h>
-#include <qpushbutton.h>
-#include <qstring.h>
 
 #include "ui_ImageTasksProperties.h"
 #include "Elpida/Exceptions/ElpidaException.hpp"
-#include "Elpida/TaskBatch.hpp"
 
 namespace Elpida
 {
 
 	ImageTasksProperties::ImageTasksProperties()
-			: QtTaskBatchWrapper(true, false), _ui(new Ui::ImageTasksProperties), _outputEnabled(false)
+		: QtTaskBatchWrapper(true, false), _ui(new Ui::ImageTasksProperties), _outputEnabled(false)
 	{
 		_ui->setupUi(this);
 		_ui->leOutputImage->setEnabled(_outputEnabled);
 		_ui->pbSelectOutput->setEnabled(_outputEnabled);
 		_connections.push_back(
-		        QCheckBox::connect(_ui->chkOutputImage, &QCheckBox::stateChanged, this,
-		                           &ImageTasksProperties::on_chkOutputImage_stateChanged));
+			QCheckBox::connect(_ui->chkOutputImage, &QCheckBox::stateChanged, this,
+				&ImageTasksProperties::on_chkOutputImage_stateChanged));
 	}
 
 	ImageTasksProperties::~ImageTasksProperties()
@@ -84,7 +80,7 @@ namespace Elpida
 
 	void ImageTasksProperties::on_chkOutputImage_stateChanged(int state)
 	{
-		_outputEnabled = (bool) state;
+		_outputEnabled = (bool)state;
 		_ui->leOutputImage->setEnabled(_outputEnabled);
 		_ui->pbSelectOutput->setEnabled(_outputEnabled);
 	}
