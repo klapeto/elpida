@@ -18,50 +18,26 @@
  *************************************************************************/
 
 /*
- * WriteFile.hpp
+ * UnalignedMemory.cpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_GENERAL_WRITEFILE_HPP_
-#define TASKBATCHES_GENERAL_WRITEFILE_HPP_
-
-#include <cstddef>
-#include <string>
-
-#include "Elpida/Task.hpp"
-#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/CommonTasks/UnalignedMemory.hpp"
+#include <malloc.h>
 
 namespace Elpida
 {
-	class TaskMetrics;
-
-	class WriteFile: public Task
+	void UnalignedMemory::allocateImpl()
 	{
-		public:
+		_pointer = malloc(_size);
+	}
 
-			typedef unsigned char Data;
-			typedef Data* DataPtr;
-
-			void run();
-			void calculateResults(const TaskMetrics& metrics);
-
-			WriteFile(const DataPtr& data, const std::size_t& size, const std::string& outputPath);
-			virtual ~WriteFile();
-
-			WriteFile(WriteFile&&) = default;
-			WriteFile(const WriteFile&) = default;
-			WriteFile& operator=(WriteFile&&) = default;
-			WriteFile& operator=(const WriteFile&) = default;
-
-		private:
-			std::string _outputPath;
-			TaskRunResult _runResult;
-			const DataPtr& _data;
-			const std::size_t& _size;
-	};
+	void UnalignedMemory::deallocateImpl()
+	{
+		free(_pointer);
+	}
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_GENERAL_WRITEFILE_HPP_ */

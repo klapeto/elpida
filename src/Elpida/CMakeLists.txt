@@ -38,6 +38,16 @@ set(ELPIDA_SOURCES
         Utilities/Pixel.cpp
         Utilities/Singleton.cpp
         Utilities/ValueUtilities.cpp
+
+        CommonTasks/AlignedMemory.cpp
+        CommonTasks/AllocateMemory.cpp
+        CommonTasks/Memory.cpp
+        CommonTasks/MemoryChunk.cpp
+        CommonTasks/NumaAllocatePerThread.cpp
+        CommonTasks/NumaMemory.cpp
+        CommonTasks/ReadFile.cpp
+        CommonTasks/UnalignedMemory.cpp
+        CommonTasks/WriteFile.cpp
         )
 
 
@@ -59,4 +69,4 @@ target_link_libraries(elpida hwloc)
 
 target_include_directories(elpida PUBLIC "${ELPIDA_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
 
-install(TARGETS elpida DESTINATION Elpida)
+install(TARGETS elpida)

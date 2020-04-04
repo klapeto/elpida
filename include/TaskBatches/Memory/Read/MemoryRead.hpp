@@ -34,7 +34,7 @@
 #include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
-#include "TaskBatches/General/NumaMemory.hpp"
+#include "Elpida/CommonTasks/NumaMemory.hpp"
 #include "TaskBatches/Memory/WorkingSetSizes.hpp"
 
 namespace Elpida

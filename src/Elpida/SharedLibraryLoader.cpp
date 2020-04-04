@@ -65,7 +65,7 @@ namespace Elpida
 			}
 		});
 
-		if (FileSystem::fileExists(orderFile))
+		if (orderFile.size() > 0 && FileSystem::fileExists(orderFile))
 		{
 			std::ifstream orderFileStream(orderFile, std::ios::in);
 			if (orderFileStream.good())
@@ -98,7 +98,7 @@ namespace Elpida
 		}
 		else
 		{
-			Logger::getInstance().log(Logger::LogType::Warning, "'", orderFile, "' file",
+			Logger::getInstance().log(Logger::LogType::Info, "'", orderFile, "' file",
 			                          "was not found. Elpida will load the libraries in folder in unspecified order");
 			for (const auto& file : loadFilenames)
 			{

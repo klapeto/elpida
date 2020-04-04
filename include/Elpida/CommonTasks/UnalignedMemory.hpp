@@ -18,60 +18,39 @@
  *************************************************************************/
 
 /*
- * MemoryChunk.hpp
+ * UnalignedMemory.hpp
  *
  *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_GENERAL_MEMORYCHUNK_HPP_
-#define TASKBATCHES_GENERAL_MEMORYCHUNK_HPP_
+#ifndef ELPIDA_COMMONTASKS_UNALIGNEDMEMORY_HPP_
+#define ELPIDA_COMMONTASKS_UNALIGNEDMEMORY_HPP_
 
 #include <cstddef>
-#include <vector>
 
-#include "TaskBatches/General/Memory.hpp"
+#include "Memory.hpp"
 
 namespace Elpida
 {
 
-	class MemoryChunk final: public Memory
+	class UnalignedMemory final : public Memory
 	{
-		public:
+	public:
+		UnalignedMemory(std::size_t size)
+			: Memory(size)
+		{
 
-			static std::vector<MemoryChunk> breakToChunks(const Memory& memory, std::size_t chunks);
-
-			void allocateImpl() override
-			{
-				_pointer = _ptr;
-			}
-
-			void deallocateImpl() override
-			{
-				_pointer = nullptr;
-			}
-
-			MemoryChunk(void* pointer, std::size_t size)
-					: Memory(size), _ptr(pointer)
-			{
-				_pointer = _ptr;
-			}
-
-			~MemoryChunk()
-			{
-				_pointer = nullptr;
-			}
-
-			MemoryChunk(MemoryChunk&& other)
-					: Memory(std::move(other))
-			{
-				this->_ptr = other._ptr;
-				other._ptr = nullptr;
-			}
-		private:
-			void* _ptr;
+		}
+		~UnalignedMemory()
+		{
+			deallocate();
+		}
+	protected:
+		void allocateImpl() override;
+		void deallocateImpl() override;
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_GENERAL_MEMORYCHUNK_HPP_ */
+#endif /* ELPIDA_COMMONTASKS_UNALIGNEDMEMORY_HPP_ */

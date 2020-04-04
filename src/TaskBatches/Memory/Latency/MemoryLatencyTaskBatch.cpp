@@ -33,7 +33,7 @@
 #include "Elpida/TaskAffinity.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "TaskBatches/Memory/WorkingSetSizes.hpp"
-#include "TaskBatches/General/AllocateMemory.hpp"
+#include "Elpida/CommonTasks/AllocateMemory.hpp"
 #include "Elpida/CpuInfo.hpp"
 #include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
 

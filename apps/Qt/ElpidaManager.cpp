@@ -46,7 +46,7 @@ namespace Elpida
 	void ElpidaManager::reloadTaskBatches()
 	{
 		destroyTaskBatches();
-		_batchLoader.loadFromFolder(_batchesDirectory, _batchesOrderFile);
+		_batchLoader.loadFromFolder(_batchesDirectory);
 		const auto& loaded = _batchLoader.getLoadedPlugins();
 
 		for (auto& plugin : loaded)

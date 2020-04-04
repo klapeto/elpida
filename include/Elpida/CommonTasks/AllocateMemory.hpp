@@ -18,51 +18,54 @@
  *************************************************************************/
 
 /*
- * ReadFile.hpp
+ * AllocateMemory.hpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 20 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_GENERAL_READFILE_HPP_
-#define TASKBATCHES_GENERAL_READFILE_HPP_
+#ifndef ELPIDA_COMMONTASKS_ALLOCATEMEMORY_HPP_
+#define ELPIDA_COMMONTASKS_ALLOCATEMEMORY_HPP_
 
-#include <string>
+#include <cstddef>
 
 #include "Elpida/Task.hpp"
+#include "Elpida/TaskMetrics.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Utilities/MemoryFile.hpp"
 
 namespace Elpida
 {
-	class TaskMetrics;
+	class Memory;
 
-	class ReadFile: public Task
+	class AllocateMemory final : public Task
 	{
-		public:
+	public:
 
-			const MemoryFile& getFile() const
-			{
-				return _file;
-			}
+		const Memory& getMemory() const
+		{
+			return *_memory;
+		}
 
-			void run();
-			void calculateResults(const TaskMetrics& metrics);
+		void applyAffinity() override;
+		void prepare() override;
+		void finalize() override;
 
-			ReadFile(const std::string& filePath);
-			virtual ~ReadFile();
+		void run() override;
+		void calculateResults(const TaskMetrics& metrics) override;
 
-			ReadFile(ReadFile&&) = default;
-			ReadFile(const ReadFile&) = default;
-			ReadFile& operator=(ReadFile&&) = default;
-			ReadFile& operator=(const ReadFile&) = default;
-
-		private:
-			MemoryFile _file;
-			TaskRunResult _runResult;
-			std::string _filePath;
+		AllocateMemory(std::size_t size, bool initialize = false, int numaNode = -1);
+		AllocateMemory(std::size_t size, bool initialize = false, bool respectNumaAffinity = false);
+		AllocateMemory(std::size_t size, int processorAffinity, bool initialize = false);
+		~AllocateMemory();
+	private:
+		TaskRunResult _result;
+		Memory* _memory;
+		std::size_t _size;
+		int _numaNode;
+		bool _initialize;
+		bool _respectNumaAffinity;
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_GENERAL_READFILE_HPP_ */
+#endif /* ELPIDA_COMMONTASKS_ALLOCATEMEMORY_HPP_ */

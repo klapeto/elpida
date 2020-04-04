@@ -18,15 +18,38 @@
  *************************************************************************/
 
 /*
- * Memory.cpp
+ * ReadFile.cpp
  *
- *  Created on: 21 Οκτ 2018
+ *  Created on: 18 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/Memory.hpp"
+#include "Elpida/CommonTasks/ReadFile.hpp"
+
+#include "Elpida/TaskMetrics.hpp"
 
 namespace Elpida
 {
+
+	ReadFile::ReadFile(const std::string& filePath)
+			: Task("Read File: " + filePath, false), _runResult("Read rate", "Bytes"), _filePath(filePath)
+	{
+	}
+
+	ReadFile::~ReadFile()
+	{
+
+	}
+
+	void ReadFile::calculateResults(const TaskMetrics& metrics)
+	{
+		_runResult.setOriginalValue(_file.getSize());
+		addResult(_runResult);
+	}
+
+	void ReadFile::run()
+	{
+		_file.load(_filePath);
+	}
 
 } /* namespace Elpida */

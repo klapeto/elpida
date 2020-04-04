@@ -18,52 +18,60 @@
  *************************************************************************/
 
 /*
- * NumaMemory.hpp
+ * MemoryChunk.hpp
  *
- *  Created on: 9 Ιουν 2019
+ *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_GENERAL_NUMAMEMORY_HPP_
-#define TASKBATCHES_GENERAL_NUMAMEMORY_HPP_
+#ifndef ELPIDA_COMMONTASKS_MEMORYCHUNK_HPP_
+#define ELPIDA_COMMONTASKS_MEMORYCHUNK_HPP_
 
 #include <cstddef>
+#include <vector>
 
-#include "TaskBatches/General/Memory.hpp"
+#include "Memory.hpp"
 
 namespace Elpida
 {
 
-	class NumaMemory final: public Memory
+	class MemoryChunk final : public Memory
 	{
-		public:
+	public:
 
-			int getNode() const
-			{
-				return _node;
-			}
+		static std::vector<MemoryChunk> breakToChunks(const Memory& memory, std::size_t chunks);
 
-			void setNode(int node)
-			{
-				_node = node;
-			}
+		void allocateImpl() override
+		{
+			_pointer = _ptr;
+		}
 
-			NumaMemory(std::size_t size, int node)
-					: Memory(size), _node(node)
-			{
-			}
+		void deallocateImpl() override
+		{
+			_pointer = nullptr;
+		}
 
-			~NumaMemory()
-			{
-				deallocate();
-			}
-		private:
-			int _node;
-		protected:
-			void allocateImpl() override;
-			void deallocateImpl() override;
+		MemoryChunk(void* pointer, std::size_t size)
+			: Memory(size), _ptr(pointer)
+		{
+			_pointer = _ptr;
+		}
+
+		~MemoryChunk()
+		{
+			_pointer = nullptr;
+		}
+
+		MemoryChunk(MemoryChunk&& other)
+			: Memory(std::move(other))
+		{
+			this->_ptr = other._ptr;
+			other._ptr = nullptr;
+		}
+	private:
+		void* _ptr;
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_GENERAL_NUMAMEMORY_HPP_ */
+#endif /* ELPIDA_COMMONTASKS_MEMORYCHUNK_HPP_ */

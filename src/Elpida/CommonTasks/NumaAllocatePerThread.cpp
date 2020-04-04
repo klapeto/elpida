@@ -24,9 +24,9 @@
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/NumaMemory.hpp"
-#include "TaskBatches/General/NumaAllocatePerThread.hpp"
-#include "TaskBatches/General/AlignedMemory.hpp"
+#include "Elpida/CommonTasks/NumaMemory.hpp"
+#include "Elpida/CommonTasks/NumaAllocatePerThread.hpp"
+#include "Elpida/CommonTasks/AlignedMemory.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
 

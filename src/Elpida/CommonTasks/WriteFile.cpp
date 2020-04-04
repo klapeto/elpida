@@ -18,51 +18,46 @@
  *************************************************************************/
 
 /*
- * AlignedMemory.hpp
+ * WriteFile.cpp
  *
- *  Created on: 21 Οκτ 2018
+ *  Created on: 18 Μαρ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_GENERAL_ALIGNEDMEMORY_HPP_
-#define TASKBATCHES_GENERAL_ALIGNEDMEMORY_HPP_
+#include "Elpida/CommonTasks/WriteFile.hpp"
 
-#include <cstddef>
-
-#include "TaskBatches/General/Memory.hpp"
+#include "Elpida/TaskMetrics.hpp"
+#include "Elpida/Utilities/MemoryFile.hpp"
 
 namespace Elpida
 {
+	WriteFile::WriteFile(const DataPtr& data, const std::size_t& size, const std::string& outputPath)
+			:
+			  Task("Write File: " + outputPath, false),
+			  _outputPath(outputPath),
+			  _runResult("Write rate", "bytes"),
+			  _data(data),
+			  _size(size)
 
-	class AlignedMemory final: public Memory
 	{
-		public:
-			unsigned int getAlignment() const
-			{
-				return _alignment;
-			}
 
-			void setAlignment(unsigned int alignment)
-			{
-				_alignment = alignment;
-			}
+	}
 
-			AlignedMemory(std::size_t size, unsigned int alignment)
-					: Memory(size), _alignment(alignment)
-			{
-			}
+	WriteFile::~WriteFile()
+	{
 
-			~AlignedMemory()
-			{
-				deallocate();
-			}
-		private:
-			unsigned int _alignment;
-		protected:
-			void allocateImpl() override;
-			void deallocateImpl() override;
-	};
+	}
+
+	void WriteFile::run()
+	{
+		MemoryFile(_data, _size).writeToFile(_outputPath);
+	}
+
+	void WriteFile::calculateResults(const TaskMetrics& metrics)
+	{
+		_runResult.setOriginalValue(_size);
+		addResult(_runResult);
+	}
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_GENERAL_ALIGNEDMEMORY_HPP_ */

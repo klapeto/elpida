@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(ImageTasks LANGUAGES CXX)
+
 set(IMAGE_TASKS_SOURCES
         ConvertToFloat.cpp
         ConvertToUInt8.cpp
@@ -24,6 +28,6 @@ endif()
 add_library(imageTasks MODULE ${IMAGE_TASKS_SOURCES})
 
 target_include_directories(imageTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(imageTasks elpida generalTasks Qt5::Widgets png)
+target_link_libraries(imageTasks elpida Qt5::Widgets png)
 
-install(TARGETS imageTasks DESTINATION Elpida/Tasks)
+#install(TARGETS imageTasks EXPORT imageTasksConfig)

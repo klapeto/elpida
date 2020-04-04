@@ -18,49 +18,48 @@
  *************************************************************************/
 
 /*
- * NumaAllocatePerThread.hpp
+ * NumaMemory.cpp
  *
  *  Created on: 9 Ιουν 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_GENERAL_NUMAALLOCATEPERTHREAD_HPP_
-#define TASKBATCHES_GENERAL_NUMAALLOCATEPERTHREAD_HPP_
-
-#include <cstddef>
-#include <unordered_map>
-
-#include "Elpida/Task.hpp"
-#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/CommonTasks/NumaMemory.hpp"
+#include "Elpida/Config.hpp"
+#ifdef ELPIDA_LINUX
+#include <numa.h>
+#else
+#include <windows.h>
+#endif
 
 namespace Elpida
 {
-	class Memory;
 
-	class NumaAllocatePerThread: public Task
+	void NumaMemory::allocateImpl()
 	{
-		public:
+#ifdef ELPIDA_LINUX
+		_pointer = numa_alloc_onnode(_size, _node);
+#else		
+		_pointer =VirtualAllocExNuma(
+            GetCurrentProcess(),
+            NULL,
+            _size,
+            MEM_RESERVE | MEM_COMMIT,
+            PAGE_READWRITE,
+            (UCHAR)_node
+        );
+#endif
+		memset(_pointer, 0, _size);
+	}
 
-			const std::unordered_map<int, Memory*>& getAllocatedMemoryRegions() const
-			{
-				return _allocatedMemoryRegions;
-			}
-
-			void prepare() override;
-
-			void run() override;
-			void calculateResults(const TaskMetrics& metrics) override;
-
-			NumaAllocatePerThread(std::size_t memorySizePerThread);
-			~NumaAllocatePerThread();
-
-		private:
-			std::unordered_map<int, Memory*> _allocatedMemoryRegions;
-			TaskRunResult _result;
-			std::size_t _memorySizePerThread;
-
-	};
+	void NumaMemory::deallocateImpl()
+	{
+#ifdef ELPIDA_LINUX
+		numa_free(_pointer, _size);
+#else
+		VirtualFree(_pointer,0, MEM_RELEASE);
+		#endif
+	}
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_GENERAL_NUMAALLOCATEPERTHREAD_HPP_ */

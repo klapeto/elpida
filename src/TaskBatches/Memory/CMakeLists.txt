@@ -29,6 +29,6 @@ endif()
 add_library(memoryTasks MODULE ${MEMORY_TASKS_SOURCES})
 
 target_include_directories(memoryTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(memoryTasks elpida generalTasks Qt5::Widgets Qt5::Charts)
+target_link_libraries(memoryTasks elpida Qt5::Widgets Qt5::Charts)
 
-install(TARGETS memoryTasks DESTINATION Elpida/Tasks)
+install(TARGETS memoryTasks DESTINATION lib)

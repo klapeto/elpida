@@ -24,14 +24,13 @@
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/AllocateMemory.hpp"
+#include "Elpida/CommonTasks/AllocateMemory.hpp"
 
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "TaskBatches/General/AlignedMemory.hpp"
-#include "TaskBatches/General/Memory.hpp"
-#include "TaskBatches/General/NumaMemory.hpp"
+#include "Elpida/CommonTasks/AlignedMemory.hpp"
+#include "Elpida/CommonTasks/NumaMemory.hpp"
 
 #include <cstring>
 
@@ -39,13 +38,13 @@ namespace Elpida
 {
 
 	AllocateMemory::AllocateMemory(std::size_t size, bool initialize, int numaNode)
-			:
-			  Task("Allocate Memory"),
-			  _result("Allocation Rate", "Bytes"),
-			  _size(size),
-			  _numaNode(numaNode),
-			  _initialize(initialize),
-			  _respectNumaAffinity(false)
+		:
+		Task("Allocate Memory"),
+		_result("Allocation Rate", "Bytes"),
+		_size(size),
+		_numaNode(numaNode),
+		_initialize(initialize),
+		_respectNumaAffinity(false)
 	{
 		if (_numaNode == -1)
 		{
@@ -58,12 +57,12 @@ namespace Elpida
 	}
 
 	AllocateMemory::AllocateMemory(std::size_t size, int processorAffinity, bool initialize)
-			:
-			  Task("Allocate Memory"),
-			  _result("Allocation Rate", "Bytes"),
-			  _size(size),
-			  _initialize(initialize),
-			  _respectNumaAffinity(false)
+		:
+		Task("Allocate Memory"),
+		_result("Allocation Rate", "Bytes"),
+		_size(size),
+		_initialize(initialize),
+		_respectNumaAffinity(false)
 	{
 		if (processorAffinity < 0)
 		{
@@ -78,14 +77,14 @@ namespace Elpida
 	}
 
 	AllocateMemory::AllocateMemory(std::size_t size, bool initialize, bool respectNumaAffinity)
-			:
-			  Task("Allocate Memory"),
-			  _result("Allocation Rate", "Bytes"),
-			  _memory(nullptr),
-			  _size(size),
-			  _numaNode(-1),
-			  _initialize(initialize),
-			  _respectNumaAffinity(respectNumaAffinity)
+		:
+		Task("Allocate Memory"),
+		_result("Allocation Rate", "Bytes"),
+		_memory(nullptr),
+		_size(size),
+		_numaNode(-1),
+		_initialize(initialize),
+		_respectNumaAffinity(respectNumaAffinity)
 	{
 		_memory = new NumaMemory(_size, 0);
 	}
@@ -96,7 +95,8 @@ namespace Elpida
 		{
 			if (_affinity.isSet())
 			{
-				_numaNode = SystemTopology::getNumaNodeOfProcessor((int) (*_affinity.getProcessorNodes().begin())->getOsIndex());
+				_numaNode =
+					SystemTopology::getNumaNodeOfProcessor((int)(*_affinity.getProcessorNodes().begin())->getOsIndex());
 			}
 			else
 			{

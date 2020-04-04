@@ -31,7 +31,7 @@
 
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/CpuInfo.hpp"
-#include "TaskBatches/General/NumaAllocatePerThread.hpp"
+#include "Elpida/CommonTasks/NumaAllocatePerThread.hpp"
 #include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
 
 #include <algorithm>

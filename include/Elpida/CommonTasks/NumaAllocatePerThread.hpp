@@ -18,55 +18,49 @@
  *************************************************************************/
 
 /*
- * AllocateMemory.hpp
+ * NumaAllocatePerThread.hpp
  *
- *  Created on: 20 Οκτ 2018
+ *  Created on: 9 Ιουν 2019
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_GENERAL_ALLOCATEMEMORY_HPP_
-#define TASKBATCHES_GENERAL_ALLOCATEMEMORY_HPP_
+#ifndef ELPIDA_COMMONTASKS_NUMAALLOCATEPERTHREAD_HPP_
+#define TELPIDA_COMMONTASKS_NUMAALLOCATEPERTHREAD_HPP_
 
 #include <cstddef>
+#include <unordered_map>
 
 #include "Elpida/Task.hpp"
-#include "Elpida/TaskMetrics.hpp"
 #include "Elpida/TaskRunResult.hpp"
 
 namespace Elpida
 {
 	class Memory;
 
-	class AllocateMemory final: public Task
+	class NumaAllocatePerThread final : public Task
 	{
-		public:
+	public:
 
-			const Memory& getMemory() const
-			{
-				return *_memory;
-			}
+		const std::unordered_map<int, Memory*>& getAllocatedMemoryRegions() const
+		{
+			return _allocatedMemoryRegions;
+		}
 
+		void prepare() override;
 
-			void applyAffinity() override;
-			void prepare() override;
-			void finalize() override;
+		void run() override;
+		void calculateResults(const TaskMetrics& metrics) override;
 
-			void run() override;
-			void calculateResults(const TaskMetrics& metrics) override;
+		NumaAllocatePerThread(std::size_t memorySizePerThread);
+		~NumaAllocatePerThread();
 
-			AllocateMemory(std::size_t size, bool initialize = false, int numaNode = -1);
-			AllocateMemory(std::size_t size, bool initialize = false, bool respectNumaAffinity = false);
-			AllocateMemory(std::size_t size, int processorAffinity, bool initialize = false);
-			~AllocateMemory();
-		private:
-			TaskRunResult _result;
-			Memory* _memory;
-			std::size_t _size;
-			int _numaNode;
-			bool _initialize;
-			bool _respectNumaAffinity;
+	private:
+		std::unordered_map<int, Memory*> _allocatedMemoryRegions;
+		TaskRunResult _result;
+		std::size_t _memorySizePerThread;
+
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_GENERAL_ALLOCATEMEMORY_HPP_ */
+#endif /* ELPIDA_COMMONTASKS_NUMAALLOCATEPERTHREAD_HPP_ */

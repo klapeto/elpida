@@ -18,39 +18,36 @@
  *************************************************************************/
 
 /*
- * UnalignedMemory.hpp
+ * AlignedMemory.cpp
  *
  *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_GENERAL_UNALIGNEDMEMORY_HPP_
-#define TASKBATCHES_GENERAL_UNALIGNEDMEMORY_HPP_
-
-#include <cstddef>
-
-#include "TaskBatches/General/Memory.hpp"
+#include "Elpida/CommonTasks/AlignedMemory.hpp"
+#include <cstring>
 
 namespace Elpida
 {
 
-	class UnalignedMemory final: public Memory
+	void AlignedMemory::allocateImpl()
 	{
-		public:
-			UnalignedMemory(std::size_t size)
-					: Memory(size)
-			{
+#if _elpida_linux
+		posix_memalign(&_pointer, _alignment, _size);
+#elif _elpida_windows
+		_pointer = _aligned_malloc(_size, _alignment);
+#endif
+		memset(_pointer, 0, _size);
+	}
 
-			}
-			~UnalignedMemory()
-			{
-				deallocate();
-			}
-		protected:
-			void allocateImpl() override;
-			void deallocateImpl() override;
-	};
+	void AlignedMemory::deallocateImpl()
+	{
+
+#if _elpida_linux
+		free(_pointer);
+#elif _elpida_windows
+		_aligned_free(_pointer);
+#endif
+	}
 
 } /* namespace Elpida */
-
-#endif /* TASKBATCHES_GENERAL_UNALIGNEDMEMORY_HPP_ */

@@ -18,48 +18,52 @@
  *************************************************************************/
 
 /*
- * NumaMemory.cpp
+ * NumaMemory.hpp
  *
  *  Created on: 9 Ιουν 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/NumaMemory.hpp"
-#include <Elpida/Config.hpp>
-#ifdef ELPIDA_LINUX
-#include <numa.h>
-#else
-#include <windows.h>
-#endif
+#ifndef ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_
+#define ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_
+
+#include <cstddef>
+
+#include "Memory.hpp"
 
 namespace Elpida
 {
 
-	void NumaMemory::allocateImpl()
+	class NumaMemory final : public Memory
 	{
-#ifdef ELPIDA_LINUX
-		_pointer = numa_alloc_onnode(_size, _node);
-#else		
-		_pointer =VirtualAllocExNuma(
-            GetCurrentProcess(),
-            NULL,
-            _size,
-            MEM_RESERVE | MEM_COMMIT,
-            PAGE_READWRITE,
-            (UCHAR)_node
-        );
-#endif
-		memset(_pointer, 0, _size);
-	}
+	public:
 
-	void NumaMemory::deallocateImpl()
-	{
-#ifdef ELPIDA_LINUX
-		numa_free(_pointer, _size);
-#else
-		VirtualFree(_pointer,0, MEM_RELEASE);
-		#endif
-	}
+		int getNode() const
+		{
+			return _node;
+		}
+
+		void setNode(int node)
+		{
+			_node = node;
+		}
+
+		NumaMemory(std::size_t size, int node)
+			: Memory(size), _node(node)
+		{
+		}
+
+		~NumaMemory()
+		{
+			deallocate();
+		}
+	private:
+		int _node;
+	protected:
+		void allocateImpl() override;
+		void deallocateImpl() override;
+	};
 
 } /* namespace Elpida */
 
+#endif /* ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_ */

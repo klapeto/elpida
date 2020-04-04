@@ -18,36 +18,15 @@
  *************************************************************************/
 
 /*
- * Plugin.cpp
+ * Memory.cpp
  *
- *  Created on: 3 Ιουλ 2018
+ *  Created on: 21 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/TaskBatch.hpp"
+#include "Elpida/CommonTasks/Memory.hpp"
 
 namespace Elpida
 {
 
-	class DummyBatch: public TaskBatch
-	{
-
-		public:
-
-			DummyBatch()
-					: TaskBatch("DummyTasks")
-			{
-			}
-		protected:
-			void createTasks() const
-			{
-
-			}
-	};
-	extern "C" TaskBatch* createTaskBatch()
-	{
-		return new DummyBatch();
-	}
-
-}  // namespace Elpida
-
+} /* namespace Elpida */

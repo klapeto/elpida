@@ -18,38 +18,51 @@
  *************************************************************************/
 
 /*
- * ReadFile.cpp
+ * ReadFile.hpp
  *
  *  Created on: 18 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/ReadFile.hpp"
+#ifndef ELPIDA_COMMONTASKS_READFILE_HPP_
+#define ELPIDA_COMMONTASKS_READFILE_HPP_
 
-#include "Elpida/TaskMetrics.hpp"
+#include <string>
+
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskRunResult.hpp"
+#include "Elpida/Utilities/MemoryFile.hpp"
 
 namespace Elpida
 {
+	class TaskMetrics;
 
-	ReadFile::ReadFile(const std::string& filePath)
-			: Task("Read File: " + filePath, false), _runResult("Read rate", "Bytes"), _filePath(filePath)
+	class ReadFile : public Task
 	{
-	}
+	public:
 
-	ReadFile::~ReadFile()
-	{
+		const MemoryFile& getFile() const
+		{
+			return _file;
+		}
 
-	}
+		void run();
+		void calculateResults(const TaskMetrics& metrics);
 
-	void ReadFile::calculateResults(const TaskMetrics& metrics)
-	{
-		_runResult.setOriginalValue(_file.getSize());
-		addResult(_runResult);
-	}
+		ReadFile(const std::string& filePath);
+		virtual ~ReadFile();
 
-	void ReadFile::run()
-	{
-		_file.load(_filePath);
-	}
+		ReadFile(ReadFile&&) = default;
+		ReadFile(const ReadFile&) = default;
+		ReadFile& operator=(ReadFile&&) = default;
+		ReadFile& operator=(const ReadFile&) = default;
+
+	private:
+		MemoryFile _file;
+		TaskRunResult _runResult;
+		std::string _filePath;
+	};
 
 } /* namespace Elpida */
+
+#endif /* ELPIDA_COMMONTASKS_READFILE_HPP_ */

@@ -46,8 +46,7 @@ namespace Elpida
 	{
 		_ui->setupUi(this);
 
-		_elpidaManager.setTaskBatchesDirectory("./Tasks");
-		_elpidaManager.setTaskBatchesOrderFile("./Tasks/plugins");
+		_elpidaManager.setTaskBatchesDirectory(".");
 
 		try
 		{

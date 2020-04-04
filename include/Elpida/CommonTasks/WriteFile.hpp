@@ -18,46 +18,50 @@
  *************************************************************************/
 
 /*
- * WriteFile.cpp
+ * WriteFile.hpp
  *
  *  Created on: 18 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/General/WriteFile.hpp"
+#ifndef ELPIDA_COMMONTASKS_WRITEFILE_HPP_
+#define ELPIDA_COMMONTASKS_WRITEFILE_HPP_
 
-#include "Elpida/TaskMetrics.hpp"
-#include "Elpida/Utilities/MemoryFile.hpp"
+#include <cstddef>
+#include <string>
+
+#include "Elpida/Task.hpp"
+#include "Elpida/TaskRunResult.hpp"
 
 namespace Elpida
 {
-	WriteFile::WriteFile(const DataPtr& data, const std::size_t& size, const std::string& outputPath)
-			:
-			  Task("Write File: " + outputPath, false),
-			  _outputPath(outputPath),
-			  _runResult("Write rate", "bytes"),
-			  _data(data),
-			  _size(size)
+	class TaskMetrics;
 
+	class WriteFile : public Task
 	{
+	public:
 
-	}
+		typedef unsigned char Data;
+		typedef Data* DataPtr;
 
-	WriteFile::~WriteFile()
-	{
+		void run();
+		void calculateResults(const TaskMetrics& metrics);
 
-	}
+		WriteFile(const DataPtr& data, const std::size_t& size, const std::string& outputPath);
+		virtual ~WriteFile();
 
-	void WriteFile::run()
-	{
-		MemoryFile(_data, _size).writeToFile(_outputPath);
-	}
+		WriteFile(WriteFile&&) = default;
+		WriteFile(const WriteFile&) = default;
+		WriteFile& operator=(WriteFile&&) = default;
+		WriteFile& operator=(const WriteFile&) = default;
 
-	void WriteFile::calculateResults(const TaskMetrics& metrics)
-	{
-		_runResult.setOriginalValue(_size);
-		addResult(_runResult);
-	}
+	private:
+		std::string _outputPath;
+		TaskRunResult _runResult;
+		const DataPtr& _data;
+		const std::size_t& _size;
+	};
 
 } /* namespace Elpida */
 
+#endif /* ELPIDA_COMMONTASKS_WRITEFILE_HPP_ */
