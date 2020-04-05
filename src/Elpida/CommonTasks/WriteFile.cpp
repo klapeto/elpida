@@ -32,13 +32,12 @@
 namespace Elpida
 {
 	WriteFile::WriteFile(const DataPtr& data, const std::size_t& size, const std::string& outputPath)
-			:
-			  Task("Write File: " + outputPath, false),
-			  _outputPath(outputPath),
-			  _runResult("Write rate", "bytes"),
-			  _data(data),
-			  _size(size)
-
+		:
+		Task("Write File: " + outputPath, false),
+		_outputPath(outputPath),
+		_runResult("Write rate", "bytes"),
+		_data(data),
+		_size(size)
 	{
 
 	}

@@ -31,16 +31,16 @@
 namespace Elpida
 {
 	MemoryReadProperties::MemoryReadProperties(MultithreadMemoryChunksReadTaskBatch* taskBatch)
-			:
-			  MemoryBandwidthChart<MultithreadMemoryChunksReadTaskBatch>(taskBatch, true),
-			  _ui(new Ui::MemoryReadProperties),
-			  _sizePerThread(256),
-			  _autoConfigureSizes(true)
+		:
+		MemoryBandwidthChart<MultithreadMemoryChunksReadTaskBatch>(taskBatch, true),
+		_ui(new Ui::MemoryReadProperties),
+		_sizePerThread(256),
+		_autoConfigureSizes(true)
 	{
 		_ui->setupUi(this);
 		_connections.push_back(
-		        _ui->chkAutomaticSize->connect(_ui->chkAutomaticSize, &QCheckBox::stateChanged, this,
-		                                       &MemoryReadProperties::chkAutomaticSize_stateChanged));
+			_ui->chkAutomaticSize->connect(_ui->chkAutomaticSize, &QCheckBox::stateChanged, this,
+				&MemoryReadProperties::chkAutomaticSize_stateChanged));
 		_ui->chkAutomaticSize->setChecked(true);
 		_ui->sbMemorySize->setEnabled(false);
 		_ui->lblMemorySizePerThread->setEnabled(false);
@@ -76,7 +76,7 @@ namespace Elpida
 
 	void MemoryReadProperties::chkAutomaticSize_stateChanged(int state)
 	{
-		_autoConfigureSizes = (bool) state;
+		_autoConfigureSizes = (bool)state;
 		_ui->sbMemorySize->setEnabled(!_autoConfigureSizes);
 		_ui->lblMemorySizePerThread->setEnabled(!_autoConfigureSizes);
 	}

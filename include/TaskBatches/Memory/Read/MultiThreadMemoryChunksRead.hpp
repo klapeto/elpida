@@ -40,31 +40,32 @@ namespace Elpida
 {
 	class TaskMetrics;
 
-	class MultiThreadMemoryChunksRead: public MultiThreadTask
+	class MultiThreadMemoryChunksRead : public MultiThreadTask
 	{
-		public:
+	public:
 
-			void calculateResults(const TaskMetrics& metrics) override
-			{
-				_totalBandwidth.setOriginalValue(_taskFactory.getTotalSize());
-				addResult(_totalBandwidth);
-			}
+		void calculateResults(const TaskMetrics& metrics) override
+		{
+			_totalBandwidth.setOriginalValue(_taskFactory.getTotalSize());
+			addResult(_totalBandwidth);
+		}
 
-			MultiThreadMemoryChunksRead(std::size_t sizePerThread)
-					:
-					  MultiThreadTask("Read " + ValueUtilities::getValueScaleString(sizePerThread) + "B @" + std::to_string(sizeof(RegisterSize)) + " Bytes/Read", _taskFactory),
-					  _taskFactory(sizePerThread),
-					  _totalBandwidth("Total Read Bandwidth", "Bytes")
-			{
+		MultiThreadMemoryChunksRead(std::size_t sizePerThread)
+			:
+			MultiThreadTask("Read " + ValueUtilities::getValueScaleString(sizePerThread) + "B @"
+				+ std::to_string(sizeof(RegisterSize)) + " Bytes/Read", _taskFactory),
+			_taskFactory(sizePerThread),
+			_totalBandwidth("Total Read Bandwidth", "Bytes")
+		{
 
-			}
-			virtual ~MultiThreadMemoryChunksRead()
-			{
+		}
+		virtual ~MultiThreadMemoryChunksRead()
+		{
 
-			}
-		private:
-			MemoryReadTaskFactory _taskFactory;
-			TaskRunResult _totalBandwidth;
+		}
+	private:
+		MemoryReadTaskFactory _taskFactory;
+		TaskRunResult _totalBandwidth;
 	};
 
 } /* namespace Elpida */

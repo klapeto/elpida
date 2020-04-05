@@ -22,56 +22,44 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-
 SOURCES += \
         Main.cpp \
-        MainWindow.cpp \
-    TaskBatchProperties.cpp \
-    StaticAspectRatioWidget.cpp \
+        Ui/MainWindow/MainWindow.cpp \
+    Ui/TaskBatchProperties/TaskBatchProperties.cpp \
     ElpidaManager.cpp \
-    LogsDialog.cpp \
-    TaskBatchesWidget.cpp \
-    ListItemWithButton.cpp \
-    TopologyWidget.cpp \
-    MascotWidget.cpp \
-    TopologyFrame.cpp
+    Ui/LogsDialog/LogsDialog.cpp \
+    Ui/TaskBatchesWidget/TaskBatchesWidget.cpp \
+    Ui/ListItemWithButton/ListItemWithButton.cpp \
+    Ui/TopologyWidget/TopologyWidget.cpp \
+    Ui/MascotWidget/MascotWidget.cpp \
+    Ui/TopologyFrame/TopologyFrame.cpp
 
 HEADERS += \
-        MainWindow.hpp \
-    TaskBatchProperties.hpp \
+        Ui/MainWindow/MainWindow.hpp \
+   Ui/TaskBatchProperties/TaskBatchProperties.hpp \
     ElpidaManager.hpp \
-    LogsDialog.hpp \
-    TaskBatchesWidget.hpp \
-    ListItemWithButton.hpp \
-    TopologyWidget.hpp \
-    MascotWidget.hpp \
-    TopologyFrame.hpp
+    Ui/LogsDialog/LogsDialog.hpp \
+    Ui/TaskBatchesWidget/TaskBatchesWidget.hpp \
+    Ui/ListItemWithButton/ListItemWithButton.hpp \
+    Ui/TopologyWidget/TopologyWidget.hpp \
+    Ui/MascotWidget/MascotWidget.hpp \
+    Ui/TopologyFrame/TopologyFrame.hpp
 
 FORMS += \
-        MainWindow.ui \
-    TaskBatchProperties.ui \ 
-    LogsDialog.ui \
-    TaskBatchesWidget.ui \
-    ListItemWithButton.ui \
-    TopologyWidget.ui \
-    TopologyFrame.ui \
-    memoryreadproperties.ui
+        Ui/MainWindow/MainWindow.ui \
+    Ui/TaskBatchProperties/TaskBatchProperties.ui \
+    Ui/LogsDialog/LogsDialog.ui \
+    Ui/TaskBatchesWidget/TaskBatchesWidget.ui \
+    Ui/ListItemWithButton/ListItemWithButton.ui \
+    Ui/TopologyWidget/TopologyWidget.ui \
+    Ui/TopologyFrame/TopologyFrame.ui
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/release/ -lelpida
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../elpida/install/lib64/debug/ -lelpida
-else:unix: LIBS += -L$$PWD/../elpida/install/lib64/ -lelpida
+RESOURCES += \
+    Images/Images.qrc
 
-INCLUDEPATH += $$PWD/../elpida
-DEPENDPATH += $$PWD/../elpida/Elpida
+INCLUDEPATH += $$PWD/../../include
+DEPENDPATH += $$PWD/../../include
 
 DISTFILES +=
 
-RESOURCES += \
-    Images.qrc
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../install/lib64/release/ -lelpida
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../install/lib64/debug/ -lelpida
-else:unix: LIBS += -L$$PWD/../../install/lib64/ -lelpida
-
-INCLUDEPATH += $$PWD/../..
-DEPENDPATH += $$PWD/../..

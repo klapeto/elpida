@@ -36,47 +36,48 @@ namespace Elpida
 
 	class OffThreadExecutor final
 	{
-		public:
+	public:
 
-			template<typename TCallable>
-			void run(TCallable&& callable)
-			{
-				if (_runnerThread.joinable()) throw ElpidaException("OffThreadExecutor",
-				                                                    "Attempted to run while thread is already executing");
-				_runnerThread = std::thread(callable);
-			}
+		template<typename TCallable>
+		void run(TCallable&& callable)
+		{
+			if (_runnerThread.joinable())
+				throw ElpidaException("OffThreadExecutor",
+					"Attempted to run while thread is already executing");
+			_runnerThread = std::thread(callable);
+		}
 
-			bool isRunning() const
-			{
-				return _runnerThread.joinable();
-			}
+		bool isRunning() const
+		{
+			return _runnerThread.joinable();
+		}
 
-			void waitThreadToExit()
+		void waitThreadToExit()
+		{
+			if (_runnerThread.joinable())
 			{
-				if (_runnerThread.joinable())
-				{
-					_runnerThread.join();
-				}
+				_runnerThread.join();
 			}
+		}
 
-			void detach()
+		void detach()
+		{
+			if (_runnerThread.joinable())
 			{
-				if (_runnerThread.joinable())
-				{
-					_runnerThread.detach();
-				}
+				_runnerThread.detach();
 			}
+		}
 
-			OffThreadExecutor()
-			{
-			}
+		OffThreadExecutor()
+		{
+		}
 
-			~OffThreadExecutor()
-			{
-				waitThreadToExit();
-			}
-		private:
-			std::thread _runnerThread;
+		~OffThreadExecutor()
+		{
+			waitThreadToExit();
+		}
+	private:
+		std::thread _runnerThread;
 	};
 }
 /* namespace Elpida */

@@ -33,50 +33,50 @@
 namespace Elpida
 {
 
-	class ElpidaException: public std::exception
+	class ElpidaException : public std::exception
 	{
-		public:
+	public:
 
-			const std::string& getMessage() const
-			{
-				return _message;
-			}
+		const std::string& getMessage() const
+		{
+			return _message;
+		}
 
-			virtual const char* what() const noexcept
-			{
-				return _what.c_str();	// This call is noexcept too
-			}
+		virtual const char* what() const noexcept
+		{
+			return _what.c_str();    // This call is noexcept too
+		}
 
-			ElpidaException()
-			{
+		ElpidaException()
+		{
 
-			}
+		}
 
-			ElpidaException(const std::string& what)
-					: _what(what)
-			{
+		ElpidaException(const std::string& what)
+			: _what(what)
+		{
 
-			}
+		}
 
-			ElpidaException(const std::string& what, const std::string& message)
-					: _what(what), _message(message)
-			{
+		ElpidaException(const std::string& what, const std::string& message)
+			: _what(what), _message(message)
+		{
 
-			}
+		}
 
-			virtual ~ElpidaException()
-			{
+		virtual ~ElpidaException()
+		{
 
-			}
+		}
 
-			ElpidaException(ElpidaException&&) = default;
-			ElpidaException(const ElpidaException&) = default;
-			ElpidaException& operator=(ElpidaException&&) = default;
-			ElpidaException& operator=(const ElpidaException&) = default;
+		ElpidaException(ElpidaException&&) = default;
+		ElpidaException(const ElpidaException&) = default;
+		ElpidaException& operator=(ElpidaException&&) = default;
+		ElpidaException& operator=(const ElpidaException&) = default;
 
-		protected:
-			std::string _what;
-			std::string _message;
+	protected:
+		std::string _what;
+		std::string _message;
 	};
 
 } /* namespace Elpida */

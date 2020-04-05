@@ -32,43 +32,43 @@
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskMetrics.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Utilities/Image.hpp"
+#include "Elpida/Utilities/Imaging/Image.hpp"
 
 namespace Elpida
 {
 
-	class PngEncoding: public Task
+	class PngEncoding : public Task
 	{
-		public:
-			typedef unsigned char Data;
-			typedef Data* DataPtr;
+	public:
+		typedef unsigned char Data;
+		typedef Data* DataPtr;
 
-			const DataPtr& getEncodedData() const
-			{
-				return _encodedData;
-			}
+		const DataPtr& getEncodedData() const
+		{
+			return _encodedData;
+		}
 
-			const std::size_t& getEncodedDataSize() const
-			{
-				return _encodedDataSize;
-			}
+		const std::size_t& getEncodedDataSize() const
+		{
+			return _encodedDataSize;
+		}
 
-			void run();
-			void calculateResults(const TaskMetrics& metrics);
+		void run();
+		void calculateResults(const TaskMetrics& metrics);
 
-			PngEncoding(const Image<Data>& inputImage);
-			virtual ~PngEncoding();
+		PngEncoding(const Image<Data>& inputImage);
+		virtual ~PngEncoding();
 
-			PngEncoding(PngEncoding&&) = default;
-			PngEncoding(const PngEncoding&) = default;
-			PngEncoding& operator=(PngEncoding&&) = default;
-			PngEncoding& operator=(const PngEncoding&) = default;
+		PngEncoding(PngEncoding&&) = default;
+		PngEncoding(const PngEncoding&) = default;
+		PngEncoding& operator=(PngEncoding&&) = default;
+		PngEncoding& operator=(const PngEncoding&) = default;
 
-		private:
-			TaskRunResult _runResult;
-			const Image<Data>& _inputImage;
-			DataPtr _encodedData;
-			std::size_t _encodedDataSize;
+	private:
+		TaskRunResult _runResult;
+		const Image<Data>& _inputImage;
+		DataPtr _encodedData;
+		std::size_t _encodedDataSize;
 	};
 
 } /* namespace Elpida */

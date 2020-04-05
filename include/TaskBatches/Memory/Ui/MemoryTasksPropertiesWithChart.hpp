@@ -45,9 +45,7 @@
 
 namespace QtCharts
 {
-	class QChartView;
 	class QChart;
-	class QLogValueAxis;
 	class QValueAxis;
 	class QCategoryAxis;
 }  // namespace QtCharts
@@ -106,7 +104,7 @@ namespace Elpida
 			auto c = 0;
 			for (auto result : ordered)
 			{
-				auto values = getChartValuesFromTaskThroughput(*result);
+				auto values = g	class QChartView;etChartValuesFromTaskThroughput(*result);
 				series->append(c, values.yValue);
 				_xAxis->append(QString::fromStdString(values.xCategory), c++);
 			}

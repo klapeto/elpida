@@ -34,34 +34,34 @@ namespace Elpida
 
 	class SharedLibrary final
 	{
-		public:
+	public:
 
-			template<typename T>
-			inline T getFunctionPointer(const std::string& functionName) const
-			{
-				return (T) getFunctionPointerImpl(functionName);
-			}
+		template<typename T>
+		inline T getFunctionPointer(const std::string& functionName) const
+		{
+			return (T)getFunctionPointerImpl(functionName);
+		}
 
-			SharedLibrary(const std::string& libraryPath);
-			SharedLibrary(const SharedLibrary&) = delete;
-			SharedLibrary& operator=(const SharedLibrary&) = delete;
+		SharedLibrary(const std::string& libraryPath);
+		SharedLibrary(const SharedLibrary&) = delete;
+		SharedLibrary& operator=(const SharedLibrary&) = delete;
 
-			SharedLibrary(SharedLibrary&& other)
-			{
-				this->_handle = other._handle;
-				other._handle = nullptr;
-			}
-			SharedLibrary& operator=(SharedLibrary&& other)
-			{
-				this->_handle = other._handle;
-				other._handle = nullptr;
-				return *this;
-			}
+		SharedLibrary(SharedLibrary&& other)
+		{
+			this->_handle = other._handle;
+			other._handle = nullptr;
+		}
+		SharedLibrary& operator=(SharedLibrary&& other)
+		{
+			this->_handle = other._handle;
+			other._handle = nullptr;
+			return *this;
+		}
 
-			~SharedLibrary();
-		private:
-			void* _handle;
-			void* getFunctionPointerImpl(const std::string& functionName) const;
+		~SharedLibrary();
+	private:
+		void* _handle;
+		void* getFunctionPointerImpl(const std::string& functionName) const;
 	};
 } /* namespace Elpida */
 

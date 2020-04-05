@@ -29,7 +29,7 @@
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Task.hpp"
 #include "Elpida/Utilities/CommandParser.hpp"
-#include "Elpida/Utilities/Image.hpp"
+#include "Elpida/Utilities/Imaging/Image.hpp"
 #include "Elpida/Utilities/MemoryFile.hpp"
 #include "Elpida/CommonTasks/ReadFile.hpp"
 #include "Elpida/CommonTasks/WriteFile.hpp"
@@ -44,7 +44,7 @@ namespace Elpida
 {
 
 	ImageTaskBatch::ImageTaskBatch()
-			: TaskBatch("ImageTasks"), _outputEnabled(false)
+		: TaskBatch("ImageTasks"), _outputEnabled(false)
 	{
 	}
 
@@ -64,7 +64,8 @@ namespace Elpida
 		_outputEnabled = _outputFile.size() > 0;
 		if (_inputFile.size() == 0)
 		{
-			throw ElpidaException("ImageTaskBatch", "Attempted to reconfigure batch with either input or output file empty");
+			throw ElpidaException("ImageTaskBatch",
+				"Attempted to reconfigure batch with either input or output file empty");
 		}
 	}
 

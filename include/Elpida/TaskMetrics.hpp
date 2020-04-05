@@ -35,48 +35,48 @@ namespace Elpida
 
 	class TaskMetrics
 	{
-		public:
+	public:
 
-			typedef std::nano NanoSecond;
-			typedef std::micro MicroSecond;
-			typedef std::milli MilliSecond;
-			typedef std::ratio<1, 1> Second;
-			typedef std::chrono::duration<double> Duration;
+		typedef std::nano NanoSecond;
+		typedef std::micro MicroSecond;
+		typedef std::milli MilliSecond;
+		typedef std::ratio<1, 1> Second;
+		typedef std::chrono::duration<double> Duration;
 
-			const Duration& getDuration() const
-			{
-				return _duration;
-			}
+		const Duration& getDuration() const
+		{
+			return _duration;
+		}
 
-			template<typename Division>
-			double getSubdivision() const
-			{
-				return ((double)Division::den * _duration.count()) / (double) Division::num;
-			}
+		template<typename Division>
+		double getSubdivision() const
+		{
+			return ((double)Division::den * _duration.count()) / (double)Division::num;
+		}
 
-			TaskMetrics()
-			{
+		TaskMetrics()
+		{
 
-			}
+		}
 
-			TaskMetrics(const Duration& duration)
-					: _duration(duration)
-			{
+		TaskMetrics(const Duration& duration)
+			: _duration(duration)
+		{
 
-			}
+		}
 
-			virtual ~TaskMetrics()
-			{
+		virtual ~TaskMetrics()
+		{
 
-			}
+		}
 
-			TaskMetrics(TaskMetrics&&) = default;
-			TaskMetrics(const TaskMetrics&) = default;
-			TaskMetrics& operator=(TaskMetrics&&) = default;
-			TaskMetrics& operator=(const TaskMetrics&) = default;
+		TaskMetrics(TaskMetrics&&) = default;
+		TaskMetrics(const TaskMetrics&) = default;
+		TaskMetrics& operator=(TaskMetrics&&) = default;
+		TaskMetrics& operator=(const TaskMetrics&) = default;
 
-		private:
-			Duration _duration;
+	private:
+		Duration _duration;
 	};
 
 } /* namespace Elpida */

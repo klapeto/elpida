@@ -34,75 +34,75 @@
 namespace Elpida
 {
 
-	class Logger: public Singleton<Logger>
+	class Logger : public Singleton<Logger>
 	{
-		public:
-			enum class LogType
-			{
-				Info, Warning, Error
-			};
+	public:
+		enum class LogType
+		{
+			Info, Warning, Error
+		};
 
-			void setOutput(std::ostream& output)
-			{
-				_output = &output;
-			}
+		void setOutput(std::ostream& output)
+		{
+			_output = &output;
+		}
 
-			bool isTimestampsEnabled() const
-			{
-				return _timestampsEnabled;
-			}
+		bool isTimestampsEnabled() const
+		{
+			return _timestampsEnabled;
+		}
 
-			void setTimestampsEnabled(bool timestampsEnabled)
-			{
-				_timestampsEnabled = timestampsEnabled;
-			}
+		void setTimestampsEnabled(bool timestampsEnabled)
+		{
+			_timestampsEnabled = timestampsEnabled;
+		}
 
-			template<typename ... TArgs>
-			void log(LogType type, TArgs ... args)
+		template<typename ... TArgs>
+		void log(LogType type, TArgs ... args)
+		{
+			if (_output != nullptr)
 			{
-				if (_output != nullptr)
+				auto& out = *_output;
+				if (_timestampsEnabled)
 				{
-					auto& out = *_output;
-					if (_timestampsEnabled)
-					{
-						appendTimestamp(out);
-					}
-					appendLogType(type, out);
-					log(args...);
-					(*_output) << std::endl;
+					appendTimestamp(out);
 				}
-			}
-
-		private:
-			std::ostream* _output;
-			bool _timestampsEnabled;
-			Logger()
-					: _output(nullptr), _timestampsEnabled(true)
-			{
-			}
-
-			template<typename T, typename ... TArgs>
-			void log(const T& str, TArgs ... args)
-			{
-				log(str);
+				appendLogType(type, out);
 				log(args...);
+				(*_output) << std::endl;
 			}
+		}
 
-			template<typename T>
-			inline void log(const T& str)
-			{
-				(*_output) << str << ' ';
-			}
+	private:
+		std::ostream* _output;
+		bool _timestampsEnabled;
+		Logger()
+			: _output(nullptr), _timestampsEnabled(true)
+		{
+		}
 
-			inline void log()
-			{
+		template<typename T, typename ... TArgs>
+		void log(const T& str, TArgs ... args)
+		{
+			log(str);
+			log(args...);
+		}
 
-			}
+		template<typename T>
+		inline void log(const T& str)
+		{
+			(*_output) << str << ' ';
+		}
 
-			void static appendTimestamp(std::ostream& out);
-			void static appendLogType(LogType type, std::ostream& out);
+		inline void log()
+		{
 
-			friend class Singleton<Logger> ;
+		}
+
+		void static appendTimestamp(std::ostream& out);
+		void static appendLogType(LogType type, std::ostream& out);
+
+		friend class Singleton<Logger>;
 	};
 
 } /* namespace Elpida */

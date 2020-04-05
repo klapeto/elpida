@@ -20,12 +20,16 @@
 
 cd ~
 if [ ! -d "elpida" ]; then
-    echo Elpida source was not found. Pleaste ensure that "buildEnvironment.bat" was run first and there were no errors
+    echo Elpida source was not found. Please ensure that "buildEnvironment.bat" was run first and there were no errors
     exit    
 fi
-cd ~/elpida
-meson --prefix $PWD/install builddir
-cd builddir
-ninja
-ninja install
+
+if [ ! -d "elpida/build" ]; then
+  mkdir "elpida/build"
+fi
+
+cd ~/elpida/build
+cmake -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$PWD/../install ..
+make
+make install
 echo Done! You can now run "runElpida.bat" to execute elpida

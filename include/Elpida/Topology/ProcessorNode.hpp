@@ -36,93 +36,93 @@ namespace Elpida
 
 	class ProcessorNode final
 	{
-		public:
-			enum class Type
-			{
-				Machine,
-				Package,
-				NumaNode,
-				Group,
-				Core,
-				L1ICache,
-				L1DCache,
-				L2ICache,
-				L2DCache,
-				L3ICache,
-				L3DCache,
-				L4Cache,
-				L5Cache,
-				ExecutionUnit,
-				Unknown
-			};
+	public:
+		enum class Type
+		{
+			Machine,
+			Package,
+			NumaNode,
+			Group,
+			Core,
+			L1ICache,
+			L1DCache,
+			L2ICache,
+			L2DCache,
+			L3ICache,
+			L3DCache,
+			L4Cache,
+			L5Cache,
+			ExecutionUnit,
+			Unknown
+		};
 
-			unsigned int getOsIndex() const
-			{
-				return _osIndex;
-			}
+		unsigned int getOsIndex() const
+		{
+			return _osIndex;
+		}
 
-			const std::vector<ProcessorNode>& getChildren() const
-			{
-				return _children;
-			}
+		const std::vector<ProcessorNode>& getChildren() const
+		{
+			return _children;
+		}
 
-			const std::vector<ProcessorNode*>& getSiblings() const
-			{
-				return _siblings;
-			}
+		const std::vector<ProcessorNode*>& getSiblings() const
+		{
+			return _siblings;
+		}
 
-			const std::vector<ProcessorNode>& getMemoryChildren() const
-			{
-				return _memoryChildren;
-			}
+		const std::vector<ProcessorNode>& getMemoryChildren() const
+		{
+			return _memoryChildren;
+		}
 
-			const std::string& getName() const
-			{
-				return _name;
-			}
+		const std::string& getName() const
+		{
+			return _name;
+		}
 
-			Type getType() const
-			{
-				return _type;
-			}
+		Type getType() const
+		{
+			return _type;
+		}
 
-			std::size_t getValue() const
-			{
-				return _value;
-			}
+		std::size_t getValue() const
+		{
+			return _value;
+		}
 
-			~ProcessorNode()
-			{
-			}
+		~ProcessorNode()
+		{
+		}
 
-		private:
-			ProcessorNode(ProcessorNode* parrent, void* node);	// Evil casting to avoid header inclusion
+	private:
+		ProcessorNode(ProcessorNode* parrent, void* node);    // Evil casting to avoid header inclusion
 
-			void addSibling(ProcessorNode& node)
-			{
-				_siblings.push_back(&node);
-			}
+		void addSibling(ProcessorNode& node)
+		{
+			_siblings.push_back(&node);
+		}
 
-			std::string _name;
-			Type _type;
-			std::size_t _value;
-			unsigned int _osIndex;
-			ProcessorNode* _parrent;
+		std::string _name;
+		Type _type;
+		std::size_t _value;
+		unsigned int _osIndex;
+		ProcessorNode* _parrent;
 
-			std::vector<ProcessorNode> _children;
-			std::vector<ProcessorNode> _memoryChildren;
-			std::vector<ProcessorNode*> _siblings;
-			void loadMachine(void* node);
-			void loadPackage(void* node);
-			void loadNumaNode(void* node);
-			void loadGroup(void* node);
-			void loadCore(void* node);
-			void loadCache(void* node);
-			void loadExecutionUnit(void* node);
+		std::vector<ProcessorNode> _children;
+		std::vector<ProcessorNode> _memoryChildren;
+		std::vector<ProcessorNode*> _siblings;
+		void loadMachine(void* node);
+		void loadPackage(void* node);
+		void loadNumaNode(void* node);
+		void loadGroup(void* node);
+		void loadCore(void* node);
+		void loadCache(void* node);
+		void loadExecutionUnit(void* node);
 
-			void loadChildren(void* node);
-			void loadSiblings();
-			friend class SystemTopology;
+		void loadChildren(void* node);
+		void loadSiblings();
+		friend class SystemTopology;
 	};
 
 } /* namespace Elpida */

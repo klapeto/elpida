@@ -94,7 +94,7 @@ namespace Elpida
 	}
 
 	NumaAllocatePerThread::NumaAllocatePerThread(std::size_t memorySizePerThread)
-			: Task("Numa Allocation Per Thread"), _memorySizePerThread(memorySizePerThread)
+		: Task("Numa Allocation Per Thread"), _memorySizePerThread(memorySizePerThread)
 	{
 	}
 

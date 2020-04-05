@@ -36,68 +36,68 @@ namespace Elpida
 
 	class TaskAffinity final
 	{
-		public:
+	public:
 
-			bool isSet() const
-			{
-				return _nodes.size() > 0;
-			}
+		bool isSet() const
+		{
+			return _nodes.size() > 0;
+		}
 
-			const std::vector<const ProcessorNode*>& getProcessorNodes() const
-			{
-				return _nodes;
-			}
+		const std::vector<const ProcessorNode*>& getProcessorNodes() const
+		{
+			return _nodes;
+		}
 
-			TaskAffinity()
-			{
-			}
+		TaskAffinity()
+		{
+		}
 
-			TaskAffinity(std::initializer_list<int> processors);
+		TaskAffinity(std::initializer_list<int> processors);
 
-			template<typename T>
-			TaskAffinity(const T& nodesToUse)
-					: _nodes(nodesToUse.begin(), nodesToUse.end())
-			{
+		template<typename T>
+		TaskAffinity(const T& nodesToUse)
+			: _nodes(nodesToUse.begin(), nodesToUse.end())
+		{
 
-			}
+		}
 
-			TaskAffinity(std::vector<const ProcessorNode*>&& nodesToUse)
-					: _nodes(std::move(nodesToUse))
-			{
+		TaskAffinity(std::vector<const ProcessorNode*>&& nodesToUse)
+			: _nodes(std::move(nodesToUse))
+		{
 
-			}
+		}
 
-			TaskAffinity(const TaskAffinity& other)
-					: _nodes(other._nodes)
-			{
+		TaskAffinity(const TaskAffinity& other)
+			: _nodes(other._nodes)
+		{
 
-			}
+		}
 
-			TaskAffinity(TaskAffinity&& other)
-					: _nodes(std::move(other._nodes))
-			{
+		TaskAffinity(TaskAffinity&& other)
+			: _nodes(std::move(other._nodes))
+		{
 
-			}
+		}
 
-			TaskAffinity& operator=(const TaskAffinity& other)
-			{
-				_nodes = other._nodes;
-				return *this;
-			}
+		TaskAffinity& operator=(const TaskAffinity& other)
+		{
+			_nodes = other._nodes;
+			return *this;
+		}
 
-			TaskAffinity& operator=(TaskAffinity&& other)
-			{
-				_nodes = std::move(other._nodes);
-				return *this;
-			}
+		TaskAffinity& operator=(TaskAffinity&& other)
+		{
+			_nodes = std::move(other._nodes);
+			return *this;
+		}
 
-			~TaskAffinity()
-			{
+		~TaskAffinity()
+		{
 
-			}
+		}
 
-		private:
-			std::vector<const ProcessorNode*> _nodes;
+	private:
+		std::vector<const ProcessorNode*> _nodes;
 	};
 
 } /* namespace Elpida */

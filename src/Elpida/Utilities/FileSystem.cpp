@@ -43,8 +43,8 @@ namespace Elpida
 	void FileSystem::iterateDirectory(const std::string& directory, std::function<void(const std::string&)> func)
 	{
 #ifdef ELPIDA_LINUX
-		DIR *dir;
-		dirent *dirent;
+		DIR* dir;
+		dirent* dirent;
 		if ((dir = opendir(directory.c_str())) != nullptr)
 		{
 			while ((dirent = readdir(dir)) != nullptr)

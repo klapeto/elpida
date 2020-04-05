@@ -44,77 +44,80 @@ namespace Elpida
 
 	class Runner
 	{
-		public:
-			enum class ProcessPriority
+	public:
+		enum class ProcessPriority
+		{
+			Normal, High,
+		};
+
+		struct EventArguments
+		{
+			struct BatchStart
 			{
-				Normal, High,
+				const std::string& name;
+				std::size_t numberOfTasks;
+			};
+			struct TaskStart
+			{
+				const std::string& name;
 			};
 
-			struct EventArguments
+			struct TaskEnd
 			{
-					struct BatchStart
-					{
-							const std::string& name;
-							std::size_t numberOfTasks;
-					};
-					struct TaskStart
-					{
-							const std::string& name;
-					};
-
-					struct TaskEnd
-					{
-							const std::string& name;
-					};
-					struct BatchEnd
-					{
-							const std::string& name;
-							const std::unordered_map<std::string, std::vector<TaskThroughput>>& results;
-					};
+				const std::string& name;
 			};
-
-			Event<const EventArguments::BatchStart&> batchStart;
-			Event<const EventArguments::TaskStart&> taskStart;
-			Event<const EventArguments::TaskEnd&> taskEnd;
-			Event<const EventArguments::BatchEnd&> batchEnd;
-
-			static void setProcessPriority(ProcessPriority priority);
-
-			void executeTasks();
-			void addTaskBatch(const TaskBatch& batch);
-			void stop()
+			struct BatchEnd
 			{
-				_mustStop = true;
-			}
+				const std::string& name;
+				const std::unordered_map<std::string, std::vector<TaskThroughput>>& results;
+			};
+		};
 
-			const std::unordered_map<std::string, std::unordered_map<std::string, std::vector<TaskThroughput>>>& getLastExecutionResults() const
-			{
-				return _lastExecutionResults;
-			}
+		Event<const EventArguments::BatchStart&> batchStart;
+		Event<const EventArguments::TaskStart&> taskStart;
+		Event<const EventArguments::TaskEnd&> taskEnd;
+		Event<const EventArguments::BatchEnd&> batchEnd;
 
-			void clearTaskBatches()
-			{
-				_tasksBatches.clear();
-			}
+		static void setProcessPriority(ProcessPriority priority);
 
-			void setTaskAffinity(const TaskAffinity& taskAffinity)
-			{
-				_taskAffinity = taskAffinity;
-			}
+		void executeTasks();
+		void addTaskBatch(const TaskBatch& batch);
+		void stop()
+		{
+			_mustStop = true;
+		}
 
-			Runner();
-			virtual ~Runner();
+		const std::unordered_map<std::string,
+								 std::unordered_map<std::string,
+													std::vector<TaskThroughput>>>& getLastExecutionResults() const
+		{
+			return _lastExecutionResults;
+		}
 
-			Runner(Runner&&) = default;
-			Runner(const Runner&) = default;
-			Runner& operator=(Runner&&) = default;
-			Runner& operator=(const Runner&) = default;
-		private:
-			std::unordered_map<std::string, std::unordered_map<std::string, std::vector<TaskThroughput>>> _lastExecutionResults;
-			std::vector<const TaskBatch*> _tasksBatches;
-			TaskAffinity _taskAffinity;
-			bool _mustStop;
-			TaskMetrics runTask(Task& task);
+		void clearTaskBatches()
+		{
+			_tasksBatches.clear();
+		}
+
+		void setTaskAffinity(const TaskAffinity& taskAffinity)
+		{
+			_taskAffinity = taskAffinity;
+		}
+
+		Runner();
+		virtual ~Runner();
+
+		Runner(Runner&&) = default;
+		Runner(const Runner&) = default;
+		Runner& operator=(Runner&&) = default;
+		Runner& operator=(const Runner&) = default;
+	private:
+		std::unordered_map<std::string, std::unordered_map<std::string, std::vector<TaskThroughput>>>
+			_lastExecutionResults;
+		std::vector<const TaskBatch*> _tasksBatches;
+		TaskAffinity _taskAffinity;
+		bool _mustStop;
+		TaskMetrics runTask(Task& task);
 	};
 
 } /* namespace Elpida */

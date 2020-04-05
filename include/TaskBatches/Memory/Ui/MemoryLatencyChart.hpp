@@ -1,4 +1,4 @@
-/**************************************************************************
+/*** ***********************************************************************
  *   Elpida - Benchmark library
  *
  *   Copyright (C) 2018  Ioannis Panagiotopoulos
@@ -33,22 +33,22 @@
 namespace Elpida
 {
 
-	class MemoryLatencyChart final: public MemoryTasksPropertiesWithChart<MemoryLatencyTaskBatch>
+	class MemoryLatencyChart final : public MemoryTasksPropertiesWithChart<MemoryLatencyTaskBatch>
 	{
-		public:
-			MemoryLatencyChart(MemoryLatencyTaskBatch* taskBatch)
-					: MemoryTasksPropertiesWithChart<MemoryLatencyTaskBatch>(taskBatch)
-			{
-			}
-			~MemoryLatencyChart()
-			{
+	public:
+		MemoryLatencyChart(MemoryLatencyTaskBatch* taskBatch)
+			: MemoryTasksPropertiesWithChart<MemoryLatencyTaskBatch>(taskBatch)
+		{
+		}
+		~MemoryLatencyChart()
+		{
 
-			}
-		protected:
-			void configureXAxis(QtCharts::QCategoryAxis* xAxis) override;
-			void configureYAxis(QtCharts::QValueAxis* yAxis) override;
-			void configureChart(QtCharts::QChart* chart) override;
-			ChartValues getChartValuesFromTaskThroughput(const TaskThroughput& throughput) override;
+		}
+	protected:
+		void configureXAxis(QtCharts::QCategoryAxis* xAxis) override;
+		void configureYAxis(QtCharts::QValueAxis* yAxis) override;
+		void configureChart(QtCharts::QChart* chart) override;
+		ChartValues getChartValuesFromTaskThroughput(const TaskThroughput& throughput) override;
 	};
 
 } /* namespace Elpida */

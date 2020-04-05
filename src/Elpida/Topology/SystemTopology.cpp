@@ -39,7 +39,7 @@
 namespace Elpida
 {
 	SystemTopology::SystemTopology()
-			: _root(nullptr)
+		: _root(nullptr)
 	{
 		reload();
 	}
@@ -60,7 +60,7 @@ namespace Elpida
 		hwloc_topology_set_all_types_filter(topo, HWLOC_TYPE_FILTER_KEEP_ALL);
 		hwloc_topology_load(topo);
 		_root = new ProcessorNode(nullptr, hwloc_get_root_obj(topo));
-		_root->loadSiblings();	// Now its safe to attempt to recursively load all siblings
+		_root->loadSiblings();    // Now its safe to attempt to recursively load all siblings
 		hwloc_topology_destroy(topo);
 		accumulateCores(*_root);
 	}
@@ -71,15 +71,15 @@ namespace Elpida
 		{
 			switch (child.getType())
 			{
-				case ProcessorNode::Type::ExecutionUnit:
-					_totalLogicalCores++;
-					_allProcessors.push_back(&child);
-					break;
-				case ProcessorNode::Type::Core:
-					_totalPhysicalCores++;
-					break;
-				default:
-					break;
+			case ProcessorNode::Type::ExecutionUnit:
+				_totalLogicalCores++;
+				_allProcessors.push_back(&child);
+				break;
+			case ProcessorNode::Type::Core:
+				_totalPhysicalCores++;
+				break;
+			default:
+				break;
 			}
 			accumulateCores(child);
 		}

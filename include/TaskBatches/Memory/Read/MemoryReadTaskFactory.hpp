@@ -34,59 +34,58 @@
 
 namespace Elpida
 {
-	class MemoryReadTaskFactory final: public TaskFactory
+	class MemoryReadTaskFactory final : public TaskFactory
 	{
-		public:
+	public:
 
-			std::size_t getSizePerTask() const
+		std::size_t getSizePerTask() const
+		{
+			return _sizePerTask;
+		}
+
+		Task* create(const ProcessorNode& processorAffinity) const override
+		{
+			std::size_t size = 0;
+			if (_autoConfigure)
 			{
-				return _sizePerTask;
+				// fuck
+			}
+			else
+			{
+				size = _sizePerTask;
 			}
 
-			Task* create(const ProcessorNode& processorAffinity) const override
-			{
-				std::size_t size = 0;
-				if (_autoConfigure)
-				{
-					// fuck
-				}
-				else
-				{
-					size = _sizePerTask;
-				}
+			auto task = new MemoryRead(size, processorAffinity.getOsIndex());
+			_totalSize += size * task->getIterations();
+			return task;
+		}
 
-				auto task = new MemoryRead(size, processorAffinity.getOsIndex());
-				_totalSize += size * task->getIterations();
-				return task;
-			}
+		std::size_t getTotalSize() const
+		{
+			return _totalSize;
+		}
 
-			std::size_t getTotalSize() const
-			{
-				return _totalSize;
-			}
+		MemoryReadTaskFactory(std::size_t sizePerTask)
+			: _sizePerTask(sizePerTask), _totalSize(0), _autoConfigure(false)
+		{
 
+		}
 
-			MemoryReadTaskFactory(std::size_t sizePerTask)
-					: _sizePerTask(sizePerTask), _totalSize(0), _autoConfigure(false)
-			{
+		MemoryReadTaskFactory()
+			: _sizePerTask(0), _totalSize(0), _autoConfigure(true)
+		{
 
-			}
+		}
 
-			MemoryReadTaskFactory()
-					: _sizePerTask(0), _totalSize(0), _autoConfigure(true)
-			{
+		~MemoryReadTaskFactory()
+		{
 
-			}
+		}
 
-			~MemoryReadTaskFactory()
-			{
-
-			}
-
-		private:
-			std::size_t _sizePerTask;
-			mutable std::size_t _totalSize;
-			bool _autoConfigure;
+	private:
+		std::size_t _sizePerTask;
+		mutable std::size_t _totalSize;
+		bool _autoConfigure;
 	};
 
 } /* namespace Elpida */

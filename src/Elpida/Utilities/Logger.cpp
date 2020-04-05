@@ -37,9 +37,11 @@ namespace Elpida
 		tm* time = localtime(&tim);
 		if (time != nullptr)
 		{
-			out << '[' << std::setfill('0') << std::setw(2) << time->tm_mday << "/" << std::setfill('0') << std::setw(2) << 1 + time->tm_mon << "/"
-			    << 1900 + time->tm_year << " " << std::setfill('0') << std::setw(2) << time->tm_hour << ":" << std::setfill('0')
-			    << std::setw(2) << time->tm_min << ":" << std::setfill('0') << std::setw(2) << time->tm_sec << "] ";
+			out << '[' << std::setfill('0') << std::setw(2) << time->tm_mday << "/" << std::setfill('0') << std::setw(2)
+				<< 1 + time->tm_mon << "/"
+				<< 1900 + time->tm_year << " " << std::setfill('0') << std::setw(2) << time->tm_hour << ":"
+				<< std::setfill('0')
+				<< std::setw(2) << time->tm_min << ":" << std::setfill('0') << std::setw(2) << time->tm_sec << "] ";
 		}
 	}
 
@@ -48,18 +50,18 @@ namespace Elpida
 		out << '[';
 		switch (type)
 		{
-			case LogType::Info:
-				out << "Info";
-				break;
-			case LogType::Warning:
-				out << "Warning";
-				break;
-			case LogType::Error:
-				out << "Error";
-				break;
-			default:
-				out << "?????";
-				break;
+		case LogType::Info:
+			out << "Info";
+			break;
+		case LogType::Warning:
+			out << "Warning";
+			break;
+		case LogType::Error:
+			out << "Error";
+			break;
+		default:
+			out << "?????";
+			break;
 		}
 		out << "] -> ";
 	}

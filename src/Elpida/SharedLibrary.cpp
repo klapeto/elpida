@@ -48,7 +48,7 @@ namespace Elpida
 	{
 		_handle =
 #ifdef ELPIDA_LINUX
-		        dlopen(libraryPath.c_str(), RTLD_LAZY);
+			dlopen(libraryPath.c_str(), RTLD_LAZY);
 #else
 		LoadLibrary(libraryPath.c_str());
 #endif
@@ -59,7 +59,7 @@ namespace Elpida
 #endif
 			throw ElpidaException("Plugin", "Error loading plugin: '" + libraryPath + "' -> " +
 #ifdef ELPIDA_LINUX
-			                              (errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
+				(errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
 #else
 			GetWindowsError());
 #endif
@@ -81,38 +81,38 @@ namespace Elpida
 	void* SharedLibrary::getFunctionPointerImpl(const std::string& functionName) const
 	{
 		return _handle != nullptr ?
-#ifdef ELPIDA_LINUX
-		                            dlsym(_handle, functionName.c_str())
-#else
-		                                  (void*) GetProcAddress((HMODULE)_handle, functionName.c_str())
-#endif
-		                                  :
-		                            nullptr;
+			   #ifdef ELPIDA_LINUX
+			   dlsym(_handle, functionName.c_str())
+			   #else
+			   (void*) GetProcAddress((HMODULE)_handle, functionName.c_str())
+			   #endif
+								  :
+			   nullptr;
 	}
 
 #ifdef ELPIDA_WINDOWS
-static std::string GetWindowsError()
-{
-	LPVOID lpMsgBuf;
-	LPVOID lpDisplayBuf;
-	DWORD dw = GetLastError();
+	static std::string GetWindowsError()
+	{
+		LPVOID lpMsgBuf;
+		LPVOID lpDisplayBuf;
+		DWORD dw = GetLastError();
 
-	FormatMessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER |
-			FORMAT_MESSAGE_FROM_SYSTEM |
-			FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
+		FormatMessage(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER |
+				FORMAT_MESSAGE_FROM_SYSTEM |
+				FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
 
-	lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
-			(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
-	StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
-			dw, lpMsgBuf);
-	std::string returnString((const char*)lpDisplayBuf);
-	LocalFree(lpMsgBuf);
-	LocalFree(lpDisplayBuf);
+		lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
+				(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
+		StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
+				dw, lpMsgBuf);
+		std::string returnString((const char*)lpDisplayBuf);
+		LocalFree(lpMsgBuf);
+		LocalFree(lpDisplayBuf);
 
-	return returnString;
-}
+		return returnString;
+	}
 #endif
 
 }

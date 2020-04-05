@@ -11,7 +11,7 @@
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *   GNU General PuELPIDA_UTILITIESblic License for more details.
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
@@ -37,35 +37,35 @@ namespace Elpida
 
 	class CommandParser
 	{
-		public:
-			bool argumentExists(const std::string& name) const;
-			const std::string& getArgument(const std::string& name) const;
-			const std::string& getArgument(std::size_t index) const;
+	public:
+		bool argumentExists(const std::string& name) const;
+		const std::string& getArgument(const std::string& name) const;
+		const std::string& getArgument(std::size_t index) const;
 
-			const std::unordered_map<std::string, std::string>& getNamedArguments() const
-			{
-				return _namedArguments;
-			}
+		const std::unordered_map<std::string, std::string>& getNamedArguments() const
+		{
+			return _namedArguments;
+		}
 
-			const std::vector<std::string>& getUnamedArguments() const
-			{
-				return _unamedArguments;
-			}
+		const std::vector<std::string>& getUnamedArguments() const
+		{
+			return _unamedArguments;
+		}
 
-			void parseCommand(const std::string& input);
+		void parseCommand(const std::string& input);
 
-			CommandParser()
-					: _notFound("")
-			{
-			}
+		CommandParser()
+			: _notFound("")
+		{
+		}
 
-			~CommandParser()
-			{
-			}
-		private:
-			std::vector<std::string> _unamedArguments;
-			std::unordered_map<std::string, std::string> _namedArguments;
-			std::string _notFound;
+		~CommandParser()
+		{
+		}
+	private:
+		std::vector<std::string> _unamedArguments;
+		std::unordered_map<std::string, std::string> _namedArguments;
+		std::string _notFound;
 	};
 
 } /* namespace Elpida */

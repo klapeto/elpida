@@ -1,0 +1,107 @@
+{
+  "elpida": {
+    "version": {
+      "major": 0,
+      "minor": 0,
+      "revision": 1,
+      "build": 166
+    },
+    "platform": {
+      "os": {
+        "name": "Linux",
+        "version": ""
+      }
+    }
+  },
+  "system": {
+    "cpu": {
+      "vendor": "AMD",
+      "brand": "Threadripper",
+      "model": 17,
+      "family": 7,
+      "stepping": 5,
+      "frequency": 3500000000,
+      "turboBoost": true,
+      "turboBoost3": false,
+      "smt": true,
+      "cache": [
+        {
+          "name": "L1I",
+          "associativity": "8-Way",
+          "size": 1024,
+          "linesPerTag": 15,
+          "lineSize": 64
+        }
+      ],
+      "features": [
+        "MMX",
+        "AVX"
+      ]
+    },
+    "topology": {
+      "totalLogicalCores": 24,
+      "totalPhysicalCores": 12,
+      "totalDepth": 10,
+      "machine": [
+        {
+          "type": "package",
+          "name": "package 1",
+          "osIndex": 1,
+          "value": null,
+          "children": [
+            {
+              "type": "l3Cache",
+              "name": "L3",
+              "osIndex": 1,
+              "value": 8192,
+              "children": []
+            }
+          ],
+          "memoryChildren": [
+            {
+              "type": "numaNode",
+              "name": "Numa Node 1",
+              "osIndex": 1,
+              "value": 546,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "memory": {
+      "totalSize": 18866654,
+      "pageSize": 4096
+    },
+    "runResults": [
+      {
+        "batchName": "ImageTasks",
+        "tasks": [
+          {
+            "name": "Read File",
+            "inputHash": "FAD154",
+            "affinity": [
+              0,
+              1,
+              3,
+              16
+            ],
+            "throughput": {
+              "value": 15.6,
+              "type": "bytes/s"
+            },
+            "results": [
+              {
+                "description": "how many bytes per second",
+                "valueTypeName": "bytes",
+                "originalValue": 146.2,
+                "multiplier": 1.1,
+                "inputValue": 0.2
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

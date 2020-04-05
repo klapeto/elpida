@@ -32,7 +32,7 @@ namespace Elpida
 {
 
 	ReadFile::ReadFile(const std::string& filePath)
-			: Task("Read File: " + filePath, false), _runResult("Read rate", "Bytes"), _filePath(filePath)
+		: Task("Read File: " + filePath, false), _runResult("Read rate", "Bytes"), _filePath(filePath)
 	{
 	}
 

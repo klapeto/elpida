@@ -29,7 +29,7 @@
 
 #include <cstddef>
 
-#include "Elpida/Utilities/ImageEncoder.hpp"
+#include "Elpida/Utilities/Imaging/ImageEncoder.hpp"
 
 namespace Elpida
 {

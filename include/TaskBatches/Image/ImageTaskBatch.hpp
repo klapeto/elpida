@@ -34,45 +34,45 @@
 namespace Elpida
 {
 
-	class ImageTaskBatch final: public TaskBatch
+	class ImageTaskBatch final : public TaskBatch
 	{
-		public:
+	public:
 
-			const std::string& getInputFile() const
-			{
-				return _inputFile;
-			}
+		const std::string& getInputFile() const
+		{
+			return _inputFile;
+		}
 
-			void setInputFile(const std::string& inputFile)
-			{
-				_inputFile = inputFile;
-			}
+		void setInputFile(const std::string& inputFile)
+		{
+			_inputFile = inputFile;
+		}
 
-			const std::string& getOutputFile() const
-			{
-				return _outputFile;
-			}
+		const std::string& getOutputFile() const
+		{
+			return _outputFile;
+		}
 
-			void setOutputFile(const std::string& outputFile)
-			{
-				_outputFile = outputFile;
-			}
+		void setOutputFile(const std::string& outputFile)
+		{
+			_outputFile = outputFile;
+		}
 
-			void reconfigure(const std::string& inputData) override;
+		void reconfigure(const std::string& inputData) override;
 
-			ImageTaskBatch();
-			~ImageTaskBatch();
+		ImageTaskBatch();
+		~ImageTaskBatch();
 
-			ImageTaskBatch(ImageTaskBatch&&) = default;
-			ImageTaskBatch(const ImageTaskBatch&) = default;
-			ImageTaskBatch& operator=(ImageTaskBatch&&) = default;
-			ImageTaskBatch& operator=(const ImageTaskBatch&) = default;
-		private:
-			std::string _inputFile;
-			std::string _outputFile;
-			bool _outputEnabled;
+		ImageTaskBatch(ImageTaskBatch&&) = default;
+		ImageTaskBatch(const ImageTaskBatch&) = default;
+		ImageTaskBatch& operator=(ImageTaskBatch&&) = default;
+		ImageTaskBatch& operator=(const ImageTaskBatch&) = default;
+	private:
+		std::string _inputFile;
+		std::string _outputFile;
+		bool _outputEnabled;
 
-			void createTasks() const override;
+		void createTasks() const override;
 	};
 
 } /* namespace Elpida */

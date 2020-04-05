@@ -62,7 +62,10 @@ namespace Elpida
 			{ nullptr, 0, 0, 0 };
 	}
 
-	ImageEncoder::ImageEncodeInfo LibPngEncoder::encode(std::size_t imageWidth, std::size_t imageHeight, unsigned char* inputData, std::size_t inputSize)
+	ImageEncoder::ImageEncodeInfo LibPngEncoder::encode(std::size_t imageWidth,
+		std::size_t imageHeight,
+		unsigned char* inputData,
+		std::size_t inputSize)
 	{
 		png_image img;
 		img.opaque = nullptr;

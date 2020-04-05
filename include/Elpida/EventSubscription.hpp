@@ -37,55 +37,55 @@ namespace Elpida
 	class Event;
 
 	template<typename ... T>
-	class EventSubscription: public NonCopyable
+	class EventSubscription : public NonCopyable
 	{
-		public:
+	public:
 
-			typedef std::function<void(T...)> EventHandler;
+		typedef std::function<void(T...)> EventHandler;
 
-			void unsubscribe()
-			{
-				_owner.unsubScribe(*this);
-			}
+		void unsubscribe()
+		{
+			_owner.unsubScribe(*this);
+		}
 
-			EventSubscription(EventSubscription<T...> && other)
-					: _iterator(std::move(other._iterator)), _owner(other._owner), _handler(other._handler)
-			{
-			}
+		EventSubscription(EventSubscription<T...>&& other)
+			: _iterator(std::move(other._iterator)), _owner(other._owner), _handler(other._handler)
+		{
+		}
 
-			~EventSubscription()
-			{
+		~EventSubscription()
+		{
 
-			}
-		private:
-			typedef typename std::list<EventSubscription<T...>>::iterator Iterator;
+		}
+	private:
+		typedef typename std::list<EventSubscription<T...>>::iterator Iterator;
 
-			Iterator _iterator;
-			Event<T...>& _owner;
-			EventHandler _handler;
+		Iterator _iterator;
+		Event<T...>& _owner;
+		EventHandler _handler;
 
-			EventSubscription(Event<T...>& owner, EventHandler&& hanlder)
-					: _owner(owner), _handler(hanlder)
-			{
+		EventSubscription(Event<T...>& owner, EventHandler&& hanlder)
+			: _owner(owner), _handler(hanlder)
+		{
 
-			}
+		}
 
-			void setIterator(Iterator iterator)
-			{
-				_iterator = iterator;
-			}
+		void setIterator(Iterator iterator)
+		{
+			_iterator = iterator;
+		}
 
-			Iterator getIterator() const
-			{
-				return _iterator;
-			}
+		Iterator getIterator() const
+		{
+			return _iterator;
+		}
 
-			void operator()(T ... args) const
-			{
-				_handler(args...);
-			}
+		void operator()(T ... args) const
+		{
+			_handler(args...);
+		}
 
-			friend class Event<T...> ;
+		friend class Event<T...>;
 	};
 
 } /* namespace Elpida */

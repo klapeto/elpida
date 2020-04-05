@@ -34,113 +34,113 @@ namespace Elpida
 
 	class TaskRunResult final
 	{
-		public:
+	public:
 
-			double getActualValue() const
-			{
-				return _originalValue * _multiplier;
-			}
+		double getActualValue() const
+		{
+			return _originalValue * _multiplier;
+		}
 
-			double getOriginalValue() const
-			{
-				return _originalValue;
-			}
+		double getOriginalValue() const
+		{
+			return _originalValue;
+		}
 
-			const std::string& getValueTypeName() const
-			{
-				return _valueTypeName;
-			}
+		const std::string& getValueTypeName() const
+		{
+			return _valueTypeName;
+		}
 
-			const std::string& getResultDescription() const
-			{
-				return _resultDescription;
-			}
+		const std::string& getResultDescription() const
+		{
+			return _resultDescription;
+		}
 
-			void setResultDescription(const std::string& resultDescription)
-			{
-				_resultDescription = resultDescription;
-			}
+		void setResultDescription(const std::string& resultDescription)
+		{
+			_resultDescription = resultDescription;
+		}
 
-			void setOriginalValue(double originalValue)
-			{
-				_originalValue = originalValue;
-			}
+		void setOriginalValue(double originalValue)
+		{
+			_originalValue = originalValue;
+		}
 
-			void setValueName(const std::string& valueName)
-			{
-				_valueTypeName = valueName;
-			}
+		void setValueName(const std::string& valueName)
+		{
+			_valueTypeName = valueName;
+		}
 
-			double getMultiplier() const
-			{
-				return _multiplier;
-			}
+		double getMultiplier() const
+		{
+			return _multiplier;
+		}
 
-			void setMultiplier(double multiplier)
-			{
-				_multiplier = multiplier;
-			}
+		void setMultiplier(double multiplier)
+		{
+			_multiplier = multiplier;
+		}
 
-			void operator=(double value)
-			{
-				_originalValue = value;
-			}
+		void operator=(double value)
+		{
+			_originalValue = value;
+		}
 
-			void operator+=(double value)
-			{
-				_originalValue += value;
-			}
+		void operator+=(double value)
+		{
+			_originalValue += value;
+		}
 
-			void setCustom(bool custom)
-			{
-				_custom = custom;
-			}
+		void setCustom(bool custom)
+		{
+			_custom = custom;
+		}
 
-			bool isCustom() const
-			{
-				return _custom;
-			}
+		bool isCustom() const
+		{
+			return _custom;
+		}
 
-			double getTestedDataValue() const
-			{
-				return _testedDataValue;
-			}
+		double getTestedDataValue() const
+		{
+			return _testedDataValue;
+		}
 
-			void setTestedDataValue(double testedDataValue)
-			{
-				_testedDataValue = testedDataValue;
-			}
+		void setTestedDataValue(double testedDataValue)
+		{
+			_testedDataValue = testedDataValue;
+		}
 
-			TaskRunResult()
-					: _valueTypeName("OPS"), _originalValue(0.0), _multiplier(1.0), _testedDataValue(0.0), _custom(false)
-			{
+		TaskRunResult()
+			: _valueTypeName("OPS"), _originalValue(0.0), _multiplier(1.0), _testedDataValue(0.0), _custom(false)
+		{
 
-			}
+		}
 
-			TaskRunResult(const std::string& description, const std::string& valueTypeName, double multiplier = 1.0)
-					:
-					  _valueTypeName(valueTypeName),
-					  _resultDescription(description),
-					  _originalValue(0.0),
-					  _multiplier(multiplier),
-					  _testedDataValue(0.0),
-					  _custom(false)
-			{
+		TaskRunResult(const std::string& description, const std::string& valueTypeName, double multiplier = 1.0)
+			:
+			_valueTypeName(valueTypeName),
+			_resultDescription(description),
+			_originalValue(0.0),
+			_multiplier(multiplier),
+			_testedDataValue(0.0),
+			_custom(false)
+		{
 
-			}
+		}
 
-			~TaskRunResult()
-			{
+		~TaskRunResult()
+		{
 
-			}
+		}
 
-		private:
-			std::string _valueTypeName;
-			std::string _resultDescription;
-			double _originalValue;
-			double _multiplier;
-			double _testedDataValue;
-			bool _custom;
+	private:
+		std::string _valueTypeName;
+		std::string _resultDescription;
+		double _originalValue;
+		double _multiplier;
+		double _testedDataValue;
+		bool _custom;
 	};
 
 } /* namespace Elpida */

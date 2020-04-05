@@ -38,7 +38,9 @@
 #include "Elpida/Utilities/Singleton.hpp"
 
 #ifdef ELPIDA_LINUX
+
 constexpr const char* LibraryExtension = ".so";
+
 #else
 constexpr const char* LibraryExtension = ".dll";
 #endif
@@ -72,7 +74,7 @@ namespace Elpida
 			{
 				std::string line;
 				auto pred = [&line](const std::string& val)
-				{	return val.find(line + LibraryExtension) != std::string::npos;};
+				{ return val.find(line + LibraryExtension) != std::string::npos; };
 				while (std::getline(orderFileStream, line))
 				{
 					auto itr = std::find_if(loadFilenames.begin(), loadFilenames.end(), pred);
@@ -84,13 +86,16 @@ namespace Elpida
 						}
 						else
 						{
-							Logger::getInstance().log(Logger::LogType::Warning, "Failed to open referenced shared library '", line, '\'');
+							Logger::getInstance().log(Logger::LogType::Warning,
+								"Failed to open referenced shared library '",
+								line,
+								'\'');
 						}
 					}
 					else
 					{
 						Logger::getInstance().log(Logger::LogType::Warning,
-						                          "A shared library referenced on '" + orderFile + "' file was not found: ", line);
+							"A shared library referenced on '" + orderFile + "' file was not found: ", line);
 					}
 				}
 				orderFileStream.close();
@@ -99,7 +104,7 @@ namespace Elpida
 		else
 		{
 			Logger::getInstance().log(Logger::LogType::Info, "'", orderFile, "' file",
-			                          "was not found. Elpida will load the libraries in folder in unspecified order");
+				"was not found. Elpida will load the libraries in folder in unspecified order");
 			for (const auto& file : loadFilenames)
 			{
 				load(file);

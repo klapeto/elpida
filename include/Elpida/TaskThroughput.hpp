@@ -38,81 +38,82 @@ namespace Elpida
 
 	class TaskThroughput
 	{
-		public:
-			double getRatePerSecond() const
+	public:
+		double getRatePerSecond() const
+		{
+			return _runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>();
+		}
+
+		std::string getRatePerSecondString() const
+		{
+			return ValueUtilities::getValueScaleString(
+				_runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>())
+				+ _runResult.getValueTypeName() + "/s";
+		}
+
+		std::string getUniversalString() const
+		{
+			if (!_runResult.isCustom())
+			{
+				return getRatePerSecondString();
+			}
+			else
+			{
+				return std::to_string(_runResult.getActualValue()) + _runResult.getValueTypeName();
+			}
+		}
+
+		std::string getUniversalSuffix() const
+		{
+			if (!_runResult.isCustom())
+			{
+				return "/s";
+			}
+			else
+			{
+				return _runResult.getValueTypeName();
+			}
+		}
+
+		double getUniversalValue() const
+		{
+			if (!_runResult.isCustom())
 			{
 				return _runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>();
 			}
-
-			std::string getRatePerSecondString() const
+			else
 			{
-				return ValueUtilities::getValueScaleString(_runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>())
-				        + _runResult.getValueTypeName() + "/s";
+				return _runResult.getActualValue();
 			}
+		}
 
-			std::string getUniversalString() const
-			{
-				if (!_runResult.isCustom())
-				{
-					return getRatePerSecondString();
-				}
-				else
-				{
-					return std::to_string(_runResult.getActualValue()) + _runResult.getValueTypeName();
-				}
-			}
+		const TaskRunResult& getRunResult() const
+		{
+			return _runResult;
+		}
 
-			std::string getUniversalSuffix() const
-			{
-				if (!_runResult.isCustom())
-				{
-					return "/s";
-				}
-				else
-				{
-					return _runResult.getValueTypeName();
-				}
-			}
+		const TaskMetrics& getTaskMetrics() const
+		{
+			return _taskMetrics;
+		}
 
-			double getUniversalValue() const
-			{
-				if (!_runResult.isCustom())
-				{
-					return _runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>();
-				}
-				else
-				{
-					return _runResult.getActualValue();
-				}
-			}
+		TaskThroughput(const TaskRunResult& runResult, const TaskMetrics& taskMetrics)
+			: _runResult(runResult), _taskMetrics(taskMetrics)
+		{
 
-			const TaskRunResult& getRunResult() const
-			{
-				return _runResult;
-			}
+		}
+		virtual ~TaskThroughput()
+		{
 
-			const TaskMetrics& getTaskMetrics() const
-			{
-				return _taskMetrics;
-			}
+		}
 
-			TaskThroughput(const TaskRunResult& runResult, const TaskMetrics& taskMetrics)
-					: _runResult(runResult), _taskMetrics(taskMetrics)
-			{
-
-			}
-			virtual ~TaskThroughput()
-			{
-
-			}
-
-			TaskThroughput(TaskThroughput&&) = default;
-			TaskThroughput(const TaskThroughput&) = default;
-			TaskThroughput& operator=(TaskThroughput&&) = default;
-			TaskThroughput& operator=(const TaskThroughput&) = default;
-		private:
-			TaskRunResult _runResult;
-			TaskMetrics _taskMetrics;
+		TaskThroughput(TaskThroughput&&) = default;
+		TaskThroughput(const TaskThroughput&) = default;
+		TaskThroughput& operator=(TaskThroughput&&) = default;
+		TaskThroughput& operator=(const TaskThroughput&) = default;
+	private:
+		TaskRunResult _runResult;
+		TaskMetrics _taskMetrics;
 	};
 
 } /* namespace Elpida */

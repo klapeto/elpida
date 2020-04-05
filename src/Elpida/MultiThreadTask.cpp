@@ -33,7 +33,7 @@ namespace Elpida
 {
 
 	MultiThreadTask::MultiThreadTask(const std::string& name, const TaskFactory& taskFactory)
-			: Task(name + "(Multi Threaded)"), _taskFactory(taskFactory), _threadsShouldWake(false)
+		: Task(name + "(Multi Threaded)"), _taskFactory(taskFactory), _threadsShouldWake(false)
 	{
 	}
 
@@ -50,7 +50,8 @@ namespace Elpida
 
 	void MultiThreadTask::createTasks()
 	{
-		auto& processors = _affinity.isSet() ? _affinity.getProcessorNodes() : SystemTopology::getTopology().getAllProcessors();
+		auto& processors =
+			_affinity.isSet() ? _affinity.getProcessorNodes() : SystemTopology::getTopology().getAllProcessors();
 		for (auto processor : processors)
 		{
 			addTask(_taskFactory.create(*processor), processor->getOsIndex());

@@ -32,61 +32,61 @@
 
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Utilities/Image.hpp"
+#include "Elpida/Utilities/Imaging/Image.hpp"
 
 namespace Elpida
 {
 	class TaskMetrics;
 
 	template<typename T>
-	class ConvertToUInt8 final: public Task
+	class ConvertToUInt8 final : public Task
 	{
-		public:
+	public:
 
-			Image<uint8_t>& getImage()
+		Image<uint8_t>& getImage()
+		{
+			return _convertedImage;
+		}
+
+		void run()
+		{
+			std::size_t size = _sourceImage.getTotalSize();
+			Pixel<uint8_t>* converted = _convertedImage.getData();
+			Pixel<T>* source = _sourceImage.getData();
+			for (std::size_t i = 0; i < size; ++i)
 			{
-				return _convertedImage;
+				converted[i].R = source[i].R * 255;
+				converted[i].G = source[i].G * 255;
+				converted[i].B = source[i].B * 255;
+				converted[i].A = source[i].A * 255;
 			}
+		}
 
-			void run()
-			{
-				std::size_t size = _sourceImage.getTotalSize();
-				Pixel<uint8_t>* converted = _convertedImage.getData();
-				Pixel<T>* source = _sourceImage.getData();
-				for (std::size_t i = 0; i < size; ++i)
-				{
-					converted[i].R = source[i].R * 255;
-					converted[i].G = source[i].G * 255;
-					converted[i].B = source[i].B * 255;
-					converted[i].A = source[i].A * 255;
-				}
-			}
+		void calculateResults(const TaskMetrics& metrics)
+		{
+			_runResult.setOriginalValue(_sourceImage.getTotalSizeInBytes());
+			addResult(_runResult);
+		}
 
-			void calculateResults(const TaskMetrics& metrics)
-			{
-				_runResult.setOriginalValue(_sourceImage.getTotalSizeInBytes());
-				addResult(_runResult);
-			}
+		void prepare()
+		{
+			_convertedImage = Image<uint8_t>(_sourceImage.getWidth(), _sourceImage.getHeight());
+		}
 
-			void prepare()
-			{
-				_convertedImage = Image<uint8_t>(_sourceImage.getWidth(), _sourceImage.getHeight());
-			}
+		ConvertToUInt8(const Image<T>& sourceImage)
+			: Task("Convert to Uint8"), _sourceImage(sourceImage), _runResult("Data covert rate", "Bytes")
+		{
 
-			ConvertToUInt8(const Image<T>& sourceImage)
-					: Task("Convert to Uint8"), _sourceImage(sourceImage), _runResult("Data covert rate", "Bytes")
-			{
+		}
 
-			}
+		~ConvertToUInt8()
+		{
 
-			~ConvertToUInt8()
-			{
-
-			}
-		private:
-			const Image<T>& _sourceImage;
-			Image<uint8_t> _convertedImage;
-			TaskRunResult _runResult;
+		}
+	private:
+		const Image<T>& _sourceImage;
+		Image<uint8_t> _convertedImage;
+		TaskRunResult _runResult;
 	};
 
 } /* namespace Elpida */

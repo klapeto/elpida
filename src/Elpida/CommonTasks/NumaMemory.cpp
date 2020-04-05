@@ -39,15 +39,15 @@ namespace Elpida
 	{
 #ifdef ELPIDA_LINUX
 		_pointer = numa_alloc_onnode(_size, _node);
-#else		
+#else
 		_pointer =VirtualAllocExNuma(
-            GetCurrentProcess(),
-            NULL,
-            _size,
-            MEM_RESERVE | MEM_COMMIT,
-            PAGE_READWRITE,
-            (UCHAR)_node
-        );
+			GetCurrentProcess(),
+			NULL,
+			_size,
+			MEM_RESERVE | MEM_COMMIT,
+			PAGE_READWRITE,
+			(UCHAR)_node
+		);
 #endif
 		memset(_pointer, 0, _size);
 	}
@@ -58,7 +58,7 @@ namespace Elpida
 		numa_free(_pointer, _size);
 #else
 		VirtualFree(_pointer,0, MEM_RELEASE);
-		#endif
+#endif
 	}
 
 } /* namespace Elpida */
