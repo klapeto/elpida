@@ -25,8 +25,8 @@
 namespace Elpida
 {
 
-	ListItemWithButton::ListItemWithButton(const QString& text, QWidget *parent)
-			: QWidget(parent), _ui(new Ui::ListItemWithButton)
+	ListItemWithButton::ListItemWithButton(const QString& text, QWidget* parent)
+		: QWidget(parent), _ui(new Ui::ListItemWithButton)
 	{
 		_ui->setupUi(this);
 		_ui->lblName->setText(text);

@@ -19,8 +19,8 @@
 
 #include <QApplication>
 #include "Elpida/Config.hpp"
-#include "MainWindow.hpp"
-#include "ElpidaManager.hpp"
+#include "Ui/MainWindow/MainWindow.hpp"
+#include "Core/ElpidaManager.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <execinfo.h>
@@ -30,7 +30,7 @@
 
 void segFaultHandler(int sig)
 {
-	void *array[20];
+	void* array[20];
 	size_t size = backtrace(array, 20);
 
 	backtrace_symbols_fd(array, size, STDERR_FILENO);
@@ -39,8 +39,7 @@ void segFaultHandler(int sig)
 #endif
 
 
-
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 #ifdef ELPIDA_LINUX
 	signal(SIGSEGV, segFaultHandler);

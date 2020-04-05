@@ -19,8 +19,8 @@
 
 #include "ui_TaskBatchesWidget.h"
 #include "TaskBatchesWidget.hpp"
-#include "TaskBatchProperties.hpp"
-#include "ListItemWithButton.hpp"
+#include "Ui/TaskBatchesProperties/TaskBatchProperties.hpp"
+#include "Ui/ListItemWithButton/ListItemWithButton.hpp"
 #include <Elpida/TaskBatch.hpp>
 #include <Elpida/Exceptions/ElpidaException.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
@@ -31,8 +31,10 @@
 namespace Elpida
 {
 
-	TaskBatchesWidget::TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList,const TaskAffinity& affinity, QWidget *parent)
-			: QWidget(parent), _taskBatchList(taskBatchList), _ui(new Ui::TaskBatchesWidget), _affinity(affinity)
+	TaskBatchesWidget::TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList,
+		const TaskAffinity& affinity,
+		QWidget* parent)
+		: QWidget(parent), _taskBatchList(taskBatchList), _ui(new Ui::TaskBatchesWidget), _affinity(affinity)
 	{
 		_runningText = "<span style=\" color:#b50000;\">Running</span>";
 		_readyText = "<span style=\"color:#008d09;\">Ready</span>";
@@ -45,7 +47,10 @@ namespace Elpida
 		onTaskBatchListModified();
 		_ui->splitter_2->setStretchFactor(0, 1);
 
-		QPushButton::connect(this, &TaskBatchesWidget::onTaskBatchStart, this, &TaskBatchesWidget::updateForTaskBatchBegin);
+		QPushButton::connect(this,
+			&TaskBatchesWidget::onTaskBatchStart,
+			this,
+			&TaskBatchesWidget::updateForTaskBatchBegin);
 		QPushButton::connect(this, &TaskBatchesWidget::onTaskStart, this, &TaskBatchesWidget::updateForTaskBegin);
 		QPushButton::connect(this, &TaskBatchesWidget::onTaskEnd, this, &TaskBatchesWidget::updateForTaskEnd);
 		QPushButton::connect(this, &TaskBatchesWidget::onTaskBatchEnd, this, &TaskBatchesWidget::updateForTaskBatchEnd);
@@ -100,10 +105,14 @@ namespace Elpida
 			else
 			{
 				item = new QListWidgetItem(_ui->lwTaskBatches);
-				auto wrapper = new ListItemWithButton(QString::fromStdString(taskBatch.second->getTaskBatch().getName()));
+				auto wrapper =
+					new ListItemWithButton(QString::fromStdString(taskBatch.second->getTaskBatch().getName()));
 				_ui->lwTaskBatches->setItemWidget(item, wrapper);
 				item->setSizeHint(wrapper->sizeHint());
-				QWidget::connect(wrapper, &ListItemWithButton::buttonClicked, this, &TaskBatchesWidget::onListItemButtonClicked);
+				QWidget::connect(wrapper,
+					&ListItemWithButton::buttonClicked,
+					this,
+					&TaskBatchesWidget::onListItemButtonClicked);
 			}
 		}
 
@@ -137,7 +146,8 @@ namespace Elpida
 					for (auto& taskResult : taskResults.second)
 					{
 						auto taskResultItem = new QTreeWidgetItem(taskItem);
-						taskResultItem->setText(0, QString::fromStdString(taskResult.getRunResult().getResultDescription()));
+						taskResultItem
+							->setText(0, QString::fromStdString(taskResult.getRunResult().getResultDescription()));
 						taskResultItem->setText(1, QString::fromStdString(taskResult.getUniversalString()));
 					}
 				}
@@ -189,8 +199,10 @@ namespace Elpida
 		}
 		catch (ElpidaException& e)
 		{
-			QMessageBox::critical(this, "Error", QString::fromStdString("Task batch runner produced error: " + e.getMessage()),
-			                      QMessageBox::StandardButton::Ok);
+			QMessageBox::critical(this,
+				"Error",
+				QString::fromStdString("Task batch runner produced error: " + e.getMessage()),
+				QMessageBox::StandardButton::Ok);
 		}
 	}
 
@@ -227,12 +239,13 @@ namespace Elpida
 						catch (const Elpida::ElpidaException& e)
 						{
 							QMessageBox::critical(
-							        this,
-							        "Error",
-							        QString::fromStdString(
-							                "A task batch was not configured properly: '" + itr->second->getTaskBatch().getName()
-							                        + "'. Error: " + e.getMessage()),
-							        QMessageBox::StandardButton::Ok);
+								this,
+								"Error",
+								QString::fromStdString(
+									"A task batch was not configured properly: '"
+										+ itr->second->getTaskBatch().getName()
+										+ "'. Error: " + e.getMessage()),
+								QMessageBox::StandardButton::Ok);
 							continue;
 						}
 						_taskBatchRunner.addTaskBatch(itr->second->getTaskBatch());
@@ -277,12 +290,12 @@ namespace Elpida
 			else
 			{
 				QMessageBox::information(this, "Task Batch Properties", "This task batch does not export properties",
-				                         QMessageBox::StandardButton::Ok);
+					QMessageBox::StandardButton::Ok);
 			}
 		}
 	}
 
-	void TaskBatchesWidget::on_twResults_itemClicked(QTreeWidgetItem *item, int column)
+	void TaskBatchesWidget::on_twResults_itemClicked(QTreeWidgetItem* item, int column)
 	{
 		auto pageItr = _taskBatchList.find(item->text(0).toStdString());
 		if (pageItr != _taskBatchList.end())

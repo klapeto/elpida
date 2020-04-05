@@ -26,17 +26,14 @@
 #include <Elpida/Topology/ProcessorNode.hpp>
 
 #include <QMessageBox>
-#include <QTreeWidgetItem>
 #include <QVBoxLayout>
 #include "MainWindow.hpp"
-#include "TopologyWidget.hpp"
+#include "Ui/TopologyWidget/TopologyWidget.hpp"
 
-#include "TaskBatches/QtTaskBatchWrapper.hpp"
-#include "TaskBatchProperties.hpp"
-#include "TaskBatchesWidget.hpp"
-#include "LogsDialog.hpp"
-#include "MascotWidget.hpp"
-#include "ElpidaManager.hpp"
+#include "Ui/TaskBatchesProperties/TaskBatchProperties.hpp"
+#include "Ui/TaskBatchesWidget/TaskBatchesWidget.hpp"
+#include "Ui/LogsDialog/LogsDialog.hpp"
+#include "Core/ElpidaManager.hpp"
 
 namespace Elpida
 {

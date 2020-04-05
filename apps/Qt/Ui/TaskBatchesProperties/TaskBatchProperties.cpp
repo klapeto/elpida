@@ -26,8 +26,8 @@
 namespace Elpida
 {
 
-	TaskBatchProperties::TaskBatchProperties(QWidget *parent)
-			: QDialog(parent), _ui(new Ui::TaskBatchProperties), _page(nullptr)
+	TaskBatchProperties::TaskBatchProperties(QWidget* parent)
+		: QDialog(parent), _ui(new Ui::TaskBatchProperties), _page(nullptr)
 	{
 		_ui->setupUi(this);
 
@@ -40,7 +40,7 @@ namespace Elpida
 
 	void TaskBatchProperties::setPage(QtTaskBatchWrapper* widget)
 	{
-		auto layout = (QVBoxLayout*) _ui->wTaskBatchPropertiesContainer->layout();
+		auto layout = (QVBoxLayout*)_ui->wTaskBatchPropertiesContainer->layout();
 		if (layout == nullptr)
 		{
 			layout = new QVBoxLayout;
@@ -64,7 +64,10 @@ namespace Elpida
 			}
 			catch (ElpidaException& e)
 			{
-				QMessageBox::critical(_ui->wTaskBatchPropertiesContainer, "Error", QString::fromStdString(e.getMessage()), QMessageBox::StandardButton::Ok);
+				QMessageBox::critical(_ui->wTaskBatchPropertiesContainer,
+					"Error",
+					QString::fromStdString(e.getMessage()),
+					QMessageBox::StandardButton::Ok);
 			}
 		}
 	}

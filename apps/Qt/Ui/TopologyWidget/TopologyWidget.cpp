@@ -31,7 +31,7 @@
 #include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Exceptions/ElpidaException.hpp>
-#include "TopologyFrame.hpp"
+#include "Ui/TopologyFrame/TopologyFrame.hpp"
 
 #include <vector>
 #include <cmath>
@@ -40,13 +40,13 @@ namespace Elpida
 {
 	struct CacheStyles
 	{
-			QString defaultStyle;
-			QString mouseOverStyle;
-			QString mouseClickStyle;
+		QString defaultStyle;
+		QString mouseOverStyle;
+		QString mouseClickStyle;
 	};
 
-	TopologyWidget::TopologyWidget(QWidget *parent)
-			: QWidget(parent), _ui(new Ui::TopologyWidget), _rootFrame(nullptr)
+	TopologyWidget::TopologyWidget(QWidget* parent)
+		: QWidget(parent), _ui(new Ui::TopologyWidget), _rootFrame(nullptr)
 	{
 		_ui->setupUi(this);
 		setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -111,7 +111,8 @@ namespace Elpida
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QHBoxLayout);
 		widget->layout()->addWidget(label);
-		label->setText(QString::fromStdString(node.getName() + "\n" + ValueUtilities::getValueScaleString(node.getValue()) + "B"));
+		label->setText(QString::fromStdString(
+			node.getName() + "\n" + ValueUtilities::getValueScaleString(node.getValue()) + "B"));
 		widget->setStyleSheet(QString("background-color: #acb4ec;"));
 		return widget;
 	}
@@ -120,33 +121,42 @@ namespace Elpida
 	{
 		switch (node.getType())
 		{
-			case ProcessorNode::Type::L1DCache:
-				return
-				{	QString("background-color: #fa9e9e;"), QString("background-color: #eba8a8;"), QString("background-color: #ffe4e4;")};
-			case ProcessorNode::Type::L1ICache:
-				return
-				{	QString("background-color: #f5bfbf;"),QString("background-color: #f9d8d8;"),QString("background-color: #ffc1c1;")};
-			case ProcessorNode::Type::L2DCache:
-				return
-				{	QString("background-color: #e48b8b;"),QString("background-color: #e19898;"),QString("background-color: #ffc1c1;")};
-			case ProcessorNode::Type::L2ICache:
-				return
-				{	QString("background-color: #e6abab;"), QString("background-color: #f6c2c2;"),QString("background-color: #fbe9e9;")};
-			case ProcessorNode::Type::L3DCache:
-				return
-				{	QString("background-color: #c67171;"),QString("background-color: #cb8282;"),QString("background-color: #dca0a0;")};
-			case ProcessorNode::Type::L3ICache:
-				return
-				{	QString("background-color: #c68989;"),QString("background-color: #d09f9f;"),QString("background-color: #e2bfbf;")};
-			case ProcessorNode::Type::L4Cache:
-				return
-				{	QString("background-color: #ae5151;"),QString("background-color: #bf7171;"),QString("background-color: #d79d9d;")};
-			case ProcessorNode::Type::L5Cache:
-				return
-				{	QString("background-color: #8f4242;"),QString("background-color: #a76363;"),QString("background-color: #bf8e8e;")};
-			default:
-				return
-				{	QString("background-color: #e1e3aa;"),QString("background-color: #e1e3aa;"),QString("background-color: #e1e3aa;")};
+		case ProcessorNode::Type::L1DCache:
+			return
+				{ QString("background-color: #fa9e9e;"), QString("background-color: #eba8a8;"),
+				  QString("background-color: #ffe4e4;") };
+		case ProcessorNode::Type::L1ICache:
+			return
+				{ QString("background-color: #f5bfbf;"), QString("background-color: #f9d8d8;"),
+				  QString("background-color: #ffc1c1;") };
+		case ProcessorNode::Type::L2DCache:
+			return
+				{ QString("background-color: #e48b8b;"), QString("background-color: #e19898;"),
+				  QString("background-color: #ffc1c1;") };
+		case ProcessorNode::Type::L2ICache:
+			return
+				{ QString("background-color: #e6abab;"), QString("background-color: #f6c2c2;"),
+				  QString("background-color: #fbe9e9;") };
+		case ProcessorNode::Type::L3DCache:
+			return
+				{ QString("background-color: #c67171;"), QString("background-color: #cb8282;"),
+				  QString("background-color: #dca0a0;") };
+		case ProcessorNode::Type::L3ICache:
+			return
+				{ QString("background-color: #c68989;"), QString("background-color: #d09f9f;"),
+				  QString("background-color: #e2bfbf;") };
+		case ProcessorNode::Type::L4Cache:
+			return
+				{ QString("background-color: #ae5151;"), QString("background-color: #bf7171;"),
+				  QString("background-color: #d79d9d;") };
+		case ProcessorNode::Type::L5Cache:
+			return
+				{ QString("background-color: #8f4242;"), QString("background-color: #a76363;"),
+				  QString("background-color: #bf8e8e;") };
+		default:
+			return
+				{ QString("background-color: #e1e3aa;"), QString("background-color: #e1e3aa;"),
+				  QString("background-color: #e1e3aa;") };
 		}
 	}
 
@@ -156,10 +166,11 @@ namespace Elpida
 		auto label = new QLabel();
 		widget->connect(widget, &TopologyFrame::clicked, this, &TopologyWidget::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-		auto layout = node.getChildren().size() > 1 ? (QLayout*) new QVBoxLayout : (QLayout*) new QVBoxLayout;
+		auto layout = node.getChildren().size() > 1 ? (QLayout*)new QVBoxLayout : (QLayout*)new QVBoxLayout;
 		widget->setLayout(layout);
 		layout->addWidget(label);
-		label->setText(QString::fromStdString(node.getName() + ": " + ValueUtilities::getValueScaleString(node.getValue()) + "B"));
+		label->setText(QString::fromStdString(
+			node.getName() + ": " + ValueUtilities::getValueScaleString(node.getValue()) + "B"));
 		auto styles = getCacheStyleSheet(node);
 		widget->setDefaultStyle(styles.defaultStyle);
 		widget->setMouseOverStyle(styles.mouseOverStyle);
@@ -203,27 +214,27 @@ namespace Elpida
 	{
 		switch (node.getType())
 		{
-			case ProcessorNode::Type::Machine:
-				return getMachineWidget(node);
-			case ProcessorNode::Type::Package:
-				return getPackageWidget(node);
-			case ProcessorNode::Type::Group:
-				return getGroupWidget(node);
-			case ProcessorNode::Type::L1DCache:
-			case ProcessorNode::Type::L1ICache:
-			case ProcessorNode::Type::L2DCache:
-			case ProcessorNode::Type::L2ICache:
-			case ProcessorNode::Type::L3DCache:
-			case ProcessorNode::Type::L3ICache:
-			case ProcessorNode::Type::L4Cache:
-			case ProcessorNode::Type::L5Cache:
-				return getCacheWidget(node);
-			case ProcessorNode::Type::Core:
-				return getCoreWidget(node);
-			case ProcessorNode::Type::ExecutionUnit:
-				return getEUWidget(node);
-			default:
-				throw ElpidaException("Invalid Enumeration");
+		case ProcessorNode::Type::Machine:
+			return getMachineWidget(node);
+		case ProcessorNode::Type::Package:
+			return getPackageWidget(node);
+		case ProcessorNode::Type::Group:
+			return getGroupWidget(node);
+		case ProcessorNode::Type::L1DCache:
+		case ProcessorNode::Type::L1ICache:
+		case ProcessorNode::Type::L2DCache:
+		case ProcessorNode::Type::L2ICache:
+		case ProcessorNode::Type::L3DCache:
+		case ProcessorNode::Type::L3ICache:
+		case ProcessorNode::Type::L4Cache:
+		case ProcessorNode::Type::L5Cache:
+			return getCacheWidget(node);
+		case ProcessorNode::Type::Core:
+			return getCoreWidget(node);
+		case ProcessorNode::Type::ExecutionUnit:
+			return getEUWidget(node);
+		default:
+			throw ElpidaException("Invalid Enumeration");
 		}
 	}
 
@@ -273,7 +284,9 @@ namespace Elpida
 		{
 			for (size_t i = 0; i < maxChildren - children.size(); i++)
 			{
-				rootLayout->addItem(new QSpacerItem(50, 50, QSizePolicy::Expanding, QSizePolicy::Expanding), currRow, currColumn);
+				rootLayout->addItem(new QSpacerItem(50, 50, QSizePolicy::Expanding, QSizePolicy::Expanding),
+					currRow,
+					currColumn);
 				if (++currColumn >= maxColumns)
 				{
 					++currRow;
@@ -282,7 +295,7 @@ namespace Elpida
 			}
 		}
 
-		((QBoxLayout*) item->layout())->addLayout(rootLayout);
+		((QBoxLayout*)item->layout())->addLayout(rootLayout);
 		return item;
 	}
 
@@ -338,7 +351,7 @@ namespace Elpida
 				checkBox->setChecked(true);
 
 				if (std::none_of(_selectedNodes.begin(), _selectedNodes.end(), [&](const ProcessorNode* nd)
-				{	return &frame->getProcessorNode() == nd;}))
+				{ return &frame->getProcessorNode() == nd; }))
 				{
 					_selectedNodes.push_front(&frame->getProcessorNode());
 				}
@@ -369,7 +382,8 @@ namespace Elpida
 				else
 				{
 					checkBox->setChecked(true);
-					if (std::none_of(_selectedNodes.begin(), _selectedNodes.end(), [&](const ProcessorNode* nd) {return &node->getProcessorNode() == nd;}))
+					if (std::none_of(_selectedNodes.begin(), _selectedNodes.end(), [&](const ProcessorNode* nd)
+					{ return &node->getProcessorNode() == nd; }))
 					{
 						_selectedNodes.push_front(&node->getProcessorNode());
 					}

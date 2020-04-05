@@ -30,21 +30,21 @@ namespace Elpida
 		class TaskBatchProperties;
 	}  // namespace Ui
 
-	class TaskBatchProperties: public QDialog
+	class TaskBatchProperties : public QDialog
 	{
-		Q_OBJECT
+	Q_OBJECT
 
-		public:
-			void setPage(QtTaskBatchWrapper* widget);
+	public:
+		void setPage(QtTaskBatchWrapper* widget);
 
-			void accept() override;
+		void accept() override;
 
-			explicit TaskBatchProperties(QWidget *parent = 0);
-			~TaskBatchProperties();
+		explicit TaskBatchProperties(QWidget* parent = 0);
+		~TaskBatchProperties();
 
-		private:
-			Ui::TaskBatchProperties* _ui;
-			QtTaskBatchWrapper* _page;
+	private:
+		Ui::TaskBatchProperties* _ui;
+		QtTaskBatchWrapper* _page;
 	};
 
 }  // namespace Elpida

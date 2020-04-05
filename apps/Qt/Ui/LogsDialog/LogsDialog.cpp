@@ -17,34 +17,26 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef ELPIDA_LOGSDIALOG_HPP
-#define ELPIDA_LOGSDIALOG_HPP
-
-#include <qdialog.h>
-#include <qobjectdefs.h>
-#include <string>
+#include "LogsDialog.hpp"
+#include "ui_LogsDialog.h"
 
 namespace Elpida
 {
 
-	namespace Ui
+	LogsDialog::LogsDialog(QWidget* parent)
+		: QDialog(parent), _ui(new Ui::LogsDialog)
 	{
-		class LogsDialog;
+		_ui->setupUi(this);
 	}
 
-	class LogsDialog final: public QDialog
+	void LogsDialog::setLogsText(const std::string& text)
 	{
-		Q_OBJECT
+		_ui->tbLogs->setText(QString::fromStdString(text));
+	}
 
-		public:
-			void setLogsText(const std::string& text);
-
-			explicit LogsDialog(QWidget *parent = 0);
-			~LogsDialog();
-
-		private:
-			Ui::LogsDialog *_ui;
-	};
+	LogsDialog::~LogsDialog()
+	{
+		delete _ui;
+	}
 
 } // namespace Elpida
-#endif // ELPIDA_LOGSDIALOG_HPP

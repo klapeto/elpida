@@ -47,36 +47,36 @@ namespace Elpida
 	}  // namespace Ui
 
 
-	class MainWindow final: public QMainWindow
+	class MainWindow final : public QMainWindow
 	{
-		Q_OBJECT
+	Q_OBJECT
 
-		public:
-			explicit MainWindow(ElpidaManager& elpidaManager, QWidget *parent = nullptr);
-			~MainWindow();
+	public:
+		explicit MainWindow(ElpidaManager& elpidaManager, QWidget* parent = nullptr);
+		~MainWindow();
 
-		protected:
-			virtual void showEvent(QShowEvent *event) override;
+	protected:
+		virtual void showEvent(QShowEvent* event) override;
 
-		private slots:
-			void on_actionExit_triggered();
-			void on_actionAbout_triggered();
+	private slots:
+		void on_actionExit_triggered();
+		void on_actionAbout_triggered();
 
-			void on_actionShowLogs_triggered();
+		void on_actionShowLogs_triggered();
 
-		private:
-			ElpidaManager& _elpidaManager;
-			std::vector<QMetaObject::Connection> _connections;
-			TaskBatchesWidget* _taskBatchesWidget;
-			LogsDialog* _logsDialog;
-			TopologyWidget* _topologyWidget;
-			Ui::MainWindow *_ui;
-			OffThreadExecutor _offThreadExecutor;
-			bool _fixedSizeSet;
+	private:
+		ElpidaManager& _elpidaManager;
+		std::vector<QMetaObject::Connection> _connections;
+		TaskBatchesWidget* _taskBatchesWidget;
+		LogsDialog* _logsDialog;
+		TopologyWidget* _topologyWidget;
+		Ui::MainWindow* _ui;
+		OffThreadExecutor _offThreadExecutor;
+		bool _fixedSizeSet;
 
-			void loadCpuInfo();
+		void loadCpuInfo();
 
-			void addMascot();
+		void addMascot();
 	};
 
 }  // namespace Elpida

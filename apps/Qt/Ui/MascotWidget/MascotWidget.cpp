@@ -5,8 +5,8 @@
 namespace Elpida
 {
 
-	MascotWidget::MascotWidget(QWidget *parent)
-			: QWidget(parent)
+	MascotWidget::MascotWidget(QWidget* parent)
+		: QWidget(parent)
 	{
 
 	}

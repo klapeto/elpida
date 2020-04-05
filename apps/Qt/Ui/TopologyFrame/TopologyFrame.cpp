@@ -17,45 +17,65 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef ELPIDA_LISTITEMWITHBUTTON_HPP
-#define ELPIDA_LISTITEMWITHBUTTON_HPP
-
-#include <QWidget>
+#include "TopologyFrame.hpp"
+#include "ui_TopologyFrame.h"
 
 namespace Elpida
 {
 
-	namespace Ui
+	TopologyFrame::TopologyFrame(const ProcessorNode& node)
+		:
+		QFrame(nullptr),
+		_node(node),
+		ui(new Ui::TopologyFrame),
+		_checkBox(nullptr),
+		_clickAble(true),
+		_mouseDown(false),
+		_mouseOver(false)
 	{
-		class ListItemWithButton;
+		ui->setupUi(this);
 	}
 
-	class ListItemWithButton: public QWidget
+	TopologyFrame::~TopologyFrame()
 	{
-		Q_OBJECT
+		delete ui;
+	}
 
-		public:
+	void TopologyFrame::mousePressEvent(QMouseEvent* event)
+	{
+		if (_clickAble)
+		{
+			_mouseDown = true;
+			setStyleSheet(_clickedStyle);
+		}
+	}
 
-			QString getText() const;
-			void setText(const QString& text);
-			void setButtonText(const QString& text);
-			void setButtonIcon(const QIcon& icon);
+	void TopologyFrame::mouseReleaseEvent(QMouseEvent* event)
+	{
+		if (_clickAble)
+		{
+			_mouseDown = false;
+			setStyleSheet(_mouseOverStyle);
+			emit clicked(this);
+		}
+	}
 
-			explicit ListItemWithButton(const QString& text, QWidget *parent = 0);
-			virtual ~ListItemWithButton();
+	void TopologyFrame::enterEvent(QEvent* event)
+	{
+		if (_clickAble)
+		{
+			_mouseOver = true;
+			setStyleSheet(_mouseOverStyle);
+		}
+	}
 
-		signals:
-			void buttonClicked(const QString& name);
-		protected:
-			void enterEvent(QEvent *event) override;
-			void leaveEvent(QEvent *event) override;
-
-		private slots:
-			void on_pbButton_clicked();
-
-		private:
-			Ui::ListItemWithButton *_ui;
-	};
+	void TopologyFrame::leaveEvent(QEvent* event)
+	{
+		if (_clickAble)
+		{
+			_mouseOver = false;
+			setStyleSheet(_defaultStyle);
+		}
+	}
 
 } // namespace Elpida
-#endif // ELPIDA_LISTITEMWITHBUTTON_HPP

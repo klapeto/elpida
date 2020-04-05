@@ -17,26 +17,45 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include "LogsDialog.hpp"
-#include "ui_LogsDialog.h"
+#ifndef ELPIDA_LISTITEMWITHBUTTON_HPP
+#define ELPIDA_LISTITEMWITHBUTTON_HPP
+
+#include <QWidget>
 
 namespace Elpida
 {
 
-	LogsDialog::LogsDialog(QWidget *parent)
-			: QDialog(parent), _ui(new Ui::LogsDialog)
+	namespace Ui
 	{
-		_ui->setupUi(this);
+		class ListItemWithButton;
 	}
 
-	void LogsDialog::setLogsText(const std::string& text)
+	class ListItemWithButton : public QWidget
 	{
-		_ui->tbLogs->setText(QString::fromStdString(text));
-	}
+	Q_OBJECT
 
-	LogsDialog::~LogsDialog()
-	{
-		delete _ui;
-	}
+	public:
+
+		QString getText() const;
+		void setText(const QString& text);
+		void setButtonText(const QString& text);
+		void setButtonIcon(const QIcon& icon);
+
+		explicit ListItemWithButton(const QString& text, QWidget* parent = 0);
+		virtual ~ListItemWithButton();
+
+	signals:
+		void buttonClicked(const QString& name);
+	protected:
+		void enterEvent(QEvent* event) override;
+		void leaveEvent(QEvent* event) override;
+
+	private slots:
+		void on_pbButton_clicked();
+
+	private:
+		Ui::ListItemWithButton* _ui;
+	};
 
 } // namespace Elpida
+#endif // ELPIDA_LISTITEMWITHBUTTON_HPP

@@ -17,65 +17,34 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include "TopologyFrame.hpp"
-#include "ui_TopologyFrame.h"
+#ifndef ELPIDA_LOGSDIALOG_HPP
+#define ELPIDA_LOGSDIALOG_HPP
+
+#include <qdialog.h>
+#include <qobjectdefs.h>
+#include <string>
 
 namespace Elpida
 {
 
-	TopologyFrame::TopologyFrame(const ProcessorNode& node)
-			:
-			  QFrame(nullptr),
-			  _node(node),
-			  ui(new Ui::TopologyFrame),
-			  _checkBox(nullptr),
-			  _clickAble(true),
-			  _mouseDown(false),
-			  _mouseOver(false)
+	namespace Ui
 	{
-		ui->setupUi(this);
+		class LogsDialog;
 	}
 
-	TopologyFrame::~TopologyFrame()
+	class LogsDialog final : public QDialog
 	{
-		delete ui;
-	}
+	Q_OBJECT
 
-	void TopologyFrame::mousePressEvent(QMouseEvent* event)
-	{
-		if (_clickAble)
-		{
-			_mouseDown = true;
-			setStyleSheet(_clickedStyle);
-		}
-	}
+	public:
+		void setLogsText(const std::string& text);
 
-	void TopologyFrame::mouseReleaseEvent(QMouseEvent* event)
-	{
-		if (_clickAble)
-		{
-			_mouseDown = false;
-			setStyleSheet(_mouseOverStyle);
-			emit clicked(this);
-		}
-	}
+		explicit LogsDialog(QWidget* parent = 0);
+		~LogsDialog();
 
-	void TopologyFrame::enterEvent(QEvent* event)
-	{
-		if (_clickAble)
-		{
-			_mouseOver = true;
-			setStyleSheet(_mouseOverStyle);
-		}
-	}
-
-	void TopologyFrame::leaveEvent(QEvent* event)
-	{
-		if (_clickAble)
-		{
-			_mouseOver = false;
-			setStyleSheet(_defaultStyle);
-		}
-	}
+	private:
+		Ui::LogsDialog* _ui;
+	};
 
 } // namespace Elpida
+#endif // ELPIDA_LOGSDIALOG_HPP

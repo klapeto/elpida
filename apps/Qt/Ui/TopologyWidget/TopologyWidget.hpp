@@ -34,44 +34,44 @@ namespace Elpida
 		class TopologyWidget;
 	}
 
-	class TopologyWidget: public QWidget
+	class TopologyWidget : public QWidget
 	{
-		Q_OBJECT
+	Q_OBJECT
 
-		public:
+	public:
 
-			const TaskAffinity& getAffinity() const
-			{
-				return _affinity;
-			}
+		const TaskAffinity& getAffinity() const
+		{
+			return _affinity;
+		}
 
-			explicit TopologyWidget(QWidget *parent = nullptr);
-			~TopologyWidget();
+		explicit TopologyWidget(QWidget* parent = nullptr);
+		~TopologyWidget();
 
-		private:
-			TaskAffinity _affinity;
-			Ui::TopologyWidget* _ui;
-			TopologyFrame* _rootFrame;
-			std::forward_list<const ProcessorNode*> _selectedNodes;
+	private:
+		TaskAffinity _affinity;
+		Ui::TopologyWidget* _ui;
+		TopologyFrame* _rootFrame;
+		std::forward_list<const ProcessorNode*> _selectedNodes;
 
-			void loadTopology();
-			TopologyFrame* getMachineWidget(const Elpida::ProcessorNode& node);
-			TopologyFrame* getPackageWidget(const Elpida::ProcessorNode& node);
-			TopologyFrame* getGroupWidget(const Elpida::ProcessorNode& node);
-			QWidget* getNumaWidget(const Elpida::ProcessorNode& node);
-			TopologyFrame* getCacheWidget(const Elpida::ProcessorNode& node);
-			TopologyFrame* getCoreWidget(const Elpida::ProcessorNode& node);
-			TopologyFrame* getEUWidget(const Elpida::ProcessorNode& node);
-			TopologyFrame* getWidget(const Elpida::ProcessorNode& node);
-			TopologyFrame* appendChildren(const Elpida::ProcessorNode& node);
+		void loadTopology();
+		TopologyFrame* getMachineWidget(const Elpida::ProcessorNode& node);
+		TopologyFrame* getPackageWidget(const Elpida::ProcessorNode& node);
+		TopologyFrame* getGroupWidget(const Elpida::ProcessorNode& node);
+		QWidget* getNumaWidget(const Elpida::ProcessorNode& node);
+		TopologyFrame* getCacheWidget(const Elpida::ProcessorNode& node);
+		TopologyFrame* getCoreWidget(const Elpida::ProcessorNode& node);
+		TopologyFrame* getEUWidget(const Elpida::ProcessorNode& node);
+		TopologyFrame* getWidget(const Elpida::ProcessorNode& node);
+		TopologyFrame* appendChildren(const Elpida::ProcessorNode& node);
 
-			void clearChildrenState(TopologyFrame* frame);
+		void clearChildrenState(TopologyFrame* frame);
 
-			void appendAffinity(TopologyFrame* frame);
+		void appendAffinity(TopologyFrame* frame);
 
-		public slots:
-			void onElementClick(const TopologyFrame* node);
-			void onClearPressed();
+	public slots:
+		void onElementClick(const TopologyFrame* node);
+		void onClearPressed();
 	};
 
 } // namespace Elpida
