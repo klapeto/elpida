@@ -19,4 +19,4 @@
 #-------------------------------------------------------------------------------
 
 cd ~/elpida
-./install/bin/elpida-cli.exe
+./install/bin/elpida-qt.exe

@@ -62,7 +62,7 @@ goto :choice
 :yes
 call getMSYS2.bat
 xcopy /f /e /y bash\* %MSYS_FOLDER%
-%MSYS_FOLDER%\usr\bin\bash.exe --login  -c "../../bootstrap.sh %ARCH% %MINGW_FOLDER%"
+%MSYS_FOLDER%\usr\bin\bash.exe --login -c "~/../../bootstrap.sh %ARCH% %MINGW_FOLDER%"
 pause
 exit
 

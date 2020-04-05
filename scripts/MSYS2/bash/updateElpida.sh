@@ -21,6 +21,7 @@
 cd ~/elpida
 git reset --hard
 git clean -ffdx :/
-git checkout master
+git checkout develop
+git submodule update --init
 git pull
 /buildEnvironment.sh $1 $2
