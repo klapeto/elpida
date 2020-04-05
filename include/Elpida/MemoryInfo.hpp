@@ -34,43 +34,43 @@
 namespace Elpida
 {
 
-	class MemoryInfo final: public NonCopyable
+	class MemoryInfo final : public NonCopyable
 	{
-		public:
+	public:
 
-			static MemoryInfo& getInfo()
-			{
-				static MemoryInfo instance;
-				return instance;
-			}
+		static MemoryInfo& getInfo()
+		{
+			static MemoryInfo instance;
+			return instance;
+		}
 
-			std::size_t getMemorySize() const
-			{
-				return _memorySize;
-			}
+		std::size_t getMemorySize() const
+		{
+			return _memorySize;
+		}
 
-			std::size_t getPageSize() const
-			{
-				return _pageSize;
-			}
+		std::size_t getPageSize() const
+		{
+			return _pageSize;
+		}
 
-			std::size_t getAvailableFreeMemory() const;
+		std::size_t getAvailableFreeMemory() const;
 
-			~MemoryInfo()
-			{
-			}
-		private:
+		~MemoryInfo()
+		{
+		}
+	private:
 
-			std::size_t _memorySize;
-			std::size_t _pageSize;
+		std::size_t _memorySize;
+		std::size_t _pageSize;
 
-			MemoryInfo()
-					: _memorySize(0), _pageSize(0)
-			{
-				getValues();
-			}
+		MemoryInfo()
+			: _memorySize(0), _pageSize(0)
+		{
+			getValues();
+		}
 
-			void getValues();
+		void getValues();
 	};
 
 } /* namespace Elpida */

@@ -30,12 +30,12 @@ set(ELPIDA_SOURCES
 
         Utilities/CommandParser.cpp
         Utilities/FileSystem.cpp
-        Utilities/Image.cpp
-        Utilities/ImageEncoder.cpp
+        Utilities/Imaging/Image.cpp
+        Utilities/Imaging/ImageEncoder.cpp
         Utilities/Logger.cpp
         Utilities/MemoryFile.cpp
         Utilities/NonCopyable.cpp
-        Utilities/Pixel.cpp
+        Utilities/Imaging/Pixel.cpp
         Utilities/Singleton.cpp
         Utilities/ValueUtilities.cpp
 

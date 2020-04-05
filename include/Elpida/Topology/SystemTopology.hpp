@@ -37,53 +37,53 @@ namespace Elpida
 
 	class SystemTopology final
 	{
-		public:
-			const std::vector<const ProcessorNode*>& getAllProcessors() const
-			{
-				return _allProcessors;
-			}
+	public:
+		const std::vector<const ProcessorNode*>& getAllProcessors() const
+		{
+			return _allProcessors;
+		}
 
-			std::size_t getDepth() const
-			{
-				return _depth;
-			}
+		std::size_t getDepth() const
+		{
+			return _depth;
+		}
 
-			const ProcessorNode* getRoot() const
-			{
-				return _root;
-			}
+		const ProcessorNode* getRoot() const
+		{
+			return _root;
+		}
 
-			std::size_t getTotalLogicalCores() const
-			{
-				return _totalLogicalCores;
-			}
+		std::size_t getTotalLogicalCores() const
+		{
+			return _totalLogicalCores;
+		}
 
-			std::size_t getTotalPhysicalCores() const
-			{
-				return _totalPhysicalCores;
-			}
+		std::size_t getTotalPhysicalCores() const
+		{
+			return _totalPhysicalCores;
+		}
 
-			static int getNumaNodeOfProcessor(int processorId);
+		static int getNumaNodeOfProcessor(int processorId);
 
-			static const SystemTopology& getTopology()
-			{
-				static SystemTopology topo;
-				return topo;
-			}
+		static const SystemTopology& getTopology()
+		{
+			static SystemTopology topo;
+			return topo;
+		}
 
-			~SystemTopology();
+		~SystemTopology();
 
-		private:
-			std::vector<const ProcessorNode*> _allProcessors;
-			ProcessorNode* _root;
+	private:
+		std::vector<const ProcessorNode*> _allProcessors;
+		ProcessorNode* _root;
 
-			std::size_t _depth;
-			std::size_t _totalLogicalCores;
-			std::size_t _totalPhysicalCores;
+		std::size_t _depth;
+		std::size_t _totalLogicalCores;
+		std::size_t _totalPhysicalCores;
 
-			SystemTopology();
-			void reload();
-			void accumulateCores(const ProcessorNode& node);
+		SystemTopology();
+		void reload();
+		void accumulateCores(const ProcessorNode& node);
 	};
 
 } /* namespace Elpida */

@@ -18,15 +18,56 @@
  *************************************************************************/
 
 /*
- * Pixel.cpp
+ * PngLoader.hpp
  *
- *  Created on: 13 Μαρ 2018
+ *  Created on: 15 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/Utilities/Pixel.hpp"
+#ifndef ELPIDA_UTILITIES_IMAGING_IMAGEENCODER_HPP_
+#define ELPIDA_UTILITIES_IMAGING_IMAGEENCODER_HPP_
+
+#include <cstddef>
 
 namespace Elpida
 {
+	class ImageEncoder
+	{
+	public:
+
+		struct ImageDecodeInfo
+		{
+			unsigned char* data;
+			std::size_t width;
+			std::size_t height;
+			int pixelSize;
+		};
+
+		struct ImageEncodeInfo
+		{
+			unsigned char* data;
+			std::size_t dataSize;
+		};
+
+		virtual ImageDecodeInfo decode(unsigned char* data, std::size_t size) = 0;
+		virtual ImageEncodeInfo encode(std::size_t imageWidth, std::size_t imageHeight, unsigned char* inputData,
+			std::size_t inputSize) = 0;
+
+		ImageEncoder()
+		{
+
+		}
+		virtual ~ImageEncoder()
+		{
+
+		}
+
+		ImageEncoder(ImageEncoder&&) = default;
+		ImageEncoder(const ImageEncoder&) = default;
+		ImageEncoder& operator=(ImageEncoder&&) = default;
+		ImageEncoder& operator=(const ImageEncoder&) = default;
+	};
 
 } /* namespace Elpida */
+
+#endif /* ELPIDA_UTILITIES_IMAGING_IMAGEENCODER_HPP_ */

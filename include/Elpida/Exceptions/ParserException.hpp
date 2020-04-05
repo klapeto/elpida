@@ -34,31 +34,31 @@
 namespace Elpida
 {
 
-	class ParserException: public ElpidaException
+	class ParserException : public ElpidaException
 	{
-		public:
-			ParserException()
-					: ElpidaException()
-			{
+	public:
+		ParserException()
+			: ElpidaException()
+		{
 
-			}
+		}
 
-			ParserException(const std::string& what)
-					: ElpidaException(what)
-			{
+		ParserException(const std::string& what)
+			: ElpidaException(what)
+		{
 
-			}
+		}
 
-			ParserException(const std::string& what, const std::string& message)
-					: ElpidaException(what, message)
-			{
+		ParserException(const std::string& what, const std::string& message)
+			: ElpidaException(what, message)
+		{
 
-			}
+		}
 
-			virtual ~ParserException()
-			{
+		virtual ~ParserException()
+		{
 
-			}
+		}
 	};
 
 } /* namespace Elpida */

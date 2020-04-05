@@ -39,61 +39,61 @@ namespace Elpida
 {
 	class TaskFactory;
 
-	class MultiThreadTask: public Task
+	class MultiThreadTask : public Task
 	{
-		public:
+	public:
 
-			void prepare() override
+		void prepare() override
+		{
+			_threadsShouldWake = false;
+			createTasks();
+			for (auto& taskThread : _tasksToBeExecuted)
 			{
-				_threadsShouldWake = false;
-				createTasks();
-				for (auto& taskThread : _tasksToBeExecuted)
-				{
-					taskThread.getTask().prepare();
-					taskThread.start();
-				}
+				taskThread.getTask().prepare();
+				taskThread.start();
 			}
+		}
 
-			void finalize() override
+		void finalize() override
+		{
+			for (auto& taskThread : _tasksToBeExecuted)
 			{
-				for (auto& taskThread : _tasksToBeExecuted)
-				{
-					taskThread.getTask().finalize();
-				}
-				destroyTasks();
+				taskThread.getTask().finalize();
 			}
+			destroyTasks();
+		}
 
-			inline void run() override
+		inline void run() override
+		{
+			std::unique_lock<std::mutex> lock(_mutex);
+			_threadsShouldWake = true;
+			lock.unlock();
+			_wakeNotifier.notify_all();
+			for (auto& task : _tasksToBeExecuted)
 			{
-				std::unique_lock<std::mutex> lock(_mutex);
-				_threadsShouldWake = true;
-				lock.unlock();
-				_wakeNotifier.notify_all();
-				for (auto& task : _tasksToBeExecuted)
-				{
-					task.join();
-				}
+				task.join();
 			}
+		}
 
-			MultiThreadTask(const std::string& name, const TaskFactory& taskFactory);
-			virtual ~MultiThreadTask();
+		MultiThreadTask(const std::string& name, const TaskFactory& taskFactory);
+		virtual ~MultiThreadTask();
 
-			MultiThreadTask(MultiThreadTask&&) = default;
-			MultiThreadTask(const MultiThreadTask&) = default;
-			MultiThreadTask& operator=(MultiThreadTask&&) = default;
-			MultiThreadTask& operator=(const MultiThreadTask&) = default;
+		MultiThreadTask(MultiThreadTask&&) = default;
+		MultiThreadTask(const MultiThreadTask&) = default;
+		MultiThreadTask& operator=(MultiThreadTask&&) = default;
+		MultiThreadTask& operator=(const MultiThreadTask&) = default;
 
-		protected:
-			virtual void createTasks();
-			void addTask(Task* task, unsigned int affinity = -1);
-		private:
-			std::vector<Task*> _createdTasks;
-			std::vector<TaskThread> _tasksToBeExecuted;
-			std::mutex _mutex;
-			std::condition_variable _wakeNotifier;
-			const TaskFactory& _taskFactory;
-			bool _threadsShouldWake;
-			void destroyTasks();
+	protected:
+		virtual void createTasks();
+		void addTask(Task* task, unsigned int affinity = -1);
+	private:
+		std::vector<Task*> _createdTasks;
+		std::vector<TaskThread> _tasksToBeExecuted;
+		std::mutex _mutex;
+		std::condition_variable _wakeNotifier;
+		const TaskFactory& _taskFactory;
+		bool _threadsShouldWake;
+		void destroyTasks();
 	};
 
 } /* namespace Elpida */

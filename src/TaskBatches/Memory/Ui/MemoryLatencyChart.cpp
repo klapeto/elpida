@@ -55,10 +55,10 @@ namespace Elpida
 	MemoryLatencyChart::ChartValues MemoryLatencyChart::getChartValuesFromTaskThroughput(const TaskThroughput& throughput)
 	{
 		return
-		{
-			throughput.getUniversalValue(),
-			ValueUtilities::getValueScaleString(throughput.getRunResult().getTestedDataValue())
-		};
+			{
+				throughput.getUniversalValue(),
+				ValueUtilities::getValueScaleString(throughput.getRunResult().getTestedDataValue())
+			};
 	}
 
 } /* namespace Elpida */

@@ -34,22 +34,22 @@
 namespace Elpida
 {
 
-	class MemoryLatencyTaskBatch final: public TaskBatch
+	class MemoryLatencyTaskBatch final : public TaskBatch
 	{
-		public:
+	public:
 
-			void createTasks() const override;
+		void createTasks() const override;
 
-			MemoryLatencyTaskBatch()
-					: TaskBatch("Memory Latency")
-			{
+		MemoryLatencyTaskBatch()
+			: TaskBatch("Memory Latency")
+		{
 
-			}
-			~MemoryLatencyTaskBatch()
-			{
-			}
-		private:
-			void addMemoryLatencyTask(std::size_t size) const;
+		}
+		~MemoryLatencyTaskBatch()
+		{
+		}
+	private:
+		void addMemoryLatencyTask(std::size_t size) const;
 	};
 
 } /* namespace Elpida */

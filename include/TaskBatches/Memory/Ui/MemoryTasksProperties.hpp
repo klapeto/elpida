@@ -33,36 +33,36 @@ namespace Elpida
 {
 
 	template<typename T>
-	class MemoryTasksProperties final: public QtTaskBatchWrapper
+	class MemoryTasksProperties final : public QtTaskBatchWrapper
 	{
-		public:
+	public:
 
-			const TaskBatch& getTaskBatch() const
-			{
-				return _taskBatch;
-			}
+		const TaskBatch& getTaskBatch() const
+		{
+			return _taskBatch;
+		}
 
-			void reconfigureTaskBatch()
-			{
+		void reconfigureTaskBatch()
+		{
 
-			}
-			void validateConfiguration()
-			{
+		}
+		void validateConfiguration()
+		{
 
-			}
+		}
 
-			MemoryTasksProperties(T&& batch)
-					:QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
-			{
+		MemoryTasksProperties(T&& batch)
+			: QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
+		{
 
-			}
+		}
 
-			~MemoryTasksProperties()
-			{
+		~MemoryTasksProperties()
+		{
 
-			}
-		private:
-			T _taskBatch;
+		}
+	private:
+		T _taskBatch;
 	};
 
 } /* namespace Elpida */

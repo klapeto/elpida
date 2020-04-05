@@ -18,53 +18,15 @@
  *************************************************************************/
 
 /*
- * Pixel.hpp
+ * Image.cpp
  *
- *  Created on: 13 Μαρ 2018
+ *  Created on: 8 Μαρ 2018
  *      Author: klapeto
  */
 
-#ifndef SRC_TASKS_IMAGE_PIXEL_HPP_
-#define SRC_TASKS_IMAGE_PIXEL_HPP_
-
-#include <type_traits>
+#include "Elpida/Utilities/Imaging/Image.hpp"
 
 namespace Elpida
 {
 
-	template<typename T>
-	class Pixel
-	{
-			static_assert(std::is_arithmetic<T>::value, "Image requires an arithmetic template parameter");
-		public:
-
-			T R;
-			T G;
-			T B;
-			T A;
-
-			inline Pixel()
-			{
-
-			}
-
-			inline Pixel(T r, T g, T b, T a)
-					: R(r), G(g), B(b), A(a)
-			{
-
-			}
-
-			inline ~Pixel()
-			{
-
-			}
-
-			inline Pixel(Pixel&&) = default;
-			inline Pixel(const Pixel&) = default;
-			inline Pixel& operator=(Pixel&&) = default;
-			inline Pixel& operator=(const Pixel&) = default;
-	};
-
 } /* namespace Elpida */
-
-#endif /* SRC_TASKS_IMAGE_PIXEL_HPP_ */

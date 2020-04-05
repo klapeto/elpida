@@ -32,68 +32,69 @@
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Utilities/Image.hpp"
+#include "Elpida/Utilities/Imaging/Image.hpp"
 
 namespace Elpida
 {
 	class TaskMetrics;
 
 	template<typename T>
-	class GrayscaleAverage: public Task
+	class GrayscaleAverage : public Task
 	{
 
-		public:
+	public:
 
-			void run()
+		void run()
+		{
+			std::size_t size = _targetImage.getTotalSize();
+			Pixel<T>* sourceData = _sourceImage.getData();
+			Pixel<T>* targetData = _targetImage.getData();
+			for (std::size_t i = 0; i < size; ++i)
 			{
-				std::size_t size = _targetImage.getTotalSize();
-				Pixel<T>* sourceData = _sourceImage.getData();
-				Pixel<T>* targetData = _targetImage.getData();
-				for (std::size_t i = 0; i < size; ++i)
-				{
-					T newColor = (sourceData[i].R + sourceData[i].G + sourceData[i].B) / 3.0;
-					targetData[i].R = newColor;
-					targetData[i].G = newColor;
-					targetData[i].B = newColor;
-					targetData[i].A = 1.0;
-				}
+				T newColor = (sourceData[i].R + sourceData[i].G + sourceData[i].B) / 3.0;
+				targetData[i].R = newColor;
+				targetData[i].G = newColor;
+				targetData[i].B = newColor;
+				targetData[i].A = 1.0;
 			}
+		}
 
-			void calculateResults(const TaskMetrics& metrics)
+		void calculateResults(const TaskMetrics& metrics)
+		{
+			_runResult.setOriginalValue(_sourceImage.getTotalSize());
+			addResult(_runResult);
+		}
+
+		void prepare()
+		{
+			if (!_sourceImage.isCompatibleWith(_targetImage))
 			{
-				_runResult.setOriginalValue(_sourceImage.getTotalSize());
-				addResult(_runResult);
+				throw ElpidaException("Grayscale", "Images are not the same size!");
 			}
+		}
 
-			void prepare()
-			{
-				if (!_sourceImage.isCompatibleWith(_targetImage))
-				{
-					throw ElpidaException("Grayscale", "Images are not the same size!");
-				}
-			}
+		GrayscaleAverage(const Image<T>& sourceImage, Image<T>& targetImage)
+			: Task("Convert to Grayscale (Average)"), _sourceImage(sourceImage), _targetImage(targetImage),
+			  _runResult("Pixel process rate", "Pixels")
+		{
 
-			GrayscaleAverage(const Image<T>& sourceImage, Image<T>& targetImage)
-					: Task("Convert to Grayscale (Average)"), _sourceImage(sourceImage), _targetImage(targetImage), _runResult("Pixel process rate", "Pixels")
-			{
+		}
 
-			}
+		GrayscaleAverage(Image<T>& image)
+			: _sourceImage(image), _targetImage(image), _runResult("Pixel process rate", "Pixels")
+		{
 
-			GrayscaleAverage(Image<T> &image)
-					: _sourceImage(image), _targetImage(image), _runResult("Pixel process rate", "Pixels")
-			{
+		}
 
-			}
+		~GrayscaleAverage()
+		{
 
-			~GrayscaleAverage()
-			{
+		}
 
-			}
-
-		private:
-			const Image<T> &_sourceImage;
-			Image<T> &_targetImage;
-			TaskRunResult _runResult;
+	private:
+		const Image<T>& _sourceImage;
+		Image<T>& _targetImage;
+		TaskRunResult _runResult;
 
 	};
 

@@ -41,7 +41,7 @@ namespace Elpida
 				auto id = nodes[0]->getOsIndex();
 				if (id >= 0)
 				{
-					TaskThread::setCurrentThreadAffinity((int) id);
+					TaskThread::setCurrentThreadAffinity((int)id);
 				}
 			}
 

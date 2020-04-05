@@ -33,18 +33,18 @@ namespace Elpida
 
 	class TaskBatchWrapper
 	{
-		public:
+	public:
 
-			virtual const TaskBatch& getTaskBatch() const = 0;
+		virtual const TaskBatch& getTaskBatch() const = 0;
 
-			TaskBatchWrapper()
-			{
+		TaskBatchWrapper()
+		{
 
-			}
-			virtual ~TaskBatchWrapper()
-			{
+		}
+		virtual ~TaskBatchWrapper()
+		{
 
-			}
+		}
 	};
 
 } /* namespace Elpida */

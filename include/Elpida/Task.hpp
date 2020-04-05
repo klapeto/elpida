@@ -39,84 +39,84 @@ namespace Elpida
 
 	class Task
 	{
-		public:
+	public:
 
-			bool isToBeMeasured() const
-			{
-				return _toBeMeasured;
-			}
+		bool isToBeMeasured() const
+		{
+			return _toBeMeasured;
+		}
 
-			void setToBeMeasured(bool toBeMeasured)
-			{
-				_toBeMeasured = toBeMeasured;
-			}
+		void setToBeMeasured(bool toBeMeasured)
+		{
+			_toBeMeasured = toBeMeasured;
+		}
 
-			inline const std::string& getName() const
-			{
-				return _name;
-			}
+		inline const std::string& getName() const
+		{
+			return _name;
+		}
 
-			const std::vector<const TaskRunResult*>& getLastRunResults() const
-			{
-				return _lastRunResults;
-			}
+		const std::vector<const TaskRunResult*>& getLastRunResults() const
+		{
+			return _lastRunResults;
+		}
 
-			void clearResults()
-			{
-				_lastRunResults.clear();
-			}
+		void clearResults()
+		{
+			_lastRunResults.clear();
+		}
 
-			virtual void run() = 0;
-			virtual void calculateResults(const TaskMetrics& metrics) = 0;
+		virtual void run() = 0;
+		virtual void calculateResults(const TaskMetrics& metrics) = 0;
 
-			virtual void applyAffinity();
+		virtual void applyAffinity();
 
-			virtual void prepare()
-			{
+		virtual void prepare()
+		{
 
-			}
+		}
 
-			virtual void finalize()
-			{
+		virtual void finalize()
+		{
 
-			}
+		}
 
-			void setAffinity(const TaskAffinity& affinity)
-			{
-				_affinity = affinity;
-			}
+		void setAffinity(const TaskAffinity& affinity)
+		{
+			_affinity = affinity;
+		}
 
-			void setAffinity(TaskAffinity&& affinity)
-			{
-				_affinity = std::move(affinity);
-			}
+		void setAffinity(TaskAffinity&& affinity)
+		{
+			_affinity = std::move(affinity);
+		}
 
-			Task(const std::string& name, bool toBeMeasured = true)
-					: _name(name), _toBeMeasured(toBeMeasured)
-			{
+		Task(const std::string& name, bool toBeMeasured = true)
+			: _name(name), _toBeMeasured(toBeMeasured)
+		{
 
-			}
+		}
 
-			virtual ~Task()
-			{
+		virtual ~Task()
+		{
 
-			}
+		}
 
-			Task(Task&&) = default;
-			Task(const Task&) = default;
-			Task& operator=(Task&&) = default;
-			Task& operator=(const Task&) = default;
-		protected:
-			TaskAffinity _affinity;
+		Task(Task&&) = default;
+		Task(const Task&) = default;
+		Task& operator=(Task&&) = default;
+		Task& operator=(const Task&) = default;
+	protected:
+		TaskAffinity _affinity;
 
-			void addResult(const TaskRunResult& result)
-			{
-				_lastRunResults.push_back(&result);
-			}
-		private:
-			std::vector<const TaskRunResult*> _lastRunResults;
-			std::string _name;
-			bool _toBeMeasured;
+		void addResult(const TaskRunResult& result)
+		{
+			_lastRunResults.push_back(&result);
+		}
+	private:
+		std::vector<const TaskRunResult*> _lastRunResults;
+		std::string _name;
+		bool _toBeMeasured;
 	};
 
 } /* namespace Elpida */

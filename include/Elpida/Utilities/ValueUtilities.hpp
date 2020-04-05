@@ -34,8 +34,8 @@ namespace Elpida
 
 	class ValueUtilities
 	{
-		public:
-			static std::string getValueScaleString(double value);
+	public:
+		static std::string getValueScaleString(double value);
 	};
 
 } /* namespace Elpida */

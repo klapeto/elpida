@@ -40,8 +40,12 @@
 namespace Elpida
 {
 
-	TaskThread::TaskThread(Task& task, std::condition_variable& waitNotifier, std::mutex& mutex, const bool& shouldWake, unsigned int affinity)
-			: _task(task), _waitNotifier(waitNotifier), _mutex(mutex), _shouldWake(shouldWake), _affinity(affinity)
+	TaskThread::TaskThread(Task& task,
+		std::condition_variable& waitNotifier,
+		std::mutex& mutex,
+		const bool& shouldWake,
+		unsigned int affinity)
+		: _task(task), _waitNotifier(waitNotifier), _mutex(mutex), _shouldWake(shouldWake), _affinity(affinity)
 	{
 	}
 

@@ -34,76 +34,75 @@ namespace Elpida
 {
 
 	class Task;
-	class TaskBatchConfiguration;
 
 	class TaskBatch
 	{
-		public:
+	public:
 
-			typedef TaskBatch* (*TaskBatchGenerator)();
+		typedef TaskBatch* (* TaskBatchGenerator)();
 
-			const std::vector<Task*>& getTasks() const
-			{
-				return _tasks;
-			}
+		const std::vector<Task*>& getTasks() const
+		{
+			return _tasks;
+		}
 
-			const std::string& getName() const
-			{
-				return _name;
-			}
+		const std::string& getName() const
+		{
+			return _name;
+		}
 
-			void prepare() const
-			{
-				destroyTasks();
-				createTasks();
-			}
+		void prepare() const
+		{
+			destroyTasks();
+			createTasks();
+		}
 
-			void finalize() const
-			{
-				destroyTasks();
-			}
+		void finalize() const
+		{
+			destroyTasks();
+		}
 
-			virtual void reconfigure(const std::string& inputData)
-			{
+		virtual void reconfigure(const std::string& inputData)
+		{
 
-			}
+		}
 
-			virtual void onBeforeExecution() const
-			{
+		virtual void onBeforeExecution() const
+		{
 
-			}
+		}
 
-			virtual void onAfterExcecution() const
-			{
+		virtual void onAfterExecution() const
+		{
 
-			}
+		}
 
-			TaskBatch(const std::string& name)
-					: _name(name)
-			{
+		TaskBatch(const std::string& name)
+			: _name(name)
+		{
 
-			}
+		}
 
-			virtual ~TaskBatch()
-			{
-				destroyTasks();
-			}
+		virtual ~TaskBatch()
+		{
+			destroyTasks();
+		}
 
-			TaskBatch(TaskBatch&&) = default;
-			TaskBatch(const TaskBatch&) = default;
-			TaskBatch& operator=(TaskBatch&&) = default;
-			TaskBatch& operator=(const TaskBatch&) = default;
+		TaskBatch(TaskBatch&&) = default;
+		TaskBatch(const TaskBatch&) = default;
+		TaskBatch& operator=(TaskBatch&&) = default;
+		TaskBatch& operator=(const TaskBatch&) = default;
 
-		private:
-			std::string _name;
-			mutable std::vector<Task*> _tasks;
-		protected:
-			void addTask(Task* task) const
-			{
-				_tasks.push_back(task);
-			}
-			void destroyTasks() const;
-			virtual void createTasks() const = 0;
+	private:
+		std::string _name;
+		mutable std::vector<Task*> _tasks;
+	protected:
+		void addTask(Task* task) const
+		{
+			_tasks.push_back(task);
+		}
+		void destroyTasks() const;
+		virtual void createTasks() const = 0;
 	};
 
 } /* namespace Elpida */

@@ -37,7 +37,7 @@
 
 extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
 {
-	return new std::vector<Elpida::QtTaskBatchWrapper*> {
+	return new std::vector<Elpida::QtTaskBatchWrapper*>{
 		new Elpida::MemoryReadProperties(new Elpida::MultithreadMemoryChunksReadTaskBatch()),
 		new Elpida::MemoryLatencyChart(new Elpida::MemoryLatencyTaskBatch)
 	};

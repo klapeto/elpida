@@ -46,7 +46,7 @@ namespace Elpida
 {
 
 	Runner::Runner()
-			: _mustStop(false)
+		: _mustStop(false)
 	{
 
 	}
@@ -67,7 +67,7 @@ namespace Elpida
 			taskBatch->onBeforeExecution();
 			const auto& tasks = taskBatch->getTasks();
 			{
-				EventArguments::BatchStart evArgs { taskBatch->getName(), tasks.size() };
+				EventArguments::BatchStart evArgs{ taskBatch->getName(), tasks.size() };
 				batchStart.raise(evArgs);
 			}
 			for (auto task : tasks)
@@ -75,7 +75,7 @@ namespace Elpida
 				if (_mustStop) break;
 				task->clearResults();
 				{
-					EventArguments::TaskStart evArgs { task->getName() };
+					EventArguments::TaskStart evArgs{ task->getName() };
 					taskStart.raise(evArgs);
 				}
 				if (_taskAffinity.isSet())
@@ -95,25 +95,25 @@ namespace Elpida
 					}
 				}
 				{
-					EventArguments::TaskEnd evArgs { taskBatch->getName() };
+					EventArguments::TaskEnd evArgs{ taskBatch->getName() };
 					taskEnd.raise(evArgs);
 				}
 			}
-			taskBatch->onAfterExcecution();
+			taskBatch->onAfterExecution();
 			taskBatch->finalize();
 			{
-				EventArguments::BatchEnd evArgs { taskBatch->getName(), batchResult };
+				EventArguments::BatchEnd evArgs{ taskBatch->getName(), batchResult };
 				batchEnd.raise(evArgs);
 			}
 		}
 	}
 
-	void Runner::addTaskBatch(const TaskBatch &batch)
+	void Runner::addTaskBatch(const TaskBatch& batch)
 	{
 		_tasksBatches.push_back(&batch);
 	}
 
-	TaskMetrics Runner::runTask(Task &task)
+	TaskMetrics Runner::runTask(Task& task)
 	{
 		task.prepare();
 		task.applyAffinity();
@@ -131,12 +131,12 @@ namespace Elpida
 #ifdef ELPIDA_LINUX
 		switch (priority)
 		{
-			case ProcessPriority::High:
-				setpriority(PRIO_PROCESS, 0, PRIO_MIN);
-				break;
-			default:
-				setpriority(PRIO_PROCESS, 0, 0);
-				break;
+		case ProcessPriority::High:
+			setpriority(PRIO_PROCESS, 0, PRIO_MIN);
+			break;
+		default:
+			setpriority(PRIO_PROCESS, 0, 0);
+			break;
 		}
 #else
 		if(!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))

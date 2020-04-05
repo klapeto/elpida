@@ -82,16 +82,16 @@ namespace Elpida
 				std::string argumentName = std::string(argumentNameStart, argumentNameEnd);
 				switch (*argumentNameEnd)
 				{
-					case '=':
-						argumentNameStart = ++argumentNameEnd;
-						while (!isWhiteSpace(*argumentNameEnd) && *argumentNameEnd)
-							argumentNameEnd++;
-						_namedArguments.emplace(argumentName, std::string(argumentNameStart, argumentNameEnd));
-						break;
-					case 0:
-					case ' ':
-						_namedArguments.emplace(argumentName, "true");
-						break;
+				case '=':
+					argumentNameStart = ++argumentNameEnd;
+					while (!isWhiteSpace(*argumentNameEnd) && *argumentNameEnd)
+						argumentNameEnd++;
+					_namedArguments.emplace(argumentName, std::string(argumentNameStart, argumentNameEnd));
+					break;
+				case 0:
+				case ' ':
+					_namedArguments.emplace(argumentName, "true");
+					break;
 				}
 			}
 			else

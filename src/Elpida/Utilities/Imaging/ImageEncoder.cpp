@@ -18,13 +18,13 @@
  *************************************************************************/
 
 /*
- * Image.cpp
+ * PngLoader.cpp
  *
- *  Created on: 8 Μαρ 2018
+ *  Created on: 15 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/Utilities/Image.hpp"
+#include "Elpida/Utilities/Imaging/ImageEncoder.hpp"
 
 namespace Elpida
 {

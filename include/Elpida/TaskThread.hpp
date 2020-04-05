@@ -36,45 +36,49 @@ namespace Elpida
 
 	class TaskThread
 	{
-		public:
+	public:
 
-			unsigned int getAffinity() const
-			{
-				return _affinity;
-			}
+		unsigned int getAffinity() const
+		{
+			return _affinity;
+		}
 
-			void setAffinity(int affinity)
-			{
-				_affinity = affinity;
-			}
+		void setAffinity(int affinity)
+		{
+			_affinity = affinity;
+		}
 
-			Task& getTask()
-			{
-				return _task;
-			}
+		Task& getTask()
+		{
+			return _task;
+		}
 
-			void start();
-			void join();
+		void start();
+		void join();
 
-			static void setCurrentThreadAffinity(unsigned int cpuId);
+		static void setCurrentThreadAffinity(unsigned int cpuId);
 
-			TaskThread(Task& task, std::condition_variable& waitNotifier, std::mutex& mutex, const bool& shouldWake, unsigned int affinity);
-			virtual ~TaskThread();
+		TaskThread(Task& task,
+			std::condition_variable& waitNotifier,
+			std::mutex& mutex,
+			const bool& shouldWake,
+			unsigned int affinity);
+		virtual ~TaskThread();
 
-			TaskThread(TaskThread&&) = default;
-			TaskThread(const TaskThread&) = delete;
-			TaskThread& operator=(TaskThread&&) = default;
-			TaskThread& operator=(const TaskThread&) = delete;
+		TaskThread(TaskThread&&) = default;
+		TaskThread(const TaskThread&) = delete;
+		TaskThread& operator=(TaskThread&&) = default;
+		TaskThread& operator=(const TaskThread&) = delete;
 
-		private:
-			std::thread _runnerThread;
-			Task& _task;
-			std::condition_variable& _waitNotifier;
-			std::mutex& _mutex;
-			const bool& _shouldWake;
-			unsigned int _affinity;
+	private:
+		std::thread _runnerThread;
+		Task& _task;
+		std::condition_variable& _waitNotifier;
+		std::mutex& _mutex;
+		const bool& _shouldWake;
+		unsigned int _affinity;
 
-			void runTask();
+		void runTask();
 	};
 
 } /* namespace Elpida */

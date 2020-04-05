@@ -33,12 +33,12 @@ namespace Elpida
 {
 
 	PngEncoding::PngEncoding(const Image<Data>& inputImage)
-			:
-			  Task("Png Encoding"),
-			  _runResult("Data process rate", "Bytes"),
-			  _inputImage(inputImage),
-			  _encodedData(nullptr),
-			  _encodedDataSize(0)
+		:
+		Task("Png Encoding"),
+		_runResult("Data process rate", "Bytes"),
+		_inputImage(inputImage),
+		_encodedData(nullptr),
+		_encodedDataSize(0)
 	{
 	}
 
@@ -53,8 +53,9 @@ namespace Elpida
 	void PngEncoding::run()
 	{
 		LibPngEncoder encoder;
-		auto encodeResult = encoder.encode(_inputImage.getWidth(), _inputImage.getHeight(), (DataPtr) _inputImage.getData(),
-		                                   _inputImage.getTotalSizeInBytes());
+		auto encodeResult =
+			encoder.encode(_inputImage.getWidth(), _inputImage.getHeight(), (DataPtr)_inputImage.getData(),
+				_inputImage.getTotalSizeInBytes());
 		_encodedData = encodeResult.data;
 		_encodedDataSize = encodeResult.dataSize;
 	}

@@ -31,7 +31,7 @@
 
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Utilities/Image.hpp"
+#include "Elpida/Utilities/Imaging/Image.hpp"
 
 namespace Elpida
 {
@@ -39,54 +39,54 @@ namespace Elpida
 	class TaskMetrics;
 
 	template<typename T, typename R = float>
-	class ConvertToFloat final: public Task
+	class ConvertToFloat final : public Task
 	{
-		public:
+	public:
 
-			Image<R>& getImage()
+		Image<R>& getImage()
+		{
+			return _convertedImage;
+		}
+
+		void run()
+		{
+			std::size_t size = _sourceImage.getTotalSize();
+			Pixel<T>* sourceData = _sourceImage.getData();
+			Pixel<R>* convertedData = _convertedImage.getData();
+			for (std::size_t i = 0; i < size; ++i)
 			{
-				return _convertedImage;
+				convertedData[i].R = sourceData[i].R / (R)255.0;
+				convertedData[i].G = sourceData[i].G / (R)255.0;
+				convertedData[i].B = sourceData[i].B / (R)255.0;
+				convertedData[i].A = sourceData[i].A / (R)255.0;
 			}
+		}
 
-			void run()
-			{
-				std::size_t size = _sourceImage.getTotalSize();
-				Pixel<T>* sourceData = _sourceImage.getData();
-				Pixel<R>* convertedData = _convertedImage.getData();
-				for (std::size_t i = 0; i < size; ++i)
-				{
-					convertedData[i].R = sourceData[i].R / (R) 255.0;
-					convertedData[i].G = sourceData[i].G / (R) 255.0;
-					convertedData[i].B = sourceData[i].B / (R) 255.0;
-					convertedData[i].A = sourceData[i].A / (R) 255.0;
-				}
-			}
+		void calculateResults(const TaskMetrics& metrics)
+		{
+			_runResult.setOriginalValue(_sourceImage.getTotalSizeInBytes());
+			addResult(_runResult);
+		}
 
-			void calculateResults(const TaskMetrics& metrics)
-			{
-				_runResult.setOriginalValue(_sourceImage.getTotalSizeInBytes());
-				addResult(_runResult);
-			}
+		void prepare()
+		{
+			_convertedImage = Image<R>(_sourceImage.getWidth(), _sourceImage.getHeight());
+		}
 
-			void prepare()
-			{
-				_convertedImage = Image<R>(_sourceImage.getWidth(), _sourceImage.getHeight());
-			}
+		ConvertToFloat(const Image<T>& sourceImage)
+			: Task("Convert to Float"), _sourceImage(sourceImage), _runResult("Data convert rate", "Bytes")
+		{
 
-			ConvertToFloat(const Image<T>& sourceImage)
-					: Task("Convert to Float"), _sourceImage(sourceImage), _runResult("Data convert rate", "Bytes")
-			{
+		}
 
-			}
+		~ConvertToFloat()
+		{
 
-			~ConvertToFloat()
-			{
-
-			}
-		private:
-			const Image<T>& _sourceImage;
-			Image<R> _convertedImage;
-			TaskRunResult _runResult;
+		}
+	private:
+		const Image<T>& _sourceImage;
+		Image<R> _convertedImage;
+		TaskRunResult _runResult;
 	};
 
 } /* namespace Elpida */

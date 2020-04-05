@@ -35,37 +35,37 @@ namespace Elpida
 
 	class MemoryFile
 	{
-		public:
+	public:
 
-			typedef unsigned char Data;
-			typedef Data* DataPtr;
+		typedef unsigned char Data;
+		typedef Data* DataPtr;
 
-			const DataPtr& getData() const
-			{
-				return _data;
-			}
+		const DataPtr& getData() const
+		{
+			return _data;
+		}
 
-			const std::size_t& getSize() const
-			{
-				return _size;
-			}
+		const std::size_t& getSize() const
+		{
+			return _size;
+		}
 
-			void load(const std::string& path);
-			void writeToFile(const std::string& path) const;
+		void load(const std::string& path);
+		void writeToFile(const std::string& path) const;
 
-			MemoryFile();
-			MemoryFile(std::size_t size);
-			MemoryFile(void* data, std::size_t size);
-			virtual ~MemoryFile();
+		MemoryFile();
+		MemoryFile(std::size_t size);
+		MemoryFile(void* data, std::size_t size);
+		virtual ~MemoryFile();
 
-			MemoryFile(MemoryFile&&) = default;
-			MemoryFile(const MemoryFile&) = default;
-			MemoryFile& operator=(MemoryFile&&) = default;
-			MemoryFile& operator=(const MemoryFile&) = default;
-		private:
-			DataPtr _data;
-			std::size_t _size;
-			bool _deleteData;
+		MemoryFile(MemoryFile&&) = default;
+		MemoryFile(const MemoryFile&) = default;
+		MemoryFile& operator=(MemoryFile&&) = default;
+		MemoryFile& operator=(const MemoryFile&) = default;
+	private:
+		DataPtr _data;
+		std::size_t _size;
+		bool _deleteData;
 	};
 
 } /* namespace Elpida */

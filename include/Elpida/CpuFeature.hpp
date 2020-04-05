@@ -34,53 +34,53 @@ namespace Elpida
 
 	class CpuFeature
 	{
-		public:
+	public:
 
-			const std::string& getName() const
-			{
-				return _name;
-			}
+		const std::string& getName() const
+		{
+			return _name;
+		}
 
-			const std::string& getDescription() const
-			{
-				return _description;
-			}
+		const std::string& getDescription() const
+		{
+			return _description;
+		}
 
-			bool isSupported() const
-			{
-				return _supported;
-			}
+		bool isSupported() const
+		{
+			return _supported;
+		}
 
-			void setSupported(bool supported)
-			{
-				_supported = supported;
-			}
+		void setSupported(bool supported)
+		{
+			_supported = supported;
+		}
 
-			CpuFeature()
-					: _supported(false)
-			{
+		CpuFeature()
+			: _supported(false)
+		{
 
-			}
+		}
 
-			CpuFeature(const std::string& name, const std::string& description, bool supported = false)
-					: _name(name), _description(description), _supported(supported)
-			{
+		CpuFeature(const std::string& name, const std::string& description, bool supported = false)
+			: _name(name), _description(description), _supported(supported)
+		{
 
-			}
-			~CpuFeature()
-			{
+		}
+		~CpuFeature()
+		{
 
-			}
+		}
 
-			CpuFeature(CpuFeature&&) = default;
-			CpuFeature(const CpuFeature&) = default;
-			CpuFeature& operator=(CpuFeature&&) = default;
-			CpuFeature& operator=(const CpuFeature&) = default;
+		CpuFeature(CpuFeature&&) = default;
+		CpuFeature(const CpuFeature&) = default;
+		CpuFeature& operator=(CpuFeature&&) = default;
+		CpuFeature& operator=(const CpuFeature&) = default;
 
-		private:
-			std::string _name;
-			std::string _description;
-			bool _supported;
+	private:
+		std::string _name;
+		std::string _description;
+		bool _supported;
 	};
 
 } /* namespace Elpida */

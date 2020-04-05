@@ -37,46 +37,46 @@ namespace Elpida
 	template<typename ... T>
 	class Event final
 	{
-		public:
-			typedef typename EventSubscription<T...>::EventHandler EventHandler;
+	public:
+		typedef typename EventSubscription<T...>::EventHandler EventHandler;
 
-			void raise(T ... eventArguments)
+		void raise(T ... eventArguments)
+		{
+			std::lock_guard<std::mutex> lock(_mutex);
+			for (const auto& subscriber : _subscribers)
 			{
-				std::lock_guard<std::mutex> lock(_mutex);
-				for (const auto& subscriber : _subscribers)
-				{
-					subscriber(eventArguments...);
-				}
+				subscriber(eventArguments...);
 			}
+		}
 
-			template<typename TCallbable>
-			EventSubscription<T...>& subscribe(TCallbable handler)
-			{
-				std::lock_guard<std::mutex> lock(_mutex);
-				auto itr = _subscribers.insert(_subscribers.end(), EventSubscription<T...>(*this, EventHandler(handler)));
-				itr->setIterator(itr);
-				return *itr;
-			}
+		template<typename TCallbable>
+		EventSubscription<T...>& subscribe(TCallbable handler)
+		{
+			std::lock_guard<std::mutex> lock(_mutex);
+			auto itr = _subscribers.insert(_subscribers.end(), EventSubscription<T...>(*this, EventHandler(handler)));
+			itr->setIterator(itr);
+			return *itr;
+		}
 
-			void unsubScribe(EventSubscription<T...>& subscription)
-			{
-				std::lock_guard<std::mutex> lock(_mutex);
-				_subscribers.erase(subscription.getIterator());
-			}
+		void unsubScribe(EventSubscription<T...>& subscription)
+		{
+			std::lock_guard<std::mutex> lock(_mutex);
+			_subscribers.erase(subscription.getIterator());
+		}
 
-			Event()
-			{
+		Event()
+		{
 
-			}
-			~Event()
-			{
-				std::lock_guard<std::mutex> lock(_mutex);
-				_subscribers.clear();
-			}
+		}
+		~Event()
+		{
+			std::lock_guard<std::mutex> lock(_mutex);
+			_subscribers.clear();
+		}
 
-		private:
-			std::mutex _mutex;
-			std::list<EventSubscription<T...>> _subscribers;
+	private:
+		std::mutex _mutex;
+		std::list<EventSubscription<T...>> _subscribers;
 
 	};
 

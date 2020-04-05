@@ -34,31 +34,31 @@
 namespace Elpida
 {
 
-	class OutOfRangeException final: public ElpidaException
+	class OutOfRangeException final : public ElpidaException
 	{
-		public:
-			OutOfRangeException()
-					: ElpidaException()
-			{
+	public:
+		OutOfRangeException()
+			: ElpidaException()
+		{
 
-			}
+		}
 
-			OutOfRangeException(const std::string& what)
-					: ElpidaException(what)
-			{
+		OutOfRangeException(const std::string& what)
+			: ElpidaException(what)
+		{
 
-			}
+		}
 
-			OutOfRangeException(const std::string& what, const std::string& message)
-					: ElpidaException(what, message)
-			{
+		OutOfRangeException(const std::string& what, const std::string& message)
+			: ElpidaException(what, message)
+		{
 
-			}
+		}
 
-			~OutOfRangeException()
-			{
+		~OutOfRangeException()
+		{
 
-			}
+		}
 	};
 
 } /* namespace Elpida */

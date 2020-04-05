@@ -26,7 +26,8 @@
 
 #include "TaskBatches/Memory/Read/MemoryRead.hpp"
 
-namespace Elpida {
+namespace Elpida
+{
 
 } /* namespace Elpida */
 

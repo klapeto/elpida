@@ -34,31 +34,31 @@
 namespace Elpida
 {
 
-	class IOException: public ElpidaException
+	class IOException : public ElpidaException
 	{
-		public:
-			IOException()
-					: ElpidaException()
-			{
+	public:
+		IOException()
+			: ElpidaException()
+		{
 
-			}
+		}
 
-			IOException(const std::string& what)
-					: ElpidaException(what)
-			{
+		IOException(const std::string& what)
+			: ElpidaException(what)
+		{
 
-			}
+		}
 
-			IOException(const std::string& what, const std::string& message)
-					: ElpidaException(what, message)
-			{
+		IOException(const std::string& what, const std::string& message)
+			: ElpidaException(what, message)
+		{
 
-			}
+		}
 
-			virtual ~IOException()
-			{
+		virtual ~IOException()
+		{
 
-			}
+		}
 	};
 
 } /* namespace Elpida */

@@ -33,23 +33,23 @@ namespace Elpida
 {
 
 	template<typename T>
-	class Singleton: public NonCopyable
+	class Singleton : public NonCopyable
 	{
-		public:
+	public:
 
-			static inline T& getInstance()
-			{
-				static T instance;
-				return instance;
-			}
+		static inline T& getInstance()
+		{
+			static T instance;
+			return instance;
+		}
 
-			virtual ~Singleton()
-			{
-			}
-		protected:
-			Singleton()
-			{
-			}
+		virtual ~Singleton()
+		{
+		}
+	protected:
+		Singleton()
+		{
+		}
 
 	};
 

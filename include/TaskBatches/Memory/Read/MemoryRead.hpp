@@ -41,109 +41,111 @@ namespace Elpida
 {
 	class TaskMetrics;
 
-	class MemoryRead final: public Task
+	class MemoryRead final : public Task
 	{
-		public:
+	public:
 
-			void prepare() override
-			{
-				_memory.allocate();
-			}
+		void prepare() override
+		{
+			_memory.allocate();
+		}
 
-			void finalize() override
-			{
-				_memory.deallocate();
-			}
+		void finalize() override
+		{
+			_memory.deallocate();
+		}
 
-			void run() override
+		void run() override
+		{
+			register auto ptr = (RegisterSize*)_memory.getPointer();
+			register auto start = ptr;
+			register auto end = (RegisterSize*)((RegisterSize)start + _memory.getSize());
+			register auto iterations = _iterations;
+			register auto x = RegisterSize();
+			for (register auto i = 0ul; i < iterations; ++i)
 			{
-				register auto ptr = (RegisterSize*) _memory.getPointer();
-				register auto start = ptr;
-				register auto end = (RegisterSize *) ((RegisterSize) start + _memory.getSize());
-				register auto iterations = _iterations;
-				register auto x = RegisterSize();
-				for (register auto i = 0ul; i < iterations; ++i)
+				ptr = start;
+				while (ptr < end)
 				{
-					ptr = start;
-					while (ptr < end)
-					{
-						x = *ptr;
-						x = *(ptr + 1);
-						x = *(ptr + 2);
-						x = *(ptr + 3);
-						x = *(ptr + 4);
-						x = *(ptr + 5);
-						x = *(ptr + 6);
-						x = *(ptr + 7);
-						x = *(ptr + 8);
-						x = *(ptr + 9);
-						x = *(ptr + 10);
-						x = *(ptr + 11);
-						x = *(ptr + 12);
-						x = *(ptr + 13);
-						x = *(ptr + 14);
-						x = *(ptr + 15);
-						x = *(ptr + 16);
-						x = *(ptr + 17);
-						x = *(ptr + 18);
-						x = *(ptr + 19);
-						x = *(ptr + 20);
-						x = *(ptr + 21);
-						x = *(ptr + 22);
-						x = *(ptr + 23);
-						x = *(ptr + 24);
-						x = *(ptr + 25);
-						x = *(ptr + 26);
-						x = *(ptr + 27);
-						x = *(ptr + 28);
-						x = *(ptr + 29);
-						x = *(ptr + 30);
-						x = *(ptr + 31);
-						ptr += 32;
-					}
+					x = *ptr;
+					x = *(ptr + 1);
+					x = *(ptr + 2);
+					x = *(ptr + 3);
+					x = *(ptr + 4);
+					x = *(ptr + 5);
+					x = *(ptr + 6);
+					x = *(ptr + 7);
+					x = *(ptr + 8);
+					x = *(ptr + 9);
+					x = *(ptr + 10);
+					x = *(ptr + 11);
+					x = *(ptr + 12);
+					x = *(ptr + 13);
+					x = *(ptr + 14);
+					x = *(ptr + 15);
+					x = *(ptr + 16);
+					x = *(ptr + 17);
+					x = *(ptr + 18);
+					x = *(ptr + 19);
+					x = *(ptr + 20);
+					x = *(ptr + 21);
+					x = *(ptr + 22);
+					x = *(ptr + 23);
+					x = *(ptr + 24);
+					x = *(ptr + 25);
+					x = *(ptr + 26);
+					x = *(ptr + 27);
+					x = *(ptr + 28);
+					x = *(ptr + 29);
+					x = *(ptr + 30);
+					x = *(ptr + 31);
+					ptr += 32;
 				}
-				auto dummy = x;
 			}
+			auto dummy = x;
+		}
 
-			std::size_t getMemorySize() const
-			{
-				return _memory.getSize();
-			}
+		std::size_t getMemorySize() const
+		{
+			return _memory.getSize();
+		}
 
-			unsigned long getIterations() const
-			{
-				return _iterations;
-			}
+		unsigned long getIterations() const
+		{
+			return _iterations;
+		}
 
-			void calculateResults(const TaskMetrics& metrics) override
-			{
-				addResult(_runResult);
-			}
+		void calculateResults(const TaskMetrics& metrics) override
+		{
+			addResult(_runResult);
+		}
 
-			MemoryRead(std::size_t size, unsigned int affinity)
-					:
-					  Task("Read " + ValueUtilities::getValueScaleString(size) + "B @" + std::to_string(sizeof(RegisterSize)) + " Bytes/Read"),
-					  _runResult(ValueUtilities::getValueScaleString(size) + "B", "Bytes"),
-					  _memory(size, affinity)
-			{
-				if (size % (32 * sizeof(RegisterSize)) != 0) throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
-				_iterations = _iterationConstant / (double) _memory.getSize();
-				_runResult.setOriginalValue(_memory.getSize());
-				_runResult.setTestedDataValue(_memory.getSize());
-				_runResult.setMultiplier(_iterations);
-			}
+		MemoryRead(std::size_t size, unsigned int affinity)
+			:
+			Task("Read " + ValueUtilities::getValueScaleString(size) + "B @" + std::to_string(sizeof(RegisterSize))
+				+ " Bytes/Read"),
+			_runResult(ValueUtilities::getValueScaleString(size) + "B", "Bytes"),
+			_memory(size, affinity)
+		{
+			if (size % (32 * sizeof(RegisterSize)) != 0)
+				throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
+			_iterations = _iterationConstant / (double)_memory.getSize();
+			_runResult.setOriginalValue(_memory.getSize());
+			_runResult.setTestedDataValue(_memory.getSize());
+			_runResult.setMultiplier(_iterations);
+		}
 
-			virtual ~MemoryRead()
-			{
-				finalize();
-			}
+		virtual ~MemoryRead()
+		{
+			finalize();
+		}
 
-		protected:
-			TaskRunResult _runResult;
-			NumaMemory _memory;
-			unsigned long _iterations;
+	protected:
+		TaskRunResult _runResult;
+		NumaMemory _memory;
+		unsigned long _iterations;
 
-			static constexpr double _iterationConstant = 100000000000; // rough estimate
+		static constexpr double _iterationConstant = 100000000000; // rough estimate
 
 	};
 
