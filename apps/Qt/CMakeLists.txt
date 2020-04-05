@@ -36,4 +36,4 @@ add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
 target_include_directories(elpida-qt PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 target_link_libraries(elpida-qt elpida Qt5::Widgets Qt5::Charts)
 
-install(TARGETS elpida-qt RUNTIME DESTINATION Elpida)
+install(TARGETS elpida-qt RUNTIME)
