@@ -104,7 +104,7 @@ namespace Elpida
 			auto c = 0;
 			for (auto result : ordered)
 			{
-				auto values = g	class QChartView;etChartValuesFromTaskThroughput(*result);
+				auto values = getChartValuesFromTaskThroughput(*result);
 				series->append(c, values.yValue);
 				_xAxis->append(QString::fromStdString(values.xCategory), c++);
 			}
