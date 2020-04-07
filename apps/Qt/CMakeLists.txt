@@ -18,7 +18,7 @@ set(ELPIDA_QT_SOURCES
         Ui/TopologyWidget/TopologyWidget.ui
         Ui/TopologyFrame/TopologyFrame.ui
         Images/Images.qrc
-        )
+        Core/Abstractions/Component.hpp Core/Abstractions/ApplicationEvent.hpp Core/Abstractions/ComponentAdapter.hpp Core/Abstractions/VisitableComponent.hpp Core/Mediator.cpp Core/Mediator.hpp Core/LogComponent.cpp Core/LogComponent.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

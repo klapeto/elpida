@@ -29,12 +29,10 @@
 
 #include <ostream>
 
-#include "Elpida/Utilities/Singleton.hpp"
-
 namespace Elpida
 {
 
-	class Logger : public Singleton<Logger>
+	class Logger final
 	{
 	public:
 		enum class LogType
@@ -73,13 +71,14 @@ namespace Elpida
 			}
 		}
 
-	private:
-		std::ostream* _output;
-		bool _timestampsEnabled;
 		Logger()
 			: _output(nullptr), _timestampsEnabled(true)
 		{
 		}
+
+	private:
+		std::ostream* _output;
+		bool _timestampsEnabled;
 
 		template<typename T, typename ... TArgs>
 		void log(const T& str, TArgs ... args)
