@@ -97,37 +97,9 @@ get_directory_property(
 
 set(LIBPNG_INCLUDE_DIRS ${LIBPNG_DIR} ${LIBPNG_BUILD_DIR})
 
+# unless you install them, they do not expose the header includes
 target_include_directories(zlib INTERFACE ${ZLIB_INCLUDE_DIRS})
 target_include_directories(png INTERFACE ${LIBPNG_INCLUDE_DIRS})
-
-
-#[[SET(ZLIB_DIRECTORY ${ZLIB_DIRECTORY} PARENT_SCOPE)
-SET(ZLIB_BUILD_DIRECTORY ${ZLIB_BUILD_DIRECTORY} PARENT_SCOPE)
-SET(ZLIB_STATIC zlibstatic PARENT_SCOPE)
-SET(ZLIB_SHARED zlib PARENT_SCOPE)
-SET(LIBPNG_DIRECTORY ${LIBPNG_DIRECTORY} PARENT_SCOPE)
-SET(LIBPNG_BUILD_DIRECTORY ${LIBPNG_BUILD_DIRECTORY} PARENT_SCOPE)
-SET(LIBPNG_STATIC ${LIBPNG_STATIC} PARENT_SCOPE)
-SET(LIBPNG_SHARED ${LIBPNG_SHARED} PARENT_SCOPE)]]
-
-# Setup the dependencies include directories, sending it upward for use.
-#[[IF (NOT DEFINED DEPS_INCLUDE_DIRECTORIES)
-    SET(DEPS_INCLUDE_DIRECTORIES
-            ${ZLIB_DIRECTORY}
-            ${ZLIB_BUILD_DIRECTORY}
-            ${LIBPNG_DIRECTORY}
-            ${LIBPNG_BUILD_DIRECTORY}
-            PARENT_SCOPE
-            )
-ELSE ()
-    # Already defined requires append semantics
-    LIST(APPEND DEPS_INCLUDE_DIRECTORIES
-            ${ZLIB_DIRECTORY}
-            ${ZLIB_BUILD_DIRECTORY}
-            ${LIBPNG_DIRECTORY}
-            ${LIBPNG_BUILD_DIRECTORY}
-            )
-ENDIF ()]]
 
 #===================================================================================
 #===================================================================================
