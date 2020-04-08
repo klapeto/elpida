@@ -1,6 +1,6 @@
 set(ELPIDA_SOURCES
-        CpuFeature.cpp
-        CpuInfo.cpp
+        Topology/CpuFeature.cpp
+        Topology/CpuInfo.cpp
         Event.cpp
         EventSubscription.cpp
         MemoryInfo.cpp
@@ -36,7 +36,6 @@ set(ELPIDA_SOURCES
         Utilities/MemoryFile.cpp
         Utilities/NonCopyable.cpp
         Utilities/Imaging/Pixel.cpp
-        Utilities/Singleton.cpp
         Utilities/ValueUtilities.cpp
 
         CommonTasks/AlignedMemory.cpp

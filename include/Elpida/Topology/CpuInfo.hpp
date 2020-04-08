@@ -32,7 +32,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Elpida/CpuFeature.hpp"
+#include "CpuFeature.hpp"
 
 namespace Elpida
 {
@@ -86,7 +86,8 @@ namespace Elpida
 				{ "ABM", "Advanced bit manipulation" },
 				{ "F16C", "Half-precision convert instruction support" },
 				{ "RDRAND", "RDRAND (HW RNG) instruction support" },
-				{ "SGX", "Intel Software Guard Extensions BMI1 instructions support" }, };
+				{ "SGX", "Intel Software Guard Extensions BMI1 instructions support" },
+			};
 
 		struct Cache
 		{
@@ -184,17 +185,12 @@ namespace Elpida
 
 		std::unordered_map<std::string, CpuFeature> getInstructionSetSupport() const;
 
-		static const CpuInfo& getCpuInfo()
-		{
-			static CpuInfo info;
-			return info;
-		}
-
 		CpuInfo(CpuInfo&&) = default;
 		CpuInfo(const CpuInfo&) = default;
 		CpuInfo& operator=(CpuInfo&&) = default;
 		CpuInfo& operator=(const CpuInfo&) = default;
 
+		CpuInfo();
 		~CpuInfo();
 	private:
 		std::vector<CpuFeature> _instructionExtensions;
@@ -219,7 +215,6 @@ namespace Elpida
 		bool _turboBoost3;
 		bool _invariantTsc;
 
-		CpuInfo();
 		void getTscFrequency();
 		void getAMDFeatures();
 		void getIntelFeatures();

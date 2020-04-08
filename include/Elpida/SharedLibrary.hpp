@@ -43,22 +43,12 @@ namespace Elpida
 		}
 
 		SharedLibrary(const std::string& libraryPath);
+		SharedLibrary(SharedLibrary&& other);
+		SharedLibrary& operator=(SharedLibrary&& other);
+		~SharedLibrary();
+
 		SharedLibrary(const SharedLibrary&) = delete;
 		SharedLibrary& operator=(const SharedLibrary&) = delete;
-
-		SharedLibrary(SharedLibrary&& other)
-		{
-			this->_handle = other._handle;
-			other._handle = nullptr;
-		}
-		SharedLibrary& operator=(SharedLibrary&& other)
-		{
-			this->_handle = other._handle;
-			other._handle = nullptr;
-			return *this;
-		}
-
-		~SharedLibrary();
 	private:
 		void* _handle;
 		void* getFunctionPointerImpl(const std::string& functionName) const;

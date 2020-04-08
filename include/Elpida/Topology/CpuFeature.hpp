@@ -18,41 +18,66 @@
  *************************************************************************/
 
 /*
- * Singleton.hpp
+ * CpuFeature.hpp
  *
- *  Created on: 30 Ιουν 2018
+ *  Created on: 11 Μαρ 2018
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_UTILITIES_SINGLETON_HPP_
-#define ELPIDA_UTILITIES_SINGLETON_HPP_
+#ifndef ELPIDA_CPUFEATURE_HPP_
+#define ELPIDA_CPUFEATURE_HPP_
 
-#include "Elpida/Utilities/NonCopyable.hpp"
+#include <string>
 
 namespace Elpida
 {
 
-	template<typename T>
-	class Singleton : public NonCopyable
+	class CpuFeature
 	{
 	public:
 
-		static inline T& getInstance()
+		const std::string& getName() const
 		{
-			static T instance;
-			return instance;
+			return _name;
 		}
 
-		virtual ~Singleton()
+		const std::string& getDescription() const
 		{
-		}
-	protected:
-		Singleton()
-		{
+			return _description;
 		}
 
+		bool isSupported() const
+		{
+			return _supported;
+		}
+
+		CpuFeature()
+			: _supported(false)
+		{
+
+		}
+
+		CpuFeature(const std::string& name, const std::string& description, bool supported = false)
+			: _name(name), _description(description), _supported(supported)
+		{
+
+		}
+		~CpuFeature()
+		{
+
+		}
+
+		CpuFeature(CpuFeature&&) = default;
+		CpuFeature(const CpuFeature&) = default;
+		CpuFeature& operator=(CpuFeature&&) = default;
+		CpuFeature& operator=(const CpuFeature&) = default;
+
+	private:
+		std::string _name;
+		std::string _description;
+		bool _supported;
 	};
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_UTILITIES_SINGLETON_HPP_ */
+#endif /* ELPIDA_CPUFEATURE_HPP_ */

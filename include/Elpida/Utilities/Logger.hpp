@@ -100,8 +100,6 @@ namespace Elpida
 
 		void static appendTimestamp(std::ostream& out);
 		void static appendLogType(LogType type, std::ostream& out);
-
-		friend class Singleton<Logger>;
 	};
 
 } /* namespace Elpida */

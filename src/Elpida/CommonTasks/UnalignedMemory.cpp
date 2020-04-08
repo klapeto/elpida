@@ -29,6 +29,17 @@
 
 namespace Elpida
 {
+	UnalignedMemory::UnalignedMemory(std::size_t size)
+		: Memory(size)
+	{
+
+	}
+
+	UnalignedMemory::~UnalignedMemory()
+	{
+		deallocate();
+	}
+
 	void UnalignedMemory::allocateImpl()
 	{
 		_pointer = malloc(_size);

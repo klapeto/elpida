@@ -38,11 +38,6 @@ namespace Elpida
 	{
 	public:
 
-		bool isSet() const
-		{
-			return _nodes.size() > 0;
-		}
-
 		const std::vector<const ProcessorNode*>& getProcessorNodes() const
 		{
 			return _nodes;
@@ -52,7 +47,7 @@ namespace Elpida
 		{
 		}
 
-		TaskAffinity(std::initializer_list<int> processors);
+		TaskAffinity(std::initializer_list<ProcessorNode*> processors);
 
 		template<typename T>
 		TaskAffinity(const T& nodesToUse)

@@ -37,13 +37,6 @@ namespace Elpida
 	class MemoryInfo final : public NonCopyable
 	{
 	public:
-
-		static MemoryInfo& getInfo()
-		{
-			static MemoryInfo instance;
-			return instance;
-		}
-
 		std::size_t getMemorySize() const
 		{
 			return _memorySize;
@@ -56,19 +49,11 @@ namespace Elpida
 
 		std::size_t getAvailableFreeMemory() const;
 
-		~MemoryInfo()
-		{
-		}
+		MemoryInfo();
+		~MemoryInfo();
 	private:
-
 		std::size_t _memorySize;
 		std::size_t _pageSize;
-
-		MemoryInfo()
-			: _memorySize(0), _pageSize(0)
-		{
-			getValues();
-		}
 
 		void getValues();
 	};

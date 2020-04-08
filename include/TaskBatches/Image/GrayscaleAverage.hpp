@@ -95,7 +95,6 @@ namespace Elpida
 		const Image<T>& _sourceImage;
 		Image<T>& _targetImage;
 		TaskRunResult _runResult;
-
 	};
 
 } /* namespace Elpida */

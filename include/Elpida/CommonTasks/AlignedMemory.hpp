@@ -47,15 +47,8 @@ namespace Elpida
 			_alignment = alignment;
 		}
 
-		AlignedMemory(std::size_t size, unsigned int alignment)
-			: Memory(size), _alignment(alignment)
-		{
-		}
-
-		~AlignedMemory()
-		{
-			deallocate();
-		}
+		AlignedMemory(std::size_t size, unsigned int alignment);
+		~AlignedMemory();
 	private:
 		unsigned int _alignment;
 	protected:

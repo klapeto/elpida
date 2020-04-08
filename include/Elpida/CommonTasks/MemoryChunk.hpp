@@ -51,23 +51,9 @@ namespace Elpida
 			_pointer = nullptr;
 		}
 
-		MemoryChunk(void* pointer, std::size_t size)
-			: Memory(size), _ptr(pointer)
-		{
-			_pointer = _ptr;
-		}
-
-		~MemoryChunk()
-		{
-			_pointer = nullptr;
-		}
-
-		MemoryChunk(MemoryChunk&& other)
-			: Memory(std::move(other))
-		{
-			this->_ptr = other._ptr;
-			other._ptr = nullptr;
-		}
+		MemoryChunk(void* pointer, std::size_t size);
+		MemoryChunk(MemoryChunk&& other);
+		~MemoryChunk();
 	private:
 		void* _ptr;
 	};

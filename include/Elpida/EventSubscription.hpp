@@ -64,8 +64,8 @@ namespace Elpida
 		Event<T...>& _owner;
 		EventHandler _handler;
 
-		EventSubscription(Event<T...>& owner, EventHandler&& hanlder)
-			: _owner(owner), _handler(hanlder)
+		EventSubscription(Event<T...>& owner, EventHandler&& handler)
+			: _owner(owner), _handler(handler)
 		{
 
 		}

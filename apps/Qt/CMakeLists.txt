@@ -18,7 +18,16 @@ set(ELPIDA_QT_SOURCES
         Ui/TopologyWidget/TopologyWidget.ui
         Ui/TopologyFrame/TopologyFrame.ui
         Images/Images.qrc
-        Core/Abstractions/Component.hpp Core/Abstractions/ApplicationEvent.hpp Core/Abstractions/ComponentAdapter.hpp Core/Abstractions/VisitableComponent.hpp Core/Mediator.cpp Core/Mediator.hpp Core/LogComponent.cpp Core/LogComponent.hpp)
+        Core/Abstractions/Command.hpp
+        Core/Abstractions/CommandHandler.hpp
+        Core/Abstractions/Mediator.hpp
+        Core/ElpidaMediator.cpp
+        Core/ElpidaMediator.hpp
+        Core/ElpidaCommandHandler.cpp
+        Core/ElpidaCommandHandler.hpp
+        Core/Commands/StartBenchmarkCommand.cpp
+        Core/Commands/StartBenchmarkCommand.hpp
+        Core/Abstractions/TypedCommand.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

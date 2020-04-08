@@ -35,7 +35,6 @@
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Utilities/FileSystem.hpp"
 #include "Elpida/Utilities/Logger.hpp"
-#include "Elpida/Utilities/Singleton.hpp"
 
 #ifdef ELPIDA_LINUX
 
@@ -53,6 +52,11 @@ namespace Elpida
 
 	}
 
+	SharedLibraryLoader::~SharedLibraryLoader()
+	{
+
+	}
+#if false
 	void SharedLibraryLoader::loadFromFolder(const std::string& path, const std::string& orderFile)
 	{
 		unloadEverything();
@@ -111,22 +115,11 @@ namespace Elpida
 			}
 		}
 	}
-
-	SharedLibraryLoader::~SharedLibraryLoader()
-	{
-
-	}
+#endif
 
 	void SharedLibraryLoader::load(const std::string& path)
 	{
-		try
-		{
-			_loadedLibraries.emplace(path, SharedLibrary(path));
-		}
-		catch (ElpidaException& e)
-		{
-			Logger::getInstance().log(Logger::LogType::Error, e.getMessage());
-		}
+		_loadedLibraries.emplace(path, SharedLibrary(path));
 	}
 
 	void SharedLibraryLoader::unload(const std::string& path)

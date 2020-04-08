@@ -58,8 +58,6 @@ namespace Elpida
 			_outputFile = outputFile;
 		}
 
-		void reconfigure(const std::string& inputData) override;
-
 		ImageTaskBatch();
 		~ImageTaskBatch();
 

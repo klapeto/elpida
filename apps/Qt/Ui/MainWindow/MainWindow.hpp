@@ -25,6 +25,8 @@
 #include <vector>
 
 #include "Elpida/OffThreadExecutor.hpp"
+#include "Elpida/Topology/SystemTopology.hpp"
+#include "Elpida/Topology/CpuInfo.hpp"
 
 namespace Elpida
 {
@@ -66,6 +68,9 @@ namespace Elpida
 
 	private:
 		ElpidaManager& _elpidaManager;
+
+		CpuInfo _cpuInfo;
+		SystemTopology _topology;
 		std::vector<QMetaObject::Connection> _connections;
 		TaskBatchesWidget* _taskBatchesWidget;
 		LogsDialog* _logsDialog;

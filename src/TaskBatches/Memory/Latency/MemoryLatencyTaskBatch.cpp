@@ -34,7 +34,7 @@
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "TaskBatches/Memory/WorkingSetSizes.hpp"
 #include "Elpida/CommonTasks/AllocateMemory.hpp"
-#include "Elpida/CpuInfo.hpp"
+#include "Elpida/Topology/CpuInfo.hpp"
 #include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
 
 namespace Elpida

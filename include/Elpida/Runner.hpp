@@ -50,6 +50,9 @@ namespace Elpida
 			Normal, High,
 		};
 
+		typedef std::vector<TaskThroughput> RunResults;
+		typedef std::unordered_map<std::string, RunResults> ResultsHashtable;
+
 		struct EventArguments
 		{
 			struct BatchStart
@@ -69,7 +72,7 @@ namespace Elpida
 			struct BatchEnd
 			{
 				const std::string& name;
-				const std::unordered_map<std::string, std::vector<TaskThroughput>>& results;
+				const ResultsHashtable& results;
 			};
 		};
 
@@ -87,9 +90,7 @@ namespace Elpida
 			_mustStop = true;
 		}
 
-		const std::unordered_map<std::string,
-								 std::unordered_map<std::string,
-													std::vector<TaskThroughput>>>& getLastExecutionResults() const
+		const std::unordered_map<std::string, ResultsHashtable>& getLastExecutionResults() const
 		{
 			return _lastExecutionResults;
 		}
@@ -112,11 +113,11 @@ namespace Elpida
 		Runner& operator=(Runner&&) = default;
 		Runner& operator=(const Runner&) = default;
 	private:
-		std::unordered_map<std::string, std::unordered_map<std::string, std::vector<TaskThroughput>>>
-			_lastExecutionResults;
+		std::unordered_map<std::string, ResultsHashtable> _lastExecutionResults;
 		std::vector<const TaskBatch*> _tasksBatches;
 		TaskAffinity _taskAffinity;
 		bool _mustStop;
+
 		TaskMetrics runTask(Task& task);
 	};
 

@@ -25,7 +25,6 @@
  */
 
 #include "Elpida/MultiThreadTask.hpp"
-#include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/TaskFactory.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 
@@ -33,8 +32,9 @@ namespace Elpida
 {
 
 	MultiThreadTask::MultiThreadTask(const std::string& name, const TaskFactory& taskFactory)
-		: Task(name + "(Multi Threaded)"), _taskFactory(taskFactory), _threadsShouldWake(false)
+		: Task(name), _taskFactory(taskFactory), _threadsShouldWake(false)
 	{
+
 	}
 
 	MultiThreadTask::~MultiThreadTask()
@@ -42,19 +42,14 @@ namespace Elpida
 		destroyTasks();
 	}
 
-	void MultiThreadTask::addTask(Task* task, unsigned int affinity)
-	{
-		_tasksToBeExecuted.push_back(TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, affinity));
-		_createdTasks.push_back(task);
-	}
-
 	void MultiThreadTask::createTasks()
 	{
-		auto& processors =
-			_affinity.isSet() ? _affinity.getProcessorNodes() : SystemTopology::getTopology().getAllProcessors();
-		for (auto processor : processors)
+		for (const auto& processor : _affinity.getProcessorNodes())
 		{
-			addTask(_taskFactory.create(*processor), processor->getOsIndex());
+			auto task = _taskFactory.create(*processor);
+			_tasksToBeExecuted
+				.push_back(TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, processor->getOsIndex()));
+			_createdTasks.push_back(task);
 		}
 	}
 
@@ -66,6 +61,38 @@ namespace Elpida
 			delete task;
 		}
 		_createdTasks.clear();
+	}
+
+	void MultiThreadTask::prepare()
+	{
+		_threadsShouldWake = false;
+		createTasks();
+		for (auto& taskThread : _tasksToBeExecuted)
+		{
+			taskThread.getTask().prepare();
+			taskThread.start();
+		}
+	}
+
+	void MultiThreadTask::finalize()
+	{
+		for (auto& taskThread : _tasksToBeExecuted)
+		{
+			taskThread.getTask().finalize();
+		}
+		destroyTasks();
+	}
+
+	void MultiThreadTask::run()
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
+		_threadsShouldWake = true;
+		lock.unlock();
+		_wakeNotifier.notify_all();
+		for (auto& task : _tasksToBeExecuted)
+		{
+			task.join();
+		}
 	}
 
 } /* namespace Elpida */

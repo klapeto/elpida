@@ -31,6 +31,24 @@
 namespace Elpida
 {
 
+	MemoryChunk::MemoryChunk(void* pointer, std::size_t size)
+		: Memory(size), _ptr(pointer)
+	{
+		_pointer = _ptr;
+	}
+
+	MemoryChunk::MemoryChunk(MemoryChunk&& other)
+		: Memory(std::move(other))
+	{
+		this->_ptr = other._ptr;
+		other._ptr = nullptr;
+	}
+
+	MemoryChunk::~MemoryChunk()
+	{
+		_pointer = nullptr;
+	}
+
 	std::vector<MemoryChunk> MemoryChunk::breakToChunks(const Memory& memory, std::size_t chunks)
 	{
 		auto memorySize = memory.getSize();

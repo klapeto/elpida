@@ -30,6 +30,16 @@
 
 namespace Elpida
 {
+	TaskBatch::TaskBatch(const std::string& name)
+		: _name(name)
+	{
+
+	}
+
+	TaskBatch::~TaskBatch()
+	{
+		destroyTasks();
+	}
 
 	void TaskBatch::destroyTasks() const
 	{
@@ -38,6 +48,22 @@ namespace Elpida
 			delete task;
 		}
 		_tasks.clear();
+	}
+
+	void TaskBatch::prepare() const
+	{
+		destroyTasks();
+		createTasks();
+	}
+
+	void TaskBatch::finalize() const
+	{
+		destroyTasks();
+	}
+
+	void TaskBatch::addTask(Task* task) const
+	{
+		_tasks.push_back(task);
 	}
 
 } /* namespace Elpida */

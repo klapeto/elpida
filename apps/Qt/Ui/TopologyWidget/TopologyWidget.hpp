@@ -28,6 +28,7 @@ namespace Elpida
 {
 	class TopologyFrame;
 	class ProcessorNode;
+	class SystemTopology;
 
 	namespace Ui
 	{
@@ -45,13 +46,14 @@ namespace Elpida
 			return _affinity;
 		}
 
-		explicit TopologyWidget(QWidget* parent = nullptr);
+		explicit TopologyWidget(const SystemTopology& topology, QWidget* parent = nullptr);
 		~TopologyWidget();
 
 	private:
 		TaskAffinity _affinity;
 		Ui::TopologyWidget* _ui;
 		TopologyFrame* _rootFrame;
+		const SystemTopology& _topology;
 		std::forward_list<const ProcessorNode*> _selectedNodes;
 
 		void loadTopology();

@@ -93,15 +93,9 @@ namespace Elpida
 	{
 		if (_respectNumaAffinity)
 		{
-			if (_affinity.isSet())
-			{
-				_numaNode =
-					SystemTopology::getNumaNodeOfProcessor((int)(*_affinity.getProcessorNodes().begin())->getOsIndex());
-			}
-			else
-			{
-				_numaNode = SystemTopology::getNumaNodeOfProcessor(0);
-			}
+			_numaNode =
+				SystemTopology::getNumaNodeOfProcessor((int)(*_affinity.getProcessorNodes().begin())->getOsIndex());
+			((NumaMemory*)_memory)->setNode(_numaNode);
 			((NumaMemory*)_memory)->setSize(_size);
 		}
 		Task::applyAffinity();

@@ -34,6 +34,15 @@
 
 namespace Elpida
 {
+	NumaMemory::NumaMemory(std::size_t size, int node)
+		: Memory(size), _node(node)
+	{
+	}
+
+	NumaMemory::~NumaMemory()
+	{
+		deallocate();
+	}
 
 	void NumaMemory::allocateImpl()
 	{

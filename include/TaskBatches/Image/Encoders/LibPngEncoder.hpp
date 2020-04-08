@@ -34,27 +34,30 @@
 namespace Elpida
 {
 
-	class LibPngEncoder: public ImageEncoder
+	class LibPngEncoder : public ImageEncoder
 	{
-		public:
+	public:
 
-			ImageEncoder::ImageDecodeInfo decode(unsigned char* data, std::size_t size);
-			ImageEncoder::ImageEncodeInfo encode(std::size_t imageWidth, std::size_t imageHeight, unsigned char* inputData, std::size_t inputSize);
+		ImageEncoder::ImageDecodeInfo decode(unsigned char* data, std::size_t size);
+		ImageEncoder::ImageEncodeInfo encode(std::size_t imageWidth,
+			std::size_t imageHeight,
+			unsigned char* inputData,
+			std::size_t inputSize);
 
-			LibPngEncoder()
-			{
+		LibPngEncoder()
+		{
 
-			}
+		}
 
-			virtual ~LibPngEncoder()
-			{
+		virtual ~LibPngEncoder()
+		{
 
-			}
+		}
 
-			LibPngEncoder(LibPngEncoder&&) = default;
-			LibPngEncoder(const LibPngEncoder&) = default;
-			LibPngEncoder& operator=(LibPngEncoder&&) = default;
-			LibPngEncoder& operator=(const LibPngEncoder&) = default;
+		LibPngEncoder(LibPngEncoder&&) = default;
+		LibPngEncoder(const LibPngEncoder&) = default;
+		LibPngEncoder& operator=(LibPngEncoder&&) = default;
+		LibPngEncoder& operator=(const LibPngEncoder&) = default;
 	};
 
 } /* namespace Elpida */

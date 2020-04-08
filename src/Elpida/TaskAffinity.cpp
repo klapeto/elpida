@@ -26,47 +26,8 @@
 
 #include "Elpida/TaskAffinity.hpp"
 
-#include <initializer_list>
-
-#include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/Topology/SystemTopology.hpp"
-
 namespace Elpida
 {
-
-	static const ProcessorNode* findNode(const std::vector<ProcessorNode>& nodes, int processor)
-	{
-		for (const auto& node : nodes)
-		{
-			if (node.getType() != ProcessorNode::Type::ExecutionUnit)
-			{
-				auto childNode = findNode(node.getChildren(), processor);
-				if (childNode != nullptr)
-				{
-					return childNode;
-				}
-			}
-			else if (node.getOsIndex() == processor)
-			{
-				return &node;
-			}
-		}
-		return nullptr;
-	}
-
-	TaskAffinity::TaskAffinity(std::initializer_list<int> processors)
-	{
-		const auto& topology = SystemTopology::getTopology();
-
-		for (int i : processors)
-		{
-			auto node = findNode(topology.getRoot()->getChildren(), i);
-			if (node != nullptr)
-			{
-				_nodes.push_back(node);
-			}
-		}
-	}
 
 } /* namespace Elpida */
 

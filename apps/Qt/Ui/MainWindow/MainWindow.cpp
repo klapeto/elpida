@@ -18,7 +18,7 @@
  *************************************************************************/
 
 #include "ui_MainWindow.h"
-#include <Elpida/CpuInfo.hpp>
+#include <Elpida/Topology/CpuInfo.hpp>
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Task.hpp>
 #include <Elpida/TaskBatch.hpp>
@@ -58,8 +58,9 @@ namespace Elpida
 				QMessageBox::StandardButton::Ok);
 		}
 
+
 		_ui->wTopology->setLayout(new QVBoxLayout);
-		auto topologyWidget = new TopologyWidget;
+		auto topologyWidget = new TopologyWidget(_topology);
 		_ui->wTopology->layout()->addWidget(topologyWidget);
 
 		_taskBatchesWidget = new TaskBatchesWidget(_elpidaManager.getCreatedTaskBatches(),
@@ -90,14 +91,14 @@ namespace Elpida
 
 	void MainWindow::loadCpuInfo(void)
 	{
-		auto cpuInfo = Elpida::CpuInfo::getCpuInfo();
+		auto& cpuInfo = _cpuInfo;
 		_ui->lblVendorValue->setText(cpuInfo.getVendorString().c_str());
 		_ui->lblModelValue->setText(cpuInfo.getProcessorBrand().c_str());
 		_ui->lblFamilyValue->setText(QString::number(cpuInfo.getFamily()));
 		_ui->lblSteppingValue->setText(QString::number(cpuInfo.getStepping()));
 		_ui->lblTscFreqValue->setText(
 			QString::number(cpuInfo.getTscFequency() / std::giga::num, 'g', 3) + QString(" GHZ"));
-		_ui->lblLogicalCoresValue->setText(QString::number(SystemTopology::getTopology().getTotalLogicalCores()));
+		_ui->lblLogicalCoresValue->setText(QString::number(_topology.getTotalLogicalCores()));
 		_ui->chkHyperthreading->setChecked(cpuInfo.isHyperThreading());
 		_ui->chkTurbo->setChecked(cpuInfo.isTurboBoost());
 		_ui->chkTurbo3->setChecked(cpuInfo.isTurboBoost3());

@@ -32,7 +32,6 @@
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskBatch.hpp"
 #include "Elpida/TaskMetrics.hpp"
-#include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Timer.hpp"
 
 #ifdef ELPIDA_LINUX
@@ -78,10 +77,9 @@ namespace Elpida
 					EventArguments::TaskStart evArgs{ task->getName() };
 					taskStart.raise(evArgs);
 				}
-				if (_taskAffinity.isSet())
-				{
-					task->setAffinity(_taskAffinity);
-				}
+
+				task->setAffinity(_taskAffinity);
+
 				TaskMetrics metrics = runTask(*task);
 				if (task->isToBeMeasured())
 				{

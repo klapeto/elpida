@@ -48,15 +48,8 @@ namespace Elpida
 			_node = node;
 		}
 
-		NumaMemory(std::size_t size, int node)
-			: Memory(size), _node(node)
-		{
-		}
-
-		~NumaMemory()
-		{
-			deallocate();
-		}
+		NumaMemory(std::size_t size, int node);
+		~NumaMemory();
 	private:
 		int _node;
 	protected:

@@ -38,6 +38,20 @@
 
 namespace Elpida
 {
+	NumaAllocatePerThread::NumaAllocatePerThread(std::size_t memorySizePerThread)
+		: Task("Numa Allocation Per Thread"), _memorySizePerThread(memorySizePerThread)
+	{
+	}
+
+	NumaAllocatePerThread::~NumaAllocatePerThread()
+	{
+		for (auto& mem : _allocatedMemoryRegions)
+		{
+			delete mem.second;
+		}
+		_allocatedMemoryRegions.clear();
+	}
+
 	void NumaAllocatePerThread::prepare()
 	{
 #ifdef ELPIDA_LINUX
@@ -91,20 +105,6 @@ namespace Elpida
 	{
 		_result.setOriginalValue(_memorySizePerThread);
 		_result.setMultiplier(_allocatedMemoryRegions.size());
-	}
-
-	NumaAllocatePerThread::NumaAllocatePerThread(std::size_t memorySizePerThread)
-		: Task("Numa Allocation Per Thread"), _memorySizePerThread(memorySizePerThread)
-	{
-	}
-
-	NumaAllocatePerThread::~NumaAllocatePerThread()
-	{
-		for (auto& mem : _allocatedMemoryRegions)
-		{
-			delete mem.second;
-		}
-		_allocatedMemoryRegions.clear();
 	}
 
 } /* namespace Elpida */

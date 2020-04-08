@@ -44,6 +44,19 @@ namespace Elpida
 	static std::string GetWindowsError();
 #endif
 
+	SharedLibrary::SharedLibrary(SharedLibrary&& other)
+	{
+		this->_handle = other._handle;
+		other._handle = nullptr;
+	}
+
+	SharedLibrary& SharedLibrary::operator=(SharedLibrary&& other)
+	{
+		this->_handle = other._handle;
+		other._handle = nullptr;
+		return *this;
+	}
+
 	SharedLibrary::SharedLibrary(const std::string& libraryPath)
 	{
 		_handle =

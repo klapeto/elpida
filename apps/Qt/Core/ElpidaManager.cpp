@@ -29,7 +29,7 @@ namespace Elpida
 {
 	ElpidaManager::ElpidaManager()
 	{
-		Logger::getInstance().setOutput(_log);
+		_logger.setOutput(_log);
 	}
 
 	ElpidaManager::~ElpidaManager()
@@ -46,8 +46,8 @@ namespace Elpida
 	void ElpidaManager::reloadTaskBatches()
 	{
 		destroyTaskBatches();
-		_batchLoader.loadFromFolder(_batchesDirectory);
-		const auto& loaded = _batchLoader.getLoadedPlugins();
+		//_batchLoader.loadFromFolder(_batchesDirectory);
+		const auto& loaded = _batchLoader.getLoadedLibraries();
 
 		for (auto& plugin : loaded)
 		{

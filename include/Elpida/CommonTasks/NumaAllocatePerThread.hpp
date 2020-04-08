@@ -47,13 +47,11 @@ namespace Elpida
 		}
 
 		void prepare() override;
-
 		void run() override;
 		void calculateResults(const TaskMetrics& metrics) override;
 
 		NumaAllocatePerThread(std::size_t memorySizePerThread);
 		~NumaAllocatePerThread();
-
 	private:
 		std::unordered_map<int, Memory*> _allocatedMemoryRegions;
 		TaskRunResult _result;

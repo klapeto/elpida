@@ -65,14 +65,8 @@ namespace Elpida
 
 		static int getNumaNodeOfProcessor(int processorId);
 
-		static const SystemTopology& getTopology()
-		{
-			static SystemTopology topo;
-			return topo;
-		}
-
+		SystemTopology();
 		~SystemTopology();
-
 	private:
 		std::vector<const ProcessorNode*> _allProcessors;
 		ProcessorNode* _root;
@@ -81,7 +75,6 @@ namespace Elpida
 		std::size_t _totalLogicalCores;
 		std::size_t _totalPhysicalCores;
 
-		SystemTopology();
 		void reload();
 		void accumulateCores(const ProcessorNode& node);
 	};

@@ -34,6 +34,16 @@
 
 namespace Elpida
 {
+	MemoryInfo::MemoryInfo()
+		: _memorySize(0), _pageSize(0)
+	{
+		getValues();
+	}
+
+	MemoryInfo::~MemoryInfo()
+	{
+	}
+
 	std::size_t MemoryInfo::getAvailableFreeMemory() const
 	{
 #ifdef ELPIDA_LINUX
@@ -62,6 +72,7 @@ namespace Elpida
 		_pageSize = sysInfo.dwPageSize;
 #endif
 	}
+
 
 } /* namespace Elpida */
 

@@ -30,7 +30,7 @@
 #include <unordered_map>
 
 #include "Elpida/Topology/SystemTopology.hpp"
-#include "Elpida/CpuInfo.hpp"
+#include "Elpida/Topology/CpuInfo.hpp"
 #include "Elpida/CommonTasks/NumaAllocatePerThread.hpp"
 #include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
 

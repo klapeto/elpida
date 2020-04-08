@@ -35,21 +35,18 @@
 namespace Elpida
 {
 
-	class SharedLibraryLoader
+	class SharedLibraryLoader final
 	{
 	public:
-		const std::unordered_map<std::string, SharedLibrary>& getLoadedPlugins() const
+		const std::unordered_map<std::string, SharedLibrary>& getLoadedLibraries() const
 		{
 			return _loadedLibraries;
 		}
-
-		virtual void loadFromFolder(const std::string& path, const std::string& orderFile = std::string());
 		void load(const std::string& path);
 		void unload(const std::string& path);
 
 		SharedLibraryLoader();
-		virtual ~SharedLibraryLoader();
-
+		~SharedLibraryLoader();
 	protected:
 		std::unordered_map<std::string, SharedLibrary> _loadedLibraries;
 		void unloadEverything();

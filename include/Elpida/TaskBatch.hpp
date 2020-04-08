@@ -51,21 +51,8 @@ namespace Elpida
 			return _name;
 		}
 
-		void prepare() const
-		{
-			destroyTasks();
-			createTasks();
-		}
-
-		void finalize() const
-		{
-			destroyTasks();
-		}
-
-		virtual void reconfigure(const std::string& inputData)
-		{
-
-		}
+		void prepare() const;
+		void finalize() const;
 
 		virtual void onBeforeExecution() const
 		{
@@ -77,16 +64,8 @@ namespace Elpida
 
 		}
 
-		TaskBatch(const std::string& name)
-			: _name(name)
-		{
-
-		}
-
-		virtual ~TaskBatch()
-		{
-			destroyTasks();
-		}
+		TaskBatch(const std::string& name);
+		virtual ~TaskBatch();
 
 		TaskBatch(TaskBatch&&) = default;
 		TaskBatch(const TaskBatch&) = default;
@@ -97,10 +76,7 @@ namespace Elpida
 		std::string _name;
 		mutable std::vector<Task*> _tasks;
 	protected:
-		void addTask(Task* task) const
-		{
-			_tasks.push_back(task);
-		}
+		void addTask(Task* task) const;
 		void destroyTasks() const;
 		virtual void createTasks() const = 0;
 	};

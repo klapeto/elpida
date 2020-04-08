@@ -53,46 +53,12 @@ namespace Elpida
 			_size = size;
 		}
 
-		void allocate()
-		{
-			std::unique_lock<std::mutex> lock(_mutex);
-			if (_pointer != nullptr)
-			{
-				deallocateImpl();
-				_pointer = nullptr;
-			}
-			allocateImpl();
-		}
-		void deallocate()
-		{
-			std::unique_lock<std::mutex> lock(_mutex);
-			if (_pointer != nullptr)
-			{
-				deallocateImpl();
-				_pointer = nullptr;
-			}
-		}
+		void allocate();
+		void deallocate();
 
-		Memory(std::size_t size)
-			: _size(size), _pointer(nullptr)
-		{
-
-		}
-
-		virtual ~Memory()
-		{
-
-		}
-
-		Memory(Memory&& other)
-		{
-			std::unique_lock<std::mutex> lock(other._mutex);
-			this->_size = other._size;
-			other._size = 0;
-			this->_pointer = other._pointer;
-			other._pointer = nullptr;
-		}
-
+		Memory(std::size_t size);
+		Memory(Memory&& other);
+		virtual ~Memory();
 	private:
 		std::mutex _mutex;
 	protected:

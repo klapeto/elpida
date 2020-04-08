@@ -25,6 +25,7 @@
 #include <unordered_map>
 
 #include "Elpida/SharedLibraryLoader.hpp"
+#include "Elpida/Utilities/Logger.hpp"
 #include "Elpida/Utilities/NonCopyable.hpp"
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 
@@ -62,6 +63,7 @@ namespace Elpida
 		ElpidaManager();
 		~ElpidaManager();
 	private:
+		Logger _logger;
 		std::unordered_map<std::string, QtTaskBatchWrapper*> _createdTaskBatches;
 		SharedLibraryLoader _batchLoader;
 		std::string _batchesDirectory;

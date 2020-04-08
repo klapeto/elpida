@@ -31,21 +31,33 @@
 
 namespace Elpida
 {
+	Task::Task(const std::string& name, bool toBeMeasured)
+		: _name(name), _toBeMeasured(toBeMeasured)
+	{
+
+	}
+
+	Task::~Task()
+	{
+
+	}
+
 	void Task::applyAffinity()
 	{
-		if (_affinity.isSet())
+		auto nodes = _affinity.getProcessorNodes();
+		if (nodes.size() > 0)
 		{
-			auto nodes = _affinity.getProcessorNodes();
-			if (nodes.size() > 0)
+			auto id = nodes[0]->getOsIndex();
+			if (id >= 0)
 			{
-				auto id = nodes[0]->getOsIndex();
-				if (id >= 0)
-				{
-					TaskThread::setCurrentThreadAffinity((int)id);
-				}
+				TaskThread::setCurrentThreadAffinity((int)id);
 			}
-
 		}
+	}
+
+	void Task::addResult(const TaskRunResult& result)
+	{
+		_lastRunResults.push_back(&result);
 	}
 
 } /* namespace Elpida */

@@ -29,6 +29,15 @@
 
 namespace Elpida
 {
+	AlignedMemory::AlignedMemory(std::size_t size, unsigned int alignment)
+		: Memory(size), _alignment(alignment)
+	{
+	}
+
+	AlignedMemory::~AlignedMemory()
+	{
+		deallocate();
+	}
 
 	void AlignedMemory::allocateImpl()
 	{
@@ -49,5 +58,6 @@ namespace Elpida
 		_aligned_free(_pointer);
 #endif
 	}
+
 
 } /* namespace Elpida */

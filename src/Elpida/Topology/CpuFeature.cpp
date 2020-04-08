@@ -18,13 +18,13 @@
  *************************************************************************/
 
 /*
- * Singleton.cpp
+ * CpuFeature.cpp
  *
- *  Created on: 30 Ιουν 2018
+ *  Created on: 11 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/Utilities/Singleton.hpp"
+#include "Elpida/Topology/CpuFeature.hpp"
 
 namespace Elpida
 {

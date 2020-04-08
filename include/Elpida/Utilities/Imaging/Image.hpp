@@ -78,12 +78,12 @@ namespace Elpida
 			return other._width == this->_width && other._height == this->_height;
 		}
 
-		void setData(T* data, std::size_t width, std::size_t height, bool aquireOwnership = false)
+		void setData(T* data, std::size_t width, std::size_t height, bool acquireOwnership = false)
 		{
 			_data = (Pixel<T>*)data;
 			_width = width;
 			_height = height;
-			_dataMustBeDeleted = aquireOwnership;
+			_dataMustBeDeleted = acquireOwnership;
 			_dataIsNotAllocatedNormally = true;
 		}
 

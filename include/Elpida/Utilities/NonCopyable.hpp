@@ -39,7 +39,6 @@ namespace Elpida
 		NonCopyable(NonCopyable&&) = default;
 		NonCopyable& operator=(NonCopyable&&) = default;
 		virtual ~NonCopyable() = default;
-
 	};
 
 } /* namespace Elpida */

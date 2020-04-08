@@ -28,5 +28,45 @@
 
 namespace Elpida
 {
+	Memory::Memory(std::size_t size)
+		: _size(size), _pointer(nullptr)
+	{
+
+	}
+
+	Memory::Memory(Memory&& other)
+	{
+		std::unique_lock<std::mutex> lock(other._mutex);
+		this->_size = other._size;
+		other._size = 0;
+		this->_pointer = other._pointer;
+		other._pointer = nullptr;
+	}
+
+	Memory::~Memory()
+	{
+
+	}
+
+	void Memory::allocate()
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
+		if (_pointer != nullptr)
+		{
+			deallocateImpl();
+			_pointer = nullptr;
+		}
+		allocateImpl();
+	}
+
+	void Memory::deallocate()
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
+		if (_pointer != nullptr)
+		{
+			deallocateImpl();
+			_pointer = nullptr;
+		}
+	}
 
 } /* namespace Elpida */

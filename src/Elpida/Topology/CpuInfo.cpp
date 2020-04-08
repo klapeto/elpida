@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "Elpida/CpuInfo.hpp"
+#include "Elpida/Topology/CpuInfo.hpp"
 
 #include <cstdint>
 #include <cpuid.h>

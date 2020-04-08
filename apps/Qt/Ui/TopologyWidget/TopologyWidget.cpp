@@ -45,8 +45,8 @@ namespace Elpida
 		QString mouseClickStyle;
 	};
 
-	TopologyWidget::TopologyWidget(QWidget* parent)
-		: QWidget(parent), _ui(new Ui::TopologyWidget), _rootFrame(nullptr)
+	TopologyWidget::TopologyWidget(const SystemTopology& topology,QWidget* parent)
+		: QWidget(parent), _topology(topology), _ui(new Ui::TopologyWidget), _rootFrame(nullptr)
 	{
 		_ui->setupUi(this);
 		setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -301,7 +301,7 @@ namespace Elpida
 
 	void TopologyWidget::loadTopology()
 	{
-		auto& top = Elpida::SystemTopology::getTopology();
+		auto& top = _topology;
 		QLayout* layout = new QHBoxLayout();
 
 		auto button = new QPushButton("Clear");
