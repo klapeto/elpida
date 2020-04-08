@@ -4,7 +4,6 @@ build:
   stage: build
   script:
     - apt update
-    - apt install sudo
     - cp scripts/Linux/* .
     - chmod u+x ./*.sh
     - ./downloadPackages.sh
