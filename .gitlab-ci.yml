@@ -10,7 +10,7 @@ build:
     - ./downloadPackages.sh
     - git submodule update --init
     - ./rebuildElpida.sh
-    - ll apps/Qt/
+    - ls -alh apps/Qt/
   artifacts:
     paths:
       - apps/Qt/
