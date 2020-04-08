@@ -20,7 +20,7 @@
 
 if [ -f /etc/lsb-release ]; then
     #Debian
-    sudo apt install git g++ cmake libgtest-dev libnuma-dev automake libtool pkg-config qtbase5-dev libqt5charts5-dev
+    sudo apt install git g++ cmake libgtest-dev libnuma-dev automake libtool pkg-config qtbase5-dev libqt5charts5-dev -y
 elif [ -f /etc/redhat-release ]; then
     # Fedora
     sudo dnf install git gcc-c++ cmake libnuma-devel automake libtool pkg-config qtbase5-devel libqt5charts5-devel
