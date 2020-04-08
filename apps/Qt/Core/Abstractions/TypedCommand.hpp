@@ -15,7 +15,7 @@ namespace Elpida
 	{
 		virtual void accept(CommandHandler& handler) const override
 		{
-			handler.handle(static_cast<T&>(this));
+			handler.handle(static_cast<const T&>(*this));
 		}
 	};
 }

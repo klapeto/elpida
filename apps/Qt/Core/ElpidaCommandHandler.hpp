@@ -11,10 +11,15 @@
 namespace Elpida
 {
 	class ElpidaMediator;
+	class ShowLogsDialogCommand;
+	class ShowAboutDialogCommand;
+
 	class ElpidaCommandHandler : public CommandHandler
 	{
 	public:
 		void handle(const Command& command) override;
+		void handle(const ShowLogsDialogCommand &command) override;
+		void handle(const ShowAboutDialogCommand &command) override;
 
 		ElpidaCommandHandler(ElpidaMediator& elpidaMediator);
 

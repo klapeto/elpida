@@ -18,58 +18,24 @@
  *************************************************************************/
 
 #include "ui_MainWindow.h"
+#include "MainWindow.hpp"
+
 #include <Elpida/Topology/CpuInfo.hpp>
 #include <Elpida/Topology/SystemTopology.hpp>
-#include <Elpida/Task.hpp>
-#include <Elpida/TaskBatch.hpp>
-#include <Elpida/Topology/SystemTopology.hpp>
-#include <Elpida/Topology/ProcessorNode.hpp>
 
-#include <QMessageBox>
-#include <QVBoxLayout>
-#include "MainWindow.hpp"
-#include "Ui/TopologyWidget/TopologyWidget.hpp"
-
-#include "Ui/TaskBatchesProperties/TaskBatchProperties.hpp"
-#include "Ui/TaskBatchesWidget/TaskBatchesWidget.hpp"
-#include "Ui/LogsDialog/LogsDialog.hpp"
-#include "Core/ElpidaManager.hpp"
+#include "Core/Commands/ShowAboutDialogCommand.hpp"
+#include "Core/Commands/ShowLogsDialogCommand.hpp"
+#include "Core/Abstractions/Mediator.hpp"
 
 namespace Elpida
 {
 
-	MainWindow::MainWindow(ElpidaManager& elpidaManager, QWidget* parent)
-		: QMainWindow(parent), _elpidaManager(elpidaManager), _ui(new Ui::MainWindow), _fixedSizeSet(false)
+	MainWindow::MainWindow(Mediator& mediator, const CpuInfo& cpuInfo, const SystemTopology& topology)
+		: QMainWindow(), _mediator(mediator), _ui(new Ui::MainWindow), _fixedSizeSet(false)
 	{
 		_ui->setupUi(this);
 
-		_elpidaManager.setTaskBatchesDirectory(".");
-
-		try
-		{
-			_elpidaManager.reloadTaskBatches();
-		}
-		catch (const ElpidaException& e)
-		{
-			QMessageBox::critical(
-				this,
-				"Error",
-				QString::fromStdString("Failed to load task batches:" + e.getMessage()),
-				QMessageBox::StandardButton::Ok);
-		}
-
-
-		_ui->wTopology->setLayout(new QVBoxLayout);
-		auto topologyWidget = new TopologyWidget(_topology);
-		_ui->wTopology->layout()->addWidget(topologyWidget);
-
-		_taskBatchesWidget = new TaskBatchesWidget(_elpidaManager.getCreatedTaskBatches(),
-			topologyWidget->getAffinity());
-		_ui->tbTasks->layout()->addWidget(_taskBatchesWidget);
-
-		_logsDialog = new LogsDialog(_ui->centralWidget);
-
-		loadCpuInfo();
+		loadCpuInfo(cpuInfo, topology);
 
 		//addMascot();
 	}
@@ -89,16 +55,15 @@ namespace Elpida
 		delete _ui;
 	}
 
-	void MainWindow::loadCpuInfo(void)
+	void MainWindow::loadCpuInfo(const CpuInfo& cpuInfo, const SystemTopology& topology)
 	{
-		auto& cpuInfo = _cpuInfo;
 		_ui->lblVendorValue->setText(cpuInfo.getVendorString().c_str());
 		_ui->lblModelValue->setText(cpuInfo.getProcessorBrand().c_str());
 		_ui->lblFamilyValue->setText(QString::number(cpuInfo.getFamily()));
 		_ui->lblSteppingValue->setText(QString::number(cpuInfo.getStepping()));
 		_ui->lblTscFreqValue->setText(
 			QString::number(cpuInfo.getTscFequency() / std::giga::num, 'g', 3) + QString(" GHZ"));
-		_ui->lblLogicalCoresValue->setText(QString::number(_topology.getTotalLogicalCores()));
+		_ui->lblLogicalCoresValue->setText(QString::number(topology.getTotalLogicalCores()));
 		_ui->chkHyperthreading->setChecked(cpuInfo.isHyperThreading());
 		_ui->chkTurbo->setChecked(cpuInfo.isTurboBoost());
 		_ui->chkTurbo3->setChecked(cpuInfo.isTurboBoost3());
@@ -196,16 +161,12 @@ namespace Elpida
 
 	void MainWindow::on_actionAbout_triggered()
 	{
-		QMessageBox::about(
-			_ui->centralWidget,
-			"About: Elpida",
-			"Elpida is an open source x86 Cpu/Algorithm benchmarking tool. It is released under the General Public License v3 (GPL v3). More info at: https://github.com/klapeto/elpida");
+		_mediator.execute(ShowAboutDialogCommand());
 	}
 
 	void Elpida::MainWindow::on_actionShowLogs_triggered()
 	{
-		_logsDialog->setLogsText(_elpidaManager.getLogDump());
-		_logsDialog->show();
+		_mediator.execute(ShowLogsDialogCommand());
 	}
 
 }  // namespace Elpida

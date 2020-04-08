@@ -25,9 +25,10 @@ set(ELPIDA_QT_SOURCES
         Core/ElpidaMediator.hpp
         Core/ElpidaCommandHandler.cpp
         Core/ElpidaCommandHandler.hpp
-        Core/Commands/StartBenchmarkCommand.cpp
-        Core/Commands/StartBenchmarkCommand.hpp
-        Core/Abstractions/TypedCommand.hpp)
+        Core/Abstractions/TypedCommand.hpp
+        Core/Commands/ShowLogsDialogCommand.hpp
+        Core/Commands/ShowAboutDialogCommand.hpp
+        Core/Abstractions/CommandForwardDeclarations.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

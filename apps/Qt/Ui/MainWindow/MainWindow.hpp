@@ -24,24 +24,13 @@
 #include <qobjectdefs.h>
 #include <vector>
 
-#include "Elpida/OffThreadExecutor.hpp"
-#include "Elpida/Topology/SystemTopology.hpp"
-#include "Elpida/Topology/CpuInfo.hpp"
-
-namespace Elpida
-{
-	class ElpidaManager;
-} /* namespace Elpida */
-
 class QTreeWidgetItem;
 
 namespace Elpida
 {
-	class QtTaskBatchWrapper;
-	class TaskBatchProperties;
-	class TaskBatchesWidget;
-	class LogsDialog;
-	class TopologyWidget;
+	class Mediator;
+	class CpuInfo;
+	class SystemTopology;
 
 	namespace Ui
 	{
@@ -54,12 +43,10 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		explicit MainWindow(ElpidaManager& elpidaManager, QWidget* parent = nullptr);
+		explicit MainWindow(Mediator& mediator, const CpuInfo& cpuInfo, const SystemTopology& topology);
 		~MainWindow();
-
 	protected:
 		virtual void showEvent(QShowEvent* event) override;
-
 	private slots:
 		void on_actionExit_triggered();
 		void on_actionAbout_triggered();
@@ -67,19 +54,12 @@ namespace Elpida
 		void on_actionShowLogs_triggered();
 
 	private:
-		ElpidaManager& _elpidaManager;
-
-		CpuInfo _cpuInfo;
-		SystemTopology _topology;
+		Mediator& _mediator;
 		std::vector<QMetaObject::Connection> _connections;
-		TaskBatchesWidget* _taskBatchesWidget;
-		LogsDialog* _logsDialog;
-		TopologyWidget* _topologyWidget;
 		Ui::MainWindow* _ui;
-		OffThreadExecutor _offThreadExecutor;
 		bool _fixedSizeSet;
 
-		void loadCpuInfo();
+		void loadCpuInfo(const CpuInfo& cpuInfo, const SystemTopology& topology);
 
 		void addMascot();
 	};
