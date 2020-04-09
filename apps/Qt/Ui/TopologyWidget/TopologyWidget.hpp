@@ -17,8 +17,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef ELPIDA_TOPOLOGYWIDGET_HPP
-#define ELPIDA_TOPOLOGYWIDGET_HPP
+#ifndef APPS_QT_UI_TOPOLOGYWIDGET_TOPOLOGYWIDGET_HPP
+#define APPS_QT_UI_TOPOLOGYWIDGET_TOPOLOGYWIDGET_HPP
 
 #include <QWidget>
 #include <forward_list>
@@ -77,4 +77,4 @@ namespace Elpida
 	};
 
 } // namespace Elpida
-#endif // ELPIDA_TOPOLOGYWIDGET_HPP
+#endif // APPS_QT_UI_TOPOLOGYWIDGET_TOPOLOGYWIDGET_HPP

@@ -2,8 +2,8 @@
 // Created by klapeto on 8/4/20.
 //
 
-#ifndef MEDIATOR_HPP
-#define MEDIATOR_HPP
+#ifndef APPS_QT_CORE_ABSTRACTIONS_MEDIATOR_HPP
+#define APPS_QT_CORE_ABSTRACTIONS_MEDIATOR_HPP
 
 namespace Elpida
 {
@@ -20,4 +20,4 @@ namespace Elpida
 	};
 }
 
-#endif //MEDIATOR_HPP
+#endif //APPS_QT_CORE_ABSTRACTIONS_MEDIATOR_HPP

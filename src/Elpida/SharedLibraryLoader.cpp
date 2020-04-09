@@ -34,7 +34,7 @@
 #include "Elpida/Config.hpp"
 #include "Elpida/Exceptions/ElpidaException.hpp"
 #include "Elpida/Utilities/FileSystem.hpp"
-#include "Elpida/Utilities/Logger.hpp"
+#include "Elpida/Utilities/Logging/Logger.hpp"
 
 #ifdef ELPIDA_LINUX
 

@@ -20,18 +20,18 @@
 #include "LogsDialog.hpp"
 #include "ui_LogsDialog.h"
 
+#include <QStandardItemModel>
+
 namespace Elpida
 {
 
-	LogsDialog::LogsDialog(QWidget* parent)
-		: QDialog(parent), _ui(new Ui::LogsDialog)
+	LogsDialog::LogsDialog(QWidget* parent, Logger& logger)
+		: QDialog(parent),_ui(new Ui::LogsDialog)
 	{
 		_ui->setupUi(this);
-	}
-
-	void LogsDialog::setLogsText(const std::string& text)
-	{
-		_ui->tbLogs->setText(QString::fromStdString(text));
+		logger.addAppender(_logAppender);
+		_ui->twLogs->setModel(&_logAppender.getModel());
+		_ui->twLogs->resizeColumnToContents(1);
 	}
 
 	LogsDialog::~LogsDialog()

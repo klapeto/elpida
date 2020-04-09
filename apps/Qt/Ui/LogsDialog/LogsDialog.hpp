@@ -17,12 +17,16 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef ELPIDA_LOGSDIALOG_HPP
-#define ELPIDA_LOGSDIALOG_HPP
+#ifndef APPS_QT_UI_LOGSDIALOG_LOGSDIALOG_HPP
+#define APPS_QT_UI_LOGSDIALOG_LOGSDIALOG_HPP
 
 #include <qdialog.h>
 #include <qobjectdefs.h>
 #include <string>
+#include <Elpida/Utilities/Logging/Logger.hpp>
+#include "Core/QModelLogAppender.hpp"
+
+class QWidget;
 
 namespace Elpida
 {
@@ -37,14 +41,13 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		void setLogsText(const std::string& text);
 
-		explicit LogsDialog(QWidget* parent = 0);
+		explicit LogsDialog(QWidget* parent, Logger& logger);
 		~LogsDialog();
-
 	private:
+		QModelLogAppender _logAppender;
 		Ui::LogsDialog* _ui;
 	};
 
 } // namespace Elpida
-#endif // ELPIDA_LOGSDIALOG_HPP
+#endif // APPS_QT_UI_LOGSDIALOG_LOGSDIALOG_HPP

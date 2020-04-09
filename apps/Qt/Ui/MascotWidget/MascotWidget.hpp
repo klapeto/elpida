@@ -1,5 +1,5 @@
-#ifndef MASCOTWIDGET_HPP
-#define MASCOTWIDGET_HPP
+#ifndef APPS_QT_UI_MASCOTWIDGET_MASCOTWIDGET_HPP
+#define APPS_QT_UI_MASCOTWIDGET_MASCOTWIDGET_HPP
 
 #include <QWidget>
 
@@ -23,4 +23,4 @@ namespace Elpida
 
 }  // namespace Elpida
 
-#endif // MASCOTWIDGET_HPP
+#endif // APPS_QT_UI_MASCOTWIDGET_MASCOTWIDGET_HPP

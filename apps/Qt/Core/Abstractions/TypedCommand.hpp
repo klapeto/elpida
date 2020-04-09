@@ -2,8 +2,8 @@
 // Created by klapeto on 8/4/20.
 //
 
-#ifndef TYPEDCOMMAND_HPP
-#define TYPEDCOMMAND_HPP
+#ifndef APPS_QT_CORE_ABSTRACTIONS_TYPEDCOMMAND_HPP
+#define APPS_QT_CORE_ABSTRACTIONS_TYPEDCOMMAND_HPP
 
 #include "Command.hpp"
 #include "CommandHandler.hpp"
@@ -21,4 +21,4 @@ namespace Elpida
 }
 
 
-#endif //TYPEDCOMMAND_HPP
+#endif //APPS_QT_CORE_ABSTRACTIONS_TYPEDCOMMAND_HPP

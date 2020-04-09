@@ -18,7 +18,6 @@
  *************************************************************************/
 
 #include "ElpidaManager.hpp"
-#include <Elpida/Utilities/Logger.hpp>
 #include <Elpida/TaskBatch.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include <Elpida/Exceptions/ElpidaException.hpp>
@@ -29,13 +28,10 @@ namespace Elpida
 {
 	ElpidaManager::ElpidaManager()
 	{
-		_logger.setOutput(_log);
 	}
 
 	ElpidaManager::~ElpidaManager()
 	{
-		_log.flush();
-		destroyTaskBatches();
 	}
 
 	void ElpidaManager::destroyTaskBatches()

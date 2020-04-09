@@ -28,7 +28,10 @@ set(ELPIDA_QT_SOURCES
         Core/Abstractions/TypedCommand.hpp
         Core/Commands/ShowLogsDialogCommand.hpp
         Core/Commands/ShowAboutDialogCommand.hpp
-        Core/Abstractions/CommandForwardDeclarations.hpp Core/Commands/ExitApplicationCommand.hpp)
+        Core/Abstractions/CommandForwardDeclarations.hpp
+        Core/Commands/ExitApplicationCommand.hpp
+        Core/QModelLogAppender.cpp
+        Core/QModelLogAppender.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

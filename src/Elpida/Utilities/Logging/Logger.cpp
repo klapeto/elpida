@@ -24,46 +24,45 @@
  *      Author: klapeto
  */
 
-#include "Elpida/Utilities/Logger.hpp"
-#include <iomanip>
+#include "Elpida/Utilities/Logging/Logger.hpp"
+#include "Elpida/Utilities/Logging/LogAppender.hpp"
 
 namespace Elpida
 {
-
-	void Logger::appendTimestamp(std::ostream& out)
+	Logger::Logger()
 	{
-		time_t tim;
-		time(&tim);
-		tm* time = localtime(&tim);
-		if (time != nullptr)
+
+	}
+
+	Logger::~Logger()
+	{
+
+	}
+
+	void Logger::log(Logger::LogType type, const std::string& message)
+	{
+		logImpl(type, std::chrono::system_clock::now(), message, nullptr);
+	}
+
+	void Logger::log(Logger::LogType type, const std::string& message, const std::exception& exception)
+	{
+		logImpl(type, std::chrono::system_clock::now(), message, &exception);
+	}
+
+	void Logger::logImpl(Logger::LogType type,
+		TimeStamp timeStamp,
+		const std::string& message,
+		const std::exception* exception)
+	{
+		for (auto appender: _appenders)
 		{
-			out << '[' << std::setfill('0') << std::setw(2) << time->tm_mday << "/" << std::setfill('0') << std::setw(2)
-				<< 1 + time->tm_mon << "/"
-				<< 1900 + time->tm_year << " " << std::setfill('0') << std::setw(2) << time->tm_hour << ":"
-				<< std::setfill('0')
-				<< std::setw(2) << time->tm_min << ":" << std::setfill('0') << std::setw(2) << time->tm_sec << "] ";
+			appender->append(type, timeStamp, message, exception);
 		}
 	}
 
-	void Logger::appendLogType(LogType type, std::ostream& out)
+	void Logger::addAppender(LogAppender& appender)
 	{
-		out << '[';
-		switch (type)
-		{
-		case LogType::Info:
-			out << "Info";
-			break;
-		case LogType::Warning:
-			out << "Warning";
-			break;
-		case LogType::Error:
-			out << "Error";
-			break;
-		default:
-			out << "?????";
-			break;
-		}
-		out << "] -> ";
+		_appenders.push_back(&appender);
 	}
 
 } /* namespace Elpida */

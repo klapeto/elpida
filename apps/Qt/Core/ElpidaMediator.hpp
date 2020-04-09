@@ -2,18 +2,20 @@
 // Created by klapeto on 8/4/20.
 //
 
-#ifndef ELPIDAMEDIATOR_HPP
-#define ELPIDAMEDIATOR_HPP
+#ifndef APPS_QT_CORE_ELPIDAMEDIATOR_HPP
+#define APPS_QT_CORE_ELPIDAMEDIATOR_HPP
 
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Topology/CpuInfo.hpp>
 #include <Elpida/MemoryInfo.hpp>
 #include <Elpida/SharedLibraryLoader.hpp>
-#include <Elpida/Utilities/Logger.hpp>
-#include <sstream>
+#include <Elpida/Utilities/Logging/Logger.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include <QtWidgets/QApplication>
+
+#include "Ui/LogsDialog/LogsDialog.hpp"
 #include "Ui/MainWindow/MainWindow.hpp"
+#include "Ui/SystemInfoWidget/SystemInfoWidget.hpp"
 
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Abstractions/CommandHandler.hpp"
@@ -40,9 +42,10 @@ namespace Elpida
 		QApplication _qApplication;
 
 		MainWindow _mainWindow;
+		SystemInfoWidget _systemInfoWidget;
+		LogsDialog _logsDialog;
 
 		std::unordered_map<std::string, QtTaskBatchWrapper*> _createdTaskBatches;
-		std::stringstream _log;
 
 	private:
 		void handle(const Command& command) override;
@@ -53,4 +56,4 @@ namespace Elpida
 }
 
 
-#endif //ELPIDAMEDIATOR_HPP
+#endif //APPS_QT_CORE_ELPIDAMEDIATOR_HPP

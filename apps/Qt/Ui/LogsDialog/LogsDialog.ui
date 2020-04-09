@@ -7,9 +7,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTextBrowser" name="tbLogs">
-     <property name="lineWrapMode">
-      <enum>QTextEdit::NoWrap</enum>
+    <widget class="QTableView" name="twLogs">
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
      </property>
     </widget>
    </item>

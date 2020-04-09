@@ -17,8 +17,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef TASKBATCHESWIDGET_HPP
-#define TASKBATCHESWIDGET_HPP
+#ifndef APPS_QT_UI_TASKBATCHESWIDGET_TASKBATCHESWIDGET_HPP
+#define APPS_QT_UI_TASKBATCHESWIDGET_TASKBATCHESWIDGET_HPP
 
 #include <qobjectdefs.h>
 #include <qstring.h>
@@ -105,4 +105,4 @@ namespace Elpida
 
 } // namespace Elpida
 
-#endif // TASKBATCHESWIDGET_HPP
+#endif // APPS_QT_UI_TASKBATCHESWIDGET_TASKBATCHESWIDGET_HPP

@@ -17,36 +17,47 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef APPS_QT_UI_TASKBATCHPROPERTIES_TASKBATCHPROPERTIES_HPP
-#define APPS_QT_UI_TASKBATCHPROPERTIES_TASKBATCHPROPERTIES_HPP
+/*
+ * Logger.hpp
+ *
+ *  Created on: 28 Οκτ 2018
+ *      Author: klapeto
+ */
 
-#include <QDialog>
+#ifndef ELPIDA_UTILITIES_LOGGING_LOGGER_HPP_
+#define ELPIDA_UTILITIES_LOGGING_LOGGER_HPP_
+
+#include <vector>
+#include <chrono>
+#include <string>
 
 namespace Elpida
 {
-	class QtTaskBatchWrapper;
-	namespace Ui
-	{
-		class TaskBatchProperties;
-	}  // namespace Ui
+	class LogAppender;
 
-	class TaskBatchProperties : public QDialog
+	class Logger final
 	{
-	Q_OBJECT
-
 	public:
-		void setPage(QtTaskBatchWrapper* widget);
+		enum class LogType
+		{
+			Info, Warning, Error
+		};
 
-		void accept() override;
+		using TimeStamp = std::chrono::time_point<std::chrono::system_clock>;
 
-		explicit TaskBatchProperties(QWidget* parent = 0);
-		~TaskBatchProperties();
+		void addAppender(LogAppender& appender);
 
+		void log(LogType type, const std::string& message);
+		void log(LogType type, const std::string& message, const std::exception& exception);
+
+		Logger();
+		~Logger();
 	private:
-		Ui::TaskBatchProperties* _ui;
-		QtTaskBatchWrapper* _page;
+		std::vector<LogAppender*> _appenders;
+
+		void logImpl(LogType type, TimeStamp timeStamp, const std::string& message, const std::exception* exception);
 	};
 
-}  // namespace Elpida
+} /* namespace Elpida */
 
-#endif // APPS_QT_UI_TASKBATCHPROPERTIES_TASKBATCHPROPERTIES_HPP
+#endif /* ELPIDA_UTILITIES_LOGGING_LOGGER_HPP_ */

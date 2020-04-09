@@ -17,8 +17,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef ELPIDA_LISTITEMWITHBUTTON_HPP
-#define ELPIDA_LISTITEMWITHBUTTON_HPP
+#ifndef APPS_QT_UI_LISTITEMWITHBUTTON_LISTITEMWITHBUTTON_HPP
+#define APPS_QT_UI_LISTITEMWITHBUTTON_LISTITEMWITHBUTTON_HPP
 
 #include <QWidget>
 
@@ -58,4 +58,4 @@ namespace Elpida
 	};
 
 } // namespace Elpida
-#endif // ELPIDA_LISTITEMWITHBUTTON_HPP
+#endif // APPS_QT_UI_LISTITEMWITHBUTTON_LISTITEMWITHBUTTON_HPP

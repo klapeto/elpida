@@ -2,8 +2,8 @@
 // Created by klapeto on 8/4/20.
 //
 
-#ifndef COMMAND_HPP
-#define COMMAND_HPP
+#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMAND_HPP
+#define APPS_QT_CORE_ABSTRACTIONS_COMMAND_HPP
 
 namespace Elpida
 {
@@ -20,4 +20,4 @@ namespace Elpida
 }
 
 
-#endif //COMMAND_HPP
+#endif //APPS_QT_CORE_ABSTRACTIONS_COMMAND_HPP

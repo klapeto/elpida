@@ -2,8 +2,8 @@
 // Created by klapeto on 8/4/20.
 //
 
-#ifndef COMMANDHANDLER_HPP
-#define COMMANDHANDLER_HPP
+#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDHANDLER_HPP
+#define APPS_QT_CORE_ABSTRACTIONS_COMMANDHANDLER_HPP
 
 #include "CommandForwardDeclarations.hpp"
 
@@ -24,4 +24,4 @@ namespace Elpida
 
 }
 
-#endif //COMMANDHANDLER_HPP
+#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDHANDLER_HPP

@@ -17,8 +17,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#ifndef APPS_QT_UI_MAINWINDOW_MAINWINDOW_HPP
+#define APPS_QT_UI_MAINWINDOW_MAINWINDOW_HPP
 
 #include <QMainWindow>
 
@@ -55,4 +55,4 @@ namespace Elpida
 
 }  // namespace Elpida
 
-#endif // MAINWINDOW_HPP
+#endif //APPS_QT_UI_MAINWINDOW_MAINWINDOW_HPP

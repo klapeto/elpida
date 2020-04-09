@@ -17,8 +17,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef ELPIDA_TOPOLOGYFRAME_HPP
-#define ELPIDA_TOPOLOGYFRAME_HPP
+#ifndef APPS_QT_UI_TOPOLOGYFRAME_TOPOLOGYFRAME_HPP
+#define APPS_QT_UI_TOPOLOGYFRAME_TOPOLOGYFRAME_HPP
 
 #include <QFrame>
 
@@ -144,4 +144,4 @@ namespace Elpida
 	};
 
 } // namespace Elpida
-#endif // ELPIDA_TOPOLOGYFRAME_HPP
+#endif // APPS_QT_UI_TOPOLOGYFRAME_TOPOLOGYFRAME_HPP

@@ -25,7 +25,7 @@
 #include <unordered_map>
 
 #include "Elpida/SharedLibraryLoader.hpp"
-#include "Elpida/Utilities/Logger.hpp"
+#include "Elpida/Utilities/Logging/Logger.hpp"
 #include "Elpida/Utilities/NonCopyable.hpp"
 #include "TaskBatches/QtTaskBatchWrapper.hpp"
 

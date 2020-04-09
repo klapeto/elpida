@@ -10,9 +10,9 @@ namespace Elpida
 {
 
 	ElpidaMediator::ElpidaMediator(int& argC, char** argv)
-		: _qApplication(argC, argv), _mainWindow(*this)
+		: _qApplication(argC, argv), _mainWindow(*this), _systemInfoWidget(*this, _cpuInfo, _topology), _logsDialog(&_mainWindow, _logger)
 	{
-		_logger.setOutput(_log);
+		_mainWindow.addTab(&_systemInfoWidget, "System Info");
 	}
 
 	ElpidaMediator::~ElpidaMediator()
@@ -38,7 +38,7 @@ namespace Elpida
 
 	void ElpidaMediator::handle(const ShowLogsDialogCommand& command)
 	{
-
+		_logsDialog.exec();
 	}
 
 	void ElpidaMediator::handle(const ShowAboutDialogCommand& command)

@@ -1,6 +1,4 @@
 set(ELPIDA_SOURCES
-        Topology/CpuFeature.cpp
-        Topology/CpuInfo.cpp
         Event.cpp
         EventSubscription.cpp
         MemoryInfo.cpp
@@ -27,12 +25,15 @@ set(ELPIDA_SOURCES
 
         Topology/ProcessorNode.cpp
         Topology/SystemTopology.cpp
+        Topology/CpuFeature.cpp
+        Topology/CpuInfo.cpp
 
         Utilities/CommandParser.cpp
         Utilities/FileSystem.cpp
         Utilities/Imaging/Image.cpp
         Utilities/Imaging/ImageEncoder.cpp
-        Utilities/Logger.cpp
+        Utilities/Logging/Logger.cpp
+        Utilities/Logging/LogAppender.cpp
         Utilities/MemoryFile.cpp
         Utilities/NonCopyable.cpp
         Utilities/Imaging/Pixel.cpp
