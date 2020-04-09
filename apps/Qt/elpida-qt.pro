@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         Main.cpp \
         Ui/MainWindow/MainWindow.cpp \
+    Ui/SystemInfoWidget/SystemInfoWidget.cpp \
     Ui/TaskBatchProperties/TaskBatchProperties.cpp \
     ElpidaManager.cpp \
     Ui/LogsDialog/LogsDialog.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
 
 HEADERS += \
         Ui/MainWindow/MainWindow.hpp \
+    Ui/SystemInfoWidget/SystemInfoWidget.hpp \
    Ui/TaskBatchProperties/TaskBatchProperties.hpp \
     ElpidaManager.hpp \
     Ui/LogsDialog/LogsDialog.hpp \
@@ -47,6 +49,7 @@ HEADERS += \
 
 FORMS += \
         Ui/MainWindow/MainWindow.ui \
+    Ui/SystemInfoWidget/SystemInfoWidget.ui \
     Ui/TaskBatchProperties/TaskBatchProperties.ui \
     Ui/LogsDialog/LogsDialog.ui \
     Ui/TaskBatchesWidget/TaskBatchesWidget.ui \

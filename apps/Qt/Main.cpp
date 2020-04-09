@@ -17,10 +17,9 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include <QApplication>
 #include "Elpida/Config.hpp"
-#include "Ui/MainWindow/MainWindow.hpp"
 #include "Core/ElpidaMediator.hpp"
+#include "Core/Commands/ShowLogsDialogCommand.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <execinfo.h>

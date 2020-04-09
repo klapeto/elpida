@@ -13,14 +13,8 @@ namespace Elpida
 	class ShowLogsDialogCommand final : public TypedCommand<ShowLogsDialogCommand>
 	{
 	public:
-		explicit ShowLogsDialogCommand()
-		{
-
-		}
-		~ShowLogsDialogCommand()
-		{
-
-		}
+		explicit ShowLogsDialogCommand() = default;
+		~ShowLogsDialogCommand() = default;
 	};
 }
 

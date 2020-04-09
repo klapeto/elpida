@@ -20,48 +20,37 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include <qmainwindow.h>
-#include <qobjectdefs.h>
-#include <vector>
+#include <QMainWindow>
 
 class QTreeWidgetItem;
 
 namespace Elpida
 {
 	class Mediator;
-	class CpuInfo;
-	class SystemTopology;
 
 	namespace Ui
 	{
 		class MainWindow;
 	}  // namespace Ui
 
-
 	class MainWindow final : public QMainWindow
 	{
 	Q_OBJECT
 
 	public:
-		explicit MainWindow(Mediator& mediator, const CpuInfo& cpuInfo, const SystemTopology& topology);
+
+		void addTab(QWidget* widget, const std::string& name);
+
+		explicit MainWindow(Mediator& mediator);
 		~MainWindow();
-	protected:
-		virtual void showEvent(QShowEvent* event) override;
 	private slots:
 		void on_actionExit_triggered();
 		void on_actionAbout_triggered();
-
 		void on_actionShowLogs_triggered();
 
 	private:
 		Mediator& _mediator;
-		std::vector<QMetaObject::Connection> _connections;
 		Ui::MainWindow* _ui;
-		bool _fixedSizeSet;
-
-		void loadCpuInfo(const CpuInfo& cpuInfo, const SystemTopology& topology);
-
-		void addMascot();
 	};
 
 }  // namespace Elpida

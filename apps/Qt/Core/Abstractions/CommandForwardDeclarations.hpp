@@ -9,6 +9,7 @@ namespace Elpida {
 	class Command;
 	class ShowLogsDialogCommand;
 	class ShowAboutDialogCommand;
+	class ExitApplicationCommand;
 }
 
 #endif //COMMANDFORWARDDECLARATIONS_HPP

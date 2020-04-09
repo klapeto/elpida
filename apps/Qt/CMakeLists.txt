@@ -9,6 +9,7 @@ set(ELPIDA_QT_SOURCES
         Ui/TaskBatchesProperties/TaskBatchProperties.cpp
         Ui/TopologyFrame/TopologyFrame.cpp
         Ui/TopologyWidget/TopologyWidget.cpp
+        Ui/SystemInfoWidget/SystemInfoWidget.cpp
         Ui/ListItemWithButton/ListItemWithButton.ui
         Ui/MainWindow/MainWindow.ui
         Ui/TaskBatchesProperties/TaskBatchProperties.ui
@@ -17,18 +18,17 @@ set(ELPIDA_QT_SOURCES
         Ui/LogsDialog/LogsDialog.ui
         Ui/TopologyWidget/TopologyWidget.ui
         Ui/TopologyFrame/TopologyFrame.ui
+        Ui/SystemInfoWidget/SystemInfoWidget.ui
         Images/Images.qrc
         Core/Abstractions/Command.hpp
         Core/Abstractions/CommandHandler.hpp
         Core/Abstractions/Mediator.hpp
         Core/ElpidaMediator.cpp
         Core/ElpidaMediator.hpp
-        Core/ElpidaCommandHandler.cpp
-        Core/ElpidaCommandHandler.hpp
         Core/Abstractions/TypedCommand.hpp
         Core/Commands/ShowLogsDialogCommand.hpp
         Core/Commands/ShowAboutDialogCommand.hpp
-        Core/Abstractions/CommandForwardDeclarations.hpp)
+        Core/Abstractions/CommandForwardDeclarations.hpp Core/Commands/ExitApplicationCommand.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

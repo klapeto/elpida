@@ -16,16 +16,16 @@
 #include "Ui/MainWindow/MainWindow.hpp"
 
 #include "Core/Abstractions/Mediator.hpp"
+#include "Core/Abstractions/CommandHandler.hpp"
 
 namespace Elpida
 {
 	class QtTaskBatchWrapper;
 
-	class ElpidaMediator final : public Mediator
+	class ElpidaMediator final : public Mediator, private CommandHandler
 	{
 	public:
 		void execute(const Command& command) override;
-
 		void run();
 
 		ElpidaMediator(int& argC, char** argv);
@@ -44,7 +44,11 @@ namespace Elpida
 		std::unordered_map<std::string, QtTaskBatchWrapper*> _createdTaskBatches;
 		std::stringstream _log;
 
-		friend class ElpidaCommandHandler;
+	private:
+		void handle(const Command& command) override;
+		void handle(const ShowLogsDialogCommand& command) override;
+		void handle(const ShowAboutDialogCommand& command) override;
+		void handle(const ExitApplicationCommand& command) override;
 	};
 }
 
