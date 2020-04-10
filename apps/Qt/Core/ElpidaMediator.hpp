@@ -47,12 +47,15 @@ namespace Elpida
 		LogsDialog _logsDialog;
 		TopologyWidget _topologyWidget;
 
+		std::string _taskBatchPath;
+
 	private:
 		void handle(const Command& command) override;
 		void handle(const ShowLogsDialogCommand& command) override;
 		void handle(const ShowAboutDialogCommand& command) override;
 		void handle(const ExitApplicationCommand& command) override;
 		void initializeSystemTopologyWidget();
+		void loadTaskBatches();
 	};
 }
 

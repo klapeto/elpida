@@ -15,6 +15,15 @@ else()
     message(FATAL_ERROR "Only Linux and Windows (msys) are supported at the moment")
 endif()
 
+if (${CMAKE_BUILD_TYPE} EQUAL Debug)
+    set(ELPIDA_DEBUG ON)
+endif()
+
+set(ELPIDA_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+if (NOT EXISTS ${ELPIDA_INSTALL})
+    file(MAKE_DIRECTORY ${ELPIDA_INSTALL})
+endif()
+
 set(CMAKE_MODULE_LINKER_FLAGS -Wl,--no-undefined)
 
 # Build External Libraries

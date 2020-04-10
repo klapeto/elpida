@@ -53,22 +53,6 @@ namespace Elpida
 
 	}
 
-	void ImageTaskBatch::reconfigure(const std::string& inputData)
-	{
-		CommandParser parser;
-		parser.parseCommand(inputData);
-
-		_inputFile = parser.getArgument("i");
-		_outputFile = parser.getArgument("o");
-
-		_outputEnabled = _outputFile.size() > 0;
-		if (_inputFile.size() == 0)
-		{
-			throw ElpidaException("ImageTaskBatch",
-				"Attempted to reconfigure batch with either input or output file empty");
-		}
-	}
-
 	void ImageTaskBatch::createTasks() const
 	{
 		auto readFile = new ReadFile(_inputFile);
@@ -88,7 +72,7 @@ namespace Elpida
 		addTask(intConvert);
 		addTask(encoding);
 
-		if (_outputFile.size() > 0)
+		if (!_outputFile.empty())
 		{
 			auto writeFile = new WriteFile(encoding->getEncodedData(), encoding->getEncodedDataSize(), _outputFile);
 			writeFile->setToBeMeasured(false);

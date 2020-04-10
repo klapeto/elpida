@@ -16,7 +16,6 @@ namespace Elpida
 		  _logsDialog(&_mainWindow, _logger), _topologyWidget(_topology)
 	{
 		_mainWindow.addTab(&_systemInfoWidget, "System Info");
-
 		initializeSystemTopologyWidget();
 	}
 	void ElpidaMediator::initializeSystemTopologyWidget()
@@ -70,5 +69,10 @@ namespace Elpida
 	void ElpidaMediator::handle(const ExitApplicationCommand& command)
 	{
 		QApplication::quit();
+	}
+
+	void ElpidaMediator::loadTaskBatches()
+	{
+
 	}
 }
