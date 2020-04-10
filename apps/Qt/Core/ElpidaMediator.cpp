@@ -3,6 +3,8 @@
 //
 
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QHBoxLayout>
 #include "ElpidaMediator.hpp"
 #include "Core/Abstractions/Command.hpp"
 
@@ -10,14 +12,30 @@ namespace Elpida
 {
 
 	ElpidaMediator::ElpidaMediator(int& argC, char** argv)
-		: _qApplication(argC, argv), _mainWindow(*this), _systemInfoWidget(*this, _cpuInfo, _topology), _logsDialog(&_mainWindow, _logger)
+		: _qApplication(argC, argv), _mainWindow(*this), _systemInfoWidget(*this, _cpuInfo, _topology),
+		  _logsDialog(&_mainWindow, _logger), _topologyWidget(_topology)
 	{
 		_mainWindow.addTab(&_systemInfoWidget, "System Info");
+
+		initializeSystemTopologyWidget();
 	}
-
-	ElpidaMediator::~ElpidaMediator()
+	void ElpidaMediator::initializeSystemTopologyWidget()
 	{
+		auto container =  new QWidget;
+		auto scrollArea = new QScrollArea;
+		auto rootLayout = new QVBoxLayout;
 
+		container->setLayout(rootLayout);
+		container->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+
+		rootLayout->addWidget(scrollArea);
+
+		scrollArea->setWidgetResizable(false);
+		scrollArea->setWidget(&_topologyWidget);
+
+		_topologyWidget.setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+
+		_mainWindow.addTab(container, "System Topology");
 	}
 
 	void ElpidaMediator::execute(const Command& command)
@@ -28,7 +46,7 @@ namespace Elpida
 	void ElpidaMediator::run()
 	{
 		_mainWindow.show();
-		_qApplication.exec();
+		QApplication::exec();
 	}
 
 	void ElpidaMediator::handle(const Command& command)
@@ -51,6 +69,6 @@ namespace Elpida
 
 	void ElpidaMediator::handle(const ExitApplicationCommand& command)
 	{
-		_qApplication.quit();
+		QApplication::quit();
 	}
 }

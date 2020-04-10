@@ -10,12 +10,13 @@
 #include <Elpida/MemoryInfo.hpp>
 #include <Elpida/SharedLibraryLoader.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
-#include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include <QtWidgets/QApplication>
+
 
 #include "Ui/LogsDialog/LogsDialog.hpp"
 #include "Ui/MainWindow/MainWindow.hpp"
 #include "Ui/SystemInfoWidget/SystemInfoWidget.hpp"
+#include "Ui/TopologyWidget/TopologyWidget.hpp"
 
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Abstractions/CommandHandler.hpp"
@@ -31,7 +32,7 @@ namespace Elpida
 		void run();
 
 		ElpidaMediator(int& argC, char** argv);
-		~ElpidaMediator();
+		~ElpidaMediator() override = default;
 	private:
 		SharedLibraryLoader _batchLoader;
 		SystemTopology _topology;
@@ -44,14 +45,14 @@ namespace Elpida
 		MainWindow _mainWindow;
 		SystemInfoWidget _systemInfoWidget;
 		LogsDialog _logsDialog;
-
-		std::unordered_map<std::string, QtTaskBatchWrapper*> _createdTaskBatches;
+		TopologyWidget _topologyWidget;
 
 	private:
 		void handle(const Command& command) override;
 		void handle(const ShowLogsDialogCommand& command) override;
 		void handle(const ShowAboutDialogCommand& command) override;
 		void handle(const ExitApplicationCommand& command) override;
+		void initializeSystemTopologyWidget();
 	};
 }
 

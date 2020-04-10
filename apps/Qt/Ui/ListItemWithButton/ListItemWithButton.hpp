@@ -41,9 +41,8 @@ namespace Elpida
 		void setButtonText(const QString& text);
 		void setButtonIcon(const QIcon& icon);
 
-		explicit ListItemWithButton(const QString& text, QWidget* parent = 0);
-		virtual ~ListItemWithButton();
-
+		explicit ListItemWithButton(const QString& text, QWidget* parent = nullptr);
+		~ListItemWithButton() override;
 	signals:
 		void buttonClicked(const QString& name);
 	protected:

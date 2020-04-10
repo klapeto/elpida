@@ -13,8 +13,8 @@ namespace Elpida
 	class ShowAboutDialogCommand final : public TypedCommand<ShowAboutDialogCommand>
 	{
 	public:
-		explicit ShowAboutDialogCommand() = default;
-		~ShowAboutDialogCommand() = default;
+		constexpr ShowAboutDialogCommand() = default;
+		~ShowAboutDialogCommand() override = default;
 	};
 }
 

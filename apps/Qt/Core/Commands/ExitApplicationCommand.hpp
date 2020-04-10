@@ -12,8 +12,8 @@ namespace Elpida
 	class ExitApplicationCommand final : public TypedCommand<ExitApplicationCommand>
 	{
 	public:
-		explicit ExitApplicationCommand() = default;
-		~ExitApplicationCommand() = default;
+		constexpr ExitApplicationCommand() = default;
+		~ExitApplicationCommand() override = default;
 	};
 }
 

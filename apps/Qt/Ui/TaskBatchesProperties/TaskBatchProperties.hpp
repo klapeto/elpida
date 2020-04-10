@@ -39,8 +39,8 @@ namespace Elpida
 
 		void accept() override;
 
-		explicit TaskBatchProperties(QWidget* parent = 0);
-		~TaskBatchProperties();
+		explicit TaskBatchProperties(QWidget* parent = nullptr);
+		~TaskBatchProperties() override;
 
 	private:
 		Ui::TaskBatchProperties* _ui;

@@ -44,14 +44,7 @@ int main(int argc, char* argv[])
 	signal(SIGSEGV, segFaultHandler);
 #endif
 
-
 	Elpida::ElpidaMediator mediator(argc, argv);
 
 	mediator.run();
-/*	Elpida::ElpidaManager elpidaManager;
-	QApplication application(argc, argv);
-	Elpida::MainWindow mainWindow(elpidaManager);
-	mainWindow.show();
-
-	return application.exec();*/
 }

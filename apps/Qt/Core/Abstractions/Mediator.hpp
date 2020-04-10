@@ -13,10 +13,7 @@ namespace Elpida
 	public:
 		virtual void execute(const Command& command) = 0;
 
-		virtual ~Mediator()
-		{
-
-		}
+		virtual ~Mediator() = default;
 	};
 }
 

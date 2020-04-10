@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Elpida::TopologyFrame</class>
- <widget class="QFrame" name="Elpida::TopologyFrame">
+ <class>Elpida::TopologyNodeFrame</class>
+ <widget class="QFrame" name="Elpida::TopologyNodeFrame">
   <property name="geometry">
    <rect>
     <x>0</x>

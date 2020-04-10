@@ -21,7 +21,7 @@ namespace Elpida
 
 	public:
 		explicit SystemInfoWidget(Mediator& mediator, const CpuInfo& cpuInfo, const SystemTopology& topology);
-		~SystemInfoWidget();
+		~SystemInfoWidget() override;
 
 	private:
 		Ui::SystemInfoWidget* _ui;

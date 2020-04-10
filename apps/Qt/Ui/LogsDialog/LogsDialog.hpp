@@ -41,9 +41,8 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-
 		explicit LogsDialog(QWidget* parent, Logger& logger);
-		~LogsDialog();
+		~LogsDialog() override;
 	private:
 		QModelLogAppender _logAppender;
 		Ui::LogsDialog* _ui;

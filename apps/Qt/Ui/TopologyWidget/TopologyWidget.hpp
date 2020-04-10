@@ -26,7 +26,7 @@
 
 namespace Elpida
 {
-	class TopologyFrame;
+	class TopologyNodeFrame;
 	class ProcessorNode;
 	class SystemTopology;
 
@@ -46,33 +46,33 @@ namespace Elpida
 			return _affinity;
 		}
 
-		explicit TopologyWidget(const SystemTopology& topology, QWidget* parent = nullptr);
-		~TopologyWidget();
+		explicit TopologyWidget(const SystemTopology& topology);
+		~TopologyWidget() override;
 
 	private:
 		TaskAffinity _affinity;
 		Ui::TopologyWidget* _ui;
-		TopologyFrame* _rootFrame;
+		TopologyNodeFrame* _rootFrame;
 		const SystemTopology& _topology;
 		std::forward_list<const ProcessorNode*> _selectedNodes;
 
 		void loadTopology();
-		TopologyFrame* getMachineWidget(const Elpida::ProcessorNode& node);
-		TopologyFrame* getPackageWidget(const Elpida::ProcessorNode& node);
-		TopologyFrame* getGroupWidget(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* getMachineWidget(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* getPackageWidget(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* getGroupWidget(const Elpida::ProcessorNode& node);
 		QWidget* getNumaWidget(const Elpida::ProcessorNode& node);
-		TopologyFrame* getCacheWidget(const Elpida::ProcessorNode& node);
-		TopologyFrame* getCoreWidget(const Elpida::ProcessorNode& node);
-		TopologyFrame* getEUWidget(const Elpida::ProcessorNode& node);
-		TopologyFrame* getWidget(const Elpida::ProcessorNode& node);
-		TopologyFrame* appendChildren(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* getCacheWidget(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* getCoreWidget(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* getEUWidget(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* getWidget(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* appendChildren(const Elpida::ProcessorNode& node);
 
-		void clearChildrenState(TopologyFrame* frame);
+		void clearChildrenState(TopologyNodeFrame* frame);
 
-		void appendAffinity(TopologyFrame* frame);
+		void appendAffinity(TopologyNodeFrame* frame);
 
 	public slots:
-		void onElementClick(const TopologyFrame* node);
+		void onElementClick(const TopologyNodeFrame* node);
 		void onClearPressed();
 	};
 

@@ -1,3 +1,4 @@
+
 //
 // Created by klapeto on 8/4/20.
 //
@@ -12,12 +13,8 @@ namespace Elpida
 	{
 	public:
 		virtual void accept(CommandHandler& handler) const = 0;
-		virtual ~Command()
-		{
-
-		}
+		virtual ~Command() = default;
 	};
 }
-
 
 #endif //APPS_QT_CORE_ABSTRACTIONS_COMMAND_HPP

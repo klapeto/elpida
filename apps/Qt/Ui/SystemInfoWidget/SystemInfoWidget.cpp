@@ -85,7 +85,7 @@ namespace Elpida
 
 		const auto& caches = cpuInfo.getCaches();
 
-		if (caches.size() > 0)
+		if (!caches.empty())
 		{
 			const auto& cache = caches[0];    // L1 Inst
 			_ui->lblL1InstSizeValue->setText(QString::number(cache.size / 1000) + " KB");

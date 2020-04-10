@@ -13,7 +13,7 @@ namespace Elpida
 	template<typename T>
 	class TypedCommand : public Command
 	{
-		virtual void accept(CommandHandler& handler) const override
+		void accept(CommandHandler& handler) const override
 		{
 			handler.handle(static_cast<const T&>(*this));
 		}

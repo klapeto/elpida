@@ -30,7 +30,6 @@ namespace Elpida
 		: QDialog(parent), _ui(new Ui::TaskBatchProperties), _page(nullptr)
 	{
 		_ui->setupUi(this);
-
 	}
 
 	TaskBatchProperties::~TaskBatchProperties()

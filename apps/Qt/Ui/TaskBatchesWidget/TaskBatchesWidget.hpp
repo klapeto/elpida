@@ -36,7 +36,6 @@ class QTreeWidgetItem;
 namespace QtCharts
 {
 	class QChart;
-	class QChartView;
 }  // namespace QtCharts
 
 
@@ -58,7 +57,7 @@ namespace Elpida
 		explicit TaskBatchesWidget(const std::unordered_map<std::string, QtTaskBatchWrapper*>& taskBatchList,
 			const TaskAffinity& affinity,
 			QWidget* parent = nullptr);
-		~TaskBatchesWidget();
+		~TaskBatchesWidget() override;
 
 	public slots:
 		void onTaskBatchListModified();

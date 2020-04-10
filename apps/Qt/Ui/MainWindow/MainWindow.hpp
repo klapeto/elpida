@@ -42,7 +42,7 @@ namespace Elpida
 		void addTab(QWidget* widget, const std::string& name);
 
 		explicit MainWindow(Mediator& mediator);
-		~MainWindow();
+		~MainWindow() override;
 	private slots:
 		void on_actionExit_triggered();
 		void on_actionAbout_triggered();

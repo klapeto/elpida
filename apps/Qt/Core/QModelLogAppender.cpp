@@ -7,7 +7,6 @@
 #include <QStandardItem>
 #include <QColor>
 #include <string>
-#include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Exceptions/ElpidaException.hpp>
 #include <iomanip>
 #include <cmath>
@@ -21,11 +20,6 @@ namespace Elpida
 		  _warningBrush(QColor(0xce, 0xb5, 0x6b))
 	{
 		_model.setHorizontalHeaderLabels({ "Timestamp", "Level", "Message", "Exception" });
-	}
-
-	QModelLogAppender::~QModelLogAppender()
-	{
-
 	}
 
 	static std::string timePointToString(const Logger::TimeStamp& timePoint)

@@ -9,8 +9,9 @@
 #include <QStandardItemModel>
 #include <QBrush>
 
-namespace Elpida {
-	class QModelLogAppender: public LogAppender
+namespace Elpida
+{
+	class QModelLogAppender : public LogAppender
 	{
 	public:
 		QStandardItemModel& getModel()
@@ -18,9 +19,12 @@ namespace Elpida {
 			return _model;
 		}
 
-		void append(Logger::LogType logType, const Logger::TimeStamp& timeStamp, const std::string &message, const std::exception *exception) override;
+		void append(Logger::LogType logType,
+			const Logger::TimeStamp& timeStamp,
+			const std::string& message,
+			const std::exception* exception) override;
 		QModelLogAppender();
-		virtual ~QModelLogAppender();
+		~QModelLogAppender() override = default;
 	private:
 		QStandardItemModel _model;
 		QBrush _errorBrush;
@@ -29,7 +33,6 @@ namespace Elpida {
 		QStandardItem* getTypeItem(Logger::LogType logType);
 	};
 }
-
 
 
 #endif //APPS_QT_CORE_QMODELLOGAPPENDER_HPP
