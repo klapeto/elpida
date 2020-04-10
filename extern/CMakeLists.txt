@@ -2,116 +2,104 @@
 #  Zlib/Libpng
 #  Modified version of the: https://github.com/awstanley/deps-zlib-libpng
 #===================================================================================
-PROJECT(deps_zlib_libpng C)
+project(deps_zlib_libpng C)
 # zlib/png integration hack - removes all the errors related to export
 # (zlib doesn't export; libpng wants to; in this case we don't care).
-SET(SKIP_INSTALL_EXPORT TRUE)
+set(SKIP_INSTALL_EXPORT TRUE)
 
 # zlib (requires nothing)
-SET(ZLIB_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/zlib")
-ADD_SUBDIRECTORY(${ZLIB_DIRECTORY})
+set(ZLIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/zlib")
 
-GET_DIRECTORY_PROPERTY(
-        ZLIB_BUILD_DIRECTORY
+# Helper
+set(ZLIB_CONF_DIR "${CMAKE_CURRENT_BINARY_DIR}/zlib")
+set(ZLIB_INCLUDE_DIRS ${ZLIB_DIR} ${ZLIB_CONF_DIR})
+
+include_directories(${ZLIB_INCLUDE_DIRS})
+
+add_subdirectory(${ZLIB_DIR})
+
+get_directory_property(
+        ZLIB_BUILD_DIR
         DIRECTORY
-        ${ZLIB_DIRECTORY}
+        ${ZLIB_DIR}
         DEFINITION
         CMAKE_CURRENT_BINARY_DIR
 )
 
-OPTION(PNG_LINK_ZLIB_STATIC "Use a static zlib library for libpng builds" OFF)
+option(PNG_LINK_ZLIB_STATIC "Use a static zlib library for libpng builds" OFF)
 
 # not needed, but paranoia for the future.
-GET_DIRECTORY_PROPERTY(
+get_directory_property(
         zlib
         DIRECTORY
-        ${ZLIB_DIRECTORY}
+        ${ZLIB_DIR}
         DEFINITION
         zlib
 )
 
 # not needed, but paranoia for the future.
-GET_DIRECTORY_PROPERTY(
+get_directory_property(
         zlibstatic
         DIRECTORY
-        ${ZLIB_DIRECTORY}
+        ${ZLIB_DIR}
         DEFINITION
         zlibstatic
 )
 
-IF (PNG_LINK_ZLIB_STATIC)
-    SET(ZLIB_LIBRARY zlibstatic)
-ELSE ()
-    SET(ZLIB_LIBRARY zlib)
-ENDIF ()
-SET(ZLIB_INCLUDE_DIR ${ZLIB_DIRECTORY})
+if (PNG_LINK_ZLIB_STATIC)
+    set(ZLIB_LIBRARY zlibstatic)
+else ()
+    set(ZLIB_LIBRARY zlib)
+endif ()
+
+# Include for png
+set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
 
 # libpng (requiring zlib)
-SET(LIBPNG_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libpng")
+set(LIBPNG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libpng")
 
 # libpng needs a hand.
-INCLUDE_DIRECTORIES(
-        ${ZLIB_DIRECTORY}
-        ${ZLIB_BUILD_DIRECTORY}
-        ${LIBPNG_DIRECTORY}
-        ${LIBPNG_BUILD_DIRECTORY}
+include_directories(
+        ${ZLIB_DIR}
+        ${ZLIB_BUILD_DIR}
+        ${LIBPNG_DIR}
+        ${LIBPNG_BUILD_DIR}
 )
 
+# we have to force png to use our lib not any system wise
 set(PNG_BUILD_ZLIB ON CACHE BOOL "Internal Zlib" FORCE)
 
-ADD_SUBDIRECTORY(${LIBPNG_DIRECTORY})
+add_subdirectory(${LIBPNG_DIR})
 
-GET_DIRECTORY_PROPERTY(
-        LIBPNG_BUILD_DIRECTORY
+get_directory_property(
+        LIBPNG_BUILD_DIR
         DIRECTORY
-        ${LIBPNG_DIRECTORY}
+        ${LIBPNG_DIR}
         DEFINITION
         CMAKE_CURRENT_BINARY_DIR
 )
 
-GET_DIRECTORY_PROPERTY(
+get_directory_property(
         LIBPNG_STATIC
         DIRECTORY
-        ${LIBPNG_DIRECTORY}
+        ${LIBPNG_DIR}
         DEFINITION
         PNG_LIB_NAME_STATIC
 )
 
-GET_DIRECTORY_PROPERTY(
+get_directory_property(
         LIBPNG_SHARED
         DIRECTORY
-        ${LIBPNG_DIRECTORY}
+        ${LIBPNG_DIR}
         DEFINITION
         PNG_LIB_NAME
 )
 
-SET(ZLIB_DIRECTORY ${ZLIB_DIRECTORY} PARENT_SCOPE)
-SET(ZLIB_BUILD_DIRECTORY ${ZLIB_BUILD_DIRECTORY} PARENT_SCOPE)
-SET(ZLIB_STATIC zlibstatic PARENT_SCOPE)
-SET(ZLIB_SHARED zlib PARENT_SCOPE)
-SET(LIBPNG_DIRECTORY ${LIBPNG_DIRECTORY} PARENT_SCOPE)
-SET(LIBPNG_BUILD_DIRECTORY ${LIBPNG_BUILD_DIRECTORY} PARENT_SCOPE)
-SET(LIBPNG_STATIC ${LIBPNG_STATIC} PARENT_SCOPE)
-SET(LIBPNG_SHARED ${LIBPNG_SHARED} PARENT_SCOPE)
+set(LIBPNG_INCLUDE_DIRS ${LIBPNG_DIR} ${LIBPNG_BUILD_DIR})
 
-# Setup the dependencies include directories, sending it upward for use.
-IF (NOT DEFINED DEPS_INCLUDE_DIRECTORIES)
-    SET(DEPS_INCLUDE_DIRECTORIES
-            ${ZLIB_DIRECTORY}
-            ${ZLIB_BUILD_DIRECTORY}
-            ${LIBPNG_DIRECTORY}
-            ${LIBPNG_BUILD_DIRECTORY}
-            PARENT_SCOPE
-            )
-ELSE ()
-    # Already defined requires append semantics
-    LIST(APPEND DEPS_INCLUDE_DIRECTORIES
-            ${ZLIB_DIRECTORY}
-            ${ZLIB_BUILD_DIRECTORY}
-            ${LIBPNG_DIRECTORY}
-            ${LIBPNG_BUILD_DIRECTORY}
-            )
-ENDIF ()
+# unless you install them, they do not expose the header includes
+target_include_directories(zlib INTERFACE ${ZLIB_INCLUDE_DIRS})
+target_include_directories(png INTERFACE ${LIBPNG_INCLUDE_DIRS})
 
 #===================================================================================
 #===================================================================================

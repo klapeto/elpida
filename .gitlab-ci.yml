@@ -1,0 +1,16 @@
+image: ubuntu
+
+build:
+  stage: build
+  script:
+    - apt update
+    - cp scripts/Linux/* .
+    - chmod u+x ./*.sh
+    - ./downloadPackages.sh
+    - git submodule update --init
+    - ./rebuildElpida.sh
+    - ls -alh apps/Qt/
+  artifacts:
+    paths:
+      - apps/Qt/
+    expire_in: 2 days
