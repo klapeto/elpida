@@ -15,7 +15,7 @@ else()
     message(FATAL_ERROR "Only Linux and Windows (msys) are supported at the moment")
 endif()
 
-if (${CMAKE_BUILD_TYPE} EQUAL Debug)
+if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
     set(ELPIDA_DEBUG ON)
 endif()
 

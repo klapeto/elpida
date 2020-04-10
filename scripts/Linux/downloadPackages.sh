@@ -1,4 +1,4 @@
-#!/bin/bashhttps://files.slack.com/files-pri/TFCSM2QV9-FSPH7NKBL/image.png
+#!/bin/bash
 #-------------------------------------------------------------------------------
 # Elpida - Benchmark library
 #
