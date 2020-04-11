@@ -87,6 +87,7 @@ namespace Elpida
 				{
 					if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 					{
+						if (strcmp(data.cFileName, ".") == 0 || strcmp(data.cFileName, "..") == 0) continue;
 						iterateDirectoryImpl(concatPaths(path, static_cast<const char*>(data.cFileName)).c_str(), func);
 						continue;
 					}

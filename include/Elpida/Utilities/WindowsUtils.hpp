@@ -6,6 +6,7 @@
 #define INCLUDE_ELPIDA_UTILITIES_WINDOWSUTILS_HPP
 
 #include "Elpida/Config.hpp"
+#include <string>
 
 namespace Elpida
 {

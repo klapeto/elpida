@@ -74,6 +74,8 @@ namespace Elpida
 			item->setForeground(_warningBrush);
 			return item;
 		}
+		default:
+			throw ElpidaException("QModelLogAppender", "Invalid Log type: " + std::to_string((int)logType));
 		}
 	}
 }

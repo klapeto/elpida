@@ -4,34 +4,41 @@
 
 #include "Elpida/Utilities/WindowsUtils.hpp"
 
-
+#ifdef ELPIDA_WINDOWS
+#include <Windows.h>
+#include <strsafe.h>
+#endif
 namespace Elpida
 {
+
 #ifdef ELPIDA_WINDOWS
-	std::string Elpida::WindowsUtils::GetLastErrorString()
-{
+	std::string WindowsUtils::GetLastErrorString()
+	{
+		try
+		{
+			DWORD errorMessageID = GetLastError();
+			if (errorMessageID == 0) return std::string();
 
+			LPSTR messageBuffer = nullptr;
+			size_t size = FormatMessageA(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (LPSTR) & messageBuffer, 0, NULL);
 
-		LPVOID lpMsgBuf;
-		LPVOID lpDisplayBuf;
-		DWORD dw = GetLastError();
+			std::string message(messageBuffer, size);
 
-		FormatMessage(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER |
-				FORMAT_MESSAGE_FROM_SYSTEM |
-				FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
+			LocalFree(messageBuffer);
+			return message;
+		}
+		catch (...)
+		{
+			if (messageBuffer != nullptr)
+			{
+				LocalFree(messageBuffer);
+			}
 
-		lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
-				(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
-		StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
-				dw, lpMsgBuf);
-		std::string returnString((const char*)lpDisplayBuf);
-		LocalFree(lpMsgBuf);
-		LocalFree(lpDisplayBuf);
+			throw;
+		}
 
-		return returnString;
-
-}
+	}
 #endif
 }
