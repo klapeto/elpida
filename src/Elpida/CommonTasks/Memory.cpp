@@ -34,18 +34,13 @@ namespace Elpida
 
 	}
 
-	Memory::Memory(Memory&& other)
+	Memory::Memory(Memory&& other) noexcept
 	{
 		std::unique_lock<std::mutex> lock(other._mutex);
 		this->_size = other._size;
 		other._size = 0;
 		this->_pointer = other._pointer;
 		other._pointer = nullptr;
-	}
-
-	Memory::~Memory()
-	{
-
 	}
 
 	void Memory::allocate()
@@ -67,6 +62,11 @@ namespace Elpida
 			deallocateImpl();
 			_pointer = nullptr;
 		}
+	}
+
+	Memory::~Memory()
+	{
+		deallocate();
 	}
 
 } /* namespace Elpida */

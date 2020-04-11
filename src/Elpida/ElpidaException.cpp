@@ -18,13 +18,13 @@
  *************************************************************************/
 
 /*
- * ParserException.cpp
+ * ElpidaException.cpp
  *
- *  Created on: 29 Ιουλ 2018
+ *  Created on: 13 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/Exceptions/ParserException.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {

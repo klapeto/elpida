@@ -39,11 +39,6 @@ namespace Elpida
 
 	}
 
-	PngDecoding::~PngDecoding()
-	{
-
-	}
-
 	void PngDecoding::run()
 	{
 		LibPngEncoder encoder;

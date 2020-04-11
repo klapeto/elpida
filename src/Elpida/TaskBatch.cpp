@@ -26,12 +26,14 @@
 
 #include "Elpida/TaskBatch.hpp"
 
+#include <utility>
+
 #include "Elpida/Task.hpp"
 
 namespace Elpida
 {
-	TaskBatch::TaskBatch(const std::string& name)
-		: _name(name)
+	TaskBatch::TaskBatch(std::string name)
+		: _name(std::move(name))
 	{
 
 	}

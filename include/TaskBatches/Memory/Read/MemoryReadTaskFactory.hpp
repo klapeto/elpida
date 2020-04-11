@@ -65,7 +65,7 @@ namespace Elpida
 			return _totalSize;
 		}
 
-		MemoryReadTaskFactory(std::size_t sizePerTask)
+		explicit MemoryReadTaskFactory(std::size_t sizePerTask)
 			: _sizePerTask(sizePerTask), _totalSize(0), _autoConfigure(false)
 		{
 
@@ -77,11 +77,7 @@ namespace Elpida
 
 		}
 
-		~MemoryReadTaskFactory()
-		{
-
-		}
-
+		~MemoryReadTaskFactory() override = default;
 	private:
 		std::size_t _sizePerTask;
 		mutable std::size_t _totalSize;

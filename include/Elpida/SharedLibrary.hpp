@@ -42,9 +42,9 @@ namespace Elpida
 			return (T)getFunctionPointerImpl(functionName);
 		}
 
-		SharedLibrary(const std::string& libraryPath);
-		SharedLibrary(SharedLibrary&& other);
-		SharedLibrary& operator=(SharedLibrary&& other);
+		explicit SharedLibrary(const std::string& libraryPath);
+		SharedLibrary(SharedLibrary&& other) noexcept ;
+		SharedLibrary& operator=(SharedLibrary&& other) noexcept ;
 		~SharedLibrary();
 
 		SharedLibrary(const SharedLibrary&) = delete;

@@ -50,7 +50,7 @@ namespace Elpida
 			addResult(_totalBandwidth);
 		}
 
-		MultiThreadMemoryChunksRead(std::size_t sizePerThread)
+		explicit MultiThreadMemoryChunksRead(std::size_t sizePerThread)
 			:
 			MultiThreadTask("Read " + ValueUtilities::getValueScaleString(sizePerThread) + "B @"
 				+ std::to_string(sizeof(RegisterSize)) + " Bytes/Read", _taskFactory),
@@ -59,10 +59,7 @@ namespace Elpida
 		{
 
 		}
-		virtual ~MultiThreadMemoryChunksRead()
-		{
-
-		}
+		~MultiThreadMemoryChunksRead() override = default;
 	private:
 		MemoryReadTaskFactory _taskFactory;
 		TaskRunResult _totalBandwidth;

@@ -23,8 +23,8 @@
 
 #ifdef ELPIDA_LINUX
 #include <execinfo.h>
-#include <signal.h>
-#include <stdlib.h>
+#include <csignal>
+#include <cstdlib>
 #include <unistd.h>
 
 void segFaultHandler(int sig)
@@ -44,7 +44,6 @@ int main(int argc, char* argv[])
 	signal(SIGSEGV, segFaultHandler);
 #endif
 
-	Elpida::ElpidaMediator mediator(argc, argv);
-
-	mediator.run();
+	Elpida::ElpidaMediator(argc, argv).run();
+	return 0;
 }

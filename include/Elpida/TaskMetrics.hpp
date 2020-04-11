@@ -43,32 +43,30 @@ namespace Elpida
 		typedef std::ratio<1, 1> Second;
 		typedef std::chrono::duration<double> Duration;
 
-		const Duration& getDuration() const
+		[[nodiscard]] const Duration& getDuration() const
 		{
 			return _duration;
 		}
 
 		template<typename Division>
-		double getSubdivision() const
+		[[nodiscard]] double getSubdivision() const
 		{
 			return ((double)Division::den * _duration.count()) / (double)Division::num;
 		}
 
 		TaskMetrics()
+			: _duration{0}
 		{
 
 		}
 
-		TaskMetrics(const Duration& duration)
+		explicit TaskMetrics(const Duration& duration)
 			: _duration(duration)
 		{
 
 		}
 
-		virtual ~TaskMetrics()
-		{
-
-		}
+		virtual ~TaskMetrics() = default;
 
 		TaskMetrics(TaskMetrics&&) = default;
 		TaskMetrics(const TaskMetrics&) = default;

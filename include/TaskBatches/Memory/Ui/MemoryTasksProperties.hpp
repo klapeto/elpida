@@ -37,30 +37,27 @@ namespace Elpida
 	{
 	public:
 
-		const TaskBatch& getTaskBatch() const
+		[[nodiscard]] const TaskBatch& getTaskBatch() const override
 		{
 			return _taskBatch;
 		}
 
-		void reconfigureTaskBatch()
+		void reconfigureTaskBatch() override
 		{
 
 		}
-		void validateConfiguration()
+		void validateConfiguration() override
 		{
 
 		}
 
-		MemoryTasksProperties(T&& batch)
+		explicit MemoryTasksProperties(T&& batch)
 			: QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
 		{
 
 		}
 
-		~MemoryTasksProperties()
-		{
-
-		}
+		~MemoryTasksProperties() override = default;
 	private:
 		T _taskBatch;
 	};

@@ -45,9 +45,7 @@ namespace Elpida
 		{
 
 		}
-		~MemoryLatencyTaskBatch()
-		{
-		}
+		~MemoryLatencyTaskBatch() override = default;
 	private:
 		void addMemoryLatencyTask(std::size_t size) const;
 	};

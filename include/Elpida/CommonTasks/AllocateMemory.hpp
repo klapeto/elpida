@@ -41,7 +41,7 @@ namespace Elpida
 	{
 	public:
 
-		const Memory& getMemory() const
+		[[nodiscard]] const Memory& getMemory() const
 		{
 			return *_memory;
 		}
@@ -53,10 +53,10 @@ namespace Elpida
 		void run() override;
 		void calculateResults(const TaskMetrics& metrics) override;
 
-		AllocateMemory(std::size_t size, bool initialize = false, int numaNode = -1);
-		AllocateMemory(std::size_t size, bool initialize = false, bool respectNumaAffinity = false);
+		explicit AllocateMemory(std::size_t size, bool initialize = false, int numaNode = -1);
+		explicit AllocateMemory(std::size_t size, bool initialize = false, bool respectNumaAffinity = false);
 		AllocateMemory(std::size_t size, int processorAffinity, bool initialize = false);
-		~AllocateMemory();
+		~AllocateMemory() override;
 	private:
 		TaskRunResult _result;
 		Memory* _memory;

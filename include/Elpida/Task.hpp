@@ -41,7 +41,7 @@ namespace Elpida
 	{
 	public:
 
-		bool isToBeMeasured() const
+		[[nodiscard]] bool isToBeMeasured() const
 		{
 			return _toBeMeasured;
 		}
@@ -51,12 +51,12 @@ namespace Elpida
 			_toBeMeasured = toBeMeasured;
 		}
 
-		const std::string& getName() const
+		[[nodiscard]] const std::string& getName() const
 		{
 			return _name;
 		}
 
-		const std::vector<const TaskRunResult*>& getLastRunResults() const
+		[[nodiscard]] const std::vector<const TaskRunResult*>& getLastRunResults() const
 		{
 			return _lastRunResults;
 		}
@@ -91,8 +91,8 @@ namespace Elpida
 			_affinity = std::move(affinity);
 		}
 
-		Task(const std::string& name, bool toBeMeasured = true);
-		virtual ~Task();
+		explicit Task(std::string name, bool toBeMeasured = true);
+		virtual ~Task() = default;
 
 		Task(Task&&) = default;
 		Task(const Task&) = default;

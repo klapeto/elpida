@@ -47,13 +47,7 @@ namespace Elpida
 		void run() override;
 
 		MultiThreadTask(const std::string& name, const TaskFactory& taskFactory);
-		virtual ~MultiThreadTask();
-
-		MultiThreadTask(MultiThreadTask&&) = default;
-		MultiThreadTask(const MultiThreadTask&) = default;
-		MultiThreadTask& operator=(MultiThreadTask&&) = default;
-		MultiThreadTask& operator=(const MultiThreadTask&) = default;
-
+		~MultiThreadTask() override;
 	private:
 		std::vector<Task*> _createdTasks;
 		std::vector<TaskThread> _tasksToBeExecuted;

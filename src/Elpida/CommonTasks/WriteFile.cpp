@@ -42,11 +42,6 @@ namespace Elpida
 
 	}
 
-	WriteFile::~WriteFile()
-	{
-
-	}
-
 	void WriteFile::run()
 	{
 		MemoryFile(_data, _size).writeToFile(_outputPath);

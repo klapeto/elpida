@@ -45,27 +45,27 @@ namespace Elpida
 	{
 	public:
 
-		virtual void prepare() override
+		void prepare() override
 		{
 			std::srand(std::time(nullptr));
 			auto size = _memory.getSize();
 
 			auto ptr = (T*)_memory.getPointer();
-			for (std::size_t i; i < size; ++i)
+			for (std::size_t i = 0; i < size; ++i)
 			{
 				ptr[i] = std::rand() / ((RAND_MAX + 1u) / (size - 1));
 			}
 		}
 
-		virtual void run() override
+		void run() override
 		{
 			volatile auto ptr = (T*)_memory.getPointer();
-			register auto start = ptr;
-			register auto end = (T*)((T)start + _memory.getSize());
-			register auto itterations = _itterations;
-			register auto x = T();
+			auto start = ptr;
+			auto end = (T*)((T)start + _memory.getSize());
+			auto iterations = _iterations;
+			auto x = T();
 
-			for (register auto i = 0ul; i < itterations; ++i)
+			for (auto i = 0ul; i < iterations; ++i)
 			{
 				ptr = start;
 				while (ptr < end)
@@ -110,14 +110,14 @@ namespace Elpida
 			auto dummy = x;
 		}
 
-		unsigned long getItterations() const
+		[[nodiscard]] unsigned long getIterations() const
 		{
-			return _itterations;
+			return _iterations;
 		}
 
 		void calculateResults(const TaskMetrics& metrics) override
 		{
-			auto size = _itterations * _memory.getSize();
+			auto size = _iterations * _memory.getSize();
 			auto time = metrics.getSubdivision<TaskMetrics::NanoSecond>();
 			_runResult.setOriginalValue((double)time / (double)size);
 			_runResult.setCustom(true);
@@ -127,23 +127,20 @@ namespace Elpida
 			addResult(_runResult);
 		}
 
-		MemoryLatency(const Memory& memory)
+		explicit MemoryLatency(const Memory& memory)
 			: Task("Memory Read latency: " + ValueUtilities::getValueScaleString(memory.getSize()) + "B"),
 			  _memory(memory)
 		{
-			_itterations = _iterationConstant / (double)_memory.getSize();
+			_iterations = _iterationConstant / (double)_memory.getSize();
 		}
 
-		virtual ~MemoryLatency()
-		{
-			finalize();
-		}
+		~MemoryLatency() override = default;
 
 	private:
 		TaskRunResult _runResult;
 	protected:
 		const Memory& _memory;
-		unsigned long _itterations;
+		unsigned long _iterations;
 	private:
 		static constexpr double _iterationConstant =
 			100000000000; // rough estimate, to be passed on construction later once we find the latency

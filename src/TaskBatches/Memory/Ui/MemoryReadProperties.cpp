@@ -25,14 +25,14 @@
  */
 
 #include "TaskBatches/Memory/Ui/MemoryReadProperties.hpp"
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 #include "ui_MemoryReadProperties.h"
 
 namespace Elpida
 {
-	MemoryReadProperties::MemoryReadProperties(MultithreadMemoryChunksReadTaskBatch* taskBatch)
+	MemoryReadProperties::MemoryReadProperties(MultiThreadMemoryChunksReadTaskBatch* taskBatch)
 		:
-		MemoryBandwidthChart<MultithreadMemoryChunksReadTaskBatch>(taskBatch, true),
+		MemoryBandwidthChart<MultiThreadMemoryChunksReadTaskBatch>(taskBatch, true),
 		_ui(new Ui::MemoryReadProperties),
 		_sizePerThread(256),
 		_autoConfigureSizes(true)

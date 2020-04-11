@@ -38,7 +38,7 @@ namespace Elpida
 	Q_OBJECT
 	public:
 
-		const TaskBatch& getTaskBatch() const
+		const TaskBatch& getTaskBatch() const override
 		{
 			return _taskBatch;
 		}
@@ -47,7 +47,7 @@ namespace Elpida
 		void validateConfiguration() override;
 
 		ImageTasksProperties();
-		~ImageTasksProperties();
+		~ImageTasksProperties() override;
 
 	private slots:
 		void on_pbSelectInput_clicked();

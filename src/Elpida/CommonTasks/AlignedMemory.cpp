@@ -59,5 +59,4 @@ namespace Elpida
 #endif
 	}
 
-
 } /* namespace Elpida */

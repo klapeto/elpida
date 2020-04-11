@@ -43,27 +43,24 @@ namespace Elpida
 		typedef unsigned char Data;
 		typedef Data* DataPtr;
 
-		const DataPtr& getEncodedData() const
+		[[nodiscard]] const DataPtr& getEncodedData() const
 		{
 			return _encodedData;
 		}
 
-		const std::size_t& getEncodedDataSize() const
+		[[nodiscard]] const std::size_t& getEncodedDataSize() const
 		{
 			return _encodedDataSize;
 		}
 
-		void run();
-		void calculateResults(const TaskMetrics& metrics);
+		void run() override;
+		void calculateResults(const TaskMetrics& metrics) override;
 
-		PngEncoding(const Image<Data>& inputImage);
-		virtual ~PngEncoding();
+		explicit PngEncoding(const Image<Data>& inputImage);
+		~PngEncoding() override;
 
 		PngEncoding(PngEncoding&&) = default;
 		PngEncoding(const PngEncoding&) = default;
-		PngEncoding& operator=(PngEncoding&&) = default;
-		PngEncoding& operator=(const PngEncoding&) = default;
-
 	private:
 		TaskRunResult _runResult;
 		const Image<Data>& _inputImage;

@@ -44,16 +44,14 @@ namespace Elpida
 		typedef unsigned char Data;
 		typedef Data* DataPtr;
 
-		void run();
-		void calculateResults(const TaskMetrics& metrics);
+		void run() override;
+		void calculateResults(const TaskMetrics& metrics) override;
 
 		WriteFile(const DataPtr& data, const std::size_t& size, const std::string& outputPath);
-		virtual ~WriteFile();
+		~WriteFile() override = default;
 
 		WriteFile(WriteFile&&) = default;
 		WriteFile(const WriteFile&) = default;
-		WriteFile& operator=(WriteFile&&) = default;
-		WriteFile& operator=(const WriteFile&) = default;
 
 	private:
 		std::string _outputPath;

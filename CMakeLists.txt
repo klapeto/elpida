@@ -4,8 +4,10 @@ project(Elpida VERSION 0.0.1
         DESCRIPTION "Simple Benchmarking Framework"
         LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+include(GNUInstallDirs)
 
 if (UNIX)
     set(ELPIDA_LINUX ON)
@@ -15,23 +17,28 @@ else()
     message(FATAL_ERROR "Only Linux and Windows (msys) are supported at the moment")
 endif()
 
-if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+if (Debug)
     set(ELPIDA_DEBUG ON)
 endif()
 
-set(ELPIDA_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-if (NOT EXISTS ${ELPIDA_INSTALL})
-    file(MAKE_DIRECTORY ${ELPIDA_INSTALL})
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "Local" FORCE)
+endif()
+
+if (MSYS)
+    set(ELPIDA_TASK_BATCH_INSTALL_DIR bin/TaskBatches)
+    set(ELPIDA_HEADER_INSTALL_DIR include)
+    set(ELPIDA_LIB_INSTALL_DIR bin)
+    set(ELPIDA_APP_INSTALL_DIR bin)
+else()
+    set(ELPIDA_TASK_BATCH_INSTALL_DIR bin/TaskBatches)
+    set(ELPIDA_HEADER_INSTALL_DIR include)
+    set(ELPIDA_LIB_INSTALL_DIR lib)
+    set(ELPIDA_APP_INSTALL_DIR bin)
 endif()
 
 set(CMAKE_MODULE_LINKER_FLAGS -Wl,--no-undefined)
 
-# Build External Libraries
 add_subdirectory(extern)
 add_subdirectory(src)
 add_subdirectory(apps)
-
-#target_include_directories(Elpida PUBLIC "${PROJECT_SOURCE_DIR}")
-
-#set_target_properties(zlibstatic PROPERTIES COMPILE_FLAGS "-O3 -march=native")
-#set_target_properties(zlib PROPERTIES COMPILE_FLAGS "-O3 -march=native")

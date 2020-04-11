@@ -29,7 +29,7 @@
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
-#include <Elpida/Exceptions/ElpidaException.hpp>
+#include <Elpida/ElpidaException.hpp>
 #include "Ui/TopologyNodeFrame/TopologyNodeFrame.hpp"
 
 #include <vector>
@@ -163,7 +163,7 @@ namespace Elpida
 	{
 		auto widget = new TopologyNodeFrame(node);
 		auto label = new QLabel();
-		widget->connect(widget, &TopologyNodeFrame::clicked, this, &TopologyWidget::onElementClick);
+		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyWidget::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		auto layout = node.getChildren().size() > 1 ? (QLayout*)new QVBoxLayout : (QLayout*)new QVBoxLayout;
 		widget->setLayout(layout);
@@ -394,8 +394,8 @@ namespace Elpida
 
 	void TopologyWidget::onClearPressed()
 	{
-		const auto& childs = _rootFrame->getChildren();
-		for (auto child : childs)
+		const auto& children = _rootFrame->getChildren();
+		for (auto child : children)
 		{
 			clearChildrenState(child);
 		}

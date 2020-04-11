@@ -59,7 +59,7 @@ namespace Elpida
 		}
 
 		ImageTaskBatch();
-		~ImageTaskBatch();
+		~ImageTaskBatch() override = default;
 
 		ImageTaskBatch(ImageTaskBatch&&) = default;
 		ImageTaskBatch(const ImageTaskBatch&) = default;

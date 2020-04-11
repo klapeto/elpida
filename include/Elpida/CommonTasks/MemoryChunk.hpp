@@ -52,8 +52,8 @@ namespace Elpida
 		}
 
 		MemoryChunk(void* pointer, std::size_t size);
-		MemoryChunk(MemoryChunk&& other);
-		~MemoryChunk();
+		MemoryChunk(MemoryChunk&& other) noexcept;
+		~MemoryChunk() override;
 	private:
 		void* _ptr;
 	};

@@ -26,7 +26,7 @@
 
 #include "Elpida/CommonTasks/MemoryChunk.hpp"
 
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {
@@ -37,7 +37,7 @@ namespace Elpida
 		_pointer = _ptr;
 	}
 
-	MemoryChunk::MemoryChunk(MemoryChunk&& other)
+	MemoryChunk::MemoryChunk(MemoryChunk&& other) noexcept
 		: Memory(std::move(other))
 	{
 		this->_ptr = other._ptr;
@@ -71,7 +71,7 @@ namespace Elpida
 			{
 				thisChunkSize = memorySize - (i * chunkSize);
 			}
-			returnArray.push_back(MemoryChunk((void*)((std::size_t)ptr + (i * chunkSize)), thisChunkSize));
+			returnArray.emplace_back((void*)((std::size_t)ptr + (i * chunkSize)), thisChunkSize);
 		}
 		return returnArray;
 	}

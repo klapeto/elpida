@@ -37,7 +37,7 @@ namespace Elpida
 	class AlignedMemory final : public Memory
 	{
 	public:
-		unsigned int getAlignment() const
+		[[nodiscard]] unsigned int getAlignment() const
 		{
 			return _alignment;
 		}
@@ -48,7 +48,7 @@ namespace Elpida
 		}
 
 		AlignedMemory(std::size_t size, unsigned int alignment);
-		~AlignedMemory();
+		~AlignedMemory() override;
 	private:
 		unsigned int _alignment;
 	protected:

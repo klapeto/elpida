@@ -27,7 +27,7 @@
 #include "Elpida/SharedLibrary.hpp"
 
 #include "Elpida/Config.hpp"
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <dirent.h>
@@ -44,13 +44,13 @@ namespace Elpida
 	static std::string GetWindowsError();
 #endif
 
-	SharedLibrary::SharedLibrary(SharedLibrary&& other)
+	SharedLibrary::SharedLibrary(SharedLibrary&& other) noexcept
 	{
 		this->_handle = other._handle;
 		other._handle = nullptr;
 	}
 
-	SharedLibrary& SharedLibrary::operator=(SharedLibrary&& other)
+	SharedLibrary& SharedLibrary::operator=(SharedLibrary&& other) noexcept
 	{
 		this->_handle = other._handle;
 		other._handle = nullptr;

@@ -46,7 +46,7 @@ namespace Elpida
 		static_assert(std::is_floating_point<T>::value,
 			"Float point type is required to use Floyd-Steinberg algorithm");
 
-		void run()
+		void run() override
 		{
 			std::size_t width = _targetImage.getWidth();
 			std::size_t height = _targetImage.getHeight();
@@ -106,7 +106,7 @@ namespace Elpida
 			}
 		}
 
-		void calculateResults(const TaskMetrics& metrics)
+		void calculateResults(const TaskMetrics& metrics) override
 		{
 			_runResult.setOriginalValue(_sourceImage.getTotalSize());
 			addResult(_runResult);
@@ -123,11 +123,7 @@ namespace Elpida
 
 		}
 
-		~FloydSteinberg()
-		{
-
-		}
-
+		~FloydSteinberg() override = default;
 	private:
 		const Image<T>& _sourceImage;
 		Image<T>& _targetImage;

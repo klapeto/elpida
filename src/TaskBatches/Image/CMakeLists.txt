@@ -35,3 +35,5 @@ add_library(imageTasks MODULE ${IMAGE_TASKS_SOURCES})
 
 target_include_directories(imageTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 target_link_libraries(imageTasks elpida Qt5::Widgets png)
+
+install(TARGETS imageTasks DESTINATION ${ELPIDA_TASK_BATCH_INSTALL_DIR})

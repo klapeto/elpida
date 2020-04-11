@@ -27,8 +27,7 @@
 #include "Elpida/Utilities/MemoryFile.hpp"
 
 #include <fstream>
-
-#include "Elpida/Exceptions/IOException.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {
@@ -79,7 +78,7 @@ namespace Elpida
 		}
 		else
 		{
-			throw IOException("MemoryFile", "Failed to open file: " + path);
+			throw ElpidaException("Failed to open file: " + path);
 		}
 	}
 
@@ -94,7 +93,7 @@ namespace Elpida
 		}
 		else
 		{
-			throw IOException("MemoryFile", "Failed to write file: " + path);
+			throw ElpidaException("MemoryFile", "Failed to write file: " + path);
 		}
 	}
 

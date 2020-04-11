@@ -46,11 +46,11 @@ namespace Elpida
 			return _file;
 		}
 
-		void run();
-		void calculateResults(const TaskMetrics& metrics);
+		void run() override;
+		void calculateResults(const TaskMetrics& metrics) override;
 
-		ReadFile(const std::string& filePath);
-		virtual ~ReadFile();
+		explicit ReadFile(const std::string& filePath);
+		~ReadFile() override = default;
 
 		ReadFile(ReadFile&&) = default;
 		ReadFile(const ReadFile&) = default;

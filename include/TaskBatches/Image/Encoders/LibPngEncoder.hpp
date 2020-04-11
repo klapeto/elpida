@@ -38,21 +38,15 @@ namespace Elpida
 	{
 	public:
 
-		ImageEncoder::ImageDecodeInfo decode(unsigned char* data, std::size_t size);
+		ImageEncoder::ImageDecodeInfo decode(unsigned char* data, std::size_t size) override;
 		ImageEncoder::ImageEncodeInfo encode(std::size_t imageWidth,
 			std::size_t imageHeight,
 			unsigned char* inputData,
-			std::size_t inputSize);
+			std::size_t inputSize) override;
 
-		LibPngEncoder()
-		{
+		LibPngEncoder() = default;
 
-		}
-
-		virtual ~LibPngEncoder()
-		{
-
-		}
+		~LibPngEncoder() override = default;
 
 		LibPngEncoder(LibPngEncoder&&) = default;
 		LibPngEncoder(const LibPngEncoder&) = default;

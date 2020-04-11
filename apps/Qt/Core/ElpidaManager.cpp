@@ -20,7 +20,7 @@
 #include "ElpidaManager.hpp"
 #include <Elpida/TaskBatch.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
-#include <Elpida/Exceptions/ElpidaException.hpp>
+#include <Elpida/ElpidaException.hpp>
 
 constexpr const char* PageCreationFunctionName = "createQtBatchWrappers";
 

@@ -45,7 +45,7 @@ namespace Elpida
 		void setClickedStyle(const QString& clickedStyle);
 		void setMouseOverStyle(const QString& mouseOverStyle);
 
-		const ProcessorNode& getProcessorNode() const
+		[[nodiscard]] const ProcessorNode& getProcessorNode() const
 		{
 			return _node;
 		}
@@ -55,12 +55,12 @@ namespace Elpida
 			_children.push_back(frame);
 		}
 
-		const std::vector<TopologyNodeFrame*>& getChildren() const
+		[[nodiscard]] const std::vector<TopologyNodeFrame*>& getChildren() const
 		{
 			return _children;
 		}
 
-		QCheckBox* getCheckBox() const
+		[[nodiscard]] QCheckBox* getCheckBox() const
 		{
 			return _checkBox;
 		}

@@ -29,7 +29,7 @@
 
 #include <thread>
 
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "ElpidaException.hpp"
 
 namespace Elpida
 {
@@ -47,7 +47,7 @@ namespace Elpida
 			_runnerThread = std::thread(callable);
 		}
 
-		bool isRunning() const
+		[[nodiscard]] bool isRunning() const
 		{
 			return _runnerThread.joinable();
 		}
@@ -68,9 +68,7 @@ namespace Elpida
 			}
 		}
 
-		OffThreadExecutor()
-		{
-		}
+		OffThreadExecutor() = default;
 
 		~OffThreadExecutor()
 		{

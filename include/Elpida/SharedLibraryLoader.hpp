@@ -45,8 +45,8 @@ namespace Elpida
 		void load(const std::string& path);
 		void unload(const std::string& path);
 
-		SharedLibraryLoader();
-		~SharedLibraryLoader();
+		SharedLibraryLoader() = default;
+		~SharedLibraryLoader() = default;
 	protected:
 		std::unordered_map<std::string, SharedLibrary> _loadedLibraries;
 		void unloadEverything();

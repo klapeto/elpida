@@ -61,23 +61,20 @@ namespace Elpida
 
 		}
 
-		bool hasProperties() const
+		[[nodiscard]] bool hasProperties() const
 		{
 			return _hasProperties;
 		}
 
-		bool hasResultChart() const
+		[[nodiscard]] bool hasResultChart() const
 		{
 			return _hasResultCharts;
 		}
 
-		virtual ~QtTaskBatchWrapper()
-		{
-
-		}
+		~QtTaskBatchWrapper() override = default;
 	protected:
-		QtTaskBatchWrapper(bool hasProperties, bool hasResultCharts, QWidget* parrent = nullptr)
-			: TaskBatchWrapper(), QWidget(parrent), _hasProperties(hasProperties), _hasResultCharts(hasResultCharts)
+		QtTaskBatchWrapper(bool hasProperties, bool hasResultCharts, QWidget* parent = nullptr)
+			: TaskBatchWrapper(), QWidget(parent), _hasProperties(hasProperties), _hasResultCharts(hasResultCharts)
 		{
 
 		}

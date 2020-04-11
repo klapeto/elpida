@@ -10,7 +10,7 @@ set(MEMORY_TASKS_SOURCES
         Read/MemoryRead.cpp
         Read/MemoryReadTaskFactory.cpp
         Read/MultiThreadMemoryChunksRead.cpp
-        Read/MultithreadMemoryChunksReadTaskBatch.cpp
+        Read/MultiThreadMemoryChunksReadTaskBatch.cpp
         Ui/MemoryBandwidthChart.cpp
         Ui/MemoryLatencyChart.cpp
         Ui/MemoryReadProperties.cpp
@@ -36,6 +36,5 @@ add_library(memoryTasks MODULE ${MEMORY_TASKS_SOURCES})
 
 target_include_directories(memoryTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 target_link_libraries(memoryTasks elpida Qt5::Widgets Qt5::Charts)
-install(TARGETS memoryTasks
-        CONFIGURATIONS Debug
-        DESTINATION ${ELPIDA_INSTALL})
+
+install(TARGETS memoryTasks DESTINATION ${ELPIDA_TASK_BATCH_INSTALL_DIR})

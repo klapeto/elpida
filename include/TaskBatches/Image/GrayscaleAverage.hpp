@@ -29,7 +29,7 @@
 
 #include <cstddef>
 
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/Imaging/Image.hpp"
@@ -44,7 +44,7 @@ namespace Elpida
 
 	public:
 
-		void run()
+		void run() override
 		{
 			std::size_t size = _targetImage.getTotalSize();
 			Pixel<T>* sourceData = _sourceImage.getData();
@@ -59,13 +59,13 @@ namespace Elpida
 			}
 		}
 
-		void calculateResults(const TaskMetrics& metrics)
+		void calculateResults(const TaskMetrics& metrics) override
 		{
 			_runResult.setOriginalValue(_sourceImage.getTotalSize());
 			addResult(_runResult);
 		}
 
-		void prepare()
+		void prepare() override
 		{
 			if (!_sourceImage.isCompatibleWith(_targetImage))
 			{
@@ -80,17 +80,7 @@ namespace Elpida
 
 		}
 
-		GrayscaleAverage(Image<T>& image)
-			: _sourceImage(image), _targetImage(image), _runResult("Pixel process rate", "Pixels")
-		{
-
-		}
-
-		~GrayscaleAverage()
-		{
-
-		}
-
+		~GrayscaleAverage() override = default;
 	private:
 		const Image<T>& _sourceImage;
 		Image<T>& _targetImage;

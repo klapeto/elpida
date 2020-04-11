@@ -38,7 +38,7 @@ namespace Elpida
 	class Event final
 	{
 	public:
-		typedef typename EventSubscription<T...>::EventHandler EventHandler;
+		using EventHandler = typename EventSubscription<T...>::EventHandler;
 
 		void raise(T ... eventArguments)
 		{
@@ -64,10 +64,8 @@ namespace Elpida
 			_subscribers.erase(subscription.getIterator());
 		}
 
-		Event()
-		{
+		Event() = default;
 
-		}
 		~Event()
 		{
 			std::lock_guard<std::mutex> lock(_mutex);
@@ -77,7 +75,6 @@ namespace Elpida
 	private:
 		std::mutex _mutex;
 		std::list<EventSubscription<T...>> _subscribers;
-
 	};
 
 } /* namespace Elpida */

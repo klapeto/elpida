@@ -62,27 +62,24 @@ namespace Elpida
 			}
 		}
 
-		void calculateResults(const TaskMetrics& metrics)
+		void calculateResults(const TaskMetrics& metrics) override
 		{
 			_runResult.setOriginalValue(_sourceImage.getTotalSizeInBytes());
 			addResult(_runResult);
 		}
 
-		void prepare()
+		void prepare() override
 		{
 			_convertedImage = Image<R>(_sourceImage.getWidth(), _sourceImage.getHeight());
 		}
 
-		ConvertToFloat(const Image<T>& sourceImage)
+		explicit ConvertToFloat(const Image<T>& sourceImage)
 			: Task("Convert to Float"), _sourceImage(sourceImage), _runResult("Data convert rate", "Bytes")
 		{
 
 		}
 
-		~ConvertToFloat()
-		{
-
-		}
+		~ConvertToFloat() override = default;
 	private:
 		const Image<T>& _sourceImage;
 		Image<R> _convertedImage;

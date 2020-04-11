@@ -44,7 +44,7 @@ namespace Elpida
 		typedef unsigned char Data;
 		typedef Data* DataPtr;
 
-		const Image<Data>& getImage() const
+		[[nodiscard]] const Image<Data>& getImage() const
 		{
 			return _image;
 		}
@@ -54,16 +54,14 @@ namespace Elpida
 			return _image;
 		}
 
-		void run();
-		void calculateResults(const TaskMetrics& metrics);
+		void run() override;
+		void calculateResults(const TaskMetrics& metrics) override;
 
 		PngDecoding(const DataPtr& inputData, const std::size_t& dataSize);
-		virtual ~PngDecoding();
+		~PngDecoding() override = default;
 
 		PngDecoding(PngDecoding&&) = default;
 		PngDecoding(const PngDecoding&) = default;
-		PngDecoding& operator=(PngDecoding&&) = default;
-		PngDecoding& operator=(const PngDecoding&) = default;
 	private:
 		Image<Data> _image;
 		TaskRunResult _runResult;

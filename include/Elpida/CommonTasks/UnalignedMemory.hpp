@@ -37,8 +37,8 @@ namespace Elpida
 	class UnalignedMemory final : public Memory
 	{
 	public:
-		UnalignedMemory(std::size_t size);
-		~UnalignedMemory();
+		explicit UnalignedMemory(std::size_t size);
+		~UnalignedMemory() override;
 	protected:
 		void allocateImpl() override;
 		void deallocateImpl() override;

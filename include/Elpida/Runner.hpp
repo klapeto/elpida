@@ -106,12 +106,7 @@ namespace Elpida
 		}
 
 		Runner();
-		virtual ~Runner();
-
-		Runner(Runner&&) = default;
-		Runner(const Runner&) = default;
-		Runner& operator=(Runner&&) = default;
-		Runner& operator=(const Runner&) = default;
+		virtual ~Runner() = default;
 	private:
 		std::unordered_map<std::string, ResultsHashtable> _lastExecutionResults;
 		std::vector<const TaskBatch*> _tasksBatches;

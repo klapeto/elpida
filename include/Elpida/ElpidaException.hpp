@@ -18,49 +18,62 @@
  *************************************************************************/
 
 /*
- * IOException.hpp
+ * ElpidaException.hpp
  *
- *  Created on: 2 Αυγ 2018
+ *  Created on: 13 Μαρ 2018
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_EXCEPTIONS_IOEXCEPTION_HPP_
-#define ELPIDA_EXCEPTIONS_IOEXCEPTION_HPP_
+#ifndef ELPIDA_EXCEPTIONS_ELPIDAEXCEPTION_HPP_
+#define ELPIDA_EXCEPTIONS_ELPIDAEXCEPTION_HPP_
 
+#include <exception>
 #include <string>
-
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include <utility>
 
 namespace Elpida
 {
 
-	class IOException : public ElpidaException
+	class ElpidaException : public std::exception
 	{
 	public:
-		IOException()
-			: ElpidaException()
+
+		[[nodiscard]] const std::string& getMessage() const
+		{
+			return _message;
+		}
+
+		[[nodiscard]] const char* what() const noexcept override
+		{
+			return _what.c_str();
+		}
+
+		ElpidaException() = default;
+
+		explicit ElpidaException(std::string what)
+			: _what(std::move(what))
 		{
 
 		}
 
-		IOException(const std::string& what)
-			: ElpidaException(what)
+		ElpidaException(std::string what, std::string message)
+			: _what(std::move(what)), _message(std::move(message))
 		{
 
 		}
 
-		IOException(const std::string& what, const std::string& message)
-			: ElpidaException(what, message)
-		{
+		~ElpidaException() override = default;
 
-		}
+		ElpidaException(ElpidaException&&) = default;
+		ElpidaException(const ElpidaException&) = default;
+		ElpidaException& operator=(ElpidaException&&) = default;
+		ElpidaException& operator=(const ElpidaException&) = default;
 
-		virtual ~IOException()
-		{
-
-		}
+	protected:
+		std::string _what;
+		std::string _message;
 	};
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_EXCEPTIONS_IOEXCEPTION_HPP_ */
+#endif /* ELPIDA_EXCEPTIONS_ELPIDAEXCEPTION_HPP_ */

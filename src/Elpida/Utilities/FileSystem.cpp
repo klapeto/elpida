@@ -25,7 +25,7 @@
  */
 
 #include "Elpida/Utilities/FileSystem.hpp"
-#include "Elpida/Exceptions/IOException.hpp"
+#include "Elpida/ElpidaException.hpp"
 #include "Elpida/Config.hpp"
 
 #include <fstream>
@@ -55,7 +55,7 @@ namespace Elpida
 		}
 		else
 		{
-			throw IOException("iterateDirectory", "'" + directory + "' directory could not be opened.");
+			throw ElpidaException("iterateDirectory", "'" + directory + "' directory could not be opened.");
 		}
 
 #else

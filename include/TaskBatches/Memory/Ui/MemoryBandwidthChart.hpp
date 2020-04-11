@@ -36,13 +36,11 @@ namespace Elpida
 	class MemoryBandwidthChart : public MemoryTasksPropertiesWithChart<T>
 	{
 	public:
-		MemoryBandwidthChart(T* taskBatch)
+		explicit MemoryBandwidthChart(T* taskBatch)
 			: MemoryTasksPropertiesWithChart<T>(taskBatch)
 		{
 		}
-		virtual ~MemoryBandwidthChart()
-		{
-		}
+		virtual ~MemoryBandwidthChart() = default;
 	protected:
 		MemoryBandwidthChart(T* taskBatch, bool hasProperties)
 			: MemoryTasksPropertiesWithChart<T>(taskBatch, hasProperties)

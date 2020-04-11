@@ -41,7 +41,7 @@ namespace Elpida
 
 	public:
 
-		const TaskAffinity& getAffinity() const
+		[[nodiscard]] const TaskAffinity& getAffinity() const
 		{
 			return _affinity;
 		}
@@ -60,14 +60,14 @@ namespace Elpida
 		TopologyNodeFrame* getMachineWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getPackageWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getGroupWidget(const Elpida::ProcessorNode& node);
-		QWidget* getNumaWidget(const Elpida::ProcessorNode& node);
+		static QWidget* getNumaWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getCacheWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getCoreWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getEUWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* appendChildren(const Elpida::ProcessorNode& node);
 
-		void clearChildrenState(TopologyNodeFrame* frame);
+		static void clearChildrenState(TopologyNodeFrame* frame);
 
 		void appendAffinity(TopologyNodeFrame* frame);
 

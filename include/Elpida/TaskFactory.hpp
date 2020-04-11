@@ -36,16 +36,10 @@ namespace Elpida
 	{
 	public:
 
-		virtual Task* create(const ProcessorNode& processorAffinity) const = 0;
+		[[nodiscard]] virtual Task* create(const ProcessorNode& processorAffinity) const = 0;
 
-		TaskFactory()
-		{
-
-		}
-		virtual ~TaskFactory()
-		{
-
-		}
+		TaskFactory() = default;
+		virtual ~TaskFactory() = default;
 	};
 
 } /* namespace Elpida */

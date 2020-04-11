@@ -7,7 +7,7 @@
 #include <QStandardItem>
 #include <QColor>
 #include <string>
-#include <Elpida/Exceptions/ElpidaException.hpp>
+#include <Elpida/ElpidaException.hpp>
 #include <iomanip>
 #include <cmath>
 #include <sstream>

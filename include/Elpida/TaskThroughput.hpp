@@ -28,6 +28,7 @@
 #define ELPIDA_TASKTHROUGHPUT_HPP_
 
 #include <string>
+#include <utility>
 
 #include "Elpida/TaskMetrics.hpp"
 #include "Elpida/TaskRunResult.hpp"
@@ -39,19 +40,19 @@ namespace Elpida
 	class TaskThroughput
 	{
 	public:
-		double getRatePerSecond() const
+		[[nodiscard]] double getRatePerSecond() const
 		{
 			return _runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>();
 		}
 
-		std::string getRatePerSecondString() const
+		[[nodiscard]] std::string getRatePerSecondString() const
 		{
 			return ValueUtilities::getValueScaleString(
 				_runResult.getActualValue() / _taskMetrics.getSubdivision<TaskMetrics::Second>())
 				+ _runResult.getValueTypeName() + "/s";
 		}
 
-		std::string getUniversalString() const
+		[[nodiscard]] std::string getUniversalString() const
 		{
 			if (!_runResult.isCustom())
 			{
@@ -63,7 +64,7 @@ namespace Elpida
 			}
 		}
 
-		std::string getUniversalSuffix() const
+		[[nodiscard]] std::string getUniversalSuffix() const
 		{
 			if (!_runResult.isCustom())
 			{
@@ -75,7 +76,7 @@ namespace Elpida
 			}
 		}
 
-		double getUniversalValue() const
+		[[nodiscard]] double getUniversalValue() const
 		{
 			if (!_runResult.isCustom())
 			{
@@ -87,25 +88,22 @@ namespace Elpida
 			}
 		}
 
-		const TaskRunResult& getRunResult() const
+		[[nodiscard]] const TaskRunResult& getRunResult() const
 		{
 			return _runResult;
 		}
 
-		const TaskMetrics& getTaskMetrics() const
+		[[nodiscard]] const TaskMetrics& getTaskMetrics() const
 		{
 			return _taskMetrics;
 		}
 
-		TaskThroughput(const TaskRunResult& runResult, const TaskMetrics& taskMetrics)
-			: _runResult(runResult), _taskMetrics(taskMetrics)
+		TaskThroughput(const TaskRunResult& runResult, TaskMetrics taskMetrics)
+			: _runResult(runResult), _taskMetrics(std::move(taskMetrics))
 		{
 
 		}
-		virtual ~TaskThroughput()
-		{
-
-		}
+		virtual ~TaskThroughput()= default;
 
 		TaskThroughput(TaskThroughput&&) = default;
 		TaskThroughput(const TaskThroughput&) = default;

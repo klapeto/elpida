@@ -18,67 +18,58 @@
  *************************************************************************/
 
 /*
- * ElpidaException.hpp
+ * MultiThreadMemoryChunksReadTaskBatch.hpp
  *
- *  Created on: 13 Μαρ 2018
+ *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#ifndef ELPIDA_EXCEPTIONS_ELPIDAEXCEPTION_HPP_
-#define ELPIDA_EXCEPTIONS_ELPIDAEXCEPTION_HPP_
+#ifndef TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREADTASKBATCH_HPP_
+#define TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREADTASKBATCH_HPP_
 
-#include <exception>
-#include <string>
+#include "Elpida/TaskBatch.hpp"
 
 namespace Elpida
 {
 
-	class ElpidaException : public std::exception
+	class MultiThreadMemoryChunksReadTaskBatch : public TaskBatch
 	{
 	public:
 
-		const std::string& getMessage() const
+		bool isAutoConfigureSizes() const
 		{
-			return _message;
+			return _autoConfigureSizes;
 		}
 
-		virtual const char* what() const noexcept
+		void setAutoConfigureSizes(bool autoConfigureSizes)
 		{
-			return _what.c_str();    // This call is noexcept too
+			_autoConfigureSizes = autoConfigureSizes;
 		}
 
-		ElpidaException()
+		std::size_t getSizePerThread() const
 		{
-
+			return _sizePerThread;
 		}
 
-		ElpidaException(const std::string& what)
-			: _what(what)
+		void setSizePerThread(std::size_t sizePerThread)
 		{
-
+			_sizePerThread = sizePerThread;
 		}
 
-		ElpidaException(const std::string& what, const std::string& message)
-			: _what(what), _message(message)
-		{
+		void createTasks() const override;
 
-		}
-
-		virtual ~ElpidaException()
+		MultiThreadMemoryChunksReadTaskBatch()
+			: TaskBatch("Memory Read Bandwidth"), _sizePerThread(256), _autoConfigureSizes(true)
 		{
 
 		}
 
-		ElpidaException(ElpidaException&&) = default;
-		ElpidaException(const ElpidaException&) = default;
-		ElpidaException& operator=(ElpidaException&&) = default;
-		ElpidaException& operator=(const ElpidaException&) = default;
-
-	protected:
-		std::string _what;
-		std::string _message;
+		~MultiThreadMemoryChunksReadTaskBatch() override = default;
+	private:
+		std::size_t _sizePerThread;
+		bool _autoConfigureSizes;
 	};
 
 } /* namespace Elpida */
 
-#endif /* ELPIDA_EXCEPTIONS_ELPIDAEXCEPTION_HPP_ */
+#endif /* TASKBATCHES_MEMORY_READ_MULTITHREADMEMORYCHUNKSREADTASKBATCH_HPP_ */

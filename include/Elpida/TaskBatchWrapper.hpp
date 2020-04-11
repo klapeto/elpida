@@ -35,16 +35,10 @@ namespace Elpida
 	{
 	public:
 
-		virtual const TaskBatch& getTaskBatch() const = 0;
+		[[nodiscard]] virtual const TaskBatch& getTaskBatch() const = 0;
 
-		TaskBatchWrapper()
-		{
-
-		}
-		virtual ~TaskBatchWrapper()
-		{
-
-		}
+		TaskBatchWrapper() = default;
+		virtual ~TaskBatchWrapper() = default;
 	};
 
 } /* namespace Elpida */

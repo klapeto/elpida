@@ -40,7 +40,6 @@ namespace Elpida
 	class EventSubscription : public NonCopyable
 	{
 	public:
-
 		typedef std::function<void(T...)> EventHandler;
 
 		void unsubscribe()
@@ -48,17 +47,15 @@ namespace Elpida
 			_owner.unsubScribe(*this);
 		}
 
-		EventSubscription(EventSubscription<T...>&& other)
-			: _iterator(std::move(other._iterator)), _owner(other._owner), _handler(other._handler)
-		{
-		}
-
-		~EventSubscription()
+		EventSubscription(EventSubscription<T...>&& other) noexcept
+			: _iterator(std::move(other._iterator)), _owner(other._owner), _handler(std::move(other._handler))
 		{
 
 		}
+
+		~EventSubscription() override = default;
 	private:
-		typedef typename std::list<EventSubscription<T...>>::iterator Iterator;
+		using Iterator = typename std::list<EventSubscription<T...>>::iterator;
 
 		Iterator _iterator;
 		Event<T...>& _owner;

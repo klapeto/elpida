@@ -19,7 +19,7 @@
 
 #include "TaskBatchProperties.hpp"
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
-#include <Elpida/Exceptions/ElpidaException.hpp>
+#include <Elpida/ElpidaException.hpp>
 #include <QMessageBox>
 #include "ui_TaskBatchProperties.h"
 

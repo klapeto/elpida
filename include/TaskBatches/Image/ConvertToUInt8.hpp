@@ -62,27 +62,24 @@ namespace Elpida
 			}
 		}
 
-		void calculateResults(const TaskMetrics& metrics)
+		void calculateResults(const TaskMetrics& metrics) override
 		{
 			_runResult.setOriginalValue(_sourceImage.getTotalSizeInBytes());
 			addResult(_runResult);
 		}
 
-		void prepare()
+		void prepare() override
 		{
 			_convertedImage = Image<uint8_t>(_sourceImage.getWidth(), _sourceImage.getHeight());
 		}
 
-		ConvertToUInt8(const Image<T>& sourceImage)
+		explicit ConvertToUInt8(const Image<T>& sourceImage)
 			: Task("Convert to Uint8"), _sourceImage(sourceImage), _runResult("Data covert rate", "Bytes")
 		{
 
 		}
 
-		~ConvertToUInt8()
-		{
-
-		}
+		~ConvertToUInt8() override = default;
 	private:
 		const Image<T>& _sourceImage;
 		Image<uint8_t> _convertedImage;

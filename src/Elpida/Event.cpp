@@ -24,6 +24,8 @@
  *      Author: klapeto
  */
 
+#include "Elpida/Event.hpp"
+
 namespace Elpida
 {
 

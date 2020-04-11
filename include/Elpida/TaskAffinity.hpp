@@ -38,59 +38,35 @@ namespace Elpida
 	{
 	public:
 
-		const std::vector<const ProcessorNode*>& getProcessorNodes() const
+		[[nodiscard]] const std::vector<const ProcessorNode*>& getProcessorNodes() const
 		{
 			return _nodes;
 		}
 
-		TaskAffinity()
-		{
-		}
-
-		TaskAffinity(std::initializer_list<ProcessorNode*> processors);
+		TaskAffinity() = default;
 
 		template<typename T>
-		TaskAffinity(const T& nodesToUse)
+		explicit TaskAffinity(const T& nodesToUse)
 			: _nodes(nodesToUse.begin(), nodesToUse.end())
 		{
 
 		}
 
-		TaskAffinity(std::vector<const ProcessorNode*>&& nodesToUse)
-			: _nodes(std::move(nodesToUse))
-		{
-
-		}
-
-		TaskAffinity(const TaskAffinity& other)
-			: _nodes(other._nodes)
-		{
-
-		}
-
-		TaskAffinity(TaskAffinity&& other)
+		TaskAffinity(const TaskAffinity& other) = default;
+		TaskAffinity(TaskAffinity&& other) noexcept
 			: _nodes(std::move(other._nodes))
 		{
 
 		}
 
-		TaskAffinity& operator=(const TaskAffinity& other)
-		{
-			_nodes = other._nodes;
-			return *this;
-		}
-
-		TaskAffinity& operator=(TaskAffinity&& other)
+		TaskAffinity& operator=(const TaskAffinity& other) = default;
+		TaskAffinity& operator=(TaskAffinity&& other) noexcept
 		{
 			_nodes = std::move(other._nodes);
 			return *this;
 		}
 
-		~TaskAffinity()
-		{
-
-		}
-
+		~TaskAffinity() = default;
 	private:
 		std::vector<const ProcessorNode*> _nodes;
 	};

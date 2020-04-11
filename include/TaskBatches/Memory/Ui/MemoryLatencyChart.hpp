@@ -36,14 +36,11 @@ namespace Elpida
 	class MemoryLatencyChart final : public MemoryTasksPropertiesWithChart<MemoryLatencyTaskBatch>
 	{
 	public:
-		MemoryLatencyChart(MemoryLatencyTaskBatch* taskBatch)
+		explicit MemoryLatencyChart(MemoryLatencyTaskBatch* taskBatch)
 			: MemoryTasksPropertiesWithChart<MemoryLatencyTaskBatch>(taskBatch)
 		{
 		}
-		~MemoryLatencyChart()
-		{
-
-		}
+		~MemoryLatencyChart() override = default;
 	protected:
 		void configureXAxis(QtCharts::QCategoryAxis* xAxis) override;
 		void configureYAxis(QtCharts::QValueAxis* yAxis) override;

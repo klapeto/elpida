@@ -18,10 +18,7 @@ set(ELPIDA_SOURCES
         TaskThroughput.cpp
         Timer.cpp
 
-        Exceptions/ElpidaException.cpp
-        Exceptions/IOException.cpp
-        Exceptions/OutOfRangeException.cpp
-        Exceptions/ParserException.cpp
+        ElpidaException.cpp
 
         Topology/ProcessorNode.cpp
         Topology/SystemTopology.cpp
@@ -68,3 +65,8 @@ endif()
 target_link_libraries(elpida hwloc)
 
 target_include_directories(elpida PUBLIC "${ELPIDA_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+
+install(DIRECTORY ${ELPIDA_INCLUDE_DIR}/Elpida DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h*")
+install(TARGETS elpida
+        PUBLIC_HEADER DESTINATION ${ELPIDA_HEADER_INSTALL_DIR}
+        LIBRARY DESTINATION ${ELPIDA_LIB_INSTALL_DIR})

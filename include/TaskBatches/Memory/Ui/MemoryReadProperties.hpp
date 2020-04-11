@@ -28,7 +28,7 @@
 #define TASKBATCHES_MEMORY_UI_MEMORYREADPROPERTIES_HPP_
 
 #include "TaskBatches/Memory/Ui/MemoryBandwidthChart.hpp"
-#include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
+#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksReadTaskBatch.hpp"
 
 namespace Ui
 {
@@ -38,7 +38,7 @@ namespace Ui
 namespace Elpida
 {
 
-	class MemoryReadProperties final : public MemoryBandwidthChart<MultithreadMemoryChunksReadTaskBatch>
+	class MemoryReadProperties final : public MemoryBandwidthChart<MultiThreadMemoryChunksReadTaskBatch>
 	{
 	Q_OBJECT
 
@@ -46,8 +46,8 @@ namespace Elpida
 		void reconfigureTaskBatch() override;
 		void validateConfiguration() override;
 
-		MemoryReadProperties(MultithreadMemoryChunksReadTaskBatch* taskBatch);
-		~MemoryReadProperties();
+		explicit MemoryReadProperties(MultiThreadMemoryChunksReadTaskBatch* taskBatch);
+		~MemoryReadProperties() override;
 	private:
 		std::vector<QMetaObject::Connection> _connections;
 		Ui::MemoryReadProperties* _ui;

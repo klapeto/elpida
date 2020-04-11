@@ -38,7 +38,7 @@ namespace Elpida
 	{
 	public:
 
-		unsigned int getAffinity() const
+		[[nodiscard]] unsigned int getAffinity() const
 		{
 			return _affinity;
 		}
@@ -66,10 +66,6 @@ namespace Elpida
 		virtual ~TaskThread();
 
 		TaskThread(TaskThread&&) = default;
-		TaskThread(const TaskThread&) = delete;
-		TaskThread& operator=(TaskThread&&) = default;
-		TaskThread& operator=(const TaskThread&) = delete;
-
 	private:
 		std::thread _runnerThread;
 		Task& _task;

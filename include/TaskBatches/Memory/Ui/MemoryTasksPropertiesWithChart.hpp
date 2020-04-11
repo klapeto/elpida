@@ -115,19 +115,19 @@ namespace Elpida
 			_yAxis->setMin(0);
 		}
 
-		MemoryTasksPropertiesWithChart(T* taskBatch)
+		explicit MemoryTasksPropertiesWithChart(T* taskBatch)
 			: MemoryTasksPropertiesWithChart(taskBatch, false)
 		{
 
 		}
-		virtual ~MemoryTasksPropertiesWithChart()
+		~MemoryTasksPropertiesWithChart() override
 		{
 			delete _chart;
 		}
 	private:
-		QtCharts::QChart* _chart;
-		QtCharts::QCategoryAxis* _xAxis;
-		QtCharts::QValueAxis* _yAxis;
+		QtCharts::QChart* _chart{};
+		QtCharts::QCategoryAxis* _xAxis{};
+		QtCharts::QValueAxis* _yAxis{};
 	protected:
 		T* _taskBatch;
 

@@ -28,7 +28,7 @@
 #include "Elpida/CommonTasks/NumaAllocatePerThread.hpp"
 #include "Elpida/CommonTasks/AlignedMemory.hpp"
 #include "Elpida/Config.hpp"
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <numa.h>

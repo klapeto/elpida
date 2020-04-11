@@ -32,7 +32,7 @@
 
 #include "Elpida/Task.hpp"
 #include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/CommonTasks/NumaMemory.hpp"
 #include "TaskBatches/Memory/WorkingSetSizes.hpp"
@@ -57,12 +57,12 @@ namespace Elpida
 
 		void run() override
 		{
-			register auto ptr = (RegisterSize*)_memory.getPointer();
-			register auto start = ptr;
-			register auto end = (RegisterSize*)((RegisterSize)start + _memory.getSize());
-			register auto iterations = _iterations;
-			register auto x = RegisterSize();
-			for (register auto i = 0ul; i < iterations; ++i)
+			auto ptr = (RegisterSize*)_memory.getPointer();
+			auto start = ptr;
+			auto end = (RegisterSize*)((RegisterSize)start + _memory.getSize());
+			auto iterations = _iterations;
+			auto x = RegisterSize();
+			for (auto i = 0ul; i < iterations; ++i)
 			{
 				ptr = start;
 				while (ptr < end)
@@ -105,12 +105,12 @@ namespace Elpida
 			auto dummy = x;
 		}
 
-		std::size_t getMemorySize() const
+		[[nodiscard]] std::size_t getMemorySize() const
 		{
 			return _memory.getSize();
 		}
 
-		unsigned long getIterations() const
+		[[nodiscard]] unsigned long getIterations() const
 		{
 			return _iterations;
 		}
@@ -135,9 +135,9 @@ namespace Elpida
 			_runResult.setMultiplier(_iterations);
 		}
 
-		virtual ~MemoryRead()
+		~MemoryRead() override
 		{
-			finalize();
+			_memory.deallocate();
 		}
 
 	protected:

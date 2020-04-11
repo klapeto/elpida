@@ -12,7 +12,7 @@ namespace Elpida
 	{
 	Q_OBJECT
 	public:
-		explicit MascotWidget(QWidget* parrent = nullptr);
+		explicit MascotWidget(QWidget* parent = nullptr);
 	signals:
 
 	public slots:

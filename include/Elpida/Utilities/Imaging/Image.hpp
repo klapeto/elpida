@@ -31,7 +31,7 @@
 #include <iostream>
 #include <string.h>
 
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 #include "Pixel.hpp"
 
 namespace Elpida

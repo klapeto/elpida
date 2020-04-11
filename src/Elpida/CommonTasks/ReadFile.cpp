@@ -36,11 +36,6 @@ namespace Elpida
 	{
 	}
 
-	ReadFile::~ReadFile()
-	{
-
-	}
-
 	void ReadFile::calculateResults(const TaskMetrics& metrics)
 	{
 		_runResult.setOriginalValue(_file.getSize());

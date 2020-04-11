@@ -49,7 +49,7 @@ namespace Elpida
 		}
 
 		NumaMemory(std::size_t size, int node);
-		~NumaMemory();
+		~NumaMemory() override;
 	private:
 		int _node;
 	protected:

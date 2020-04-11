@@ -26,18 +26,15 @@
 
 #include "Elpida/Task.hpp"
 
+#include <utility>
+
 #include "Elpida/TaskThread.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 
 namespace Elpida
 {
-	Task::Task(const std::string& name, bool toBeMeasured)
-		: _name(name), _toBeMeasured(toBeMeasured)
-	{
-
-	}
-
-	Task::~Task()
+	Task::Task(std::string name, bool toBeMeasured)
+		: _name(std::move(name)), _toBeMeasured(toBeMeasured)
 	{
 
 	}

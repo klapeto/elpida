@@ -38,12 +38,12 @@ namespace Elpida
 	class Memory : public NonCopyable
 	{
 	public:
-		void* getPointer() const
+		[[nodiscard]] void* getPointer() const
 		{
 			return _pointer;
 		}
 
-		std::size_t getSize() const
+		[[nodiscard]] std::size_t getSize() const
 		{
 			return _size;
 		}
@@ -56,9 +56,9 @@ namespace Elpida
 		void allocate();
 		void deallocate();
 
-		Memory(std::size_t size);
-		Memory(Memory&& other);
-		virtual ~Memory();
+		explicit Memory(std::size_t size);
+		Memory(Memory&& other) noexcept;
+		~Memory() override;
 	private:
 		std::mutex _mutex;
 	protected:

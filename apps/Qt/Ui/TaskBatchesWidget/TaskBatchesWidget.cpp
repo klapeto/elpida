@@ -22,7 +22,7 @@
 #include "Ui/TaskBatchesProperties/TaskBatchProperties.hpp"
 #include "Ui/ListItemWithButton/ListItemWithButton.hpp"
 #include <Elpida/TaskBatch.hpp>
-#include <Elpida/Exceptions/ElpidaException.hpp>
+#include <Elpida/ElpidaException.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include <QMessageBox>
 #include <QListWidgetItem>
@@ -212,7 +212,7 @@ namespace Elpida
 		{
 			_taskBatchRunner.clearTaskBatches();
 			auto selectedItems = _ui->lwTaskBatches->selectedItems();
-			if (selectedItems.size() > 0)
+			if (!selectedItems.empty())
 			{
 				_ui->lblSatusValue->setText(_runningText);
 				_ui->pbStop->setEnabled(true);

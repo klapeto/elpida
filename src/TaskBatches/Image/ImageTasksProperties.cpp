@@ -25,7 +25,7 @@
 #include <qobjectdefs.h>
 
 #include "ui_ImageTasksProperties.h"
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {

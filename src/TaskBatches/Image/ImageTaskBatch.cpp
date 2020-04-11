@@ -26,7 +26,7 @@
 
 #include "TaskBatches/Image/ImageTaskBatch.hpp"
 
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 #include "Elpida/Task.hpp"
 #include "Elpida/Utilities/CommandParser.hpp"
 #include "Elpida/Utilities/Imaging/Image.hpp"
@@ -46,11 +46,6 @@ namespace Elpida
 	ImageTaskBatch::ImageTaskBatch()
 		: TaskBatch("ImageTasks"), _outputEnabled(false)
 	{
-	}
-
-	ImageTaskBatch::~ImageTaskBatch()
-	{
-
 	}
 
 	void ImageTaskBatch::createTasks() const

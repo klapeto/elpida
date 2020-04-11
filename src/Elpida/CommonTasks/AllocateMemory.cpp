@@ -26,7 +26,7 @@
 
 #include "Elpida/CommonTasks/AllocateMemory.hpp"
 
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/CommonTasks/AlignedMemory.hpp"

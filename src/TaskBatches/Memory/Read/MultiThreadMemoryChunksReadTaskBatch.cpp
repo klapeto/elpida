@@ -18,15 +18,31 @@
  *************************************************************************/
 
 /*
- * OutOfRangeException.cpp
+ * MultithreadMemoryChunksReadCached.cpp
  *
- *  Created on: 29 Ιουλ 2018
+ *  Created on: 16 Μαΐ 2019
  *      Author: klapeto
  */
 
-#include "Elpida/Exceptions/OutOfRangeException.hpp"
+#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksReadTaskBatch.hpp"
+
+#include <cstddef>
+#include <unordered_map>
+
+#include "Elpida/Topology/SystemTopology.hpp"
+#include "Elpida/Topology/CpuInfo.hpp"
+#include "Elpida/CommonTasks/NumaAllocatePerThread.hpp"
+#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
+
+#include <algorithm>
 
 namespace Elpida
 {
 
+	void MultiThreadMemoryChunksReadTaskBatch::createTasks() const
+	{
+		addTask(new MultiThreadMemoryChunksRead(_sizePerThread));
+	}
+
 } /* namespace Elpida */
+

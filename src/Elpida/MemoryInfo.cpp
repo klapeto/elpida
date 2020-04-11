@@ -40,10 +40,6 @@ namespace Elpida
 		getValues();
 	}
 
-	MemoryInfo::~MemoryInfo()
-	{
-	}
-
 	std::size_t MemoryInfo::getAvailableFreeMemory() const
 	{
 #ifdef ELPIDA_LINUX

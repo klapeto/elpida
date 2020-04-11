@@ -28,7 +28,7 @@
 
 #include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
 #include "TaskBatches/Memory/Latency/MemoryLatencyTaskBatch.hpp"
-#include "TaskBatches/Memory/Read/MultithreadMemoryChunksReadTaskBatch.hpp"
+#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksReadTaskBatch.hpp"
 
 #include "TaskBatches/Memory/Ui/MemoryTasksProperties.hpp"
 #include "TaskBatches/Memory/Ui/MemoryLatencyChart.hpp"
@@ -38,7 +38,7 @@
 extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
 {
 	return new std::vector<Elpida::QtTaskBatchWrapper*>{
-		new Elpida::MemoryReadProperties(new Elpida::MultithreadMemoryChunksReadTaskBatch()),
+		new Elpida::MemoryReadProperties(new Elpida::MultiThreadMemoryChunksReadTaskBatch()),
 		new Elpida::MemoryLatencyChart(new Elpida::MemoryLatencyTaskBatch)
 	};
 }

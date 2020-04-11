@@ -50,10 +50,6 @@ namespace Elpida
 
 	}
 
-	Runner::~Runner()
-	{
-	}
-
 	void Runner::executeTasks()
 	{
 		_mustStop = false;

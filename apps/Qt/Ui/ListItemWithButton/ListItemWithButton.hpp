@@ -36,7 +36,7 @@ namespace Elpida
 
 	public:
 
-		QString getText() const;
+		[[nodiscard]] QString getText() const;
 		void setText(const QString& text);
 		void setButtonText(const QString& text);
 		void setButtonIcon(const QIcon& icon);

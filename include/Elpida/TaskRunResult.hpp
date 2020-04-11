@@ -28,6 +28,7 @@
 #define ELPIDA_TASKRUNRESULT_HPP_
 
 #include <string>
+#include <utility>
 
 namespace Elpida
 {
@@ -36,22 +37,22 @@ namespace Elpida
 	{
 	public:
 
-		double getActualValue() const
+		[[nodiscard]] double getActualValue() const
 		{
 			return _originalValue * _multiplier;
 		}
 
-		double getOriginalValue() const
+		[[nodiscard]] double getOriginalValue() const
 		{
 			return _originalValue;
 		}
 
-		const std::string& getValueTypeName() const
+		[[nodiscard]] const std::string& getValueTypeName() const
 		{
 			return _valueTypeName;
 		}
 
-		const std::string& getResultDescription() const
+		[[nodiscard]] const std::string& getResultDescription() const
 		{
 			return _resultDescription;
 		}
@@ -71,7 +72,7 @@ namespace Elpida
 			_valueTypeName = valueName;
 		}
 
-		double getMultiplier() const
+		[[nodiscard]] double getMultiplier() const
 		{
 			return _multiplier;
 		}
@@ -81,9 +82,10 @@ namespace Elpida
 			_multiplier = multiplier;
 		}
 
-		void operator=(double value)
+		TaskRunResult& operator=(double value)
 		{
 			_originalValue = value;
+			return *this;
 		}
 
 		void operator+=(double value)
@@ -96,12 +98,12 @@ namespace Elpida
 			_custom = custom;
 		}
 
-		bool isCustom() const
+		[[nodiscard]] bool isCustom() const
 		{
 			return _custom;
 		}
 
-		double getTestedDataValue() const
+		[[nodiscard]] double getTestedDataValue() const
 		{
 			return _testedDataValue;
 		}
@@ -117,10 +119,10 @@ namespace Elpida
 
 		}
 
-		TaskRunResult(const std::string& description, const std::string& valueTypeName, double multiplier = 1.0)
+		TaskRunResult(std::string description, std::string valueTypeName, double multiplier = 1.0)
 			:
-			_valueTypeName(valueTypeName),
-			_resultDescription(description),
+			_valueTypeName(std::move(valueTypeName)),
+			_resultDescription(std::move(description)),
 			_originalValue(0.0),
 			_multiplier(multiplier),
 			_testedDataValue(0.0),
@@ -129,11 +131,7 @@ namespace Elpida
 
 		}
 
-		~TaskRunResult()
-		{
-
-		}
-
+		~TaskRunResult() = default;
 	private:
 		std::string _valueTypeName;
 		std::string _resultDescription;

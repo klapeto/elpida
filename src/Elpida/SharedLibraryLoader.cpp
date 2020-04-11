@@ -32,7 +32,7 @@
 #include <vector>
 
 #include "Elpida/Config.hpp"
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/FileSystem.hpp"
 #include "Elpida/Utilities/Logging/Logger.hpp"
 
@@ -47,15 +47,6 @@ constexpr const char* LibraryExtension = ".dll";
 namespace Elpida
 {
 
-	SharedLibraryLoader::SharedLibraryLoader()
-	{
-
-	}
-
-	SharedLibraryLoader::~SharedLibraryLoader()
-	{
-
-	}
 #if false
 	void SharedLibraryLoader::loadFromFolder(const std::string& path, const std::string& orderFile)
 	{
