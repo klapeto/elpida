@@ -31,6 +31,7 @@
 #include <unordered_map>
 
 #include "Elpida/SharedLibrary.hpp"
+#include "Elpida/Config.hpp"
 
 namespace Elpida
 {
@@ -38,6 +39,8 @@ namespace Elpida
 	class SharedLibraryLoader final
 	{
 	public:
+		static const std::string LibrariesExtension;
+
 		const std::unordered_map<std::string, SharedLibrary>& getLoadedLibraries() const
 		{
 			return _loadedLibraries;
@@ -49,7 +52,6 @@ namespace Elpida
 		~SharedLibraryLoader() = default;
 	protected:
 		std::unordered_map<std::string, SharedLibrary> _loadedLibraries;
-		void unloadEverything();
 	};
 
 } /* namespace Elpida */

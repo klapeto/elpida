@@ -201,7 +201,7 @@ namespace Elpida
 		{
 			QMessageBox::critical(this,
 				"Error",
-				QString::fromStdString("Task batch runner produced error: " + e.getMessage()),
+				QString::fromStdString("Task batch runner produced error: " + e.getComponent()),
 				QMessageBox::StandardButton::Ok);
 		}
 	}
@@ -244,7 +244,7 @@ namespace Elpida
 								QString::fromStdString(
 									"A task batch was not configured properly: '"
 										+ itr->second->getTaskBatch().getName()
-										+ "'. Error: " + e.getMessage()),
+										+ "'. Error: " + e.getComponent()),
 								QMessageBox::StandardButton::Ok);
 							continue;
 						}

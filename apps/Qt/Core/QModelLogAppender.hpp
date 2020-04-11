@@ -19,7 +19,7 @@ namespace Elpida
 			return _model;
 		}
 
-		void append(Logger::LogType logType,
+		void append(LogType logType,
 			const Logger::TimeStamp& timeStamp,
 			const std::string& message,
 			const std::exception* exception) override;
@@ -30,7 +30,7 @@ namespace Elpida
 		QBrush _errorBrush;
 		QBrush _warningBrush;
 
-		QStandardItem* getTypeItem(Logger::LogType logType);
+		QStandardItem* getTypeItem(LogType logType);
 	};
 }
 

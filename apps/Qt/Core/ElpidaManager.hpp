@@ -61,7 +61,7 @@ namespace Elpida
 		void destroyTaskBatches();
 
 		ElpidaManager();
-		~ElpidaManager();
+		~ElpidaManager() override;
 	private:
 		Logger _logger;
 		std::unordered_map<std::string, QtTaskBatchWrapper*> _createdTaskBatches;

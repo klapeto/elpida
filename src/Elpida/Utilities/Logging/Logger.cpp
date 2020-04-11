@@ -29,27 +29,18 @@
 
 namespace Elpida
 {
-	Logger::Logger()
-	{
 
-	}
-
-	Logger::~Logger()
-	{
-
-	}
-
-	void Logger::log(Logger::LogType type, const std::string& message)
+	void Logger::log(LogType type, const std::string& message)
 	{
 		logImpl(type, std::chrono::system_clock::now(), message, nullptr);
 	}
 
-	void Logger::log(Logger::LogType type, const std::string& message, const std::exception& exception)
+	void Logger::log(LogType type, const std::string& message, const std::exception& exception)
 	{
 		logImpl(type, std::chrono::system_clock::now(), message, &exception);
 	}
 
-	void Logger::logImpl(Logger::LogType type,
+	void Logger::logImpl(LogType type,
 		TimeStamp timeStamp,
 		const std::string& message,
 		const std::exception* exception)

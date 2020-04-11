@@ -15,12 +15,9 @@ namespace Elpida
 	{
 	public:
 
-		virtual void append(Logger::LogType logType, const Logger::TimeStamp& timeStamp, const std::string& message, const std::exception* exception) = 0;
+		virtual void append(LogType logType, const Logger::TimeStamp& timeStamp, const std::string& message, const std::exception* exception) = 0;
 
-		virtual ~LogAppender()
-		{
-
-		}
+		virtual ~LogAppender() = default;
 	};
 }
 

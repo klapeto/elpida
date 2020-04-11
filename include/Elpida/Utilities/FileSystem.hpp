@@ -80,6 +80,8 @@ namespace Elpida
 		{
 
 		}
+
+		static void iterateDirectoryImpl(const char* path, std::function<void(const std::string&)>& func);
 	};
 
 } /* namespace Elpida */

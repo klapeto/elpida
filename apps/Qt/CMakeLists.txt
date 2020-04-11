@@ -44,6 +44,12 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
+if (ELPIDA_DEBUG_BUILD EQUAL 1)
+    message("${TASK_BATCH_DEBUG_DIR}")
+    add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
+endif()
+
+
 add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
 
 target_include_directories(elpida-qt PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")

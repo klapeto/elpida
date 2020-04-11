@@ -45,7 +45,7 @@ set(ELPIDA_SOURCES
         CommonTasks/ReadFile.cpp
         CommonTasks/UnalignedMemory.cpp
         CommonTasks/WriteFile.cpp
-        )
+        Utilities/WindowsUtils.cpp)
 
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

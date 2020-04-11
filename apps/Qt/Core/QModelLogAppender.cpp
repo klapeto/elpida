@@ -36,7 +36,7 @@ namespace Elpida
 		return oss.str();
 	}
 
-	void QModelLogAppender::append(Logger::LogType logType,
+	void QModelLogAppender::append(LogType logType,
 		const Logger::TimeStamp& timeStamp,
 		const std::string& message,
 		const std::exception* exception)
@@ -56,19 +56,19 @@ namespace Elpida
 		_model.appendRow(list);
 	}
 
-	QStandardItem* QModelLogAppender::getTypeItem(Logger::LogType logType)
+	QStandardItem* QModelLogAppender::getTypeItem(LogType logType)
 	{
 		switch (logType)
 		{
-		case Logger::LogType::Info:
+		case LogType::Info:
 			return new QStandardItem("Info");
-		case Logger::LogType::Error:
+		case LogType::Error:
 		{
 			auto item = new QStandardItem("Error");
 			item->setForeground(_errorBrush);
 			return item;
 		}
-		case Logger::LogType::Warning:
+		case LogType::Warning:
 		{
 			auto item = new QStandardItem("Warning");
 			item->setForeground(_warningBrush);

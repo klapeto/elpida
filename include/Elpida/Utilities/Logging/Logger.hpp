@@ -33,15 +33,17 @@
 
 namespace Elpida
 {
+	enum class LogType
+	{
+		Info, Warning, Error
+	};
+
 	class LogAppender;
 
 	class Logger final
 	{
 	public:
-		enum class LogType
-		{
-			Info, Warning, Error
-		};
+
 
 		using TimeStamp = std::chrono::time_point<std::chrono::system_clock>;
 
@@ -50,8 +52,8 @@ namespace Elpida
 		void log(LogType type, const std::string& message);
 		void log(LogType type, const std::string& message, const std::exception& exception);
 
-		Logger();
-		~Logger();
+		Logger() = default;
+		~Logger() = default;
 	private:
 		std::vector<LogAppender*> _appenders;
 

@@ -17,9 +17,13 @@ else()
     message(FATAL_ERROR "Only Linux and Windows (msys) are supported at the moment")
 endif()
 
-if (Debug)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(ELPIDA_DEBUG ON)
+    set(ELPIDA_DEBUG_BUILD 1)
+    add_definitions(-DELPIDA_DEBUG_BUILD=1)
 endif()
+
+set(ELPIDA_SHARED_LIBRARY_EXTENSION ${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "Local" FORCE)

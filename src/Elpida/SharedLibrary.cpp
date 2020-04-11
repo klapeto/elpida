@@ -36,6 +36,7 @@
 #include <Windows.h>
 #include <strsafe.h>
 #include <string>
+#include "Elpida/Utilities/WindowsUtils.hpp"
 #endif
 
 namespace Elpida
@@ -74,7 +75,7 @@ namespace Elpida
 #ifdef ELPIDA_LINUX
 				(errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
 #else
-			GetWindowsError());
+			WindowsUtils::GetLastErrorString());
 #endif
 		}
 	}
@@ -102,31 +103,6 @@ namespace Elpida
 								  :
 			   nullptr;
 	}
-
-#ifdef ELPIDA_WINDOWS
-	static std::string GetWindowsError()
-	{
-		LPVOID lpMsgBuf;
-		LPVOID lpDisplayBuf;
-		DWORD dw = GetLastError();
-
-		FormatMessage(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER |
-				FORMAT_MESSAGE_FROM_SYSTEM |
-				FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-
-		lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
-				(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
-		StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
-				dw, lpMsgBuf);
-		std::string returnString((const char*)lpDisplayBuf);
-		LocalFree(lpMsgBuf);
-		LocalFree(lpDisplayBuf);
-
-		return returnString;
-	}
-#endif
 
 }
 /* namespace Elpida */

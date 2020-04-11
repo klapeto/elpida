@@ -38,26 +38,26 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] const std::string& getMessage() const
+		[[nodiscard]] const std::string& getComponent() const
 		{
 			return _message;
 		}
 
 		[[nodiscard]] const char* what() const noexcept override
 		{
-			return _what.c_str();
+			return _message.c_str();
 		}
 
 		ElpidaException() = default;
 
-		explicit ElpidaException(std::string what)
-			: _what(std::move(what))
+		explicit ElpidaException(std::string component)
+			: _component(std::move(component))
 		{
 
 		}
 
-		ElpidaException(std::string what, std::string message)
-			: _what(std::move(what)), _message(std::move(message))
+		ElpidaException(std::string component, std::string message)
+			: _component(std::move(component)), _message(std::move(message))
 		{
 
 		}
@@ -70,7 +70,7 @@ namespace Elpida
 		ElpidaException& operator=(const ElpidaException&) = default;
 
 	protected:
-		std::string _what;
+		std::string _component;
 		std::string _message;
 	};
 

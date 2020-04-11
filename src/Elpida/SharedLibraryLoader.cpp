@@ -26,87 +26,12 @@
 
 #include "Elpida/SharedLibraryLoader.hpp"
 
-#include <algorithm>
-#include <fstream>
-#include <utility>
-#include <vector>
-
-#include "Elpida/Config.hpp"
 #include "Elpida/ElpidaException.hpp"
-#include "Elpida/Utilities/FileSystem.hpp"
-#include "Elpida/Utilities/Logging/Logger.hpp"
-
-#ifdef ELPIDA_LINUX
-
-constexpr const char* LibraryExtension = ".so";
-
-#else
-constexpr const char* LibraryExtension = ".dll";
-#endif
 
 namespace Elpida
 {
 
-#if false
-	void SharedLibraryLoader::loadFromFolder(const std::string& path, const std::string& orderFile)
-	{
-		unloadEverything();
-
-		std::vector<std::string> loadFilenames;
-
-		FileSystem::iterateDirectory(path, [&loadFilenames](const std::string& filePath)
-		{
-			if (filePath.find(LibraryExtension) != std::string::npos)
-			{
-				loadFilenames.push_back(filePath);
-			}
-		});
-
-		if (orderFile.size() > 0 && FileSystem::fileExists(orderFile))
-		{
-			std::ifstream orderFileStream(orderFile, std::ios::in);
-			if (orderFileStream.good())
-			{
-				std::string line;
-				auto pred = [&line](const std::string& val)
-				{ return val.find(line + LibraryExtension) != std::string::npos; };
-				while (std::getline(orderFileStream, line))
-				{
-					auto itr = std::find_if(loadFilenames.begin(), loadFilenames.end(), pred);
-					if (itr != loadFilenames.end())
-					{
-						if (FileSystem::fileExists(*itr))
-						{
-							load(*itr);
-						}
-						else
-						{
-							Logger::getInstance().log(Logger::LogType::Warning,
-								"Failed to open referenced shared library '",
-								line,
-								'\'');
-						}
-					}
-					else
-					{
-						Logger::getInstance().log(Logger::LogType::Warning,
-							"A shared library referenced on '" + orderFile + "' file was not found: ", line);
-					}
-				}
-				orderFileStream.close();
-			}
-		}
-		else
-		{
-			Logger::getInstance().log(Logger::LogType::Info, "'", orderFile, "' file",
-				"was not found. Elpida will load the libraries in folder in unspecified order");
-			for (const auto& file : loadFilenames)
-			{
-				load(file);
-			}
-		}
-	}
-#endif
+	const std::string SharedLibraryLoader::LibrariesExtension{ELPIDA_SHARED_LIBRARY_EXTENSION};
 
 	void SharedLibraryLoader::load(const std::string& path)
 	{
@@ -116,11 +41,6 @@ namespace Elpida
 	void SharedLibraryLoader::unload(const std::string& path)
 	{
 		_loadedLibraries.erase(path);
-	}
-
-	void SharedLibraryLoader::unloadEverything()
-	{
-		_loadedLibraries.clear();
 	}
 
 } /* namespace Elpida */

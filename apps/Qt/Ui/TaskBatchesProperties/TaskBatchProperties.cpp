@@ -65,7 +65,7 @@ namespace Elpida
 			{
 				QMessageBox::critical(_ui->wTaskBatchPropertiesContainer,
 					"Error",
-					QString::fromStdString(e.getMessage()),
+					QString::fromStdString(e.getComponent()),
 					QMessageBox::StandardButton::Ok);
 			}
 		}

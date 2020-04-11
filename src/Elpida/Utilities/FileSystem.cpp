@@ -33,45 +33,84 @@
 #ifdef ELPIDA_LINUX
 #include <dirent.h>
 #include <sys/stat.h>
+#include <cstring>
 #else
 #include <Windows.h>
 #include <strsafe.h>
+#include "Elpida/Utilities/WindowsUtils.hpp"
 #endif
 
 namespace Elpida
 {
-	void FileSystem::iterateDirectory(const std::string& directory, std::function<void(const std::string&)> func)
+	void FileSystem::iterateDirectoryImpl(const char* path, std::function<void(const std::string&)>& func)
 	{
 #ifdef ELPIDA_LINUX
 		DIR* dir;
-		dirent* dirent;
-		if ((dir = opendir(directory.c_str())) != nullptr)
+		if ((dir = opendir(path)) != nullptr)
 		{
-			while ((dirent = readdir(dir)) != nullptr)
+			try
 			{
-				func(concatPaths(directory, dirent->d_name));
+				dirent* dirent;
+				while ((dirent = readdir(dir)) != nullptr)
+				{
+					if (dirent->d_type == DT_DIR)
+					{
+						if (strcmp(dirent->d_name, ".") == 0 || strcmp(dirent->d_name, "..") == 0) continue;
+						iterateDirectoryImpl(concatPaths(path, static_cast<const char*>(dirent->d_name)).c_str(), func);
+					}
+					else
+					{
+						func(concatPaths(path, static_cast<const char*>(dirent->d_name)));
+					}
+				}
+			}
+			catch (...)
+			{
+				closedir(dir);
+				throw;
 			}
 			closedir(dir);
 		}
 		else
 		{
-			throw ElpidaException("iterateDirectory", "'" + directory + "' directory could not be opened.");
+			throw ElpidaException("iterateDirectory", "'" + std::string(path) + "' directory could not be opened.");
 		}
-
 #else
 		WIN32_FIND_DATA data;
-		HANDLE hFind = FindFirstFile(concatPaths(directory, "*").c_str(), &data);
+		HANDLE hFind = FindFirstFile(concatPaths(path, "*").c_str(), &data);
 
-				if (hFind != INVALID_HANDLE_VALUE)
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			try
+			{
+				do
 				{
-					do
+					if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 					{
-						func(concatPaths(directory, data.cFileName));
-					}while (FindNextFile(hFind, &data));
-					FindClose(hFind);
-				}
+						iterateDirectoryImpl(concatPaths(path, static_cast<const char*>(data.cFileName)).c_str(), func);
+						continue;
+					}
+					func(concatPaths(path, data.cFileName));
+				} while (FindNextFile(hFind, &data));
+			}
+			catch (...)
+			{
+				FindClose(hFind);
+				throw;
+			}
+			FindClose(hFind);
+		}
+		else
+		{
+			throw ElpidaException("Iterate directory", WindowsUtils::GetLastErrorString());
+		}
 
 #endif
+	}
+
+	void FileSystem::iterateDirectory(const std::string& directory, std::function<void(const std::string&)> func)
+	{
+		iterateDirectoryImpl(directory.c_str(), func);
 	}
 
 	bool FileSystem::fileExists(const std::string& file)
