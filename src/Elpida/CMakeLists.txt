@@ -35,6 +35,9 @@ set(ELPIDA_SOURCES
         Utilities/NonCopyable.cpp
         Utilities/Imaging/Pixel.cpp
         Utilities/ValueUtilities.cpp
+        Utilities/WindowsUtils.cpp
+        Utilities/Plugin/Plugin.cpp
+        Utilities/Plugin/TaskBatchesContainerPlugin.cpp
 
         CommonTasks/AlignedMemory.cpp
         CommonTasks/AllocateMemory.cpp
@@ -45,7 +48,7 @@ set(ELPIDA_SOURCES
         CommonTasks/ReadFile.cpp
         CommonTasks/UnalignedMemory.cpp
         CommonTasks/WriteFile.cpp
-        Utilities/WindowsUtils.cpp)
+        )
 
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

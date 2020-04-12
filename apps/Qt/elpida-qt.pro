@@ -29,6 +29,7 @@ SOURCES += \
     Ui/TaskBatchProperties/TaskBatchProperties.cpp \
     ElpidaManager.cpp \
     Ui/LogsDialog/LogsDialog.cpp \
+    Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp \
     Ui/TaskBatchesWidget/TaskBatchesWidget.cpp \
     Ui/ListItemWithButton/ListItemWithButton.cpp \
     Ui/TopologyWidget/TopologyWidget.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
    Ui/TaskBatchProperties/TaskBatchProperties.hpp \
     ElpidaManager.hpp \
     Ui/LogsDialog/LogsDialog.hpp \
+    Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp \
     Ui/TaskBatchesWidget/TaskBatchesWidget.hpp \
     Ui/ListItemWithButton/ListItemWithButton.hpp \
     Ui/TopologyWidget/TopologyWidget.hpp \
@@ -52,6 +54,7 @@ FORMS += \
     Ui/SystemInfoWidget/SystemInfoWidget.ui \
     Ui/TaskBatchProperties/TaskBatchProperties.ui \
     Ui/LogsDialog/LogsDialog.ui \
+    Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui \
     Ui/TaskBatchesWidget/TaskBatchesWidget.ui \
     Ui/ListItemWithButton/ListItemWithButton.ui \
     Ui/TopologyWidget/TopologyWidget.ui \

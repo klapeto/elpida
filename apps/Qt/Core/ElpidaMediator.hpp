@@ -11,6 +11,7 @@
 #include <Elpida/SharedLibraryLoader.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <QtWidgets/QApplication>
+#include <Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp>
 
 
 #include "Ui/LogsDialog/LogsDialog.hpp"
@@ -46,6 +47,7 @@ namespace Elpida
 		SystemInfoWidget _systemInfoWidget;
 		LogsDialog _logsDialog;
 		TopologyWidget _topologyWidget;
+		TaskBatchesListWidget _taskBatchesListWidget;
 
 		std::string _taskBatchPath;
 

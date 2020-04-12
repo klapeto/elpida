@@ -28,6 +28,7 @@
 #define ELPIDA_UTILITIES_VALUEUTILITIES_HPP_
 
 #include <string>
+#include <sstream>
 
 namespace Elpida
 {
@@ -35,9 +36,39 @@ namespace Elpida
 	class ValueUtilities
 	{
 	public:
-		static std::string getValueScaleString(double value);
-	};
+		ValueUtilities() = delete;
 
+		static std::string getValueScaleString(double value);
+
+		template<typename ... TArgs>
+		inline static std::string concatenateToString(TArgs&& ... args)
+		{
+			std::ostringstream stream;
+			concatenateToStringImpl(stream, std::forward<TArgs>(args)...);
+			return stream.str();
+		}
+	private:
+		template<typename T, typename ... TRest>
+		inline static void concatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)
+		{
+			str << first;
+			concatenateToStringImpl(str, std::forward<TRest>(rest)...);
+		}
+
+		template<typename T >
+		inline static void concatenateToStringImpl(std::ostringstream&)
+		{
+
+		}
+
+		template<typename T >
+		inline static void concatenateToStringImpl(std::ostringstream& str, T arg)
+		{
+			str << arg;
+		}
+
+	};
+	using Vu = ValueUtilities;
 } /* namespace Elpida */
 
 #endif /* ELPIDA_UTILITIES_VALUEUTILITIES_HPP_ */

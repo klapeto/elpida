@@ -15,10 +15,12 @@ namespace Elpida
 
 	ElpidaMediator::ElpidaMediator(int& argC, char** argv)
 		: _qApplication(argC, argv), _mainWindow(*this), _systemInfoWidget(*this, _cpuInfo, _topology),
-		  _logsDialog(&_mainWindow, _logger), _topologyWidget(_topology)
+		  _logsDialog(&_mainWindow, _logger), _topologyWidget(_topology), _taskBatchesListWidget(_batchLoader, _logger)
 	{
 		_mainWindow.addTab(&_systemInfoWidget, "System Info");
 		initializeSystemTopologyWidget();
+		_mainWindow.addTab(&_taskBatchesListWidget, "Task Batches");
+
 #if ELPIDA_DEBUG_BUILD
 		_taskBatchPath = TASK_BATCH_DEBUG_DIR;
 #else
@@ -26,6 +28,7 @@ namespace Elpida
 #endif
 
 		loadTaskBatches();
+		_taskBatchesListWidget.reloadTaskBatches();
 	}
 	void ElpidaMediator::initializeSystemTopologyWidget()
 	{
@@ -132,5 +135,4 @@ namespace Elpida
 			_logger.log(LogType::Error, "Failed to iterate Directory:'" + _taskBatchPath + "'", ex);
 		}
 	}
-
 }

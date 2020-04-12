@@ -31,14 +31,21 @@
 #include "TaskBatches/Memory/Read/MultiThreadMemoryChunksReadTaskBatch.hpp"
 
 #include "TaskBatches/Memory/Ui/MemoryTasksProperties.hpp"
-#include "TaskBatches/Memory/Ui/MemoryLatencyChart.hpp"
 #include "TaskBatches/Memory/Ui/MemoryReadProperties.hpp"
 
+#include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
+#include "TaskBatches/Memory/Ui/MemoryLatencyChart.hpp"
 
-extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
+extern "C" Elpida::TaskBatchesContainerPlugin<Elpida::QtTaskBatchWrapper>* createPlugin()
 {
-	return new std::vector<Elpida::QtTaskBatchWrapper*>{
-		new Elpida::MemoryReadProperties(new Elpida::MultiThreadMemoryChunksReadTaskBatch()),
-		new Elpida::MemoryLatencyChart(new Elpida::MemoryLatencyTaskBatch)
-	};
+	using namespace Elpida;
+	using Plugin = TaskBatchesContainerPlugin<QtTaskBatchWrapper>;
+
+	auto plugin = Plugin::createNew();
+	plugin->constructAndAddNew<MemoryReadProperties>(Plugin::constructNew<MultiThreadMemoryChunksReadTaskBatch>());
+	plugin->constructAndAddNew<MemoryLatencyChart>(Plugin::constructNew<MemoryLatencyTaskBatch>());
+
+	return plugin;
 }
+
+

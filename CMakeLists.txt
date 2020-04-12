@@ -29,6 +29,8 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "Local" FORCE)
 endif()
 
+add_compile_options(-Wextra)
+
 if (MSYS)
     set(ELPIDA_TASK_BATCH_INSTALL_DIR bin/TaskBatches)
     set(ELPIDA_HEADER_INSTALL_DIR include)

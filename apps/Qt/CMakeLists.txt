@@ -1,8 +1,6 @@
 set(ELPIDA_QT_SOURCES
-        Core/ElpidaManager.cpp
         Ui/ListItemWithButton/ListItemWithButton.cpp
         Ui/LogsDialog/LogsDialog.cpp
-        Main.cpp
         Ui/MainWindow/MainWindow.cpp
         Ui/MascotWidget/MascotWidget.cpp
         Ui/TaskBatchesWidget/TaskBatchesWidget.cpp
@@ -10,16 +8,23 @@ set(ELPIDA_QT_SOURCES
         Ui/TopologyNodeFrame/TopologyNodeFrame.cpp
         Ui/TopologyWidget/TopologyWidget.cpp
         Ui/SystemInfoWidget/SystemInfoWidget.cpp
+        Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp
+
         Ui/ListItemWithButton/ListItemWithButton.ui
         Ui/MainWindow/MainWindow.ui
         Ui/TaskBatchesProperties/TaskBatchProperties.ui
         Ui/TaskBatchesWidget/TaskBatchesWidget.ui
+        Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui
         Ui/ListItemWithButton/ListItemWithButton.ui
         Ui/LogsDialog/LogsDialog.ui
         Ui/TopologyWidget/TopologyWidget.ui
         Ui/TopologyNodeFrame/TopologyNodeFrame.ui
         Ui/SystemInfoWidget/SystemInfoWidget.ui
+
+        Main.cpp
+
         Images/Images.qrc
+
         Core/Abstractions/Command.hpp
         Core/Abstractions/CommandHandler.hpp
         Core/Abstractions/Mediator.hpp

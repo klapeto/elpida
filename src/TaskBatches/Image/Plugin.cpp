@@ -24,16 +24,17 @@
  *      Author: klapeto
  */
 
-#include "TaskBatches/Image/ImageTaskBatch.hpp"
 #include "TaskBatches/Image/ImageTasksProperties.hpp"
+#include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
 
-
-extern "C" Elpida::QtTaskBatchWrapper* createQtBatchWrapper()
+extern "C" Elpida::TaskBatchesContainerPlugin<Elpida::QtTaskBatchWrapper>* createPlugin()
 {
-	return new Elpida::ImageTasksProperties();
+	using namespace Elpida;
+	using Plugin = TaskBatchesContainerPlugin<QtTaskBatchWrapper>;
+
+	auto plugin = Plugin::createNew();
+	plugin->constructAndAddNew<ImageTasksProperties>();
+
+	return plugin;
 }
 
-extern "C" std::vector<Elpida::QtTaskBatchWrapper*>* createQtBatchWrappers()
-{
-	return new std::vector<Elpida::QtTaskBatchWrapper*>{ new Elpida::ImageTasksProperties() };
-}
