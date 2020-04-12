@@ -1,42 +1,30 @@
 set(ELPIDA_QT_SOURCES
-        Ui/ListItemWithButton/ListItemWithButton.cpp
-        Ui/LogsDialog/LogsDialog.cpp
+        Ui/LogsWidget/LogsWidget.cpp
         Ui/MainWindow/MainWindow.cpp
         Ui/MascotWidget/MascotWidget.cpp
-        Ui/TaskBatchesWidget/TaskBatchesWidget.cpp
-        Ui/TaskBatchesProperties/TaskBatchProperties.cpp
         Ui/TopologyNodeFrame/TopologyNodeFrame.cpp
         Ui/TopologyWidget/TopologyWidget.cpp
         Ui/SystemInfoWidget/SystemInfoWidget.cpp
         Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp
+        Ui/TaskResultsWidget/TaskResultsWidget.cpp
+        Ui/CommonDialog/CommonDialog.cpp
 
-        Ui/ListItemWithButton/ListItemWithButton.ui
         Ui/MainWindow/MainWindow.ui
-        Ui/TaskBatchesProperties/TaskBatchProperties.ui
-        Ui/TaskBatchesWidget/TaskBatchesWidget.ui
         Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui
-        Ui/ListItemWithButton/ListItemWithButton.ui
-        Ui/LogsDialog/LogsDialog.ui
+        Ui/LogsWidget/LogsWidget.ui
         Ui/TopologyWidget/TopologyWidget.ui
         Ui/TopologyNodeFrame/TopologyNodeFrame.ui
         Ui/SystemInfoWidget/SystemInfoWidget.ui
+        Ui/TaskResultsWidget/TaskResultsWidget.ui
+        Ui/CommonDialog/CommonDialog.ui
 
         Main.cpp
 
         Images/Images.qrc
 
-        Core/Abstractions/Command.hpp
-        Core/Abstractions/CommandHandler.hpp
-        Core/Abstractions/Mediator.hpp
         Core/ElpidaMediator.cpp
-        Core/ElpidaMediator.hpp
-        Core/Abstractions/TypedCommand.hpp
-        Core/Commands/ShowLogsDialogCommand.hpp
-        Core/Commands/ShowAboutDialogCommand.hpp
-        Core/Abstractions/CommandForwardDeclarations.hpp
-        Core/Commands/ExitApplicationCommand.hpp
         Core/QModelLogAppender.cpp
-        Core/QModelLogAppender.hpp)
+        )
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

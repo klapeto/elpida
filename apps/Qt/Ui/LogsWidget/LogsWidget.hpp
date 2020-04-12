@@ -17,36 +17,34 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef APPS_QT_UI_TASKBATCHPROPERTIES_TASKBATCHPROPERTIES_HPP
-#define APPS_QT_UI_TASKBATCHPROPERTIES_TASKBATCHPROPERTIES_HPP
+#ifndef APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+#define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
 
-#include <QDialog>
+#include <QWidget>
+#include <string>
+#include <Elpida/Utilities/Logging/Logger.hpp>
+#include "Core/QModelLogAppender.hpp"
+
 
 namespace Elpida
 {
-	class QtTaskBatchWrapper;
+
 	namespace Ui
 	{
-		class TaskBatchProperties;
-	}  // namespace Ui
+		class LogsWidget;
+	}
 
-	class TaskBatchProperties : public QDialog
+	class LogsWidget final : public QWidget
 	{
 	Q_OBJECT
 
 	public:
-		void setPage(QtTaskBatchWrapper* widget);
-
-		void accept() override;
-
-		explicit TaskBatchProperties(QWidget* parent = nullptr);
-		~TaskBatchProperties() override;
-
+		explicit LogsWidget(Logger& logger);
+		~LogsWidget() override;
 	private:
-		Ui::TaskBatchProperties* _ui;
-		QtTaskBatchWrapper* _page;
+		QModelLogAppender _logAppender;
+		Ui::LogsWidget* _ui;
 	};
 
-}  // namespace Elpida
-
-#endif // APPS_QT_UI_TASKBATCHPROPERTIES_TASKBATCHPROPERTIES_HPP
+} // namespace Elpida
+#endif //APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Elpida::TaskBatchesListWidget</class>
- <widget class="QWidget" name="Elpida::TaskBatchesListWidget">
+ <class>Elpida::TaskResultsWidget</class>
+ <widget class="QWidget" name="Elpida::TaskResultsWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,13 +15,13 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QGroupBox" name="gbTaskBatches">
+    <widget class="QGroupBox" name="gbTaskResults">
      <property name="title">
-      <string>Available Task Batches</string>
+      <string>Task Results</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QListView" name="lvTaskBatches"/>
+       <widget class="QTreeView" name="tvResults"/>
       </item>
      </layout>
     </widget>

@@ -12,9 +12,11 @@
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <QtWidgets/QApplication>
 #include <Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp>
+#include <Ui/TaskResultsWidget/TaskResultsWidget.hpp>
+#include <Ui/CommonDialog/CommonDialog.hpp>
 
 
-#include "Ui/LogsDialog/LogsDialog.hpp"
+#include "Ui/LogsWidget/LogsWidget.hpp"
 #include "Ui/MainWindow/MainWindow.hpp"
 #include "Ui/SystemInfoWidget/SystemInfoWidget.hpp"
 #include "Ui/TopologyWidget/TopologyWidget.hpp"
@@ -35,7 +37,7 @@ namespace Elpida
 		ElpidaMediator(int& argC, char** argv);
 		~ElpidaMediator() override = default;
 	private:
-		SharedLibraryLoader _batchLoader;
+		SharedLibraryLoader _libraryLoader;
 		SystemTopology _topology;
 		CpuInfo _cpuInfo;
 		MemoryInfo _memoryInfo;
@@ -45,9 +47,11 @@ namespace Elpida
 
 		MainWindow _mainWindow;
 		SystemInfoWidget _systemInfoWidget;
-		LogsDialog _logsDialog;
+		LogsWidget _logsWidget;
 		TopologyWidget _topologyWidget;
 		TaskBatchesListWidget _taskBatchesListWidget;
+		TaskResultsWidget _taskResultsWidget;
+		CommonDialog _commonDialog;
 
 		std::string _taskBatchPath;
 
@@ -58,6 +62,7 @@ namespace Elpida
 		void handle(const ExitApplicationCommand& command) override;
 		void initializeSystemTopologyWidget();
 		void loadTaskBatches();
+		void initializeTaskBatchesTab();
 	};
 }
 

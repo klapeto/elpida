@@ -24,39 +24,42 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         Main.cpp \
+    Ui/CommonDialog/CommonDialog.cpp \
         Ui/MainWindow/MainWindow.cpp \
     Ui/SystemInfoWidget/SystemInfoWidget.cpp \
     Ui/TaskBatchProperties/TaskBatchProperties.cpp \
     ElpidaManager.cpp \
-    Ui/LogsDialog/LogsDialog.cpp \
+    Ui/LogsWidget/LogsWidget.cpp \
     Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp \
     Ui/TaskBatchesWidget/TaskBatchesWidget.cpp \
-    Ui/ListItemWithButton/ListItemWithButton.cpp \
+    Ui/TaskResultsWidget/TaskResultsWidget.cpp \
     Ui/TopologyWidget/TopologyWidget.cpp \
     Ui/MascotWidget/MascotWidget.cpp \
     Ui/TopologyFrame/TopologyFrame.cpp
 
 HEADERS += \
+    Ui/CommonDialog/CommonDialog.hpp \
         Ui/MainWindow/MainWindow.hpp \
     Ui/SystemInfoWidget/SystemInfoWidget.hpp \
    Ui/TaskBatchProperties/TaskBatchProperties.hpp \
     ElpidaManager.hpp \
-    Ui/LogsDialog/LogsDialog.hpp \
+    Ui/LogsWidget/LogsWidget.hpp \
     Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp \
     Ui/TaskBatchesWidget/TaskBatchesWidget.hpp \
-    Ui/ListItemWithButton/ListItemWithButton.hpp \
+    Ui/TaskResultsWidget/TaskResultsWidget.hpp \
     Ui/TopologyWidget/TopologyWidget.hpp \
     Ui/MascotWidget/MascotWidget.hpp \
     Ui/TopologyFrame/TopologyFrame.hpp
 
 FORMS += \
+    Ui/CommonDialog/CommonDialog.ui \
         Ui/MainWindow/MainWindow.ui \
     Ui/SystemInfoWidget/SystemInfoWidget.ui \
     Ui/TaskBatchProperties/TaskBatchProperties.ui \
-    Ui/LogsDialog/LogsDialog.ui \
+    Ui/LogsWidget/LogsWidget.ui \
     Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui \
     Ui/TaskBatchesWidget/TaskBatchesWidget.ui \
-    Ui/ListItemWithButton/ListItemWithButton.ui \
+    Ui/TaskResultsWidget/TaskResultsWidget.ui \
     Ui/TopologyWidget/TopologyWidget.ui \
     Ui/TopologyFrame/TopologyFrame.ui
 

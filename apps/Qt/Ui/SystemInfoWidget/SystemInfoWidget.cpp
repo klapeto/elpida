@@ -7,10 +7,9 @@
 namespace Elpida
 {
 
-	SystemInfoWidget::SystemInfoWidget(Mediator& mediator, const CpuInfo& cpuInfo, const SystemTopology& topology)
+	SystemInfoWidget::SystemInfoWidget(const CpuInfo& cpuInfo, const SystemTopology& topology)
 		:
 		QWidget(),
-		_mediator(mediator),
 		_ui(new Ui::SystemInfoWidget)
 	{
 		_ui->setupUi(this);

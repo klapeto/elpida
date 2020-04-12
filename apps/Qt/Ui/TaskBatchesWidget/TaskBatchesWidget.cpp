@@ -20,7 +20,6 @@
 #include "ui_TaskBatchesWidget.h"
 #include "TaskBatchesWidget.hpp"
 #include "Ui/TaskBatchesProperties/TaskBatchProperties.hpp"
-#include "Ui/ListItemWithButton/ListItemWithButton.hpp"
 #include <Elpida/TaskBatch.hpp>
 #include <Elpida/ElpidaException.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>

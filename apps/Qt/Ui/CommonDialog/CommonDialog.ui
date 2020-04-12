@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Elpida::LogsDialog</class>
- <widget class="QDialog" name="Elpida::LogsDialog">
+ <class>Elpida::CommonDialog</class>
+ <widget class="QDialog" name="Elpida::CommonDialog">
   <property name="windowTitle">
-   <string>Logs</string>
+   <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableView" name="twLogs">
-     <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Close</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -30,7 +23,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Elpida::LogsDialog</receiver>
+   <receiver>Elpida::CommonDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -46,7 +39,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Elpida::LogsDialog</receiver>
+   <receiver>Elpida::CommonDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -17,60 +17,26 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include "ListItemWithButton.hpp"
-#include "ui_ListItemWithButton.h"
+#include "LogsWidget.hpp"
+#include "ui_LogsWidget.h"
 
-#include <iostream>
+#include <QStandardItemModel>
 
 namespace Elpida
 {
 
-	ListItemWithButton::ListItemWithButton(const QString& text, QWidget* parent)
-		: QWidget(parent), _ui(new Ui::ListItemWithButton)
+	LogsWidget::LogsWidget(Logger& logger)
+		: QWidget(),_ui(new Ui::LogsWidget)
 	{
 		_ui->setupUi(this);
-		_ui->lblName->setText(text);
-		_ui->pbButton->setVisible(false);
+		logger.addAppender(_logAppender);
+		_ui->twLogs->setModel(&_logAppender.getModel());
+		_ui->twLogs->resizeColumnToContents(1);
 	}
 
-	ListItemWithButton::~ListItemWithButton()
+	LogsWidget::~LogsWidget()
 	{
 		delete _ui;
-	}
-
-	void ListItemWithButton::enterEvent(QEvent* event)
-	{
-		_ui->pbButton->setVisible(true);
-	}
-
-	void ListItemWithButton::setText(const QString& text)
-	{
-		_ui->lblName->setText(text);
-	}
-
-	void ListItemWithButton::leaveEvent(QEvent* event)
-	{
-		_ui->pbButton->setVisible(false);
-	}
-
-	void ListItemWithButton::setButtonText(const QString& text)
-	{
-		_ui->pbButton->setText(text);
-	}
-
-	void ListItemWithButton::setButtonIcon(const QIcon& icon)
-	{
-		_ui->pbButton->setIcon(icon);
-	}
-
-	QString ListItemWithButton::getText() const
-	{
-		return _ui->lblName->text();
-	}
-
-	void ListItemWithButton::on_pbButton_clicked()
-	{
-		emit buttonClicked(_ui->lblName->text());
 	}
 
 } // namespace Elpida

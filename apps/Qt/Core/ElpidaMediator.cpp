@@ -14,13 +14,17 @@ namespace Elpida
 {
 
 	ElpidaMediator::ElpidaMediator(int& argC, char** argv)
-		: _qApplication(argC, argv), _mainWindow(*this), _systemInfoWidget(*this, _cpuInfo, _topology),
-		  _logsDialog(&_mainWindow, _logger), _topologyWidget(_topology), _taskBatchesListWidget(_batchLoader, _logger)
+		: _qApplication(argC, argv), _mainWindow(*this), _systemInfoWidget(_cpuInfo, _topology),
+		  _logsWidget(_logger), _topologyWidget(_topology),
+		  _taskBatchesListWidget(_libraryLoader, _logger), _commonDialog(&_mainWindow)
 	{
 		_mainWindow.addTab(&_systemInfoWidget, "System Info");
 		initializeSystemTopologyWidget();
-		_mainWindow.addTab(&_taskBatchesListWidget, "Task Batches");
+		initializeTaskBatchesTab();
 
+	}
+	void ElpidaMediator::initializeTaskBatchesTab()
+	{
 #if ELPIDA_DEBUG_BUILD
 		_taskBatchPath = TASK_BATCH_DEBUG_DIR;
 #else
@@ -29,6 +33,15 @@ namespace Elpida
 
 		loadTaskBatches();
 		_taskBatchesListWidget.reloadTaskBatches();
+
+		// TODO: create as normal widgets
+		auto rootWidget = new QWidget();
+		auto rootLayout = new QHBoxLayout();
+		rootLayout->addWidget(&_taskBatchesListWidget);
+		rootLayout->addWidget(&_taskResultsWidget);
+		rootWidget->setLayout(rootLayout);
+
+		_mainWindow.addTab(rootWidget, "Task Batches");
 	}
 	void ElpidaMediator::initializeSystemTopologyWidget()
 	{
@@ -67,7 +80,7 @@ namespace Elpida
 
 	void ElpidaMediator::handle(const ShowLogsDialogCommand& command)
 	{
-		_logsDialog.exec();
+		_commonDialog.show(&_logsWidget);
 	}
 
 	void ElpidaMediator::handle(const ShowAboutDialogCommand& command)
@@ -121,7 +134,7 @@ namespace Elpida
 				{
 					try
 					{
-						_batchLoader.load(path);
+						_libraryLoader.load(path);
 					}
 					catch (const std::exception& ex)
 					{

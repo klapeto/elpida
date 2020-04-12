@@ -20,12 +20,11 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		explicit SystemInfoWidget(Mediator& mediator, const CpuInfo& cpuInfo, const SystemTopology& topology);
+		explicit SystemInfoWidget(const CpuInfo& cpuInfo, const SystemTopology& topology);
 		~SystemInfoWidget() override;
 
 	private:
 		Ui::SystemInfoWidget* _ui;
-		Mediator& _mediator;
 
 		void loadCpuInfo(const CpuInfo& cpuInfo, const SystemTopology& topology);
 	};

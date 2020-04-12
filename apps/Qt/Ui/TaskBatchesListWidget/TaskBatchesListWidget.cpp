@@ -75,6 +75,7 @@ namespace Elpida
 		_createdPlugins.clear();
 		_model.clear();
 	}
+
 	QtTaskBatchWrapper* TaskBatchesListWidget::getSelectedTaskBatch()
 	{
 		auto selectedIndexes = _ui->lvTaskBatches->selectionModel()->selectedIndexes();
