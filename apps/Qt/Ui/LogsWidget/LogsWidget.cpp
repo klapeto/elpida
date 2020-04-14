@@ -20,8 +20,6 @@
 #include "LogsWidget.hpp"
 #include "ui_LogsWidget.h"
 
-#include <QStandardItemModel>
-
 namespace Elpida
 {
 

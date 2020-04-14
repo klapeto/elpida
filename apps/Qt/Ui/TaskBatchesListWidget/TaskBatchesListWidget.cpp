@@ -2,91 +2,81 @@
 #include "ui_TaskBatchesListWidget.h"
 
 #include <QList>
+#include <QListWidgetItem>
 
 #include <Elpida/SharedLibraryLoader.hpp>
 #include <Elpida/TaskBatch.hpp>
 #include <Elpida/Task.hpp>
-#include <Elpida/Utilities/Plugin/Plugin.hpp>
-#include <Elpida/Utilities/Logging/Logger.hpp>
-#include <Elpida/Utilities/ValueUtilities.hpp>
-#include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
+
+#include "Models/TaskBatchesModel.hpp"
 
 namespace Elpida
 {
 
-	TaskBatchesListWidget::TaskBatchesListWidget(const SharedLibraryLoader& loader, Logger& logger)
-		: QWidget(), _ui(new Ui::TaskBatchesListWidget), _loader(loader), _logger(logger)
+	TaskBatchesListWidget::TaskBatchesListWidget(const CollectionModel<QtTaskBatchWrapper*>& model)
+		: QWidget(), _ui(new Ui::TaskBatchesListWidget), _model(model)
 	{
 		_ui->setupUi(this);
-		_ui->lvTaskBatches->setModel(&_model);
+//		_subscriptions.push_back(&_model.itemAdded.subscribe([this](const auto& item)
+//		{
+//			onItemAdded(item);
+//		}));
+//		_subscriptions.push_back(&_model.itemRemoved.subscribe([this](const auto& item)
+//		{
+//			onItemRemoved(item);
+//		}));
+//		_subscriptions.push_back(&_model.cleared.subscribe([this]()
+//		{
+//			onCleared();
+//		}));
 	}
 
 	TaskBatchesListWidget::~TaskBatchesListWidget()
 	{
+		for (auto subscription: _subscriptions)
+		{
+			subscription->unsubscribe();
+		}
 		delete _ui;
-		destroyAllBatches();
-	}
-
-	void TaskBatchesListWidget::reloadTaskBatches()
-	{
-		destroyAllBatches();
-		const auto& loaded = _loader.getLoadedLibraries();
-		for (const auto& lib: loaded)
-		{
-			auto factoryFp = lib.second
-				.getFunctionPointer<TaskBatchesContainerPlugin<Elpida::QtTaskBatchWrapper>::Factory>("createPlugin");
-			if (factoryFp != nullptr)
-			{
-				TaskBatchesContainerPlugin<Elpida::QtTaskBatchWrapper>* pPlugin = nullptr;
-				try
-				{
-					pPlugin = factoryFp();
-				}
-				catch (const std::exception& ex)
-				{
-					_logger.log(LogType::Error,
-						Vu::concatenateToString("Plugin with name: '",
-							lib.first,
-							"' failed to produce task batches"),
-						ex);
-					throw;
-				}
-
-				const auto& data = pPlugin->getUnderlyingData();
-				_createdPlugins.push_back(pPlugin);
-				for (auto bWrapper : data)
-				{
-					const auto& batch = bWrapper->getTaskBatch();
-					auto item = new QStandardItem(QString::fromStdString(batch.getName()));
-					item->setData(QVariant::fromValue(bWrapper));
-					_model.appendRow(item);
-				}
-			}
-		}
-	}
-
-	void TaskBatchesListWidget::destroyAllBatches()
-	{
-		for (auto plugin: _createdPlugins)
-		{
-			delete plugin;
-		}
-		_createdPlugins.clear();
-		_model.clear();
 	}
 
 	QtTaskBatchWrapper* TaskBatchesListWidget::getSelectedTaskBatch()
 	{
-		auto selectedIndexes = _ui->lvTaskBatches->selectionModel()->selectedIndexes();
+		auto selectedIndexes = _ui->lvTaskBatches->selectedItems();
 		if (!selectedIndexes.empty())
 		{
-			auto variant = _model.itemFromIndex(selectedIndexes.first())->data();
+			auto variant = selectedIndexes.first()->data(0);
 			// Dirty hack because QtTaskBatchWrapper is derived from QWidget and QVariant special handles that
 			// which we do not want here.
 			return (QtTaskBatchWrapper*)variant.value<void*>();
 		}
 		return nullptr;
+	}
+
+	void TaskBatchesListWidget::onItemAdded(const CollectionChangedEventArgs<QtTaskBatchWrapper*>& item)
+	{
+		auto value = item.getItem().getValue();
+		auto wItem = new QListWidgetItem(QString::fromStdString(value->getTaskBatch().getName()));
+		wItem->setData(0, QVariant::fromValue((void*)wItem));
+		_ui->lvTaskBatches->addItem(wItem);
+		_createdItems.insert_or_assign(value, wItem);
+	}
+
+	void TaskBatchesListWidget::onItemRemoved(const CollectionChangedEventArgs<QtTaskBatchWrapper*>& item)
+	{
+		auto itr = _createdItems.find(item.getItem().getValue());
+		if (itr != _createdItems.end())
+		{
+			auto wItem = itr->second;
+			_ui->lvTaskBatches->removeItemWidget(wItem);
+			_createdItems.erase(itr);
+		}
+	}
+
+	void TaskBatchesListWidget::onCleared()
+	{
+		_ui->lvTaskBatches->clear();
 	}
 
 } // namespace Elpida

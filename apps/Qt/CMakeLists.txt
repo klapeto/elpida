@@ -24,7 +24,12 @@ set(ELPIDA_QT_SOURCES
 
         Core/ElpidaMediator.cpp
         Core/QModelLogAppender.cpp
-        )
+
+        Models/TaskBatchesModel.cpp
+        Models/Abstractions/CollectionModel.cpp
+        Models/Abstractions/CollectionItem.cpp
+        Models/Abstractions/EventArgs/CollectionChangedEventArgs.cpp
+        Controllers/TaskBatchesController.cpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

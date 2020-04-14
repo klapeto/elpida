@@ -48,6 +48,8 @@ namespace Elpida
 		void load(const std::string& path);
 		void unload(const std::string& path);
 
+		void unloadAll();
+
 		SharedLibraryLoader() = default;
 		~SharedLibraryLoader() = default;
 	protected:

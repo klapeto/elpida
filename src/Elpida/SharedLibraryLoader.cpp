@@ -43,4 +43,9 @@ namespace Elpida
 		_loadedLibraries.erase(path);
 	}
 
+	void SharedLibraryLoader::unloadAll()
+	{
+		_loadedLibraries.clear();
+	}
+
 } /* namespace Elpida */

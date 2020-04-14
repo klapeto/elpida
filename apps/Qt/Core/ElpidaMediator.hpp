@@ -15,6 +15,8 @@
 #include <Ui/TaskResultsWidget/TaskResultsWidget.hpp>
 #include <Ui/CommonDialog/CommonDialog.hpp>
 
+#include <QtGui/QStandardItemModel>
+#include "Controllers/TaskBatchesController.hpp"
 
 #include "Ui/LogsWidget/LogsWidget.hpp"
 #include "Ui/MainWindow/MainWindow.hpp"
@@ -23,6 +25,8 @@
 
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Abstractions/CommandHandler.hpp"
+
+#include "Models/TaskBatchesModel.hpp"
 
 namespace Elpida
 {
@@ -37,23 +41,24 @@ namespace Elpida
 		ElpidaMediator(int& argC, char** argv);
 		~ElpidaMediator() override = default;
 	private:
-		SharedLibraryLoader _libraryLoader;
+		QApplication _qApplication;
+
 		SystemTopology _topology;
 		CpuInfo _cpuInfo;
-		MemoryInfo _memoryInfo;
 		Logger _logger;
-
-		QApplication _qApplication;
 
 		MainWindow _mainWindow;
 		SystemInfoWidget _systemInfoWidget;
 		LogsWidget _logsWidget;
 		TopologyWidget _topologyWidget;
-		TaskBatchesListWidget _taskBatchesListWidget;
+
 		TaskResultsWidget _taskResultsWidget;
 		CommonDialog _commonDialog;
 
-		std::string _taskBatchPath;
+		TaskBatchesModel _taskBatchesModel;
+		TaskBatchesController _taskBatchesController;
+		TaskBatchesListWidget _taskBatchesListWidget;
+
 
 	private:
 		void handle(const Command& command) override;
@@ -61,7 +66,6 @@ namespace Elpida
 		void handle(const ShowAboutDialogCommand& command) override;
 		void handle(const ExitApplicationCommand& command) override;
 		void initializeSystemTopologyWidget();
-		void loadTaskBatches();
 		void initializeTaskBatchesTab();
 	};
 }

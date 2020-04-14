@@ -14,9 +14,20 @@ namespace Elpida
 {
 
 	ElpidaMediator::ElpidaMediator(int& argC, char** argv)
-		: _qApplication(argC, argv), _mainWindow(*this), _systemInfoWidget(_cpuInfo, _topology),
-		  _logsWidget(_logger), _topologyWidget(_topology),
-		  _taskBatchesListWidget(_libraryLoader, _logger), _commonDialog(&_mainWindow)
+		:
+		_qApplication(argC, argv),
+		_topology(),
+		_cpuInfo(),
+		_logger(),
+		_mainWindow(*this),
+		_systemInfoWidget(_cpuInfo, _topology),
+		_logsWidget(_logger),
+		_topologyWidget(_topology),
+		_taskResultsWidget(),
+		_commonDialog(&_mainWindow),
+		_taskBatchesModel(),
+		_taskBatchesController(_taskBatchesModel, _logger),
+		_taskBatchesListWidget(_taskBatchesModel)
 	{
 		_mainWindow.addTab(&_systemInfoWidget, "System Info");
 		initializeSystemTopologyWidget();
@@ -25,14 +36,7 @@ namespace Elpida
 	}
 	void ElpidaMediator::initializeTaskBatchesTab()
 	{
-#if ELPIDA_DEBUG_BUILD
-		_taskBatchPath = TASK_BATCH_DEBUG_DIR;
-#else
-		_taskBatchPath = "./TaskBatches";	// TODO: Think of something more portable
-#endif
-
-		loadTaskBatches();
-		_taskBatchesListWidget.reloadTaskBatches();
+		_taskBatchesController.reload();
 
 		// TODO: create as normal widgets
 		auto rootWidget = new QWidget();
@@ -43,6 +47,7 @@ namespace Elpida
 
 		_mainWindow.addTab(rootWidget, "Task Batches");
 	}
+
 	void ElpidaMediator::initializeSystemTopologyWidget()
 	{
 		auto container = new QWidget;
@@ -96,56 +101,4 @@ namespace Elpida
 		QApplication::quit();
 	}
 
-	static bool hasLibraryExtension(const std::string& path)
-	{
-		if (!path.empty())
-		{
-			auto& ext = SharedLibraryLoader::LibrariesExtension;
-			if (!ext.empty())
-			{
-				const auto pSize = path.size();
-				const auto eSize = ext.size();
-
-				if (pSize <= eSize) return false;    // path is less than extension or it is the extension
-
-				for (auto pi = pSize - 1, ei = eSize - 1; ei > 0; --pi, --ei)
-				{
-					if (ext[ei] == path[pi]) continue;
-					return false;
-				}
-				return true;
-			}
-			else
-			{
-				// wtf?
-				throw ElpidaException(__func__, "Library extension has no value. Probably a corrupt build or bug");
-			}
-		}
-		return false;
-	}
-
-	void ElpidaMediator::loadTaskBatches()
-	{
-		try
-		{
-			FileSystem::iterateDirectory(_taskBatchPath, [this](const std::string& path)
-			{
-				if (hasLibraryExtension(path))
-				{
-					try
-					{
-						_libraryLoader.load(path);
-					}
-					catch (const std::exception& ex)
-					{
-						_logger.log(LogType::Error, "Failed to load Library:'" + path + "'", ex);
-					}
-				}
-			});
-		}
-		catch (const std::exception& ex)
-		{
-			_logger.log(LogType::Error, "Failed to iterate Directory:'" + _taskBatchPath + "'", ex);
-		}
-	}
 }

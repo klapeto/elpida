@@ -29,6 +29,7 @@
 
 #include <list>
 #include "Elpida/Utilities/NonCopyable.hpp"
+#include "Elpida/EventSubscriptionBase.hpp"
 #include <functional>
 
 namespace Elpida
@@ -37,12 +38,12 @@ namespace Elpida
 	class Event;
 
 	template<typename ... T>
-	class EventSubscription : public NonCopyable
+	class EventSubscription : public NonCopyable, public EventSubscriptionBase
 	{
 	public:
 		typedef std::function<void(T...)> EventHandler;
 
-		void unsubscribe()
+		void unsubscribe() override
 		{
 			_owner.unsubScribe(*this);
 		}
@@ -58,11 +59,11 @@ namespace Elpida
 		using Iterator = typename std::list<EventSubscription<T...>>::iterator;
 
 		Iterator _iterator;
-		Event<T...>& _owner;
+		const Event<T...>& _owner;
 		EventHandler _handler;
 
-		EventSubscription(Event<T...>& owner, EventHandler&& handler)
-			: _owner(owner), _handler(handler)
+		EventSubscription(const Event<T...>& owner, EventHandler&& handler)
+			: _owner(owner), _handler(std::move(handler))
 		{
 
 		}

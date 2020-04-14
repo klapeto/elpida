@@ -49,8 +49,8 @@ namespace Elpida
 			}
 		}
 
-		template<typename TCallbable>
-		EventSubscription<T...>& subscribe(TCallbable handler)
+		template<typename TCallable>
+		EventSubscription<T...>& subscribe(TCallable handler) const
 		{
 			std::lock_guard<std::mutex> lock(_mutex);
 			auto itr = _subscribers.insert(_subscribers.end(), EventSubscription<T...>(*this, EventHandler(handler)));
@@ -58,11 +58,12 @@ namespace Elpida
 			return *itr;
 		}
 
-		void unsubScribe(EventSubscription<T...>& subscription)
+		void unsubScribe(EventSubscription<T...>& subscription) const
 		{
 			std::lock_guard<std::mutex> lock(_mutex);
 			_subscribers.erase(subscription.getIterator());
 		}
+
 
 		Event() = default;
 
@@ -73,8 +74,8 @@ namespace Elpida
 		}
 
 	private:
-		std::mutex _mutex;
-		std::list<EventSubscription<T...>> _subscribers;
+		mutable std::mutex _mutex;
+		mutable std::list<EventSubscription<T...>> _subscribers;
 	};
 
 } /* namespace Elpida */
