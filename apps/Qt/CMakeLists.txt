@@ -8,6 +8,7 @@ set(ELPIDA_QT_SOURCES
         Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp
         Ui/TaskResultsWidget/TaskResultsWidget.cpp
         Ui/CommonDialog/CommonDialog.cpp
+        Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.cpp
 
         Ui/MainWindow/MainWindow.ui
         Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui
@@ -17,6 +18,7 @@ set(ELPIDA_QT_SOURCES
         Ui/SystemInfoWidget/SystemInfoWidget.ui
         Ui/TaskResultsWidget/TaskResultsWidget.ui
         Ui/CommonDialog/CommonDialog.ui
+        Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.ui
 
         Main.cpp
 
@@ -31,9 +33,10 @@ set(ELPIDA_QT_SOURCES
         Models/Abstractions/EventArgs/CollectionChangedEventArgs.cpp
         Models/Abstractions/CollectionModelObserver.cpp
         Models/TaskRunResultsModel.cpp
+        Models/TaskRunnerModel.cpp
 
         Controllers/TaskBatchesController.cpp
- )
+        )
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

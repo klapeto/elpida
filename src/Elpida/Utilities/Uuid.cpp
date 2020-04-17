@@ -17,7 +17,7 @@ namespace Elpida
 
 	std::string Uuid::create()
 	{
-#ifdef ELPIDA_LINUX
+#if defined(ELPIDA_LINUX)
 		std::fstream file("/proc/sys/kernel/random/uuid", std::fstream::in);
 		file.exceptions(std::ios_base::failbit);
 		std::string uuid;
@@ -26,7 +26,7 @@ namespace Elpida
 			file >> uuid;
 		}
 		return uuid;
-#else
+#elif defined(ELPIDA_WINDOWS)
 		GUID uuid;
 		auto status = CoCreateGuid(&uuid);
 		std::ostringstream stream;
@@ -42,6 +42,8 @@ namespace Elpida
 
 		}
 		return stream.str();
+#else
+#error "Platform not supported"
 #endif
 	}
 }

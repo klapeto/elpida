@@ -30,6 +30,7 @@ SOURCES += \
     Ui/TaskBatchProperties/TaskBatchProperties.cpp \
     ElpidaManager.cpp \
     Ui/LogsWidget/LogsWidget.cpp \
+    Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.cpp \
     Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp \
     Ui/TaskBatchesWidget/TaskBatchesWidget.cpp \
     Ui/TaskResultsWidget/TaskResultsWidget.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
    Ui/TaskBatchProperties/TaskBatchProperties.hpp \
     ElpidaManager.hpp \
     Ui/LogsWidget/LogsWidget.hpp \
+    Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp \
     Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp \
     Ui/TaskBatchesWidget/TaskBatchesWidget.hpp \
     Ui/TaskResultsWidget/TaskResultsWidget.hpp \
@@ -57,6 +59,7 @@ FORMS += \
     Ui/SystemInfoWidget/SystemInfoWidget.ui \
     Ui/TaskBatchProperties/TaskBatchProperties.ui \
     Ui/LogsWidget/LogsWidget.ui \
+    Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.ui \
     Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui \
     Ui/TaskBatchesWidget/TaskBatchesWidget.ui \
     Ui/TaskResultsWidget/TaskResultsWidget.ui \

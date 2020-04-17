@@ -10,24 +10,26 @@
 #include <Elpida/MemoryInfo.hpp>
 #include <Elpida/SharedLibraryLoader.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
-#include <QtWidgets/QApplication>
-#include <Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp>
-#include <Ui/TaskResultsWidget/TaskResultsWidget.hpp>
-#include <Ui/CommonDialog/CommonDialog.hpp>
 
-#include <QtGui/QStandardItemModel>
+#include <QtWidgets/QApplication>
+
+#include "Models/TaskRunnerModel.hpp"
 #include "Models/TaskRunResultsModel.hpp"
+#include "Models/TaskBatchesModel.hpp"
+
 #include "Controllers/TaskBatchesController.hpp"
 
 #include "Ui/LogsWidget/LogsWidget.hpp"
 #include "Ui/MainWindow/MainWindow.hpp"
 #include "Ui/SystemInfoWidget/SystemInfoWidget.hpp"
 #include "Ui/TopologyWidget/TopologyWidget.hpp"
+#include "Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp"
+#include "Ui/TaskResultsWidget/TaskResultsWidget.hpp"
+#include "Ui/CommonDialog/CommonDialog.hpp"
+#include "Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp"
 
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Abstractions/CommandHandler.hpp"
-
-#include "Models/TaskBatchesModel.hpp"
 
 namespace Elpida
 {
@@ -62,7 +64,8 @@ namespace Elpida
 		TaskBatchesController _taskBatchesController;
 		TaskBatchesListWidget _taskBatchesListWidget;
 
-
+		TaskRunnerModel _taskRunnerModel;
+		TaskBatchRunnerStatusView _runnerStatusView;
 	private:
 		void handle(const Command& command) override;
 		void handle(const ShowLogsDialogCommand& command) override;

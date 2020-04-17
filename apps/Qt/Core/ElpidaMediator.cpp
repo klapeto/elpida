@@ -28,7 +28,9 @@ namespace Elpida
 		_commonDialog(&_mainWindow),
 		_taskBatchesModel(),
 		_taskBatchesController(_taskBatchesModel, _logger),
-		_taskBatchesListWidget(_taskBatchesModel)
+		_taskBatchesListWidget(_taskBatchesModel),
+		_taskRunnerModel(),
+		_runnerStatusView(_taskRunnerModel)
 	{
 		_mainWindow.addTab(&_systemInfoWidget, "System Info");
 		initializeSystemTopologyWidget();
@@ -44,6 +46,7 @@ namespace Elpida
 		auto rootLayout = new QHBoxLayout();
 		rootLayout->addWidget(&_taskBatchesListWidget);
 		rootLayout->addWidget(&_taskResultsWidget);
+		rootLayout->addWidget(&_runnerStatusView);
 		rootWidget->setLayout(rootLayout);
 
 		_mainWindow.addTab(rootWidget, "Task Batches");
