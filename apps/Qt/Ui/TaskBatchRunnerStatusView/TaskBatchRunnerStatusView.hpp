@@ -22,11 +22,10 @@ namespace Elpida
 
 	public:
 		explicit TaskBatchRunnerStatusView(const TaskRunnerModel& model);
-		~TaskBatchRunnerStatusView();
-
+		~TaskBatchRunnerStatusView() override;
 	private:
-		const TaskRunnerModel& _model;
 		Ui::TaskBatchRunnerStatusView* _ui;
+		const TaskRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
 		const Task* _currentRunningTask;
 		const TaskBatch* _currentRunningTaskBatch;

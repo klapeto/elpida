@@ -9,6 +9,7 @@ set(ELPIDA_QT_SOURCES
         Ui/TaskResultsWidget/TaskResultsWidget.cpp
         Ui/CommonDialog/CommonDialog.cpp
         Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.cpp
+        Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.cpp
 
         Ui/MainWindow/MainWindow.ui
         Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui
@@ -19,6 +20,7 @@ set(ELPIDA_QT_SOURCES
         Ui/TaskResultsWidget/TaskResultsWidget.ui
         Ui/CommonDialog/CommonDialog.ui
         Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.ui
+        Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.ui
 
         Main.cpp
 
@@ -36,6 +38,8 @@ set(ELPIDA_QT_SOURCES
         Models/TaskRunnerModel.cpp
 
         Controllers/TaskBatchesController.cpp
+        Controllers/TaskRunnerController.cpp
+        Controllers/MainViewController.cpp
         )
 
 

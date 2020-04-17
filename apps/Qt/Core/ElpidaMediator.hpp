@@ -27,6 +27,7 @@
 #include "Ui/TaskResultsWidget/TaskResultsWidget.hpp"
 #include "Ui/CommonDialog/CommonDialog.hpp"
 #include "Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp"
+#include "Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.hpp"
 
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Abstractions/CommandHandler.hpp"
@@ -66,6 +67,7 @@ namespace Elpida
 
 		TaskRunnerModel _taskRunnerModel;
 		TaskBatchRunnerStatusView _runnerStatusView;
+		TaskBatchRunnerControlsView _taskBatchRunnerControlsView;
 	private:
 		void handle(const Command& command) override;
 		void handle(const ShowLogsDialogCommand& command) override;

@@ -30,7 +30,8 @@ namespace Elpida
 		_taskBatchesController(_taskBatchesModel, _logger),
 		_taskBatchesListWidget(_taskBatchesModel),
 		_taskRunnerModel(),
-		_runnerStatusView(_taskRunnerModel)
+		_runnerStatusView(_taskRunnerModel),
+		_taskBatchRunnerControlsView(_taskRunnerModel)
 	{
 		_mainWindow.addTab(&_systemInfoWidget, "System Info");
 		initializeSystemTopologyWidget();
@@ -47,6 +48,7 @@ namespace Elpida
 		rootLayout->addWidget(&_taskBatchesListWidget);
 		rootLayout->addWidget(&_taskResultsWidget);
 		rootLayout->addWidget(&_runnerStatusView);
+		rootLayout->addWidget(&_taskBatchRunnerControlsView);
 		rootWidget->setLayout(rootLayout);
 
 		_mainWindow.addTab(rootWidget, "Task Batches");
