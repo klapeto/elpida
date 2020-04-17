@@ -57,7 +57,7 @@ namespace Elpida
 		for (auto taskBatch : _tasksBatches)
 		{
 			if (_mustStop) break;
-			auto& batchResult = _lastExecutionResults[taskBatch->getName()];
+			auto batchResult = TaskBatchRunResult(*taskBatch);
 			taskBatch->prepare();
 			taskBatch->onBeforeExecution();
 			const auto& tasks = taskBatch->getTasks();
@@ -80,12 +80,10 @@ namespace Elpida
 				if (task->isToBeMeasured())
 				{
 					task->calculateResults(metrics);
-
-					auto& resultsToExport = batchResult[task->getName()];
 					const auto& results = task->getLastRunResults();
 					for (auto result : results)
 					{
-						resultsToExport.push_back(TaskThroughput(*result, metrics));
+						batchResult.addResult(*task, TaskThroughput(*result, metrics));
 					}
 				}
 				{
@@ -99,6 +97,7 @@ namespace Elpida
 				EventArguments::BatchEnd evArgs{ taskBatch->getName(), batchResult };
 				batchEnd.raise(evArgs);
 			}
+			_lastExecutionResults.emplace(taskBatch->getName(), std::move(batchResult));
 		}
 	}
 

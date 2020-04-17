@@ -17,6 +17,7 @@ set(ELPIDA_SOURCES
         TaskThread.cpp
         TaskThroughput.cpp
         Timer.cpp
+        TaskBatchRunResult.cpp
 
         ElpidaException.cpp
 
@@ -38,6 +39,7 @@ set(ELPIDA_SOURCES
         Utilities/WindowsUtils.cpp
         Utilities/Plugin/Plugin.cpp
         Utilities/Plugin/TaskBatchesContainerPlugin.cpp
+        Utilities/Uuid.cpp
 
         CommonTasks/AlignedMemory.cpp
         CommonTasks/AllocateMemory.cpp

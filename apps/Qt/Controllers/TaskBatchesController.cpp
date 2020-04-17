@@ -10,7 +10,6 @@
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include "TaskBatchesController.hpp"
 
-
 namespace Elpida
 {
 
@@ -94,6 +93,7 @@ namespace Elpida
 			_logger.log(LogType::Error, "Failed to iterate Directory:'" + _taskBatchPath + "'", ex);
 		}
 	}
+
 	void TaskBatchesController::reload()
 	{
 		destroyAll();

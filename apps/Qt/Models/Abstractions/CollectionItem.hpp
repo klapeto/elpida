@@ -25,6 +25,10 @@ namespace Elpida
 			return _value;
 		}
 
+		CollectionItem(const CollectionItem<T>&) = delete;
+		CollectionItem(CollectionItem<T>&&) noexcept = default;
+		CollectionItem<T>& operator=(const CollectionItem<T>&) = delete;
+		CollectionItem<T>& operator=(CollectionItem<T>&&) noexcept = default;
 	private:
 		const CollectionModel<T>& _owner;
 		Iterator _iterator;

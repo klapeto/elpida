@@ -37,7 +37,6 @@ void segFaultHandler(int sig)
 }
 #endif
 
-
 int main(int argc, char* argv[])
 {
 #ifdef ELPIDA_LINUX

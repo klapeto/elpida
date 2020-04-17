@@ -29,7 +29,11 @@ set(ELPIDA_QT_SOURCES
         Models/Abstractions/CollectionModel.cpp
         Models/Abstractions/CollectionItem.cpp
         Models/Abstractions/EventArgs/CollectionChangedEventArgs.cpp
-        Controllers/TaskBatchesController.cpp)
+        Models/Abstractions/CollectionModelObserver.cpp
+        Models/TaskRunResultsModel.cpp
+
+        Controllers/TaskBatchesController.cpp
+ )
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

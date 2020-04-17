@@ -21,7 +21,21 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QTreeView" name="tvResults"/>
+       <widget class="QTreeWidget" name="twResultList">
+        <property name="columnCount">
+         <number>2</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>Name</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Throughput</string>
+         </property>
+        </column>
+       </widget>
       </item>
      </layout>
     </widget>

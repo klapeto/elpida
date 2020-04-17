@@ -15,29 +15,14 @@ namespace Elpida
 {
 
 	TaskBatchesListWidget::TaskBatchesListWidget(const CollectionModel<QtTaskBatchWrapper*>& model)
-		: QWidget(), _ui(new Ui::TaskBatchesListWidget), _model(model)
+		: QWidget(), CollectionModelObserver<QtTaskBatchWrapper*>(model), _ui(new Ui::TaskBatchesListWidget)
 	{
 		_ui->setupUi(this);
-		_subscriptions.push_back(&_model.itemAdded.subscribe([this](const auto& item)
-		{
-			onItemAdded(item);
-		}));
-		_subscriptions.push_back(&_model.itemRemoved.subscribe([this](const auto& item)
-		{
-			onItemRemoved(item);
-		}));
-		_subscriptions.push_back(&_model.cleared.subscribe([this]()
-		{
-			onCleared();
-		}));
+		model.getItems().back().getValue();
 	}
 
 	TaskBatchesListWidget::~TaskBatchesListWidget()
 	{
-		for (auto subscription: _subscriptions)
-		{
-			subscription->unsubscribe();
-		}
 		delete _ui;
 	}
 
@@ -54,18 +39,17 @@ namespace Elpida
 		return nullptr;
 	}
 
-	void TaskBatchesListWidget::onItemAdded(const CollectionChangedEventArgs<QtTaskBatchWrapper*>& item)
+	void TaskBatchesListWidget::onItemAdded(QtTaskBatchWrapper* const& item)
 	{
-		const auto& value = item.getItem().getValue();
-		auto wItem = new QListWidgetItem(QString::fromStdString(value->getTaskBatch().getName()));
+		auto wItem = new QListWidgetItem(QString::fromStdString(item->getTaskBatch().getName()));
 		wItem->setData(Qt::UserRole, QVariant::fromValue((void*)wItem));
 		_ui->lvTaskBatches->addItem(wItem);
-		_createdItems.insert_or_assign(value, wItem);
+		_createdItems.insert_or_assign(item, wItem);
 	}
 
-	void TaskBatchesListWidget::onItemRemoved(const CollectionChangedEventArgs<QtTaskBatchWrapper*>& item)
+	void TaskBatchesListWidget::onItemRemoved(QtTaskBatchWrapper* const& item)
 	{
-		auto itr = _createdItems.find(item.getItem().getValue());
+		auto itr = _createdItems.find(item);
 		if (itr != _createdItems.end())
 		{
 			auto wItem = itr->second;
@@ -74,7 +58,7 @@ namespace Elpida
 		}
 	}
 
-	void TaskBatchesListWidget::onCleared()
+	void TaskBatchesListWidget::onCollectionCleared()
 	{
 		_ui->lvTaskBatches->clear();
 	}

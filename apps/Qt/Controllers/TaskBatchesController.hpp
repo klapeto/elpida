@@ -9,7 +9,8 @@
 #include <Models/Abstractions/CollectionModel.hpp>
 #include <Elpida/SharedLibraryLoader.hpp>
 
-namespace Elpida {
+namespace Elpida
+{
 
 	class QtTaskBatchWrapper;
 	class Logger;
@@ -36,7 +37,6 @@ namespace Elpida {
 		void reloadLibraries();
 	};
 }
-
 
 
 #endif //APPS_QT_CONTROLLERS_TASKBATCHESCONTROLLER_HPP

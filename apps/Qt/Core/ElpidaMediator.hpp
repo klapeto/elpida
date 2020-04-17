@@ -16,6 +16,7 @@
 #include <Ui/CommonDialog/CommonDialog.hpp>
 
 #include <QtGui/QStandardItemModel>
+#include "Models/TaskRunResultsModel.hpp"
 #include "Controllers/TaskBatchesController.hpp"
 
 #include "Ui/LogsWidget/LogsWidget.hpp"
@@ -52,7 +53,9 @@ namespace Elpida
 		LogsWidget _logsWidget;
 		TopologyWidget _topologyWidget;
 
+		TaskRunResultsModel _runResultsModel;
 		TaskResultsWidget _taskResultsWidget;
+
 		CommonDialog _commonDialog;
 
 		TaskBatchesModel _taskBatchesModel;

@@ -8,6 +8,7 @@
 #include "Models/Abstractions/EventArgs/CollectionChangedEventArgs.hpp"
 #include "Model.hpp"
 #include "CollectionItem.hpp"
+#include <type_traits>
 
 namespace Elpida
 {
@@ -45,11 +46,16 @@ namespace Elpida
 			onCleared();
 		}
 
-		const std::list<const CollectionItem<T>>& getItems() const
+		const std::list<CollectionItem<T>>& getItems() const
 		{
-			return reinterpret_cast<const std::list<const CollectionItem<T>>&>(_items);    // evil casting, but works
+			return _items;
 		}
 
+		CollectionModel() = default;
+		CollectionModel(const CollectionModel<T>&) = delete;
+		CollectionModel(CollectionModel<T>&&) noexcept = delete;
+		CollectionModel<T>& operator=(const CollectionModel<T>&) = delete;
+		CollectionModel<T>& operator=(CollectionModel<T>&&) noexcept = delete;
 		~CollectionModel() override = default;
 	private:
 		std::list<CollectionItem<T>> _items;
