@@ -7,7 +7,7 @@
 #ifdef ELPIDA_LINUX
 #include <fstream>
 #else
-#include <Rpc.h>
+#include <Windows.h>
 #include <sstream>
 #include <iomanip>
 #endif
@@ -27,8 +27,8 @@ namespace Elpida
 		}
 		return uuid;
 #else
-		UUID uuid;
-		auto status = UuidCreateSequential(&uuid);
+		GUID uuid;
+		auto status = CoCreateGuid(&uuid);
 		std::ostringstream stream;
 		stream << std::hex << std::setfill ('0') << std::setw(sizeof(UUID::Data1) * 2) << uuid.Data1 << '-'
 			<< std::hex << std::setfill ('0') << std::setw(sizeof(UUID::Data2) * 2) << uuid.Data2 << '-'
