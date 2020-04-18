@@ -122,6 +122,7 @@ namespace Elpida
 		}
 		~MemoryTasksPropertiesWithChart() override
 		{
+			delete _taskBatch;
 			delete _chart;
 		}
 	private:

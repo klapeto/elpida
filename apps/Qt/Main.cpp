@@ -18,8 +18,34 @@
  *************************************************************************/
 
 #include "Elpida/Config.hpp"
+
+#include "Controllers/CoreController.hpp"
+#include "Controllers/TaskBatchesController.hpp"
+#include "Controllers/TaskRunnerController.hpp"
+
+#include "Models/TaskBatchesModel.hpp"
+#include "Models/TaskRunResultsModel.hpp"
+
+#include "Ui/MainWindow/MainWindow.hpp"
+#include "Ui/SystemInfoWidget/SystemInfoWidget.hpp"
+#include "Ui/TopologyWidget/TopologyWidget.hpp"
+#include "Ui/TaskResultsWidget/TaskResultsWidget.hpp"
+#include "Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp"
+#include "Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.hpp"
+#include "Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp"
+#include "Ui/TaskResultsWidget/TaskResultsWidget.hpp"
+
 #include "Core/ElpidaMediator.hpp"
-#include "Core/Commands/ShowLogsDialogCommand.hpp"
+
+#include <Elpida/Topology/CpuInfo.hpp>
+#include <Elpida/Topology/SystemTopology.hpp>
+#include <Elpida/Utilities/Logging/Logger.hpp>
+
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QVBoxLayout>
+
+
+using namespace Elpida;
 
 #ifdef ELPIDA_LINUX
 #include <execinfo.h>
@@ -27,6 +53,13 @@
 #include <cstdlib>
 #include <unistd.h>
 
+void initializeTopologyTab(MainWindow& mainWindow, TopologyWidget& topologyWidget);
+
+void initializeTaskTab(MainWindow& mainWindow,
+	TaskBatchesListWidget& taskBatchesListWidget,
+	TaskResultsWidget& taskResultsWidget,
+	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
+	TaskBatchRunnerControlsView& taskBatchRunnerControlsView);
 void segFaultHandler(int sig)
 {
 	void* array[20];
@@ -37,12 +70,91 @@ void segFaultHandler(int sig)
 }
 #endif
 
-int main(int argc, char* argv[])
+static void setupPlatformSpecifics()
 {
 #ifdef ELPIDA_LINUX
 	signal(SIGSEGV, segFaultHandler);
 #endif
+}
 
-	Elpida::ElpidaMediator(argc, argv).run();
+int main(int argc, char* argv[])
+{
+	setupPlatformSpecifics();
+
+	ElpidaMediator mediator;
+
+	CoreController coreController(argc, argv);
+	mediator.registerCommandHandler(coreController);
+
+	MainWindow mainWindow(mediator);
+
+	CpuInfo cpuInfo;
+	SystemTopology topology;
+
+	SystemInfoWidget systemInfoWidget(cpuInfo, topology);
+	mainWindow.addTab(systemInfoWidget, "System Info");
+
+	TopologyWidget topologyWidget(topology);
+
+	initializeTopologyTab(mainWindow, topologyWidget);
+
+	Logger logger;
+	TaskBatchesModel taskBatchesModel;
+	TaskRunnerModel taskRunnerModel;
+	TaskRunResultsModel taskRunResultsModel;
+	TaskBatchesController taskBatchesController(taskBatchesModel, logger);
+	taskBatchesController.reload();
+
+	TaskRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel);
+	mediator.registerCommandHandler(runnerController);
+
+	TaskBatchesListWidget taskBatchesListWidget(taskBatchesModel);
+	TaskResultsWidget taskResultsWidget(taskRunResultsModel);
+	TaskBatchRunnerStatusView taskBatchRunnerStatusView(taskRunnerModel);
+	TaskBatchRunnerControlsView taskBatchRunnerControlsView(mediator, taskRunnerModel);
+	initializeTaskTab(mainWindow,
+		taskBatchesListWidget,
+		taskResultsWidget,
+		taskBatchRunnerStatusView,
+		taskBatchRunnerControlsView);
+
+	mainWindow.show();
+
+	coreController.run();
 	return 0;
+}
+void initializeTaskTab(MainWindow& mainWindow,
+	TaskBatchesListWidget& taskBatchesListWidget,
+	TaskResultsWidget& taskResultsWidget,
+	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
+	TaskBatchRunnerControlsView& taskBatchRunnerControlsView)
+{// TODO: create as normal widgets
+	auto rootWidget = new QWidget();
+	auto rootLayout = new QHBoxLayout();
+	rootLayout->addWidget(&taskBatchesListWidget);
+	rootLayout->addWidget(&taskResultsWidget);
+	rootLayout->addWidget(&taskBatchRunnerStatusView);
+	rootLayout->addWidget(&taskBatchRunnerControlsView);
+	rootWidget->setLayout(rootLayout);
+
+	mainWindow.addTab(*rootWidget, "Task Batches");
+}
+
+void initializeTopologyTab(MainWindow& mainWindow, TopologyWidget& topologyWidget)
+{
+	auto container = new QWidget;
+	auto scrollArea = new QScrollArea;
+	auto rootLayout = new QVBoxLayout;
+
+	container->setLayout(rootLayout);
+	container->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+	rootLayout->addWidget(scrollArea);
+
+	scrollArea->setWidgetResizable(false);
+	scrollArea->setWidget(&topologyWidget);
+
+	topologyWidget.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+	mainWindow.addTab(*container, "System Topology");
 }

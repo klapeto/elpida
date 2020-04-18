@@ -39,7 +39,7 @@ namespace Elpida
 
 	public:
 
-		void addTab(QWidget* widget, const std::string& name);
+		void addTab(QWidget& widget, const std::string& name);
 
 		explicit MainWindow(Mediator& mediator);
 		~MainWindow() override;

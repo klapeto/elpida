@@ -11,7 +11,8 @@ namespace Elpida
 	class Mediator
 	{
 	public:
-		virtual void execute(const Command& command) = 0;
+		virtual void execute(Command& command) = 0;
+		virtual void execute(Command&& command) = 0;
 
 		virtual ~Mediator() = default;
 	};

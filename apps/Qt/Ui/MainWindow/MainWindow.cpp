@@ -34,9 +34,9 @@ namespace Elpida
 		_ui->setupUi(this);
 	}
 
-	void MainWindow::addTab(QWidget* widget, const std::string& name)
+	void MainWindow::addTab(QWidget& widget, const std::string& name)
 	{
-		_ui->tbwMain->addTab(widget, QString::fromStdString(name));
+		_ui->tbwMain->addTab(&widget, QString::fromStdString(name));
 	}
 
 	MainWindow::~MainWindow()

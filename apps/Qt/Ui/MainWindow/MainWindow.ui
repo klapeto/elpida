@@ -34,10 +34,10 @@ QMainWindow{
 }
 
 #centralWidget {
-background-color: rgba(229,232,253,200);
+background-color: rgba(229,232,253,245);
 }
 #menuBar {
-background-color: rgba(229,232,253,200);
+background-color: rgba(229,232,253,245);
 }
 
 QWidget :disabled {

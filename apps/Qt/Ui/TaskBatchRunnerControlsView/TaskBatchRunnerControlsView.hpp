@@ -13,21 +13,26 @@ namespace Elpida
 
 	class TaskRunnerModel;
 	class EventSubscriptionBase;
+	class Mediator;
 
 	class TaskBatchRunnerControlsView : public QWidget
 	{
 	Q_OBJECT
 
 	public:
-		explicit TaskBatchRunnerControlsView(const TaskRunnerModel& model);
+		explicit TaskBatchRunnerControlsView(Mediator& mediator, const TaskRunnerModel& model);
 		~TaskBatchRunnerControlsView() override;
 	private:
 		Ui::TaskBatchRunnerControlsView* _ui;
 		const TaskRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
+		Mediator& _mediator;
 		bool _running;
 
 		void onDataChanged();
+
+		void startClicked(bool checked);
+		void stopClicked(bool checked);
 	};
 
 } // namespace Elpida

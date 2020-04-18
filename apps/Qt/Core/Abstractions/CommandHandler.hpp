@@ -12,10 +12,30 @@ namespace Elpida
 	class CommandHandler
 	{
 	public:
-		virtual void handle(const Command& command) = 0;
-		virtual void handle(const ShowLogsDialogCommand& command) = 0;
-		virtual void handle(const ShowAboutDialogCommand& command) = 0;
-		virtual void handle(const ExitApplicationCommand& command) = 0;
+		virtual void handle(Command& command)
+		{
+		};
+		virtual void handle(ShowLogsDialogCommand& command)
+		{
+		};
+		virtual void handle(ShowAboutDialogCommand& command)
+		{
+		};
+		virtual void handle(ExitApplicationCommand& command)
+		{
+		};
+		virtual void handle(StartBenchmarkingCommand& command)
+		{
+		};
+		virtual void handle(StopBenchmarkingCommand& command)
+		{
+		};
+		virtual void handle(GetSelectedTaskBatchesCommand& command)
+		{
+		};
+		virtual void handle(ShowMessageCommand& command)
+		{
+		};
 
 		virtual ~CommandHandler() = default;
 	};

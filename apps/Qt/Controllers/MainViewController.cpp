@@ -4,6 +4,7 @@
 
 #include "MainViewController.hpp"
 
-namespace Elpida {
+namespace Elpida
+{
 
 }

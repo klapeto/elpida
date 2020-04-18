@@ -40,6 +40,7 @@ set(ELPIDA_QT_SOURCES
         Controllers/TaskBatchesController.cpp
         Controllers/TaskRunnerController.cpp
         Controllers/MainViewController.cpp
+        Controllers/CoreController.cpp
         )
 
 

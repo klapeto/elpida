@@ -10,6 +10,10 @@ namespace Elpida {
 	class ShowLogsDialogCommand;
 	class ShowAboutDialogCommand;
 	class ExitApplicationCommand;
+	class StartBenchmarkingCommand;
+	class StopBenchmarkingCommand;
+	class GetSelectedTaskBatchesCommand;
+	class ShowMessageCommand;
 }
 
 #endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP

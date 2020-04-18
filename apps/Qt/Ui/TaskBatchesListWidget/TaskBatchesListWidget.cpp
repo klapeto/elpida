@@ -10,6 +10,7 @@
 #include <TaskBatches/QtTaskBatchWrapper.hpp>
 
 #include "Models/TaskBatchesModel.hpp"
+#include "Core/Commands/GetSelectedTaskBatchesCommand.hpp"
 
 namespace Elpida
 {
@@ -61,6 +62,15 @@ namespace Elpida
 	void TaskBatchesListWidget::onCollectionCleared()
 	{
 		_ui->lvTaskBatches->clear();
+	}
+
+	void TaskBatchesListWidget::handle(GetSelectedTaskBatchesCommand& command)
+	{
+		auto selected = getSelectedTaskBatch();
+		if (selected != nullptr)
+		{
+			command.addTaskBatch(selected->getTaskBatch());
+		}
 	}
 
 } // namespace Elpida

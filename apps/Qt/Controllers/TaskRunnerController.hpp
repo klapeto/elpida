@@ -7,19 +7,28 @@
 
 
 #include <Elpida/Runner.hpp>
+#include "Core/Abstractions/CommandHandler.hpp"
+
 namespace Elpida {
 
 	class TaskRunResultsModel;
 	class TaskRunnerModel;
+	class Mediator;
 
-	class TaskRunnerController
+	class TaskRunnerController: public CommandHandler
 	{
 	public:
-		TaskRunnerController(TaskRunResultsModel& runResultsModel, TaskRunnerModel& runnerModel);
+		void handle(StartBenchmarkingCommand &command) override;
+		void handle(StopBenchmarkingCommand &command) override;
+
+		TaskRunnerController(Mediator& mediator,
+			TaskRunResultsModel& runResultsModel,
+			TaskRunnerModel& runnerModel);
 	private:
 		Runner _runner;
 		TaskRunResultsModel& _runResultsModel;
 		TaskRunnerModel& _runnerModel;
+		Mediator& _mediator;
 	};
 }
 

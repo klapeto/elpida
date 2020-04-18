@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "Models/Abstractions/CollectionModelObserver.hpp"
+#include "Core/Abstractions/CommandHandler.hpp"
 
 #include <unordered_map>
 
@@ -17,11 +18,13 @@ namespace Elpida
 		class TaskBatchesListWidget;
 	}
 
-	class TaskBatchesListWidget : public QWidget, public CollectionModelObserver<QtTaskBatchWrapper*>
+	class TaskBatchesListWidget : public QWidget, public CollectionModelObserver<QtTaskBatchWrapper*>, public CommandHandler
 	{
 	Q_OBJECT
 
 	public:
+
+		void handle(GetSelectedTaskBatchesCommand &command) override;
 
 		QtTaskBatchWrapper* getSelectedTaskBatch();
 

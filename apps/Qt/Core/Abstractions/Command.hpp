@@ -11,7 +11,7 @@ namespace Elpida
 	class Command
 	{
 	public:
-		virtual void accept(CommandHandler& handler) const = 0;
+		virtual void accept(CommandHandler& handler) = 0;
 		virtual ~Command() = default;
 	};
 }
