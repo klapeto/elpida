@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1718</width>
-    <height>795</height>
+    <width>1340</width>
+    <height>771</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,13 +19,31 @@
   </property>
   <property name="styleSheet">
    <string notr="true">/*============ QWidget ============*/
-QWidget {
-	background-color:  rgb(229,232,253);
+QTabWidget,QFrame,QLabel,QCheckBox,QGroupBox {
+background-color: rgba(229,232,253,0);
+}
+
+QTreeWidget QWidget {
+	background-color: rgba(229,232,253,255); 
+}
+
+QMainWindow{
+	background-color: rgba(229,232,253,255); 
+	image: url(:/Elpida.svg);
+	image-position: bottom right;
+}
+
+#centralWidget {
+background-color: rgba(229,232,253,200);
+}
+#menuBar {
+background-color: rgba(229,232,253,200);
 }
 
 QWidget :disabled {
-	background-color: rgb(199, 202, 226);
+	background-color: rgba(199, 202, 226,255);
 }
+
 /*==================================*/
 /*============ QGroupBox ============*/
 QGroupBox {
@@ -64,16 +82,16 @@ QCheckBox::indicator:checked {
 /*============ QPushButton ============*/
 QPushButton {
 	border: 1px solid rgb(158, 159, 238);
-	background-color: rgb(203, 199, 247);
+	background-color: rgba(203, 199, 247,255);
 	min-width: 5em;
 }
 
 QPushButton:hover {
-	background-color: rgb(221, 219, 243);
+	background-color: rgba(221, 219, 243,255);
 }
 
 QPushButton:pressed  {
-	background-color: rgb(137, 142, 226);
+	background-color: rgba(137, 142, 226,255);
 }
 
 QPushButton:flat {
@@ -85,7 +103,7 @@ QPushButton:default {
 }
 /*==================================*/
 /*============ QToolButton ============*/
-QToolButton {
+/*QToolButton {
 	border: 1px solid rgb(158, 159, 238);
 	background-color:rgb(214, 217, 243);
 	padding: 2px;
@@ -97,7 +115,7 @@ QToolButton:hover {
 
 QToolButton:pressed  {
 	background-color: rgb(137, 142, 226);
-}
+}*/
 /*==================================*/
 /*============ QLineEdit ============*/
 QLineEdit {
@@ -107,11 +125,8 @@ QLineEdit {
 /*==================================*/</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <property name="styleSheet">
-    <string notr="true"/>
-   </property>
-   <layout class="QGridLayout" name="gridLayout_11">
-    <item row="1" column="0">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
      <widget class="QTabWidget" name="tbwMain">
       <property name="currentIndex">
        <number>-1</number>
@@ -125,7 +140,7 @@ QLineEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1718</width>
+     <width>1340</width>
      <height>30</height>
     </rect>
    </property>
@@ -145,14 +160,6 @@ QLineEdit {
    </widget>
    <addaction name="menuElpida"/>
    <addaction name="menuAbout"/>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <action name="actionExit">
    <property name="text">

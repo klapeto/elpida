@@ -9,11 +9,13 @@
 #include <QtWidgets/QApplication>
 #include "Ui/MainWindow/MainWindow.hpp"
 
+class QWidget;
+
 namespace Elpida
-{git
+{
 	class MainViewController
 	{
-		//void addView(QWidget* widget);
+		void addTabView(QWidget& widget, const std::string& name);
 
 	private:
 		QApplication _qApplication;

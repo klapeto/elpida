@@ -25,11 +25,11 @@ namespace Elpida
 	{
 		auto parent = new QTreeWidgetItem();
 		parent->setText(0, QString::fromStdString(item.getTaskBatch().getName()));
-		for (auto res: item.getTasksThroughputs())
+		for (const auto& throughput: item.getTasksThroughputs())
 		{
 			auto child = new QTreeWidgetItem();
-			child->setText(0, QString::fromStdString(res.first));
-			child->setText(1, QString::fromStdString(res.second.getRatePerSecondString()));
+			child->setText(0, QString::fromStdString(throughput.first));
+			child->setText(1, QString::fromStdString(throughput.second.getRatePerSecondString()));
 			parent->addChild(child);
 		}
 		_createdItems.emplace(item.getId(), parent);
