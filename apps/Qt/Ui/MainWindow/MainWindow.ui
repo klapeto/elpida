@@ -44,6 +44,11 @@ QWidget :disabled {
 	background-color: rgba(199, 202, 226,255);
 }
 
+QScrollBar {
+    background-color: rgba(229,232,253,255);
+}
+
+
 /*==================================*/
 /*============ QGroupBox ============*/
 QGroupBox {
