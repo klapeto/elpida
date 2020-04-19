@@ -36,6 +36,9 @@ namespace Elpida
 		virtual void handle(ShowMessageCommand& command)
 		{
 		};
+		virtual void handle(GetTaskAffinityCommand& command)
+		{
+		};
 
 		virtual ~CommandHandler() = default;
 	};

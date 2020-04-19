@@ -38,7 +38,6 @@ namespace Elpida
 	class TaskBatch
 	{
 	public:
-		using TaskBatchGenerator =  TaskBatch* (*)();
 
 		const std::vector<Task*>& getTasks() const
 		{

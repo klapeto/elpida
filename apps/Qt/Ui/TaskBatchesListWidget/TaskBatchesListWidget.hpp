@@ -12,6 +12,7 @@ class QListWidgetItem;
 namespace Elpida
 {
 	class QtTaskBatchWrapper;
+	class TaskBatch;
 
 	namespace Ui
 	{
@@ -26,7 +27,7 @@ namespace Elpida
 
 		void handle(GetSelectedTaskBatchesCommand &command) override;
 
-		QtTaskBatchWrapper* getSelectedTaskBatch();
+		TaskBatch* getSelectedTaskBatch();
 
 		explicit TaskBatchesListWidget(const CollectionModel<QtTaskBatchWrapper*>& model);
 		~TaskBatchesListWidget() override;
@@ -38,6 +39,7 @@ namespace Elpida
 		void onItemAdded(QtTaskBatchWrapper* const& item) override;
 		void onItemRemoved(QtTaskBatchWrapper* const& item) override;
 		void onCollectionCleared() override;
+		void addItem(QtTaskBatchWrapper* const& item);
 	};
 
 } // namespace Elpida

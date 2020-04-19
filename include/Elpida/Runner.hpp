@@ -54,21 +54,20 @@ namespace Elpida
 		{
 			struct BatchStart
 			{
-				const std::string& name;
-				std::size_t numberOfTasks;
+				const TaskBatch& batch;
 			};
 			struct TaskStart
 			{
-				const std::string& name;
+				const Task& task;
 			};
 
 			struct TaskEnd
 			{
-				const std::string& name;
+				const Task& task;
 			};
 			struct BatchEnd
 			{
-				const std::string& name;
+				const TaskBatch& batch;
 				const TaskBatchRunResult& results;
 			};
 		};
@@ -80,37 +79,20 @@ namespace Elpida
 
 		static void setProcessPriority(ProcessPriority priority);
 
-		void executeTasks();
-		void addTaskBatch(const TaskBatch& batch);
-		void stop()
-		{
-			_mustStop = true;
-		}
-
-		const std::unordered_map<std::string, TaskBatchRunResult>& getLastExecutionResults() const
-		{
-			return _lastExecutionResults;
-		}
-
-		void clearTaskBatches()
-		{
-			_tasksBatches.clear();
-		}
-
-		void setTaskAffinity(const TaskAffinity& taskAffinity)
-		{
-			_taskAffinity = taskAffinity;
-		}
+		std::vector<TaskBatchRunResult>  executeTasks(const std::vector<const TaskBatch*>& taskBatches, TaskAffinity affinity);
+		void stopExecuting();
 
 		Runner();
 		virtual ~Runner() = default;
 	private:
-		std::unordered_map<std::string, TaskBatchRunResult> _lastExecutionResults;
-		std::vector<const TaskBatch*> _tasksBatches;
-		TaskAffinity _taskAffinity;
 		bool _mustStop;
 
-		TaskMetrics runTask(Task& task);
+		static TaskMetrics runTask(Task& task);
+
+		void raiseTaskBatchStarted(const TaskBatch* taskBatch);
+		void raiseTaskStart(const Task* task);
+		void raiseTaskEnd(const Task* task);
+		void raiseTaskBatchEnd(const TaskBatch* taskBatch, const TaskBatchRunResult& batchResult);
 	};
 
 } /* namespace Elpida */

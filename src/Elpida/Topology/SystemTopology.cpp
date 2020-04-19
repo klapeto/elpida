@@ -39,7 +39,7 @@
 namespace Elpida
 {
 	SystemTopology::SystemTopology()
-		: _root(nullptr)
+		: _root(nullptr), _depth(0), _totalLogicalCores(0), _totalPhysicalCores(0)
 	{
 		reload();
 	}
@@ -51,10 +51,7 @@ namespace Elpida
 
 	void SystemTopology::reload()
 	{
-		if (_root != nullptr)
-		{
-			delete _root;
-		}
+		delete _root;
 		hwloc_topology_t topo;
 		hwloc_topology_init(&topo);
 		hwloc_topology_set_all_types_filter(topo, HWLOC_TYPE_FILTER_KEEP_ALL);

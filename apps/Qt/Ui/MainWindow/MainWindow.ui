@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1340</width>
-    <height>771</height>
+    <width>145</width>
+    <height>45</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -145,8 +145,8 @@ QLineEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1340</width>
-     <height>30</height>
+     <width>145</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuElpida">

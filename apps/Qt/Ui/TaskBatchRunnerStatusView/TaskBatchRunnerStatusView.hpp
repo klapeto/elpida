@@ -34,6 +34,12 @@ namespace Elpida
 		QString _readyString;
 		QString _naString;
 
+		bool _running;
+
+		signals:
+		void onDataUpdated();
+
+	private slots:
 		void updateUi();
 	};
 

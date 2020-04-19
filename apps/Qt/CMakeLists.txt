@@ -41,7 +41,7 @@ set(ELPIDA_QT_SOURCES
         Controllers/TaskRunnerController.cpp
         Controllers/MainViewController.cpp
         Controllers/CoreController.cpp
-        )
+        Core/Commands/GetTaskAffinityCommand.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

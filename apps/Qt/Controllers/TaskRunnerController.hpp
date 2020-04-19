@@ -7,6 +7,7 @@
 
 
 #include <Elpida/Runner.hpp>
+#include <Elpida/OffThreadExecutor.hpp>
 #include "Core/Abstractions/CommandHandler.hpp"
 
 namespace Elpida {
@@ -25,10 +26,16 @@ namespace Elpida {
 			TaskRunResultsModel& runResultsModel,
 			TaskRunnerModel& runnerModel);
 	private:
+		OffThreadExecutor _taskRunnerThread;
 		Runner _runner;
 		TaskRunResultsModel& _runResultsModel;
 		TaskRunnerModel& _runnerModel;
 		Mediator& _mediator;
+
+		void onTaskBatchStarted(const Runner::EventArguments::BatchStart& ev);
+		void onTaskStarted(const Runner::EventArguments::TaskStart& ev);
+		void onTaskEnded(const Runner::EventArguments::TaskEnd& ev);
+		void onTaskBatchEnded(const Runner::EventArguments::BatchEnd& ev);
 	};
 }
 

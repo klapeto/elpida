@@ -14,9 +14,11 @@ namespace Elpida
 	{
 		_ui->setupUi(this);
 
+
+		QWidget::connect(this, &TaskBatchRunnerControlsView::onDataChanged, this, &TaskBatchRunnerControlsView::updateUi);
 		_dataChangedEventSubscription = &_model.dataChanged.subscribe([this]
 		{
-			onDataChanged();
+			emit onDataChanged();
 		});
 		QWidget::connect(_ui->pbRun, &QPushButton::clicked, this, &TaskBatchRunnerControlsView::startClicked);
 		QWidget::connect(_ui->pbStop, &QPushButton::clicked, this, &TaskBatchRunnerControlsView::stopClicked);
@@ -28,19 +30,19 @@ namespace Elpida
 		delete _ui;
 	}
 
-	void TaskBatchRunnerControlsView::onDataChanged()
+	void TaskBatchRunnerControlsView::updateUi()
 	{
 		if (_model.isRunning() && !_running)
-		{
-			_ui->pbRun->setEnabled(true);
-			_ui->pbStop->setEnabled(false);
-			_running = true;
-		}
-		else if (!_model.isRunning() && _running)
 		{
 			_ui->pbRun->setEnabled(false);
 			_ui->pbStop->setEnabled(true);
 			_running = true;
+		}
+		else if (!_model.isRunning() && _running)
+		{
+			_ui->pbRun->setEnabled(true);
+			_ui->pbStop->setEnabled(false);
+			_running = false;
 		}
 	}
 	void TaskBatchRunnerControlsView::startClicked(bool checked)

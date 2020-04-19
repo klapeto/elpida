@@ -28,9 +28,11 @@ namespace Elpida
 		EventSubscriptionBase* _dataChangedEventSubscription;
 		Mediator& _mediator;
 		bool _running;
-
+	signals:
 		void onDataChanged();
 
+	private slots:
+		void updateUi();
 		void startClicked(bool checked);
 		void stopClicked(bool checked);
 	};

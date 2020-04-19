@@ -16,67 +16,87 @@ namespace Elpida
 	class TaskRunnerModel : public Model
 	{
 	public:
-//		void setCurrentRunningTask(const Task* currentRunningTask)
-//		{
-//			_currentRunningTask = currentRunningTask;
-//			onDataChanged();
-//		}
-//
-//		void setCurrentRunningTaskBatch(const TaskBatch* currentRunningTaskBatch)
-//		{
-//			_currentRunningTaskBatch = currentRunningTaskBatch;
-//			onDataChanged();
-//		}
-//
-//		void setTotalTasksToRun(int totalTasksToRun)
-//		{
-//			_totalTasksToRun = totalTasksToRun;
-//		}
-//
-//		void setRunning(bool running)
-//		{
-//			_running = running;
-//			onDataChanged();
-//		}
-//
-//		void setTasksThatRun(int tasksThatRun)
-//		{
-//			_tasksThatRun = tasksThatRun;
-//			onDataChanged();
-//		}
+
+		void setCurrentRunningTask(const Task* currentRunningTask)
+		{
+			_currentRunningTask = currentRunningTask;
+			onDataChanged();
+		}
+		void setCurrentRunningTaskBatch(const TaskBatch* currentRunningTaskBatch)
+		{
+			_currentRunningTaskBatch = currentRunningTaskBatch;
+			onDataChanged();
+		}
+		void setSessionTotalTaskBatchesCount(size_t sessionTotalTaskBatchesCount)
+		{
+			_sessionTotalTaskBatchesCount = sessionTotalTaskBatchesCount;
+			onDataChanged();
+		}
+		void setSessionExecutedTaskBatchesCount(size_t sessionExecutedTaskBatchesCount)
+		{
+			_sessionExecutedTaskBatchesCount = sessionExecutedTaskBatchesCount;
+			onDataChanged();
+		}
+		void setBatchExecutedTasksCount(size_t batchExecutedTasksCount)
+		{
+			_batchExecutedTasksCount = batchExecutedTasksCount;
+			onDataChanged();
+		}
+		void setBatchTotalTasksCount(size_t batchTotalTasksCount)
+		{
+			_batchTotalTasksCount = batchTotalTasksCount;
+			onDataChanged();
+		}
+		void setRunning(bool running)
+		{
+			_running = running;
+			onDataChanged();
+		}
 
 		const Task* getCurrentRunningTask() const
 		{
 			return _currentRunningTask;
 		}
-
 		const TaskBatch* getCurrentRunningTaskBatch() const
 		{
 			return _currentRunningTaskBatch;
 		}
-
-		int getTotalTasksToRun() const
+		size_t getSessionTotalTaskBatchesCount() const
 		{
-			return _totalTasksToRun;
+			return _sessionTotalTaskBatchesCount;
 		}
-
+		size_t getSessionExecutedTaskBatchesCount() const
+		{
+			return _sessionExecutedTaskBatchesCount;
+		}
+		size_t getBatchExecutedTasksCount() const
+		{
+			return _batchExecutedTasksCount;
+		}
+		size_t getBatchTotalTasksCount() const
+		{
+			return _batchTotalTasksCount;
+		}
 		bool isRunning() const
 		{
 			return _running;
 		}
 
-		int getTasksThatRun() const
+		TaskRunnerModel()
+			: _currentRunningTask(nullptr), _currentRunningTaskBatch(nullptr), _sessionTotalTaskBatchesCount(0),
+			  _sessionExecutedTaskBatchesCount(0), _batchExecutedTasksCount(0), _batchTotalTasksCount(), _running(false)
 		{
-			return _tasksThatRun;
 		}
 
+		~TaskRunnerModel() = default;
 	private:
 		const Task* _currentRunningTask;
 		const TaskBatch* _currentRunningTaskBatch;
-		int _totalTasksToRun;
-		int _tasksThatRun;
+		size_t _sessionTotalTaskBatchesCount;
+		size_t _sessionExecutedTaskBatchesCount;
+		size_t _batchExecutedTasksCount;
+		size_t _batchTotalTasksCount;
 
-	private:
 		bool _running;
 	};
 }

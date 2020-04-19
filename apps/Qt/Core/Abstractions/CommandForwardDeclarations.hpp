@@ -14,6 +14,7 @@ namespace Elpida {
 	class StopBenchmarkingCommand;
 	class GetSelectedTaskBatchesCommand;
 	class ShowMessageCommand;
+	class GetTaskAffinityCommand;
 }
 
 #endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP

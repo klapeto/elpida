@@ -19,7 +19,11 @@ namespace Elpida
 		: QWidget(), CollectionModelObserver<QtTaskBatchWrapper*>(model), _ui(new Ui::TaskBatchesListWidget)
 	{
 		_ui->setupUi(this);
-		model.getItems().back().getValue();
+
+		for (const auto& itm: model.getItems())
+		{
+			addItem(itm.getValue());
+		}
 	}
 
 	TaskBatchesListWidget::~TaskBatchesListWidget()
@@ -27,7 +31,7 @@ namespace Elpida
 		delete _ui;
 	}
 
-	QtTaskBatchWrapper* TaskBatchesListWidget::getSelectedTaskBatch()
+	TaskBatch* TaskBatchesListWidget::getSelectedTaskBatch()
 	{
 		auto selectedIndexes = _ui->lvTaskBatches->selectedItems();
 		if (!selectedIndexes.empty())
@@ -35,15 +39,20 @@ namespace Elpida
 			auto variant = selectedIndexes.first()->data(Qt::UserRole);
 			// Dirty hack because QtTaskBatchWrapper is derived from QWidget and QVariant special handles that
 			// which we do not want here.
-			return (QtTaskBatchWrapper*)variant.value<void*>();
+			return (TaskBatch*)variant.value<void*>();
 		}
 		return nullptr;
 	}
 
 	void TaskBatchesListWidget::onItemAdded(QtTaskBatchWrapper* const& item)
 	{
+		addItem(item);
+	}
+
+	void TaskBatchesListWidget::addItem(QtTaskBatchWrapper* const& item)
+	{
 		auto wItem = new QListWidgetItem(QString::fromStdString(item->getTaskBatch().getName()));
-		wItem->setData(Qt::UserRole, QVariant::fromValue((void*)wItem));
+		wItem->setData(Qt::UserRole, QVariant::fromValue((void*)&item->getTaskBatch()));
 		_ui->lvTaskBatches->addItem(wItem);
 		_createdItems.insert_or_assign(item, wItem);
 	}
@@ -69,7 +78,7 @@ namespace Elpida
 		auto selected = getSelectedTaskBatch();
 		if (selected != nullptr)
 		{
-			command.addTaskBatch(selected->getTaskBatch());
+			command.addTaskBatch(*selected);
 		}
 	}
 

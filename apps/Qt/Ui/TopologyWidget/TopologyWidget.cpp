@@ -31,6 +31,7 @@
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/ElpidaException.hpp>
 #include "Ui/TopologyNodeFrame/TopologyNodeFrame.hpp"
+#include "Core/Commands/GetTaskAffinityCommand.hpp"
 
 #include <vector>
 #include <cmath>
@@ -259,7 +260,7 @@ namespace Elpida
 		auto item = getWidget(node);
 
 		auto rootLayout = new QGridLayout;
-		if (node.getMemoryChildren().size() > 0)
+		if (!node.getMemoryChildren().empty())
 		{
 			for (auto& memChild : node.getMemoryChildren())
 			{
@@ -304,7 +305,7 @@ namespace Elpida
 		QLayout* layout = new QHBoxLayout();
 
 		auto button = new QPushButton("Clear");
-		button->connect(button, &QPushButton::pressed, this, &TopologyWidget::onClearPressed);
+		QPushButton::connect(button, &QPushButton::pressed, this, &TopologyWidget::onClearPressed);
 
 		_rootFrame = appendChildren(*top.getRoot());
 		layout->addWidget(button);
@@ -324,8 +325,8 @@ namespace Elpida
 		}
 		else
 		{
-			const auto& childs = frame->getChildren();
-			for (auto child : childs)
+			const auto& children = frame->getChildren();
+			for (auto child : children)
 			{
 				clearChildrenState(child);
 			}
@@ -336,8 +337,8 @@ namespace Elpida
 	{
 		if (frame->getProcessorNode().getType() != ProcessorNode::Type::ExecutionUnit)
 		{
-			const auto& childs = frame->getChildren();
-			for (auto child : childs)
+			const auto& children = frame->getChildren();
+			for (auto child : children)
 			{
 				appendAffinity(child);
 			}
@@ -362,8 +363,8 @@ namespace Elpida
 	{
 		if (node->getProcessorNode().getType() != ProcessorNode::Type::ExecutionUnit)
 		{
-			const auto& childs = node->getChildren();
-			for (auto child : childs)
+			const auto& children = node->getChildren();
+			for (auto child : children)
 			{
 				appendAffinity(child);
 			}
@@ -400,6 +401,11 @@ namespace Elpida
 			clearChildrenState(child);
 		}
 		_selectedNodes.clear();
+	}
+
+	void TopologyWidget::handle(GetTaskAffinityCommand& command)
+	{
+		command.setAffinity(_affinity);
 	}
 
 } // namespace Elpida

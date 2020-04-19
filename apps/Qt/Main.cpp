@@ -108,10 +108,15 @@ int main(int argc, char* argv[])
 	TaskRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel);
 	mediator.registerCommandHandler(runnerController);
 
+
 	TaskBatchesListWidget taskBatchesListWidget(taskBatchesModel);
 	TaskResultsWidget taskResultsWidget(taskRunResultsModel);
 	TaskBatchRunnerStatusView taskBatchRunnerStatusView(taskRunnerModel);
 	TaskBatchRunnerControlsView taskBatchRunnerControlsView(mediator, taskRunnerModel);
+
+	mediator.registerCommandHandler(taskBatchesListWidget);
+	mediator.registerCommandHandler(topologyWidget);
+
 	initializeTaskTab(mainWindow,
 		taskBatchesListWidget,
 		taskResultsWidget,
@@ -123,16 +128,21 @@ int main(int argc, char* argv[])
 	coreController.run();
 	return 0;
 }
+
 void initializeTaskTab(MainWindow& mainWindow,
 	TaskBatchesListWidget& taskBatchesListWidget,
 	TaskResultsWidget& taskResultsWidget,
 	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
 	TaskBatchRunnerControlsView& taskBatchRunnerControlsView)
-{// TODO: create as normal widgets
+{
+	// TODO: create as normal widgets
 	auto rootWidget = new QWidget();
-	auto rootLayout = new QHBoxLayout();
-	rootLayout->addWidget(&taskBatchesListWidget);
-	rootLayout->addWidget(&taskResultsWidget);
+	auto rootLayout = new QVBoxLayout();
+	auto topLayout = new QHBoxLayout();
+
+	topLayout->addWidget(&taskBatchesListWidget);
+	topLayout->addWidget(&taskResultsWidget);
+	rootLayout->addLayout(topLayout);
 	rootLayout->addWidget(&taskBatchRunnerStatusView);
 	rootLayout->addWidget(&taskBatchRunnerControlsView);
 	rootWidget->setLayout(rootLayout);

@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Elpida::TaskBatchRunnerStatusView</class>
  <widget class="QWidget" name="Elpida::TaskBatchRunnerStatusView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>258</width>
+    <height>193</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -19,6 +27,20 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblCurrentTask">
+        <property name="text">
+         <string>Current Task:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="lblCurrentTaskBatchName">
+        <property name="text">
+         <string>N/A</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QLabel" name="lblSatusValue">
         <property name="text">
@@ -33,20 +55,6 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="lblCurrentTaskBatchName">
-        <property name="text">
-         <string>N/A</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="lblCurrentTask">
-        <property name="text">
-         <string>Current Task:</string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
        <widget class="QLabel" name="lblCurrentTaskName">
         <property name="text">
@@ -54,10 +62,23 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
-       <widget class="QProgressBar" name="pbRunnerProgress">
-        <property name="value">
-         <number>0</number>
+      <item row="4" column="1">
+       <widget class="QProgressBar" name="pbTotalProgress"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QProgressBar" name="pbBatchProgress"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="lblBatchProgress">
+        <property name="text">
+         <string>Batch Progress:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="lblTotalProgress">
+        <property name="text">
+         <string>Total Progress:</string>
         </property>
        </widget>
       </item>

@@ -38,27 +38,27 @@ namespace Elpida
 	class SystemTopology final
 	{
 	public:
-		const std::vector<const ProcessorNode*>& getAllProcessors() const
+		[[nodiscard]] const std::vector<const ProcessorNode*>& getAllProcessors() const
 		{
 			return _allProcessors;
 		}
 
-		std::size_t getDepth() const
+		[[nodiscard]] std::size_t getDepth() const
 		{
 			return _depth;
 		}
 
-		const ProcessorNode* getRoot() const
+		[[nodiscard]] const ProcessorNode* getRoot() const
 		{
 			return _root;
 		}
 
-		std::size_t getTotalLogicalCores() const
+		[[nodiscard]] std::size_t getTotalLogicalCores() const
 		{
 			return _totalLogicalCores;
 		}
 
-		std::size_t getTotalPhysicalCores() const
+		[[nodiscard]] std::size_t getTotalPhysicalCores() const
 		{
 			return _totalPhysicalCores;
 		}

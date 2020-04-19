@@ -22,6 +22,7 @@
 
 #include <QWidget>
 #include <forward_list>
+#include "Core/Abstractions/CommandHandler.hpp"
 #include "Elpida/TaskAffinity.hpp"
 
 namespace Elpida
@@ -35,7 +36,7 @@ namespace Elpida
 		class TopologyWidget;
 	}
 
-	class TopologyWidget : public QWidget
+	class TopologyWidget : public QWidget, public CommandHandler
 	{
 	Q_OBJECT
 
@@ -46,9 +47,10 @@ namespace Elpida
 			return _affinity;
 		}
 
+		void handle(GetTaskAffinityCommand &command) override;
+
 		explicit TopologyWidget(const SystemTopology& topology);
 		~TopologyWidget() override;
-
 	private:
 		TaskAffinity _affinity;
 		Ui::TopologyWidget* _ui;

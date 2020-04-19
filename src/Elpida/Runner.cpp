@@ -50,62 +50,6 @@ namespace Elpida
 
 	}
 
-	void Runner::executeTasks()
-	{
-		_mustStop = false;
-		_lastExecutionResults.clear();
-		for (auto taskBatch : _tasksBatches)
-		{
-			if (_mustStop) break;
-			auto batchResult = TaskBatchRunResult(*taskBatch);
-			taskBatch->prepare();
-			taskBatch->onBeforeExecution();
-			const auto& tasks = taskBatch->getTasks();
-			{
-				EventArguments::BatchStart evArgs{ taskBatch->getName(), tasks.size() };
-				batchStart.raise(evArgs);
-			}
-			for (auto task : tasks)
-			{
-				if (_mustStop) break;
-				task->clearResults();
-				{
-					EventArguments::TaskStart evArgs{ task->getName() };
-					taskStart.raise(evArgs);
-				}
-
-				task->setAffinity(_taskAffinity);
-
-				TaskMetrics metrics = runTask(*task);
-				if (task->isToBeMeasured())
-				{
-					task->calculateResults(metrics);
-					const auto& results = task->getLastRunResults();
-					for (auto result : results)
-					{
-						batchResult.addResult(*task, TaskThroughput(*result, metrics));
-					}
-				}
-				{
-					EventArguments::TaskEnd evArgs{ taskBatch->getName() };
-					taskEnd.raise(evArgs);
-				}
-			}
-			taskBatch->onAfterExecution();
-			taskBatch->finalize();
-			{
-				EventArguments::BatchEnd evArgs{ taskBatch->getName(), batchResult };
-				batchEnd.raise(evArgs);
-			}
-			_lastExecutionResults.emplace(taskBatch->getName(), std::move(batchResult));
-		}
-	}
-
-	void Runner::addTaskBatch(const TaskBatch& batch)
-	{
-		_tasksBatches.push_back(&batch);
-	}
-
 	TaskMetrics Runner::runTask(Task& task)
 	{
 		task.prepare();
@@ -138,5 +82,82 @@ namespace Elpida
 		}
 #endif
 	}
+	std::vector<TaskBatchRunResult> Runner::executeTasks(const std::vector<const TaskBatch*>& taskBatches,
+		TaskAffinity affinity)
+	{
+		std::vector<TaskBatchRunResult> results;
 
-}/* namespace Elpida */
+		_mustStop = false;
+		for (auto taskBatch : taskBatches)
+		{
+			if (_mustStop) break;
+			if (taskBatch != nullptr)
+			{
+				auto batchResult = TaskBatchRunResult(*taskBatch);
+
+				taskBatch->prepare();
+				taskBatch->onBeforeExecution();
+
+				const auto& tasks = taskBatch->getTasks();
+				raiseTaskBatchStarted(taskBatch);
+
+				for (auto task : tasks)
+				{
+					if (_mustStop) break;
+					task->clearResults();
+					raiseTaskStart(task);
+					task->setAffinity(affinity);
+
+					TaskMetrics metrics = runTask(*task);
+
+					if (task->isToBeMeasured())
+					{
+						task->calculateResults(metrics);
+						const auto& taskResults = task->getLastRunResults();
+						for (const auto result : taskResults)
+						{
+							batchResult.addResult(*task, TaskThroughput(*result, metrics));
+						}
+					}
+
+					raiseTaskEnd(task);
+				}
+				taskBatch->onAfterExecution();
+				taskBatch->finalize();
+
+				raiseTaskBatchEnd(taskBatch, batchResult);
+
+				results.push_back(std::move(batchResult));
+			}
+		}
+		return results;
+	}
+	void Runner::raiseTaskBatchEnd(const TaskBatch* taskBatch, const TaskBatchRunResult& batchResult)
+	{
+		EventArguments::BatchEnd evArgs{ *taskBatch, batchResult };
+		batchEnd.raise(evArgs);
+	}
+
+	void Runner::raiseTaskEnd(const Task* task)
+	{
+		EventArguments::TaskEnd evArgs{ *task };
+		taskEnd.raise(evArgs);
+	}
+
+	void Runner::raiseTaskStart(const Task* task)
+	{
+		EventArguments::TaskStart evArgs{ *task };
+		taskStart.raise(evArgs);
+	}
+
+	void Runner::raiseTaskBatchStarted(const TaskBatch* taskBatch)
+	{
+		EventArguments::BatchStart evArgs{ *taskBatch };
+		batchStart.raise(evArgs);
+	}
+
+	void Runner::stopExecuting()
+	{
+		_mustStop = true;
+	}
+} /* namespace Elpida */
