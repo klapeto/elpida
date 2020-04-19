@@ -74,13 +74,13 @@ namespace Elpida
 		switch (static_cast<ShowMessageCommand::Type>(type))
 		{
 		case ShowMessageCommand::Type::Info:
-			QMessageBox::information(QApplication::activeWindow(),"Information", message);
+			QMessageBox::information(this, "Information", message);
 			break;
 		case ShowMessageCommand::Type::Warning:
-			QMessageBox::warning(QApplication::activeWindow(), "Warning", message);
+			QMessageBox::warning(this, "Warning", message);
 			break;
 		case ShowMessageCommand::Type::Error:
-			QMessageBox::critical(QApplication::activeWindow(), "Error", message);
+			QMessageBox::critical(this, "Error", message);
 			break;
 		}
 	}

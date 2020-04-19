@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 
 	ElpidaMediator mediator;
 
-	QCustomApplication application(argc, argv);
+	QCustomApplication application(argc, argv, mediator);
 
 	MainWindow mainWindow(mediator);
 

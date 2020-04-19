@@ -49,7 +49,7 @@ namespace Elpida
 		void on_actionExit_triggered();
 		void on_actionAbout_triggered();
 		void on_actionShowLogs_triggered();
-		static void showMessageRequestedHandler(const QString& message, int type);
+		void showMessageRequestedHandler(const QString& message, int type);
 
 		signals:
 		void showMessageRequested(const QString& message, int type);

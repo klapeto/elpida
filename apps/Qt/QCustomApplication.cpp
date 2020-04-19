@@ -9,11 +9,13 @@
 #include <iostream>
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
+#include "Core/Abstractions/Mediator.hpp"
+#include "Core/Commands/ShowMessageCommand.hpp"
 
 namespace Elpida
 {
-	QCustomApplication::QCustomApplication(int& argc, char** argv)
-		: QApplication(argc, argv)
+	QCustomApplication::QCustomApplication(int& argc, char** argv, Mediator& mediator)
+		: QApplication(argc, argv), _mediator(mediator)
 	{
 
 	}
@@ -35,11 +37,10 @@ namespace Elpida
 		catch (const ElpidaException& ex)
 		{
 			auto exComponentPresent = !ex.getComponent().empty();
-			QMessageBox::critical(QApplication::activeWindow(),
-				QString::fromStdString("Error"),
-				QString::fromStdString(Vu::concatenateToString(exComponentPresent ? "Error occurred in: " : "",
+			_mediator
+				.execute(ShowMessageCommand(Vu::concatenateToString(exComponentPresent ? "Error occurred in: " : "",
 					exComponentPresent ? ex.getComponent() : "", exComponentPresent ? "\n" : "",
-					ex.what())));
+					ex.what()), ShowMessageCommand::Type::Error));
 			return false;
 		}
 		catch (const std::exception& ex)

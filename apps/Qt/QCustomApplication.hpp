@@ -9,14 +9,19 @@
 
 namespace Elpida
 {
+	class Mediator;
+
 	class QCustomApplication : public QApplication
 	{
 	public:
 
 		bool notify(QObject *, QEvent *) override;
 
-		QCustomApplication(int& argc, char** argv);
+		QCustomApplication(int& argc, char** argv, Mediator& mediator);
 		~QCustomApplication() override = default;
+
+	private:
+		Mediator& _mediator;
 
 	};
 
