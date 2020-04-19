@@ -52,48 +52,59 @@ namespace Elpida
 
 	MemoryFile::~MemoryFile()
 	{
-		if (_data != nullptr && _deleteData)
-		{
-			delete[] _data;
-		}
+		destroyData();
 	}
 
 	void MemoryFile::load(const std::string& path)
 	{
-		if (_data != nullptr && _deleteData)
-		{
-			delete[] _data;
-		}
+		destroyData();
 		_size = 0;
 		std::ifstream file(path, std::ifstream::binary);
-		if (file.good())
+		try
 		{
-			file.seekg(0, file.end);
+			file.exceptions(std::ios::failbit);
+			file.seekg(0, std::ifstream::end);
 			_size = file.tellg();
-			file.seekg(0, file.beg);
+			file.seekg(0, std::ifstream::beg);
 
 			_data = new Data[_size];
 			file.read((char*)_data, _size);
-			file.close();
 		}
-		else
+		catch (...)
 		{
-			throw ElpidaException("Failed to open file: " + path);
+			destroyData();
+			if (file.is_open())
+			{
+				file.close();
+			}
+			throw;
+		}
+	}
+	void MemoryFile::destroyData()
+	{
+		if (_deleteData)
+		{
+			delete[] _data;
 		}
 	}
 
 	void MemoryFile::writeToFile(const std::string& path) const
 	{
 		std::ofstream file(path, std::ofstream::binary);
-		if (file.good())
+		try
 		{
+			file.exceptions(std::ios::failbit);
 			file.write((char*)_data, _size);
 			file.flush();
 			file.close();
 		}
-		else
+		catch (...)
 		{
-			throw ElpidaException("MemoryFile", "Failed to write file: " + path);
+			if (file.is_open())
+			{
+				file.close();
+			}
+			throw;
 		}
 	}
 

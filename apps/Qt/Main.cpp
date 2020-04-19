@@ -74,6 +74,7 @@ static void setupPlatformSpecifics()
 {
 #ifdef ELPIDA_LINUX
 	signal(SIGSEGV, segFaultHandler);
+	signal(SIGABRT, segFaultHandler);
 #endif
 }
 

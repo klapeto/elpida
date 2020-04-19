@@ -30,6 +30,7 @@
 #include <exception>
 #include <string>
 #include <utility>
+#include <sstream>
 
 namespace Elpida
 {
@@ -40,7 +41,7 @@ namespace Elpida
 
 		[[nodiscard]] const std::string& getComponent() const
 		{
-			return _message;
+			return _component;
 		}
 
 		[[nodiscard]] const char* what() const noexcept override
@@ -50,8 +51,8 @@ namespace Elpida
 
 		ElpidaException() = default;
 
-		explicit ElpidaException(std::string component)
-			: _component(std::move(component))
+		explicit ElpidaException(std::string message)
+			: _message(std::move(message))
 		{
 
 		}

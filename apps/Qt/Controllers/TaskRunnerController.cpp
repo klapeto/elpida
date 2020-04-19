@@ -8,6 +8,7 @@
 #include "Core/Commands/ShowMessageCommand.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Models/TaskRunnerModel.hpp"
+#include "Models/TaskRunResultsModel.hpp"
 
 #include <Elpida/TaskBatch.hpp>
 
@@ -54,7 +55,7 @@ namespace Elpida
 				auto& affinity = getAffinityCmd.getAffinity();
 				if (!affinity.getProcessorNodes().empty())
 				{
-					_taskRunnerThread.run([this, aff{ std::move(affinity) }, batches{ std::move(taskBatches) }]()
+					_taskRunnerThread.run([this, aff(affinity), batches(taskBatches)]()
 					{
 						_runnerModel.transactional<TaskRunnerModel>([&batches](TaskRunnerModel& model)
 						{
@@ -68,23 +69,18 @@ namespace Elpida
 				}
 				else
 				{
-					_mediator
-						.execute(ShowMessageCommand("You need to select at least one processor to run task batches",
-							ShowMessageCommand::Type::Error));
+					throw ElpidaException("You need to select at least one processor to run task batches");
 				}
 			}
 			else
 			{
-				_mediator.execute(ShowMessageCommand("At least 1 task batch must be selected to run!",
-					ShowMessageCommand::Type::Error));
+				throw ElpidaException("At least 1 task batch must be selected to run!");
 			}
 		}
 		else
 		{
-			_mediator.execute(ShowMessageCommand("You cannot start task batches when already running!",
-				ShowMessageCommand::Type::Error));
+			throw ElpidaException("You cannot start task batches when already running!");
 		}
-
 	}
 	void TaskRunnerController::handle(StopBenchmarkingCommand& command)
 	{
@@ -121,5 +117,7 @@ namespace Elpida
 			model.setCurrentRunningTaskBatch(nullptr);
 			model.setSessionExecutedTaskBatchesCount(model.getSessionExecutedTaskBatchesCount() + 1);
 		});
+
+		_runResultsModel.add(ev.results);
 	}
 }

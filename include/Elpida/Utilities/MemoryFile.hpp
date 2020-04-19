@@ -66,6 +66,7 @@ namespace Elpida
 		DataPtr _data;
 		std::size_t _size;
 		bool _deleteData;
+		void destroyData();
 	};
 
 } /* namespace Elpida */

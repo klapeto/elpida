@@ -96,33 +96,41 @@ namespace Elpida
 				auto batchResult = TaskBatchRunResult(*taskBatch);
 
 				taskBatch->prepare();
-				taskBatch->onBeforeExecution();
-
-				const auto& tasks = taskBatch->getTasks();
-				raiseTaskBatchStarted(taskBatch);
-
-				for (auto task : tasks)
+				try
 				{
-					if (_mustStop) break;
-					task->clearResults();
-					raiseTaskStart(task);
-					task->setAffinity(affinity);
+					taskBatch->onBeforeExecution();
+					const auto& tasks = taskBatch->getTasks();
+					raiseTaskBatchStarted(taskBatch);
 
-					TaskMetrics metrics = runTask(*task);
-
-					if (task->isToBeMeasured())
+					for (auto task : tasks)
 					{
-						task->calculateResults(metrics);
-						const auto& taskResults = task->getLastRunResults();
-						for (const auto result : taskResults)
-						{
-							batchResult.addResult(*task, TaskThroughput(*result, metrics));
-						}
-					}
+						if (_mustStop) break;
+						task->clearResults();
+						raiseTaskStart(task);
+						task->setAffinity(affinity);
 
-					raiseTaskEnd(task);
+						TaskMetrics metrics = runTask(*task);
+
+						if (task->isToBeMeasured())
+						{
+							task->calculateResults(metrics);
+							const auto& taskResults = task->getLastRunResults();
+							for (const auto result : taskResults)
+							{
+								batchResult.addResult(*task, TaskThroughput(*result, metrics));
+							}
+						}
+
+						raiseTaskEnd(task);
+					}
+					taskBatch->onAfterExecution();
 				}
-				taskBatch->onAfterExecution();
+				catch (const std::exception& ex)
+				{
+					taskBatch->finalize();
+					throw ;
+				}
+
 				taskBatch->finalize();
 
 				raiseTaskBatchEnd(taskBatch, batchResult);

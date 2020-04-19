@@ -41,7 +41,8 @@ set(ELPIDA_QT_SOURCES
         Controllers/TaskRunnerController.cpp
         Controllers/MainViewController.cpp
         Controllers/CoreController.cpp
-        Core/Commands/GetTaskAffinityCommand.hpp)
+        Controllers/QCustomApplication.cpp
+        )
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
@@ -50,14 +51,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-if(CMAKE_VERSION VERSION_LESS "3.7.0")
+if (CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
+endif ()
 
 if (ELPIDA_DEBUG_BUILD EQUAL 1)
     message("${TASK_BATCH_DEBUG_DIR}")
     add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
-endif()
+endif ()
 
 
 add_executable(elpida-qt ${ELPIDA_QT_SOURCES})

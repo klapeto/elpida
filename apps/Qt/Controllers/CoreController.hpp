@@ -5,7 +5,7 @@
 #ifndef APPS_QT_CONTROLLERS_CORECONTROLLER_HPP
 #define APPS_QT_CONTROLLERS_CORECONTROLLER_HPP
 
-#include <QtWidgets/QApplication>
+#include "QCustomApplication.hpp"
 #include "Core/Abstractions/CommandHandler.hpp"
 
 namespace Elpida {
@@ -19,8 +19,9 @@ namespace Elpida {
 		void run();
 
 		CoreController(int& argC, char** argV);
+		~CoreController() override =default;
 	private:
-		QApplication _qApplication;
+		QCustomApplication _qApplication;
 	};
 }
 
