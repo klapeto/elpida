@@ -19,7 +19,6 @@
 
 #include "Elpida/Config.hpp"
 
-#include "Controllers/CoreController.hpp"
 #include "Controllers/TaskBatchesController.hpp"
 #include "Controllers/TaskRunnerController.hpp"
 
@@ -43,6 +42,7 @@
 
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QVBoxLayout>
+#include "QCustomApplication.hpp"
 
 
 using namespace Elpida;
@@ -84,8 +84,7 @@ int main(int argc, char* argv[])
 
 	ElpidaMediator mediator;
 
-	CoreController coreController(argc, argv);
-	mediator.registerCommandHandler(coreController);
+	QCustomApplication application(argc, argv);
 
 	MainWindow mainWindow(mediator);
 
@@ -117,6 +116,7 @@ int main(int argc, char* argv[])
 
 	mediator.registerCommandHandler(taskBatchesListWidget);
 	mediator.registerCommandHandler(topologyWidget);
+	mediator.registerCommandHandler(mainWindow);
 
 	initializeTaskTab(mainWindow,
 		taskBatchesListWidget,
@@ -126,8 +126,7 @@ int main(int argc, char* argv[])
 
 	mainWindow.show();
 
-	coreController.run();
-	return 0;
+	return QApplication::exec();
 }
 
 void initializeTaskTab(MainWindow& mainWindow,

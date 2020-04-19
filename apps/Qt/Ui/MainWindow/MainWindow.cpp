@@ -17,13 +17,13 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
+#include <QtWidgets/QMessageBox>
 #include "ui_MainWindow.h"
 #include "MainWindow.hpp"
 
-#include "Core/Commands/ExitApplicationCommand.hpp"
-#include "Core/Commands/ShowAboutDialogCommand.hpp"
 #include "Core/Commands/ShowLogsDialogCommand.hpp"
 #include "Core/Abstractions/Mediator.hpp"
+#include "Core/Commands/ShowMessageCommand.hpp"
 
 namespace Elpida
 {
@@ -32,6 +32,7 @@ namespace Elpida
 		: QMainWindow(), _mediator(mediator), _ui(new Ui::MainWindow)
 	{
 		_ui->setupUi(this);
+		QWidget::connect(this, &MainWindow::showMessageRequested, this, &MainWindow::showMessageRequestedHandler);
 	}
 
 	void MainWindow::addTab(QWidget& widget, const std::string& name)
@@ -46,17 +47,42 @@ namespace Elpida
 
 	void MainWindow::on_actionExit_triggered()
 	{
-		_mediator.execute(ExitApplicationCommand());
+		QApplication::quit();
 	}
 
 	void MainWindow::on_actionAbout_triggered()
 	{
-		_mediator.execute(ShowAboutDialogCommand());
+		QMessageBox::about(
+			QApplication::activeWindow(),
+			"About: Elpida",
+			"Elpida is an open source x86 Cpu/Algorithm benchmarking tool. It is released under the General Public License v3 (GPL v3). More info at: https://gitlab.com/dev-hood/elpida/elpida");
+
 	}
 
 	void Elpida::MainWindow::on_actionShowLogs_triggered()
 	{
 		_mediator.execute(ShowLogsDialogCommand());
+	}
+
+	void MainWindow::handle(ShowMessageCommand& command)
+	{
+		emit showMessageRequested(QString::fromStdString(command.getMessage()), static_cast<int>(command.getType()));
+	}
+
+	void MainWindow::showMessageRequestedHandler(const QString& message, int type)
+	{
+		switch (static_cast<ShowMessageCommand::Type>(type))
+		{
+		case ShowMessageCommand::Type::Info:
+			QMessageBox::information(QApplication::activeWindow(),"Information", message);
+			break;
+		case ShowMessageCommand::Type::Warning:
+			QMessageBox::warning(QApplication::activeWindow(), "Warning", message);
+			break;
+		case ShowMessageCommand::Type::Error:
+			QMessageBox::critical(QApplication::activeWindow(), "Error", message);
+			break;
+		}
 	}
 
 }  // namespace Elpida

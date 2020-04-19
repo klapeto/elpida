@@ -22,7 +22,7 @@
 
 #include <QMainWindow>
 
-class QTreeWidgetItem;
+#include "Core/Abstractions/CommandHandler.hpp"
 
 namespace Elpida
 {
@@ -33,11 +33,13 @@ namespace Elpida
 		class MainWindow;
 	}  // namespace Ui
 
-	class MainWindow final : public QMainWindow
+	class MainWindow final : public QMainWindow, public CommandHandler
 	{
 	Q_OBJECT
 
 	public:
+
+		void handle(ShowMessageCommand &command) override;
 
 		void addTab(QWidget& widget, const std::string& name);
 
@@ -47,6 +49,10 @@ namespace Elpida
 		void on_actionExit_triggered();
 		void on_actionAbout_triggered();
 		void on_actionShowLogs_triggered();
+		static void showMessageRequestedHandler(const QString& message, int type);
+
+		signals:
+		void showMessageRequested(const QString& message, int type);
 
 	private:
 		Mediator& _mediator;

@@ -37,15 +37,15 @@ namespace Elpida
 	{
 	public:
 
-		typedef unsigned char Data;
-		typedef Data* DataPtr;
+		using Data = unsigned char ;
+		using DataPtr = Data*;
 
-		const DataPtr& getData() const
+		[[nodiscard]] const DataPtr& getData() const
 		{
 			return _data;
 		}
 
-		const std::size_t& getSize() const
+		[[nodiscard]] const std::size_t& getSize() const
 		{
 			return _size;
 		}
@@ -59,9 +59,9 @@ namespace Elpida
 		virtual ~MemoryFile();
 
 		MemoryFile(MemoryFile&&) = default;
-		MemoryFile(const MemoryFile&) = default;
+		MemoryFile(const MemoryFile&) = delete;
 		MemoryFile& operator=(MemoryFile&&) = default;
-		MemoryFile& operator=(const MemoryFile&) = default;
+		MemoryFile& operator=(const MemoryFile&) = delete;
 	private:
 		DataPtr _data;
 		std::size_t _size;

@@ -57,13 +57,23 @@ namespace Elpida
 				{
 					_taskRunnerThread.run([this, aff(affinity), batches(taskBatches)]()
 					{
-						_runnerModel.transactional<TaskRunnerModel>([&batches](TaskRunnerModel& model)
+						try
 						{
-							model.setRunning(true);
-							model.setSessionTotalTaskBatchesCount(batches.size());
-						});
-						_runner.executeTasks(batches, aff);
-						_runnerModel.setRunning(false);
+							_runnerModel.transactional<TaskRunnerModel>([&batches](TaskRunnerModel& model)
+							{
+								model.setRunning(true);
+								model.setSessionTotalTaskBatchesCount(batches.size());
+							});
+							_runner.executeTasks(batches, aff);
+							_runnerModel.setRunning(false);
+
+						}
+						catch (const std::exception& ex)
+						{
+							_runnerModel.setRunning(false);
+							_taskRunnerThread.detach();
+							_mediator.execute(ShowMessageCommand(Vu::concatenateToString("Error occurred while running task batches: ", ex.what()), ShowMessageCommand::Type::Error));
+						}
 						_taskRunnerThread.detach();
 					});
 				}
