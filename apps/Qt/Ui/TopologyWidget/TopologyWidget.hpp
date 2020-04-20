@@ -23,7 +23,7 @@
 #include <QWidget>
 #include <forward_list>
 #include "Core/Abstractions/CommandHandler.hpp"
-#include "Elpida/TaskAffinity.hpp"
+#include "Elpida/Engine/Task/TaskAffinity.hpp"
 
 namespace Elpida
 {

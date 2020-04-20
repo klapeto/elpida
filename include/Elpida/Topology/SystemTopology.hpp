@@ -38,6 +38,11 @@ namespace Elpida
 	class SystemTopology final
 	{
 	public:
+		enum class ProcessPriority
+		{
+			Normal, High,
+		};
+
 		[[nodiscard]] const std::vector<const ProcessorNode*>& getAllProcessors() const
 		{
 			return _allProcessors;
@@ -64,6 +69,8 @@ namespace Elpida
 		}
 
 		static int getNumaNodeOfProcessor(int processorId);
+
+		static void setProcessPriority(ProcessPriority priority);
 
 		SystemTopology();
 		~SystemTopology();

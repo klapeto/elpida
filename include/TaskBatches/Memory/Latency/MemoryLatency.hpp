@@ -118,7 +118,7 @@ namespace Elpida
 		void calculateResults(const TaskMetrics& metrics) override
 		{
 			auto size = _iterations * _memory.getSize();
-			auto time = metrics.getSubdivision<TaskMetrics::NanoSecond>();
+			auto time = metrics.getDurationSubdivision<TaskMetrics::NanoSecond>();
 			_runResult.setOriginalValue((double)time / (double)size);
 			_runResult.setCustom(true);
 			_runResult.setMultiplier(1000);

@@ -44,6 +44,9 @@
 #include <QtWidgets/QVBoxLayout>
 #include "QCustomApplication.hpp"
 
+#include <Elpida/Engine/Configuration/TaskConfiguration.hpp>
+#include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
+
 
 using namespace Elpida;
 
@@ -125,6 +128,10 @@ int main(int argc, char* argv[])
 		taskBatchRunnerControlsView);
 
 	mainWindow.show();
+
+	TaskConfiguration conf{
+		{"", new ConfigurationValue<bool>(true)}
+	};
 
 	return QApplication::exec();
 }

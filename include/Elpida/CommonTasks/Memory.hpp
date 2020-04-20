@@ -48,11 +48,6 @@ namespace Elpida
 			return _size;
 		}
 
-		void setSize(std::size_t size)
-		{
-			_size = size;
-		}
-
 		void allocate();
 		void deallocate();
 
