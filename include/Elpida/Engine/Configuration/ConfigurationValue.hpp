@@ -11,6 +11,10 @@
 
 namespace Elpida
 {
+	/**
+	 * Type-Specific Configuration Value
+	 * @tparam T Underlying type that will be used. The type must be compatible with the Type
+	 */
 	template<typename T>
 	class ConfigurationValue : public ConfigurationValueBase
 	{

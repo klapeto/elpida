@@ -19,11 +19,8 @@ namespace Elpida
 	class Benchmark final
 	{
 	public:
-
-		[[nodiscard]] ConfigurationSpecificationGroups getConfigurationSpecifications() const;
-		[[nodiscard]] std::vector<Task*> createNewTasks(const TaskAffinity& affinity, const BenchmarkConfiguration& configuration);
-
-		[[nodiscard]] static std::string getKeyForTask(const TaskSpecification& specification, size_t index);
+		[[nodiscard]] std::vector<TaskConfigurationSpecifications> getConfigurationSpecifications() const;
+		[[nodiscard]] std::vector<Task*> createNewTasks(const TaskAffinity& affinity, const BenchmarkConfiguration& configuration) const;
 
 		[[nodiscard]] size_t getTotalTasksCount() const
 		{
@@ -33,6 +30,11 @@ namespace Elpida
 		[[nodiscard]] const BenchmarkScoreCalculator& getScoreCalculator() const
 		{
 			return _scoreCalculator;
+		}
+
+		const std::string& getName() const
+		{
+			return _name;
 		}
 
 		Benchmark(std::string name,

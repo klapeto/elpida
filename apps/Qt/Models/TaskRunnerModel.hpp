@@ -11,7 +11,7 @@
 namespace Elpida
 {
 	class Task;
-	class TaskBatch;
+	class BenchMark;
 
 	class TaskRunnerModel : public Model
 	{
@@ -22,29 +22,29 @@ namespace Elpida
 			_currentRunningTask = currentRunningTask;
 			onDataChanged();
 		}
-		void setCurrentRunningTaskBatch(const TaskBatch* currentRunningTaskBatch)
+		void setCurrentRunningTaskBatch(const BenchMark* currentRunningTaskBatch)
 		{
-			_currentRunningTaskBatch = currentRunningTaskBatch;
+			_currentRunningBenchmark = currentRunningTaskBatch;
 			onDataChanged();
 		}
-		void setSessionTotalTaskBatchesCount(size_t sessionTotalTaskBatchesCount)
+		void setSessionTotalBenchmarksCount(size_t sessionTotalBenchmarksCount)
 		{
-			_sessionTotalTaskBatchesCount = sessionTotalTaskBatchesCount;
+			_sessionTotalBenchmarksCount = sessionTotalBenchmarksCount;
 			onDataChanged();
 		}
-		void setSessionExecutedTaskBatchesCount(size_t sessionExecutedTaskBatchesCount)
+		void setSessionCompletedBenchmarksCount(size_t sessionCompletedBenchmarksCount )
 		{
-			_sessionExecutedTaskBatchesCount = sessionExecutedTaskBatchesCount;
+			_sessionCompletedBenchmarksCount = sessionCompletedBenchmarksCount ;
 			onDataChanged();
 		}
-		void setBatchExecutedTasksCount(size_t batchExecutedTasksCount)
+		void setBatchExecutedTasksCount(size_t benchmarkCompletedTasksCount)
 		{
-			_batchExecutedTasksCount = batchExecutedTasksCount;
+			_benchmarkCompletedTasksCount = benchmarkCompletedTasksCount;
 			onDataChanged();
 		}
-		void setBatchTotalTasksCount(size_t batchTotalTasksCount)
+		void setBenchmarkTotalTasksCount(size_t benchmarkTotalTasksCount)
 		{
-			_batchTotalTasksCount = batchTotalTasksCount;
+			_benchmarkTotalTasksCount = benchmarkTotalTasksCount;
 			onDataChanged();
 		}
 		void setRunning(bool running)
@@ -57,25 +57,25 @@ namespace Elpida
 		{
 			return _currentRunningTask;
 		}
-		const TaskBatch* getCurrentRunningTaskBatch() const
+		const BenchMark* getCurrentRunningBenchmark() const
 		{
-			return _currentRunningTaskBatch;
+			return _currentRunningBenchmark;
 		}
-		size_t getSessionTotalTaskBatchesCount() const
+		size_t getSessionTotalBenchmarksCount() const
 		{
-			return _sessionTotalTaskBatchesCount;
+			return _sessionTotalBenchmarksCount;
 		}
-		size_t getSessionExecutedTaskBatchesCount() const
+		size_t getSessionCompletedBenchmarksCount() const
 		{
-			return _sessionExecutedTaskBatchesCount;
+			return _sessionCompletedBenchmarksCount;
 		}
 		size_t getBatchExecutedTasksCount() const
 		{
-			return _batchExecutedTasksCount;
+			return _benchmarkCompletedTasksCount;
 		}
 		size_t getBatchTotalTasksCount() const
 		{
-			return _batchTotalTasksCount;
+			return _benchmarkTotalTasksCount;
 		}
 		bool isRunning() const
 		{
@@ -83,19 +83,19 @@ namespace Elpida
 		}
 
 		TaskRunnerModel()
-			: _currentRunningTask(nullptr), _currentRunningTaskBatch(nullptr), _sessionTotalTaskBatchesCount(0),
-			  _sessionExecutedTaskBatchesCount(0), _batchExecutedTasksCount(0), _batchTotalTasksCount(), _running(false)
+			: _currentRunningTask(nullptr), _currentRunningBenchmark(nullptr), _sessionTotalBenchmarksCount(0),
+			  _sessionCompletedBenchmarksCount(0), _benchmarkCompletedTasksCount(0), _benchmarkTotalTasksCount(), _running(false)
 		{
 		}
 
 		~TaskRunnerModel() = default;
 	private:
 		const Task* _currentRunningTask;
-		const TaskBatch* _currentRunningTaskBatch;
-		size_t _sessionTotalTaskBatchesCount;
-		size_t _sessionExecutedTaskBatchesCount;
-		size_t _batchExecutedTasksCount;
-		size_t _batchTotalTasksCount;
+		const BenchMark* _currentRunningBenchmark;
+		size_t _sessionTotalBenchmarksCount;
+		size_t _sessionCompletedBenchmarksCount;
+		size_t _benchmarkCompletedTasksCount;
+		size_t _benchmarkTotalTasksCount;
 
 		bool _running;
 	};

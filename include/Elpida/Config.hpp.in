@@ -42,4 +42,13 @@
 #cmakedefine ELPIDA_WINDOWS
 #cmakedefine ELPIDA_DEBUG
 
+#cmakedefine ELPIDA_DEBUG
+
+#if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW64__)
+#define FUNCTION_NAME __PRETTY_FUNCTION__
+#else	//MSVC?
+#define FUNCTION_NAME __FUNCSIG__
+#endif
+#else
+
 #endif /* ELPIDA_CONFIG_HPP_IN_ */

@@ -12,6 +12,9 @@ namespace Elpida
 {
 	class ConfigurationValueBase;
 
+	/**
+	 * Configuration values for a specific Task instance
+	 */
 	class TaskConfiguration final
 	{
 	public:

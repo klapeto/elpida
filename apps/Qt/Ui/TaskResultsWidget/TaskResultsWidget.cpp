@@ -1,16 +1,17 @@
 #include "TaskResultsWidget.hpp"
 #include "ui_TaskResultsWidget.h"
 
-#include <Elpida/TaskBatch.hpp>
+#include <Elpida/Engine/Task/TaskSpecification.hpp>
+#include <Elpida/Engine/Benchmark.hpp>
 
 #include <QTreeWidgetItem>
 
 namespace Elpida
 {
 
-	TaskResultsWidget::TaskResultsWidget(const CollectionModel<TaskBatchRunResult>& model)
+	TaskResultsWidget::TaskResultsWidget(const CollectionModel<BenchmarkResult>& model)
 		:
-		QWidget(), CollectionModelObserver<TaskBatchRunResult>(model),
+		QWidget(), CollectionModelObserver<BenchmarkResult>(model),
 		_ui(new Ui::TaskResultsWidget)
 	{
 		_ui->setupUi(this);
@@ -21,22 +22,26 @@ namespace Elpida
 		delete _ui;
 	}
 
-	void TaskResultsWidget::onItemAdded(const TaskBatchRunResult& item)
+	void TaskResultsWidget::onItemAdded(const BenchmarkResult& item)
 	{
 		auto parent = new QTreeWidgetItem();
-		parent->setText(0, QString::fromStdString(item.getTaskBatch().getName()));
-		for (const auto& throughput: item.getTasksThroughputs())
+		parent->setText(0, QString::fromStdString(item.getBenchmark().getName()));
+		for (const auto& result: item.getTaskResults())
 		{
+			auto metrics = result.getMetrics();
 			auto child = new QTreeWidgetItem();
-			child->setText(0, QString::fromStdString(throughput.first));
-			child->setText(1, QString::fromStdString(throughput.second.getRatePerSecondString()));
+			child->setText(0, QString::fromStdString(result.getSpecification().getName()));
+			child->setText(1,
+				QString::fromStdString(std::to_string(
+					metrics.getActualProcessDataSize() / metrics.getDurationSubdivision<TaskMetrics::Second>())
+					+ result.getSpecification().getOutputValueUnit() + "/s"));
 			parent->addChild(child);
 		}
 		_createdItems.emplace(item.getId(), parent);
 		_ui->twResultList->addTopLevelItem(parent);
 	}
 
-	void TaskResultsWidget::onItemRemoved(const TaskBatchRunResult& item)
+	void TaskResultsWidget::onItemRemoved(const BenchmarkResult& item)
 	{
 		auto itr = _createdItems.find(item.getId());
 		if (itr != _createdItems.end())

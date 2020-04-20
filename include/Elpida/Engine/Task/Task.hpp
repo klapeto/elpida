@@ -17,11 +17,11 @@ namespace Elpida
 	{
 	public:
 
-		virtual void setInput(const TaskData* const* input)
+		virtual void setInput(TaskData* const* input)
 		{
 			_inputData = input;
 		};
-		virtual const TaskData* const*  getOutput()
+		virtual TaskData* const* getOutput()
 		{
 			return &_outputData;
 		};
@@ -31,7 +31,7 @@ namespace Elpida
 			return *_inputData;
 		};
 
-		[[nodiscard]] bool isToBeCountedOnResults() const
+		[[nodiscard]] bool shouldBeCountedOnResults() const
 		{
 			return _toBeCountedOnResults;
 		}
@@ -57,7 +57,7 @@ namespace Elpida
 	protected:
 		TaskAffinity _affinity;
 		const TaskSpecification& _specification;
-		const TaskData* const* _inputData;
+		TaskData* const* _inputData;
 		TaskData* _outputData;
 		bool _toBeCountedOnResults;
 	};

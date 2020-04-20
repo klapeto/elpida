@@ -15,11 +15,9 @@ namespace Elpida
 		std::string filePathSetting = "filePath";
 
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
-			const TaskAffinity& affinity,
-			const std::string& settingsNamespace,
-			bool toBeCountedOnResults) const override;
+			const TaskAffinity& affinity) const override;
 
-		ReadFileSpecification();
+		ReadFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled);
 		~ReadFileSpecification() = default;
 	};
 }

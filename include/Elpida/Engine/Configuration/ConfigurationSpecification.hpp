@@ -9,6 +9,9 @@
 
 namespace Elpida
 {
+	/**
+	 * Standard information regarding a specific configuration for a task
+	 */
 	class ConfigurationSpecification final
 	{
 	public:

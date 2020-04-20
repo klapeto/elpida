@@ -8,6 +8,7 @@
 #include "Elpida/Event.hpp"
 #include "Elpida/Engine/Result/BenchmarkResult.hpp"
 #include "Elpida/Engine/Benchmark.hpp"
+#include "Elpida/Engine/Runner/BenchmarkRunRequest.hpp"
 #include <vector>
 
 namespace Elpida {
@@ -24,7 +25,7 @@ namespace Elpida {
 		Event<const TaskEventArgs&> taskStarted;
 		Event<const TaskEventArgs&> taskEnded;
 
-		virtual std::vector<BenchmarkResult> runBenchmarks(const std::vector<Benchmark*>& benchmarks, const TaskAffinity& taskAffinity);
+		virtual std::vector<BenchmarkResult> runBenchmarks(const std::vector<BenchmarkRunRequest>& benchmarkRequests, const TaskAffinity& taskAffinity);
 		void stopBenchmarking();
 
 		BenchmarkRunner();

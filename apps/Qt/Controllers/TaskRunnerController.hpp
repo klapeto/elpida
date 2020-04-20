@@ -6,7 +6,9 @@
 #define APPS_QT_CONTROLLERS_TASKRUNNERCONTROLLER_HPP
 
 
-#include <Elpida/Runner.hpp>
+#include <Elpida/Engine/Runner/BenchmarkRunner.hpp>
+#include <Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp>
+#include <Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp>
 #include <Elpida/OffThreadExecutor.hpp>
 #include "Core/Abstractions/CommandHandler.hpp"
 
@@ -27,15 +29,15 @@ namespace Elpida {
 			TaskRunnerModel& runnerModel);
 	private:
 		OffThreadExecutor _taskRunnerThread;
-		Runner _runner;
+		BenchmarkRunner _runner;
 		TaskRunResultsModel& _runResultsModel;
 		TaskRunnerModel& _runnerModel;
 		Mediator& _mediator;
 
-		void onTaskBatchStarted(const Runner::EventArguments::BatchStart& ev);
-		void onTaskStarted(const Runner::EventArguments::TaskStart& ev);
-		void onTaskEnded(const Runner::EventArguments::TaskEnd& ev);
-		void onTaskBatchEnded(const Runner::EventArguments::BatchEnd& ev);
+		void onTaskBatchStarted(const BenchmarkEventArgs& ev);
+		void onTaskStarted(const TaskEventArgs& ev);
+		void onTaskEnded(const TaskEventArgs& ev);
+		void onTaskBatchEnded(const BenchmarkEventArgs& ev);
 	};
 }
 

@@ -12,6 +12,9 @@
 
 namespace Elpida
 {
+	/**
+	 * Base class for all Configuration values
+	 */
 	class ConfigurationValueBase
 	{
 	public:

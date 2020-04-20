@@ -11,7 +11,7 @@ class QListWidgetItem;
 
 namespace Elpida
 {
-	class QtTaskBatchWrapper;
+	class Benchmark;
 	class TaskBatch;
 
 	namespace Ui
@@ -19,7 +19,7 @@ namespace Elpida
 		class TaskBatchesListWidget;
 	}
 
-	class TaskBatchesListWidget : public QWidget, public CollectionModelObserver<QtTaskBatchWrapper*>, public CommandHandler
+	class TaskBatchesListWidget : public QWidget, public CollectionModelObserver<Benchmark*>, public CommandHandler
 	{
 	Q_OBJECT
 
@@ -29,17 +29,17 @@ namespace Elpida
 
 		TaskBatch* getSelectedTaskBatch();
 
-		explicit TaskBatchesListWidget(const CollectionModel<QtTaskBatchWrapper*>& model);
+		explicit TaskBatchesListWidget(const CollectionModel<Benchmark*>& model);
 		~TaskBatchesListWidget() override;
 	private:
 		Ui::TaskBatchesListWidget* _ui;
-		std::unordered_map<const QtTaskBatchWrapper*, QListWidgetItem*> _createdItems;
+		std::unordered_map<const Benchmark*, QListWidgetItem*> _createdItems;
 	protected:
 
-		void onItemAdded(QtTaskBatchWrapper* const& item) override;
-		void onItemRemoved(QtTaskBatchWrapper* const& item) override;
+		void onItemAdded(Benchmark* const& item) override;
+		void onItemRemoved(Benchmark* const& item) override;
 		void onCollectionCleared() override;
-		void addItem(QtTaskBatchWrapper* const& item);
+		void addItem(Benchmark* const& item);
 	};
 
 } // namespace Elpida

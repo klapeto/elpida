@@ -40,12 +40,12 @@
 namespace Elpida
 {
 
-	TaskThread::TaskThread(std::vector<Task*>&& tasksToRun,
+	TaskThread::TaskThread(Task& taskToRun,
 		std::condition_variable& waitNotifier,
 		std::mutex& mutex,
 		const bool& shouldWake,
 		unsigned int affinity)
-		: _tasksToRun(std::move(tasksToRun)), _waitNotifier(waitNotifier), _mutex(mutex), _shouldWake(shouldWake),
+		: _taskToRun(taskToRun), _waitNotifier(waitNotifier), _mutex(mutex), _shouldWake(shouldWake),
 		  _affinity(affinity)
 	{
 	}
@@ -56,10 +56,7 @@ namespace Elpida
 		{
 			_runnerThread.join();
 		}
-		for (auto task: _tasksToRun)
-		{
-			delete task;
-		}
+		delete &_taskToRun;
 	}
 
 	void TaskThread::start()
@@ -84,10 +81,7 @@ namespace Elpida
 			_waitNotifier.wait(lock);
 		}
 		lock.unlock();
-		for (auto task: _tasksToRun)
-		{
-			task->run();
-		}
+		_taskToRun.run();
 	}
 
 	void TaskThread::setCurrentThreadAffinity(unsigned int cpuId)

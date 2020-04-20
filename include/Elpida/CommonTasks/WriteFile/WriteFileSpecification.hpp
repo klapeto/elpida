@@ -13,9 +13,10 @@ namespace Elpida {
 	public:
 		std::string filePathSetting = "filePath";
 
-		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const override;
+		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
+			const TaskAffinity& affinity) const override;
 
-		WriteFileSpecification();
+		WriteFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled);
 		~WriteFileSpecification() = default;
 	};
 }

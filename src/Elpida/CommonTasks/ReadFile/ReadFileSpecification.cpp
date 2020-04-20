@@ -11,26 +11,28 @@ namespace Elpida
 {
 
 	Task* ReadFileSpecification::createNewTask(const TaskConfiguration& configuration,
-		const TaskAffinity& affinity,
-		const std::string& settingsNamespace,
-		bool toBeCountedOnResults) const
+		const TaskAffinity& affinity) const
 	{
 		auto filePath = getSettingAndValidate<std::string>(configuration,
-			settingsNamespace,
 			filePathSetting,
 			ConfigurationValueBase::Type::FilePath);
-		return new ReadFile(*this, affinity, filePath.getValue(), toBeCountedOnResults);
+		return new ReadFile(*this, affinity, filePath.getValue(), shouldBeCountedOnResults());
 	}
 
-	ReadFileSpecification::ReadFileSpecification()
+	ReadFileSpecification::ReadFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled)
 		: TaskSpecification("Read File to Memory",
 		"Reads a file from disk to memory",
 		_noInputString.data(),
 		_noInputString.data(),
 		"File contents in bytes",
 		"Bytes",
-		"B")
+		"B",
+		{},
+		false,
+		true,
+		shouldBeCountedOnResults,
+		false,
+		canBeDisabled)
 	{
-
 	}
 }

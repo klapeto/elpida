@@ -5,9 +5,7 @@
 #include <QListWidgetItem>
 
 #include <Elpida/SharedLibraryLoader.hpp>
-#include <Elpida/TaskBatch.hpp>
-#include <Elpida/Task.hpp>
-#include <TaskBatches/QtTaskBatchWrapper.hpp>
+#include <Elpida/Engine/Benchmark.hpp>
 
 #include "Models/TaskBatchesModel.hpp"
 #include "Core/Commands/GetSelectedTaskBatchesCommand.hpp"
@@ -15,8 +13,8 @@
 namespace Elpida
 {
 
-	TaskBatchesListWidget::TaskBatchesListWidget(const CollectionModel<QtTaskBatchWrapper*>& model)
-		: QWidget(), CollectionModelObserver<QtTaskBatchWrapper*>(model), _ui(new Ui::TaskBatchesListWidget)
+	TaskBatchesListWidget::TaskBatchesListWidget(const CollectionModel<Benchmark*>& model)
+		: QWidget(), CollectionModelObserver<Benchmark*>(model), _ui(new Ui::TaskBatchesListWidget)
 	{
 		_ui->setupUi(this);
 
@@ -44,20 +42,20 @@ namespace Elpida
 		return nullptr;
 	}
 
-	void TaskBatchesListWidget::onItemAdded(QtTaskBatchWrapper* const& item)
+	void TaskBatchesListWidget::onItemAdded(Benchmark* const& item)
 	{
 		addItem(item);
 	}
 
-	void TaskBatchesListWidget::addItem(QtTaskBatchWrapper* const& item)
+	void TaskBatchesListWidget::addItem(Benchmark* const& item)
 	{
-		auto wItem = new QListWidgetItem(QString::fromStdString(item->getTaskBatch().getName()));
-		wItem->setData(Qt::UserRole, QVariant::fromValue((void*)&item->getTaskBatch()));
+		auto wItem = new QListWidgetItem(QString::fromStdString(item->getName()));
+		wItem->setData(Qt::UserRole, QVariant::fromValue((void*)&item));
 		_ui->lvTaskBatches->addItem(wItem);
 		_createdItems.insert_or_assign(item, wItem);
 	}
 
-	void TaskBatchesListWidget::onItemRemoved(QtTaskBatchWrapper* const& item)
+	void TaskBatchesListWidget::onItemRemoved(Benchmark* const& item)
 	{
 		auto itr = _createdItems.find(item);
 		if (itr != _createdItems.end())

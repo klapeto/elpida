@@ -7,7 +7,6 @@
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
-#include <TaskBatches/QtTaskBatchWrapper.hpp>
 #include "TaskBatchesController.hpp"
 
 namespace Elpida
@@ -51,7 +50,7 @@ namespace Elpida
 			else
 			{
 				// wtf?
-				throw ElpidaException(__func__, "Library extension has no value. Probably a corrupt build or bug");
+				throw ElpidaException(FUNCTION_NAME, "Library extension has no value. Probably a corrupt build or bug");
 			}
 		}
 		return false;

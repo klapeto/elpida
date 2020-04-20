@@ -1,15 +1,12 @@
 #include "TaskBatchRunnerStatusView.hpp"
 #include "ui_TaskBatchRunnerStatusView.h"
 
-#include <Elpida/Task.hpp>
-#include <Elpida/TaskBatch.hpp>
-
 namespace Elpida
 {
 
 	TaskBatchRunnerStatusView::TaskBatchRunnerStatusView(const TaskRunnerModel& model)
 		: QWidget(), _ui(new Ui::TaskBatchRunnerStatusView), _model(model), _currentRunningTask(nullptr),
-		  _currentRunningTaskBatch(nullptr), _running(false)
+		  _currentRunningBenchmark(nullptr), _running(false)
 	{
 		_ui->setupUi(this);
 
@@ -37,7 +34,7 @@ namespace Elpida
 			if (!_running)
 			{
 				_ui->lblSatusValue->setText(_runningString);
-				_ui->pbTotalProgress->setMaximum(_model.getSessionTotalTaskBatchesCount());
+				_ui->pbTotalProgress->setMaximum(_model.getSessionTotalBenchmarksCount());
 				_running = true;
 			}
 			auto task = _model.getCurrentRunningTask();
@@ -52,15 +49,15 @@ namespace Elpida
 			{
 				_ui->pbBatchProgress->setValue(_model.getBatchExecutedTasksCount());
 			}
-			if (static_cast<size_t>(_ui->pbTotalProgress->value()) != _model.getSessionExecutedTaskBatchesCount())
+			if (static_cast<size_t>(_ui->pbTotalProgress->value()) != _model.getSessionCompletedBenchmarksCount())
 			{
-				_ui->pbTotalProgress->setValue(_model.getSessionExecutedTaskBatchesCount());
+				_ui->pbTotalProgress->setValue(_model.getSessionCompletedBenchmarksCount());
 			}
-			auto taskBatch = _model.getCurrentRunningTaskBatch();
-			if (taskBatch != nullptr && taskBatch != _currentRunningTaskBatch)
+			auto taskBatch = _model.getCurrentRunningBenchmark();
+			if (taskBatch != nullptr && taskBatch != _currentRunningBenchmark)
 			{
 				_ui->lblCurrentTaskBatchName->setText(QString::fromStdString(taskBatch->getName()));
-				_currentRunningTaskBatch = taskBatch;
+				_currentRunningBenchmark = taskBatch;
 			}
 		}
 		else
@@ -68,7 +65,7 @@ namespace Elpida
 			_ui->lblSatusValue->setText(_readyString);
 			_ui->lblCurrentTaskBatchName->setText(_naString);
 			_ui->lblCurrentTaskName->setText(_naString);
-			_currentRunningTaskBatch = nullptr;
+			_currentRunningBenchmark = nullptr;
 			_currentRunningTask = nullptr;
 			_ui->pbBatchProgress->reset();
 			_ui->pbTotalProgress->reset();

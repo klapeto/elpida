@@ -8,31 +8,31 @@
 #include "Task.hpp"
 #include "TaskThread.hpp"
 
-namespace Elpida {
-	class Benchmark;
-
-	class MultiThreadTask: public Task
+namespace Elpida
+{
+	class MultiThreadTask : public Task
 	{
 	public:
+
 		void prepare() override;
 		void finalize() override;
 		void run() override;
 		void applyAffinity() override;
 
-		MultiThreadTask(const TaskSpecification& specification,
-			TaskAffinity&& affinity,
-			const Benchmark& singleThreadBenchmark,
-			bool toBeCountedOnResults);
+		MultiThreadTask(const TaskSpecification& taskSpecification, const TaskConfiguration& configuration, const TaskAffinity& affinity);
+		~MultiThreadTask() override;
 	private:
 		std::mutex _mutex;
 		std::condition_variable _wakeNotifier;
-		std::vector<TaskSpecification*> _singleThreadSpecifications;
 		std::vector<TaskThread> _createdThreads;
-		const Benchmark& _singleThreadBenchmark;
+		std::vector<TaskData*> _chunks;
+		const TaskConfiguration& _configuration;
 		bool _threadsShouldWake;
+
+		void breakInputIntoChunks(size_t chunks);
+		void destroyChunks();
 	};
 }
-
 
 
 #endif //INCLUDE_ELPIDA_ENGINE_TASK_MULTITHREADTASK_HPP

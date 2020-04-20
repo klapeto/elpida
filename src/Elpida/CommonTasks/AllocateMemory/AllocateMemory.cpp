@@ -80,7 +80,7 @@ namespace Elpida
 		{
 			memset(_memory->getPointer(), 0, _memory->getSize());
 		}
-		_outputData->setData(_memory->getPointer());
+		_outputData->setData(static_cast<unsigned char*>(_memory->getPointer()));
 	}
 
 } /* namespace Elpida */

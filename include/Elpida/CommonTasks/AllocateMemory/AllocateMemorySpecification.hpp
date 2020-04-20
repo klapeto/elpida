@@ -17,7 +17,7 @@ namespace Elpida
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
 			const TaskAffinity& affinity) const override;
 
-		AllocateMemorySpecification(bool toBeMeasured);
+		AllocateMemorySpecification(bool shouldBeCountedOnResults, bool canBeDisabled, bool enableMultiThreading);
 		~AllocateMemorySpecification() override = default;
 	};
 }

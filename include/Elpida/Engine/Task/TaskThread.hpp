@@ -38,28 +38,17 @@ namespace Elpida
 	class TaskThread final
 	{
 	public:
-
-		[[nodiscard]] unsigned int getAffinity() const
-		{
-			return _affinity;
-		}
-
-		void setAffinity(int affinity)
-		{
-			_affinity = affinity;
-		}
-
-		const std::vector<Task*>& getTasksToRun() const
-		{
-			return _tasksToRun;
-		}
-
 		void start();
 		void join();
 
+		Task& getTaskToRun() const
+		{
+			return _taskToRun;
+		}
+
 		static void setCurrentThreadAffinity(unsigned int cpuId);
 
-		TaskThread(std::vector<Task*>&& tasksToRun,
+		TaskThread(Task& taskToRun,
 			std::condition_variable& waitNotifier,
 			std::mutex& mutex,
 			const bool& shouldWake,
@@ -69,7 +58,7 @@ namespace Elpida
 		TaskThread(TaskThread&&) = default;
 	private:
 		std::thread _runnerThread;
-		std::vector<Task*> _tasksToRun;
+		Task& _taskToRun;
 		std::condition_variable& _waitNotifier;
 		std::mutex& _mutex;
 		const bool& _shouldWake;

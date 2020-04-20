@@ -5,10 +5,12 @@
 #include "Elpida/Engine/Benchmark.hpp"
 
 #include <utility>
+#include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Task/Task.hpp"
 #include "Elpida/Engine/Configuration/BenchmarkConfiguration.hpp"
-
+#include "Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp"
+#include "Elpida/Engine/Task/MultiThreadTask.hpp"
 
 namespace Elpida
 {
@@ -30,24 +32,33 @@ namespace Elpida
 	}
 
 	std::vector<Task*> Benchmark::createNewTasks(const TaskAffinity& affinity,
-		const BenchmarkConfiguration& configuration)
+		const BenchmarkConfiguration& configuration) const
 	{
 		std::vector<Task*> tasks;
 		Task* previousTask = nullptr;
-		auto i = 1u;
 		try
 		{
 			for (auto spec : _taskSpecifications)
 			{
-				auto taskConfiguration = configuration.getConfigurationForTask(getKeyForTask(*spec, i++));
+				auto taskConfiguration = configuration.getConfigurationForTask(*spec);
 				if (taskConfiguration == nullptr && !spec->getConfigurationSpecifications().empty())
 				{
-					throw ElpidaException("Benchmark::createNewTasks",
+					throw ElpidaException(FUNCTION_NAME,
 						Vu::concatenateToString("Task: '",
 							spec->getName(),
 							"' requires configuration that was not provided!"));
 				}
-				auto task = spec->createNewTask(*taskConfiguration, affinity);
+				Task* task = nullptr;
+
+				if (spec->isMultiThreadingEnabled())
+				{
+					task = new MultiThreadTask(*spec, *taskConfiguration, affinity);
+				}
+				else
+				{
+					task = spec->createNewTask(*taskConfiguration, affinity);
+				}
+
 				if (previousTask != nullptr)
 				{
 					task->setInput(previousTask->getOutput());
@@ -67,24 +78,13 @@ namespace Elpida
 		return tasks;
 	}
 
-	ConfigurationSpecificationGroups Benchmark::getConfigurationSpecifications() const
+	std::vector<TaskConfigurationSpecifications> Benchmark::getConfigurationSpecifications() const
 	{
-		std::unordered_map<std::string, std::vector<ConfigurationSpecification*>> groups;
-		auto i = 1u;
+		std::vector<TaskConfigurationSpecifications> specifications;
 		for (auto spec: _taskSpecifications)
 		{
-			std::vector<ConfigurationSpecification*> configSpecs;
-			for (auto configSpec : spec->getConfigurationSpecifications())
-			{
-				configSpecs.push_back(&configSpec);
-			}
-			groups.emplace(getKeyForTask(*spec, i++), std::move(configSpecs));
+			specifications.push_back(TaskConfigurationSpecifications(*spec));
 		}
-		return ConfigurationSpecificationGroups(std::move(groups));
-	}
-
-	std::string Benchmark::getKeyForTask(const TaskSpecification& specification, size_t index)
-	{
-		return specification.getName() + " #" + std::to_string(index);
+		return specifications;
 	}
 }

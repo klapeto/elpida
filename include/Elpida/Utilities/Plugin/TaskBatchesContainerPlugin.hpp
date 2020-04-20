@@ -18,40 +18,26 @@ namespace Elpida
 
 		using Factory = TaskBatchesContainerPlugin<T>* (*)();
 
-		template<typename TR, typename ... TArgs>
-		void constructAndAddNew(TArgs&& ... args)
-		{
-			_batches.push_back(new TR(std::forward<TArgs>(args)...));
-		}
-
-		template<typename TR, typename ... TArgs>
-		static TR* constructNew(TArgs&& ... args)
-		{
-			return new TR(std::forward<TArgs>(args)...);
-		}
-
 		const std::vector<T*>& getUnderlyingData() const override
 		{
-			return _batches;
+			return _data;
 		}
 
-		static TaskBatchesContainerPlugin<T>* createNew()
+		void add(T* data)
 		{
-			return new TaskBatchesContainerPlugin<T>();
+			_data.push_back(data);
 		}
 
+		TaskBatchesContainerPlugin() = default;
 		virtual ~TaskBatchesContainerPlugin()
 		{
-			for (auto ptr : _batches)
+			for (auto ptr : _data)
 			{
 				delete ptr;
 			}
 		}
 	private:
-	public:
-		TaskBatchesContainerPlugin() = default;
-	private:
-		std::vector<T*> _batches;
+		std::vector<T*> _data;
 	};
 }
 

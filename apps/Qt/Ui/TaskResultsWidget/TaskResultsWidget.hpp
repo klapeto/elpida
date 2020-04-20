@@ -2,7 +2,7 @@
 #define ELPIDA_TASKRESULTSWIDGET_HPP
 
 #include <QWidget>
-#include <Elpida/TaskBatchRunResult.hpp>
+#include <Elpida/Engine/Result/BenchmarkResult.hpp>
 #include "Models/Abstractions/CollectionModelObserver.hpp"
 
 class QTreeWidgetItem;
@@ -15,19 +15,19 @@ namespace Elpida
 		class TaskResultsWidget;
 	}
 
-	class TaskResultsWidget : public QWidget, public CollectionModelObserver<TaskBatchRunResult>
+	class TaskResultsWidget : public QWidget, public CollectionModelObserver<BenchmarkResult>
 	{
 	Q_OBJECT
 
 	public:
-		explicit TaskResultsWidget(const CollectionModel<TaskBatchRunResult>& model);
+		explicit TaskResultsWidget(const CollectionModel<BenchmarkResult>& model);
 		~TaskResultsWidget() override;
 	private:
 		Ui::TaskResultsWidget* _ui;
 		std::unordered_map<std::string, QTreeWidgetItem*> _createdItems;
 	protected:
-		void onItemAdded(const TaskBatchRunResult &item) override;
-		void onItemRemoved(const TaskBatchRunResult &item) override;
+		void onItemAdded(const BenchmarkResult &item) override;
+		void onItemRemoved(const BenchmarkResult &item) override;
 		void onCollectionCleared() override;
 	};
 

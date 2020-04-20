@@ -18,45 +18,44 @@ namespace Elpida
 
 	}
 
-	std::vector<BenchmarkResult> BenchmarkRunner::runBenchmarks(const std::vector<Benchmark*>& benchmarks,
+	std::vector<BenchmarkResult> BenchmarkRunner::runBenchmarks(const std::vector<BenchmarkRunRequest>& benchmarkRequests,
 		const TaskAffinity& taskAffinity)
 	{
 		_mustStop = false;
 		std::vector<BenchmarkResult> benchmarkResults;
-		for (const auto benchmark : benchmarks)
+		for (const auto& benchmarkRequest : benchmarkRequests)
 		{
 			if (_mustStop) break;
-			if (benchmark != nullptr)
+			const auto& benchmark = benchmarkRequest.getBenchmark();
+			raiseBenchmarkStarted(benchmark);
+
+			auto tasks = benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration());
+			try
 			{
-				raiseBenchmarkStarted(*benchmark);
-				auto tasks = benchmark->createTasks(taskAffinity);
-				try
+				std::vector<TaskResult> taskResults;
+				for (auto task : tasks)
 				{
-					std::vector<TaskResult> taskResults;
-					for (auto task : tasks)
+					if (_mustStop) break;
+
+					raiseTaskStarted(*task);
+
+					auto metrics = runTask(*task);
+					if (task->shouldBeCountedOnResults())
 					{
-						if (_mustStop) break;
-
-						raiseTaskStarted(*task);
-
-						auto metrics = runTask(*task);
-						if (task->isToBeCountedOnResults())
-						{
-							taskResults.emplace_back(task->getSpecification(), std::move(metrics));
-						}
-						raiseTasksEnded(*task);
+						taskResults.emplace_back(task->getSpecification(), std::move(metrics));
 					}
-					destroyTasks(tasks);
-					raiseBenchmarkEnded(*benchmark);
+					raiseTasksEnded(*task);
+				}
+				destroyTasks(tasks);
+				raiseBenchmarkEnded(benchmark);
 
-					BenchmarkResult::Score score = benchmark->getScoreCalculator().calculate(taskResults);
-					benchmarkResults.emplace_back(*benchmark, std::move(taskResults), score);
-				}
-				catch (...)
-				{
-					destroyTasks(tasks);
-					throw;
-				}
+				BenchmarkResult::Score score = benchmark.getScoreCalculator().calculate(taskResults);
+				benchmarkResults.emplace_back(benchmark, std::move(taskResults), score);
+			}
+			catch (...)
+			{
+				destroyTasks(tasks);
+				throw;
 			}
 		}
 
@@ -75,6 +74,7 @@ namespace Elpida
 	{
 		_mustStop = true;
 	}
+
 	TaskMetrics BenchmarkRunner::runTask(Task& task)
 	{
 		task.applyAffinity();

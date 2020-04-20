@@ -15,15 +15,14 @@ namespace Elpida
 	class BenchmarkConfiguration final
 	{
 	public:
-		[[nodiscard]] const TaskConfiguration* getConfigurationForTask(const std::string& taskKey) const;
+		[[nodiscard]] TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification) const;
 
-		explicit BenchmarkConfiguration(const std::unordered_map<std::string, TaskConfiguration*>* taskConfigurations)
-			: _taskConfigurations(*taskConfigurations)
-		{
-		}
+		void addConfiguration(const TaskSpecification& taskSpecification, TaskConfiguration& configuration);
+
+		BenchmarkConfiguration() = default;
 		~BenchmarkConfiguration() = default;
 	private:
-		const std::unordered_map<std::string, TaskConfiguration*>& _taskConfigurations;
+		std::unordered_map<std::string, TaskConfiguration*> _taskConfigurations;
 	};
 }
 

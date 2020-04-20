@@ -5,14 +5,13 @@
 #ifndef APPS_QT_MODELS_TASKRUNRESULTSMODEL_HPP
 #define APPS_QT_MODELS_TASKRUNRESULTSMODEL_HPP
 
+#include <Elpida/Engine/Result/BenchmarkResult.hpp>
 #include "Models/Abstractions/CollectionModel.hpp"
-#include <Elpida/TaskBatchRunResult.hpp>
 
 namespace Elpida
 {
-	class TaskRunResultsModel : public CollectionModel<TaskBatchRunResult>
+	class TaskRunResultsModel : public CollectionModel<BenchmarkResult>
 	{
-
 
 	};
 }

@@ -53,7 +53,7 @@ namespace Elpida
 
 	void ReadFile::finalize()
 	{
-		_outputData = new TaskData(_file.getData(), _file.getSize());
+		_outputData = new TaskData(static_cast<unsigned char*>(_file.getData()), _file.getSize());
 	}
 
 	void ReadFile::prepare()

@@ -28,7 +28,7 @@ namespace Elpida
 		const TaskRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
 		const Task* _currentRunningTask;
-		const TaskBatch* _currentRunningTaskBatch;
+		const BenchMark* _currentRunningBenchmark;
 
 		QString _runningString;
 		QString _readyString;

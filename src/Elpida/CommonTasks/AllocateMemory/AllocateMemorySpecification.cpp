@@ -12,17 +12,18 @@ namespace Elpida
 {
 
 	Task* AllocateMemorySpecification::createNewTask(const TaskConfiguration& configuration,
-		const TaskAffinity& affinity,
-		bool toBeCountedOnResults) const
+		const TaskAffinity& affinity) const
 	{
 		auto size = getSettingAndValidate<size_t>(configuration,
 			memorySizeSetting.data(),
 			ConfigurationValueBase::Type::UnsignedInt);
 
-		return new AllocateMemory(*this, affinity, toBeCountedOnResults, size.getValue());
+		return new AllocateMemory(*this, affinity, shouldBeCountedOnResults(), size.getValue());
 	}
 
-	AllocateMemorySpecification::AllocateMemorySpecification(bool isToBeMeasured)
+	AllocateMemorySpecification::AllocateMemorySpecification(bool shouldBeCountedOnResults,
+		bool canBeDisabled,
+		bool enableMultiThreading)
 		: TaskSpecification("Allocate Memory",
 		"Allocates memory to be used by other tasks on the benchmark",
 		_noInputString.data(),
@@ -33,8 +34,14 @@ namespace Elpida
 		{
 			ConfigurationSpecification("Memory size",
 				"The amount of memory to allocate",
-				ConfigurationValueBase::Type::UnsignedInt),
-		}, isToBeMeasured)
+				ConfigurationValueBase::Type::UnsignedInt,
+				true),
+		},
+		false,
+		true,
+		shouldBeCountedOnResults,
+		enableMultiThreading,
+		canBeDisabled)
 	{
 	}
 }

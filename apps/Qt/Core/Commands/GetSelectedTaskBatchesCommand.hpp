@@ -7,19 +7,19 @@
 
 #include <vector>
 #include "Core/Abstractions/TypedCommand.hpp"
+#include <Elpida/Engine/Runner/BenchmarkRunRequest.hpp>
 
 namespace Elpida
 {
-	class TaskBatch;
 	class GetSelectedTaskBatchesCommand final : public TypedCommand<GetSelectedTaskBatchesCommand>
 	{
 	public:
-		void addTaskBatch(const TaskBatch& taskBatch)
+		void addTaskBatch(const BenchmarkRunRequest& taskBatch)
 		{
-			_taskBatches.push_back(&taskBatch);
+			_taskBatches.push_back(taskBatch);
 		}
 
-		[[nodiscard]] const std::vector<const TaskBatch*>& getTaskBatches() const
+		[[nodiscard]] const std::vector<BenchmarkRunRequest>& getTaskBatches() const
 		{
 			return _taskBatches;
 		}
@@ -27,7 +27,7 @@ namespace Elpida
 		GetSelectedTaskBatchesCommand() = default;
 		~GetSelectedTaskBatchesCommand() override = default;
 	private:
-		std::vector<const TaskBatch*> _taskBatches;
+		std::vector<BenchmarkRunRequest> _taskBatches;
 	};
 
 }

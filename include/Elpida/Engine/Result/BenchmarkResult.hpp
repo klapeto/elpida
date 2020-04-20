@@ -5,13 +5,12 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_RESULT_BENCHMARKRESULT_HPP
 #define INCLUDE_ELPIDA_ENGINE_RESULT_BENCHMARKRESULT_HPP
 
-
 #include "TaskResult.hpp"
 #include <vector>
+#include <string>
 
 namespace Elpida
 {
-
 	class Benchmark;
 
 	class BenchmarkResult
@@ -29,14 +28,22 @@ namespace Elpida
 			return _taskResults;
 		}
 
-		BenchmarkResult(const Benchmark& benchmark, std::vector<TaskResult>&& taskResults, Score score)
-			: _benchmark(benchmark), _taskResults(std::move(taskResults)), _score(score)
+		const std::string& getId() const
 		{
-
+			return _id;
 		}
+
+		Score getScore() const
+		{
+			return _score;
+		}
+
+		BenchmarkResult(const Benchmark& benchmark, std::vector<TaskResult>&& taskResults, Score score);
+		~BenchmarkResult() = default;
 	private:
 		const Benchmark& _benchmark;
 		std::vector<TaskResult> _taskResults;
+		std::string _id;
 		Score _score;
 	};
 }

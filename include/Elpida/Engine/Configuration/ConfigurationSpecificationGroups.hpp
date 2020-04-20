@@ -11,25 +11,25 @@
 
 namespace Elpida
 {
-	class ConfigurationSpecification;
+	class TaskConfigurationSpecifications;
+
+
 	class ConfigurationSpecificationGroups final
 	{
 	public:
 
-		const std::unordered_map<std::string, std::vector<ConfigurationSpecification*>>& getGroups() const
+		const std::unordered_map<std::string, TaskConfigurationSpecifications*>& getGroups() const
 		{
 			return _groups;
 		}
 
-		ConfigurationSpecificationGroups(std::unordered_map<std::string,
-															std::vector<ConfigurationSpecification*>>&& groups)
+		explicit ConfigurationSpecificationGroups(std::unordered_map<std::string, TaskConfigurationSpecifications*>&& groups)
 			: _groups(std::move(groups))
 		{
-
-		};
+		}
 		~ConfigurationSpecificationGroups() = default;
 	private:
-		std::unordered_map<std::string, std::vector<ConfigurationSpecification*>> _groups;
+		std::unordered_map<std::string, TaskConfigurationSpecifications*> _groups;
 	};
 }
 
