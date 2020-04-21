@@ -1,5 +1,5 @@
-#include "TaskResultsWidget.hpp"
-#include "ui_TaskResultsWidget.h"
+#include "TaskResultsView.hpp"
+#include "ui_TaskResultsView.h"
 
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include <Elpida/Engine/Benchmark.hpp>
@@ -9,20 +9,20 @@
 namespace Elpida
 {
 
-	TaskResultsWidget::TaskResultsWidget(const CollectionModel<BenchmarkResult>& model)
+	TaskResultsView::TaskResultsView(const CollectionModel<BenchmarkResult>& model)
 		:
 		QWidget(), CollectionModelObserver<BenchmarkResult>(model),
-		_ui(new Ui::TaskResultsWidget)
+		_ui(new Ui::TaskResultsView)
 	{
 		_ui->setupUi(this);
 	}
 
-	TaskResultsWidget::~TaskResultsWidget()
+	TaskResultsView::~TaskResultsView()
 	{
 		delete _ui;
 	}
 
-	void TaskResultsWidget::onItemAdded(const BenchmarkResult& item)
+	void TaskResultsView::onItemAdded(const BenchmarkResult& item)
 	{
 		auto parent = new QTreeWidgetItem();
 		parent->setText(0, QString::fromStdString(item.getBenchmark().getName()));
@@ -41,7 +41,7 @@ namespace Elpida
 		_ui->twResultList->addTopLevelItem(parent);
 	}
 
-	void TaskResultsWidget::onItemRemoved(const BenchmarkResult& item)
+	void TaskResultsView::onItemRemoved(const BenchmarkResult& item)
 	{
 		auto itr = _createdItems.find(item.getId());
 		if (itr != _createdItems.end())
@@ -51,7 +51,7 @@ namespace Elpida
 		}
 	}
 
-	void TaskResultsWidget::onCollectionCleared()
+	void TaskResultsView::onCollectionCleared()
 	{
 		_ui->twResultList->clear();
 		_createdItems.clear();

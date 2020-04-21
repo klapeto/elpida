@@ -12,18 +12,18 @@ namespace Elpida
 
 	namespace Ui
 	{
-		class TaskResultsWidget;
+		class TaskResultsView;
 	}
 
-	class TaskResultsWidget : public QWidget, public CollectionModelObserver<BenchmarkResult>
+	class TaskResultsView : public QWidget, public CollectionModelObserver<BenchmarkResult>
 	{
 	Q_OBJECT
 
 	public:
-		explicit TaskResultsWidget(const CollectionModel<BenchmarkResult>& model);
-		~TaskResultsWidget() override;
+		explicit TaskResultsView(const CollectionModel<BenchmarkResult>& model);
+		~TaskResultsView() override;
 	private:
-		Ui::TaskResultsWidget* _ui;
+		Ui::TaskResultsView* _ui;
 		std::unordered_map<std::string, QTreeWidgetItem*> _createdItems;
 	protected:
 		void onItemAdded(const BenchmarkResult &item) override;

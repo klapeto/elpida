@@ -33,10 +33,10 @@ namespace Elpida
 
 	namespace Ui
 	{
-		class TopologyWidget;
+		class TopologyView;
 	}
 
-	class TopologyWidget : public QWidget, public CommandHandler
+	class TopologyView : public QWidget, public CommandHandler
 	{
 	Q_OBJECT
 
@@ -49,11 +49,11 @@ namespace Elpida
 
 		void handle(GetTaskAffinityCommand &command) override;
 
-		explicit TopologyWidget(const SystemTopology& topology);
-		~TopologyWidget() override;
+		explicit TopologyView(const SystemTopology& topology);
+		~TopologyView() override;
 	private:
 		TaskAffinity _affinity;
-		Ui::TopologyWidget* _ui;
+		Ui::TopologyView* _ui;
 		TopologyNodeFrame* _rootFrame;
 		const SystemTopology& _topology;
 		std::forward_list<const ProcessorNode*> _selectedNodes;

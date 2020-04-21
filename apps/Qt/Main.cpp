@@ -27,13 +27,12 @@
 #include "Models/BenchmarkConfigurationsModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
-#include "Views/SystemInfoWidget/SystemInfoWidget.hpp"
-#include "Views/TopologyWidget/TopologyWidget.hpp"
-#include "Views/TaskResultsWidget/TaskResultsWidget.hpp"
-#include "Views/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp"
-#include "Views/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.hpp"
+#include "Views/SystemInfoView/SystemInfoView.hpp"
+#include "Views/TopologyView/TopologyView.hpp"
+#include "Views/TaskResultsView/TaskResultsView.hpp"
+#include "Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.hpp"
+#include "Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp"
 #include "Views/BenchmarkListView/BenchmarkListView.hpp"
-#include "Views/TaskResultsWidget/TaskResultsWidget.hpp"
 
 #include "Core/ElpidaMediator.hpp"
 
@@ -57,13 +56,13 @@ using namespace Elpida;
 #include <cstdlib>
 #include <unistd.h>
 
-void initializeTopologyTab(MainWindow& mainWindow, TopologyWidget& topologyWidget);
+void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget);
 
 void initializeTaskTab(MainWindow& mainWindow,
 	BenchmarkListView& taskBatchesListWidget,
-	TaskResultsWidget& taskResultsWidget,
-	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
-	TaskBatchRunnerControlsView& taskBatchRunnerControlsView);
+	TaskResultsView& taskResultsWidget,
+	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
+	BenchmarkRunnerControlsView& taskBatchRunnerControlsView);
 void segFaultHandler(int sig)
 {
 	void* array[20];
@@ -95,12 +94,12 @@ int main(int argc, char* argv[])
 	CpuInfo cpuInfo;
 	SystemTopology topology;
 
-	SystemInfoWidget systemInfoWidget(cpuInfo, topology);
-	mainWindow.addTab(systemInfoWidget, "System Info");
+	SystemInfoView systemInfoView(cpuInfo, topology);
+	mainWindow.addTab(systemInfoView, "System Info");
 
-	TopologyWidget topologyWidget(topology);
+	TopologyView topologyView(topology);
 
-	initializeTopologyTab(mainWindow, topologyWidget);
+	initializeTopologyTab(mainWindow, topologyView);
 
 	Logger logger;
 	BenchmarksModel taskBatchesModel;
@@ -114,35 +113,31 @@ int main(int argc, char* argv[])
 	mediator.registerCommandHandler(runnerController);
 
 
-	BenchmarkListView taskBatchesListWidget(taskBatchesModel);
-	TaskResultsWidget taskResultsWidget(taskRunResultsModel);
-	TaskBatchRunnerStatusView taskBatchRunnerStatusView(taskRunnerModel);
-	TaskBatchRunnerControlsView taskBatchRunnerControlsView(mediator, taskRunnerModel);
+	BenchmarkListView taskBatchesListView(taskBatchesModel);
+	TaskResultsView taskResultsView(taskRunResultsModel);
+	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
+	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel);
 
-	mediator.registerCommandHandler(taskBatchesListWidget);
-	mediator.registerCommandHandler(topologyWidget);
+	mediator.registerCommandHandler(taskBatchesListView);
+	mediator.registerCommandHandler(topologyView);
 	mediator.registerCommandHandler(mainWindow);
 
 	initializeTaskTab(mainWindow,
-		taskBatchesListWidget,
-		taskResultsWidget,
-		taskBatchRunnerStatusView,
-		taskBatchRunnerControlsView);
+		taskBatchesListView,
+		taskResultsView,
+		benchmarkRunnerStatusView,
+		benchmarkRunnerControlsView);
 
 	mainWindow.show();
-
-	TaskConfiguration conf{
-		{"", new ConfigurationValue<bool>(true, "Accept")}
-	};
 
 	return QApplication::exec();
 }
 
 void initializeTaskTab(MainWindow& mainWindow,
 	BenchmarkListView& taskBatchesListWidget,
-	TaskResultsWidget& taskResultsWidget,
-	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
-	TaskBatchRunnerControlsView& taskBatchRunnerControlsView)
+	TaskResultsView& taskResultsWidget,
+	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
+	BenchmarkRunnerControlsView& taskBatchRunnerControlsView)
 {
 	// TODO: create as normal widgets
 	auto rootWidget = new QWidget();
@@ -159,7 +154,7 @@ void initializeTaskTab(MainWindow& mainWindow,
 	mainWindow.addTab(*rootWidget, "Task Batches");
 }
 
-void initializeTopologyTab(MainWindow& mainWindow, TopologyWidget& topologyWidget)
+void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget)
 {
 	auto container = new QWidget;
 	auto scrollArea = new QScrollArea;

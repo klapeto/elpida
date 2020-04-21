@@ -1,26 +1,25 @@
 set(ELPIDA_QT_SOURCES
-        Views/LogsWidget/LogsWidget.cpp
+        Views/LogsView/LogsView.cpp
         Views/MainWindow/MainWindow.cpp
-        Views/MascotWidget/MascotWidget.cpp
         Views/TopologyNodeFrame/TopologyNodeFrame.cpp
-        Views/TopologyWidget/TopologyWidget.cpp
-        Views/SystemInfoWidget/SystemInfoWidget.cpp
+        Views/TopologyView/TopologyView.cpp
+        Views/SystemInfoView/SystemInfoView.cpp
         Views/BenchmarkListView/BenchmarkListView.cpp
-        Views/TaskResultsWidget/TaskResultsWidget.cpp
+        Views/TaskResultsView/TaskResultsView.cpp
         Views/CommonDialog/CommonDialog.cpp
-        Views/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.cpp
-        Views/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.cpp
+        Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.cpp
+        Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.cpp
 
         Views/MainWindow/MainWindow.ui
         Views/BenchmarkListView/BenchmarkListView.ui
-        Views/LogsWidget/LogsWidget.ui
-        Views/TopologyWidget/TopologyWidget.ui
+        Views/LogsView/LogsView.ui
+        Views/TopologyView/TopologyView.ui
         Views/TopologyNodeFrame/TopologyNodeFrame.ui
-        Views/SystemInfoWidget/SystemInfoWidget.ui
-        Views/TaskResultsWidget/TaskResultsWidget.ui
+        Views/SystemInfoView/SystemInfoView.ui
+        Views/TaskResultsView/TaskResultsView.ui
         Views/CommonDialog/CommonDialog.ui
-        Views/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.ui
-        Views/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.ui
+        Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.ui
+        Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui
 
         Main.cpp
 
@@ -36,12 +35,16 @@ set(ELPIDA_QT_SOURCES
         Models/Abstractions/CollectionModelObserver.cpp
         Models/BenchmarkResultsModel.cpp
         Models/BenchmarkRunnerModel.cpp
+        Models/BenchmarkConfigurationsModel.cpp
+        Models/Abstractions/AssociativeModel/AssociativeModel.cpp
+        Models/Abstractions/ListModel/ListModel.cpp
+        Models/Abstractions/ListModel/ListModelItem.cpp
 
         Controllers/BenchmarksController.cpp
         Controllers/BenchmarkRunnerController.cpp
         Controllers/MainViewController.cpp
         QCustomApplication.cpp
-        Models/BenchmarkConfigurationsModel.cpp Models/BenchmarkConfigurationsModel.hpp Models/Abstractions/AssociativeModel/AssociativeModel.cpp Models/Abstractions/AssociativeModel/AssociativeModel.hpp Models/Abstractions/ListModel/ListModel.cpp Models/Abstractions/ListModel/ListModel.hpp Models/Abstractions/ListModel/ListModelItem.cpp Models/Abstractions/ListModel/ListModelItem.hpp)
+        )
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

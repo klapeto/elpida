@@ -8,22 +8,22 @@ namespace Elpida
 
 	namespace Ui
 	{
-		class TaskBatchRunnerControlsView;
+		class BenchmarkRunnerControlsView;
 	}
 
 	class BenchmarkRunnerModel;
 	class EventSubscriptionBase;
 	class Mediator;
 
-	class TaskBatchRunnerControlsView : public QWidget
+	class BenchmarkRunnerControlsView : public QWidget
 	{
 	Q_OBJECT
 
 	public:
-		explicit TaskBatchRunnerControlsView(Mediator& mediator, const BenchmarkRunnerModel& model);
-		~TaskBatchRunnerControlsView() override;
+		explicit BenchmarkRunnerControlsView(Mediator& mediator, const BenchmarkRunnerModel& model);
+		~BenchmarkRunnerControlsView() override;
 	private:
-		Ui::TaskBatchRunnerControlsView* _ui;
+		Ui::BenchmarkRunnerControlsView* _ui;
 		const BenchmarkRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
 		Mediator& _mediator;

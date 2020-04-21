@@ -17,24 +17,34 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include "LogsWidget.hpp"
-#include "ui_LogsWidget.h"
+#ifndef APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+#define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+
+#include <QWidget>
+#include <string>
+#include <Elpida/Utilities/Logging/Logger.hpp>
+#include "Core/QModelLogAppender.hpp"
+
 
 namespace Elpida
 {
 
-	LogsWidget::LogsWidget(Logger& logger)
-		: QWidget(),_ui(new Ui::LogsWidget)
+	namespace Ui
 	{
-		_ui->setupUi(this);
-		logger.addAppender(_logAppender);
-		_ui->twLogs->setModel(&_logAppender.getModel());
-		_ui->twLogs->resizeColumnToContents(1);
+		class LogsView;
 	}
 
-	LogsWidget::~LogsWidget()
+	class LogsView final : public QWidget
 	{
-		delete _ui;
-	}
+	Q_OBJECT
+
+	public:
+		explicit LogsView(Logger& logger);
+		~LogsView() override;
+	private:
+		QModelLogAppender _logAppender;
+		Ui::LogsView* _ui;
+	};
 
 } // namespace Elpida
+#endif //APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP

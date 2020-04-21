@@ -17,8 +17,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include "TopologyWidget.hpp"
-#include "ui_TopologyWidget.h"
+#include "TopologyView.hpp"
+#include "ui_TopologyView.h"
 
 #include <QVBoxLayout>
 #include <QGroupBox>
@@ -45,24 +45,24 @@ namespace Elpida
 		QString mouseClickStyle;
 	};
 
-	TopologyWidget::TopologyWidget(const SystemTopology& topology)
-		: QWidget(), _topology(topology), _ui(new Ui::TopologyWidget), _rootFrame(nullptr)
+	TopologyView::TopologyView(const SystemTopology& topology)
+		: QWidget(), _topology(topology), _ui(new Ui::TopologyView), _rootFrame(nullptr)
 	{
 		_ui->setupUi(this);
 		setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		loadTopology();
 	}
 
-	TopologyWidget::~TopologyWidget()
+	TopologyView::~TopologyView()
 	{
 		delete _ui;
 	}
 
-	TopologyNodeFrame* TopologyWidget::getMachineWidget(const Elpida::ProcessorNode& node)
+	TopologyNodeFrame* TopologyView::getMachineWidget(const Elpida::ProcessorNode& node)
 	{
 		auto widget = new TopologyNodeFrame(node);
 		auto label = new QLabel();
-		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyWidget::onElementClick);
+		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(label);
@@ -74,11 +74,11 @@ namespace Elpida
 		return widget;
 	}
 
-	TopologyNodeFrame* TopologyWidget::getPackageWidget(const Elpida::ProcessorNode& node)
+	TopologyNodeFrame* TopologyView::getPackageWidget(const Elpida::ProcessorNode& node)
 	{
 		auto widget = new TopologyNodeFrame(node);
 		auto label = new QLabel();
-		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyWidget::onElementClick);
+		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QHBoxLayout);
 		widget->layout()->addWidget(label);
@@ -89,11 +89,11 @@ namespace Elpida
 		return widget;
 	}
 
-	TopologyNodeFrame* TopologyWidget::getGroupWidget(const Elpida::ProcessorNode& node)
+	TopologyNodeFrame* TopologyView::getGroupWidget(const Elpida::ProcessorNode& node)
 	{
 		auto widget = new TopologyNodeFrame(node);
 		auto label = new QLabel();
-		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyWidget::onElementClick);
+		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(label);
@@ -104,7 +104,7 @@ namespace Elpida
 		return widget;
 	}
 
-	QWidget* TopologyWidget::getNumaWidget(const Elpida::ProcessorNode& node)
+	QWidget* TopologyView::getNumaWidget(const Elpida::ProcessorNode& node)
 	{
 		auto widget = new QWidget();
 		auto label = new QLabel();
@@ -160,11 +160,11 @@ namespace Elpida
 		}
 	}
 
-	TopologyNodeFrame* TopologyWidget::getCacheWidget(const Elpida::ProcessorNode& node)
+	TopologyNodeFrame* TopologyView::getCacheWidget(const Elpida::ProcessorNode& node)
 	{
 		auto widget = new TopologyNodeFrame(node);
 		auto label = new QLabel();
-		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyWidget::onElementClick);
+		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		auto layout = node.getChildren().size() > 1 ? (QLayout*)new QVBoxLayout : (QLayout*)new QVBoxLayout;
 		widget->setLayout(layout);
@@ -178,11 +178,11 @@ namespace Elpida
 		return widget;
 	}
 
-	TopologyNodeFrame* TopologyWidget::getCoreWidget(const Elpida::ProcessorNode& node)
+	TopologyNodeFrame* TopologyView::getCoreWidget(const Elpida::ProcessorNode& node)
 	{
 		auto widget = new TopologyNodeFrame(node);
 		auto label = new QLabel();
-		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyWidget::onElementClick);
+		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(label);
@@ -193,12 +193,12 @@ namespace Elpida
 		return widget;
 	}
 
-	TopologyNodeFrame* TopologyWidget::getEUWidget(const Elpida::ProcessorNode& node)
+	TopologyNodeFrame* TopologyView::getEUWidget(const Elpida::ProcessorNode& node)
 	{
 		auto widget = new TopologyNodeFrame(node);
 		auto checkbox = new QCheckBox();
 		checkbox->setAttribute(Qt::WA_TransparentForMouseEvents);
-		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyWidget::onElementClick);
+		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(checkbox);
@@ -210,7 +210,7 @@ namespace Elpida
 		return widget;
 	}
 
-	TopologyNodeFrame* TopologyWidget::getWidget(const Elpida::ProcessorNode& node)
+	TopologyNodeFrame* TopologyView::getWidget(const Elpida::ProcessorNode& node)
 	{
 		switch (node.getType())
 		{
@@ -238,7 +238,7 @@ namespace Elpida
 		}
 	}
 
-	TopologyNodeFrame* TopologyWidget::appendChildren(const Elpida::ProcessorNode& node)
+	TopologyNodeFrame* TopologyView::appendChildren(const Elpida::ProcessorNode& node)
 	{
 		const auto& children = node.getChildren();
 		unsigned maxChildren = 0;
@@ -299,13 +299,13 @@ namespace Elpida
 		return item;
 	}
 
-	void TopologyWidget::loadTopology()
+	void TopologyView::loadTopology()
 	{
 		auto& top = _topology;
 		QLayout* layout = new QHBoxLayout();
 
 		auto button = new QPushButton("Clear");
-		QPushButton::connect(button, &QPushButton::pressed, this, &TopologyWidget::onClearPressed);
+		QPushButton::connect(button, &QPushButton::pressed, this, &TopologyView::onClearPressed);
 
 		_rootFrame = appendChildren(*top.getRoot());
 		layout->addWidget(button);
@@ -313,7 +313,7 @@ namespace Elpida
 		setLayout(layout);
 	}
 
-	void TopologyWidget::clearChildrenState(TopologyNodeFrame* frame)
+	void TopologyView::clearChildrenState(TopologyNodeFrame* frame)
 	{
 		if (frame->getProcessorNode().getType() == ProcessorNode::Type::ExecutionUnit)
 		{
@@ -333,7 +333,7 @@ namespace Elpida
 		}
 	}
 
-	void TopologyWidget::appendAffinity(TopologyNodeFrame* frame)
+	void TopologyView::appendAffinity(TopologyNodeFrame* frame)
 	{
 		if (frame->getProcessorNode().getType() != ProcessorNode::Type::ExecutionUnit)
 		{
@@ -359,7 +359,7 @@ namespace Elpida
 		}
 	}
 
-	void TopologyWidget::onElementClick(const TopologyNodeFrame* node)
+	void TopologyView::onElementClick(const TopologyNodeFrame* node)
 	{
 		if (node->getProcessorNode().getType() != ProcessorNode::Type::ExecutionUnit)
 		{
@@ -393,7 +393,7 @@ namespace Elpida
 		_affinity = TaskAffinity(_selectedNodes);
 	}
 
-	void TopologyWidget::onClearPressed()
+	void TopologyView::onClearPressed()
 	{
 		const auto& children = _rootFrame->getChildren();
 		for (auto child : children)
@@ -403,7 +403,7 @@ namespace Elpida
 		_selectedNodes.clear();
 	}
 
-	void TopologyWidget::handle(GetTaskAffinityCommand& command)
+	void TopologyView::handle(GetTaskAffinityCommand& command)
 	{
 		command.setAffinity(_affinity);
 	}

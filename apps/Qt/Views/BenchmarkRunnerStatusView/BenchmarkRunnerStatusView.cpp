@@ -1,5 +1,5 @@
-#include "TaskBatchRunnerStatusView.hpp"
-#include "ui_TaskBatchRunnerStatusView.h"
+#include "BenchmarkRunnerStatusView.hpp"
+#include "ui_BenchmarkRunnerStatusView.h"
 
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include <Elpida/Engine/Benchmark.hpp>
@@ -7,8 +7,8 @@
 namespace Elpida
 {
 
-	TaskBatchRunnerStatusView::TaskBatchRunnerStatusView(const BenchmarkRunnerModel& model)
-		: QWidget(), _ui(new Ui::TaskBatchRunnerStatusView), _model(model), _currentRunningTaskSpecification(nullptr),
+	BenchmarkRunnerStatusView::BenchmarkRunnerStatusView(const BenchmarkRunnerModel& model)
+		: QWidget(), _ui(new Ui::BenchmarkRunnerStatusView), _model(model), _currentRunningTaskSpecification(nullptr),
 		  _currentRunningBenchmark(nullptr), _running(false)
 	{
 		_ui->setupUi(this);
@@ -17,20 +17,20 @@ namespace Elpida
 		_readyString = "<span style=\"color:#008d09;\">Ready</span>";
 		_naString = "N/A";
 
-		QWidget::connect(this, &TaskBatchRunnerStatusView::onDataUpdated, this, &TaskBatchRunnerStatusView::updateUi);
+		QWidget::connect(this, &BenchmarkRunnerStatusView::onDataUpdated, this, &BenchmarkRunnerStatusView::updateUi);
 		_dataChangedEventSubscription = &_model.dataChanged.subscribe([this]
 		{
 			emit onDataUpdated();
 		});
 	}
 
-	TaskBatchRunnerStatusView::~TaskBatchRunnerStatusView()
+	BenchmarkRunnerStatusView::~BenchmarkRunnerStatusView()
 	{
 		_dataChangedEventSubscription->unsubscribe();
 		delete _ui;
 	}
 
-	void TaskBatchRunnerStatusView::updateUi()
+	void BenchmarkRunnerStatusView::updateUi()
 	{
 		if (_model.isRunning())
 		{

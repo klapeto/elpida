@@ -1,5 +1,5 @@
-#include "SystemInfoWidget.hpp"
-#include "ui_SystemInfoWidget.h"
+#include "SystemInfoView.hpp"
+#include "ui_SystemInfoView.h"
 
 #include <Elpida/Topology/CpuInfo.hpp>
 #include <Elpida/Topology/SystemTopology.hpp>
@@ -7,22 +7,20 @@
 namespace Elpida
 {
 
-	SystemInfoWidget::SystemInfoWidget(const CpuInfo& cpuInfo, const SystemTopology& topology)
-		:
-		QWidget(),
-		_ui(new Ui::SystemInfoWidget)
+	SystemInfoView::SystemInfoView(const CpuInfo& cpuInfo, const SystemTopology& topology)
+		: QWidget(), _ui(new Ui::SystemInfoView)
 	{
 		_ui->setupUi(this);
 
 		loadCpuInfo(cpuInfo, topology);
 	}
 
-	SystemInfoWidget::~SystemInfoWidget()
+	SystemInfoView::~SystemInfoView()
 	{
 		delete _ui;
 	}
 
-	void SystemInfoWidget::loadCpuInfo(const CpuInfo& cpuInfo, const SystemTopology& topology)
+	void SystemInfoView::loadCpuInfo(const CpuInfo& cpuInfo, const SystemTopology& topology)
 	{
 		_ui->lblVendorValue->setText(cpuInfo.getVendorString().c_str());
 		_ui->lblModelValue->setText(cpuInfo.getProcessorBrand().c_str());

@@ -13,18 +13,18 @@ namespace Elpida
 
 	namespace Ui
 	{
-		class TaskBatchRunnerStatusView;
+		class BenchmarkRunnerStatusView;
 	}
 
-	class TaskBatchRunnerStatusView : public QWidget
+	class BenchmarkRunnerStatusView : public QWidget
 	{
 	Q_OBJECT
 
 	public:
-		explicit TaskBatchRunnerStatusView(const BenchmarkRunnerModel& model);
-		~TaskBatchRunnerStatusView() override;
+		explicit BenchmarkRunnerStatusView(const BenchmarkRunnerModel& model);
+		~BenchmarkRunnerStatusView() override;
 	private:
-		Ui::TaskBatchRunnerStatusView* _ui;
+		Ui::BenchmarkRunnerStatusView* _ui;
 		const BenchmarkRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
 		const TaskSpecification* _currentRunningTaskSpecification;

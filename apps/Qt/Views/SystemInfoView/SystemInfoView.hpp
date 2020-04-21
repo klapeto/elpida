@@ -12,19 +12,19 @@ namespace Elpida
 
 	namespace Ui
 	{
-		class SystemInfoWidget;
+		class SystemInfoView;
 	}
 
-	class SystemInfoWidget : public QWidget
+	class SystemInfoView : public QWidget
 	{
 	Q_OBJECT
 
 	public:
-		explicit SystemInfoWidget(const CpuInfo& cpuInfo, const SystemTopology& topology);
-		~SystemInfoWidget() override;
+		explicit SystemInfoView(const CpuInfo& cpuInfo, const SystemTopology& topology);
+		~SystemInfoView() override;
 
 	private:
-		Ui::SystemInfoWidget* _ui;
+		Ui::SystemInfoView* _ui;
 
 		void loadCpuInfo(const CpuInfo& cpuInfo, const SystemTopology& topology);
 	};
