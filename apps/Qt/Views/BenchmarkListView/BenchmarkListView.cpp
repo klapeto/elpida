@@ -50,7 +50,8 @@ namespace Elpida
 	void BenchmarkListView::addItem(Benchmark* const& item)
 	{
 		auto wItem = new QListWidgetItem(QString::fromStdString(item->getName()));
-		wItem->setData(Qt::UserRole, QVariant::fromValue((void*)&item));
+
+		wItem->setData(Qt::UserRole, QVariant::fromValue((void*)item));
 		_ui->lvTaskBatches->addItem(wItem);
 		_createdItems.insert_or_assign(item, wItem);
 	}
