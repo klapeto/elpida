@@ -7,12 +7,13 @@
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
-#include "TaskBatchesController.hpp"
+#include <Elpida/Engine/Benchmark.hpp>
+#include "BenchmarksController.hpp"
 
 namespace Elpida
 {
 
-	TaskBatchesController::TaskBatchesController(CollectionModel<QtTaskBatchWrapper*>& model, Logger& logger)
+	BenchmarksController::BenchmarksController(ListModel<Benchmark*>& model, Logger& logger)
 		:
 		_model(model), _logger(logger)
 	{
@@ -23,7 +24,7 @@ namespace Elpida
 #endif
 	}
 
-	TaskBatchesController::~TaskBatchesController()
+	BenchmarksController::~BenchmarksController()
 	{
 		destroyAll();
 	}
@@ -56,7 +57,7 @@ namespace Elpida
 		return false;
 	}
 
-	void TaskBatchesController::destroyAll()
+	void BenchmarksController::destroyAll()
 	{
 		for (auto plugin: _createdPlugins)
 		{
@@ -67,7 +68,7 @@ namespace Elpida
 		_libraryLoader.unloadAll();
 	}
 
-	void TaskBatchesController::reloadLibraries()
+	void BenchmarksController::reloadLibraries()
 	{
 		try
 		{
@@ -93,7 +94,7 @@ namespace Elpida
 		}
 	}
 
-	void TaskBatchesController::reload()
+	void BenchmarksController::reload()
 	{
 		destroyAll();
 		reloadLibraries();
@@ -101,10 +102,10 @@ namespace Elpida
 		for (const auto& lib: loaded)
 		{
 			auto factoryFp = lib.second
-				.getFunctionPointer<TaskBatchesContainerPlugin<Elpida::QtTaskBatchWrapper>::Factory>("createPlugin");
+				.getFunctionPointer<TaskBatchesContainerPlugin<Elpida::Benchmark>::Factory>("createPlugin");
 			if (factoryFp != nullptr)
 			{
-				TaskBatchesContainerPlugin<Elpida::QtTaskBatchWrapper>* pPlugin = nullptr;
+				TaskBatchesContainerPlugin<Elpida::Benchmark>* pPlugin = nullptr;
 				try
 				{
 					pPlugin = factoryFp();

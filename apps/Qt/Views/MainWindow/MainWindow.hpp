@@ -31,7 +31,7 @@ namespace Elpida
 	namespace Ui
 	{
 		class MainWindow;
-	}  // namespace Ui
+	}  // namespace Views
 
 	class MainWindow final : public QMainWindow, public CommandHandler
 	{

@@ -32,9 +32,14 @@ namespace Elpida
 			return _scoreCalculator;
 		}
 
-		const std::string& getName() const
+		[[nodiscard]] const std::string& getName() const
 		{
 			return _name;
+		}
+
+		const std::string& getId() const
+		{
+			return _id;
 		}
 
 		Benchmark(std::string name,
@@ -44,6 +49,7 @@ namespace Elpida
 	protected:
 		std::vector<TaskSpecification*> _taskSpecifications;
 		std::string _name;
+		std::string _id;
 		const BenchmarkScoreCalculator& _scoreCalculator;
 	};
 }

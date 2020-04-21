@@ -2,27 +2,27 @@
 // Created by klapeto on 17/4/20.
 //
 
-#ifndef APPS_QT_MODELS_TASKRUNNERMODEL_HPP
-#define APPS_QT_MODELS_TASKRUNNERMODEL_HPP
+#ifndef APPS_QT_MODELS_BENCHMARKRUNNERMODEL_HPP
+#define APPS_QT_MODELS_BENCHMARKRUNNERMODEL_HPP
 
 
 #include "Models/Abstractions/Model.hpp"
 
 namespace Elpida
 {
-	class Task;
-	class BenchMark;
+	class TaskSpecification;
+	class Benchmark;
 
-	class TaskRunnerModel : public Model
+	class BenchmarkRunnerModel : public Model
 	{
 	public:
 
-		void setCurrentRunningTask(const Task* currentRunningTask)
+		void setCurrentRunningTaskSpecification(const TaskSpecification* currentRunningTask)
 		{
-			_currentRunningTask = currentRunningTask;
+			_currentRunningTaskSpecification = currentRunningTask;
 			onDataChanged();
 		}
-		void setCurrentRunningTaskBatch(const BenchMark* currentRunningTaskBatch)
+		void setCurrentRunningTaskBatch(const Benchmark* currentRunningTaskBatch)
 		{
 			_currentRunningBenchmark = currentRunningTaskBatch;
 			onDataChanged();
@@ -53,11 +53,11 @@ namespace Elpida
 			onDataChanged();
 		}
 
-		const Task* getCurrentRunningTask() const
+		const TaskSpecification* getCurrentRunningTaskSpecification() const
 		{
-			return _currentRunningTask;
+			return _currentRunningTaskSpecification;
 		}
-		const BenchMark* getCurrentRunningBenchmark() const
+		const Benchmark* getCurrentRunningBenchmark() const
 		{
 			return _currentRunningBenchmark;
 		}
@@ -82,16 +82,16 @@ namespace Elpida
 			return _running;
 		}
 
-		TaskRunnerModel()
-			: _currentRunningTask(nullptr), _currentRunningBenchmark(nullptr), _sessionTotalBenchmarksCount(0),
+		BenchmarkRunnerModel()
+			: _currentRunningTaskSpecification(nullptr), _currentRunningBenchmark(nullptr), _sessionTotalBenchmarksCount(0),
 			  _sessionCompletedBenchmarksCount(0), _benchmarkCompletedTasksCount(0), _benchmarkTotalTasksCount(), _running(false)
 		{
 		}
 
-		~TaskRunnerModel() = default;
+		~BenchmarkRunnerModel() = default;
 	private:
-		const Task* _currentRunningTask;
-		const BenchMark* _currentRunningBenchmark;
+		const TaskSpecification* _currentRunningTaskSpecification;
+		const Benchmark* _currentRunningBenchmark;
 		size_t _sessionTotalBenchmarksCount;
 		size_t _sessionCompletedBenchmarksCount;
 		size_t _benchmarkCompletedTasksCount;
@@ -102,4 +102,4 @@ namespace Elpida
 }
 
 
-#endif //APPS_QT_MODELS_TASKRUNNERMODEL_HPP
+#endif //APPS_QT_MODELS_BENCHMARKRUNNERMODEL_HPP

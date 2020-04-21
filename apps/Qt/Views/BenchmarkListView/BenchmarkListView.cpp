@@ -1,5 +1,5 @@
-#include "TaskBatchesListWidget.hpp"
-#include "ui_TaskBatchesListWidget.h"
+#include "BenchmarkListView.hpp"
+#include "ui_BenchmarkListView.h"
 
 #include <QList>
 #include <QListWidgetItem>
@@ -7,14 +7,14 @@
 #include <Elpida/SharedLibraryLoader.hpp>
 #include <Elpida/Engine/Benchmark.hpp>
 
-#include "Models/TaskBatchesModel.hpp"
-#include "Core/Commands/GetSelectedTaskBatchesCommand.hpp"
+#include "Models/BenchmarksModel.hpp"
+#include "Core/Commands/GetBenchmarksToRunCommand.hpp"
 
 namespace Elpida
 {
 
-	TaskBatchesListWidget::TaskBatchesListWidget(const CollectionModel<Benchmark*>& model)
-		: QWidget(), CollectionModelObserver<Benchmark*>(model), _ui(new Ui::TaskBatchesListWidget)
+	BenchmarkListView::BenchmarkListView(const ListModel<Benchmark*>& model)
+		: QWidget(), CollectionModelObserver<Benchmark*>(model), _ui(new Ui::BenchmarkListView)
 	{
 		_ui->setupUi(this);
 
@@ -24,12 +24,12 @@ namespace Elpida
 		}
 	}
 
-	TaskBatchesListWidget::~TaskBatchesListWidget()
+	BenchmarkListView::~BenchmarkListView()
 	{
 		delete _ui;
 	}
 
-	TaskBatch* TaskBatchesListWidget::getSelectedTaskBatch()
+	Benchmark* BenchmarkListView::getSelectedBenchmark()
 	{
 		auto selectedIndexes = _ui->lvTaskBatches->selectedItems();
 		if (!selectedIndexes.empty())
@@ -37,17 +37,17 @@ namespace Elpida
 			auto variant = selectedIndexes.first()->data(Qt::UserRole);
 			// Dirty hack because QtTaskBatchWrapper is derived from QWidget and QVariant special handles that
 			// which we do not want here.
-			return (TaskBatch*)variant.value<void*>();
+			return (Benchmark*)variant.value<void*>();
 		}
 		return nullptr;
 	}
 
-	void TaskBatchesListWidget::onItemAdded(Benchmark* const& item)
+	void BenchmarkListView::onItemAdded(Benchmark* const& item)
 	{
 		addItem(item);
 	}
 
-	void TaskBatchesListWidget::addItem(Benchmark* const& item)
+	void BenchmarkListView::addItem(Benchmark* const& item)
 	{
 		auto wItem = new QListWidgetItem(QString::fromStdString(item->getName()));
 		wItem->setData(Qt::UserRole, QVariant::fromValue((void*)&item));
@@ -55,7 +55,7 @@ namespace Elpida
 		_createdItems.insert_or_assign(item, wItem);
 	}
 
-	void TaskBatchesListWidget::onItemRemoved(Benchmark* const& item)
+	void BenchmarkListView::onItemRemoved(Benchmark* const& item)
 	{
 		auto itr = _createdItems.find(item);
 		if (itr != _createdItems.end())
@@ -66,17 +66,17 @@ namespace Elpida
 		}
 	}
 
-	void TaskBatchesListWidget::onCollectionCleared()
+	void BenchmarkListView::onCollectionCleared()
 	{
 		_ui->lvTaskBatches->clear();
 	}
 
-	void TaskBatchesListWidget::handle(GetSelectedTaskBatchesCommand& command)
+	void BenchmarkListView::handle(GetBenchmarksToRunCommand& command)
 	{
-		auto selected = getSelectedTaskBatch();
+		auto selected = getSelectedBenchmark();
 		if (selected != nullptr)
 		{
-			command.addTaskBatch(*selected);
+			command.addBenchmark(*selected);
 		}
 	}
 

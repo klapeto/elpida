@@ -11,6 +11,7 @@
 #include "Elpida/Engine/Configuration/BenchmarkConfiguration.hpp"
 #include "Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp"
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
+#include "Elpida/Utilities/Uuid.hpp"
 
 namespace Elpida
 {
@@ -21,6 +22,7 @@ namespace Elpida
 		: _taskSpecifications(std::move(taskSpecifications)),
 		  _name(std::move(name)), _scoreCalculator(scoreCalculator)
 	{
+		_id = Uuid::create();
 	}
 
 	Benchmark::~Benchmark()

@@ -2,14 +2,14 @@
 #define ELPIDA_TASKBATCHRUNNERSTATUS_H
 
 #include <QWidget>
-#include "Models/TaskRunnerModel.hpp"
+#include "Models/BenchmarkRunnerModel.hpp"
 
 namespace Elpida
 {
 
 	class EventSubscriptionBase;
-	class Task;
-	class TaskBatch;
+	class TaskSpecification;
+	class Benchmark;
 
 	namespace Ui
 	{
@@ -21,14 +21,14 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		explicit TaskBatchRunnerStatusView(const TaskRunnerModel& model);
+		explicit TaskBatchRunnerStatusView(const BenchmarkRunnerModel& model);
 		~TaskBatchRunnerStatusView() override;
 	private:
 		Ui::TaskBatchRunnerStatusView* _ui;
-		const TaskRunnerModel& _model;
+		const BenchmarkRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
-		const Task* _currentRunningTask;
-		const BenchMark* _currentRunningBenchmark;
+		const TaskSpecification* _currentRunningTaskSpecification;
+		const Benchmark* _currentRunningBenchmark;
 
 		QString _runningString;
 		QString _readyString;

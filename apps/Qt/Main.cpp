@@ -19,20 +19,21 @@
 
 #include "Elpida/Config.hpp"
 
-#include "Controllers/TaskBatchesController.hpp"
-#include "Controllers/TaskRunnerController.hpp"
+#include "Controllers/BenchmarksController.hpp"
+#include "Controllers/BenchmarkRunnerController.hpp"
 
-#include "Models/TaskBatchesModel.hpp"
-#include "Models/TaskRunResultsModel.hpp"
+#include "Models/BenchmarksModel.hpp"
+#include "Models/BenchmarkResultsModel.hpp"
+#include "Models/BenchmarkConfigurationsModel.hpp"
 
-#include "Ui/MainWindow/MainWindow.hpp"
-#include "Ui/SystemInfoWidget/SystemInfoWidget.hpp"
-#include "Ui/TopologyWidget/TopologyWidget.hpp"
-#include "Ui/TaskResultsWidget/TaskResultsWidget.hpp"
-#include "Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp"
-#include "Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.hpp"
-#include "Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp"
-#include "Ui/TaskResultsWidget/TaskResultsWidget.hpp"
+#include "Views/MainWindow/MainWindow.hpp"
+#include "Views/SystemInfoWidget/SystemInfoWidget.hpp"
+#include "Views/TopologyWidget/TopologyWidget.hpp"
+#include "Views/TaskResultsWidget/TaskResultsWidget.hpp"
+#include "Views/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp"
+#include "Views/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.hpp"
+#include "Views/BenchmarkListView/BenchmarkListView.hpp"
+#include "Views/TaskResultsWidget/TaskResultsWidget.hpp"
 
 #include "Core/ElpidaMediator.hpp"
 
@@ -59,7 +60,7 @@ using namespace Elpida;
 void initializeTopologyTab(MainWindow& mainWindow, TopologyWidget& topologyWidget);
 
 void initializeTaskTab(MainWindow& mainWindow,
-	TaskBatchesListWidget& taskBatchesListWidget,
+	BenchmarkListView& taskBatchesListWidget,
 	TaskResultsWidget& taskResultsWidget,
 	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
 	TaskBatchRunnerControlsView& taskBatchRunnerControlsView);
@@ -102,17 +103,18 @@ int main(int argc, char* argv[])
 	initializeTopologyTab(mainWindow, topologyWidget);
 
 	Logger logger;
-	TaskBatchesModel taskBatchesModel;
-	TaskRunnerModel taskRunnerModel;
-	TaskRunResultsModel taskRunResultsModel;
-	TaskBatchesController taskBatchesController(taskBatchesModel, logger);
+	BenchmarksModel taskBatchesModel;
+	BenchmarkRunnerModel taskRunnerModel;
+	BenchmarkResultsModel taskRunResultsModel;
+	BenchmarkConfigurationsModel benchmarkConfigurationsModel;
+	BenchmarksController taskBatchesController(taskBatchesModel, logger);
 	taskBatchesController.reload();
 
-	TaskRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel);
+	BenchmarkRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel);
 	mediator.registerCommandHandler(runnerController);
 
 
-	TaskBatchesListWidget taskBatchesListWidget(taskBatchesModel);
+	BenchmarkListView taskBatchesListWidget(taskBatchesModel);
 	TaskResultsWidget taskResultsWidget(taskRunResultsModel);
 	TaskBatchRunnerStatusView taskBatchRunnerStatusView(taskRunnerModel);
 	TaskBatchRunnerControlsView taskBatchRunnerControlsView(mediator, taskRunnerModel);
@@ -130,14 +132,14 @@ int main(int argc, char* argv[])
 	mainWindow.show();
 
 	TaskConfiguration conf{
-		{"", new ConfigurationValue<bool>(true)}
+		{"", new ConfigurationValue<bool>(true, "Accept")}
 	};
 
 	return QApplication::exec();
 }
 
 void initializeTaskTab(MainWindow& mainWindow,
-	TaskBatchesListWidget& taskBatchesListWidget,
+	BenchmarkListView& taskBatchesListWidget,
 	TaskResultsWidget& taskResultsWidget,
 	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
 	TaskBatchRunnerControlsView& taskBatchRunnerControlsView)

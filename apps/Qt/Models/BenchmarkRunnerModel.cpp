@@ -2,7 +2,7 @@
 // Created by klapeto on 17/4/20.
 //
 
-#include "TaskRunnerModel.hpp"
+#include "BenchmarkRunnerModel.hpp"
 
 namespace Elpida {
 

@@ -1,26 +1,26 @@
 set(ELPIDA_QT_SOURCES
-        Ui/LogsWidget/LogsWidget.cpp
-        Ui/MainWindow/MainWindow.cpp
-        Ui/MascotWidget/MascotWidget.cpp
-        Ui/TopologyNodeFrame/TopologyNodeFrame.cpp
-        Ui/TopologyWidget/TopologyWidget.cpp
-        Ui/SystemInfoWidget/SystemInfoWidget.cpp
-        Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp
-        Ui/TaskResultsWidget/TaskResultsWidget.cpp
-        Ui/CommonDialog/CommonDialog.cpp
-        Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.cpp
-        Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.cpp
+        Views/LogsWidget/LogsWidget.cpp
+        Views/MainWindow/MainWindow.cpp
+        Views/MascotWidget/MascotWidget.cpp
+        Views/TopologyNodeFrame/TopologyNodeFrame.cpp
+        Views/TopologyWidget/TopologyWidget.cpp
+        Views/SystemInfoWidget/SystemInfoWidget.cpp
+        Views/BenchmarkListView/BenchmarkListView.cpp
+        Views/TaskResultsWidget/TaskResultsWidget.cpp
+        Views/CommonDialog/CommonDialog.cpp
+        Views/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.cpp
+        Views/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.cpp
 
-        Ui/MainWindow/MainWindow.ui
-        Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui
-        Ui/LogsWidget/LogsWidget.ui
-        Ui/TopologyWidget/TopologyWidget.ui
-        Ui/TopologyNodeFrame/TopologyNodeFrame.ui
-        Ui/SystemInfoWidget/SystemInfoWidget.ui
-        Ui/TaskResultsWidget/TaskResultsWidget.ui
-        Ui/CommonDialog/CommonDialog.ui
-        Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.ui
-        Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.ui
+        Views/MainWindow/MainWindow.ui
+        Views/BenchmarkListView/BenchmarkListView.ui
+        Views/LogsWidget/LogsWidget.ui
+        Views/TopologyWidget/TopologyWidget.ui
+        Views/TopologyNodeFrame/TopologyNodeFrame.ui
+        Views/SystemInfoWidget/SystemInfoWidget.ui
+        Views/TaskResultsWidget/TaskResultsWidget.ui
+        Views/CommonDialog/CommonDialog.ui
+        Views/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.ui
+        Views/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.ui
 
         Main.cpp
 
@@ -29,19 +29,19 @@ set(ELPIDA_QT_SOURCES
         Core/ElpidaMediator.cpp
         Core/QModelLogAppender.cpp
 
-        Models/TaskBatchesModel.cpp
+        Models/BenchmarksModel.cpp
         Models/Abstractions/CollectionModel.cpp
         Models/Abstractions/CollectionItem.cpp
         Models/Abstractions/EventArgs/CollectionChangedEventArgs.cpp
         Models/Abstractions/CollectionModelObserver.cpp
-        Models/TaskRunResultsModel.cpp
-        Models/TaskRunnerModel.cpp
+        Models/BenchmarkResultsModel.cpp
+        Models/BenchmarkRunnerModel.cpp
 
-        Controllers/TaskBatchesController.cpp
-        Controllers/TaskRunnerController.cpp
+        Controllers/BenchmarksController.cpp
+        Controllers/BenchmarkRunnerController.cpp
         Controllers/MainViewController.cpp
         QCustomApplication.cpp
-        )
+        Models/BenchmarkConfigurationsModel.cpp Models/BenchmarkConfigurationsModel.hpp Models/Abstractions/AssociativeModel/AssociativeModel.cpp Models/Abstractions/AssociativeModel/AssociativeModel.hpp Models/Abstractions/ListModel/ListModel.cpp Models/Abstractions/ListModel/ListModel.hpp Models/Abstractions/ListModel/ListModelItem.cpp Models/Abstractions/ListModel/ListModelItem.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

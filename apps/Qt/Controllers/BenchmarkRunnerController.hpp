@@ -2,8 +2,8 @@
 // Created by klapeto on 18/4/20.
 //
 
-#ifndef APPS_QT_CONTROLLERS_TASKRUNNERCONTROLLER_HPP
-#define APPS_QT_CONTROLLERS_TASKRUNNERCONTROLLER_HPP
+#ifndef APPS_QT_CONTROLLERS_BENCHMARKRUNNERCONTROLLER_HPP
+#define APPS_QT_CONTROLLERS_BENCHMARKRUNNERCONTROLLER_HPP
 
 
 #include <Elpida/Engine/Runner/BenchmarkRunner.hpp>
@@ -14,24 +14,27 @@
 
 namespace Elpida {
 
-	class TaskRunResultsModel;
-	class TaskRunnerModel;
+	class BenchmarkResultsModel;
+	class BenchmarkRunnerModel;
+	class BenchmarkConfigurationsModel;
 	class Mediator;
 
-	class TaskRunnerController: public CommandHandler
+	class BenchmarkRunnerController: public CommandHandler
 	{
 	public:
 		void handle(StartBenchmarkingCommand &command) override;
 		void handle(StopBenchmarkingCommand &command) override;
 
-		TaskRunnerController(Mediator& mediator,
-			TaskRunResultsModel& runResultsModel,
-			TaskRunnerModel& runnerModel);
+		BenchmarkRunnerController(Mediator& mediator,
+			BenchmarkResultsModel& benchmarkResultsModel,
+			BenchmarkRunnerModel& runnerModel,
+			BenchmarkConfigurationsModel& configurationsModel);
 	private:
 		OffThreadExecutor _taskRunnerThread;
 		BenchmarkRunner _runner;
-		TaskRunResultsModel& _runResultsModel;
-		TaskRunnerModel& _runnerModel;
+		BenchmarkResultsModel& _benchmarkResultsModel;
+		BenchmarkRunnerModel& _runnerModel;
+		BenchmarkConfigurationsModel& _configurationsModel;
 		Mediator& _mediator;
 
 		void onTaskBatchStarted(const BenchmarkEventArgs& ev);
@@ -41,4 +44,4 @@ namespace Elpida {
 	};
 }
 
-#endif //APPS_QT_CONTROLLERS_TASKRUNNERCONTROLLER_HPP
+#endif //APPS_QT_CONTROLLERS_BENCHMARKRUNNERCONTROLLER_HPP

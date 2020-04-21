@@ -1,7 +1,7 @@
 #include "TaskBatchRunnerControlsView.hpp"
 #include "ui_TaskBatchRunnerControlsView.h"
 
-#include "Models/TaskRunnerModel.hpp"
+#include "Models/BenchmarkRunnerModel.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/StartBenchmarkingCommand.hpp"
 #include "Core/Commands/StopBenchmarkingCommand.hpp"
@@ -9,7 +9,7 @@
 namespace Elpida
 {
 
-	TaskBatchRunnerControlsView::TaskBatchRunnerControlsView(Mediator& mediator, const TaskRunnerModel& model)
+	TaskBatchRunnerControlsView::TaskBatchRunnerControlsView(Mediator& mediator, const BenchmarkRunnerModel& model)
 		: QWidget(), _ui(new Ui::TaskBatchRunnerControlsView), _model(model), _running(false), _mediator(mediator)
 	{
 		_ui->setupUi(this);

@@ -11,7 +11,7 @@ namespace Elpida
 		class TaskBatchRunnerControlsView;
 	}
 
-	class TaskRunnerModel;
+	class BenchmarkRunnerModel;
 	class EventSubscriptionBase;
 	class Mediator;
 
@@ -20,11 +20,11 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		explicit TaskBatchRunnerControlsView(Mediator& mediator, const TaskRunnerModel& model);
+		explicit TaskBatchRunnerControlsView(Mediator& mediator, const BenchmarkRunnerModel& model);
 		~TaskBatchRunnerControlsView() override;
 	private:
 		Ui::TaskBatchRunnerControlsView* _ui;
-		const TaskRunnerModel& _model;
+		const BenchmarkRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
 		Mediator& _mediator;
 		bool _running;

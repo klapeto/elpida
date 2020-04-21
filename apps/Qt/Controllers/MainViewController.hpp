@@ -5,7 +5,7 @@
 #ifndef APPS_QT_CONTROLLERS_MAINVIEWCONTROLLER_HPP
 #define APPS_QT_CONTROLLERS_MAINVIEWCONTROLLER_HPP
 
-#include "Ui/MainWindow/MainWindow.hpp"
+#include "Views/MainWindow/MainWindow.hpp"
 
 class QWidget;
 

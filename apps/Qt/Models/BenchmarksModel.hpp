@@ -5,13 +5,13 @@
 #ifndef APPS_QT_CORE_MODELS_TASKBATCHESMODEL_HPP
 #define APPS_QT_CORE_MODELS_TASKBATCHESMODEL_HPP
 
-#include "Models/Abstractions/CollectionModel.hpp"
+#include "Models/Abstractions/ListModel/ListModel.hpp"
 
 namespace Elpida
 {
-	class QtTaskBatchWrapper;
+	class Benchmark;
 
-	class TaskBatchesModel : public CollectionModel<QtTaskBatchWrapper*>
+	class BenchmarksModel : public ListModel<Benchmark*>
 	{
 
 	};

@@ -12,7 +12,7 @@ namespace Elpida {
 	class ExitApplicationCommand;
 	class StartBenchmarkingCommand;
 	class StopBenchmarkingCommand;
-	class GetSelectedTaskBatchesCommand;
+	class GetBenchmarksToRunCommand;
 	class ShowMessageCommand;
 	class GetTaskAffinityCommand;
 }

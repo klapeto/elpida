@@ -30,7 +30,7 @@
 #include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/ElpidaException.hpp>
-#include "Ui/TopologyNodeFrame/TopologyNodeFrame.hpp"
+#include "Views/TopologyNodeFrame/TopologyNodeFrame.hpp"
 #include "Core/Commands/GetTaskAffinityCommand.hpp"
 
 #include <vector>
