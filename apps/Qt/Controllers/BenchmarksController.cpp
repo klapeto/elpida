@@ -122,9 +122,9 @@ namespace Elpida
 
 				const auto& data = pPlugin->getUnderlyingData();
 				_createdPlugins.push_back(pPlugin);
-				for (auto bWrapper : data)
+				for (auto benchmark : data)
 				{
-					_model.add(bWrapper);
+					_model.add(benchmark);
 				}
 			}
 		}
