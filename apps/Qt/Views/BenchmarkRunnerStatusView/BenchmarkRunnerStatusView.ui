@@ -51,7 +51,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="lblCurrentTaskBatch">
         <property name="text">
-         <string>Current Task Batch:</string>
+         <string>Current Benchmark:</string>
         </property>
        </widget>
       </item>
@@ -71,7 +71,7 @@
       <item row="3" column="0">
        <widget class="QLabel" name="lblBatchProgress">
         <property name="text">
-         <string>Batch Progress:</string>
+         <string>Benchmark Progress:</string>
         </property>
        </widget>
       </item>

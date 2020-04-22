@@ -15,9 +15,9 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QGroupBox" name="gbTaskBatches">
+    <widget class="QGroupBox" name="gbBenchmarks">
      <property name="title">
-      <string>Available Task Batches</string>
+      <string>Available Benchmarks</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Elpida::TaskResultsView</class>
- <widget class="QWidget" name="Elpida::TaskResultsView">
+ <class>Elpida::BenchmarkResultsView</class>
+ <widget class="QWidget" name="Elpida::BenchmarkResultsView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,9 +15,9 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QGroupBox" name="gbTaskResults">
+    <widget class="QGroupBox" name="gbBenchmarkResults">
      <property name="title">
-      <string>Task Results</string>
+      <string>Benchmark Results</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>

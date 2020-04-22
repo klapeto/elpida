@@ -5,10 +5,12 @@ set(ELPIDA_QT_SOURCES
         Views/TopologyView/TopologyView.cpp
         Views/SystemInfoView/SystemInfoView.cpp
         Views/BenchmarkListView/BenchmarkListView.cpp
-        Views/TaskResultsView/TaskResultsView.cpp
+        Views/BenchmarkResultsView/BenchmarkResultsView.cpp
         Views/CommonDialog/CommonDialog.cpp
         Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.cpp
         Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.cpp
+        Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp
+        Views/ConfigurationViews/FileInputView/FileInputView.cpp
 
         Views/MainWindow/MainWindow.ui
         Views/BenchmarkListView/BenchmarkListView.ui
@@ -16,10 +18,12 @@ set(ELPIDA_QT_SOURCES
         Views/TopologyView/TopologyView.ui
         Views/TopologyNodeFrame/TopologyNodeFrame.ui
         Views/SystemInfoView/SystemInfoView.ui
-        Views/TaskResultsView/TaskResultsView.ui
+        Views/BenchmarkResultsView/BenchmarkResultsView.ui
         Views/CommonDialog/CommonDialog.ui
         Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.ui
         Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui
+        Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
+        Views/ConfigurationViews/FileInputView/FileInputView.ui
 
         Main.cpp
 

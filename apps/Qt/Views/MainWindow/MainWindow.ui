@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>145</width>
-    <height>45</height>
+    <width>153</width>
+    <height>50</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,9 +19,13 @@
   </property>
   <property name="styleSheet">
    <string notr="true">/*============ QWidget ============*/
-QTabWidget,QFrame,QLabel,QCheckBox,QGroupBox {
+QTabWidget,QFrame,QLabel,QCheckBox,QGroupBox,QScrollArea{
 background-color: rgba(229,232,253,0);
 }
+
+#scrollAreaWidgetContents{
+background-color: rgba(229,232,253,0);
+} 
 
 QTreeWidget QWidget {
 	background-color: rgba(229,232,253,255); 
@@ -145,8 +149,8 @@ QLineEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>145</width>
-     <height>23</height>
+     <width>153</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuElpida">

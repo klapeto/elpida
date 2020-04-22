@@ -23,51 +23,47 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        Main.cpp \
-    Ui/CommonDialog/CommonDialog.cpp \
-        Ui/MainWindow/MainWindow.cpp \
-    Ui/SystemInfoWidget/SystemInfoWidget.cpp \
-    Ui/TaskBatchProperties/TaskBatchProperties.cpp \
-    ElpidaManager.cpp \
-    Ui/LogsWidget/LogsWidget.cpp \
-    Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.cpp \
-    Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.cpp \
-    Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp \
-    Ui/TaskBatchesWidget/TaskBatchesWidget.cpp \
-    Ui/TaskResultsWidget/TaskResultsWidget.cpp \
-    Ui/TopologyWidget/TopologyWidget.cpp \
-    Ui/MascotWidget/MascotWidget.cpp \
-    Ui/TopologyFrame/TopologyFrame.cpp
+	Main.cpp \
+    Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp \
+    Views/BenchmarkListView/BenchmarkListView.cpp \
+    Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.cpp \
+    Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.cpp \
+    Views/CommonDialog/CommonDialog.cpp \
+    Views/ConfigurationViews/FileInputView/FileInputView.cpp \
+    Views/LogsView/LogsView.cpp \
+    Views/MainWindow/MainWindow.cpp \
+    Views/SystemInfoView/SystemInfoView.cpp \
+    Views/BenchmarkResultsView/BenchmarkResultsView.cpp \
+    Views/TopologyNodeFrame/TopologyNodeFrame.cpp \
+    Views/TopologyView/TopologyView.cpp
 
 HEADERS += \
-    Ui/CommonDialog/CommonDialog.hpp \
-        Ui/MainWindow/MainWindow.hpp \
-    Ui/SystemInfoWidget/SystemInfoWidget.hpp \
-   Ui/TaskBatchProperties/TaskBatchProperties.hpp \
-    ElpidaManager.hpp \
-    Ui/LogsWidget/LogsWidget.hpp \
-    Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.hpp \
-    Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp \
-    Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp \
-    Ui/TaskBatchesWidget/TaskBatchesWidget.hpp \
-    Ui/TaskResultsWidget/TaskResultsWidget.hpp \
-    Ui/TopologyWidget/TopologyWidget.hpp \
-    Ui/MascotWidget/MascotWidget.hpp \
-    Ui/TopologyFrame/TopologyFrame.hpp
+    Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp \
+    Views/BenchmarkListView/BenchmarkListView.hpp \
+    Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp \
+    Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.hpp \
+    Views/CommonDialog/CommonDialog.hpp \
+    Views/ConfigurationViews/FileInputView/FileInputView.hpp \
+    Views/LogsView/LogsView.hpp \
+    Views/MainWindow/MainWindow.hpp \
+    Views/SystemInfoView/SystemInfoView.hpp \
+    Views/BenchmarkResultsView/BenchmarkResultsView.hpp \
+    Views/TopologyNodeFrame/TopologyNodeFrame.hpp \
+    Views/TopologyView/TopologyView.hpp
 
 FORMS += \
-    Ui/CommonDialog/CommonDialog.ui \
-        Ui/MainWindow/MainWindow.ui \
-    Ui/SystemInfoWidget/SystemInfoWidget.ui \
-    Ui/TaskBatchProperties/TaskBatchProperties.ui \
-    Ui/LogsWidget/LogsWidget.ui \
-    Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.ui \
-    Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.ui \
-    Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui \
-    Ui/TaskBatchesWidget/TaskBatchesWidget.ui \
-    Ui/TaskResultsWidget/TaskResultsWidget.ui \
-    Ui/TopologyWidget/TopologyWidget.ui \
-    Ui/TopologyFrame/TopologyFrame.ui
+    Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui \
+    Views/BenchmarkListView/BenchmarkListView.ui \
+    Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui \
+    Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.ui \
+    Views/CommonDialog/CommonDialog.ui \
+    Views/ConfigurationViews/FileInputView/FileInputView.ui \
+    Views/LogsView/LogsView.ui \
+    Views/MainWindow/MainWindow.ui \
+    Views/SystemInfoView/SystemInfoView.ui \
+    Views/BenchmarkResultsView/BenchmarkResultsView.ui \
+    Views/TopologyNodeFrame/TopologyNodeFrame.ui \
+    Views/TopologyView/TopologyView.ui
 
 RESOURCES += \
     Images/Images.qrc

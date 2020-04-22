@@ -29,10 +29,11 @@
 #include "Views/MainWindow/MainWindow.hpp"
 #include "Views/SystemInfoView/SystemInfoView.hpp"
 #include "Views/TopologyView/TopologyView.hpp"
-#include "Views/TaskResultsView/TaskResultsView.hpp"
+#include "Views/BenchmarkResultsView/BenchmarkResultsView.hpp"
 #include "Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.hpp"
 #include "Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp"
 #include "Views/BenchmarkListView/BenchmarkListView.hpp"
+#include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
 
 #include "Core/ElpidaMediator.hpp"
 
@@ -60,9 +61,10 @@ void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget)
 
 void initializeTaskTab(MainWindow& mainWindow,
 	BenchmarkListView& taskBatchesListWidget,
-	TaskResultsView& taskResultsWidget,
+	BenchmarkResultsView& taskResultsWidget,
 	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
-	BenchmarkRunnerControlsView& taskBatchRunnerControlsView);
+	BenchmarkRunnerControlsView& taskBatchRunnerControlsView,
+	BenchmarkConfigurationView& benchmarkConfigurationView);
 void segFaultHandler(int sig)
 {
 	void* array[20];
@@ -114,9 +116,10 @@ int main(int argc, char* argv[])
 
 
 	BenchmarkListView taskBatchesListView(taskBatchesModel);
-	TaskResultsView taskResultsView(taskRunResultsModel);
+	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
 	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel);
+	BenchmarkConfigurationView benchmarkConfigurationView;
 
 	mediator.registerCommandHandler(taskBatchesListView);
 	mediator.registerCommandHandler(topologyView);
@@ -124,9 +127,10 @@ int main(int argc, char* argv[])
 
 	initializeTaskTab(mainWindow,
 		taskBatchesListView,
-		taskResultsView,
+		benchmarkResultsView,
 		benchmarkRunnerStatusView,
-		benchmarkRunnerControlsView);
+		benchmarkRunnerControlsView,
+		benchmarkConfigurationView);
 
 	mainWindow.show();
 
@@ -135,9 +139,10 @@ int main(int argc, char* argv[])
 
 void initializeTaskTab(MainWindow& mainWindow,
 	BenchmarkListView& taskBatchesListWidget,
-	TaskResultsView& taskResultsWidget,
+	BenchmarkResultsView& taskResultsWidget,
 	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
-	BenchmarkRunnerControlsView& taskBatchRunnerControlsView)
+	BenchmarkRunnerControlsView& taskBatchRunnerControlsView,
+	BenchmarkConfigurationView& benchmarkConfigurationView)
 {
 	// TODO: create as normal widgets
 	auto rootWidget = new QWidget();
@@ -145,6 +150,7 @@ void initializeTaskTab(MainWindow& mainWindow,
 	auto topLayout = new QHBoxLayout();
 
 	topLayout->addWidget(&taskBatchesListWidget);
+	topLayout->addWidget(&benchmarkConfigurationView);
 	topLayout->addWidget(&taskResultsWidget);
 	rootLayout->addLayout(topLayout);
 	rootLayout->addWidget(&taskBatchRunnerStatusView);
@@ -167,6 +173,7 @@ void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget)
 
 	scrollArea->setWidgetResizable(false);
 	scrollArea->setWidget(&topologyWidget);
+	scrollArea->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
 	topologyWidget.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
