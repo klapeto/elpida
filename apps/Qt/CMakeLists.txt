@@ -48,7 +48,7 @@ set(ELPIDA_QT_SOURCES
         Controllers/BenchmarkRunnerController.cpp
         Controllers/MainViewController.cpp
         QCustomApplication.cpp
-        )
+        ConfigurationViewsPool.cpp ConfigurationViewsPool.hpp Views/ConfigurationViews/ConfigurationViewBase.cpp Views/ConfigurationViews/ConfigurationViewBase.hpp Models/Abstractions/AssociativeModel/AssociativeItem.cpp Models/Abstractions/AssociativeModel/AssociativeItem.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

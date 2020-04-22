@@ -10,7 +10,7 @@
 namespace Elpida
 {
 	class TaskSpecification;
-	class ConfigurationSpecification;
+	class ConfigurationSpecificationBase;
 
 	/**
 	 * A collection of Configuration Specifications for a TaskSpecification
@@ -23,15 +23,16 @@ namespace Elpida
 			return _taskSpecification;
 		}
 
-		[[nodiscard]] const std::vector<const ConfigurationSpecification*>& getConfigurationSpecifications() const
+		[[nodiscard]] const std::vector<const ConfigurationSpecificationBase*>& getConfigurationSpecifications() const
 		{
 			return _configurationSpecifications;
 		}
 
 		explicit TaskConfigurationSpecifications(const TaskSpecification& taskSpecification);
+		~TaskConfigurationSpecifications() = default;
 	private:
 		const TaskSpecification& _taskSpecification;
-		std::vector<const ConfigurationSpecification*> _configurationSpecifications;
+		std::vector<const ConfigurationSpecificationBase*> _configurationSpecifications;
 	};
 }
 

@@ -16,7 +16,7 @@ namespace Elpida
 	{
 		auto size = getSettingAndValidate<size_t>(configuration,
 			memorySizeSetting.data(),
-			ConfigurationValueBase::Type::UnsignedInt);
+			ConfigurationType::UnsignedInt);
 
 		return new AllocateMemory(*this, affinity, shouldBeCountedOnResults(), size.getValue());
 	}
@@ -32,9 +32,8 @@ namespace Elpida
 		"Bytes",
 		"B",
 		{
-			ConfigurationSpecification("Memory size",
+			new ConfigurationSpecification<unsigned long>(256ul, "Memory size",
 				"The amount of memory to allocate",
-				ConfigurationValueBase::Type::UnsignedInt,
 				true),
 		},
 		false,

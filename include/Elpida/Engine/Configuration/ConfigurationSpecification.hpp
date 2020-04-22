@@ -5,46 +5,91 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_CONFIGURATION_CONFIGURATIONSPECIFICATION_HPP
 #define INCLUDE_ELPIDA_ENGINE_CONFIGURATION_CONFIGURATIONSPECIFICATION_HPP
 
-#include "ConfigurationValueBase.hpp"
+#include "ConfigurationSpecificationBase.hpp"
+#include "ConfigurationValue.hpp"
+#include "ConfigurationType.hpp"
+#include <string>
 
 namespace Elpida
 {
+	class ConfigurationValueBase;
+
 	/**
 	 * Standard information regarding a specific configuration for a task
 	 */
-	class ConfigurationSpecification final
+
+	template<typename T>
+	class ConfigurationSpecification : public ConfigurationSpecificationBase
 	{
 	public:
-		const std::string& getName() const
+
+		ConfigurationValueBase* createDefault() const override
 		{
-			return _name;
-		}
-		const std::string& getDescription() const
-		{
-			return _description;
-		}
-		ConfigurationValueBase::Type getType() const
-		{
-			return _type;
+			return new ConfigurationValue<T>(*this, _defaultValue);
 		}
 
-		bool isRequired() const
+		explicit ConfigurationSpecification(bool defaultValue,
+			const std::string& name,
+			const std::string& description,
+			bool isRequired)
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::Bool, isRequired),
+			  _defaultValue(defaultValue)
 		{
-			return _required;
+			static_assert(std::is_same_v<bool, T>, "ConfigurationValue is not specified as bool");
 		}
 
-		ConfigurationSpecification(std::string name,
-			std::string description,
-			ConfigurationValueBase::Type type, bool required)
-			: _name(std::move(name)), _description(std::move(description)), _type(type), _required(required)
+		explicit ConfigurationSpecification(unsigned long defaultValue,
+			const std::string& name,
+			const std::string& description,
+			bool isRequired)
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::UnsignedInt, isRequired),
+			  _defaultValue(defaultValue)
 		{
-
+			static_assert(std::is_literal_type_v<T>, "ConfigurationValue is not specified as unsigned integral");
 		}
-	public:
-		std::string _name;
-		std::string _description;
-		ConfigurationValueBase::Type _type;
-		bool _required;
+
+		explicit ConfigurationSpecification(long defaultValue,
+			const std::string& name,
+			const std::string& description,
+			bool isRequired)
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::Int, isRequired),
+			  _defaultValue(defaultValue)
+		{
+			static_assert(std::is_literal_type_v<T>, "ConfigurationValue is not specified as integral");
+		}
+
+		explicit ConfigurationSpecification(double defaultValue,
+			const std::string& name,
+			const std::string& description,
+			bool isRequired)
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::Float, isRequired),
+			  _defaultValue(defaultValue)
+		{
+			static_assert(std::is_floating_point_v<T>, "ConfigurationValue is not specified as floating point");
+		}
+
+		explicit ConfigurationSpecification(const std::string& defaultValue,
+			const std::string& name,
+			const std::string& description,
+			bool isRequired)
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::String, isRequired),
+			  _defaultValue(defaultValue)
+		{
+			static_assert(std::is_convertible_v<std::string, T>, "ConfigurationValue is not specified as string");
+		}
+
+		ConfigurationSpecification(ConfigurationType type,
+			T defaultValue,
+			const std::string& name,
+			const std::string& description,
+			bool isRequired)
+			: ConfigurationSpecificationBase(name, description, type, isRequired), _defaultValue(defaultValue)
+		{
+		}
+
+		~ConfigurationSpecification() = default;
+	private:
+		T _defaultValue;
 	};
 }
 

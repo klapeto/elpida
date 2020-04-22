@@ -38,7 +38,7 @@ namespace Elpida
 		}
 
 		Model()
-			: _lock(_mutex, std::defer_lock_t())
+			: _lock(_mutex, std::defer_lock_t()), _transaction(false)
 		{
 
 		}

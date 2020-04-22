@@ -6,21 +6,26 @@
 #define APPS_QT_MODELS_ABSTRACTIONS_ASSOCIATIVEMODEL_HPP
 
 #include "Models/Abstractions/CollectionModel.hpp"
+#include "Models/Abstractions/AssociativeModel/AssociativeItem.hpp"
 #include <unordered_map>
 #include <Elpida/Config.hpp>
 
 namespace Elpida
 {
 	template<typename TKey, typename TValue>
-	class AssociativeModel : public CollectionModel<std::pair<TKey, TValue>>
+	class AssociativeModel : public CollectionModel<std::pair<const TKey&, const TValue&>>
 	{
 	public:
-		void add(const TKey& key, TValue&& value)
+		using Pair =std::pair<const TKey&, const TValue&>;
+
+		template<typename T>
+		void add(const TKey& key, T&& value)
 		{
-			_values.insert(key, value);
-			CollectionModel<std::pair<TKey, TValue>>
-			::onItemAdded(CollectionItem<std::pair<TKey, TValue>>(std::make_pair<TKey, TValue>(key, value)));
-			CollectionModel<std::pair<TKey, TValue>>::dataChanged();
+			auto itr = _values.insert_or_assign(key, std::forward<T>(value));
+			const auto& newValue = _values.at(key);
+			auto colItem = AssociativeItem<TKey,TValue>(*this, std::pair<const TKey&, const TValue&>(key, newValue));
+			CollectionModel<Pair>::onItemAdded(colItem);
+			CollectionModel<Pair>::onDataChanged();
 		}
 
 		const TValue& get(const TKey& key) const

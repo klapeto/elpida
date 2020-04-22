@@ -13,7 +13,7 @@ namespace Elpida
 	{
 		auto filepath = getSettingAndValidate<std::string>(configuration,
 			filePathSetting,
-			ConfigurationValueBase::Type::FilePath);
+			ConfigurationType::FilePath);
 		return new WriteFile(*this, std::move(affinity), filepath.getValue(), shouldBeCountedOnResults());
 	}
 
@@ -25,7 +25,9 @@ namespace Elpida
 		_noOutputString.data(),
 		_noOutputString.data(),
 		"B",
-		{},
+		{
+			new ConfigurationSpecification<std::string>(std::string(), "File Name", "The absolute file path", true)
+			},
 		true,
 		false,
 		shouldBeCountedOnResults,

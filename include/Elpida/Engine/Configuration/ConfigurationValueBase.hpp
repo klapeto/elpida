@@ -9,30 +9,22 @@
 #include <type_traits>
 #include <string>
 #include <utility>
+#include "ConfigurationType.hpp"
 
 namespace Elpida
 {
+	class ConfigurationSpecificationBase;
+
 	/**
 	 * Base class for all Configuration values
 	 */
 	class ConfigurationValueBase
 	{
 	public:
-		enum class Type
-		{
-			String,
-			Bool,
-			Int,
-			UnsignedInt,
-			Float,
-			FilePath,
-			FolderPath,
-			Custom,
-		};
 
-		[[nodiscard]] Type getType() const
+		const ConfigurationSpecificationBase& getConfigurationSpecification() const
 		{
-			return _type;
+			return _configurationSpecification;
 		}
 
 		template<typename T>
@@ -43,16 +35,14 @@ namespace Elpida
 			return static_cast<T&>(*this);
 		}
 
-		explicit ConfigurationValueBase(Type type, std::string name, std::string description)
-			: _type(type), _name(std::move(name)), _description(std::move(description))
+		virtual ~ConfigurationValueBase() = default;
+	protected:
+		ConfigurationValueBase(const ConfigurationSpecificationBase& configurationSpecification)
+			: _configurationSpecification(configurationSpecification)
 		{
 		}
 
-		virtual ~ConfigurationValueBase() = default;
-	protected:
-		std::string _name;
-		std::string _description;
-		Type _type;
+		const ConfigurationSpecificationBase& _configurationSpecification;
 	};
 }
 

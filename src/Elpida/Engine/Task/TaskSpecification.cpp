@@ -8,14 +8,14 @@
 
 namespace Elpida
 {
-	Elpida::TaskSpecification::TaskSpecification(std::string name,
+	TaskSpecification::TaskSpecification(std::string name,
 		std::string description,
 		std::string inputValueDescription,
 		std::string inputValueUnit,
 		std::string outputValueDescription,
 		std::string outputValueUnit,
 		std::string throughputUnit,
-		std::vector<ConfigurationSpecification>&& configurationSpecifications,
+		std::vector<ConfigurationSpecificationBase*>&& configurationSpecifications,
 		bool acceptsInput,
 		bool exportsOutput,
 		bool shouldBeCountedOnResults,
@@ -33,5 +33,13 @@ namespace Elpida
 		  _canBeDisabled(canBeDisabled)
 	{
 		_id = Uuid::create();
+	}
+
+	TaskSpecification::~TaskSpecification()
+	{
+		for (auto configSpec: _configurationSpecifications)
+		{
+			delete configSpec;
+		}
 	}
 }

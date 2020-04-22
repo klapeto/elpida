@@ -6,23 +6,27 @@
 #define INCLUDE_ELPIDA_ENGINE_CONFIGURATION_BENCHMARKCONFIGURATION_HPP
 
 #include <unordered_map>
+#include "TaskConfiguration.hpp"
 
 namespace Elpida
 {
-	class TaskConfiguration;
 	class TaskSpecification;
 
 	class BenchmarkConfiguration final
 	{
 	public:
-		[[nodiscard]] TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification) const;
+		[[nodiscard]] const TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification) const;
+		[[nodiscard]] TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification) ;
 
-		void addConfiguration(const TaskSpecification& taskSpecification, TaskConfiguration& configuration);
+		void addConfiguration(const TaskSpecification& taskSpecification, TaskConfiguration&& configuration);
 
 		BenchmarkConfiguration() = default;
+		BenchmarkConfiguration(BenchmarkConfiguration&&) = default;
+		BenchmarkConfiguration& operator=(BenchmarkConfiguration&&) = default;
 		~BenchmarkConfiguration() = default;
 	private:
-		std::unordered_map<std::string, TaskConfiguration*> _taskConfigurations;
+		std::unordered_map<std::string, TaskConfiguration> _taskConfigurations;
+		const TaskConfiguration* getConfigurationImpl(const TaskSpecification& taskSpecification) const;
 	};
 }
 

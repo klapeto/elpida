@@ -6,7 +6,9 @@
 #define APPS_QT_CONTROLLERS_BENCHMARKSCONTROLLER_HPP
 
 
-#include <Models/Abstractions/ListModel/ListModel.hpp>
+#include "Models/Abstractions/ListModel/ListModel.hpp"
+#include "Models/Abstractions/AssociativeModel/AssociativeModel.hpp"
+#include <Elpida/Engine/Configuration/BenchmarkConfiguration.hpp>
 #include <Elpida/SharedLibraryLoader.hpp>
 
 namespace Elpida
@@ -24,14 +26,15 @@ namespace Elpida
 		void reload();
 		void destroyAll();
 
-		explicit BenchmarksController(ListModel<Benchmark*>& model, Logger& logger);
+		explicit BenchmarksController(ListModel<Benchmark*>& model, AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel, Logger& logger);
 		virtual ~BenchmarksController();
 	private:
 		std::vector<TaskBatchesContainerPlugin<Benchmark>*> _createdPlugins;
 		SharedLibraryLoader _libraryLoader;
-		std::string _taskBatchPath;
+		std::string _benchmarksPath;
 		Logger& _logger;
 		ListModel<Benchmark*>& _model;
+		AssociativeModel<std::string, BenchmarkConfiguration>& _configurationsModel;
 
 		void reloadLibraries();
 	};

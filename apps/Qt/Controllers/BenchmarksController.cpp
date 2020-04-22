@@ -8,17 +8,22 @@
 #include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp>
+#include <Elpida/Engine/Configuration/ConfigurationSpecificationBase.hpp>
+#include <Elpida/Engine/Configuration/TaskConfiguration.hpp>
 #include "BenchmarksController.hpp"
 
 namespace Elpida
 {
 
-	BenchmarksController::BenchmarksController(ListModel<Benchmark*>& model, Logger& logger)
+	BenchmarksController::BenchmarksController(ListModel<Benchmark*>& model,
+		AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
+		Logger& logger)
 		:
-		_model(model), _logger(logger)
+		_model(model), _configurationsModel(configurationsModel), _logger(logger)
 	{
 #if ELPIDA_DEBUG_BUILD
-		_taskBatchPath = TASK_BATCH_DEBUG_DIR;
+		_benchmarksPath = TASK_BATCH_DEBUG_DIR;
 #else
 		_taskBatchPath = "./TaskBatches";	// TODO: Think of something more portable
 #endif
@@ -73,7 +78,7 @@ namespace Elpida
 		try
 		{
 			_libraryLoader.unloadAll();
-			FileSystem::iterateDirectory(_taskBatchPath, [this](const std::string& path)
+			FileSystem::iterateDirectory(_benchmarksPath, [this](const std::string& path)
 			{
 				if (hasLibraryExtension(path))
 				{
@@ -90,7 +95,7 @@ namespace Elpida
 		}
 		catch (const std::exception& ex)
 		{
-			_logger.log(LogType::Error, "Failed to iterate Directory:'" + _taskBatchPath + "'", ex);
+			_logger.log(LogType::Error, "Failed to iterate Directory:'" + _benchmarksPath + "'", ex);
 		}
 	}
 
@@ -124,6 +129,17 @@ namespace Elpida
 				_createdPlugins.push_back(pPlugin);
 				for (auto benchmark : data)
 				{
+					BenchmarkConfiguration configuration;
+					for (const auto& configSpec :benchmark->getConfigurationSpecifications())
+					{
+						TaskConfiguration taskConfiguration;
+						for (auto spc : configSpec.getConfigurationSpecifications())
+						{
+							taskConfiguration.setConfiguration(spc->getName(), *spc->createDefault());
+						}
+						configuration.addConfiguration(configSpec.getTaskSpecification(), std::move(taskConfiguration));
+					}
+					_configurationsModel.add(benchmark->getId(), std::move(configuration));
 					_model.add(benchmark);
 				}
 			}

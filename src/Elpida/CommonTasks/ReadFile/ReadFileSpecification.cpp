@@ -15,7 +15,7 @@ namespace Elpida
 	{
 		auto filePath = getSettingAndValidate<std::string>(configuration,
 			filePathSetting,
-			ConfigurationValueBase::Type::FilePath);
+			ConfigurationType::FilePath);
 		return new ReadFile(*this, affinity, filePath.getValue(), shouldBeCountedOnResults());
 	}
 
@@ -27,7 +27,9 @@ namespace Elpida
 		"File contents in bytes",
 		"Bytes",
 		"B",
-		{},
+		{
+			new ConfigurationSpecification<std::string>(std::string(), "File Name", "The absolute file path", true)
+			    },
 		false,
 		true,
 		shouldBeCountedOnResults,

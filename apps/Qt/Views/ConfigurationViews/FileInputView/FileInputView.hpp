@@ -2,6 +2,7 @@
 #define ELPIDA_FILEINPUTVIEW_HPP
 
 #include <QWidget>
+#include "Views/ConfigurationViews/ConfigurationViewBase.hpp"
 
 namespace Elpida
 {
@@ -11,16 +12,18 @@ namespace Elpida
 		class FileInputView;
 	}
 
-	class FileInputView : public QWidget
+	class FileInputView : public QWidget, public ConfigurationViewBase
 	{
 	Q_OBJECT
 
 	public:
-		explicit FileInputView();
-		~FileInputView();
+		void setConfiguration(ConfigurationValueBase &configurationValue) override;
 
+		explicit FileInputView();
+		~FileInputView() override;
 	private:
 		Ui::FileInputView* _ui;
+		ConfigurationValueBase* _configurationValue;
 	};
 
 } // namespace Elpida

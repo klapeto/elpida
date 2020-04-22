@@ -29,41 +29,11 @@ namespace Elpida
 			_value = value;
 		}
 
-		explicit ConfigurationValue(bool value, const std::string& name, const std::string& description = std::string())
-			: ConfigurationValue(Type::Bool, value, name, description)
+		explicit ConfigurationValue(const ConfigurationSpecificationBase& specification, T value)
+			: ConfigurationValueBase(specification), _value(value)
 		{
-			static_assert(std::is_same_v<bool, T>, "ConfigurationValue is not specified as bool");
-		}
 
-		explicit ConfigurationValue(unsigned long value,const std::string& name, const std::string& description = std::string())
-			: ConfigurationValue(Type::UnsignedInt, value, name, description)
-		{
-			static_assert(std::is_literal_type_v<T>, "ConfigurationValue is not specified as unsigned integral");
 		}
-
-		explicit ConfigurationValue(long value, const std::string& name, const std::string& description = std::string())
-			: ConfigurationValue(Type::Int, value, name, description)
-		{
-			static_assert(std::is_literal_type_v<T>, "ConfigurationValue is not specified as integral");
-		}
-
-		explicit ConfigurationValue(double value,const std::string& name, const std::string& description = std::string())
-			: ConfigurationValue(Type::Float, value, name, description)
-		{
-			static_assert(std::is_floating_point_v<T>, "ConfigurationValue is not specified as floating point");
-		}
-
-		explicit ConfigurationValue(const std::string& value, const std::string& name, const std::string& description = std::string())
-			: ConfigurationValue(Type::String, value, name, description)
-		{
-			static_assert(std::is_convertible_v<std::string, T>, "ConfigurationValue is not specified as string");
-		}
-
-		ConfigurationValue(Type type, T value, const std::string& name, const std::string& description = std::string())
-			: ConfigurationValueBase(type, name, description), _value(value)
-		{
-		}
-
 		~ConfigurationValue() override = default;
 	private:
 		T _value;

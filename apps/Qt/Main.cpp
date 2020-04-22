@@ -25,6 +25,7 @@
 #include "Models/BenchmarksModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
 #include "Models/BenchmarkConfigurationsModel.hpp"
+#include "Models/BenchmarkConfigurationsModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
 #include "Views/SystemInfoView/SystemInfoView.hpp"
@@ -108,7 +109,7 @@ int main(int argc, char* argv[])
 	BenchmarkRunnerModel taskRunnerModel;
 	BenchmarkResultsModel taskRunResultsModel;
 	BenchmarkConfigurationsModel benchmarkConfigurationsModel;
-	BenchmarksController taskBatchesController(taskBatchesModel, logger);
+	BenchmarksController taskBatchesController(taskBatchesModel,benchmarkConfigurationsModel, logger);
 	taskBatchesController.reload();
 
 	BenchmarkRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel);

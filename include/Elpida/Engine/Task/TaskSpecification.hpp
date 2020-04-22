@@ -53,7 +53,7 @@ namespace Elpida
 		{
 			return _throughputUnit;
 		}
-		[[nodiscard]] const std::vector<ConfigurationSpecification>& getConfigurationSpecifications() const
+		[[nodiscard]] const std::vector<ConfigurationSpecificationBase*>& getConfigurationSpecifications() const
 		{
 			return _configurationSpecifications;
 		}
@@ -90,7 +90,7 @@ namespace Elpida
 		[[nodiscard]] virtual Task* createNewTask(const TaskConfiguration& configuration,
 			const TaskAffinity& affinity) const = 0;
 
-		virtual ~TaskSpecification() = default;
+		virtual ~TaskSpecification();
 	private:
 		std::string _id;
 		std::string _name;
@@ -100,7 +100,7 @@ namespace Elpida
 		std::string _outputValueDescription;
 		std::string _outputValueUnit;
 		std::string _throughputUnit;
-		std::vector<ConfigurationSpecification> _configurationSpecifications;
+		std::vector<ConfigurationSpecificationBase*> _configurationSpecifications;
 		bool _acceptsInput;
 		bool _exportsOutput;
 		bool _shouldBeCountedOnResults;
@@ -114,7 +114,7 @@ namespace Elpida
 			std::string outputValueDescription,
 			std::string outputValueUnit,
 			std::string throughputUnit,
-			std::vector<ConfigurationSpecification>&& configurationSpecifications,
+			std::vector<ConfigurationSpecificationBase*>&& configurationSpecifications,
 			bool acceptsInput,
 			bool exportsOutput,
 			bool shouldBeCountedOnResults,
@@ -127,12 +127,12 @@ namespace Elpida
 		template<typename T>
 		ConfigurationValue<T>& getSettingAndValidate(const TaskConfiguration& configuration,
 			const std::string& name,
-			ConfigurationValueBase::Type type) const
+			ConfigurationType type) const
 		{
 			auto config = configuration.getConfiguration(name);
 			if (config != nullptr)
 			{
-				if (config->getType() == type)
+				if (config->getConfigurationSpecification().getType() == type)
 				{
 					return config->as<ConfigurationValue<T>>();
 				}

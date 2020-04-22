@@ -9,28 +9,37 @@
 namespace Elpida
 {
 
-	TaskConfiguration* BenchmarkConfiguration::getConfigurationForTask(const TaskSpecification& taskSpecification) const
+	const TaskConfiguration* BenchmarkConfiguration::getConfigurationForTask(const TaskSpecification& taskSpecification) const
+	{
+		return getConfigurationImpl(taskSpecification);
+	}
+
+	const TaskConfiguration* BenchmarkConfiguration::getConfigurationImpl(const TaskSpecification& taskSpecification) const
 	{
 		auto itr = _taskConfigurations.find(taskSpecification.getId());
 		if (itr != _taskConfigurations.end())
 		{
-			return itr->second;
+			return &itr->second;
 		}
 		return nullptr;
 	}
 
 	void BenchmarkConfiguration::addConfiguration(const TaskSpecification& taskSpecification,
-		TaskConfiguration& configuration)
+		TaskConfiguration&& configuration)
 	{
 		auto itr = _taskConfigurations.find(taskSpecification.getId());
 		if (itr == _taskConfigurations.end())
 		{
-			_taskConfigurations.emplace(taskSpecification.getId(), &configuration);
+			_taskConfigurations.insert_or_assign(taskSpecification.getId(), std::move(configuration));
 		}
 		else
 		{
 			throw ElpidaException("BenchmarkConfiguration::addConfiguration",
 				"Attempted to add a configuration that already exists");
 		}
+	}
+	TaskConfiguration* BenchmarkConfiguration::getConfigurationForTask(const TaskSpecification& taskSpecification)
+	{
+		return const_cast<TaskConfiguration*>(getConfigurationImpl(taskSpecification));
 	}
 }
