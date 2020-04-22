@@ -16,10 +16,17 @@ namespace Elpida
 		delete _ui;
 	}
 
-	void FileInputView::setConfiguration(ConfigurationValueBase& configurationValue)
+	void FileInputView::setConfiguration(ConfigurationValueBase* configurationValue)
 	{
-		_configurationValue = &configurationValue;
-		//_ui->lblPropertyName->setText(QString::fromStdString(_configurationValue.));
+		_configurationValue = configurationValue;
+		if (configurationValue != nullptr)
+		{
+			//_ui->lblPropertyName->setText(QString::fromStdString(_configurationValue.));
+		}
+	}
+	ConfigurationValueBase* FileInputView::getConfiguration()
+	{
+		return _configurationValue;
 	}
 
 } // namespace Elpida

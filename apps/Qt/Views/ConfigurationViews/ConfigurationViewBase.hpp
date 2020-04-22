@@ -11,7 +11,8 @@ namespace Elpida {
 	class ConfigurationViewBase
 	{
 	public:
-		virtual void setConfiguration(ConfigurationValueBase& configurationValue) = 0;
+		virtual void setConfiguration(ConfigurationValueBase* configurationValue) = 0;
+		virtual ConfigurationValueBase* getConfiguration() = 0;
 
 		virtual ~ConfigurationViewBase() = default;
 	};

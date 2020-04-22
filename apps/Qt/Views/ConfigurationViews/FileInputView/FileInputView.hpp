@@ -17,7 +17,8 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		void setConfiguration(ConfigurationValueBase &configurationValue) override;
+		void setConfiguration(ConfigurationValueBase* configurationValue) override;
+		ConfigurationValueBase* getConfiguration() override;
 
 		explicit FileInputView();
 		~FileInputView() override;
