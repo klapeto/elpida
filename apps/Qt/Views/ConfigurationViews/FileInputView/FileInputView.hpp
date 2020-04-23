@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "Views/ConfigurationViews/ConfigurationViewBase.hpp"
+#include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
 
 namespace Elpida
 {
@@ -19,12 +20,17 @@ namespace Elpida
 	public:
 		void setConfiguration(ConfigurationValueBase* configurationValue) override;
 		ConfigurationValueBase* getConfiguration() override;
+		void saveSetting() override;
 
 		explicit FileInputView();
 		~FileInputView() override;
 	private:
 		Ui::FileInputView* _ui;
-		ConfigurationValueBase* _configurationValue;
+		ConfigurationValue<std::string>* _configurationValue;
+
+	public slots:
+		void onEditingFinished();
+		void onBrowseClicked(bool checked);
 	};
 
 } // namespace Elpida

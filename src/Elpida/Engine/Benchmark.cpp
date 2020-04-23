@@ -12,13 +12,14 @@
 #include "Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp"
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
 #include "Elpida/Utilities/Uuid.hpp"
+#include "Elpida/Engine/BenchmarkScoreCalculator.hpp"
 
 namespace Elpida
 {
 
 	Benchmark::Benchmark(std::string name,
 		std::vector<TaskSpecification*>&& taskSpecifications,
-		const BenchmarkScoreCalculator& scoreCalculator)
+		BenchmarkScoreCalculator* scoreCalculator)
 		: _taskSpecifications(std::move(taskSpecifications)),
 		  _name(std::move(name)), _scoreCalculator(scoreCalculator)
 	{
@@ -31,6 +32,7 @@ namespace Elpida
 		{
 			delete specification;
 		}
+		delete _scoreCalculator;
 	}
 
 	std::vector<Task*> Benchmark::createNewTasks(const TaskAffinity& affinity,

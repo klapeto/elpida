@@ -16,6 +16,7 @@ namespace Elpida
 	public:
 		virtual void setConfiguration(ConfigurationValueBase* configurationValue) = 0;
 		virtual ConfigurationValueBase* getConfiguration() = 0;
+		virtual void saveSetting() = 0;
 
 		ConfigurationViewBase()
 			: QWidget()

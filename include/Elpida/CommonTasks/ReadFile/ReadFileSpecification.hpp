@@ -12,13 +12,13 @@ namespace Elpida
 	class ReadFileSpecification final : public TaskSpecification
 	{
 	public:
-		std::string filePathSetting = "filePath";
+		static const char* filePathSetting;
 
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
 			const TaskAffinity& affinity) const override;
 
 		ReadFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled);
-		~ReadFileSpecification() = default;
+		~ReadFileSpecification() override = default;
 	};
 }
 

@@ -18,7 +18,7 @@ extern "C" Elpida::TaskBatchesContainerPlugin<Elpida::Benchmark>* createPlugin()
 	auto benchmark = new Benchmark("Test Benchmark",{
 		new ReadFileSpecification(true, false),
 		new WriteFileSpecification(true, false)
-	}, DefaultBenchmarkScoreCalculator());
+	}, new DefaultBenchmarkScoreCalculator());
 
 	plugin->add(benchmark);
 

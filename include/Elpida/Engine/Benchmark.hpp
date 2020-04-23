@@ -30,7 +30,7 @@ namespace Elpida
 
 		[[nodiscard]] const BenchmarkScoreCalculator& getScoreCalculator() const
 		{
-			return _scoreCalculator;
+			return *_scoreCalculator;
 		}
 
 		[[nodiscard]] const std::string& getName() const
@@ -45,7 +45,7 @@ namespace Elpida
 
 		Benchmark(std::string name,
 			std::vector<TaskSpecification*>&& taskSpecifications,
-			const BenchmarkScoreCalculator& scoreCalculator);
+			BenchmarkScoreCalculator* scoreCalculator);
 		Benchmark(const Benchmark&) = delete;
 		Benchmark& operator=(const Benchmark&) = delete;
 		virtual ~Benchmark();
@@ -53,7 +53,7 @@ namespace Elpida
 		std::vector<TaskSpecification*> _taskSpecifications;
 		std::string _name;
 		std::string _id;
-		const BenchmarkScoreCalculator& _scoreCalculator;
+		BenchmarkScoreCalculator* _scoreCalculator;
 	};
 }
 

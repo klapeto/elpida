@@ -28,7 +28,7 @@ namespace Elpida
 
 		[[nodiscard]] virtual const TaskData* getInput() const
 		{
-			return *_inputData;
+			return _inputData != nullptr ? *_inputData : nullptr;
 		};
 
 		[[nodiscard]] bool shouldBeCountedOnResults() const

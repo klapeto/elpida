@@ -8,6 +8,8 @@
 namespace Elpida
 {
 
+	const char* WriteFileSpecification::filePathSetting = "Output File Name";
+
 	Task* WriteFileSpecification::createNewTask(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
@@ -26,7 +28,7 @@ namespace Elpida
 		_noOutputString.data(),
 		"B",
 		{
-			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,std::string(), "Output File Name", "The absolute file path", true)
+			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,"/home/klapeto/OUT.png", filePathSetting, "The absolute file path", true)
 			},
 		true,
 		false,

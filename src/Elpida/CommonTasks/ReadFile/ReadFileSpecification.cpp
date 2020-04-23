@@ -10,6 +10,8 @@
 namespace Elpida
 {
 
+	const char* ReadFileSpecification::filePathSetting = "Input File Name";
+
 	Task* ReadFileSpecification::createNewTask(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
@@ -28,7 +30,7 @@ namespace Elpida
 		"Bytes",
 		"B",
 		{
-			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,std::string(), "Input File Name", "The absolute file path", true)
+			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,"/home/klapeto/ERf_027(B13).png", filePathSetting, "The absolute file path", true)
 			    },
 		false,
 		true,
