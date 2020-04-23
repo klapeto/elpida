@@ -3,8 +3,14 @@
 
 #include <QWidget>
 
+class QVBoxLayout;
+
 namespace Elpida
 {
+	class BenchmarkConfigurationModel;
+	class EventSubscriptionBase;
+	class ConfigurationViewsPool;
+	class ConfigurationViewBase;
 
 	namespace Ui
 	{
@@ -16,11 +22,24 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		explicit BenchmarkConfigurationView();
+		explicit BenchmarkConfigurationView(BenchmarkConfigurationModel& benchmarkConfigurationModel,
+			ConfigurationViewsPool& configurationViewsPool);
 		~BenchmarkConfigurationView() override;
 
 	private:
+		std::vector<ConfigurationViewBase*> _rentedViews;
+		BenchmarkConfigurationModel& _benchmarkConfigurationModel;
+		ConfigurationViewsPool& _configurationViewsPool;
+		EventSubscriptionBase* _dataChangedSubscription;
 		Ui::BenchmarkConfigurationView* _ui;
+		QVBoxLayout* _containerLayout;
+
+	signals:
+		void dataChanged();
+
+	private slots:
+		void dataChangedHandler();
+		void returnAllViewsToPool();
 	};
 
 } // namespace Elpida

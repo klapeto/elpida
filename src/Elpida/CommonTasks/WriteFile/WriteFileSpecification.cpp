@@ -26,7 +26,7 @@ namespace Elpida
 		_noOutputString.data(),
 		"B",
 		{
-			new ConfigurationSpecification<std::string>(std::string(), "File Name", "The absolute file path", true)
+			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,std::string(), "Output File Name", "The absolute file path", true)
 			},
 		true,
 		false,

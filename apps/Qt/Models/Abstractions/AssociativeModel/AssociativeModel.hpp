@@ -28,12 +28,25 @@ namespace Elpida
 			CollectionModel<Pair>::onDataChanged();
 		}
 
-		const TValue& get(const TKey& key) const
+		const TValue& getConst(const TKey& key) const
 		{
 			auto itr = _values.find(key);
 			if (itr != _values.end())
 			{
 				return itr->second;
+			}
+			else
+			{
+				throw ElpidaException(FUNCTION_NAME, "Key not found on model");
+			}
+		}
+
+		TValue& get(const TKey& key) const
+		{
+			auto itr = _values.find(key);
+			if (itr != _values.end())
+			{
+				return const_cast<TValue&>(itr->second);
 			}
 			else
 			{

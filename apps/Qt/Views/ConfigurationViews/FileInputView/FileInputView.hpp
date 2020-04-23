@@ -12,7 +12,7 @@ namespace Elpida
 		class FileInputView;
 	}
 
-	class FileInputView : public QWidget, public ConfigurationViewBase
+	class FileInputView : public ConfigurationViewBase
 	{
 	Q_OBJECT
 

@@ -2,7 +2,7 @@
 // Created by klapeto on 21/4/20.
 //
 
-#include "BenchmarkConfigurationsModel.hpp"
+#include "BenchmarkConfigurationsCollectionModel.hpp"
 namespace Elpida {
 
 }

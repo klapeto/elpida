@@ -125,9 +125,9 @@ namespace Elpida
 					throw;
 				}
 
-				const auto& data = pPlugin->getUnderlyingData();
+				const auto& benchmarks = pPlugin->getUnderlyingData();
 				_createdPlugins.push_back(pPlugin);
-				for (auto benchmark : data)
+				for (auto benchmark : benchmarks)
 				{
 					BenchmarkConfiguration configuration;
 					for (const auto& configSpec :benchmark->getConfigurationSpecifications())

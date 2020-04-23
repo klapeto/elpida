@@ -21,6 +21,11 @@ namespace Elpida
 		ConfigurationValueBase* getConfiguration(const std::string& name) const;
 		void setConfiguration(const std::string& name, ConfigurationValueBase& configuration);
 
+		const std::unordered_map<std::string, ConfigurationValueBase*>& getAllConfigurations() const
+		{
+			return _configuration;
+		}
+
 		TaskConfiguration() = default;
 		TaskConfiguration(std::initializer_list<std::pair<std::string, ConfigurationValueBase*>> pairs);;
 		TaskConfiguration(TaskConfiguration&&) = default;

@@ -28,7 +28,7 @@ namespace Elpida
 		"Bytes",
 		"B",
 		{
-			new ConfigurationSpecification<std::string>(std::string(), "File Name", "The absolute file path", true)
+			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,std::string(), "Input File Name", "The absolute file path", true)
 			    },
 		false,
 		true,

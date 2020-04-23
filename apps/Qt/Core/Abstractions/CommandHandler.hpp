@@ -39,6 +39,9 @@ namespace Elpida
 		virtual void handle(GetTaskAffinityCommand& command)
 		{
 		};
+		virtual void handle(SelectedBenchmarkChangedEvent& command)
+		{
+		};
 
 		virtual ~CommandHandler() = default;
 	};

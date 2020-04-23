@@ -9,12 +9,14 @@
 
 #include "Models/BenchmarksModel.hpp"
 #include "Core/Commands/GetBenchmarksToRunCommand.hpp"
+#include "Core/Commands/SelectedBenchmarkChangedEvent.hpp"
+#include "Core/Abstractions/Mediator.hpp"
 
 namespace Elpida
 {
 
-	BenchmarkListView::BenchmarkListView(const ListModel<Benchmark*>& model)
-		: QWidget(), CollectionModelObserver<Benchmark*>(model), _ui(new Ui::BenchmarkListView)
+	BenchmarkListView::BenchmarkListView(const ListModel<Benchmark*>& model, Mediator& mediator)
+		: QWidget(), CollectionModelObserver<Benchmark*>(model), _mediator(mediator), _ui(new Ui::BenchmarkListView)
 	{
 		_ui->setupUi(this);
 
@@ -22,6 +24,7 @@ namespace Elpida
 		{
 			addItem(itm.getValue());
 		}
+		QWidget::connect(_ui->lvTaskBatches, &QListWidget::itemSelectionChanged, this, &BenchmarkListView::onSelectionChanged);
 	}
 
 	BenchmarkListView::~BenchmarkListView()
@@ -79,6 +82,12 @@ namespace Elpida
 		{
 			command.addBenchmark(*selected);
 		}
+	}
+
+	void BenchmarkListView::onSelectionChanged()
+	{
+		SelectedBenchmarkChangedEvent event(*getSelectedBenchmark(), nullptr);
+		_mediator.execute(event);
 	}
 
 } // namespace Elpida

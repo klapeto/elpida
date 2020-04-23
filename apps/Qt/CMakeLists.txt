@@ -39,7 +39,7 @@ set(ELPIDA_QT_SOURCES
         Models/Abstractions/CollectionModelObserver.cpp
         Models/BenchmarkResultsModel.cpp
         Models/BenchmarkRunnerModel.cpp
-        Models/BenchmarkConfigurationsModel.cpp
+        Models/BenchmarkConfigurationsCollectionModel.cpp
         Models/Abstractions/AssociativeModel/AssociativeModel.cpp
         Models/Abstractions/ListModel/ListModel.cpp
         Models/Abstractions/ListModel/ListModelItem.cpp
@@ -48,7 +48,7 @@ set(ELPIDA_QT_SOURCES
         Controllers/BenchmarkRunnerController.cpp
         Controllers/MainViewController.cpp
         QCustomApplication.cpp
-        ConfigurationViewsPool.cpp ConfigurationViewsPool.hpp Views/ConfigurationViews/ConfigurationViewBase.cpp Views/ConfigurationViews/ConfigurationViewBase.hpp Models/Abstractions/AssociativeModel/AssociativeItem.cpp Models/Abstractions/AssociativeModel/AssociativeItem.hpp)
+        ConfigurationViewsPool.cpp ConfigurationViewsPool.hpp Views/ConfigurationViews/ConfigurationViewBase.cpp Views/ConfigurationViews/ConfigurationViewBase.hpp Models/Abstractions/AssociativeModel/AssociativeItem.cpp Models/Abstractions/AssociativeModel/AssociativeItem.hpp Models/BenchmarkConfigurationModel.cpp Models/BenchmarkConfigurationModel.hpp Controllers/BenchmarkConfigurationController.cpp Controllers/BenchmarkConfigurationController.hpp Core/Commands/SelectedBenchmarkChangedEvent.hpp)
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

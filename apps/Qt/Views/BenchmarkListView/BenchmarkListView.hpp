@@ -13,6 +13,7 @@ class QListWidgetItem;
 namespace Elpida
 {
 	class Benchmark;
+	class Mediator;
 
 	namespace Ui
 	{
@@ -27,12 +28,12 @@ namespace Elpida
 
 		void handle(GetBenchmarksToRunCommand &command) override;
 
-		explicit BenchmarkListView(const ListModel<Benchmark*>& model);
+		explicit BenchmarkListView(const ListModel<Benchmark*>& model, Mediator& mediator);
 		~BenchmarkListView() override;
 	private:
 		Ui::BenchmarkListView* _ui;
 		std::unordered_map<const Benchmark*, QListWidgetItem*> _createdItems;
-
+		Mediator& _mediator;
 		Benchmark* getSelectedBenchmark();
 	protected:
 
@@ -40,6 +41,9 @@ namespace Elpida
 		void onItemRemoved(Benchmark* const& item) override;
 		void onCollectionCleared() override;
 		void addItem(Benchmark* const& item);
+
+	private slots:
+		void onSelectionChanged();
 	};
 
 } // namespace Elpida

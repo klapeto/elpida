@@ -16,7 +16,7 @@ namespace Elpida {
 
 	class BenchmarkResultsModel;
 	class BenchmarkRunnerModel;
-	class BenchmarkConfigurationsModel;
+	class BenchmarkConfigurationsCollectionModel;
 	class Mediator;
 
 	class BenchmarkRunnerController: public CommandHandler
@@ -28,13 +28,13 @@ namespace Elpida {
 		BenchmarkRunnerController(Mediator& mediator,
 			BenchmarkResultsModel& benchmarkResultsModel,
 			BenchmarkRunnerModel& runnerModel,
-			BenchmarkConfigurationsModel& configurationsModel);
+			BenchmarkConfigurationsCollectionModel& configurationsModel);
 	private:
 		OffThreadExecutor _taskRunnerThread;
 		BenchmarkRunner _runner;
 		BenchmarkResultsModel& _benchmarkResultsModel;
 		BenchmarkRunnerModel& _runnerModel;
-		BenchmarkConfigurationsModel& _configurationsModel;
+		BenchmarkConfigurationsCollectionModel& _configurationsModel;
 		Mediator& _mediator;
 
 		void onTaskBatchStarted(const BenchmarkEventArgs& ev);

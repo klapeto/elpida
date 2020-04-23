@@ -9,7 +9,7 @@
 #include "Core/Abstractions/TypedCommand.hpp"
 
 namespace Elpida  {
-	class GetTaskAffinityCommand: public TypedCommand<GetTaskAffinityCommand>
+	class GetTaskAffinityCommand final: public TypedCommand<GetTaskAffinityCommand>
 	{
 	public:
 		[[nodiscard]] const TaskAffinity& getAffinity() const
@@ -23,6 +23,7 @@ namespace Elpida  {
 		}
 
 		GetTaskAffinityCommand() = default;
+		~GetTaskAffinityCommand() override = default;
 	private:
 		TaskAffinity _affinity;
 	};

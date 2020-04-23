@@ -16,11 +16,12 @@ namespace Elpida
 	class BenchmarkConfiguration;
 	class BenchmarkScoreCalculator;
 
-	class Benchmark final
+	class Benchmark
 	{
 	public:
 		[[nodiscard]] std::vector<TaskConfigurationSpecifications> getConfigurationSpecifications() const;
-		[[nodiscard]] std::vector<Task*> createNewTasks(const TaskAffinity& affinity, const BenchmarkConfiguration& configuration) const;
+		[[nodiscard]] std::vector<Task*> createNewTasks(const TaskAffinity& affinity,
+			const BenchmarkConfiguration& configuration) const;
 
 		[[nodiscard]] size_t getTotalTasksCount() const
 		{
@@ -37,7 +38,7 @@ namespace Elpida
 			return _name;
 		}
 
-		const std::string& getId() const
+		[[nodiscard]] const std::string& getId() const
 		{
 			return _id;
 		}
@@ -45,7 +46,9 @@ namespace Elpida
 		Benchmark(std::string name,
 			std::vector<TaskSpecification*>&& taskSpecifications,
 			const BenchmarkScoreCalculator& scoreCalculator);
-		~Benchmark();
+		Benchmark(const Benchmark&) = delete;
+		Benchmark& operator=(const Benchmark&) = delete;
+		virtual ~Benchmark();
 	protected:
 		std::vector<TaskSpecification*> _taskSpecifications;
 		std::string _name;

@@ -10,14 +10,14 @@
 #include "Core/Abstractions/Mediator.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
-#include "Models/BenchmarkConfigurationsModel.hpp"
+#include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 
 namespace Elpida
 {
 	BenchmarkRunnerController::BenchmarkRunnerController(Mediator& mediator,
 		BenchmarkResultsModel& benchmarkResultsModel,
 		BenchmarkRunnerModel& runnerModel,
-		BenchmarkConfigurationsModel& configurationsModel)
+		BenchmarkConfigurationsCollectionModel& configurationsModel)
 		: _benchmarkResultsModel(benchmarkResultsModel), _runnerModel(runnerModel), _configurationsModel(configurationsModel), _mediator(mediator)
 	{
 
@@ -60,7 +60,7 @@ namespace Elpida
 					for (auto bench: benchmarks)
 					{
 						benchmarkRunRequests
-							.emplace_back(*bench, _configurationsModel.get(bench->getId()));
+							.emplace_back(*bench, _configurationsModel.getConst(bench->getId()));
 					}
 					_taskRunnerThread.run([this, aff(affinity), benches(benchmarkRunRequests)]()
 					{

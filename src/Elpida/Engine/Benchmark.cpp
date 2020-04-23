@@ -85,7 +85,7 @@ namespace Elpida
 		std::vector<TaskConfigurationSpecifications> specifications;
 		for (auto spec: _taskSpecifications)
 		{
-			specifications.push_back(TaskConfigurationSpecifications(*spec));
+			specifications.emplace_back(*spec);
 		}
 		return specifications;
 	}

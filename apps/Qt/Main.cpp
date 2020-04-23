@@ -19,13 +19,16 @@
 
 #include "Elpida/Config.hpp"
 
+#include "ConfigurationViewsPool.hpp"
+
 #include "Controllers/BenchmarksController.hpp"
 #include "Controllers/BenchmarkRunnerController.hpp"
+#include "Controllers/BenchmarkConfigurationController.hpp"
 
 #include "Models/BenchmarksModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
-#include "Models/BenchmarkConfigurationsModel.hpp"
-#include "Models/BenchmarkConfigurationsModel.hpp"
+#include "Models/BenchmarkConfigurationsCollectionModel.hpp"
+#include "Models/BenchmarkConfigurationModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
 #include "Views/SystemInfoView/SystemInfoView.hpp"
@@ -45,9 +48,6 @@
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QVBoxLayout>
 #include "QCustomApplication.hpp"
-
-#include <Elpida/Engine/Configuration/TaskConfiguration.hpp>
-#include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
 
 
 using namespace Elpida;
@@ -94,6 +94,8 @@ int main(int argc, char* argv[])
 
 	MainWindow mainWindow(mediator);
 
+	ConfigurationViewsPool configurationViewsPool;
+
 	CpuInfo cpuInfo;
 	SystemTopology topology;
 
@@ -108,23 +110,23 @@ int main(int argc, char* argv[])
 	BenchmarksModel taskBatchesModel;
 	BenchmarkRunnerModel taskRunnerModel;
 	BenchmarkResultsModel taskRunResultsModel;
-	BenchmarkConfigurationsModel benchmarkConfigurationsModel;
+	BenchmarkConfigurationModel benchmarkConfigurationModel;
+	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
 	BenchmarksController taskBatchesController(taskBatchesModel,benchmarkConfigurationsModel, logger);
 	taskBatchesController.reload();
-
 	BenchmarkRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel);
-	mediator.registerCommandHandler(runnerController);
-
-
-	BenchmarkListView taskBatchesListView(taskBatchesModel);
+	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
 	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel);
-	BenchmarkConfigurationView benchmarkConfigurationView;
+	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationModel, configurationViewsPool);
+	BenchmarkConfigurationController benchmarkConfigurationController(benchmarkConfigurationsModel, benchmarkConfigurationModel);
 
+	mediator.registerCommandHandler(runnerController);
 	mediator.registerCommandHandler(taskBatchesListView);
 	mediator.registerCommandHandler(topologyView);
 	mediator.registerCommandHandler(mainWindow);
+	mediator.registerCommandHandler(benchmarkConfigurationController);
 
 	initializeTaskTab(mainWindow,
 		taskBatchesListView,

@@ -18,6 +18,7 @@ namespace Elpida
 	public:
 		ConfigurationViewBase* rentViewForConfiguration(const ConfigurationValueBase& spec);
 		void returnView(ConfigurationViewBase* view);
+
 		ConfigurationViewsPool();
 		virtual ~ConfigurationViewsPool();
 	private:
@@ -26,7 +27,7 @@ namespace Elpida
 		template<typename T>
 		ConfigurationViewBase* getFromStack(std::stack<ConfigurationViewBase*>& stack)
 		{
-			if (stack.size() > 0)
+			if (!stack.empty())
 			{
 				auto value = stack.top();
 				stack.pop();

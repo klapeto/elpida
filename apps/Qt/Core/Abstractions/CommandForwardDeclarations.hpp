@@ -15,6 +15,7 @@ namespace Elpida {
 	class GetBenchmarksToRunCommand;
 	class ShowMessageCommand;
 	class GetTaskAffinityCommand;
+	class SelectedBenchmarkChangedEvent;
 }
 
 #endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP

@@ -68,8 +68,8 @@ namespace Elpida
 			if (_lock.owns_lock())
 			{
 				_transaction = false;
-				onDataChanged();
 				_lock.unlock();
+				onDataChanged();
 			}
 			else
 			{

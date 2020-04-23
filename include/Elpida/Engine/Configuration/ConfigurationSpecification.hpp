@@ -87,7 +87,7 @@ namespace Elpida
 		{
 		}
 
-		~ConfigurationSpecification() = default;
+		~ConfigurationSpecification() override = default;
 	private:
 		T _defaultValue;
 	};

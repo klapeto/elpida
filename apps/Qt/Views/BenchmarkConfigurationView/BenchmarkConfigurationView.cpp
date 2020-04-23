@@ -1,34 +1,68 @@
 #include "BenchmarkConfigurationView.hpp"
 #include "ui_BenchmarkConfigurationView.h"
 
-#include <QLabel>
-#include <QLineEdit>
-#include <QGridLayout>
-#include <QCheckBox>
-#include <QPushButton>
-#include <QSpacerItem>
+#include "Models/BenchmarkConfigurationModel.hpp"
+#include "ConfigurationViewsPool.hpp"
+#include "Views/ConfigurationViews/ConfigurationViewBase.hpp"
+#include <Elpida/Engine/Configuration/BenchmarkConfiguration.hpp>
+#include <Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp>
+#include <Elpida/Engine/Configuration/TaskConfiguration.hpp>
+#include <Elpida/Engine/Benchmark.hpp>
 
 namespace Elpida
 {
 
-	BenchmarkConfigurationView::BenchmarkConfigurationView()
-		: QWidget(nullptr), _ui(new Ui::BenchmarkConfigurationView)
+	BenchmarkConfigurationView::BenchmarkConfigurationView(BenchmarkConfigurationModel& benchmarkConfigurationModel,
+		ConfigurationViewsPool& configurationViewsPool)
+		: QWidget(nullptr), _benchmarkConfigurationModel(benchmarkConfigurationModel),
+		  _configurationViewsPool(configurationViewsPool),
+		  _ui(new Ui::BenchmarkConfigurationView)
 	{
 		_ui->setupUi(this);
 
-//		auto layout = new QGridLayout;
-//		layout->addWidget(new QLabel("Input Prop:"), 0,0,Qt::AlignLeft);
-//		layout->addWidget(new QLineEdit(), 0,1,Qt::AlignLeft);
-//		layout->addWidget(new QCheckBox("Bool Prop"), 1,0,1,3,Qt::AlignLeft);
-//		layout->addWidget(new QLabel("File Prop:"), 2,0,Qt::AlignLeft);
-//		layout->addWidget(new QLineEdit(), 2,1,Qt::AlignLeft);
-//		layout->addWidget(new QPushButton("File.."), 2,3,Qt::AlignLeft);
-//		_ui->scrollAreaWidgetContents->setLayout(layout);
+		_containerLayout = new QVBoxLayout;
+		_ui->scrollAreaWidgetContents->setLayout(_containerLayout);
+		_dataChangedSubscription = &_benchmarkConfigurationModel.dataChanged.subscribe([this]()
+		{
+			emit dataChanged();
+		});
+		QWidget::connect(this,
+			&BenchmarkConfigurationView::dataChanged,
+			this,
+			&BenchmarkConfigurationView::dataChangedHandler);
 	}
 
 	BenchmarkConfigurationView::~BenchmarkConfigurationView()
 	{
+		_dataChangedSubscription->unsubscribe();
 		delete _ui;
+	}
+
+	void BenchmarkConfigurationView::dataChangedHandler()
+	{
+		returnAllViewsToPool();
+		auto configuration = _benchmarkConfigurationModel.getBenchmarkConfiguration();
+
+		for (auto& taskConfPair: configuration->getAllTaskConfigurations())
+		{
+			for (auto& taskConfValuePair: taskConfPair.second.getAllConfigurations())
+			{
+				auto view = _configurationViewsPool.rentViewForConfiguration(*taskConfValuePair.second);
+				_rentedViews.push_back(view);
+				view->setConfiguration(taskConfValuePair.second);
+				_containerLayout->addWidget(view);
+			}
+		}
+	}
+
+	void BenchmarkConfigurationView::returnAllViewsToPool()
+	{
+		for (auto view : _rentedViews)
+		{
+			_configurationViewsPool.returnView(view);
+			_containerLayout->removeWidget(view);
+		}
+		_rentedViews.clear();
 	}
 
 } // namespace Elpida

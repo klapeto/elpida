@@ -16,7 +16,12 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]] const TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification) const;
-		[[nodiscard]] TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification) ;
+		[[nodiscard]] TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification);
+
+		const std::unordered_map<std::string, TaskConfiguration>& getAllTaskConfigurations() const
+		{
+			return _taskConfigurations;
+		}
 
 		void addConfiguration(const TaskSpecification& taskSpecification, TaskConfiguration&& configuration);
 
