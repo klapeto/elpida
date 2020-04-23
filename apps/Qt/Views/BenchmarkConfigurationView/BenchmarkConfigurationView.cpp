@@ -48,6 +48,7 @@ namespace Elpida
 			for (auto& taskConfValuePair: taskConfPair.second.getAllConfigurations())
 			{
 				auto view = _configurationViewsPool.rentViewForConfiguration(*taskConfValuePair.second);
+				view->show();
 				_rentedViews.push_back(view);
 				view->setConfiguration(taskConfValuePair.second);
 				_containerLayout->addWidget(view);
@@ -57,10 +58,12 @@ namespace Elpida
 
 	void BenchmarkConfigurationView::returnAllViewsToPool()
 	{
+
 		for (auto view : _rentedViews)
 		{
 			_configurationViewsPool.returnView(view);
 			_containerLayout->removeWidget(view);
+			view->hide();
 		}
 		_rentedViews.clear();
 	}

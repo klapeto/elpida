@@ -26,6 +26,8 @@
 
 #include "Elpida/CommonTasks/WriteFile/WriteFile.hpp"
 
+#include <utility>
+
 #include "Elpida/Utilities/MemoryFile.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Engine/Task/TaskData.hpp"
@@ -37,7 +39,7 @@ namespace Elpida
 		const TaskAffinity& affinity,
 		std::string filePath,
 		bool toBeCountedOnResults)
-		: Task(specification, affinity, toBeCountedOnResults), _outputPath(filePath)
+		: Task(specification, affinity, toBeCountedOnResults), _outputPath(std::move(filePath))
 	{
 
 	}
