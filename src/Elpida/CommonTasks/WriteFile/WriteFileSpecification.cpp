@@ -19,7 +19,7 @@ namespace Elpida
 		return new WriteFile(*this, std::move(affinity), filepath.getValue(), shouldBeCountedOnResults());
 	}
 
-	WriteFileSpecification::WriteFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled)
+	WriteFileSpecification::WriteFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled, const std::string& defaultValue)
 		: TaskSpecification("Write from memory to file",
 		"Writes data received from other tasks to file on disk",
 		"Data to write to disk",
@@ -28,7 +28,7 @@ namespace Elpida
 		_noOutputString.data(),
 		"B",
 		{
-			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,"/home/klapeto/OUT.png", filePathSetting, "The absolute file path", true)
+			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath, defaultValue, filePathSetting, "The absolute file path", true)
 			},
 		true,
 		false,

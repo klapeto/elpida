@@ -21,7 +21,7 @@ namespace Elpida
 		return new ReadFile(*this, affinity, filePath.getValue(), shouldBeCountedOnResults());
 	}
 
-	ReadFileSpecification::ReadFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled)
+	ReadFileSpecification::ReadFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled, const std::string& defaultValue)
 		: TaskSpecification("Read File to Memory",
 		"Reads a file from disk to memory",
 		_noInputString.data(),
@@ -30,7 +30,7 @@ namespace Elpida
 		"Bytes",
 		"B",
 		{
-			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,"/home/klapeto/ERf_027(B13).png", filePathSetting, "The absolute file path", true)
+			new ConfigurationSpecification<std::string>(ConfigurationType::FilePath,defaultValue, filePathSetting, "The absolute file path", true)
 			    },
 		false,
 		true,
