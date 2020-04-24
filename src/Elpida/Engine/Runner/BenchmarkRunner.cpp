@@ -84,13 +84,13 @@ namespace Elpida
 		task.run();
 		auto end = Timer::now();
 
+		task.finalize();
+
 		auto outputValue = (*task.getOutput()) != nullptr ? (*task.getOutput())->getSize(): 0;
 		auto inputValue = task.getInput() != nullptr ? task.getInput()->getSize() : 0;
 		auto metrics = TaskMetrics(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start),
-		    inputValue,
+			inputValue,
 			outputValue);;
-
-		task.finalize();
 
 		return metrics;
 	}

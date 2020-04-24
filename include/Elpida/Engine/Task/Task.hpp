@@ -6,6 +6,7 @@
 #define INCLUDE_ELPIDA_ENGINE_TASK_TASK_HPP
 
 #include <string>
+#include <utility>
 #include "TaskSpecification.hpp"
 
 namespace Elpida
@@ -47,8 +48,8 @@ namespace Elpida
 
 		virtual void applyAffinity();
 
-		Task(const TaskSpecification& specification, const TaskAffinity& affinity, bool toBeCountedOnResults = true)
-			: _specification(specification), _affinity(affinity), _inputData(nullptr), _outputData(nullptr),
+		Task(const TaskSpecification& specification, TaskAffinity  affinity, bool toBeCountedOnResults = true)
+			: _specification(specification), _affinity(std::move(affinity)), _inputData(nullptr), _outputData(nullptr),
 			  _toBeCountedOnResults(toBeCountedOnResults)
 		{
 		}

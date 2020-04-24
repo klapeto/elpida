@@ -20,7 +20,7 @@ namespace Elpida
 
 		[[nodiscard]] const Benchmark& getBenchmark() const
 		{
-			return _benchmark;
+			return *_benchmark;
 		}
 
 		[[nodiscard]] const std::vector<TaskResult>& getTaskResults() const
@@ -28,20 +28,24 @@ namespace Elpida
 			return _taskResults;
 		}
 
-		const std::string& getId() const
+		[[nodiscard]] const std::string& getId() const
 		{
 			return _id;
 		}
 
-		Score getScore() const
+		[[nodiscard]] Score getScore() const
 		{
 			return _score;
 		}
 
 		BenchmarkResult(const Benchmark& benchmark, std::vector<TaskResult>&& taskResults, Score score);
+		BenchmarkResult(BenchmarkResult&&) = default;
+		BenchmarkResult& operator=(BenchmarkResult&&) = default;
+		BenchmarkResult(const BenchmarkResult&) = default;
+		BenchmarkResult& operator=(const BenchmarkResult&) = default;
 		~BenchmarkResult() = default;
 	private:
-		const Benchmark& _benchmark;
+		const Benchmark* _benchmark;
 		std::vector<TaskResult> _taskResults;
 		std::string _id;
 		Score _score;

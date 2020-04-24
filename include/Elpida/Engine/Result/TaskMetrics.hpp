@@ -39,6 +39,11 @@ namespace Elpida
 			return ((double)Division::den * _duration.count()) / (double)Division::num;
 		}
 
+		[[nodiscard]] double getThroughputPerSecond() const
+		{
+			return (_inputDataSize > 0 ? _inputDataSize : _actualProcessDataSize) / getDurationSubdivision<Second>();
+		}
+
 		explicit TaskMetrics(const Duration& duration, size_t inputDataSize, size_t actualProcessDataSize)
 			: _duration(duration), _inputDataSize(inputDataSize), _actualProcessDataSize(actualProcessDataSize)
 		{

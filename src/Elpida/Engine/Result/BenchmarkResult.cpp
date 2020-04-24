@@ -11,7 +11,7 @@ namespace Elpida
 	BenchmarkResult::BenchmarkResult(const Benchmark& benchmark,
 		std::vector<TaskResult>&& taskResults,
 		BenchmarkResult::Score score)
-		: _benchmark(benchmark), _taskResults(std::move(taskResults)), _score(score)
+		: _benchmark(&benchmark), _taskResults(std::move(taskResults)), _score(score)
 	{
 		_id = Uuid::create();
 	}

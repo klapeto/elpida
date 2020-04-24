@@ -3,6 +3,7 @@
 
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Utilities/ValueUtilities.hpp>
 
 #include <QTreeWidgetItem>
 
@@ -23,17 +24,18 @@ namespace Elpida
 
 	void BenchmarkResultsView::onItemAdded(const BenchmarkResult& item)
 	{
+
 		auto parent = new QTreeWidgetItem();
 		parent->setText(0, QString::fromStdString(item.getBenchmark().getName()));
 		for (const auto& result: item.getTaskResults())
 		{
 			auto metrics = result.getMetrics();
 			auto child = new QTreeWidgetItem();
+
 			child->setText(0, QString::fromStdString(result.getSpecification().getName()));
 			child->setText(1,
-				QString::fromStdString(std::to_string(
-					metrics.getActualProcessDataSize() / metrics.getDurationSubdivision<TaskMetrics::Second>())
-					+ result.getSpecification().getOutputValueUnit() + "/s"));
+				QString::fromStdString(Vu::getValueScaleString(metrics.getThroughputPerSecond())
+					+ result.getSpecification().getThroughputUnit() + "/s"));
 			parent->addChild(child);
 		}
 		_createdItems.emplace(item.getId(), parent);

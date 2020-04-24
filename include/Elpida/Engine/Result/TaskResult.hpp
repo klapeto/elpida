@@ -18,22 +18,27 @@ namespace Elpida
 	public:
 		[[nodiscard]] const TaskSpecification& getSpecification() const
 		{
-			return _specification;
+			return *_specification;
 		}
+
 		[[nodiscard]] const TaskMetrics& getMetrics() const
 		{
 			return _metrics;
 		}
 
 		TaskResult(const TaskSpecification& specification, TaskMetrics&& metrics)
-			: _specification(specification), _metrics(metrics)
+			: _specification(&specification), _metrics(metrics)
 		{
 
 		}
 
+		TaskResult(TaskResult&&) = default;
+		TaskResult& operator=(TaskResult&&) = default;
+		TaskResult(const TaskResult&) = default;
+		TaskResult& operator=(const TaskResult&) = default;
 		~TaskResult() = default;
 	private:
-		const TaskSpecification& _specification;
+		const TaskSpecification* _specification;
 		TaskMetrics _metrics;
 	};
 }
