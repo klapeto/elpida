@@ -70,6 +70,8 @@ namespace Elpida
 							{
 								model.setRunning(true);
 								model.setSessionTotalBenchmarksCount(benches.size());
+								model.setBenchmarkCompletedTasksCount(0);
+								model.setSessionCompletedBenchmarksCount(0);
 							});
 							auto results = _runner.runBenchmarks(benches, aff);
 							_runnerModel.setRunning(false);
@@ -81,6 +83,13 @@ namespace Elpida
 										model.add(result);
 									}
 								});
+							_runnerModel.transactional<BenchmarkRunnerModel>([&benches](BenchmarkRunnerModel& model)
+							{
+								model.setRunning(false);
+								model.setSessionTotalBenchmarksCount(0);
+								model.setBenchmarkCompletedTasksCount(0);
+								model.setSessionCompletedBenchmarksCount(0);
+							});
 						}
 						catch (const std::exception& ex)
 						{
@@ -118,7 +127,7 @@ namespace Elpida
 		_runnerModel.transactional<BenchmarkRunnerModel>([&ev](BenchmarkRunnerModel& model)
 		{
 			model.setCurrentRunningTaskBatch(&ev.getBenchmark());
-			model.setBatchExecutedTasksCount(0);
+			model.setBenchmarkCompletedTasksCount(0);
 			model.setBenchmarkTotalTasksCount(ev.getBenchmark().getTotalTasksCount());
 		});
 	}
@@ -133,7 +142,7 @@ namespace Elpida
 		_runnerModel.transactional<BenchmarkRunnerModel>([&ev](BenchmarkRunnerModel& model)
 		{
 			model.setCurrentRunningTaskSpecification(nullptr);
-			model.setBatchExecutedTasksCount(model.getBatchExecutedTasksCount() + 1);
+			model.setBenchmarkCompletedTasksCount(model.getBatchExecutedTasksCount() + 1);
 		});
 	}
 	void BenchmarkRunnerController::onTaskBatchEnded(const BenchmarkEventArgs& ev)

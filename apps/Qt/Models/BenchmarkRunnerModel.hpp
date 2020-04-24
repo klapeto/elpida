@@ -37,7 +37,7 @@ namespace Elpida
 			_sessionCompletedBenchmarksCount = sessionCompletedBenchmarksCount ;
 			onDataChanged();
 		}
-		void setBatchExecutedTasksCount(size_t benchmarkCompletedTasksCount)
+		void setBenchmarkCompletedTasksCount(size_t benchmarkCompletedTasksCount)
 		{
 			_benchmarkCompletedTasksCount = benchmarkCompletedTasksCount;
 			onDataChanged();
@@ -88,7 +88,7 @@ namespace Elpida
 		{
 		}
 
-		~BenchmarkRunnerModel() = default;
+		~BenchmarkRunnerModel() override = default;
 	private:
 		const TaskSpecification* _currentRunningTaskSpecification;
 		const Benchmark* _currentRunningBenchmark;
