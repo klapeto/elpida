@@ -132,12 +132,13 @@ namespace Elpida
 					BenchmarkConfiguration configuration;
 					for (const auto& configSpec :benchmark->getConfigurationSpecifications())
 					{
-						TaskConfiguration taskConfiguration;
+						auto& taskSpec = configSpec.getTaskSpecification();
+						TaskConfiguration taskConfiguration(taskSpec);
 						for (auto spc : configSpec.getConfigurationSpecifications())
 						{
 							taskConfiguration.setConfiguration(spc->getName(), *spc->createDefault());
 						}
-						configuration.addConfiguration(configSpec.getTaskSpecification(), std::move(taskConfiguration));
+						configuration.addConfiguration(taskSpec, std::move(taskConfiguration));
 					}
 					_configurationsModel.add(benchmark->getId(), std::move(configuration));
 					_model.add(benchmark);

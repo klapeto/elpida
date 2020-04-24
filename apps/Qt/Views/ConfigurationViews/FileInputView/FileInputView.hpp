@@ -1,8 +1,7 @@
 #ifndef ELPIDA_FILEINPUTVIEW_HPP
 #define ELPIDA_FILEINPUTVIEW_HPP
 
-#include <QWidget>
-#include "Views/ConfigurationViews/ConfigurationViewBase.hpp"
+#include "Views/ConfigurationViews/ConfigurationValueViewBase.hpp"
 #include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
 
 namespace Elpida
@@ -13,7 +12,7 @@ namespace Elpida
 		class FileInputView;
 	}
 
-	class FileInputView : public ConfigurationViewBase
+	class FileInputView : public ConfigurationValueViewBase
 	{
 	Q_OBJECT
 

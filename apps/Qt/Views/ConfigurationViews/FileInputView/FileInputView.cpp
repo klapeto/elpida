@@ -12,7 +12,7 @@ namespace Elpida
 {
 
 	FileInputView::FileInputView()
-		: ConfigurationViewBase(), _ui(new Ui::FileInputView), _configurationValue(nullptr)
+		: ConfigurationValueViewBase(), _ui(new Ui::FileInputView), _configurationValue(nullptr)
 	{
 		_ui->setupUi(this);
 		QWidget::connect(_ui->leFilePath, &QLineEdit::editingFinished, this, &FileInputView::onEditingFinished);

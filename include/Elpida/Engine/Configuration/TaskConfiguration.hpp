@@ -11,6 +11,7 @@
 namespace Elpida
 {
 	class ConfigurationValueBase;
+	class TaskSpecification;
 
 	/**
 	 * Configuration values for a specific Task instance
@@ -26,13 +27,33 @@ namespace Elpida
 			return _configuration;
 		}
 
-		TaskConfiguration() = default;
-		TaskConfiguration(std::initializer_list<std::pair<std::string, ConfigurationValueBase*>> pairs);;
+		bool isEnabled() const
+		{
+			return _enabled;
+		}
+
+		void setEnabled(bool enabled)
+		{
+			_enabled = enabled;
+		}
+
+		const TaskSpecification& getTaskSpecification() const
+		{
+			return *_taskSpecification;
+		}
+
+		explicit TaskConfiguration(const TaskSpecification& taskSpecification)
+			: _taskSpecification(&taskSpecification), _enabled(true)
+		{
+
+		};
 		TaskConfiguration(TaskConfiguration&&) = default;
 		TaskConfiguration& operator=(TaskConfiguration&&) = default;
 		~TaskConfiguration();
 	private:
 		std::unordered_map<std::string, ConfigurationValueBase*> _configuration;
+		const TaskSpecification* _taskSpecification;
+		bool _enabled;
 	};
 }
 

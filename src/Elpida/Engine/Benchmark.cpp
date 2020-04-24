@@ -52,23 +52,25 @@ namespace Elpida
 							spec->getName(),
 							"' requires configuration that was not provided!"));
 				}
-				Task* task = nullptr;
+				if (!spec->canBeDisabled() || taskConfiguration->isEnabled()){
+					Task* task;
 
-				if (spec->isMultiThreadingEnabled())
-				{
-					task = new MultiThreadTask(*spec, *taskConfiguration, affinity);
-				}
-				else
-				{
-					task = spec->createNewTask(*taskConfiguration, affinity);
-				}
+					if (spec->isMultiThreadingEnabled())
+					{
+						task = new MultiThreadTask(*spec, *taskConfiguration, affinity);
+					}
+					else
+					{
+						task = spec->createNewTask(*taskConfiguration, affinity);
+					}
 
-				if (previousTask != nullptr)
-				{
-					task->setInput(previousTask->getOutput());
+					if (previousTask != nullptr)
+					{
+						task->setInput(previousTask->getOutput());
+					}
+					previousTask = task;
+					tasks.push_back(task);
 				}
-				previousTask = task;
-				tasks.push_back(task);
 			}
 		}
 		catch (...)

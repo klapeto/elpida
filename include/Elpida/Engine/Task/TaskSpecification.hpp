@@ -62,27 +62,27 @@ namespace Elpida
 			return _shouldBeCountedOnResults;
 		}
 
-		bool canBeDisabled() const
+		[[nodiscard]] bool canBeDisabled() const
 		{
 			return _canBeDisabled;
 		}
 
-		const std::string& getId() const
+		[[nodiscard]] const std::string& getId() const
 		{
 			return _id;
 		}
 
-		bool acceptsInput() const
+		[[nodiscard]] bool acceptsInput() const
 		{
 			return _acceptsInput;
 		}
 
-		bool exportsOutput() const
+		[[nodiscard]] bool exportsOutput() const
 		{
 			return _exportsOutput;
 		}
 
-		bool isMultiThreadingEnabled() const
+		[[nodiscard]] bool isMultiThreadingEnabled() const
 		{
 			return _multiThreadingEnabled;
 		}

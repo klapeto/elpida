@@ -10,22 +10,28 @@
 
 namespace Elpida
 {
-	class ConfigurationViewBase;
+	class ConfigurationValueViewBase;
 	class ConfigurationValueBase;
+	class TaskConfigurationListItemViewBase;
+	class TaskConfiguration;
 
 	class ConfigurationViewsPool
 	{
 	public:
-		ConfigurationViewBase* rentViewForConfiguration(const ConfigurationValueBase& spec);
-		void returnView(ConfigurationViewBase* view);
+		ConfigurationValueViewBase* rentViewForConfiguration(const ConfigurationValueBase& spec);
+		void returnView(ConfigurationValueViewBase* view);
+
+		TaskConfigurationListItemViewBase* rentViewForTaskList(TaskConfiguration& spec);
+		void returnViewForTaskList(TaskConfigurationListItemViewBase* view);
 
 		ConfigurationViewsPool();
 		virtual ~ConfigurationViewsPool();
 	private:
-		std::stack<ConfigurationViewBase*> _fileViews;
+		std::stack<ConfigurationValueViewBase*> _fileViews;
+		std::stack<TaskConfigurationListItemViewBase*> _taskListItemViews;
 
-		template<typename T>
-		ConfigurationViewBase* getFromStack(std::stack<ConfigurationViewBase*>& stack)
+		template<typename TItem, typename TBase>
+		TBase* getFromStack(std::stack<TBase*>& stack)
 		{
 			if (!stack.empty())
 			{
@@ -35,20 +41,30 @@ namespace Elpida
 			}
 			else
 			{
-				return new T();
+				return new TItem();
 			}
 		}
 
-		template<typename T>
-		ConfigurationViewBase* fillPool(std::stack<ConfigurationViewBase*>& stack)
+		template<typename TItem, typename TBase>
+		void fillPool(std::stack<TBase*>& stack)
 		{
 			for (size_t i = 0; i < _initialPoolsSize; ++i)
 			{
-				stack.push(new T());
+				stack.push(new TItem());
 			}
 		}
 
-		static void destroyPool(std::stack<ConfigurationViewBase*>& stack);
+		template<typename TBase>
+		static void destroyPool(std::stack<TBase*>& stack)
+		{
+			auto size = stack.size();
+			for (auto i = 0u; i < size; ++i)
+			{
+				auto item = stack.top();
+				delete item;
+				stack.pop();
+			}
+		}
 
 		const size_t _initialPoolsSize = 5;
 	};

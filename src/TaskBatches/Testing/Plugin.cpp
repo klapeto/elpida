@@ -23,7 +23,8 @@ extern "C" Elpida::TaskBatchesContainerPlugin<Elpida::Benchmark>* createPlugin()
 	plugin->add(benchmark);
 
 	benchmark = new Benchmark("Test Benchmark NEXT",{
-		new ReadFileSpecification(true, false, "Tralalala")
+		new ReadFileSpecification(true, false, "/media/klapeto/Αρχεία/Isos/neon-user-20200326-1117.iso"),
+		new WriteFileSpecification(true, true,"/media/klapeto/Αρχεία/Isos/TEST.iso"),
 	}, new DefaultBenchmarkScoreCalculator());
 
 	plugin->add(benchmark);

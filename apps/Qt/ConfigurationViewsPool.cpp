@@ -6,6 +6,7 @@
 #include <Elpida/Engine/Configuration/ConfigurationSpecificationBase.hpp>
 #include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
 #include "Views/ConfigurationViews/FileInputView/FileInputView.hpp"
+#include "Views/ConfigurationViews/TaskListItemView/TaskListItemView.hpp"
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Config.hpp>
 
@@ -14,27 +15,32 @@ namespace Elpida
 	ConfigurationViewsPool::ConfigurationViewsPool()
 	{
 		fillPool<FileInputView>(_fileViews);
+		fillPool<TaskListItemView>(_taskListItemViews);
 	}
 
 	ConfigurationViewsPool::~ConfigurationViewsPool()
 	{
 		destroyPool(_fileViews);
+		destroyPool(_taskListItemViews);
 	}
 
-	void ConfigurationViewsPool::returnView(ConfigurationViewBase* view)
+	void ConfigurationViewsPool::returnView(ConfigurationValueViewBase* view)
 	{
-		switch (view->getConfiguration()->getConfigurationSpecification().getType())
+		if (view != nullptr)
 		{
-		case ConfigurationType::FilePath:
-			_fileViews.push(view);
-			break;
-		default:
-			throw ElpidaException(FUNCTION_NAME, "Not implemented!");
+			switch (view->getConfiguration()->getConfigurationSpecification().getType())
+			{
+			case ConfigurationType::FilePath:
+				_fileViews.push(view);
+				break;
+			default:
+				throw ElpidaException(FUNCTION_NAME, "Not implemented!");
+			}
+			view->setConfiguration(nullptr);
 		}
-		view->setConfiguration(nullptr);
 	}
 
-	ConfigurationViewBase* ConfigurationViewsPool::rentViewForConfiguration(const ConfigurationValueBase& spec)
+	ConfigurationValueViewBase* ConfigurationViewsPool::rentViewForConfiguration(const ConfigurationValueBase& spec)
 	{
 		switch (spec.getConfigurationSpecification().getType())
 		{
@@ -45,14 +51,19 @@ namespace Elpida
 		}
 	}
 
-	void ConfigurationViewsPool::destroyPool(std::stack<ConfigurationViewBase*>& stack)
+	TaskConfigurationListItemViewBase* ConfigurationViewsPool::rentViewForTaskList(TaskConfiguration& spec)
 	{
-		auto size = stack.size();
-		for (auto i = 0u; i < size; ++i)
+		auto view = getFromStack<TaskListItemView>(_taskListItemViews);
+		view->setTaskConfiguration(&spec);
+		return view;
+	}
+
+	void ConfigurationViewsPool::returnViewForTaskList(TaskConfigurationListItemViewBase* view)
+	{
+		if (view != nullptr)
 		{
-			auto item = stack.top();
-			delete item;
-			stack.pop();
+			_taskListItemViews.push(view);
+			view->setTaskConfiguration(nullptr);
 		}
 	}
 }

@@ -8,15 +8,6 @@
 namespace Elpida
 {
 
-	TaskConfiguration::TaskConfiguration(std::initializer_list<std::pair<std::string,
-																		 ConfigurationValueBase*>> pairs)
-	{
-		for (auto&& pair : pairs)
-		{
-			_configuration.insert(pair);
-		}
-	}
-
 	TaskConfiguration::~TaskConfiguration()
 	{
 		for (auto& pair: _configuration)

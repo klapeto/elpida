@@ -11,6 +11,9 @@ set(ELPIDA_QT_SOURCES
         Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.cpp
         Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp
         Views/ConfigurationViews/FileInputView/FileInputView.cpp
+        Views/ConfigurationViews/TaskListItemView/TaskListItemView.cpp
+        Views/ConfigurationViews/ConfigurationValueViewBase.cpp
+        Views/ConfigurationViews/TaskConfigurationListItemViewBase.cpp
 
         Views/MainWindow/MainWindow.ui
         Views/BenchmarkListView/BenchmarkListView.ui
@@ -24,6 +27,7 @@ set(ELPIDA_QT_SOURCES
         Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui
         Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
         Views/ConfigurationViews/FileInputView/FileInputView.ui
+        #Views/ConfigurationViews/TaskListItemView/TaskListItemView.ui
 
         Main.cpp
 
@@ -43,12 +47,17 @@ set(ELPIDA_QT_SOURCES
         Models/Abstractions/AssociativeModel/AssociativeModel.cpp
         Models/Abstractions/ListModel/ListModel.cpp
         Models/Abstractions/ListModel/ListModelItem.cpp
+        Models/Abstractions/AssociativeModel/AssociativeItem.cpp
+        Models/BenchmarkConfigurationModel.cpp
 
         Controllers/BenchmarksController.cpp
         Controllers/BenchmarkRunnerController.cpp
         Controllers/MainViewController.cpp
+        Controllers/BenchmarkConfigurationController.cpp
+
         QCustomApplication.cpp
-        ConfigurationViewsPool.cpp ConfigurationViewsPool.hpp Views/ConfigurationViews/ConfigurationViewBase.cpp Views/ConfigurationViews/ConfigurationViewBase.hpp Models/Abstractions/AssociativeModel/AssociativeItem.cpp Models/Abstractions/AssociativeModel/AssociativeItem.hpp Models/BenchmarkConfigurationModel.cpp Models/BenchmarkConfigurationModel.hpp Controllers/BenchmarkConfigurationController.cpp Controllers/BenchmarkConfigurationController.hpp Core/Commands/SelectedBenchmarkChangedEvent.hpp)
+        ConfigurationViewsPool.cpp
+        )
 
 
 find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)

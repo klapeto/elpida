@@ -30,6 +30,7 @@ SOURCES += \
     Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.cpp \
     Views/CommonDialog/CommonDialog.cpp \
     Views/ConfigurationViews/FileInputView/FileInputView.cpp \
+    Views/ConfigurationViews/TaskListItemView/TaskListItemView.cpp \
     Views/LogsView/LogsView.cpp \
     Views/MainWindow/MainWindow.cpp \
     Views/SystemInfoView/SystemInfoView.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.hpp \
     Views/CommonDialog/CommonDialog.hpp \
     Views/ConfigurationViews/FileInputView/FileInputView.hpp \
+    Views/ConfigurationViews/TaskListItemView/TaskListItemView.hpp \
     Views/LogsView/LogsView.hpp \
     Views/MainWindow/MainWindow.hpp \
     Views/SystemInfoView/SystemInfoView.hpp \

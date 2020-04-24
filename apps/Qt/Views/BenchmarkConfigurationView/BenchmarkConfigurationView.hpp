@@ -4,13 +4,14 @@
 #include <QWidget>
 
 class QVBoxLayout;
+class QListWidgetItem;
 
 namespace Elpida
 {
 	class BenchmarkConfigurationModel;
 	class EventSubscriptionBase;
 	class ConfigurationViewsPool;
-	class ConfigurationViewBase;
+	class ConfigurationValueViewBase;
 
 	namespace Ui
 	{
@@ -27,7 +28,7 @@ namespace Elpida
 		~BenchmarkConfigurationView() override;
 
 	private:
-		std::vector<ConfigurationViewBase*> _rentedViews;
+		std::vector<ConfigurationValueViewBase*> _rentedViews;
 		BenchmarkConfigurationModel& _benchmarkConfigurationModel;
 		ConfigurationViewsPool& _configurationViewsPool;
 		EventSubscriptionBase* _dataChangedSubscription;
@@ -40,6 +41,8 @@ namespace Elpida
 	private slots:
 		void dataChangedHandler();
 		void returnAllViewsToPool();
+		void returnAllTaskListItems() const;
+		static void taskListItemClicked(QListWidgetItem* item);
 	};
 
 } // namespace Elpida
