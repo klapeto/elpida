@@ -19,7 +19,7 @@ namespace Elpida
 		auto itr = _taskConfigurations.find(taskSpecification.getId());
 		if (itr != _taskConfigurations.end())
 		{
-			return &itr->second;
+			return itr->second;
 		}
 		return nullptr;
 	}
@@ -30,7 +30,8 @@ namespace Elpida
 		auto itr = _taskConfigurations.find(taskSpecification.getId());
 		if (itr == _taskConfigurations.end())
 		{
-			_taskConfigurations.insert_or_assign(taskSpecification.getId(), std::move(configuration));
+			_orderedConfigurations.push_back(std::move(configuration));
+			_taskConfigurations.insert_or_assign(taskSpecification.getId(), &_orderedConfigurations.back());
 		}
 		else
 		{
@@ -38,6 +39,7 @@ namespace Elpida
 				"Attempted to add a configuration that already exists");
 		}
 	}
+
 	TaskConfiguration* BenchmarkConfiguration::getConfigurationForTask(const TaskSpecification& taskSpecification)
 	{
 		return const_cast<TaskConfiguration*>(getConfigurationImpl(taskSpecification));

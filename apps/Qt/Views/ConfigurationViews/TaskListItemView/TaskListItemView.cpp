@@ -11,8 +11,7 @@ namespace Elpida
 	TaskListItemView::TaskListItemView()
 		: TaskConfigurationListItemViewBase(), _taskConfiguration(nullptr)
 	{
-		setFlags(Qt::ItemIsUserCheckable);
-		//setCheckState(Qt::Unchecked);
+		setCheckState(Qt::Checked);
 	}
 
 	void TaskListItemView::setTaskConfiguration(TaskConfiguration* taskConfiguration)
@@ -22,7 +21,7 @@ namespace Elpida
 		{
 			if (taskConfiguration->getTaskSpecification().canBeDisabled())
 			{
-				setFlags(Qt::ItemIsUserCheckable| Qt::ItemIsEnabled);
+				setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 				setCheckState(taskConfiguration->isEnabled() ? Qt::Checked : Qt::Unchecked);
 			}
 			else

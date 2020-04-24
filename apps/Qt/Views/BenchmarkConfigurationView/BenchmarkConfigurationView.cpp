@@ -52,9 +52,9 @@ namespace Elpida
 		auto configuration = _benchmarkConfigurationModel.getBenchmarkConfiguration();
 		for (auto& taskConfPair: configuration->getAllTaskConfigurations())
 		{
-			auto itm = _configurationViewsPool.rentViewForTaskList(const_cast<TaskConfiguration&>(taskConfPair.second));
+			auto itm = _configurationViewsPool.rentViewForTaskList(const_cast<TaskConfiguration&>(taskConfPair));
 			_ui->lwTasks->addItem(itm);
-			for (auto& confValuePair: taskConfPair.second.getAllConfigurations())
+			for (auto& confValuePair: taskConfPair.getAllConfigurations())
 			{
 				auto view = _configurationViewsPool.rentViewForConfiguration(*confValuePair.second);
 				view->show();
