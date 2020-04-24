@@ -18,8 +18,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
+
 if [ -f /etc/lsb-release ]; then
     #Debian
+    export DEBIAN_FRONTEND=noninteractive
     apt install -y git g++ cmake libgtest-dev libnuma-dev automake libtool pkg-config qtbase5-dev libqt5charts5-dev
 elif [ -f /etc/redhat-release ]; then
     # Fedora
