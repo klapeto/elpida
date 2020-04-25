@@ -19,6 +19,7 @@ namespace Elpida
 	class ConfigurationValue : public ConfigurationValueBase
 	{
 	public:
+
 		T getValue() const
 		{
 			return _value;

@@ -2,8 +2,10 @@
 // Created by klapeto on 20/4/20.
 //
 
+#include "Elpida/Config.hpp"
 #include "Elpida/Engine/Configuration/BenchmarkConfiguration.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
+#include "Elpida/Engine/Benchmark.hpp"
 #include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
@@ -30,12 +32,21 @@ namespace Elpida
 		auto itr = _taskConfigurations.find(taskSpecification.getId());
 		if (itr == _taskConfigurations.end())
 		{
-			_orderedConfigurations.push_back(std::move(configuration));
-			_taskConfigurations.insert_or_assign(taskSpecification.getId(), &_orderedConfigurations.back());
+			if (_orderedConfigurations.capacity() >= _orderedConfigurations.size() + 1)
+			{
+				_orderedConfigurations.push_back(std::move(configuration));
+				auto& cfg = _orderedConfigurations.back();
+				_taskConfigurations.emplace(taskSpecification.getId(), &cfg);
+			}
+			else
+			{
+				throw ElpidaException(FUNCTION_NAME,
+					"Attempted to add more Task Configurations than the benchmark has");
+			}
 		}
 		else
 		{
-			throw ElpidaException("BenchmarkConfiguration::addConfiguration",
+			throw ElpidaException(FUNCTION_NAME,
 				"Attempted to add a configuration that already exists");
 		}
 	}
@@ -43,5 +54,14 @@ namespace Elpida
 	TaskConfiguration* BenchmarkConfiguration::getConfigurationForTask(const TaskSpecification& taskSpecification)
 	{
 		return const_cast<TaskConfiguration*>(getConfigurationImpl(taskSpecification));
+	}
+
+	BenchmarkConfiguration::BenchmarkConfiguration(const Benchmark& benchmark)
+	{
+		_orderedConfigurations.reserve(benchmark.getTotalTasksCount());
+		// The reason we need to reserve in advance is due to the std::unordered_map has pointers to
+		// the std::vector objects. If the std::vector reallocates with an addition, then the pointers
+		// inside the std::map will be invalidated. With reserve() we prevent this (Assuming that the
+		// additions will not exceed the benchmarks task count)
 	}
 }

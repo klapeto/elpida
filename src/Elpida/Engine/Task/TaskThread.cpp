@@ -45,9 +45,22 @@ namespace Elpida
 		std::mutex& mutex,
 		const bool& shouldWake,
 		unsigned int affinity)
-		: _taskToRun(taskToRun), _waitNotifier(waitNotifier), _mutex(mutex), _shouldWake(shouldWake),
+		: _taskToRun(&taskToRun),
+		  _waitNotifier(waitNotifier),
+		  _mutex(mutex),
+		  _shouldWake(shouldWake),
 		  _affinity(affinity)
 	{
+	}
+
+	TaskThread::TaskThread(TaskThread&& other) noexcept
+		: _taskToRun(other._taskToRun),
+		  _waitNotifier(other._waitNotifier),
+		  _mutex(other._mutex),
+		  _shouldWake(other._shouldWake),
+		  _affinity(other._affinity)
+	{
+		other._taskToRun = nullptr;
 	}
 
 	TaskThread::~TaskThread()
@@ -56,7 +69,7 @@ namespace Elpida
 		{
 			_runnerThread.join();
 		}
-		delete &_taskToRun;
+		delete _taskToRun;
 	}
 
 	void TaskThread::start()
@@ -81,7 +94,7 @@ namespace Elpida
 			_waitNotifier.wait(lock);
 		}
 		lock.unlock();
-		_taskToRun.run();
+		_taskToRun->run();
 	}
 
 	void TaskThread::setCurrentThreadAffinity(unsigned int cpuId)

@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "Elpida/CommonTasks/Memory.hpp"
+#include "Elpida/Utilities/Memory.hpp"
 
 namespace Elpida
 {

@@ -32,9 +32,9 @@ set(ELPIDA_SOURCES
         Utilities/Uuid.cpp
 
         CommonTasks/AllocateMemory/AllocateMemory.cpp
-        CommonTasks/Memory.cpp
-        CommonTasks/MemoryChunk.cpp
-        CommonTasks/NumaMemory.cpp
+        Utilities/Memory.cpp
+        Utilities/MemoryChunk.cpp
+        Utilities/NumaMemory.cpp
         CommonTasks/ReadFile/ReadFile.cpp
         CommonTasks/WriteFile/WriteFile.cpp
         CommonTasks/AllocateMemory/AllocateMemorySpecification.cpp

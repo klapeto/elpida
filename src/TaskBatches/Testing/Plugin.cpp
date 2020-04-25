@@ -7,6 +7,7 @@
 #include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
+#include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
 
 extern "C" Elpida::TaskBatchesContainerPlugin<Elpida::Benchmark>* createPlugin()
 {
@@ -22,9 +23,8 @@ extern "C" Elpida::TaskBatchesContainerPlugin<Elpida::Benchmark>* createPlugin()
 
 	plugin->add(benchmark);
 
-	benchmark = new Benchmark("Test Benchmark NEXT",{
-		new ReadFileSpecification(true, false, "/media/klapeto/Αρχεία/Isos/neon-user-20200326-1117.iso"),
-		new WriteFileSpecification(true, true,"/media/klapeto/Αρχεία/Isos/TEST.iso"),
+	benchmark = new Benchmark("Test Allocate Memory",{
+		new AllocateMemorySpecification(true, false, true)
 	}, new DefaultBenchmarkScoreCalculator());
 
 	plugin->add(benchmark);

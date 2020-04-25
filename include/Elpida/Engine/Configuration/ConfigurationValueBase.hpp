@@ -22,7 +22,7 @@ namespace Elpida
 	{
 	public:
 
-		const ConfigurationSpecificationBase& getConfigurationSpecification() const
+		[[nodiscard]] const ConfigurationSpecificationBase& getConfigurationSpecification() const
 		{
 			return _configurationSpecification;
 		}
@@ -37,7 +37,7 @@ namespace Elpida
 
 		virtual ~ConfigurationValueBase() = default;
 	protected:
-		ConfigurationValueBase(const ConfigurationSpecificationBase& configurationSpecification)
+		explicit ConfigurationValueBase(const ConfigurationSpecificationBase& configurationSpecification)
 			: _configurationSpecification(configurationSpecification)
 		{
 		}

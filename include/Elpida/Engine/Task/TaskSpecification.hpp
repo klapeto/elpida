@@ -127,7 +127,7 @@ namespace Elpida
 		template<typename T>
 		ConfigurationValue<T>& getSettingAndValidate(const TaskConfiguration& configuration,
 			const std::string& name,
-			ConfigurationType type) const
+			ConfigurationType::Type type) const
 		{
 			auto config = configuration.getConfiguration(name);
 			if (config != nullptr)

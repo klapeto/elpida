@@ -15,7 +15,7 @@ namespace Elpida
 	MultiThreadTask::MultiThreadTask(const TaskSpecification& taskSpecification,
 		const TaskConfiguration& configuration,
 		const TaskAffinity& affinity)
-		: Task(taskSpecification, affinity, true), _configuration(configuration)
+		: Task(taskSpecification, affinity, true), _configuration(configuration), _threadsShouldWake(false)
 	{
 	}
 
@@ -40,9 +40,8 @@ namespace Elpida
 			}
 
 			task->prepare();
-			auto thread = TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, processor->getOsIndex());
-			thread.start();
-			_createdThreads.push_back(std::move(thread));
+			_createdThreads.push_back(std::move(TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, processor->getOsIndex())));
+			_createdThreads.back().start();
 		}
 	}
 
@@ -54,11 +53,17 @@ namespace Elpida
 		}
 		_createdThreads.clear();
 		destroyChunks();
-		if (_specification.exportsOutput())
+		if (_specification.exportsOutput() && _specification.acceptsInput())
 		{
 			_outputData = *_inputData;
 		}
+		else if (_specification.exportsOutput())
+		{
+
+			// ???
+		}
 	}
+
 	void MultiThreadTask::run()
 	{
 		std::unique_lock<std::mutex> lock(_mutex);

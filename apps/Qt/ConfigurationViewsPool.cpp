@@ -7,6 +7,7 @@
 #include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
 #include "Views/ConfigurationViews/FileInputView/FileInputView.hpp"
 #include "Views/ConfigurationViews/TaskListItemView/TaskListItemView.hpp"
+#include "Views/ConfigurationViews/NumberInputView/NumberInputView.hpp"
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Config.hpp>
 
@@ -16,12 +17,14 @@ namespace Elpida
 	{
 		fillPool<FileInputView>(_fileViews);
 		fillPool<TaskListItemView>(_taskListItemViews);
+		fillPool<NumberInputView>(_numberViews);
 	}
 
 	ConfigurationViewsPool::~ConfigurationViewsPool()
 	{
 		destroyPool(_fileViews);
 		destroyPool(_taskListItemViews);
+		destroyPool(_numberViews);
 	}
 
 	void ConfigurationViewsPool::returnView(ConfigurationValueViewBase* view)
@@ -30,7 +33,12 @@ namespace Elpida
 		{
 			switch (view->getConfiguration()->getConfigurationSpecification().getType())
 			{
-			case ConfigurationType::FilePath:
+			case ConfigurationType::Type::FilePath:
+				_fileViews.push(view);
+				break;
+			case ConfigurationType::Type::Float:
+			case ConfigurationType::Type::Int:
+			case ConfigurationType::Type::UnsignedInt:
 				_fileViews.push(view);
 				break;
 			default:
@@ -44,8 +52,12 @@ namespace Elpida
 	{
 		switch (spec.getConfigurationSpecification().getType())
 		{
-		case ConfigurationType::FilePath:
+		case ConfigurationType::Type::FilePath:
 			return getFromStack<FileInputView>(_fileViews);
+		case ConfigurationType::Type::Float:
+		case ConfigurationType::Type::Int:
+		case ConfigurationType::Type::UnsignedInt:
+			return getFromStack<NumberInputView>(_numberViews);
 		default:
 			throw ElpidaException(FUNCTION_NAME, "Not implemented!");
 		}

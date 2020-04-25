@@ -14,6 +14,7 @@ set(ELPIDA_QT_SOURCES
         Views/ConfigurationViews/TaskListItemView/TaskListItemView.cpp
         Views/ConfigurationViews/ConfigurationValueViewBase.cpp
         Views/ConfigurationViews/TaskConfigurationListItemViewBase.cpp
+        Views/ConfigurationViews/NumberInputView/NumberInputView.cpp
 
         Views/MainWindow/MainWindow.ui
         Views/BenchmarkListView/BenchmarkListView.ui
@@ -27,7 +28,7 @@ set(ELPIDA_QT_SOURCES
         Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui
         Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
         Views/ConfigurationViews/FileInputView/FileInputView.ui
-        #Views/ConfigurationViews/TaskListItemView/TaskListItemView.ui
+        Views/ConfigurationViews/NumberInputView/NumberInputView.ui
 
         Main.cpp
 

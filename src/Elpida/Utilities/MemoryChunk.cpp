@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "Elpida/CommonTasks/MemoryChunk.hpp"
+#include "Elpida/Utilities/MemoryChunk.hpp"
 
 #include "Elpida/ElpidaException.hpp"
 

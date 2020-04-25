@@ -95,6 +95,7 @@ namespace Elpida
 		return NodeNumber;
 #endif
 	}
+
 	void SystemTopology::setProcessPriority(SystemTopology::ProcessPriority priority)
 	{
 #ifdef ELPIDA_LINUX

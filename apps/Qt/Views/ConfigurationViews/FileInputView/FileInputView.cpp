@@ -29,7 +29,7 @@ namespace Elpida
 		if (configurationValue != nullptr)
 		{
 			auto& spec = configurationValue->getConfigurationSpecification();
-			if (spec.getType() == ConfigurationType::FilePath)
+			if (spec.getType() == ConfigurationType::Type::FilePath)
 			{
 				auto& value = configurationValue->as<ConfigurationValue<std::string>>();
 				_configurationValue = &value;
@@ -40,7 +40,6 @@ namespace Elpida
 			{
 				throw ElpidaException(FUNCTION_NAME, "Invalid Configuration! Expected FilePath configuration");
 			}
-
 		}
 	}
 

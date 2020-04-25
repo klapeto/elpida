@@ -28,6 +28,7 @@ namespace Elpida
 		virtual ~ConfigurationViewsPool();
 	private:
 		std::stack<ConfigurationValueViewBase*> _fileViews;
+		std::stack<ConfigurationValueViewBase*> _numberViews;
 		std::stack<TaskConfigurationListItemViewBase*> _taskListItemViews;
 
 		template<typename TItem, typename TBase>

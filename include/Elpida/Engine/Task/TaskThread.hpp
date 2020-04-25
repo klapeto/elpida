@@ -43,7 +43,7 @@ namespace Elpida
 
 		Task& getTaskToRun() const
 		{
-			return _taskToRun;
+			return *_taskToRun;
 		}
 
 		static void setCurrentThreadAffinity(unsigned int cpuId);
@@ -55,10 +55,10 @@ namespace Elpida
 			unsigned int affinity);
 		virtual ~TaskThread();
 
-		TaskThread(TaskThread&&) = default;
+		TaskThread(TaskThread&& other) noexcept;
 	private:
 		std::thread _runnerThread;
-		Task& _taskToRun;
+		Task* _taskToRun;
 		std::condition_variable& _waitNotifier;
 		std::mutex& _mutex;
 		const bool& _shouldWake;

@@ -34,7 +34,7 @@ namespace Elpida
 
 			child->setText(0, QString::fromStdString(result.getSpecification().getName()));
 			child->setText(1,
-				QString::fromStdString(Vu::getValueScaleString(metrics.getThroughputPerSecond())
+				QString::fromStdString(Vu::getValueScaleStringSI(metrics.getThroughputPerSecond())
 					+ result.getSpecification().getThroughputUnit() + "/s"));
 			parent->addChild(child);
 		}

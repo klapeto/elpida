@@ -6,6 +6,7 @@
 #define INCLUDE_ELPIDA_ENGINE_CONFIGURATION_CONFIGURATIONSPECIFICATIONBASE_HPP
 
 #include <string>
+#include <utility>
 #include "ConfigurationType.hpp"
 
 namespace Elpida
@@ -23,7 +24,7 @@ namespace Elpida
 		{
 			return _description;
 		}
-		[[nodiscard]] ConfigurationType getType() const
+		[[nodiscard]] ConfigurationType::Type getType() const
 		{
 			return _type;
 		}
@@ -32,21 +33,21 @@ namespace Elpida
 			return _required;
 		}
 
-		virtual ConfigurationValueBase* createDefault() const = 0;
+		[[nodiscard]] virtual ConfigurationValueBase* createDefault() const = 0;
 
 		virtual ~ConfigurationSpecificationBase() = default;
 	protected:
-		ConfigurationSpecificationBase(const std::string& name,
-			const std::string& description,
-			ConfigurationType type,
+		ConfigurationSpecificationBase(std::string name,
+			std::string description,
+			ConfigurationType::Type type,
 			bool aRequired)
-			: _name(name), _description(description), _type(type), _required(aRequired)
+			: _name(std::move(name)), _description(std::move(description)), _type(type), _required(aRequired)
 		{
 		}
 	private:
 		std::string _name;
 		std::string _description;
-		ConfigurationType _type;
+		ConfigurationType::Type _type;
 		bool _required;
 	};
 }

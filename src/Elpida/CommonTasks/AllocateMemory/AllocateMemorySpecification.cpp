@@ -10,13 +10,14 @@
 
 namespace Elpida
 {
+	const char* AllocateMemorySpecification::memorySizeSetting = "Memory size";
 
 	Task* AllocateMemorySpecification::createNewTask(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
 		auto size = getSettingAndValidate<size_t>(configuration,
-			memorySizeSetting.data(),
-			ConfigurationType::UnsignedInt);
+			std::string(memorySizeSetting),
+			ConfigurationType::Type::UnsignedInt);
 
 		return new AllocateMemory(*this, affinity, shouldBeCountedOnResults(), size.getValue());
 	}
@@ -32,7 +33,7 @@ namespace Elpida
 		"Bytes",
 		"B",
 		{
-			new ConfigurationSpecification<unsigned long>(256ul, "Memory size",
+			new ConfigurationSpecification<ConfigurationType::UnsignedInt>(256ul, memorySizeSetting,
 				"The amount of memory to allocate",
 				true),
 		},

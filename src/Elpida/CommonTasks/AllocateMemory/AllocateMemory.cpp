@@ -29,7 +29,7 @@
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/CommonTasks/NumaMemory.hpp"
+#include "Elpida/Utilities/NumaMemory.hpp"
 #include "Elpida/Engine/Task/TaskData.hpp"
 
 #include <cstring>

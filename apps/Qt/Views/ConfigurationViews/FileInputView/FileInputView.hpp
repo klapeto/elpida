@@ -25,7 +25,7 @@ namespace Elpida
 		~FileInputView() override;
 	private:
 		Ui::FileInputView* _ui;
-		ConfigurationValue<std::string>* _configurationValue;
+		ConfigurationValue<ConfigurationType::FilePath>* _configurationValue;
 
 	public slots:
 		void onEditingFinished();

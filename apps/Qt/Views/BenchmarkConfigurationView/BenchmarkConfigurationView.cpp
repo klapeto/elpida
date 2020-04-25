@@ -63,7 +63,6 @@ namespace Elpida
 				_containerLayout->addWidget(view);
 			}
 		}
-
 	}
 
 	void BenchmarkConfigurationView::returnAllTaskListItems() const

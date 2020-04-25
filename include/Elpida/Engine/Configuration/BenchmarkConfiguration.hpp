@@ -12,6 +12,7 @@
 namespace Elpida
 {
 	class TaskSpecification;
+	class Benchmark;
 
 	class BenchmarkConfiguration final
 	{
@@ -26,7 +27,7 @@ namespace Elpida
 
 		void addConfiguration(const TaskSpecification& taskSpecification, TaskConfiguration&& configuration);
 
-		BenchmarkConfiguration() = default;
+		explicit BenchmarkConfiguration(const Benchmark& benchmark);
 		BenchmarkConfiguration(BenchmarkConfiguration&&) = default;
 		BenchmarkConfiguration& operator=(BenchmarkConfiguration&&) = default;
 		~BenchmarkConfiguration() = default;

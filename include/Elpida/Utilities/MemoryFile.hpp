@@ -33,14 +33,16 @@
 namespace Elpida
 {
 
+	class Memory;
+
 	class MemoryFile
 	{
 	public:
 
 		using Data = unsigned char ;
-		using DataPtr = Data*;
+		using pData = Data*;
 
-		[[nodiscard]] const DataPtr& getData() const
+		[[nodiscard]] const pData& getData() const
 		{
 			return _data;
 		}
@@ -53,8 +55,7 @@ namespace Elpida
 		void load(const std::string& path);
 		void writeToFile(const std::string& path) const;
 
-		MemoryFile();
-		MemoryFile(std::size_t size);
+		explicit MemoryFile(unsigned int processorAffinity);
 		MemoryFile(void* data, std::size_t size);
 		virtual ~MemoryFile();
 
@@ -63,9 +64,13 @@ namespace Elpida
 		MemoryFile& operator=(MemoryFile&&) = default;
 		MemoryFile& operator=(const MemoryFile&) = delete;
 	private:
-		DataPtr _data;
+		pData _data;
+		Memory* _allocatedMemory;
 		std::size_t _size;
+		unsigned int _processorAffinity;
 		bool _deleteData;
+
+		void allocateData();
 		void destroyData();
 	};
 

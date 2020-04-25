@@ -32,53 +32,53 @@ namespace Elpida
 			const std::string& name,
 			const std::string& description,
 			bool isRequired)
-			: ConfigurationSpecificationBase(name, description, ConfigurationType::Bool, isRequired),
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::Type::Bool, isRequired),
 			  _defaultValue(defaultValue)
 		{
-			static_assert(std::is_same_v<bool, T>, "ConfigurationValue is not specified as bool");
+			static_assert(std::is_same_v<ConfigurationType::Bool, T>, "ConfigurationValue is not specified as bool");
 		}
 
-		explicit ConfigurationSpecification(unsigned long defaultValue,
+		explicit ConfigurationSpecification(ConfigurationType::UnsignedInt defaultValue,
 			const std::string& name,
 			const std::string& description,
 			bool isRequired)
-			: ConfigurationSpecificationBase(name, description, ConfigurationType::UnsignedInt, isRequired),
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::Type::UnsignedInt, isRequired),
 			  _defaultValue(defaultValue)
 		{
 			static_assert(std::is_literal_type_v<T>, "ConfigurationValue is not specified as unsigned integral");
 		}
 
-		explicit ConfigurationSpecification(long defaultValue,
+		explicit ConfigurationSpecification(ConfigurationType::Int defaultValue,
 			const std::string& name,
 			const std::string& description,
 			bool isRequired)
-			: ConfigurationSpecificationBase(name, description, ConfigurationType::Int, isRequired),
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::Type::Int, isRequired),
 			  _defaultValue(defaultValue)
 		{
 			static_assert(std::is_literal_type_v<T>, "ConfigurationValue is not specified as integral");
 		}
 
-		explicit ConfigurationSpecification(double defaultValue,
+		explicit ConfigurationSpecification(ConfigurationType::Float defaultValue,
 			const std::string& name,
 			const std::string& description,
 			bool isRequired)
-			: ConfigurationSpecificationBase(name, description, ConfigurationType::Float, isRequired),
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::Type::Float, isRequired),
 			  _defaultValue(defaultValue)
 		{
 			static_assert(std::is_floating_point_v<T>, "ConfigurationValue is not specified as floating point");
 		}
 
-		explicit ConfigurationSpecification(const std::string& defaultValue,
+		explicit ConfigurationSpecification(const ConfigurationType::String& defaultValue,
 			const std::string& name,
 			const std::string& description,
 			bool isRequired)
-			: ConfigurationSpecificationBase(name, description, ConfigurationType::String, isRequired),
+			: ConfigurationSpecificationBase(name, description, ConfigurationType::Type::String, isRequired),
 			  _defaultValue(defaultValue)
 		{
 			static_assert(std::is_convertible_v<std::string, T>, "ConfigurationValue is not specified as string");
 		}
 
-		ConfigurationSpecification(ConfigurationType type,
+		ConfigurationSpecification(ConfigurationType::Type type,
 			T defaultValue,
 			const std::string& name,
 			const std::string& description,

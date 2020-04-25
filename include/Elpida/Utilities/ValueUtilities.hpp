@@ -37,8 +37,49 @@ namespace Elpida
 	{
 	public:
 		ValueUtilities() = delete;
+		~ValueUtilities() = delete;
 
-		static std::string getValueScaleString(double value);
+		enum class SIPrefixes
+		{
+			None,
+			Kilo,
+			Mega,
+			Giga,
+			Tera,
+			Peta,
+			Exa,
+			Zetta,
+			Yotta
+		};
+
+		enum class IECPrefixes
+		{
+			None,
+			Kibi,
+			Mebi,
+			Gibi,
+			Tebi,
+			Pebi,
+			Exbi,
+			Zebi,
+			Yobi
+		};
+
+		static const char* PrefixesSI[(int)SIPrefixes::Yotta + 1];
+		static const char* PrefixesIEC[(int)IECPrefixes::Yobi + 1];
+
+		static const double ScaleValuesSI[(int)SIPrefixes::Yotta + 1];
+		static const double ScaleValuesIEC[(int)IECPrefixes::Yobi + 1];
+
+		static std::string getValueScaleStringSI(double value)
+		{
+			return getValueScaleStringImpl(value, 1000);
+		}
+
+		static std::string getValueScaleStringIEC(double value)
+		{
+			return getValueScaleStringImpl(value, 1024);
+		}
 
 		template<typename ... TArgs>
 		inline static std::string concatenateToString(TArgs&& ... args)
@@ -48,6 +89,8 @@ namespace Elpida
 			return stream.str();
 		}
 	private:
+		static std::string getValueScaleStringImpl(double value, double denominator);
+
 		template<typename T, typename ... TRest>
 		inline static void concatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)
 		{
@@ -55,13 +98,13 @@ namespace Elpida
 			concatenateToStringImpl(str, std::forward<TRest>(rest)...);
 		}
 
-		template<typename T >
+		template<typename T>
 		inline static void concatenateToStringImpl(std::ostringstream&)
 		{
 
 		}
 
-		template<typename T >
+		template<typename T>
 		inline static void concatenateToStringImpl(std::ostringstream& str, T arg)
 		{
 			str << arg;

@@ -28,6 +28,8 @@
 
 #include <utility>
 #include "Elpida/Engine/Task/TaskData.hpp"
+#include "Elpida/Topology/ProcessorNode.hpp"
+#include "Elpida/Engine/Task/TaskAffinity.hpp"
 
 namespace Elpida
 {
@@ -36,7 +38,8 @@ namespace Elpida
 		const TaskAffinity& affinity,
 		std::string filePath,
 		bool toBeCountedOnResults)
-		: Task(specification, affinity, toBeCountedOnResults), _filePath(std::move(filePath))
+		: Task(specification, affinity, toBeCountedOnResults),
+		  _file(affinity.getProcessorNodes().front()->getOsIndex()), _filePath(std::move(filePath))
 	{
 
 	}

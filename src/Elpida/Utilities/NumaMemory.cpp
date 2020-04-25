@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "Elpida/CommonTasks/NumaMemory.hpp"
+#include "Elpida/Utilities/NumaMemory.hpp"
 #include "Elpida/Config.hpp"
 #ifdef ELPIDA_LINUX
 #include <numa.h>
@@ -66,7 +66,7 @@ namespace Elpida
 #ifdef ELPIDA_LINUX
 		numa_free(_pointer, _size);
 #else
-		VirtualFree(_pointer,0, MEM_RELEASE);
+		VirtualFree(_pointer, 0, MEM_RELEASE);
 #endif
 	}
 

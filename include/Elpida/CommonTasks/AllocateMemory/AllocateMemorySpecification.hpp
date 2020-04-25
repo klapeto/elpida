@@ -12,7 +12,7 @@ namespace Elpida
 	class AllocateMemorySpecification final : public TaskSpecification
 	{
 	public:
-		std::string_view memorySizeSetting = "memorySize";
+		static const char* memorySizeSetting;
 
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
 			const TaskAffinity& affinity) const override;

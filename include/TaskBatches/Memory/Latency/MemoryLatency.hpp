@@ -35,7 +35,7 @@
 #include "Elpida/TaskMetrics.hpp"
 #include "Elpida/TaskRunResult.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
-#include "Elpida/CommonTasks/Memory.hpp"
+#include "Elpida/Utilities/Memory.hpp"
 
 namespace Elpida
 {

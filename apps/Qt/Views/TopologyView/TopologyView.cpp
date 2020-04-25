@@ -112,7 +112,7 @@ namespace Elpida
 		widget->setLayout(new QHBoxLayout);
 		widget->layout()->addWidget(label);
 		label->setText(QString::fromStdString(
-			node.getName() + "\n" + ValueUtilities::getValueScaleString(node.getValue()) + "B"));
+			node.getName() + "\n" + ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
 		widget->setStyleSheet(QString("background-color: #acb4ec;"));
 		return widget;
 	}
@@ -170,7 +170,7 @@ namespace Elpida
 		widget->setLayout(layout);
 		layout->addWidget(label);
 		label->setText(QString::fromStdString(
-			node.getName() + ": " + ValueUtilities::getValueScaleString(node.getValue()) + "B"));
+			node.getName() + ": " + ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
 		auto styles = getCacheStyleSheet(node);
 		widget->setDefaultStyle(styles.defaultStyle);
 		widget->setMouseOverStyle(styles.mouseOverStyle);

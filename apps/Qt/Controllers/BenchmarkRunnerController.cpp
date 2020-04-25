@@ -57,6 +57,7 @@ namespace Elpida
 				if (!affinity.getProcessorNodes().empty())
 				{
 					std::vector<BenchmarkRunRequest> benchmarkRunRequests;
+					benchmarkRunRequests.reserve(benchmarks.size());
 					for (auto bench: benchmarks)
 					{
 						benchmarkRunRequests

@@ -129,14 +129,14 @@ namespace Elpida
 				_createdPlugins.push_back(pPlugin);
 				for (auto benchmark : benchmarks)
 				{
-					BenchmarkConfiguration configuration;
-					for (const auto& configSpec :benchmark->getConfigurationSpecifications())
+					BenchmarkConfiguration configuration(*benchmark);
+					for (const auto& taskConfigSpecs :benchmark->getConfigurationSpecifications())
 					{
-						auto& taskSpec = configSpec.getTaskSpecification();
+						auto& taskSpec = taskConfigSpecs.getTaskSpecification();
 						TaskConfiguration taskConfiguration(taskSpec);
-						for (auto spc : configSpec.getConfigurationSpecifications())
+						for (auto configSpec : taskConfigSpecs.getConfigurationSpecifications())
 						{
-							taskConfiguration.setConfiguration(spc->getName(), *spc->createDefault());
+							taskConfiguration.setConfiguration(configSpec->getName(), *configSpec->createDefault());
 						}
 						configuration.addConfiguration(taskSpec, std::move(taskConfiguration));
 					}
