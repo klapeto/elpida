@@ -39,7 +39,7 @@ namespace Elpida
 			case ConfigurationType::Type::Float:
 			case ConfigurationType::Type::Int:
 			case ConfigurationType::Type::UnsignedInt:
-				_fileViews.push(view);
+				_numberViews.push(view);
 				break;
 			default:
 				throw ElpidaException(FUNCTION_NAME, "Not implemented!");
