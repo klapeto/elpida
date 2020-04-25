@@ -32,45 +32,70 @@
 
 namespace Elpida
 {
-	std::string ValueUtilities::getValueScaleString(double value)
+	const char* ValueUtilities::PrefixesSI[] = {
+		"",
+		"K",
+		"M",
+		"G",
+		"T",
+		"P",
+		"E",
+		"Z",
+		"Y"
+	};
+
+	const char* ValueUtilities::PrefixesIEC[] = {
+		"",
+		"Ki",
+		"Mi",
+		"Gi",
+		"Ti",
+		"Pi",
+		"Ei",
+		"Zi",
+		"Yi"
+	};
+
+	const double ValueUtilities::ScaleValuesSI[] = {
+		1.0,
+		1000.0,
+		1000.0 * 1000.0,
+		1000.0 * 1000.0 * 1000.0,
+		1000.0 * 1000.0 * 1000.0 * 1000.0,
+		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0
+	};
+
+	const double ValueUtilities::ScaleValuesIEC[] = {
+		1.0,
+		1024.0,
+		1024.0 * 1024.0,
+		1024.0 * 1024.0 * 1024.0,
+		1024.0 * 1024.0 * 1024.0 * 1024.0,
+		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
+	};
+
+	std::string ValueUtilities::getValueScaleStringImpl(double value, double denominator)
 	{
 		std::ostringstream returnString;
-		if (value < std::kilo::num)
+		double accumulator = denominator;
+		auto i = 0;
+		while (true)
 		{
-			returnString << std::fixed << std::setprecision(2) << value;
-			return returnString.str();
-		}
+			if (value < accumulator)
+			{
+				returnString << std::fixed << std::setprecision(2) << value / accumulator * denominator << " "
+							 << PrefixesSI[i];
+				return returnString.str();
+			}
 
-		if (value < std::mega::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::kilo::num << " K";
-			return returnString.str();
+			i++;
+			accumulator *= denominator;
 		}
-
-		if (value < std::giga::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::mega::num << " M";
-			return returnString.str();
-		}
-
-		if (value < std::tera::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::giga::num << " G";
-			return returnString.str();
-		}
-
-		if (value < std::peta::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::tera::num << " T";
-			return returnString.str();
-		}
-
-		if (value < std::exa::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::peta::num << " P";
-			return returnString.str();
-		}
-		returnString << std::fixed << std::setprecision(2) << value / std::exa::num << " E";
-		return returnString.str();
 	}
 } /* namespace Elpida */

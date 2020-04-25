@@ -1,26 +1,34 @@
 set(ELPIDA_QT_SOURCES
-        Ui/LogsWidget/LogsWidget.cpp
-        Ui/MainWindow/MainWindow.cpp
-        Ui/MascotWidget/MascotWidget.cpp
-        Ui/TopologyNodeFrame/TopologyNodeFrame.cpp
-        Ui/TopologyWidget/TopologyWidget.cpp
-        Ui/SystemInfoWidget/SystemInfoWidget.cpp
-        Ui/TaskBatchesListWidget/TaskBatchesListWidget.cpp
-        Ui/TaskResultsWidget/TaskResultsWidget.cpp
-        Ui/CommonDialog/CommonDialog.cpp
-        Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.cpp
-        Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.cpp
+        Views/LogsView/LogsView.cpp
+        Views/MainWindow/MainWindow.cpp
+        Views/TopologyNodeFrame/TopologyNodeFrame.cpp
+        Views/TopologyView/TopologyView.cpp
+        Views/SystemInfoView/SystemInfoView.cpp
+        Views/BenchmarkListView/BenchmarkListView.cpp
+        Views/BenchmarkResultsView/BenchmarkResultsView.cpp
+        Views/CommonDialog/CommonDialog.cpp
+        Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.cpp
+        Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.cpp
+        Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp
+        Views/ConfigurationViews/FileInputView/FileInputView.cpp
+        Views/ConfigurationViews/TaskListItemView/TaskListItemView.cpp
+        Views/ConfigurationViews/ConfigurationValueViewBase.cpp
+        Views/ConfigurationViews/TaskConfigurationListItemViewBase.cpp
+        Views/ConfigurationViews/NumberInputView/NumberInputView.cpp
 
-        Ui/MainWindow/MainWindow.ui
-        Ui/TaskBatchesListWidget/TaskBatchesListWidget.ui
-        Ui/LogsWidget/LogsWidget.ui
-        Ui/TopologyWidget/TopologyWidget.ui
-        Ui/TopologyNodeFrame/TopologyNodeFrame.ui
-        Ui/SystemInfoWidget/SystemInfoWidget.ui
-        Ui/TaskResultsWidget/TaskResultsWidget.ui
-        Ui/CommonDialog/CommonDialog.ui
-        Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.ui
-        Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.ui
+        Views/MainWindow/MainWindow.ui
+        Views/BenchmarkListView/BenchmarkListView.ui
+        Views/LogsView/LogsView.ui
+        Views/TopologyView/TopologyView.ui
+        Views/TopologyNodeFrame/TopologyNodeFrame.ui
+        Views/SystemInfoView/SystemInfoView.ui
+        Views/BenchmarkResultsView/BenchmarkResultsView.ui
+        Views/CommonDialog/CommonDialog.ui
+        Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.ui
+        Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui
+        Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
+        Views/ConfigurationViews/FileInputView/FileInputView.ui
+        Views/ConfigurationViews/NumberInputView/NumberInputView.ui
 
         Main.cpp
 
@@ -29,18 +37,27 @@ set(ELPIDA_QT_SOURCES
         Core/ElpidaMediator.cpp
         Core/QModelLogAppender.cpp
 
-        Models/TaskBatchesModel.cpp
+        Models/BenchmarksModel.cpp
         Models/Abstractions/CollectionModel.cpp
         Models/Abstractions/CollectionItem.cpp
         Models/Abstractions/EventArgs/CollectionChangedEventArgs.cpp
         Models/Abstractions/CollectionModelObserver.cpp
-        Models/TaskRunResultsModel.cpp
-        Models/TaskRunnerModel.cpp
+        Models/BenchmarkResultsModel.cpp
+        Models/BenchmarkRunnerModel.cpp
+        Models/BenchmarkConfigurationsCollectionModel.cpp
+        Models/Abstractions/AssociativeModel/AssociativeModel.cpp
+        Models/Abstractions/ListModel/ListModel.cpp
+        Models/Abstractions/ListModel/ListModelItem.cpp
+        Models/Abstractions/AssociativeModel/AssociativeItem.cpp
+        Models/BenchmarkConfigurationModel.cpp
 
-        Controllers/TaskBatchesController.cpp
-        Controllers/TaskRunnerController.cpp
+        Controllers/BenchmarksController.cpp
+        Controllers/BenchmarkRunnerController.cpp
         Controllers/MainViewController.cpp
+        Controllers/BenchmarkConfigurationController.cpp
+
         QCustomApplication.cpp
+        ConfigurationViewsPool.cpp
         )
 
 

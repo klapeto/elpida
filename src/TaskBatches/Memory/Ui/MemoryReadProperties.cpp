@@ -39,7 +39,7 @@ namespace Elpida
 	{
 		_ui->setupUi(this);
 		_connections.push_back(
-			_ui->chkAutomaticSize->connect(_ui->chkAutomaticSize, &QCheckBox::stateChanged, this,
+			QCheckBox::connect(_ui->chkAutomaticSize, &QCheckBox::stateChanged, this,
 				&MemoryReadProperties::chkAutomaticSize_stateChanged));
 		_ui->chkAutomaticSize->setChecked(true);
 		_ui->sbMemorySize->setEnabled(false);

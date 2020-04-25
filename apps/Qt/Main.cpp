@@ -19,20 +19,25 @@
 
 #include "Elpida/Config.hpp"
 
-#include "Controllers/TaskBatchesController.hpp"
-#include "Controllers/TaskRunnerController.hpp"
+#include "ConfigurationViewsPool.hpp"
 
-#include "Models/TaskBatchesModel.hpp"
-#include "Models/TaskRunResultsModel.hpp"
+#include "Controllers/BenchmarksController.hpp"
+#include "Controllers/BenchmarkRunnerController.hpp"
+#include "Controllers/BenchmarkConfigurationController.hpp"
 
-#include "Ui/MainWindow/MainWindow.hpp"
-#include "Ui/SystemInfoWidget/SystemInfoWidget.hpp"
-#include "Ui/TopologyWidget/TopologyWidget.hpp"
-#include "Ui/TaskResultsWidget/TaskResultsWidget.hpp"
-#include "Ui/TaskBatchRunnerStatusView/TaskBatchRunnerStatusView.hpp"
-#include "Ui/TaskBatchRunnerControlsView/TaskBatchRunnerControlsView.hpp"
-#include "Ui/TaskBatchesListWidget/TaskBatchesListWidget.hpp"
-#include "Ui/TaskResultsWidget/TaskResultsWidget.hpp"
+#include "Models/BenchmarksModel.hpp"
+#include "Models/BenchmarkResultsModel.hpp"
+#include "Models/BenchmarkConfigurationsCollectionModel.hpp"
+#include "Models/BenchmarkConfigurationModel.hpp"
+
+#include "Views/MainWindow/MainWindow.hpp"
+#include "Views/SystemInfoView/SystemInfoView.hpp"
+#include "Views/TopologyView/TopologyView.hpp"
+#include "Views/BenchmarkResultsView/BenchmarkResultsView.hpp"
+#include "Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.hpp"
+#include "Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp"
+#include "Views/BenchmarkListView/BenchmarkListView.hpp"
+#include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
 
 #include "Core/ElpidaMediator.hpp"
 
@@ -53,13 +58,14 @@ using namespace Elpida;
 #include <cstdlib>
 #include <unistd.h>
 
-void initializeTopologyTab(MainWindow& mainWindow, TopologyWidget& topologyWidget);
+void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget);
 
 void initializeTaskTab(MainWindow& mainWindow,
-	TaskBatchesListWidget& taskBatchesListWidget,
-	TaskResultsWidget& taskResultsWidget,
-	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
-	TaskBatchRunnerControlsView& taskBatchRunnerControlsView);
+	BenchmarkListView& taskBatchesListWidget,
+	BenchmarkResultsView& taskResultsWidget,
+	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
+	BenchmarkRunnerControlsView& taskBatchRunnerControlsView,
+	BenchmarkConfigurationView& benchmarkConfigurationView);
 void segFaultHandler(int sig)
 {
 	void* array[20];
@@ -88,41 +94,46 @@ int main(int argc, char* argv[])
 
 	MainWindow mainWindow(mediator);
 
+	ConfigurationViewsPool configurationViewsPool;
+
 	CpuInfo cpuInfo;
 	SystemTopology topology;
 
-	SystemInfoWidget systemInfoWidget(cpuInfo, topology);
-	mainWindow.addTab(systemInfoWidget, "System Info");
+	SystemInfoView systemInfoView(cpuInfo, topology);
+	mainWindow.addTab(systemInfoView, "System Info");
 
-	TopologyWidget topologyWidget(topology);
+	TopologyView topologyView(topology);
 
-	initializeTopologyTab(mainWindow, topologyWidget);
+	initializeTopologyTab(mainWindow, topologyView);
 
 	Logger logger;
-	TaskBatchesModel taskBatchesModel;
-	TaskRunnerModel taskRunnerModel;
-	TaskRunResultsModel taskRunResultsModel;
-	TaskBatchesController taskBatchesController(taskBatchesModel, logger);
+	BenchmarksModel taskBatchesModel;
+	BenchmarkRunnerModel taskRunnerModel;
+	BenchmarkResultsModel taskRunResultsModel;
+	BenchmarkConfigurationModel benchmarkConfigurationModel;
+	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
+	BenchmarksController taskBatchesController(taskBatchesModel,benchmarkConfigurationsModel, logger);
 	taskBatchesController.reload();
+	BenchmarkRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel);
+	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
+	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
+	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
+	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel);
+	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationModel, configurationViewsPool);
+	BenchmarkConfigurationController benchmarkConfigurationController(benchmarkConfigurationsModel, benchmarkConfigurationModel);
 
-	TaskRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel);
 	mediator.registerCommandHandler(runnerController);
-
-
-	TaskBatchesListWidget taskBatchesListWidget(taskBatchesModel);
-	TaskResultsWidget taskResultsWidget(taskRunResultsModel);
-	TaskBatchRunnerStatusView taskBatchRunnerStatusView(taskRunnerModel);
-	TaskBatchRunnerControlsView taskBatchRunnerControlsView(mediator, taskRunnerModel);
-
-	mediator.registerCommandHandler(taskBatchesListWidget);
-	mediator.registerCommandHandler(topologyWidget);
+	mediator.registerCommandHandler(taskBatchesListView);
+	mediator.registerCommandHandler(topologyView);
 	mediator.registerCommandHandler(mainWindow);
+	mediator.registerCommandHandler(benchmarkConfigurationController);
 
 	initializeTaskTab(mainWindow,
-		taskBatchesListWidget,
-		taskResultsWidget,
-		taskBatchRunnerStatusView,
-		taskBatchRunnerControlsView);
+		taskBatchesListView,
+		benchmarkResultsView,
+		benchmarkRunnerStatusView,
+		benchmarkRunnerControlsView,
+		benchmarkConfigurationView);
 
 	mainWindow.show();
 
@@ -130,10 +141,11 @@ int main(int argc, char* argv[])
 }
 
 void initializeTaskTab(MainWindow& mainWindow,
-	TaskBatchesListWidget& taskBatchesListWidget,
-	TaskResultsWidget& taskResultsWidget,
-	TaskBatchRunnerStatusView& taskBatchRunnerStatusView,
-	TaskBatchRunnerControlsView& taskBatchRunnerControlsView)
+	BenchmarkListView& taskBatchesListWidget,
+	BenchmarkResultsView& taskResultsWidget,
+	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
+	BenchmarkRunnerControlsView& taskBatchRunnerControlsView,
+	BenchmarkConfigurationView& benchmarkConfigurationView)
 {
 	// TODO: create as normal widgets
 	auto rootWidget = new QWidget();
@@ -141,6 +153,7 @@ void initializeTaskTab(MainWindow& mainWindow,
 	auto topLayout = new QHBoxLayout();
 
 	topLayout->addWidget(&taskBatchesListWidget);
+	topLayout->addWidget(&benchmarkConfigurationView);
 	topLayout->addWidget(&taskResultsWidget);
 	rootLayout->addLayout(topLayout);
 	rootLayout->addWidget(&taskBatchRunnerStatusView);
@@ -150,7 +163,7 @@ void initializeTaskTab(MainWindow& mainWindow,
 	mainWindow.addTab(*rootWidget, "Task Batches");
 }
 
-void initializeTopologyTab(MainWindow& mainWindow, TopologyWidget& topologyWidget)
+void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget)
 {
 	auto container = new QWidget;
 	auto scrollArea = new QScrollArea;
@@ -163,6 +176,7 @@ void initializeTopologyTab(MainWindow& mainWindow, TopologyWidget& topologyWidge
 
 	scrollArea->setWidgetResizable(false);
 	scrollArea->setWidget(&topologyWidget);
+	scrollArea->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
 	topologyWidget.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 

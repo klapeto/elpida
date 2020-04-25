@@ -5,11 +5,11 @@
 #ifndef APPS_QT_CORE_COMMANDS_GETTASKAFFINITYCOMMAND_HPP
 #define APPS_QT_CORE_COMMANDS_GETTASKAFFINITYCOMMAND_HPP
 
-#include <Elpida/TaskAffinity.hpp>
+#include <Elpida/Engine/Task/TaskAffinity.hpp>
 #include "Core/Abstractions/TypedCommand.hpp"
 
 namespace Elpida  {
-	class GetTaskAffinityCommand: public TypedCommand<GetTaskAffinityCommand>
+	class GetTaskAffinityCommand final: public TypedCommand<GetTaskAffinityCommand>
 	{
 	public:
 		[[nodiscard]] const TaskAffinity& getAffinity() const
@@ -23,6 +23,7 @@ namespace Elpida  {
 		}
 
 		GetTaskAffinityCommand() = default;
+		~GetTaskAffinityCommand() override = default;
 	private:
 		TaskAffinity _affinity;
 	};

@@ -15,9 +15,6 @@ namespace Elpida
 	template<typename T>
 	class CollectionItem
 	{
-	private:
-		using Iterator = typename std::list<CollectionItem<T>>::iterator;
-
 	public:
 
 		const T& getValue() const
@@ -29,9 +26,8 @@ namespace Elpida
 		CollectionItem(CollectionItem<T>&&) noexcept = default;
 		CollectionItem<T>& operator=(const CollectionItem<T>&) = delete;
 		CollectionItem<T>& operator=(CollectionItem<T>&&) noexcept = default;
-	private:
+	protected:
 		const CollectionModel<T>& _owner;
-		Iterator _iterator;
 		T _value;
 
 		template<typename TR>

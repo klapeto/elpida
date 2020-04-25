@@ -22,9 +22,7 @@ namespace Elpida
 
 	private:
 		Mediator& _mediator;
-
 	};
-
 }
 
 

@@ -30,13 +30,16 @@ namespace Elpida
 		virtual void handle(StopBenchmarkingCommand& command)
 		{
 		};
-		virtual void handle(GetSelectedTaskBatchesCommand& command)
+		virtual void handle(GetBenchmarksToRunCommand& command)
 		{
 		};
 		virtual void handle(ShowMessageCommand& command)
 		{
 		};
 		virtual void handle(GetTaskAffinityCommand& command)
+		{
+		};
+		virtual void handle(SelectedBenchmarkChangedEvent& command)
 		{
 		};
 

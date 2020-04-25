@@ -17,39 +17,9 @@ namespace Elpida
 	class CollectionModel : public Model
 	{
 	public:
-
 		Event<const CollectionChangedEventArgs<T>&> itemAdded;
 		Event<const CollectionChangedEventArgs<T>&> itemRemoved;
 		Event<> cleared;
-
-		template<typename TR>
-		void add(TR&& item)
-		{
-			auto itr = _items.insert(_items.end(), CollectionItem<T>(*this, std::forward<TR>(item)));
-			auto& insItem = _items.back();
-
-			insItem._iterator = itr;
-			onDataChanged();
-			onItemAdded(insItem);
-		}
-
-		void remove(CollectionItem<T>& item)
-		{
-			_items.erase(item._iterator);
-			onDataChanged();
-			onItemRemoved(item);
-		}
-
-		void clear()
-		{
-			_items.clear();
-			onCleared();
-		}
-
-		const std::list<CollectionItem<T>>& getItems() const
-		{
-			return _items;
-		}
 
 		CollectionModel() = default;
 		CollectionModel(const CollectionModel<T>&) = delete;
@@ -57,9 +27,7 @@ namespace Elpida
 		CollectionModel<T>& operator=(const CollectionModel<T>&) = delete;
 		CollectionModel<T>& operator=(CollectionModel<T>&&) noexcept = delete;
 		~CollectionModel() override = default;
-	private:
-		std::list<CollectionItem<T>> _items;
-
+	protected:
 		void onItemAdded(const CollectionItem<T>& item)
 		{
 			auto args = CollectionChangedEventArgs<T>(item);

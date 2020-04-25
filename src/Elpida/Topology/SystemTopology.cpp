@@ -32,8 +32,10 @@
 
 #ifdef ELPIDA_LINUX
 #include <numa.h>
+#include <sys/resource.h>
 #else
-#include <windows.h>
+#include <Windows.h>
+#include <iostream>
 #endif
 
 namespace Elpida
@@ -91,6 +93,26 @@ namespace Elpida
 
 		GetNumaProcessorNode(processorId, &NodeNumber);
 		return NodeNumber;
+#endif
+	}
+
+	void SystemTopology::setProcessPriority(SystemTopology::ProcessPriority priority)
+	{
+#ifdef ELPIDA_LINUX
+		switch (priority)
+		{
+		case ProcessPriority::High:
+			setpriority(PRIO_PROCESS, 0, PRIO_MIN);
+			break;
+		default:
+			setpriority(PRIO_PROCESS, 0, 0);
+			break;
+		}
+#else
+		if(!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
+		{
+			std::cout << "Warning! Failed to set process priority: " << GetLastError() << std::endl;
+		}
 #endif
 	}
 

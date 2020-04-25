@@ -56,47 +56,44 @@ namespace Elpida
 			Unknown
 		};
 
-		unsigned int getOsIndex() const
+		[[nodiscard]] unsigned int getOsIndex() const
 		{
 			return _osIndex;
 		}
 
-		const std::vector<ProcessorNode>& getChildren() const
+		[[nodiscard]] const std::vector<ProcessorNode>& getChildren() const
 		{
 			return _children;
 		}
 
-		const std::vector<ProcessorNode*>& getSiblings() const
+		[[nodiscard]] const std::vector<ProcessorNode*>& getSiblings() const
 		{
 			return _siblings;
 		}
 
-		const std::vector<ProcessorNode>& getMemoryChildren() const
+		[[nodiscard]] const std::vector<ProcessorNode>& getMemoryChildren() const
 		{
 			return _memoryChildren;
 		}
 
-		const std::string& getName() const
+		[[nodiscard]] const std::string& getName() const
 		{
 			return _name;
 		}
 
-		Type getType() const
+		[[nodiscard]] Type getType() const
 		{
 			return _type;
 		}
 
-		std::size_t getValue() const
+		[[nodiscard]] std::size_t getValue() const
 		{
 			return _value;
 		}
 
-		~ProcessorNode()
-		{
-		}
-
+		~ProcessorNode()= default;
 	private:
-		ProcessorNode(ProcessorNode* parrent, void* node);    // Evil casting to avoid header inclusion
+		ProcessorNode(ProcessorNode* parent, void* node);    // Evil casting to avoid header inclusion
 
 		void addSibling(ProcessorNode& node)
 		{
@@ -107,7 +104,7 @@ namespace Elpida
 		Type _type;
 		std::size_t _value;
 		unsigned int _osIndex;
-		ProcessorNode* _parrent;
+		ProcessorNode* _parent;
 
 		std::vector<ProcessorNode> _children;
 		std::vector<ProcessorNode> _memoryChildren;

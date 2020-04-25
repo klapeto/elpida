@@ -38,7 +38,7 @@ namespace Elpida
 		}
 
 		Model()
-			: _lock(_mutex, std::defer_lock_t())
+			: _lock(_mutex, std::defer_lock_t()), _transaction(false)
 		{
 
 		}
@@ -68,8 +68,8 @@ namespace Elpida
 			if (_lock.owns_lock())
 			{
 				_transaction = false;
-				onDataChanged();
 				_lock.unlock();
+				onDataChanged();
 			}
 			else
 			{

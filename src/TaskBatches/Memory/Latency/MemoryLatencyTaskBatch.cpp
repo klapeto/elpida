@@ -30,10 +30,10 @@
 #include <algorithm>
 
 #include "Elpida/Task.hpp"
-#include "Elpida/TaskAffinity.hpp"
+#include "Elpida/Engine/Task/TaskAffinity.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "TaskBatches/Memory/WorkingSetSizes.hpp"
-#include "Elpida/CommonTasks/AllocateMemory.hpp"
+#include "Elpida/CommonTasks/AllocateMemory/AllocateMemory.hpp"
 #include "Elpida/Topology/CpuInfo.hpp"
 #include "TaskBatches/Memory/Latency/MemoryLatency.hpp"
 

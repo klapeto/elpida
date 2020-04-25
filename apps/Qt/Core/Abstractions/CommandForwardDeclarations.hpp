@@ -12,9 +12,10 @@ namespace Elpida {
 	class ExitApplicationCommand;
 	class StartBenchmarkingCommand;
 	class StopBenchmarkingCommand;
-	class GetSelectedTaskBatchesCommand;
+	class GetBenchmarksToRunCommand;
 	class ShowMessageCommand;
 	class GetTaskAffinityCommand;
+	class SelectedBenchmarkChangedEvent;
 }
 
 #endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
