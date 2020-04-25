@@ -80,13 +80,41 @@ QCheckBox::indicator:checked:hover  {
 
 QCheckBox::indicator:pressed,  QCheckBox::indicator:unchecked:pressed, QPushButton:disabled {
 	background-color: rgb(199, 202, 226);
-} QCheckBox::indicator:checked:pressed {
+} 
+
+QCheckBox::indicator:checked:pressed {
 	background-color: rgb(137, 142, 226);
 }
 
 QCheckBox::indicator:checked {
 	background-color: rgb(155, 195, 255);
 }
+
+
+QListWidget::indicator {
+	border: 1px solid rgb(179, 179, 179);
+}
+
+QListWidget::indicator:hover, QListWidget::indicator:hover:unchecked {
+	background-color: rgb(221, 219, 243);
+}
+
+QListWidget::indicator:checked:hover  {
+	background-color:rgb(110, 122, 231);
+}
+
+QListWidget::indicator:pressed,  QListWidget::indicator:unchecked:pressed {
+	background-color: rgb(199, 202, 226);
+} 
+
+QListWidget::indicator:checked:pressed {
+	background-color: rgb(137, 142, 226);
+}
+
+QListWidget::indicator:checked {
+	background-color: rgb(155, 195, 255);
+}
+
 /*==================================*/
 /*============ QPushButton ============*/
 QPushButton {

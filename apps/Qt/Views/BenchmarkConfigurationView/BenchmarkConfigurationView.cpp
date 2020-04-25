@@ -82,7 +82,6 @@ namespace Elpida
 
 	void BenchmarkConfigurationView::returnAllViewsToPool()
 	{
-
 		for (auto view : _rentedViews)
 		{
 			view->saveSetting();

@@ -21,11 +21,12 @@ namespace Elpida
 		{
 			if (taskConfiguration->getTaskSpecification().canBeDisabled())
 			{
-				setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+				setFlags(Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
 				setCheckState(taskConfiguration->isEnabled() ? Qt::Checked : Qt::Unchecked);
 			}
 			else
 			{
+				setCheckState(Qt::Checked);
 				setFlags(Qt::NoItemFlags);
 			}
 
@@ -33,6 +34,7 @@ namespace Elpida
 		}
 		else
 		{
+			setCheckState(Qt::Checked);
 			setFlags(Qt::NoItemFlags);
 		}
 	}
