@@ -8,6 +8,7 @@
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/TaskData.hpp"
+#include "Elpida/Engine/Task/TaskSpecification.hpp"
 
 namespace Elpida
 {
@@ -19,52 +20,7 @@ namespace Elpida
 	{
 	}
 
-	void MultiThreadTask::prepare()
-	{
-		const auto& processors = _affinity.getProcessorNodes();
-		const size_t processorCount = processors.size();
-
-		if (_specification.acceptsInput())
-		{
-			breakInputIntoChunks(processorCount);
-		}
-		size_t i = 0;
-		for (auto processor : processors)
-		{
-			auto task = _specification
-				.createNewTask(_configuration, TaskAffinity(std::vector<const ProcessorNode*>{ processor }));
-
-			if (_specification.acceptsInput())
-			{
-				task->setInput(&_chunks[i]);
-			}
-
-			task->prepare();
-			_createdThreads.push_back(std::move(TaskThread(*task, _wakeNotifier, _mutex, _threadsShouldWake, processor->getOsIndex())));
-			_createdThreads.back().start();
-		}
-	}
-
-	void MultiThreadTask::finalize()
-	{
-		for (auto& thread: _createdThreads)
-		{
-			thread.getTaskToRun().finalize();
-		}
-		_createdThreads.clear();
-		destroyChunks();
-		if (_specification.exportsOutput() && _specification.acceptsInput())
-		{
-			_outputData = *_inputData;
-		}
-		else if (_specification.exportsOutput())
-		{
-
-			// ???
-		}
-	}
-
-	void MultiThreadTask::run()
+	void MultiThreadTask::execute()
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
 		_threadsShouldWake = true;
@@ -84,10 +40,14 @@ namespace Elpida
 	void MultiThreadTask::breakInputIntoChunks(size_t chunks)
 	{
 		destroyChunks();
-		size_t chunkSize = 0;
-		auto dataSize = (*_inputData)->getSize();
 
-		if (_inputData != nullptr && dataSize > 0)
+		size_t chunkSize = 0;
+		auto inputData = getInput();
+		bool acceptsInput = _specification.acceptsInput();
+
+		auto dataSize = inputData != nullptr ? inputData->getSize() : 0;
+
+		if (acceptsInput && dataSize > 0)
 		{
 			chunkSize = std::floor(dataSize / (float)chunks);
 		}
@@ -109,7 +69,7 @@ namespace Elpida
 				"A task received data as input that is less than the chunk size");
 		}
 
-		auto rootPtr = (*_inputData)->getData();
+		auto rootPtr = inputData->getData();
 		size_t offset = 0;
 		for (size_t i = 0; i < chunks; ++i)
 		{
@@ -125,6 +85,7 @@ namespace Elpida
 			}
 		}
 	}
+
 	void MultiThreadTask::destroyChunks()
 	{
 		for (auto chunk: _chunks)
@@ -133,8 +94,58 @@ namespace Elpida
 		}
 		_chunks.clear();
 	}
+
 	MultiThreadTask::~MultiThreadTask()
 	{
 		destroyChunks();
+	}
+
+	void MultiThreadTask::prepareImpl()
+	{
+		const auto& processors = _affinity.getProcessorNodes();
+		const size_t processorCount = processors.size();
+
+		if (_specification.acceptsInput())
+		{
+			breakInputIntoChunks(processorCount);
+		}
+		size_t i = 0;
+		for (auto processor : processors)
+		{
+			auto task = _specification
+				.createNewTask(_configuration, TaskAffinity(std::vector<const ProcessorNode*>{ processor }));
+
+			if (_specification.acceptsInput())
+			{
+				task->setInput(*_chunks[i]);
+			}
+
+			task->prepare();
+			_createdThreads.push_back(std::move(TaskThread(*task,
+				_wakeNotifier,
+				_mutex,
+				_threadsShouldWake,
+				processor->getOsIndex())));
+			_createdThreads.back().start();
+		}
+	}
+
+	TaskData MultiThreadTask::finalizeAndGetOutputData()
+	{
+		for (auto& thread: _createdThreads)
+		{
+			thread.getTaskToRun().finalize();
+		}
+		_createdThreads.clear();
+		destroyChunks();
+//		if (_specification.exportsOutput() && _specification.acceptsInput())
+//		{
+//			_outputData = *_inputData;
+//		}
+//		else if (_specification.exportsOutput())
+//		{
+//			// ???
+//		}
+		return TaskData();
 	}
 }

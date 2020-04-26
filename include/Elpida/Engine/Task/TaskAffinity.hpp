@@ -52,13 +52,6 @@ namespace Elpida
 
 		}
 
-//		template<typename T>
-//		explicit TaskAffinity(T&& nodesToUse)
-//			: _nodes(std::forward<T>(nodesToUse))
-//		{
-//
-//		}
-
 		TaskAffinity(const TaskAffinity& other) = default;
 		TaskAffinity(TaskAffinity&& other) noexcept
 			: _nodes(std::move(other._nodes))

@@ -51,11 +51,11 @@ namespace Elpida
 			_pointer = nullptr;
 		}
 
-		MemoryChunk(void* pointer, std::size_t size);
+		MemoryChunk(pData pointer, std::size_t size);
 		MemoryChunk(MemoryChunk&& other) noexcept;
 		~MemoryChunk() override;
 	private:
-		void* _ptr;
+		pData _ptr;
 	};
 
 } /* namespace Elpida */

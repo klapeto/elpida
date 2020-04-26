@@ -38,7 +38,10 @@ namespace Elpida
 	class Memory : public NonCopyable
 	{
 	public:
-		[[nodiscard]] void* getPointer() const
+		using Data = unsigned char;
+		using pData = Data*;
+
+		[[nodiscard]] pData getPointer() const
 		{
 			return _pointer;
 		}
@@ -58,7 +61,7 @@ namespace Elpida
 		std::mutex _mutex;
 	protected:
 		std::size_t _size;
-		void* _pointer;
+		pData _pointer;
 
 		virtual void allocateImpl() = 0;
 		virtual void deallocateImpl() = 0;

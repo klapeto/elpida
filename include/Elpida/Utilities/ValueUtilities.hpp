@@ -65,20 +65,71 @@ namespace Elpida
 			Yobi
 		};
 
-		static const char* PrefixesSI[(int)SIPrefixes::Yotta + 1];
-		static const char* PrefixesIEC[(int)IECPrefixes::Yobi + 1];
+		static inline const char* PrefixesSI[(int)SIPrefixes::Yotta + 1] = {
+			"",
+			"K",
+			"M",
+			"G",
+			"T",
+			"P",
+			"E",
+			"Z",
+			"Y"
+		};
 
-		static const double ScaleValuesSI[(int)SIPrefixes::Yotta + 1];
-		static const double ScaleValuesIEC[(int)IECPrefixes::Yobi + 1];
+		static inline const char* PrefixesIEC[(int)IECPrefixes::Yobi + 1] = {
+			"",
+			"Ki",
+			"Mi",
+			"Gi",
+			"Ti",
+			"Pi",
+			"Ei",
+			"Zi",
+			"Yi"
+		};
+
+		static inline const double ScaleValuesSI[] = {
+			1.0,
+			1000.0,
+			1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0
+		};
+
+		static inline const double ScaleValuesIEC[] = {
+			1.0,
+			1024.0,
+			1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
+		};
+
+		static inline constexpr double SIDenominator = 1000.0;
+		static inline constexpr double IECDenominator = 1024.0;
+
+		template<class T, size_t N>
+		static constexpr size_t getArrayLength(T (&)[N])
+		{
+			return N;
+		}
 
 		static std::string getValueScaleStringSI(double value)
 		{
-			return getValueScaleStringImpl(value, 1000);
+			return getValueScaleStringImpl(value, SIDenominator, PrefixesSI, getArrayLength(PrefixesSI));
 		}
 
 		static std::string getValueScaleStringIEC(double value)
 		{
-			return getValueScaleStringImpl(value, 1024);
+			return getValueScaleStringImpl(value, IECDenominator, PrefixesIEC, getArrayLength(PrefixesIEC));
 		}
 
 		template<typename ... TArgs>
@@ -88,8 +139,18 @@ namespace Elpida
 			concatenateToStringImpl(stream, std::forward<TArgs>(args)...);
 			return stream.str();
 		}
+
+		template<typename ... TArgs>
+		inline static std::string Cs(TArgs&& ... args)
+		{
+			return concatenateToString(std::forward<TArgs>(args)...);
+		}
+
 	private:
-		static std::string getValueScaleStringImpl(double value, double denominator);
+		static std::string getValueScaleStringImpl(double value,
+			double denominator,
+			const char* prefixes[],
+			size_t arraySize);
 
 		template<typename T, typename ... TRest>
 		inline static void concatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)

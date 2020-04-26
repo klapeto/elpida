@@ -11,7 +11,10 @@ namespace Elpida
 	class TaskData final
 	{
 	public:
-		[[nodiscard]] unsigned char* getData() const
+		using Data = unsigned char;
+		using pData = Data*;
+
+		[[nodiscard]] pData getData() const
 		{
 			return _data;
 		}
@@ -20,23 +23,25 @@ namespace Elpida
 			return _size;
 		}
 
-		void setData(unsigned char* data)
-		{
-			_data = data;
-		}
-
-		void setSize(size_t size)
-		{
-			_size = size;
-		}
-
-		TaskData(unsigned char* data, size_t size)
+		TaskData(pData data, size_t size)
 			: _data(data), _size(size)
 		{
 		}
+
+		TaskData()
+			: _data(nullptr), _size(0)
+		{
+		}
+
+		TaskData(const TaskData&) = delete;
+		TaskData& operator=(const TaskData&) = delete;
+
+		TaskData(TaskData&&) = default;
+		TaskData& operator=(TaskData&&) = default;
+
 		~TaskData() = default;
 	private:
-		unsigned char* _data;
+		pData _data;
 		size_t _size;
 	};
 }

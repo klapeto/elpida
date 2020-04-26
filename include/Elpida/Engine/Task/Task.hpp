@@ -7,29 +7,32 @@
 
 #include <string>
 #include <utility>
-#include "TaskSpecification.hpp"
+#include "TaskData.hpp"
+#include "TaskAffinity.hpp"
 
 namespace Elpida
 {
 
 	class TaskData;
+	class TaskSpecification;
 
 	class Task
 	{
 	public:
 
-		virtual void setInput(TaskData* const* input)
+		void setInput(const TaskData& input)
 		{
-			_inputData = input;
-		};
-		virtual TaskData* const* getOutput()
+			_inputData = &input;
+		}
+
+		const TaskData& getOutput()
 		{
-			return &_outputData;
+			return _outputData;
 		};
 
-		[[nodiscard]] virtual const TaskData* getInput() const
+		[[nodiscard]] inline const TaskData* getInput() const
 		{
-			return _inputData != nullptr ? *_inputData : nullptr;
+			return _inputData;
 		};
 
 		[[nodiscard]] bool shouldBeCountedOnResults() const
@@ -42,25 +45,25 @@ namespace Elpida
 			return _specification;
 		}
 
-		virtual void prepare() = 0;
-		virtual void finalize() = 0;
-		virtual void run() = 0;
+		void prepare();
+		void finalize();
+		virtual void execute() = 0;
 
 		virtual void applyAffinity();
 
-		Task(const TaskSpecification& specification, TaskAffinity  affinity, bool toBeCountedOnResults = true)
-			: _specification(specification), _affinity(std::move(affinity)), _inputData(nullptr), _outputData(nullptr),
-			  _toBeCountedOnResults(toBeCountedOnResults)
-		{
-		}
+		Task(const TaskSpecification& specification, TaskAffinity affinity, bool toBeCountedOnResults = true);
 
 		virtual ~Task() = default;
 	protected:
 		TaskAffinity _affinity;
 		const TaskSpecification& _specification;
-		TaskData* const* _inputData;
-		TaskData* _outputData;
 		bool _toBeCountedOnResults;
+
+		virtual void prepareImpl() = 0;
+		virtual TaskData finalizeAndGetOutputData() = 0;
+	private:
+		TaskData _outputData;
+		const TaskData* _inputData;
 	};
 }
 

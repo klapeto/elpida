@@ -94,7 +94,7 @@ namespace Elpida
 			_waitNotifier.wait(lock);
 		}
 		lock.unlock();
-		_taskToRun->run();
+		_taskToRun->execute();
 	}
 
 	void TaskThread::setCurrentThreadAffinity(unsigned int cpuId)

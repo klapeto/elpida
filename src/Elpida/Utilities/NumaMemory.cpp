@@ -41,15 +41,15 @@ namespace Elpida
 
 	NumaMemory::~NumaMemory()
 	{
-		deallocate();
+		deallocate(); // TODO: this is not needed, but be safe
 	}
 
 	void NumaMemory::allocateImpl()
 	{
 #ifdef ELPIDA_LINUX
-		_pointer = numa_alloc_onnode(_size, _node);
+		_pointer = (pData)numa_alloc_onnode(_size, _node);
 #else
-		_pointer =VirtualAllocExNuma(
+		_pointer = (pData)VirtualAllocExNuma(
 			GetCurrentProcess(),
 			NULL,
 			_size,

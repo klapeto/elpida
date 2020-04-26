@@ -39,15 +39,16 @@ namespace Elpida
 	class ReadFile : public Task
 	{
 	public:
-		void prepare() override;
-		void finalize() override;
-		void run() override;
+		void execute() override;
 
 		ReadFile(const TaskSpecification& specification,
 			const TaskAffinity& affinity,
 			std::string filePath,
 			bool toBeCountedOnResults = true);
-		~ReadFile() override;
+		~ReadFile() override = default;
+	protected:
+		void prepareImpl() override;
+		TaskData finalizeAndGetOutputData() override;
 	private:
 		MemoryFile _file;
 		std::string _filePath;

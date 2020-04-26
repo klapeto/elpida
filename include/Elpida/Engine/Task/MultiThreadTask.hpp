@@ -10,17 +10,20 @@
 
 namespace Elpida
 {
+	class TaskConfiguration;
+
 	class MultiThreadTask : public Task
 	{
 	public:
-
-		void prepare() override;
-		void finalize() override;
-		void run() override;
+		void execute() override;
 		void applyAffinity() override;
 
 		MultiThreadTask(const TaskSpecification& taskSpecification, const TaskConfiguration& configuration, const TaskAffinity& affinity);
 		~MultiThreadTask() override;
+
+	protected:
+		void prepareImpl() override;
+		TaskData finalizeAndGetOutputData() override;
 	private:
 		std::mutex _mutex;
 		std::condition_variable _wakeNotifier;

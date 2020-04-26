@@ -32,65 +32,65 @@
 
 namespace Elpida
 {
-	const char* ValueUtilities::PrefixesSI[] = {
-		"",
-		"K",
-		"M",
-		"G",
-		"T",
-		"P",
-		"E",
-		"Z",
-		"Y"
-	};
+//	const char* ValueUtilities::PrefixesSI[] = {
+//		"",
+//		"K",
+//		"M",
+//		"G",
+//		"T",
+//		"P",
+//		"E",
+//		"Z",
+//		"Y"
+//	};
+//
+//	const char* ValueUtilities::PrefixesIEC[] = {
+//		"",
+//		"Ki",
+//		"Mi",
+//		"Gi",
+//		"Ti",
+//		"Pi",
+//		"Ei",
+//		"Zi",
+//		"Yi"
+//	};
+//
+//	const double ValueUtilities::ScaleValuesSI[] = {
+//		1.0,
+//		1000.0,
+//		1000.0 * 1000.0,
+//		1000.0 * 1000.0 * 1000.0,
+//		1000.0 * 1000.0 * 1000.0 * 1000.0,
+//		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+//		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+//		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+//		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0
+//	};
+//
+//	const double ValueUtilities::ScaleValuesIEC[] = {
+//		1.0,
+//		1024.0,
+//		1024.0 * 1024.0,
+//		1024.0 * 1024.0 * 1024.0,
+//		1024.0 * 1024.0 * 1024.0 * 1024.0,
+//		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+//		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+//		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+//		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
+//	};
 
-	const char* ValueUtilities::PrefixesIEC[] = {
-		"",
-		"Ki",
-		"Mi",
-		"Gi",
-		"Ti",
-		"Pi",
-		"Ei",
-		"Zi",
-		"Yi"
-	};
-
-	const double ValueUtilities::ScaleValuesSI[] = {
-		1.0,
-		1000.0,
-		1000.0 * 1000.0,
-		1000.0 * 1000.0 * 1000.0,
-		1000.0 * 1000.0 * 1000.0 * 1000.0,
-		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0
-	};
-
-	const double ValueUtilities::ScaleValuesIEC[] = {
-		1.0,
-		1024.0,
-		1024.0 * 1024.0,
-		1024.0 * 1024.0 * 1024.0,
-		1024.0 * 1024.0 * 1024.0 * 1024.0,
-		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
-	};
-
-	std::string ValueUtilities::getValueScaleStringImpl(double value, double denominator)
+	std::string ValueUtilities::getValueScaleStringImpl(double value, double denominator, const char* prefixes[], size_t arraySize)
 	{
 		std::ostringstream returnString;
 		double accumulator = denominator;
-		auto i = 0;
-		while (true)
+		size_t i = 0;
+		while (i < arraySize)
 		{
 			if (value < accumulator)
 			{
 				returnString << std::fixed << std::setprecision(2) << value / accumulator * denominator << " "
-							 << PrefixesSI[i];
+							 << prefixes[i];
 				return returnString.str();
 			}
 

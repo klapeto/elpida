@@ -43,44 +43,34 @@ namespace Elpida
 		bool toBeCountedOnResults,
 		std::size_t size, bool initialize)
 		: Task(specification, affinity, toBeCountedOnResults),
+		_memory(size,
+			SystemTopology::getNumaNodeOfProcessor((int)affinity.getProcessorNodes().front()->getOsIndex())),
 		  _size(size),
 		  _initialize(initialize)
 	{
-		_memory = new NumaMemory(size,
-			SystemTopology::getNumaNodeOfProcessor((int)affinity.getProcessorNodes().front()->getOsIndex()));
-		_outputData = new TaskData(nullptr, size);
+
+	}
+	void AllocateMemory::execute()
+	{
+		_memory.allocate();
 	}
 
-	AllocateMemory::~AllocateMemory()
+	void AllocateMemory::prepareImpl()
 	{
-		delete _outputData;
-		delete _memory;
+		_memory.deallocate();
 	}
 
-	void AllocateMemory::run()
+	TaskData AllocateMemory::finalizeAndGetOutputData()
 	{
-		_memory->allocate();
-	}
-
-	void AllocateMemory::prepare()
-	{
-		if (_memory != nullptr)
-		{
-			_memory->deallocate();
-		}
-	}
-
-	void AllocateMemory::finalize()
-	{
-		if (_memory == nullptr || _memory->getPointer() == nullptr)
+		if (_memory.getPointer() == nullptr)
 		{
 			throw ElpidaException("Allocate Memory", "Memory Allocation failed");
 		}
 		if (_initialize)
 		{
-			memset(_memory->getPointer(), 0, _memory->getSize());
+			memset(_memory.getPointer(), 0, _memory.getSize());
 		}
-		_outputData->setData(static_cast<unsigned char*>(_memory->getPointer()));
+		return TaskData(_memory.getPointer(), _size);
 	}
 
 } /* namespace Elpida */

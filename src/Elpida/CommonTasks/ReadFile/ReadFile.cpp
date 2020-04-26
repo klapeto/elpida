@@ -39,29 +39,25 @@ namespace Elpida
 		std::string filePath,
 		bool toBeCountedOnResults)
 		: Task(specification, affinity, toBeCountedOnResults),
-		  _file(affinity.getProcessorNodes().front()->getOsIndex()), _filePath(std::move(filePath))
+		  _file(affinity.getProcessorNodes().front()->getOsIndex()),
+		  _filePath(std::move(filePath))
 	{
 
 	}
 
-	ReadFile::~ReadFile()
-	{
-		delete _outputData;
-	}
-
-	void ReadFile::run()
+	void ReadFile::execute()
 	{
 		_file.load(_filePath);
 	}
 
-	void ReadFile::finalize()
+	void ReadFile::prepareImpl()
 	{
-		_outputData = new TaskData(static_cast<unsigned char*>(_file.getData()), _file.getSize());
+
 	}
 
-	void ReadFile::prepare()
+	TaskData ReadFile::finalizeAndGetOutputData()
 	{
-
+		return TaskData(_file.getData(), _file.getSize());;
 	}
 
 } /* namespace Elpida */

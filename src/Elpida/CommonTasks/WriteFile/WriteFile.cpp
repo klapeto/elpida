@@ -44,22 +44,19 @@ namespace Elpida
 
 	}
 
-	void WriteFile::run()
+	void WriteFile::execute()
 	{
-		MemoryFile((*_inputData)->getData(), (*_inputData)->getSize()).writeToFile(_outputPath);
+		MemoryFile(getInput()->getData(), getInput()->getSize()).writeToFile(_outputPath);
 	}
 
-	void WriteFile::prepare()
+	void WriteFile::prepareImpl()
 	{
-		if ((*_inputData) == nullptr)
-		{
-			throw ElpidaException("Write File", "Previous task did not provide input!");
-		}
+
 	}
 
-	void WriteFile::finalize()
+	TaskData WriteFile::finalizeAndGetOutputData()
 	{
-
+		return TaskData();
 	}
 } /* namespace Elpida */
 

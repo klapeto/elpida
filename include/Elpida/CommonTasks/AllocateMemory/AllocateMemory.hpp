@@ -27,9 +27,9 @@
 #ifndef ELPIDA_COMMONTASKS_ALLOCATEMEMORY_HPP_
 #define ELPIDA_COMMONTASKS_ALLOCATEMEMORY_HPP_
 
-#include <cstddef>
-
 #include "Elpida/Engine/Task/Task.hpp"
+#include "Elpida/Utilities/NumaMemory.hpp"
+
 
 namespace Elpida
 {
@@ -38,19 +38,20 @@ namespace Elpida
 	class AllocateMemory final : public Task
 	{
 	public:
-
-		void prepare() override;
-		void finalize() override;
-		void run() override;
+		void execute() override;
 
 		AllocateMemory(const TaskSpecification& specification,
 			const TaskAffinity& affinity,
 			bool toBeCountedOnResults,
 			std::size_t size,
 			bool initialize = false);
-		~AllocateMemory() override;
+
+		~AllocateMemory() override = default;
+	protected:
+		void prepareImpl() override;
+		TaskData finalizeAndGetOutputData() override;
 	private:
-		Memory* _memory;
+		NumaMemory _memory;
 		std::size_t _size;
 		bool _initialize;
 	};

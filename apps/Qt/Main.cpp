@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 	SystemTopology topology;
 
 	SystemInfoView systemInfoView(cpuInfo, topology);
-	mainWindow.addTab(systemInfoView, "System Info");
+	mainWindow.addTab(systemInfoView, "CPU Info");
 
 	TopologyView topologyView(topology);
 
@@ -160,7 +160,7 @@ void initializeTaskTab(MainWindow& mainWindow,
 	rootLayout->addWidget(&taskBatchRunnerControlsView);
 	rootWidget->setLayout(rootLayout);
 
-	mainWindow.addTab(*rootWidget, "Task Batches");
+	mainWindow.addTab(*rootWidget, "Benchmarks");
 }
 
 void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget)

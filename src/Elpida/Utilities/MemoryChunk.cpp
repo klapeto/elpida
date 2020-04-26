@@ -24,14 +24,16 @@
  *      Author: klapeto
  */
 
+
 #include "Elpida/Utilities/MemoryChunk.hpp"
+#include "Elpida/Config.hpp"
 
 #include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {
 
-	MemoryChunk::MemoryChunk(void* pointer, std::size_t size)
+	MemoryChunk::MemoryChunk(pData pointer, std::size_t size)
 		: Memory(size), _ptr(pointer)
 	{
 		_pointer = _ptr;
@@ -54,10 +56,10 @@ namespace Elpida
 		auto memorySize = memory.getSize();
 
 		if (chunks > memorySize)
-			throw ElpidaException("MemoryChunk::breakToChunks",
+			throw ElpidaException(FUNCTION_NAME,
 				"Attempted to break to chunks that are greater than the memory size");
 		if (memory.getPointer() == nullptr)
-			throw ElpidaException("MemoryChunk::breakToChunks",
+			throw ElpidaException(FUNCTION_NAME,
 				"Attempted to break to chunks memory that is not allocated");
 
 		auto returnArray = std::vector<MemoryChunk>();
@@ -71,7 +73,7 @@ namespace Elpida
 			{
 				thisChunkSize = memorySize - (i * chunkSize);
 			}
-			returnArray.emplace_back((void*)((std::size_t)ptr + (i * chunkSize)), thisChunkSize);
+			returnArray.emplace_back((pData)((std::size_t)ptr + (i * chunkSize)), thisChunkSize);
 		}
 		return returnArray;
 	}

@@ -40,15 +40,17 @@ namespace Elpida
 	{
 	public:
 
-		void prepare() override;
-		void finalize() override;
-		void run() override;
+		void execute() override;
 
 		WriteFile(const TaskSpecification& specification,
 			const TaskAffinity& affinity,
 			std::string filePath,
 			bool toBeCountedOnResults = true);
 		~WriteFile() override = default;
+
+	protected:
+		void prepareImpl() override;
+		TaskData finalizeAndGetOutputData() override;
 	private:
 		std::string _outputPath;
 	};
