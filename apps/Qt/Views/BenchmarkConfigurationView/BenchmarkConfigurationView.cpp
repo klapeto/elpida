@@ -42,6 +42,8 @@ namespace Elpida
 	BenchmarkConfigurationView::~BenchmarkConfigurationView()
 	{
 		_dataChangedSubscription->unsubscribe();
+		returnAllTaskListItems();
+		returnAllViewsToPool();
 		delete _ui;
 	}
 
@@ -68,7 +70,7 @@ namespace Elpida
 	void BenchmarkConfigurationView::returnAllTaskListItems() const
 	{
 		auto size = _ui->lwTasks->count();
-		for (auto i = size; i >= 0; --i)
+		for (auto i = size - 1; i >= 0; --i)
 		{
 			auto itm = (TaskConfigurationListItemViewBase*)_ui->lwTasks->takeItem(i);
 			if (itm != nullptr)
@@ -84,8 +86,9 @@ namespace Elpida
 		for (auto view : _rentedViews)
 		{
 			view->saveSetting();
-			_configurationViewsPool.returnView(view);
 			_containerLayout->removeWidget(view);
+			view->setParent(nullptr);
+			_configurationViewsPool.returnView(view);
 			view->hide();
 		}
 		_rentedViews.clear();

@@ -41,6 +41,10 @@ namespace Elpida
 				throw ElpidaException(FUNCTION_NAME, "Invalid Configuration! Expected FilePath configuration");
 			}
 		}
+		else
+		{
+			_configurationValue = nullptr;
+		}
 	}
 
 	ConfigurationValueBase* FileInputView::getConfiguration()
@@ -72,7 +76,6 @@ namespace Elpida
 			_ui->leFilePath->setText(fileNames.at(0));
 			saveSetting();
 		}
-
 	}
 
 } // namespace Elpida
