@@ -16,7 +16,7 @@ namespace Elpida
 
 	Task::Task(const TaskSpecification& specification, TaskAffinity affinity, bool toBeCountedOnResults)
 		: _affinity(std::move(affinity)), _specification(specification),
-		  _toBeCountedOnResults(toBeCountedOnResults), _inputData(nullptr)
+		  _toBeCountedOnResults(toBeCountedOnResults)
 	{
 		if (_affinity.getProcessorNodes().empty())
 		{
@@ -35,7 +35,7 @@ namespace Elpida
 
 	void Task::prepare()
 	{
-		if (_specification.acceptsInput() && _inputData == nullptr)
+		if (_specification.acceptsInput() && _inputData.getTaskData().empty())
 		{
 			throw ElpidaException(FUNCTION_NAME,
 				Vu::Cs("'", _specification.getName(), "' task needs input and it was not provided!"));
@@ -47,5 +47,4 @@ namespace Elpida
 	{
 		_outputData = finalizeAndGetOutputData();
 	}
-
 }

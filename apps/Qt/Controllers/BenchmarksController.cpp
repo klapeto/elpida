@@ -7,7 +7,7 @@
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
-#include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp>
 #include <Elpida/Engine/Configuration/ConfigurationSpecificationBase.hpp>
 #include <Elpida/Engine/Configuration/TaskConfiguration.hpp>

@@ -2,7 +2,7 @@
 #include "ui_BenchmarkResultsView.h"
 
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
-#include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 
 #include <QTreeWidgetItem>

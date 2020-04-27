@@ -43,6 +43,17 @@ namespace Elpida
 			return _nodes;
 		}
 
+		[[nodiscard]] std::vector<const ProcessorNode*> getProcessors(size_t processorsToUse) const
+		{
+			std::vector<const ProcessorNode*> returnProcessors;
+			auto processors = processorsToUse <= _nodes.size() ? processorsToUse : _nodes.size();
+			for (size_t i = 0; i < processors; ++i)
+			{
+				returnProcessors.push_back(_nodes[i]);
+			}
+			return returnProcessors;
+		}
+
 		TaskAffinity() = default;
 
 		template<typename T>

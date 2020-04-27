@@ -49,7 +49,7 @@ namespace Elpida
 		~AllocateMemory() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskData finalizeAndGetOutputData() override;
+		TaskOutput finalizeAndGetOutputData() override;
 	private:
 		NumaMemory _memory;
 		std::size_t _size;

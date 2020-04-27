@@ -5,7 +5,7 @@
 #include <QListWidgetItem>
 
 #include <Elpida/SharedLibraryLoader.hpp>
-#include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
 #include "Models/BenchmarksModel.hpp"
 #include "Core/Commands/GetBenchmarksToRunCommand.hpp"

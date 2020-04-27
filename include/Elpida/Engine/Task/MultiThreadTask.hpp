@@ -23,7 +23,7 @@ namespace Elpida
 
 	protected:
 		void prepareImpl() override;
-		TaskData finalizeAndGetOutputData() override;
+		TaskOutput finalizeAndGetOutputData() override;
 	private:
 		std::mutex _mutex;
 		std::condition_variable _wakeNotifier;

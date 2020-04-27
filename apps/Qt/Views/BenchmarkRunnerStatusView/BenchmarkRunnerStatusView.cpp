@@ -2,7 +2,7 @@
 #include "ui_BenchmarkRunnerStatusView.h"
 
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
-#include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
 namespace Elpida
 {

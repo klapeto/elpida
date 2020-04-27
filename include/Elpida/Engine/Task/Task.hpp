@@ -7,30 +7,35 @@
 
 #include <string>
 #include <utility>
-#include "TaskData.hpp"
+#include "TaskOutput.hpp"
+#include "TaskInput.hpp"
 #include "TaskAffinity.hpp"
 
 namespace Elpida
 {
 
-	class TaskData;
 	class TaskSpecification;
 
 	class Task
 	{
 	public:
 
-		void setInput(const TaskData& input)
+		void setInput(const TaskInput& input)
 		{
-			_inputData = &input;
+			_inputData = input;
 		}
 
-		const TaskData& getOutput()
+		void setInput(TaskInput&& input)
+		{
+			_inputData = input;
+		}
+
+		TaskOutput& getOutput()
 		{
 			return _outputData;
 		};
 
-		[[nodiscard]] inline const TaskData* getInput() const
+		[[nodiscard]] inline const TaskInput& getInput() const
 		{
 			return _inputData;
 		};
@@ -60,10 +65,10 @@ namespace Elpida
 		bool _toBeCountedOnResults;
 
 		virtual void prepareImpl() = 0;
-		virtual TaskData finalizeAndGetOutputData() = 0;
+		virtual TaskOutput finalizeAndGetOutputData() = 0;
 	private:
-		TaskData _outputData;
-		const TaskData* _inputData;
+		TaskOutput _outputData;
+		TaskInput _inputData;
 	};
 }
 

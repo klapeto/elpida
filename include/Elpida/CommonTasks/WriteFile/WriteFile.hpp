@@ -50,7 +50,7 @@ namespace Elpida
 
 	protected:
 		void prepareImpl() override;
-		TaskData finalizeAndGetOutputData() override;
+		TaskOutput finalizeAndGetOutputData() override;
 	private:
 		std::string _outputPath;
 	};

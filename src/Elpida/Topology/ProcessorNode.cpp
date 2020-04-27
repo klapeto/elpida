@@ -34,7 +34,7 @@
 namespace Elpida
 {
 
-	static constexpr const char* UnknownOsIndexStr = "[No Index]";
+	static inline constexpr const char* UnknownOsIndexStr = "[No Index]";
 
 	ProcessorNode::ProcessorNode(ProcessorNode* parent, void* node)
 		: _type(Type::Unknown), _value(0), _osIndex(0), _parent(parent)

@@ -48,7 +48,7 @@ namespace Elpida
 		~ReadFile() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskData finalizeAndGetOutputData() override;
+		TaskOutput finalizeAndGetOutputData() override;
 	private:
 		MemoryFile _file;
 		std::string _filePath;

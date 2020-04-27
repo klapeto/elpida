@@ -30,7 +30,8 @@
 
 #include "Elpida/Utilities/MemoryFile.hpp"
 #include "Elpida/ElpidaException.hpp"
-#include "Elpida/Engine/Task/TaskData.hpp"
+#include "Elpida/Engine/Task/TaskInput.hpp"
+
 
 namespace Elpida
 {
@@ -46,7 +47,8 @@ namespace Elpida
 
 	void WriteFile::execute()
 	{
-		MemoryFile(getInput()->getData(), getInput()->getSize()).writeToFile(_outputPath);
+		auto input = getInput().getTaskData().front();
+		MemoryFile(input->getData(), input->getSize()).writeToFile(_outputPath);
 	}
 
 	void WriteFile::prepareImpl()
@@ -54,9 +56,9 @@ namespace Elpida
 
 	}
 
-	TaskData WriteFile::finalizeAndGetOutputData()
+	TaskOutput WriteFile::finalizeAndGetOutputData()
 	{
-		return TaskData();
+		return TaskOutput();
 	}
 } /* namespace Elpida */
 

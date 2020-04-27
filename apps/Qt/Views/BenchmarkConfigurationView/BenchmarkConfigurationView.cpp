@@ -10,7 +10,7 @@
 #include <Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp>
 #include <Elpida/Engine/Configuration/TaskConfiguration.hpp>
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
-#include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
 namespace Elpida
 {

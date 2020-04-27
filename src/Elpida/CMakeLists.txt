@@ -30,22 +30,22 @@ set(ELPIDA_SOURCES
         Utilities/Plugin/Plugin.cpp
         Utilities/Plugin/TaskBatchesContainerPlugin.cpp
         Utilities/Uuid.cpp
-
-        CommonTasks/AllocateMemory/AllocateMemory.cpp
         Utilities/Memory.cpp
         Utilities/MemoryChunk.cpp
         Utilities/NumaMemory.cpp
+
+        CommonTasks/AllocateMemory/AllocateMemory.cpp
         CommonTasks/ReadFile/ReadFile.cpp
         CommonTasks/WriteFile/WriteFile.cpp
         CommonTasks/AllocateMemory/AllocateMemorySpecification.cpp
 
-        Engine/Benchmark.cpp
+        Engine/Benchmark/Benchmark.cpp
         Engine/Configuration/TaskConfiguration.cpp
         Engine/Configuration/ConfigurationValue.cpp
         Engine/Configuration/ConfigurationValueBase.cpp
         Engine/Task/Task.cpp
         Engine/Task/TaskSpecification.cpp
-        Engine/Task/TaskData.cpp
+        Engine/Task/Data/TaskData.cpp
         Engine/Runner/BenchmarkRunner.cpp
         Engine/Result/BenchmarkResult.cpp
         Engine/Result/TaskResult.cpp
@@ -54,7 +54,21 @@ set(ELPIDA_SOURCES
         Engine/DefaultBenchmarkScoreCalculator.cpp
         Engine/Runner/EventArgs/BenchmarkEventArgs.cpp
         Engine/Runner/EventArgs/TaskEventArgs.cpp
-        Engine/Task/MultiThreadTask.cpp CommonTasks/ReadFile/ReadFileSpecification.cpp ../../include/Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp CommonTasks/WriteFile/WriteFileSpecification.cpp ../../include/Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp Engine/Configuration/BenchmarkConfiguration.cpp ../../include/Elpida/Engine/Configuration/BenchmarkConfiguration.hpp Engine/Configuration/ConfigurationSpecification.cpp ../../include/Elpida/Engine/Configuration/ConfigurationSpecification.hpp Engine/Configuration/TaskConfigurationSpecifications.cpp ../../include/Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp Engine/Runner/BenchmarkRunRequest.cpp ../../include/Elpida/Engine/Runner/BenchmarkRunRequest.hpp Engine/Configuration/ConfigurationSpecificationBase.cpp ../../include/Elpida/Engine/Configuration/ConfigurationSpecificationBase.hpp ../../include/Elpida/Engine/Configuration/ConfigurationType.hpp)
+        Engine/Task/MultiThreadTask.cpp
+        Engine/Configuration/BenchmarkConfiguration.cpp
+        Engine/Configuration/ConfigurationSpecification.cpp
+        Engine/Configuration/TaskConfigurationSpecifications.cpp
+        Engine/Runner/BenchmarkRunRequest.cpp
+        Engine/Configuration/ConfigurationSpecificationBase.cpp
+        Engine/Task/TaskInput.cpp
+        Engine/Task/TaskOutput.cpp
+        Engine/Task/Data/PassiveTaskData.cpp
+        Engine/Task/Data/ActiveTaskData.cpp
+        Engine/Task/InputManipulator.cpp
+
+        CommonTasks/ReadFile/ReadFileSpecification.cpp
+        CommonTasks/WriteFile/WriteFileSpecification.cpp
+)
 
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

@@ -7,7 +7,7 @@
 
 #include "Elpida/Event.hpp"
 #include "Elpida/Engine/Result/BenchmarkResult.hpp"
-#include "Elpida/Engine/Benchmark.hpp"
+#include "Elpida/Engine/Benchmark/Benchmark.hpp"
 #include "Elpida/Engine/Runner/BenchmarkRunRequest.hpp"
 #include <vector>
 

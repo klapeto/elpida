@@ -5,7 +5,7 @@
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Configuration/BenchmarkConfiguration.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
-#include "Elpida/Engine/Benchmark.hpp"
+#include "Elpida/Engine/Benchmark/Benchmark.hpp"
 #include "Elpida/ElpidaException.hpp"
 
 namespace Elpida

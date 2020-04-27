@@ -3,7 +3,7 @@
 //
 
 #include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
-#include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>

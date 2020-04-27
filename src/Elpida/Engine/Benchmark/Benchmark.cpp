@@ -2,7 +2,7 @@
 // Created by klapeto on 19/4/20.
 //
 
-#include "Elpida/Engine/Benchmark.hpp"
+#include "Elpida/Engine/Benchmark/Benchmark.hpp"
 
 #include <utility>
 #include "Elpida/Config.hpp"
@@ -38,50 +38,48 @@ namespace Elpida
 	std::vector<Task*> Benchmark::createNewTasks(const TaskAffinity& affinity,
 		const BenchmarkConfiguration& configuration) const
 	{
-		std::vector<Task*> tasks;
-		Task* previousTask = nullptr;
-		try
+		if (!affinity.getProcessorNodes().empty())
 		{
-			for (auto spec : _taskSpecifications)
+			std::vector<Task*> tasks;
+			try
 			{
-				auto taskConfiguration = configuration.getConfigurationForTask(*spec);
-				if (taskConfiguration == nullptr && !spec->getConfigurationSpecifications().empty())
+				for (auto spec : _taskSpecifications)
 				{
-					throw ElpidaException(FUNCTION_NAME,
-						Vu::concatenateToString("Task: '",
-							spec->getName(),
-							"' requires configuration that was not provided!"));
-				}
-				if (!spec->canBeDisabled() || taskConfiguration->isEnabled()){
-					Task* task;
-
-					if (spec->isMultiThreadingEnabled())
+					auto taskConfiguration = configuration.getConfigurationForTask(*spec);
+					if (taskConfiguration == nullptr && !spec->getConfigurationSpecifications().empty())
 					{
-						task = new MultiThreadTask(*spec, *taskConfiguration, affinity);
+						throw ElpidaException(FUNCTION_NAME,
+							Vu::Cs("Task: '",
+								spec->getName(),
+								"' requires configuration that was not provided!"));
 					}
-					else
+					if (!spec->canBeDisabled() || taskConfiguration->isEnabled())
 					{
-						task = spec->createNewTask(*taskConfiguration, affinity);
+						if (spec->isMultiThreadingEnabled())
+						{
+							tasks.push_back(new MultiThreadTask(*spec, *taskConfiguration, affinity));
+						}
+						else
+						{
+							tasks.push_back(spec->createNewTask(*taskConfiguration, affinity));
+						}
 					}
-
-					if (previousTask != nullptr)
-					{
-						task->setInput(previousTask->getOutput());
-					}
-					previousTask = task;
-					tasks.push_back(task);
 				}
 			}
-		}
-		catch (...)
-		{
-			for (auto task : tasks)
+			catch (...)
 			{
-				delete task;
+				for (auto task : tasks)
+				{
+					delete task;
+				}
+				throw;
 			}
-			throw;
+			return tasks;
 		}
-		return tasks;
+		else
+		{
+			throw ElpidaException(FUNCTION_NAME, "Benchmark affinity is empty");
+		}
 	}
 
 	std::vector<TaskConfigurationSpecifications> Benchmark::getConfigurationSpecifications() const

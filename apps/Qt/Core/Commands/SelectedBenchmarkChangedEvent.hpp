@@ -5,7 +5,7 @@
 #ifndef APPS_QT_CORE_COMMANDS_SELECTEDBENCHMARKCHANGEDEVENT_HPP
 #define APPS_QT_CORE_COMMANDS_SELECTEDBENCHMARKCHANGEDEVENT_HPP
 
-#include <Elpida/Engine/Benchmark.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include "Core/Abstractions/TypedCommand.hpp"
 
 namespace Elpida

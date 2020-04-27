@@ -26,8 +26,10 @@
 
 #include "Elpida/Utilities/NumaMemory.hpp"
 #include "Elpida/Config.hpp"
+
 #ifdef ELPIDA_LINUX
 #include <numa.h>
+#include "Elpida/ElpidaException.hpp"
 #else
 #include <windows.h>
 #endif
@@ -47,7 +49,11 @@ namespace Elpida
 	void NumaMemory::allocateImpl()
 	{
 #ifdef ELPIDA_LINUX
-		_pointer = (pData)numa_alloc_onnode(_size, _node);
+		if (numa_available() < 0)
+		{
+			throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
+		}
+			_pointer = (pData)numa_alloc_onnode(_size, _node);
 #else
 		_pointer = (pData)VirtualAllocExNuma(
 			GetCurrentProcess(),

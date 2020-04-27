@@ -27,9 +27,9 @@
 #include "Elpida/CommonTasks/ReadFile/ReadFile.hpp"
 
 #include <utility>
-#include "Elpida/Engine/Task/TaskData.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
+#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {
@@ -55,9 +55,9 @@ namespace Elpida
 
 	}
 
-	TaskData ReadFile::finalizeAndGetOutputData()
+	TaskOutput ReadFile::finalizeAndGetOutputData()
 	{
-		return TaskData(_file.getData(), _file.getSize());;
+		return TaskOutput(new PassiveTaskData( _file.getData(), _file.getSize()));;
 	}
 
 } /* namespace Elpida */

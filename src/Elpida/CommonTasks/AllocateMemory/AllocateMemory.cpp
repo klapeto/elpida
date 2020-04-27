@@ -29,11 +29,9 @@
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/Utilities/NumaMemory.hpp"
-#include "Elpida/Engine/Task/TaskData.hpp"
+#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
 
 #include <cstring>
-#include <utility>
 
 namespace Elpida
 {
@@ -43,8 +41,8 @@ namespace Elpida
 		bool toBeCountedOnResults,
 		std::size_t size, bool initialize)
 		: Task(specification, affinity, toBeCountedOnResults),
-		_memory(size,
-			SystemTopology::getNumaNodeOfProcessor((int)affinity.getProcessorNodes().front()->getOsIndex())),
+		  _memory(size,
+			  SystemTopology::getNumaNodeOfProcessor((int)affinity.getProcessorNodes().front()->getOsIndex())),
 		  _size(size),
 		  _initialize(initialize)
 	{
@@ -60,7 +58,7 @@ namespace Elpida
 		_memory.deallocate();
 	}
 
-	TaskData AllocateMemory::finalizeAndGetOutputData()
+	TaskOutput AllocateMemory::finalizeAndGetOutputData()
 	{
 		if (_memory.getPointer() == nullptr)
 		{
@@ -70,7 +68,7 @@ namespace Elpida
 		{
 			memset(_memory.getPointer(), 0, _memory.getSize());
 		}
-		return TaskData(_memory.getPointer(), _size);
+		return TaskOutput(new PassiveTaskData( _memory.getPointer(), _size ));
 	}
 
 } /* namespace Elpida */
