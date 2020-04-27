@@ -18,11 +18,7 @@ namespace Elpida
 
 	TaskInput InputManipulator::getUnifiedInput(const TaskOutput& output, const TaskAffinity& affinity)
 	{
-		auto accumulatedSize = 0ul;
-		for (auto& data : output.getTaskData())
-		{
-			accumulatedSize += data->getSize();
-		}
+		auto accumulatedSize = getAccumulatedSizeOfChunks(output.getTaskData());
 		auto taskData = new ActiveTaskData(accumulatedSize,
 			SystemTopology::getNumaNodeOfProcessor((int)affinity.getProcessors(1).front()->getOsIndex()));
 		return TaskInput({ taskData });

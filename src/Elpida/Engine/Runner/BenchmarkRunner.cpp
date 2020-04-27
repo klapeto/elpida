@@ -38,21 +38,14 @@ namespace Elpida
 		if (previousTask != nullptr && nextSpec.acceptsInput())
 		{
 			auto& previousOutput = previousTask->getOutput();
-			bool previousManyOutputs = previousOutput.getTaskData().size() > 1;
 			bool nextManyInputs = nextSpec.isMultiThreadingEnabled();
 
-
-			if (previousManyOutputs && nextManyInputs)
+			if (nextManyInputs)
 			{
 				// N -> N
-				nextTask->setInput(previousOutput.createTaskInput());
-			}
-			else if (!previousManyOutputs && nextManyInputs)
-			{
-				// 1 -> N
 				nextTask->setInput(InputManipulator::getChunkedInput(previousOutput, affinity));
 			}
-			else if (previousManyOutputs)
+			else
 			{
 				nextTask->setInput(InputManipulator::getUnifiedInput(previousOutput, affinity));
 			}
@@ -81,10 +74,12 @@ namespace Elpida
 
 					raiseTaskStarted(*task);
 
-					if (previousTask != nullptr/* && accepts input*/)
-					{
-						task->setInput(previousTask->getOutput().createTaskInput());
-					}
+
+					handle(previousTask, task, taskAffinity);
+//					if (previousTask != nullptr)
+//					{
+//						task->setInput(previousTask->getOutput().createTaskInput());
+//					}
 					auto metrics = runTask(*task);
 					previousTask = task;
 					if (task->shouldBeCountedOnResults())

@@ -26,8 +26,8 @@ namespace Elpida
 			: _taskData(std::move(taskData))
 		{
 		}
-		TaskInput(const TaskInput&) = default;
-		TaskInput& operator=(const TaskInput&) = default;
+		TaskInput(const TaskInput&) = delete;
+		TaskInput& operator=(const TaskInput&) = delete;
 		TaskInput(TaskInput&&) = default;
 		TaskInput& operator=(TaskInput&&) = default;
 		~TaskInput();

@@ -20,14 +20,9 @@ namespace Elpida
 	{
 	public:
 
-		void setInput(const TaskInput& input)
-		{
-			_inputData = input;
-		}
-
 		void setInput(TaskInput&& input)
 		{
-			_inputData = input;
+			_inputData = std::move(input);
 		}
 
 		TaskOutput& getOutput()
