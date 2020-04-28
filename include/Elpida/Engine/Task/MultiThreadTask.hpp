@@ -17,6 +17,7 @@ namespace Elpida
 	public:
 		void execute() override;
 		void applyAffinity() override;
+		virtual size_t getActualProcessedDataSize() const override;
 
 		MultiThreadTask(const TaskSpecification& taskSpecification, const TaskConfiguration& configuration, const TaskAffinity& affinity);
 		~MultiThreadTask() override = default;

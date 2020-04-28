@@ -80,4 +80,13 @@ namespace Elpida
 
 		return TaskOutput(std::move(accumulatedOutputs));
 	}
+	size_t MultiThreadTask::getActualProcessedDataSize() const
+	{
+		size_t accumulator = 0;
+		for (auto& thread: _createdThreads)
+		{
+			accumulator += thread.getTaskToRun().getActualProcessedDataSize();
+		}
+		return accumulator;
+	}
 }

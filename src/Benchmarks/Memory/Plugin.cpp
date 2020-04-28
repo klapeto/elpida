@@ -18,15 +18,33 @@
  *************************************************************************/
 
 /*
- * MemoryBandwidthChart.cpp
+ * Plugin.cpp
  *
- *  Created on: 24 Νοε 2019
+ *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/Ui/MemoryBandwidthChart.hpp"
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
+#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
+#include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
+#include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
+#include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
 
-namespace Elpida
+extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 {
+	using namespace Elpida;
+	using Plugin = BenchmarksContainerPlugin<Elpida::Benchmark>;
 
-} /* namespace Elpida */
+	auto plugin = new Plugin();
+
+	auto benchmark = new Benchmark("Memory Read Bandwidth",{
+		new AllocateMemorySpecification(true, false, true),
+		new MemoryReadSpecification(true, false,true),
+	}, new DefaultBenchmarkScoreCalculator());
+
+	plugin->add(benchmark);
+
+	return plugin;
+}
+
+

@@ -60,5 +60,9 @@ namespace Elpida
 	{
 		return TaskOutput();
 	}
+	size_t WriteFile::getActualProcessedDataSize() const
+	{
+		return getInput().getTaskData().front()->getSize();
+	}
 } /* namespace Elpida */
 

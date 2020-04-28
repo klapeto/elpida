@@ -41,6 +41,7 @@ namespace Elpida
 	public:
 
 		void execute() override;
+		virtual size_t getActualProcessedDataSize() const override;
 
 		WriteFile(const TaskSpecification& specification,
 			const TaskAffinity& affinity,

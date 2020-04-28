@@ -17,7 +17,7 @@ namespace Elpida
 	class Benchmark;
 
 	template<typename T>
-	class TaskBatchesContainerPlugin;
+	class BenchmarksContainerPlugin;
 
 	class BenchmarksController
 	{
@@ -29,7 +29,7 @@ namespace Elpida
 		explicit BenchmarksController(ListModel<Benchmark*>& model, AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel, Logger& logger);
 		virtual ~BenchmarksController();
 	private:
-		std::vector<TaskBatchesContainerPlugin<Benchmark>*> _createdPlugins;
+		std::vector<BenchmarksContainerPlugin<Benchmark>*> _createdPlugins;
 		SharedLibraryLoader _libraryLoader;
 		std::string _benchmarksPath;
 		Logger& _logger;

@@ -71,5 +71,10 @@ namespace Elpida
 		return TaskOutput(new PassiveTaskData( _memory.getPointer(), _size ));
 	}
 
+	size_t AllocateMemory::getActualProcessedDataSize() const
+	{
+		return _size;
+	}
+
 } /* namespace Elpida */
 

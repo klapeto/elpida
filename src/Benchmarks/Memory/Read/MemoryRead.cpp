@@ -18,50 +18,42 @@
  *************************************************************************/
 
 /*
- * MemoryTasksProperties.hpp
+ * MemoryRead.cpp
  *
- *  Created on: 16 Μαΐ 2019
+ *  Created on: 18 Οκτ 2018
  *      Author: klapeto
  */
 
-#ifndef TASKBATCHES_MEMORY_CHARTS_MEMORYTASKSPROPERTIES_HPP_
-#define TASKBATCHES_MEMORY_CHARTS_MEMORYTASKSPROPERTIES_HPP_
-
-#include "TaskBatches/QtTaskBatchWrapper.hpp"
+#include <Elpida/ElpidaException.hpp>
+#include "Benchmarks/Memory/Read/MemoryRead.hpp"
 
 namespace Elpida
 {
 
-	template<typename T>
-	class MemoryTasksProperties final : public QtTaskBatchWrapper
+	MemoryRead::MemoryRead(const TaskSpecification& specification,
+		const TaskAffinity& affinity,
+		bool toBeCountedOnResults)
+		: Task(specification, affinity, toBeCountedOnResults), _taskData(nullptr), _iterations(1)
 	{
-	public:
 
-		[[nodiscard]] const TaskBatch& getTaskBatch() const override
-		{
-			return _taskBatch;
-		}
+	}
+	void MemoryRead::prepareImpl()
+	{
+		_taskData = getInput().getTaskData().front();
+		if (_taskData->getSize() % (32 * sizeof(RegisterSize)) != 0)
+			throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
 
-		void reconfigureTaskBatch() override
-		{
+		_iterations = (unsigned long)(_iterationConstant / (double)_taskData->getSize());
+	}
 
-		}
-		void validateConfiguration() override
-		{
+	TaskOutput MemoryRead::finalizeAndGetOutputData()
+	{
+		return TaskOutput(getInput().createPassiveWrappers());
+	}
 
-		}
-
-		explicit MemoryTasksProperties(T&& batch)
-			: QtTaskBatchWrapper(false, false), _taskBatch(std::move(batch))
-		{
-
-		}
-
-		~MemoryTasksProperties() override = default;
-	private:
-		T _taskBatch;
-	};
-
+	size_t MemoryRead::getActualProcessedDataSize() const
+	{
+		return _taskData->getSize() * _iterations;
+	}
 } /* namespace Elpida */
 
-#endif /* TASKBATCHES_MEMORY_CHARTS_MEMORYTASKSPROPERTIES_HPP_ */

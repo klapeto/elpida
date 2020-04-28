@@ -5,7 +5,7 @@
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Utilities/FileSystem.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
-#include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
+#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp>
@@ -107,10 +107,10 @@ namespace Elpida
 		for (const auto& lib: loaded)
 		{
 			auto factoryFp = lib.second
-				.getFunctionPointer<TaskBatchesContainerPlugin<Elpida::Benchmark>::Factory>("createPlugin");
+				.getFunctionPointer<BenchmarksContainerPlugin<Elpida::Benchmark>::Factory>("createPlugin");
 			if (factoryFp != nullptr)
 			{
-				TaskBatchesContainerPlugin<Elpida::Benchmark>* pPlugin = nullptr;
+				BenchmarksContainerPlugin<Elpida::Benchmark>* pPlugin = nullptr;
 				try
 				{
 					pPlugin = factoryFp();
@@ -125,6 +125,11 @@ namespace Elpida
 					throw;
 				}
 
+				if (pPlugin == nullptr)
+				{
+					_logger.log(LogType::Error, Vu::Cs("'", lib.first, "' plugin did not return any data!"));
+					continue;
+				}
 				const auto& benchmarks = pPlugin->getUnderlyingData();
 				_createdPlugins.push_back(pPlugin);
 				for (auto benchmark : benchmarks)

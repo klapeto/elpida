@@ -19,7 +19,7 @@ namespace Elpida
 	class Task
 	{
 	public:
-		
+
 		void setInput(TaskInput&& input)
 		{
 			_inputData = std::move(input);
@@ -48,6 +48,7 @@ namespace Elpida
 		void prepare();
 		void finalize();
 		virtual void execute() = 0;
+		[[nodiscard]] virtual size_t getActualProcessedDataSize() const = 0;
 
 		virtual void applyAffinity();
 

@@ -18,16 +18,14 @@
  *************************************************************************/
 
 /*
- * MemoryRead.cpp
+ * WorkingSetSizes.cpp
  *
- *  Created on: 18 Οκτ 2018
+ *  Created on: 24 Νοε 2019
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/Read/MemoryRead.hpp"
+#include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
 namespace Elpida
 {
-
 } /* namespace Elpida */
-

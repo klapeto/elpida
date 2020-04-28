@@ -39,6 +39,7 @@ namespace Elpida
 	{
 	public:
 		void execute() override;
+		[[nodiscard]] size_t getActualProcessedDataSize() const override;
 
 		AllocateMemory(const TaskSpecification& specification,
 			const TaskAffinity& affinity,

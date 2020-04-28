@@ -29,13 +29,10 @@
 
 #include <cstdint>
 #include <string>
+#include <Elpida/Engine/Task/Task.hpp>
+#include <utility>
+#include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
-#include "Elpida/Task.hpp"
-#include "Elpida/TaskRunResult.hpp"
-#include "Elpida/ElpidaException.hpp"
-#include "Elpida/Utilities/ValueUtilities.hpp"
-#include "Elpida/Utilities/NumaMemory.hpp"
-#include "TaskBatches/Memory/WorkingSetSizes.hpp"
 
 namespace Elpida
 {
@@ -44,22 +41,11 @@ namespace Elpida
 	class MemoryRead final : public Task
 	{
 	public:
-
-		void prepare() override
+		void execute() override
 		{
-			_memory.allocate();
-		}
-
-		void finalize() override
-		{
-			_memory.deallocate();
-		}
-
-		void run() override
-		{
-			auto ptr = (RegisterSize*)_memory.getPointer();
+			auto ptr = (RegisterSize*)_taskData->getData();
 			auto start = ptr;
-			auto end = (RegisterSize*)((RegisterSize)start + _memory.getSize());
+			auto end = (RegisterSize*)((RegisterSize)start + _taskData->getSize());
 			auto iterations = _iterations;
 			auto x = RegisterSize();
 			for (auto i = 0ul; i < iterations; ++i)
@@ -105,47 +91,18 @@ namespace Elpida
 			auto dummy = x;
 		}
 
-		[[nodiscard]] std::size_t getMemorySize() const
-		{
-			return _memory.getSize();
-		}
+		[[nodiscard]] size_t getActualProcessedDataSize() const override;
 
-		[[nodiscard]] unsigned long getIterations() const
-		{
-			return _iterations;
-		}
+		MemoryRead(const TaskSpecification& specification, const TaskAffinity& affinity, bool toBeCountedOnResults);
 
-		void calculateResults(const TaskMetrics& metrics) override
-		{
-			addResult(_runResult);
-		}
-
-		MemoryRead(std::size_t size, unsigned int affinity)
-			:
-			Task("Read " + ValueUtilities::getValueScaleString(size) + "B @" + std::to_string(sizeof(RegisterSize))
-				+ " Bytes/Read"),
-			_runResult(ValueUtilities::getValueScaleString(size) + "B", "Bytes"),
-			_memory(size, affinity)
-		{
-			if (size % (32 * sizeof(RegisterSize)) != 0)
-				throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
-			_iterations = _iterationConstant / (double)_memory.getSize();
-			_runResult.setOriginalValue(_memory.getSize());
-			_runResult.setTestedDataValue(_memory.getSize());
-			_runResult.setMultiplier(_iterations);
-		}
-
-		~MemoryRead() override
-		{
-			_memory.deallocate();
-		}
-
+		~MemoryRead() override = default;
 	protected:
-		TaskRunResult _runResult;
-		NumaMemory _memory;
+		TaskData* _taskData;
 		unsigned long _iterations;
+		static constexpr inline double _iterationConstant = 100000000000; // rough estimate
 
-		static constexpr double _iterationConstant = 100000000000; // rough estimate
+		void prepareImpl() override;
+		TaskOutput finalizeAndGetOutputData() override;
 
 	};
 

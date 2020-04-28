@@ -136,11 +136,7 @@ namespace Elpida
 
 		task.finalize();
 
-		auto outputValue = accumulateOutputValues(task.getOutput().getTaskData(),
-			[](const TaskData* data)
-			{
-				return data->getSize();
-			});
+		auto actualProcessDataSize = task.getActualProcessedDataSize();
 
 		auto inputValue = accumulateOutputValues(task.getInput().getTaskData(),
 			[](const TaskData* data)
@@ -149,7 +145,7 @@ namespace Elpida
 			});
 		auto metrics = TaskMetrics(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start),
 			inputValue,
-			outputValue);
+			actualProcessDataSize);
 
 		return metrics;
 	}

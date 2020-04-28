@@ -57,7 +57,12 @@ namespace Elpida
 
 	TaskOutput ReadFile::finalizeAndGetOutputData()
 	{
-		return TaskOutput(new PassiveTaskData( _file.getData(), _file.getSize()));;
+		return TaskOutput(new PassiveTaskData(_file.getData(), _file.getSize()));;
+	}
+
+	size_t ReadFile::getActualProcessedDataSize() const
+	{
+		return _file.getSize();
 	}
 
 } /* namespace Elpida */

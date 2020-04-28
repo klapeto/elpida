@@ -18,31 +18,23 @@
  *************************************************************************/
 
 /*
- * MultithreadMemoryChunksReadCached.cpp
+ * Plugin.cpp
  *
- *  Created on: 16 Μαΐ 2019
+ *  Created on: 3 Ιουλ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksReadTaskBatch.hpp"
+#include "TaskBatches/Image/ImageTasksProperties.hpp"
+#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 
-#include <cstddef>
-#include <unordered_map>
-
-#include "Elpida/Topology/SystemTopology.hpp"
-#include "Elpida/Topology/CpuInfo.hpp"
-#include "Elpida/CommonTasks/NumaAllocatePerThread.hpp"
-#include "TaskBatches/Memory/Read/MultiThreadMemoryChunksRead.hpp"
-
-#include <algorithm>
-
-namespace Elpida
+extern "C" Elpida::TaskBatchesContainerPlugin<Elpida::QtTaskBatchWrapper>* createPlugin()
 {
+	using namespace Elpida;
+	using Plugin = TaskBatchesContainerPlugin<QtTaskBatchWrapper>;
 
-	void MultiThreadMemoryChunksReadTaskBatch::createTasks() const
-	{
-		addTask(new MultiThreadMemoryChunksRead(_sizePerThread));
-	}
+	auto plugin = Plugin::createNew();
+	plugin->constructAndAddNew<ImageTasksProperties>();
 
-} /* namespace Elpida */
+	return plugin;
+}
 

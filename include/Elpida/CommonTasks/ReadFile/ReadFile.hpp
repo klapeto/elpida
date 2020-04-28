@@ -40,6 +40,7 @@ namespace Elpida
 	{
 	public:
 		void execute() override;
+		[[nodiscard]] size_t getActualProcessedDataSize() const override;
 
 		ReadFile(const TaskSpecification& specification,
 			const TaskAffinity& affinity,

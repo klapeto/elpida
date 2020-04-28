@@ -28,7 +28,7 @@ set(ELPIDA_SOURCES
         Utilities/ValueUtilities.cpp
         Utilities/WindowsUtils.cpp
         Utilities/Plugin/Plugin.cpp
-        Utilities/Plugin/TaskBatchesContainerPlugin.cpp
+        Utilities/Plugin/BenchmarksContainerPlugin.cpp
         Utilities/Uuid.cpp
         Utilities/Memory.cpp
         Utilities/MemoryChunk.cpp

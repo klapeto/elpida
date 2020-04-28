@@ -26,6 +26,10 @@ namespace Elpida
 			QOverload<int>::of(&QComboBox::currentIndexChanged),
 			this,
 			&NumberInputView::onStandardChanged);
+		QWidget::connect(_ui->cbUnitScale,
+			QOverload<int>::of(&QComboBox::currentIndexChanged),
+			this,
+			&NumberInputView::onScaleChanged);
 		QWidget::connect(_ui->dsbNumber,
 			QOverload<double>::of(&QDoubleSpinBox::valueChanged),
 			this,
@@ -144,6 +148,11 @@ namespace Elpida
 	}
 
 	void NumberInputView::onValueChanged(double value)
+	{
+		saveSetting();
+	}
+
+	void NumberInputView::onScaleChanged(int state)
 	{
 		saveSetting();
 	}

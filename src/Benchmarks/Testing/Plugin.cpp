@@ -2,17 +2,17 @@
 // Created by klapeto on 21/4/20.
 //
 
-#include <Elpida/Utilities/Plugin/TaskBatchesContainerPlugin.hpp>
+#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
 #include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
 
-extern "C" Elpida::TaskBatchesContainerPlugin<Elpida::Benchmark>* createPlugin()
+extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 {
 	using namespace Elpida;
-	using Plugin = TaskBatchesContainerPlugin<Elpida::Benchmark>;
+	using Plugin = BenchmarksContainerPlugin<Elpida::Benchmark>;
 
 	auto plugin = new Plugin();
 

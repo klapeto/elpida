@@ -32,6 +32,7 @@ namespace Elpida
 
 	private slots:
 		void onStandardChanged(int state);
+		void onScaleChanged(int state);
 		void onValueChanged(double newValue);
 
 	};
