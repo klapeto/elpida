@@ -42,6 +42,7 @@ namespace Elpida
 		const auto& processors = _affinity.getProcessorNodes();
 		const size_t processorCount = processors.size();
 
+		_createdThreads.reserve(processorCount);
 		auto& input = getInput();
 		size_t i = 0;
 		for (auto processor : processors)
