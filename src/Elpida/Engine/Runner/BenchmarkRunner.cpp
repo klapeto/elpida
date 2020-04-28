@@ -32,7 +32,7 @@ namespace Elpida
 
 	}
 
-	static void handle(Task* previousTask, Task* nextTask, const TaskAffinity& affinity)
+	static void assingInput(Task* previousTask, Task* nextTask, const TaskAffinity& affinity)
 	{
 		auto& nextSpec = nextTask->getSpecification();
 		if (previousTask != nullptr && nextSpec.acceptsInput())
@@ -74,12 +74,8 @@ namespace Elpida
 
 					raiseTaskStarted(*task);
 
+					assingInput(previousTask, task, taskAffinity);
 
-					handle(previousTask, task, taskAffinity);
-//					if (previousTask != nullptr)
-//					{
-//						task->setInput(previousTask->getOutput().createTaskInput());
-//					}
 					auto metrics = runTask(*task);
 					previousTask = task;
 					if (task->shouldBeCountedOnResults())
@@ -140,9 +136,6 @@ namespace Elpida
 
 		task.finalize();
 
-
-
-		//auto outputValue = task.getOutput().getSize();
 		auto outputValue = accumulateOutputValues(task.getOutput().getTaskData(),
 			[](const TaskData* data)
 			{

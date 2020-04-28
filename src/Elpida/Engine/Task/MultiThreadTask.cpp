@@ -4,11 +4,11 @@
 
 #include <cmath>
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
-#include "Elpida/Engine/Benchmark/Benchmark.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/Data/TaskData.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
+#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {
@@ -37,121 +37,46 @@ namespace Elpida
 
 	}
 
-	void MultiThreadTask::breakInputIntoChunks(size_t chunks)
-	{
-		destroyChunks();
-
-//		size_t chunkSize = 0;
-//		auto inputData = getInput();
-//		bool acceptsInput = _specification.acceptsInput();
-//
-//		auto dataSize = inputData.getTaskData().size();
-//
-//		if (acceptsInput && dataSize > 0)
-//		{
-//			chunkSize = std::floor(dataSize / (float)chunks);
-//		}
-//		else
-//		{
-//			throw ElpidaException(FUNCTION_NAME,
-//				"A task needs input but the previous one does not provide output!");
-//		}
-//
-//		if (dataSize < chunks)
-//		{
-//			throw ElpidaException(FUNCTION_NAME,
-//				"A task received data as input that is less than the chunks");
-//		}
-//
-//		if (dataSize < chunkSize)    //is this possible?
-//		{
-//			throw ElpidaException(FUNCTION_NAME,
-//				"A task received data as input that is less than the chunk size");
-//		}
-//
-//		auto rootPtr = inputData.getTaskData().begin();
-//		size_t offset = 0;
-//		for (size_t i = 0; i < chunks; ++i)
-//		{
-//			if (offset + chunkSize <= dataSize)
-//			{
-//				_chunks.push_back(new TaskData(rootPtr + offset, chunkSize));
-//				offset += chunkSize;
-//			}
-//			else
-//			{
-//				auto newChunkSize = dataSize - offset + chunkSize;
-//				_chunks.push_back(new TaskData(rootPtr + offset, newChunkSize));
-//			}
-//		}
-	}
-
-	void MultiThreadTask::destroyChunks()
-	{
-		for (auto chunk: _chunks)
-		{
-			delete chunk;
-		}
-		_chunks.clear();
-	}
-
-	MultiThreadTask::~MultiThreadTask()
-	{
-		destroyChunks();
-	}
-
 	void MultiThreadTask::prepareImpl()
 	{
 		const auto& processors = _affinity.getProcessorNodes();
 		const size_t processorCount = processors.size();
 
-		if (_specification.acceptsInput())
+		auto& input = getInput();
+		size_t i = 0;
+		for (auto processor : processors)
 		{
+			auto task = _specification
+				.createNewTask(_configuration, TaskAffinity(std::vector<const ProcessorNode*>{ processor }));
 
+			if (_specification.acceptsInput())
+			{
+				auto& data = input.getTaskData()[i];
+				task->setInput(TaskInput({ new PassiveTaskData(data->getData(), data->getSize()) }));
+			}
+
+			task->prepare();
+			_createdThreads.push_back(std::move(TaskThread(*task,
+				_wakeNotifier,
+				_mutex,
+				_threadsShouldWake,
+				processor->getOsIndex())));
+			_createdThreads.back().start();
 		}
-
-//
-//		if (_specification.acceptsInput())
-//		{
-//			breakInputIntoChunks(processorCount);
-//		}
-//		size_t i = 0;
-//		for (auto processor : processors)
-//		{
-//			auto task = _specification
-//				.createNewTask(_configuration, TaskAffinity(std::vector<const ProcessorNode*>{ processor }));
-//
-//			if (_specification.acceptsInput())
-//			{
-//				task->setInput(*_chunks[i]);
-//			}
-//
-//			task->prepare();
-//			_createdThreads.push_back(std::move(TaskThread(*task,
-//				_wakeNotifier,
-//				_mutex,
-//				_threadsShouldWake,
-//				processor->getOsIndex())));
-//			_createdThreads.back().start();
-//		}
 	}
 
 	TaskOutput MultiThreadTask::finalizeAndGetOutputData()
 	{
+		std::vector<TaskData*> accumulatedOutputs;
 		for (auto& thread: _createdThreads)
 		{
 			thread.getTaskToRun().finalize();
+			for (auto& out : thread.getTaskToRun().getOutput().getTaskData())
+			{
+				accumulatedOutputs.push_back(new PassiveTaskData(*out));
+			}
 		}
-		_createdThreads.clear();
-		destroyChunks();
-//		if (_specification.exportsOutput() && _specification.acceptsInput())
-//		{
-//			_outputData = *_inputData;
-//		}
-//		else if (_specification.exportsOutput())
-//		{
-//			// ???
-//		}
-		return TaskOutput();
+
+		return TaskOutput(std::move(accumulatedOutputs));
 	}
 }

@@ -4,6 +4,7 @@
 
 #include "Elpida/Engine/Task/TaskInput.hpp"
 #include "Elpida/Engine/Task/Data/TaskData.hpp"
+#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {
@@ -14,5 +15,15 @@ namespace Elpida
 		{
 			delete data;
 		}
+	}
+
+	std::vector<TaskData*> TaskInput::createPassiveWrappers() const
+	{
+		std::vector<TaskData*> returnVector;
+		for (auto data: _taskData)
+		{
+			returnVector.push_back(new PassiveTaskData(data->getData(), data->getSize()));
+		}
+		return returnVector;
 	}
 }

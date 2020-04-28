@@ -27,6 +27,13 @@ namespace Elpida
 		{
 
 		}
+
+		explicit PassiveTaskData(const TaskData& data)
+			: _data(data.getData()), _size(data.getSize())
+		{
+
+		}
+
 		~PassiveTaskData() override = default;
 	private:
 		pData _data;

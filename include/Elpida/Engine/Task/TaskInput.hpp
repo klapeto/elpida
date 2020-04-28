@@ -21,6 +21,9 @@ namespace Elpida
 			return _taskData;
 		}
 
+
+		[[nodiscard]] std::vector<TaskData*> createPassiveWrappers() const;
+
 		TaskInput() = default;
 		explicit TaskInput(std::vector<TaskData*> taskData)
 			: _taskData(std::move(taskData))

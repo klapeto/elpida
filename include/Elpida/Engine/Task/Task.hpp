@@ -19,7 +19,7 @@ namespace Elpida
 	class Task
 	{
 	public:
-
+		
 		void setInput(TaskInput&& input)
 		{
 			_inputData = std::move(input);
