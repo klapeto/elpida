@@ -7,6 +7,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 namespace Elpida
 {
@@ -43,10 +44,18 @@ namespace Elpida
 		}
 
 		explicit TaskConfiguration(const TaskSpecification& taskSpecification)
-			: _taskSpecification(&taskSpecification), _enabled(true)
+			: _taskSpecification(&taskSpecification), _enabled(true), _ownsData(true)
 		{
 
 		};
+
+		explicit TaskConfiguration(const TaskSpecification& taskSpecification,
+			std::unordered_map<std::string, ConfigurationValueBase*> configuration)
+			: _configuration(std::move(configuration)), _taskSpecification(&taskSpecification), _enabled(true),
+			  _ownsData(false)
+		{
+
+		}
 		TaskConfiguration(TaskConfiguration&&) = default;
 		TaskConfiguration& operator=(TaskConfiguration&&) = default;
 		~TaskConfiguration();
@@ -54,6 +63,7 @@ namespace Elpida
 		std::unordered_map<std::string, ConfigurationValueBase*> _configuration;
 		const TaskSpecification* _taskSpecification;
 		bool _enabled;
+		bool _ownsData;
 	};
 }
 

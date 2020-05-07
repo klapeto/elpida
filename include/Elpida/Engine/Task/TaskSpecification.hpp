@@ -87,8 +87,7 @@ namespace Elpida
 			return _multiThreadingEnabled;
 		}
 
-		[[nodiscard]] virtual Task* createNewTask(const TaskConfiguration& configuration,
-			const TaskAffinity& affinity) const = 0;
+		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const;
 
 		virtual ~TaskSpecification();
 	private:
@@ -101,6 +100,7 @@ namespace Elpida
 		std::string _outputValueUnit;
 		std::string _throughputUnit;
 		std::vector<ConfigurationSpecificationBase*> _configurationSpecifications;
+		std::unordered_map<std::string, ConfigurationValueBase*> _fixedConfiguration;
 		bool _acceptsInput;
 		bool _exportsOutput;
 		bool _shouldBeCountedOnResults;
@@ -119,10 +119,13 @@ namespace Elpida
 			bool exportsOutput,
 			bool shouldBeCountedOnResults,
 			bool enableMultiThreading,
-			bool canBeDisabled);
+			bool canBeDisabled,
+			std::unordered_map<std::string, ConfigurationValueBase*>&& fixedConfiguration = std::unordered_map<std::string, ConfigurationValueBase*>());
 
-		static constexpr std::string_view _noInputString = "[Task receives no input]";
-		static constexpr std::string_view _noOutputString = "[Task produces no output]";
+		static constexpr inline std::string_view _noInputString = "[Task receives no input]";
+		static constexpr inline std::string_view _noOutputString = "[Task produces no output]";
+
+		virtual Task* createNewTaskImpl(const TaskConfiguration& configuration, const TaskAffinity& affinity) const = 0;
 
 		template<typename T>
 		ConfigurationValue<T>& getSettingAndValidate(const TaskConfiguration& configuration,

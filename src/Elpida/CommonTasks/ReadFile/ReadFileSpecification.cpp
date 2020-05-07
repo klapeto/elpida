@@ -12,7 +12,7 @@ namespace Elpida
 
 	const char* ReadFileSpecification::filePathSetting = "Input File Name";
 
-	Task* ReadFileSpecification::createNewTask(const TaskConfiguration& configuration,
+	Task* ReadFileSpecification::createNewTaskImpl(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
 		auto filePath = getSettingAndValidate<std::string>(configuration,

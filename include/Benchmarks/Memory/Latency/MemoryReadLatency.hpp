@@ -31,39 +31,23 @@
 #include <string>
 #include <random>
 
-#include "Elpida/Task.hpp"
-#include "Elpida/TaskMetrics.hpp"
-#include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Utilities/ValueUtilities.hpp"
-#include "Elpida/Utilities/Memory.hpp"
+#include <Elpida/Engine/Task/Task.hpp>
+#include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
 namespace Elpida
 {
 
-	template<typename T = int64_t>
-	class MemoryLatency : public Task
+	class MemoryReadLatency : public Task
 	{
 	public:
 
-		void prepare() override
+		void execute() override
 		{
-			std::srand(std::time(nullptr));
-			auto size = _memory.getSize();
-
-			auto ptr = (T*)_memory.getPointer();
-			for (std::size_t i = 0; i < size; ++i)
-			{
-				ptr[i] = std::rand() / ((RAND_MAX + 1u) / (size - 1));
-			}
-		}
-
-		void run() override
-		{
-			volatile auto ptr = (T*)_memory.getPointer();
+			auto ptr = (volatile RegisterSize*)_taskData->getData();
 			auto start = ptr;
-			auto end = (T*)((T)start + _memory.getSize());
+			auto end = (RegisterSize*)((RegisterSize)start + _taskData->getSize());
 			auto iterations = _iterations;
-			auto x = T();
+			auto x = RegisterSize();
 
 			for (auto i = 0ul; i < iterations; ++i)
 			{
@@ -110,39 +94,34 @@ namespace Elpida
 			auto dummy = x;
 		}
 
-		[[nodiscard]] unsigned long getIterations() const
-		{
-			return _iterations;
-		}
+		[[nodiscard]] size_t getActualProcessedDataSize() const override;
+	public:
 
-		void calculateResults(const TaskMetrics& metrics) override
-		{
-			auto size = _iterations * _memory.getSize();
-			auto time = metrics.getDurationSubdivision<TaskMetrics::NanoSecond>();
-			_runResult.setOriginalValue((double)time / (double)size);
-			_runResult.setCustom(true);
-			_runResult.setMultiplier(1000);
-			_runResult.setTestedDataValue(_memory.getSize());
-			_runResult.setValueName("ns");
-			addResult(_runResult);
-		}
+//		void calculateResults(const TaskMetrics& metrics) override
+//		{
+//			auto size = _iterations * _memory.getSize();
+//			auto time = metrics.getDurationSubdivision<TaskMetrics::NanoSecond>();
+//			_runResult.setOriginalValue((double)time / (double)size);
+//			_runResult.setCustom(true);
+//			_runResult.setMultiplier(1000);
+//			_runResult.setTestedDataValue(_memory.getSize());
+//			_runResult.setValueName("ns");
+//			addResult(_runResult);
+//		}
 
-		explicit MemoryLatency(const Memory& memory)
-			: Task("Memory Read latency: " + ValueUtilities::getValueScaleString(memory.getSize()) + "B"),
-			  _memory(memory)
-		{
-			_iterations = _iterationConstant / (double)_memory.getSize();
-		}
+		explicit MemoryReadLatency(const TaskSpecification& specification,
+			TaskAffinity affinity,
+			bool toBeCountedOnResults);
 
-		~MemoryLatency() override = default;
+		~MemoryReadLatency() override = default;
 
-	private:
-		TaskRunResult _runResult;
 	protected:
-		const Memory& _memory;
-		unsigned long _iterations;
+		TaskOutput finalizeAndGetOutputData() override;
+		void prepareImpl() override;
 	private:
-		static constexpr double _iterationConstant =
+		TaskData* _taskData;
+		unsigned long _iterations;
+		static constexpr inline double _iterationConstant =
 			100000000000; // rough estimate, to be passed on construction later once we find the latency
 	};
 

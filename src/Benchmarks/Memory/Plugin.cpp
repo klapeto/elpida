@@ -29,6 +29,7 @@
 #include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
 #include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
 #include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
+#include "Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp"
 
 extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 {
@@ -40,6 +41,14 @@ extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 	auto benchmark = new Benchmark("Memory Read Bandwidth",{
 		new AllocateMemorySpecification(true, false, true),
 		new MemoryReadSpecification(true, false,true),
+	}, new DefaultBenchmarkScoreCalculator());
+
+	plugin->add(benchmark);
+
+
+	benchmark = new Benchmark("Memory Read Latency",{
+		new AllocateMemorySpecification(true, false, false),
+		new MemoryReadLatencySpecification(true, false,false),
 	}, new DefaultBenchmarkScoreCalculator());
 
 	plugin->add(benchmark);

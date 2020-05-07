@@ -14,7 +14,7 @@ namespace Elpida
 	public:
 		static const char* memorySizeSetting;
 
-		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
+		[[nodiscard]] Task* createNewTaskImpl(const TaskConfiguration& configuration,
 			const TaskAffinity& affinity) const override;
 
 		AllocateMemorySpecification(bool shouldBeCountedOnResults, bool canBeDisabled, bool enableMultiThreading);

@@ -20,12 +20,14 @@ namespace Elpida
 		bool exportsOutput,
 		bool shouldBeCountedOnResults,
 		bool enableMultiThreading,
-		bool canBeDisabled)
+		bool canBeDisabled,
+		std::unordered_map<std::string, ConfigurationValueBase*>&& fixedConfiguration)
 		: _name(std::move(name)), _description(std::move(description)),
 		  _inputValueDescription(std::move(inputValueDescription)),
 		  _inputValueUnit(std::move(inputValueUnit)), _outputValueDescription(std::move(outputValueDescription)),
 		  _outputValueUnit(std::move(outputValueUnit)), _throughputUnit(std::move(throughputUnit)),
 		  _configurationSpecifications(std::move(configurationSpecifications)),
+		  _fixedConfiguration(std::move(fixedConfiguration)),
 		  _acceptsInput(acceptsInput),
 		  _exportsOutput(exportsOutput),
 		  _shouldBeCountedOnResults(shouldBeCountedOnResults),
@@ -41,5 +43,24 @@ namespace Elpida
 		{
 			delete configSpec;
 		}
+
+		for (auto& fixedConfig: _fixedConfiguration)
+		{
+			delete fixedConfig.second;
+		}
+	}
+
+	Task* TaskSpecification::createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const
+	{
+		TaskConfiguration finalConfig(*this, _fixedConfiguration);
+		for (auto& config: configuration.getAllConfigurations())
+		{
+			auto itr = _fixedConfiguration.find(config.first);
+			if (itr == _fixedConfiguration.end())
+			{
+				finalConfig.setConfiguration(config.first, *config.second);
+			}
+		}
+		return createNewTaskImpl(finalConfig, affinity);
 	}
 }

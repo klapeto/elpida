@@ -27,7 +27,7 @@ namespace Elpida
 		canBeDisabled)
 	{
 	}
-	Task* MemoryReadSpecification::createNewTask(const TaskConfiguration& configuration,
+	Task* MemoryReadSpecification::createNewTaskImpl(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
 		return new MemoryRead(*this, affinity, shouldBeCountedOnResults());

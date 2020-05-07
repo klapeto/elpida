@@ -10,9 +10,12 @@ namespace Elpida
 
 	TaskConfiguration::~TaskConfiguration()
 	{
-		for (auto& pair: _configuration)
+		if (_ownsData)
 		{
-			delete pair.second;
+			for (auto& pair: _configuration)
+			{
+				delete pair.second;
+			}
 		}
 	}
 

@@ -10,7 +10,7 @@ namespace Elpida
 
 	const char* WriteFileSpecification::filePathSetting = "Output File Name";
 
-	Task* WriteFileSpecification::createNewTask(const TaskConfiguration& configuration,
+	Task* WriteFileSpecification::createNewTaskImpl(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
 		auto filepath = getSettingAndValidate<std::string>(configuration,

@@ -43,7 +43,7 @@ namespace Elpida
 	public:
 		void execute() override
 		{
-			auto ptr = (RegisterSize*)_taskData->getData();
+			auto ptr = (volatile RegisterSize*)_taskData->getData();
 			auto start = ptr;
 			auto end = (RegisterSize*)((RegisterSize)start + _taskData->getSize());
 			auto iterations = _iterations;

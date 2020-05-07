@@ -9,17 +9,16 @@
 
 namespace Elpida
 {
-	class MemoryReadSpecification: public TaskSpecification
+	class MemoryReadSpecification : public TaskSpecification
 	{
 	public:
-
-		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
-			const TaskAffinity& affinity) const override;
-
-
 		MemoryReadSpecification(bool shouldBeCountedOnResults, bool canBeDisabled, bool enableMultiThreading);
 
 		~MemoryReadSpecification() override = default;
+
+	protected:
+		[[nodiscard]] Task* createNewTaskImpl(const TaskConfiguration& configuration,
+			const TaskAffinity& affinity) const override;
 	};
 }
 

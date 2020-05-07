@@ -12,7 +12,7 @@ namespace Elpida
 {
 	const char* AllocateMemorySpecification::memorySizeSetting = "Memory size";
 
-	Task* AllocateMemorySpecification::createNewTask(const TaskConfiguration& configuration,
+	Task* AllocateMemorySpecification::createNewTaskImpl(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
 		auto size = getSettingAndValidate<size_t>(configuration,

@@ -1,21 +1,23 @@
-project(MemoryTasks VERSION 0.0.1
+project(MemoryBenchmarks VERSION 0.0.1
         DESCRIPTION "Memory Benchmarks for Elpida"
         LANGUAGES CXX C)
 
-set(MEMORY_TASKS_SOURCES
+set(MEMORY_BENCHMARKS_SOURCES
         Plugin.cpp
         WorkingSetSizes.cpp
-#        Latency/MemoryLatency.cpp
-#        Latency/MemoryLatencyTaskBatch.cpp
+        Latency/MemoryReadLatency.cpp
+        Latency/MemoryReadLatencySpecification.cpp
         Read/MemoryRead.cpp
-        Read/MemoryReadSpecification.cpp)
+        Read/MemoryReadSpecification.cpp Latency/MemoryReadLatencySpecification.cpp ../../../include/Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp)
 
 
+add_library(memoryBenchmarks MODULE ${MEMORY_BENCHMARKS_SOURCES})
 
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_options(memoryBenchmarks PRIVATE -O3)
+endif()
 
-add_library(memoryTasks MODULE ${MEMORY_TASKS_SOURCES})
+target_include_directories(memoryBenchmarks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
+target_link_libraries(memoryBenchmarks elpida)
 
-target_include_directories(memoryTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(memoryTasks elpida)
-
-install(TARGETS memoryTasks DESTINATION ${ELPIDA_TASK_BATCH_INSTALL_DIR})
+install(TARGETS memoryBenchmarks DESTINATION ${ELPIDA_TASK_BATCH_INSTALL_DIR})
