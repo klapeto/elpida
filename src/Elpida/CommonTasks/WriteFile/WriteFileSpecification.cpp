@@ -19,23 +19,22 @@ namespace Elpida
 		return new WriteFile(*this, std::move(affinity), filepath.getValue(), shouldBeCountedOnResults());
 	}
 
-	WriteFileSpecification::WriteFileSpecification(bool shouldBeCountedOnResults, bool canBeDisabled, const std::string& defaultValue)
+	WriteFileSpecification::WriteFileSpecification(bool shouldBeCountedOnResults,
+		bool canBeDisabled,
+		const std::string& defaultValue)
 		: TaskSpecification("Write from memory to file",
-		"Writes data received from other tasks to file on disk",
-		"Data to write to disk",
-		"Bytes",
-		_noOutputString.data(),
-		_noOutputString.data(),
-		"B",
-		{
-			new ConfigurationSpecification<ConfigurationType::FilePath>(ConfigurationType::Type::FilePath, defaultValue, filePathSetting, "The absolute file path", true)
-			},
-		true,
-		false,
-		shouldBeCountedOnResults,
-		false,
-		canBeDisabled)
+		ResultSpecification("Write Rate", "B", ResultSpecification::Throughput, ResultSpecification::Accumulative))
 	{
+		withDescription("Writes data received from other tasks to file on disk");
+		withInputData(DataSpecification("Data to write", "B", "The bytes to write to file"));
 
+		setToBeCountedOnResults(shouldBeCountedOnResults);
+		setCanBeDisabled(canBeDisabled);
+
+		withConfiguration(new ConfigurationSpecification<ConfigurationType::FilePath>(ConfigurationType::Type::FilePath,
+			defaultValue,
+			filePathSetting,
+			"The absolute file path",
+			true));
 	}
 }

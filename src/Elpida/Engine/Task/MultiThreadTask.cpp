@@ -80,13 +80,16 @@ namespace Elpida
 
 		return TaskOutput(std::move(accumulatedOutputs));
 	}
-	size_t MultiThreadTask::getActualProcessedDataSize() const
+
+	size_t MultiThreadTask::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
 		size_t accumulator = 0;
 		for (auto& thread: _createdThreads)
 		{
-			accumulator += thread.getTaskToRun().getActualProcessedDataSize();
+			accumulator += thread.getTaskToRun().calculateTaskResultValue(taskElapsedTime);
 		}
-		return accumulator;
+		return _specification.getResultSpecification().getAggregationType() == ResultSpecification::Accumulative
+			   ? accumulator : accumulator / _createdThreads.size();
 	}
+
 }

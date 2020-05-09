@@ -8,31 +8,14 @@
 
 namespace Elpida
 {
-	TaskSpecification::TaskSpecification(std::string name,
-		std::string description,
-		std::string inputValueDescription,
-		std::string inputValueUnit,
-		std::string outputValueDescription,
-		std::string outputValueUnit,
-		std::string throughputUnit,
-		std::vector<ConfigurationSpecificationBase*>&& configurationSpecifications,
-		bool acceptsInput,
-		bool exportsOutput,
-		bool shouldBeCountedOnResults,
-		bool enableMultiThreading,
-		bool canBeDisabled,
-		std::unordered_map<std::string, ConfigurationValueBase*>&& fixedConfiguration)
-		: _name(std::move(name)), _description(std::move(description)),
-		  _inputValueDescription(std::move(inputValueDescription)),
-		  _inputValueUnit(std::move(inputValueUnit)), _outputValueDescription(std::move(outputValueDescription)),
-		  _outputValueUnit(std::move(outputValueUnit)), _throughputUnit(std::move(throughputUnit)),
-		  _configurationSpecifications(std::move(configurationSpecifications)),
-		  _fixedConfiguration(std::move(fixedConfiguration)),
-		  _acceptsInput(acceptsInput),
-		  _exportsOutput(exportsOutput),
-		  _shouldBeCountedOnResults(shouldBeCountedOnResults),
-		  _multiThreadingEnabled(enableMultiThreading),
-		  _canBeDisabled(canBeDisabled)
+	TaskSpecification::TaskSpecification(std::string name, ResultSpecification resultSpecification)
+		: _name(std::move(name)),
+		  _resultSpecification(std::move(resultSpecification)),
+		  _acceptsInput(false),
+		  _exportsOutput(false),
+		  _shouldBeCountedOnResults(false),
+		  _multiThreadingEnabled(false),
+		  _canBeDisabled(false)
 	{
 		_id = Uuid::create();
 	}

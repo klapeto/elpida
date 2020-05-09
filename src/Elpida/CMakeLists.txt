@@ -35,9 +35,11 @@ set(ELPIDA_SOURCES
         Utilities/NumaMemory.cpp
 
         CommonTasks/AllocateMemory/AllocateMemory.cpp
-        CommonTasks/ReadFile/ReadFile.cpp
-        CommonTasks/WriteFile/WriteFile.cpp
         CommonTasks/AllocateMemory/AllocateMemorySpecification.cpp
+        CommonTasks/ReadFile/ReadFile.cpp
+        CommonTasks/ReadFile/ReadFileSpecification.cpp
+        CommonTasks/WriteFile/WriteFile.cpp
+        CommonTasks/WriteFile/WriteFileSpecification.cpp
 
         Engine/Benchmark/Benchmark.cpp
         Engine/Configuration/TaskConfiguration.cpp
@@ -65,10 +67,8 @@ set(ELPIDA_SOURCES
         Engine/Task/Data/PassiveTaskData.cpp
         Engine/Task/Data/ActiveTaskData.cpp
         Engine/Task/InputManipulator.cpp
-
-        CommonTasks/ReadFile/ReadFileSpecification.cpp
-        CommonTasks/WriteFile/WriteFileSpecification.cpp
-)
+        Engine/Task/Data/DataSpecification.cpp
+        Engine/Result/ResultSpecification.cpp ../../include/Elpida/Engine/Result/ResultSpecification.hpp ../../include/Elpida/Utilities/Duration.hpp)
 
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

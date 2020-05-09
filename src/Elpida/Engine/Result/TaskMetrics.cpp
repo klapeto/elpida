@@ -3,3 +3,14 @@
 //
 
 #include "Elpida/Engine/Result/TaskMetrics.hpp"
+
+namespace Elpida
+{
+
+	TaskMetrics::TaskMetrics(const Elpida::Duration& duration, size_t resultValue)
+		: _duration(duration), _resultValue(resultValue)
+	{
+
+	}
+
+}

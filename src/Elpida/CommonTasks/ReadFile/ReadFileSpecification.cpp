@@ -24,25 +24,20 @@ namespace Elpida
 	ReadFileSpecification::ReadFileSpecification(bool shouldBeCountedOnResults,
 		bool canBeDisabled,
 		const std::string& defaultValue)
-		: TaskSpecification("Read File to Memory",
-		"Reads a file from disk to memory",
-		_noInputString.data(),
-		_noInputString.data(),
-		"File contents in bytes",
-		"Bytes",
-		"B",
-		{
-			new ConfigurationSpecification<ConfigurationType::FilePath>(ConfigurationType::Type::FilePath,
-				defaultValue,
-				filePathSetting,
-				"The absolute file path",
-				true)
-		},
-		false,
-		true,
-		shouldBeCountedOnResults,
-		false,
-		canBeDisabled)
+		: TaskSpecification("Read File to Memory",ResultSpecification("Read Rate", "B", ResultSpecification::Throughput, ResultSpecification::Accumulative))
 	{
+		withDescription("Reads a file from disk to memory");
+		withOutputData(DataSpecification("File contents", "B", "File contents in bytes"));
+
+		setCanBeDisabled(canBeDisabled);
+		setToBeCountedOnResults(shouldBeCountedOnResults);
+
+		auto config = new ConfigurationSpecification<ConfigurationType::FilePath>(ConfigurationType::Type::FilePath,
+			defaultValue,
+			filePathSetting,
+			"The absolute file path",
+			true);
+
+		withConfiguration(config);
 	}
 }

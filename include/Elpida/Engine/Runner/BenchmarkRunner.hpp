@@ -33,7 +33,7 @@ namespace Elpida {
 	private:
 		bool _mustStop;
 		static void destroyTasks(std::vector<Task*>& tasks);
-		static TaskMetrics runTask(Task& task);
+		static TaskResult runTask(Task& task);
 		void raiseBenchmarkStarted(const Benchmark& benchmark);
 		void raiseBenchmarkEnded(const Benchmark& benchmark);
 		void raiseTaskStarted(const Task& benchmark);

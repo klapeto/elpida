@@ -9,6 +9,8 @@
 #include <utility>
 #include "TaskOutput.hpp"
 #include "TaskInput.hpp"
+#include "Elpida/Engine/Result/TaskResult.hpp"
+#include "Elpida/Utilities/Duration.hpp"
 #include "TaskAffinity.hpp"
 
 namespace Elpida
@@ -48,7 +50,8 @@ namespace Elpida
 		void prepare();
 		void finalize();
 		virtual void execute() = 0;
-		[[nodiscard]] virtual size_t getActualProcessedDataSize() const = 0;
+
+		[[nodiscard]] TaskResult calculateTaskResult(const Duration& taskElapsedTime) const;
 
 		virtual void applyAffinity();
 
@@ -62,9 +65,12 @@ namespace Elpida
 
 		virtual void prepareImpl() = 0;
 		virtual TaskOutput finalizeAndGetOutputData() = 0;
+		virtual size_t calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
 	private:
 		TaskOutput _outputData;
 		TaskInput _inputData;
+
+		friend class MultiThreadTask;
 	};
 }
 

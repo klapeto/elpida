@@ -47,4 +47,9 @@ namespace Elpida
 	{
 		_outputData = finalizeAndGetOutputData();
 	}
+
+	TaskResult Task::calculateTaskResult(const Duration& taskElapsedTime) const
+	{
+		return TaskResult(_specification, TaskMetrics(taskElapsedTime, calculateTaskResultValue(taskElapsedTime)));
+	}
 }

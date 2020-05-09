@@ -6,6 +6,7 @@
 #define INCLUDE_ELPIDA_ENGINE_RESULT_TASKMETRICS_HPP
 
 #include <chrono>
+#include "Elpida/Utilities/Duration.hpp"
 
 namespace Elpida
 {
@@ -13,24 +14,14 @@ namespace Elpida
 	{
 	public:
 
-		typedef std::nano NanoSecond;
-		typedef std::micro MicroSecond;
-		typedef std::milli MilliSecond;
-		typedef std::ratio<1, 1> Second;
-		typedef std::chrono::duration<double> Duration;
-
 		[[nodiscard]] const Duration& getDuration() const
 		{
 			return _duration;
 		}
 
-		[[nodiscard]] size_t getInputDataSize() const
+		[[nodiscard]] size_t getResultValue() const
 		{
-			return _inputDataSize;
-		}
-		[[nodiscard]] size_t getActualProcessDataSize() const
-		{
-			return _actualProcessDataSize;
+			return _resultValue;
 		}
 
 		template<typename Division>
@@ -39,17 +30,7 @@ namespace Elpida
 			return ((double)Division::den * _duration.count()) / (double)Division::num;
 		}
 
-		[[nodiscard]] double getThroughputPerSecond() const
-		{
-			return  _actualProcessDataSize / getDurationSubdivision<Second>();
-		}
-
-		explicit TaskMetrics(const Duration& duration, size_t inputDataSize, size_t actualProcessDataSize)
-			: _duration(duration), _inputDataSize(inputDataSize), _actualProcessDataSize(actualProcessDataSize)
-		{
-
-		}
-
+		explicit TaskMetrics(const Duration& duration, size_t resultValue);
 		TaskMetrics(TaskMetrics&&) = default;
 		TaskMetrics(const TaskMetrics&) = default;
 		TaskMetrics& operator=(TaskMetrics&&) = default;
@@ -57,8 +38,7 @@ namespace Elpida
 		~TaskMetrics() = default;
 	private:
 		Duration _duration;
-		size_t _inputDataSize;
-		size_t _actualProcessDataSize;
+		size_t _resultValue;
 	};
 
 }

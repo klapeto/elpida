@@ -40,16 +40,17 @@ namespace Elpida
 	{
 	public:
 		void execute() override;
-		[[nodiscard]] size_t getActualProcessedDataSize() const override;
 
 		ReadFile(const TaskSpecification& specification,
 			const TaskAffinity& affinity,
 			std::string filePath,
 			bool toBeCountedOnResults = true);
+	public:
 		~ReadFile() override = default;
 	protected:
 		void prepareImpl() override;
 		TaskOutput finalizeAndGetOutputData() override;
+		size_t calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		MemoryFile _file;
 		std::string _filePath;

@@ -12,12 +12,12 @@ namespace Elpida
 	class AllocateMemorySpecification final : public TaskSpecification
 	{
 	public:
-		static const char* memorySizeSetting;
+		static inline const char* memorySizeSetting = "Memory size";
 
 		[[nodiscard]] Task* createNewTaskImpl(const TaskConfiguration& configuration,
 			const TaskAffinity& affinity) const override;
 
-		AllocateMemorySpecification(bool shouldBeCountedOnResults, bool canBeDisabled, bool enableMultiThreading);
+		AllocateMemorySpecification(bool shouldBeCountedOnResults, bool canBeDisabled, bool enableMultiThreading, size_t fixedSize = 0);
 		~AllocateMemorySpecification() override = default;
 	};
 }

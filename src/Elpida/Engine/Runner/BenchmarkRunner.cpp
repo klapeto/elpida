@@ -76,11 +76,11 @@ namespace Elpida
 
 					assingInput(previousTask, task, taskAffinity);
 
-					auto metrics = runTask(*task);
+					auto result = runTask(*task);
 					previousTask = task;
 					if (task->shouldBeCountedOnResults())
 					{
-						taskResults.emplace_back(task->getSpecification(), std::move(metrics));
+						taskResults.push_back(std::move(result));
 					}
 					raiseTasksEnded(*task);
 				}
@@ -125,7 +125,7 @@ namespace Elpida
 		return returnValue;
 	}
 
-	TaskMetrics BenchmarkRunner::runTask(Task& task)
+	TaskResult BenchmarkRunner::runTask(Task& task)
 	{
 		task.applyAffinity();
 		task.prepare();
@@ -136,18 +136,19 @@ namespace Elpida
 
 		task.finalize();
 
-		auto actualProcessDataSize = task.getActualProcessedDataSize();
+//		auto actualProcessDataSize = task.getActualProcessedDataSize();
+//
+//		auto inputValue = accumulateOutputValues(task.getInput().getTaskData(),
+//			[](const TaskData* data)
+//			{
+//				return data->getSize();
+//			});
+//		auto metrics = TaskMetrics(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start),
+//			inputValue,
+//			actualProcessDataSize);
+//			return metrics;
 
-		auto inputValue = accumulateOutputValues(task.getInput().getTaskData(),
-			[](const TaskData* data)
-			{
-				return data->getSize();
-			});
-		auto metrics = TaskMetrics(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start),
-			inputValue,
-			actualProcessDataSize);
-
-		return metrics;
+		return task.calculateTaskResult(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start));
 	}
 
 	void BenchmarkRunner::raiseBenchmarkStarted(const Benchmark& benchmark)

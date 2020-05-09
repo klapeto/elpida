@@ -6,11 +6,11 @@
 #include "Elpida/CommonTasks/AllocateMemory/AllocateMemory.hpp"
 #include "Elpida/Engine/Configuration/TaskConfiguration.hpp"
 #include "Elpida/Engine/Configuration/ConfigurationValue.hpp"
+#include "Elpida/Engine/Task/Data/DataSpecification.hpp"
 #include "Elpida/Engine/Configuration/ConfigurationSpecification.hpp"
 
 namespace Elpida
 {
-	const char* AllocateMemorySpecification::memorySizeSetting = "Memory size";
 
 	Task* AllocateMemorySpecification::createNewTaskImpl(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
@@ -24,25 +24,30 @@ namespace Elpida
 
 	AllocateMemorySpecification::AllocateMemorySpecification(bool shouldBeCountedOnResults,
 		bool canBeDisabled,
-		bool enableMultiThreading)
+		bool enableMultiThreading, size_t fixedSize)
 		: TaskSpecification("Allocate Memory",
-		"Allocates memory to be used by other tasks on the benchmark",
-		_noInputString.data(),
-		_noInputString.data(),
-		"Data that was allocated",
-		"Bytes",
-		"B",
-		{
-			new ConfigurationSpecification<ConfigurationType::UnsignedInt>(256ul, memorySizeSetting,
-				"The amount of memory to allocate",
-				true),
-		},
-		false,
-		true,
-		shouldBeCountedOnResults,
-		enableMultiThreading,
-		canBeDisabled)
+		ResultSpecification("Allocation Rate", "B", ResultSpecification::Throughput, ResultSpecification::Accumulative))
 	{
+		withDescription("Allocates memory to be used by other tasks on the benchmark");
+
+		setCanBeDisabled(canBeDisabled);
+		setEnabledMultiThreading(enableMultiThreading);
+		setToBeCountedOnResults(shouldBeCountedOnResults);
+
+		withOutputData(DataSpecification("Allocated Bytes", "B", "The allocated memory"));
+
+		auto config = new ConfigurationSpecification<ConfigurationType::UnsignedInt>(256ul,
+			memorySizeSetting,
+			"The amount of memory to allocate",
+			true);
+		if (fixedSize > 0)
+		{
+			withFixedConfiguration(config, fixedSize);
+		}
+		else
+		{
+			withConfiguration(config);
+		}
 	}
 }
 

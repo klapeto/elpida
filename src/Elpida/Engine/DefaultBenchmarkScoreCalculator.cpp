@@ -12,8 +12,7 @@ namespace Elpida
 
 		for (auto& res: taskResults)
 		{
-			accumulator += (double)res.getMetrics().getActualProcessDataSize()
-				/ res.getMetrics().getDurationSubdivision<TaskMetrics::Second>();
+			accumulator += (double)res.getMetrics().getResultValue();
 		}
 
 		return accumulator;

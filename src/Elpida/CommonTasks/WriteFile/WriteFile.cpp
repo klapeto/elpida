@@ -60,7 +60,8 @@ namespace Elpida
 	{
 		return TaskOutput();
 	}
-	size_t WriteFile::getActualProcessedDataSize() const
+
+	size_t WriteFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
 		return getInput().getTaskData().front()->getSize();
 	}

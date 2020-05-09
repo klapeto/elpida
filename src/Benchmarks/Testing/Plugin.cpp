@@ -16,14 +16,14 @@ extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 
 	auto plugin = new Plugin();
 
-	auto benchmark = new Benchmark("Test Benchmark",{
+	auto benchmark = new Benchmark("Test Benchmark", {
 		new ReadFileSpecification(true, false, "/media/klapeto/Αρχεία/Isos/neon-user-20200326-1117.iso"),
-		new WriteFileSpecification(true, false,"/media/klapeto/Αρχεία/Isos/TEST.iso"),
+		new WriteFileSpecification(true, false, "/media/klapeto/Αρχεία/Isos/TEST.iso"),
 	}, new DefaultBenchmarkScoreCalculator());
 
 	plugin->add(benchmark);
 
-	benchmark = new Benchmark("Test Allocate Memory",{
+	benchmark = new Benchmark("Test Allocate Memory", {
 		new AllocateMemorySpecification(true, false, true)
 	}, new DefaultBenchmarkScoreCalculator());
 

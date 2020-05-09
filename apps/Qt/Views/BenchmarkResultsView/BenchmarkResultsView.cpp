@@ -22,6 +22,23 @@ namespace Elpida
 		delete _ui;
 	}
 
+	static std::string getResultString(const TaskResult& result)
+	{
+		auto& metrics = result.getMetrics();
+		auto& resultSpec = result.getTaskSpecification().getResultSpecification();
+		if (resultSpec.getType() == ResultSpecification::Throughput)
+		{
+			return Vu::Cs(Vu::getValueScaleStringSI(
+				metrics.getResultValue() / metrics.getDurationSubdivision<Second>()),
+				resultSpec.getUnit(),
+				"/s");
+		}
+		else
+		{
+			return std::to_string(metrics.getResultValue()) + resultSpec.getUnit();
+		}
+	}
+
 	void BenchmarkResultsView::onItemAdded(const BenchmarkResult& item)
 	{
 
@@ -29,13 +46,11 @@ namespace Elpida
 		parent->setText(0, QString::fromStdString(item.getBenchmark().getName()));
 		for (const auto& result: item.getTaskResults())
 		{
-			auto metrics = result.getMetrics();
 			auto child = new QTreeWidgetItem();
 
-			child->setText(0, QString::fromStdString(result.getSpecification().getName()));
+			child->setText(0, QString::fromStdString(result.getTaskSpecification().getName()));
 			child->setText(1,
-				QString::fromStdString(Vu::getValueScaleStringSI(metrics.getThroughputPerSecond())
-					+ result.getSpecification().getThroughputUnit() + "/s"));
+				QString::fromStdString(getResultString(result)));
 			parent->addChild(child);
 		}
 		_createdItems.emplace(item.getId(), parent);

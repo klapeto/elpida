@@ -4,7 +4,13 @@
 
 #include "Elpida/Engine/Result/TaskResult.hpp"
 
-namespace Elpida {
+namespace Elpida
+{
 
 
+	TaskResult::TaskResult(const TaskSpecification& specification, TaskMetrics&& metrics)
+		: _metrics(metrics), _taskSpecification(&specification)
+	{
+
+	}
 }

@@ -39,7 +39,6 @@ namespace Elpida
 	{
 	public:
 		void execute() override;
-		[[nodiscard]] size_t getActualProcessedDataSize() const override;
 
 		AllocateMemory(const TaskSpecification& specification,
 			const TaskAffinity& affinity,
@@ -51,6 +50,8 @@ namespace Elpida
 	protected:
 		void prepareImpl() override;
 		TaskOutput finalizeAndGetOutputData() override;
+
+		[[nodiscard]] size_t calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		NumaMemory _memory;
 		std::size_t _size;
