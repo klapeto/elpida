@@ -3,6 +3,7 @@
 //
 
 #include "TaskConfigurationListItemViewBase.hpp"
+
 namespace Elpida
 {
 

@@ -1,8 +1,8 @@
 #include "FileInputView.hpp"
 #include "ui_FileInputView.h"
 
-#include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
-#include <Elpida/Engine/Configuration/ConfigurationSpecificationBase.hpp>
+#include <Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp>
+#include <Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp>
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Config.hpp>
 

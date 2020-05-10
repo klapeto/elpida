@@ -1,30 +1,24 @@
 //
-// Created by klapeto on 27/4/20.
+// Created by klapeto on 10/5/20.
 //
 
-#include "Elpida/Engine/Task/InputManipulator.hpp"
 
-#include "Elpida/Engine/Task/Data/ActiveTaskData.hpp"
+#include "Elpida/Engine/Data/Adapters/CopyingChunkNormalizerAdapter.hpp"
+
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
+#include "Elpida/Engine/Data/ActiveTaskData.hpp"
 #include "Elpida/Engine/Task/TaskOutput.hpp"
-#include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
+#include "Elpida/Topology/ProcessorNode.hpp"
 
-#include <cmath>
 #include <cstring>
+#include <cmath>
 
 namespace Elpida
 {
 
-	TaskInput InputManipulator::getUnifiedInput(const TaskOutput& output, const TaskAffinity& affinity)
-	{
-		auto accumulatedSize = getAccumulatedSizeOfChunks(output.getTaskData());
-		auto taskData = new ActiveTaskData(accumulatedSize,
-			SystemTopology::getNumaNodeOfProcessor((int)affinity.getProcessors(1).front()->getOsIndex()));
-		return TaskInput({ taskData });
-	}
-
-	TaskInput InputManipulator::getChunkedInput(const TaskOutput& output, const TaskAffinity& affinity)
+	TaskInput CopyingChunkNormalizerAdapter::transformOutputToInput(const TaskOutput& output,
+		const TaskAffinity& affinity) const
 	{
 		auto& processors = affinity.getProcessorNodes();
 		auto targetChunksCount = processors.size();
@@ -89,16 +83,6 @@ namespace Elpida
 			}
 		}
 
-		return TaskInput(targetChunksVec);
-	}
-
-	size_t InputManipulator::getAccumulatedSizeOfChunks(const std::vector<TaskData*>& outputChunks)
-	{
-		size_t outputTotalSize = 0;
-		for (auto& data : outputChunks)
-		{
-			outputTotalSize += data->getSize();
-		}
-		return outputTotalSize;
+		return TaskInput(std::move(targetChunksVec));
 	}
 }

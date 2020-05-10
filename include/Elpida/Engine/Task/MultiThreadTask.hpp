@@ -11,21 +11,20 @@
 namespace Elpida
 {
 	class TaskConfiguration;
+	class TaskBuilder;
 
 	class MultiThreadTask : public Task
 	{
 	public:
 		void execute() override;
 		void applyAffinity() override;
-	protected:
-		virtual size_t calculateTaskResultValue(const Duration& taskElapsedTime) const override;
-	public:
-		MultiThreadTask(const TaskSpecification& taskSpecification, const TaskConfiguration& configuration, const TaskAffinity& affinity);
-		~MultiThreadTask() override = default;
 
+		MultiThreadTask(const TaskBuilder& taskBuilder, const TaskConfiguration& configuration, const TaskAffinity& affinity);
+		~MultiThreadTask() override = default;
 	protected:
 		void prepareImpl() override;
 		TaskOutput finalizeAndGetOutputData() override;
+		virtual size_t calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::mutex _mutex;
 		std::condition_variable _wakeNotifier;

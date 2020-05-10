@@ -8,7 +8,7 @@
 
 #include "Models/Abstractions/ListModel/ListModel.hpp"
 #include "Models/Abstractions/AssociativeModel/AssociativeModel.hpp"
-#include <Elpida/Engine/Configuration/BenchmarkConfiguration.hpp>
+#include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 #include <Elpida/SharedLibraryLoader.hpp>
 
 namespace Elpida

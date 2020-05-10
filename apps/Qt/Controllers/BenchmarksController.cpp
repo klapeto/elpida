@@ -8,9 +8,11 @@
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp>
-#include <Elpida/Engine/Configuration/ConfigurationSpecificationBase.hpp>
-#include <Elpida/Engine/Configuration/TaskConfiguration.hpp>
+#include <Elpida/Engine/Configuration/Specification/TaskConfigurationSpecifications.hpp>
+#include <Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp>
+#include <Elpida/Engine/Configuration/Concrete/TaskConfiguration.hpp>
+#include <Elpida/Engine/Task/TaskSpecification.hpp>
+#include <Elpida/Engine/Task/TaskBuilder.hpp>
 #include "BenchmarksController.hpp"
 
 namespace Elpida
@@ -135,15 +137,9 @@ namespace Elpida
 				for (auto benchmark : benchmarks)
 				{
 					BenchmarkConfiguration configuration(*benchmark);
-					for (const auto& taskConfigSpecs :benchmark->getConfigurationSpecifications())
+					for (const auto& builder : benchmark->getTaskBuilders())
 					{
-						auto& taskSpec = taskConfigSpecs.getTaskSpecification();
-						TaskConfiguration taskConfiguration(taskSpec);
-						for (auto configSpec : taskConfigSpecs.getConfigurationSpecifications())
-						{
-							taskConfiguration.setConfiguration(configSpec->getName(), *configSpec->createDefault());
-						}
-						configuration.addConfiguration(taskSpec, std::move(taskConfiguration));
+						configuration.addConfiguration(builder->getTaskSpecification(), builder->getDefaultConfiguration());
 					}
 					_configurationsModel.add(benchmark->getId(), std::move(configuration));
 					_model.add(benchmark);

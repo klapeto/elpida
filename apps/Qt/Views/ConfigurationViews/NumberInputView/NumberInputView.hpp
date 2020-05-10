@@ -2,7 +2,7 @@
 #define ELPIDA_NUMBERINPUTVIEW_HPP
 
 #include "Views/ConfigurationViews/ConfigurationValueViewBase.hpp"
-#include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
+#include <Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp>
 
 namespace Elpida
 {

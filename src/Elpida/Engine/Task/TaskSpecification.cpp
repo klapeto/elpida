@@ -12,10 +12,7 @@ namespace Elpida
 		: _name(std::move(name)),
 		  _resultSpecification(std::move(resultSpecification)),
 		  _acceptsInput(false),
-		  _exportsOutput(false),
-		  _shouldBeCountedOnResults(false),
-		  _multiThreadingEnabled(false),
-		  _canBeDisabled(false)
+		  _exportsOutput(false)
 	{
 		_id = Uuid::create();
 	}
@@ -26,24 +23,5 @@ namespace Elpida
 		{
 			delete configSpec;
 		}
-
-		for (auto& fixedConfig: _fixedConfiguration)
-		{
-			delete fixedConfig.second;
-		}
-	}
-
-	Task* TaskSpecification::createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const
-	{
-		TaskConfiguration finalConfig(*this, _fixedConfiguration);
-		for (auto& config: configuration.getAllConfigurations())
-		{
-			auto itr = _fixedConfiguration.find(config.first);
-			if (itr == _fixedConfiguration.end())
-			{
-				finalConfig.setConfiguration(config.first, *config.second);
-			}
-		}
-		return createNewTaskImpl(finalConfig, affinity);
 	}
 }

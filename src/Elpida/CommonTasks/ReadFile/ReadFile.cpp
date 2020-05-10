@@ -29,16 +29,15 @@
 #include <utility>
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
-#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
+#include "Elpida/Engine/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {
 
 	ReadFile::ReadFile(const TaskSpecification& specification,
 		const TaskAffinity& affinity,
-		std::string filePath,
-		bool toBeCountedOnResults)
-		: Task(specification, affinity, toBeCountedOnResults),
+		std::string filePath)
+		: Task(specification, affinity),
 		  _file(affinity.getProcessorNodes().front()->getOsIndex()),
 		  _filePath(std::move(filePath))
 	{

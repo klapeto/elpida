@@ -4,6 +4,7 @@
 
 #include "BenchmarkRunnerModel.hpp"
 
-namespace Elpida {
+namespace Elpida
+{
 
 }

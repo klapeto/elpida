@@ -10,19 +10,18 @@
 
 #include "Elpida/Timer.hpp"
 #include "Elpida/Engine/Task/Task.hpp"
-#include "Elpida/Engine/Task/Data/TaskData.hpp"
 #include "Elpida/Engine/Task/TaskInput.hpp"
 #include "Elpida/Engine/Task/TaskOutput.hpp"
 #include "Elpida/Engine/BenchmarkScoreCalculator.hpp"
 #include "Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp"
 #include "Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
-#include "Elpida/Engine/Task/Data/ActiveTaskData.hpp"
-#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
+#include "Elpida/Engine/Data/ActiveTaskData.hpp"
+#include "Elpida/Engine/Data/PassiveTaskData.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/Engine/Task/InputManipulator.hpp"
+#include "Elpida/Engine/Task/TaskBuilder.hpp"
 
 namespace Elpida
 {
@@ -32,23 +31,18 @@ namespace Elpida
 
 	}
 
-	static void assingInput(Task* previousTask, Task* nextTask, const TaskAffinity& affinity)
+	static void assignInput(BenchmarkTaskInstance* previousTaskInstance,
+		BenchmarkTaskInstance* nextTaskInstance,
+		const TaskAffinity& affinity)
 	{
-		auto& nextSpec = nextTask->getSpecification();
-		if (previousTask != nullptr && nextSpec.acceptsInput())
+		auto& nextTask = nextTaskInstance->getTask();
+		auto& nextSpec = nextTask.getSpecification();
+		if (previousTaskInstance != nullptr && nextSpec.acceptsInput())
 		{
-			auto& previousOutput = previousTask->getOutput();
-			bool nextManyInputs = nextSpec.isMultiThreadingEnabled();
-
-			if (nextManyInputs)
-			{
-				// N -> N
-				nextTask->setInput(InputManipulator::getChunkedInput(previousOutput, affinity));
-			}
-			else
-			{
-				nextTask->setInput(InputManipulator::getUnifiedInput(previousOutput, affinity));
-			}
+			auto& previousTask = previousTaskInstance->getTask();
+			auto& previousOutput = previousTask.getOutput();
+			nextTask.setInput(nextTaskInstance->getTaskBuilder().getDataAdapter()
+				.transformOutputToInput(previousOutput, affinity));
 		}
 	}
 
@@ -57,34 +51,35 @@ namespace Elpida
 	{
 		_mustStop = false;
 		std::vector<BenchmarkResult> benchmarkResults;
-		Task* previousTask = nullptr;
+		BenchmarkTaskInstance* previousTask = nullptr;
 		for (const auto& benchmarkRequest : benchmarkRequests)
 		{
 			if (_mustStop) break;
 			const auto& benchmark = benchmarkRequest.getBenchmark();
 			raiseBenchmarkStarted(benchmark);
 
-			auto tasks = benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration());
+			auto benchmarkTaskInstances = benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration());
 			try
 			{
 				std::vector<TaskResult> taskResults;
-				for (auto task : tasks)
+				for (auto& taskInstance : benchmarkTaskInstances)
 				{
 					if (_mustStop) break;
+					auto& task = taskInstance.getTask();
+					raiseTaskStarted(task);
 
-					raiseTaskStarted(*task);
+					assignInput(previousTask, &taskInstance, taskAffinity);
 
-					assingInput(previousTask, task, taskAffinity);
+					auto result = runTask(task);
 
-					auto result = runTask(*task);
-					previousTask = task;
-					if (task->shouldBeCountedOnResults())
+					previousTask = &taskInstance;
+					if (taskInstance.getTaskBuilder().isShouldBeCountedOnResults())
 					{
 						taskResults.push_back(std::move(result));
 					}
-					raiseTasksEnded(*task);
+					raiseTasksEnded(task);
 				}
-				destroyTasks(tasks);
+				//destroyTasks(benchmarkTaskInstances);
 				raiseBenchmarkEnded(benchmark);
 
 				BenchmarkResult::Score score = benchmark.getScoreCalculator().calculate(taskResults);
@@ -92,7 +87,7 @@ namespace Elpida
 			}
 			catch (...)
 			{
-				destroyTasks(tasks);
+				//destroyTasks(benchmarkTaskInstances);
 				throw;
 			}
 		}
@@ -114,17 +109,6 @@ namespace Elpida
 		_mustStop = true;
 	}
 
-	template<typename T, typename TCallable>
-	static double accumulateOutputValues(const std::vector<T>& vec, TCallable callable)
-	{
-		double returnValue = 0.0;
-		for (auto& value : vec)
-		{
-			returnValue += callable(value);
-		}
-		return returnValue;
-	}
-
 	TaskResult BenchmarkRunner::runTask(Task& task)
 	{
 		task.applyAffinity();
@@ -135,18 +119,6 @@ namespace Elpida
 		auto end = Timer::now();
 
 		task.finalize();
-
-//		auto actualProcessDataSize = task.getActualProcessedDataSize();
-//
-//		auto inputValue = accumulateOutputValues(task.getInput().getTaskData(),
-//			[](const TaskData* data)
-//			{
-//				return data->getSize();
-//			});
-//		auto metrics = TaskMetrics(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start),
-//			inputValue,
-//			actualProcessDataSize);
-//			return metrics;
 
 		return task.calculateTaskResult(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start));
 	}

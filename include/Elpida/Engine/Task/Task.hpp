@@ -15,7 +15,6 @@
 
 namespace Elpida
 {
-
 	class TaskSpecification;
 
 	class Task
@@ -30,16 +29,11 @@ namespace Elpida
 		TaskOutput& getOutput()
 		{
 			return _outputData;
-		};
+		}
 
 		[[nodiscard]] inline const TaskInput& getInput() const
 		{
 			return _inputData;
-		};
-
-		[[nodiscard]] bool shouldBeCountedOnResults() const
-		{
-			return _toBeCountedOnResults;
 		}
 
 		[[nodiscard]] const TaskSpecification& getSpecification() const
@@ -55,17 +49,15 @@ namespace Elpida
 
 		virtual void applyAffinity();
 
-		Task(const TaskSpecification& specification, TaskAffinity affinity, bool toBeCountedOnResults = true);
-
+		Task(const TaskSpecification& specification, TaskAffinity affinity);
 		virtual ~Task() = default;
 	protected:
 		TaskAffinity _affinity;
 		const TaskSpecification& _specification;
-		bool _toBeCountedOnResults;
 
 		virtual void prepareImpl() = 0;
 		virtual TaskOutput finalizeAndGetOutputData() = 0;
-		virtual size_t calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
+		[[nodiscard]] virtual size_t calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
 	private:
 		TaskOutput _outputData;
 		TaskInput _inputData;

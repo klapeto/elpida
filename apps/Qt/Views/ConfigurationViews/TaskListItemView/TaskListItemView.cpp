@@ -1,7 +1,8 @@
 #include "TaskListItemView.hpp"
 //#include "ui_TaskListItemView.h"
 
-#include <Elpida/Engine/Configuration/TaskConfiguration.hpp>
+#include <Elpida/Engine/Configuration/Concrete/TaskConfiguration.hpp>
+#include <Elpida/Engine/Task/TaskBuilder.hpp>
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include <QCheckBox>
 
@@ -19,7 +20,7 @@ namespace Elpida
 		_taskConfiguration = taskConfiguration;
 		if (taskConfiguration != nullptr)
 		{
-			if (taskConfiguration->getTaskSpecification().canBeDisabled())
+			if (taskConfiguration->getTaskBuilder().isCanBeDisabled())
 			{
 				setFlags(Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
 				setCheckState(taskConfiguration->isEnabled() ? Qt::Checked : Qt::Unchecked);
@@ -43,7 +44,7 @@ namespace Elpida
 	{
 		if (_taskConfiguration != nullptr)
 		{
-			if (_taskConfiguration->getTaskSpecification().canBeDisabled())
+			if (_taskConfiguration->getTaskBuilder().isCanBeDisabled())
 			{
 				_taskConfiguration->setEnabled(checkState() == Qt::Checked);
 			}

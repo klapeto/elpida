@@ -6,9 +6,9 @@
 #include "Views/ConfigurationViews/ConfigurationValueViewBase.hpp"
 #include "Views/ConfigurationViews/TaskConfigurationListItemViewBase.hpp"
 
-#include <Elpida/Engine/Configuration/BenchmarkConfiguration.hpp>
-#include <Elpida/Engine/Configuration/TaskConfigurationSpecifications.hpp>
-#include <Elpida/Engine/Configuration/TaskConfiguration.hpp>
+#include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
+#include <Elpida/Engine/Configuration/Specification/TaskConfigurationSpecifications.hpp>
+#include <Elpida/Engine/Configuration/Concrete/TaskConfiguration.hpp>
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 

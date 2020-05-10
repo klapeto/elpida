@@ -3,8 +3,8 @@
 //
 
 #include "ConfigurationViewsPool.hpp"
-#include <Elpida/Engine/Configuration/ConfigurationSpecificationBase.hpp>
-#include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
+#include <Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp>
+#include <Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp>
 #include "Views/ConfigurationViews/FileInputView/FileInputView.hpp"
 #include "Views/ConfigurationViews/TaskListItemView/TaskListItemView.hpp"
 #include "Views/ConfigurationViews/NumberInputView/NumberInputView.hpp"

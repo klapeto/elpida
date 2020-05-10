@@ -29,7 +29,7 @@
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
+#include "Elpida/Engine/Data/PassiveTaskData.hpp"
 
 #include <cstring>
 
@@ -38,9 +38,8 @@ namespace Elpida
 
 	AllocateMemory::AllocateMemory(const TaskSpecification& specification,
 		const TaskAffinity& affinity,
-		bool toBeCountedOnResults,
 		std::size_t size, bool initialize)
-		: Task(specification, affinity, toBeCountedOnResults),
+		: Task(specification, affinity),
 		  _memory(size,
 			  SystemTopology::getNumaNodeOfProcessor((int)affinity.getProcessorNodes().front()->getOsIndex())),
 		  _size(size),

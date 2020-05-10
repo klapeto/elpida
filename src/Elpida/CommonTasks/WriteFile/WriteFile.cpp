@@ -38,9 +38,8 @@ namespace Elpida
 
 	WriteFile::WriteFile(const TaskSpecification& specification,
 		const TaskAffinity& affinity,
-		std::string filePath,
-		bool toBeCountedOnResults)
-		: Task(specification, affinity, toBeCountedOnResults), _outputPath(std::move(filePath))
+		std::string filePath)
+		: Task(specification, affinity), _outputPath(std::move(filePath))
 	{
 
 	}

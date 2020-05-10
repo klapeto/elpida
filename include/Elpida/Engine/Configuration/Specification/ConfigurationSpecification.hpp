@@ -6,8 +6,8 @@
 #define INCLUDE_ELPIDA_ENGINE_CONFIGURATION_CONFIGURATIONSPECIFICATION_HPP
 
 #include "ConfigurationSpecificationBase.hpp"
-#include "ConfigurationValue.hpp"
-#include "ConfigurationType.hpp"
+#include "Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp"
+#include "Elpida/Engine/Configuration/ConfigurationType.hpp"
 #include <string>
 
 namespace Elpida
@@ -23,7 +23,7 @@ namespace Elpida
 	{
 	public:
 
-		ConfigurationValueBase* createDefault() const override
+		[[nodiscard]] ConfigurationValueBase* createDefault() const override
 		{
 			return new ConfigurationValue<T>(*this, _defaultValue);
 		}

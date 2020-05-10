@@ -41,11 +41,7 @@ namespace Elpida
 	public:
 		void execute() override;
 
-		ReadFile(const TaskSpecification& specification,
-			const TaskAffinity& affinity,
-			std::string filePath,
-			bool toBeCountedOnResults = true);
-	public:
+		ReadFile(const TaskSpecification& specification, const TaskAffinity& affinity, std::string filePath);
 		~ReadFile() override = default;
 	protected:
 		void prepareImpl() override;

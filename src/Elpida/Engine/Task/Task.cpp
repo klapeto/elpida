@@ -9,14 +9,14 @@
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Task/TaskThread.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
+#include "Elpida/Engine/Data/DataAdapter.hpp"
 #include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {
 
-	Task::Task(const TaskSpecification& specification, TaskAffinity affinity, bool toBeCountedOnResults)
-		: _affinity(std::move(affinity)), _specification(specification),
-		  _toBeCountedOnResults(toBeCountedOnResults)
+	Task::Task(const TaskSpecification& specification, TaskAffinity affinity)
+		: _affinity(std::move(affinity)), _specification(specification)
 	{
 		if (_affinity.getProcessorNodes().empty())
 		{
@@ -52,4 +52,5 @@ namespace Elpida
 	{
 		return TaskResult(_specification, TaskMetrics(taskElapsedTime, calculateTaskResultValue(taskElapsedTime)));
 	}
+
 }

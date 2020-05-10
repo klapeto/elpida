@@ -6,18 +6,19 @@
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Config.hpp"
-#include "Elpida/Engine/Task/Data/TaskData.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
-#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
+#include "Elpida/Engine/Data/PassiveTaskData.hpp"
+#include "Elpida/Engine/Task/TaskBuilder.hpp"
 
 namespace Elpida
 {
 
-	MultiThreadTask::MultiThreadTask(const TaskSpecification& taskSpecification,
+	MultiThreadTask::MultiThreadTask(const TaskBuilder& taskBuilder,
 		const TaskConfiguration& configuration,
 		const TaskAffinity& affinity)
-		: Task(taskSpecification, affinity, true), _configuration(configuration), _threadsShouldWake(false)
+		: Task(taskBuilder.getTaskSpecification(), affinity), _configuration(configuration), _threadsShouldWake(false)
 	{
+
 	}
 
 	void MultiThreadTask::execute()

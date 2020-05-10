@@ -42,12 +42,12 @@ set(ELPIDA_SOURCES
         CommonTasks/WriteFile/WriteFileSpecification.cpp
 
         Engine/Benchmark/Benchmark.cpp
-        Engine/Configuration/TaskConfiguration.cpp
-        Engine/Configuration/ConfigurationValue.cpp
-        Engine/Configuration/ConfigurationValueBase.cpp
+        Engine/Configuration/Concrete/TaskConfiguration.cpp
+        Engine/Configuration/Concrete/ConfigurationValue.cpp
+        Engine/Configuration/Concrete/ConfigurationValueBase.cpp
         Engine/Task/Task.cpp
         Engine/Task/TaskSpecification.cpp
-        Engine/Task/Data/TaskData.cpp
+        Engine/Data/TaskData.cpp
         Engine/Runner/BenchmarkRunner.cpp
         Engine/Result/BenchmarkResult.cpp
         Engine/Result/TaskResult.cpp
@@ -57,18 +57,24 @@ set(ELPIDA_SOURCES
         Engine/Runner/EventArgs/BenchmarkEventArgs.cpp
         Engine/Runner/EventArgs/TaskEventArgs.cpp
         Engine/Task/MultiThreadTask.cpp
-        Engine/Configuration/BenchmarkConfiguration.cpp
-        Engine/Configuration/ConfigurationSpecification.cpp
-        Engine/Configuration/TaskConfigurationSpecifications.cpp
+        Engine/Configuration/Concrete/BenchmarkConfiguration.cpp
+        Engine/Configuration/Specification/ConfigurationSpecification.cpp
+        Engine/Configuration/Specification/TaskConfigurationSpecifications.cpp
         Engine/Runner/BenchmarkRunRequest.cpp
-        Engine/Configuration/ConfigurationSpecificationBase.cpp
+        Engine/Configuration/Specification/ConfigurationSpecificationBase.cpp
         Engine/Task/TaskInput.cpp
         Engine/Task/TaskOutput.cpp
-        Engine/Task/Data/PassiveTaskData.cpp
-        Engine/Task/Data/ActiveTaskData.cpp
-        Engine/Task/InputManipulator.cpp
-        Engine/Task/Data/DataSpecification.cpp
-        Engine/Result/ResultSpecification.cpp ../../include/Elpida/Engine/Result/ResultSpecification.hpp ../../include/Elpida/Utilities/Duration.hpp)
+        Engine/Data/PassiveTaskData.cpp
+        Engine/Data/ActiveTaskData.cpp
+        Engine/Data/DataSpecification.cpp
+        Engine/Result/ResultSpecification.cpp
+        Engine/Task/TaskBuilder.cpp
+        Engine/Data/DataAdapter.cpp
+        Engine/Benchmark/BenchmarkTaskInstance.cpp
+        Engine/Data/Adapters/CopyingChunkNormalizerAdapter.cpp
+        Engine/Data/Adapters/CopyingUnifyingAdapter.cpp
+        Engine/Data/Adapters/ForwardingAdapter.cpp
+        Engine/Configuration/ConfigurationInstance.cpp)
 
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

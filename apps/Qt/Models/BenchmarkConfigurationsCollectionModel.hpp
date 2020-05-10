@@ -5,7 +5,7 @@
 #ifndef APPS_QT_MODELS_BENCHMARKCONFIGURATIONSCOLLECTIONMODEL_HPP
 #define APPS_QT_MODELS_BENCHMARKCONFIGURATIONSCOLLECTIONMODEL_HPP
 
-#include <Elpida/Engine/Configuration/BenchmarkConfiguration.hpp>
+#include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 #include "Models/Abstractions/AssociativeModel/AssociativeModel.hpp"
 
 namespace Elpida

@@ -2,7 +2,7 @@
 // Created by klapeto on 8/5/20.
 //
 
-#include "Elpida/Engine/Task/Data/DataSpecification.hpp"
+#include "Elpida/Engine/Data/DataSpecification.hpp"
 
 #include <utility>
 

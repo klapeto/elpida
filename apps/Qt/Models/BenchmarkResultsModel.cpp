@@ -3,3 +3,8 @@
 //
 
 #include "BenchmarkResultsModel.hpp"
+
+namespace Elpida
+{
+
+}

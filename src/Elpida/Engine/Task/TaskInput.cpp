@@ -3,8 +3,8 @@
 //
 
 #include "Elpida/Engine/Task/TaskInput.hpp"
-#include "Elpida/Engine/Task/Data/TaskData.hpp"
-#include "Elpida/Engine/Task/Data/PassiveTaskData.hpp"
+#include "Elpida/Engine/Data/TaskData.hpp"
+#include "Elpida/Engine/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {

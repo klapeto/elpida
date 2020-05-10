@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <string>
 #include <utility>
-#include "ConfigurationType.hpp"
+#include "Elpida/Engine/Configuration/ConfigurationType.hpp"
 
 namespace Elpida
 {
@@ -27,6 +27,13 @@ namespace Elpida
 			return _configurationSpecification;
 		}
 
+		[[nodiscard]] bool isReadOnly() const
+		{
+			return _readOnly;
+		}
+
+		[[nodiscard]] virtual ConfigurationValueBase* clone() const = 0;
+
 		template<typename T>
 		T& as()
 		{
@@ -37,12 +44,14 @@ namespace Elpida
 
 		virtual ~ConfigurationValueBase() = default;
 	protected:
-		explicit ConfigurationValueBase(const ConfigurationSpecificationBase& configurationSpecification)
-			: _configurationSpecification(configurationSpecification)
+		explicit ConfigurationValueBase(const ConfigurationSpecificationBase& configurationSpecification, bool readOnly)
+			: _configurationSpecification(configurationSpecification), _readOnly(readOnly)
 		{
 		}
 
 		const ConfigurationSpecificationBase& _configurationSpecification;
+	private:
+		bool _readOnly;
 	};
 }
 

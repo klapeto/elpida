@@ -42,7 +42,6 @@ namespace Elpida
 
 		AllocateMemory(const TaskSpecification& specification,
 			const TaskAffinity& affinity,
-			bool toBeCountedOnResults,
 			std::size_t size,
 			bool initialize = false);
 

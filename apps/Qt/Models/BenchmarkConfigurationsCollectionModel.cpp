@@ -3,6 +3,8 @@
 //
 
 #include "BenchmarkConfigurationsCollectionModel.hpp"
-namespace Elpida {
+
+namespace Elpida
+{
 
 }

@@ -42,12 +42,8 @@ namespace Elpida
 
 		void execute() override;
 
-		WriteFile(const TaskSpecification& specification,
-			const TaskAffinity& affinity,
-			std::string filePath,
-			bool toBeCountedOnResults = true);
+		WriteFile(const TaskSpecification& specification, const TaskAffinity& affinity, std::string filePath);
 		~WriteFile() override = default;
-
 	protected:
 		void prepareImpl() override;
 		TaskOutput finalizeAndGetOutputData() override;

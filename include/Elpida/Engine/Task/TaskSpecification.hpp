@@ -7,11 +7,11 @@
 
 #include <string>
 #include <Elpida/Engine/Result/ResultSpecification.hpp>
-#include "Elpida/Engine/Task/Data/DataSpecification.hpp"
-#include "Elpida/Engine/Configuration/ConfigurationSpecification.hpp"
+#include "Elpida/Engine/Data/DataSpecification.hpp"
+#include "Elpida/Engine/Configuration/Specification/ConfigurationSpecification.hpp"
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
-#include "Elpida/Engine/Configuration/ConfigurationValue.hpp"
-#include "Elpida/Engine/Configuration/TaskConfiguration.hpp"
+#include "Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp"
+#include "Elpida/Engine/Configuration/Concrete/TaskConfiguration.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 
@@ -42,16 +42,6 @@ namespace Elpida
 			return _configurationSpecifications;
 		}
 
-		[[nodiscard]] bool shouldBeCountedOnResults() const
-		{
-			return _shouldBeCountedOnResults;
-		}
-
-		[[nodiscard]] bool canBeDisabled() const
-		{
-			return _canBeDisabled;
-		}
-
 		[[nodiscard]] const std::string& getId() const
 		{
 			return _id;
@@ -67,27 +57,22 @@ namespace Elpida
 			return _exportsOutput;
 		}
 
-		[[nodiscard]] bool isMultiThreadingEnabled() const
-		{
-			return _multiThreadingEnabled;
-		}
-
-		const DataSpecification& getInputDataSpecification() const
+		[[nodiscard]] const DataSpecification& getInputDataSpecification() const
 		{
 			return _inputDataSpecification;
 		}
 
-		const DataSpecification& getOutputDataSpecification() const
+		[[nodiscard]] const DataSpecification& getOutputDataSpecification() const
 		{
 			return _outputDataSpecification;
 		}
 
-		const ResultSpecification& getResultSpecification() const
+		[[nodiscard]] const ResultSpecification& getResultSpecification() const
 		{
 			return _resultSpecification;
 		}
 
-		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const;
+		[[nodiscard]] virtual Task* createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const = 0;
 
 		virtual ~TaskSpecification();
 	private:
@@ -98,16 +83,10 @@ namespace Elpida
 		DataSpecification _outputDataSpecification;
 		ResultSpecification _resultSpecification;
 		std::vector<ConfigurationSpecificationBase*> _configurationSpecifications;
-		std::unordered_map<std::string, ConfigurationValueBase*> _fixedConfiguration;
 		bool _acceptsInput;
 		bool _exportsOutput;
-		bool _shouldBeCountedOnResults;
-		bool _multiThreadingEnabled;
-		bool _canBeDisabled;
 	protected:
 		TaskSpecification(std::string name, ResultSpecification resultSpecification);
-
-		virtual Task* createNewTaskImpl(const TaskConfiguration& configuration, const TaskAffinity& affinity) const = 0;
 
 		template<typename T>
 		ConfigurationValue<T>& getSettingAndValidate(const TaskConfiguration& configuration,
@@ -124,38 +103,16 @@ namespace Elpida
 				else
 				{
 					throw ElpidaException(_name,
-						Vu::concatenateToString("Bad configuration: the setting with name '",
+						Vu::Cs("Bad configuration: the setting with name '",
 							name, "' must had wrong type'"));
 				}
 			}
 			else
 			{
 				throw ElpidaException(_name,
-					Vu::concatenateToString("Bad configuration: a setting with name '",
+					Vu::Cs("Bad configuration: a setting with name '",
 						name, "' must be defined under benchmark settings"));
 			}
-		}
-
-		void setCanBeDisabled(bool value = true)
-		{
-			_canBeDisabled = value;
-		}
-
-		void setEnabledMultiThreading(bool value = true)
-		{
-			_multiThreadingEnabled = value;
-		}
-
-		void setToBeCountedOnResults(bool value = true)
-		{
-			_shouldBeCountedOnResults = value;
-		}
-
-		template<typename T>
-		void withFixedConfiguration(ConfigurationSpecificationBase* specification, T&& fixedValue)
-		{
-			_configurationSpecifications.push_back(specification);
-			_fixedConfiguration.emplace(specification->getName(), new ConfigurationValue<T>(*specification, fixedValue));
 		}
 
 		void withConfiguration(ConfigurationSpecificationBase* specification)
@@ -179,6 +136,8 @@ namespace Elpida
 			_exportsOutput = true;
 			_inputDataSpecification = std::move(inputDataSpecification);
 		}
+
+		friend class TaskBuilder;
 	};
 }
 

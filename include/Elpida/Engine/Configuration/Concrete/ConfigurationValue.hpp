@@ -25,13 +25,18 @@ namespace Elpida
 			return _value;
 		}
 
+		[[nodiscard]] ConfigurationValueBase* clone() const override
+		{
+			return new ConfigurationValue<T>(_configurationSpecification, (const T&)_value, isReadOnly());
+		}
+
 		void setValue(T value)
 		{
 			_value = value;
 		}
 
-		explicit ConfigurationValue(const ConfigurationSpecificationBase& specification, T value)
-			: ConfigurationValueBase(specification), _value(value)
+		explicit ConfigurationValue(const ConfigurationSpecificationBase& specification, T value, bool readOnly = false)
+			: ConfigurationValueBase(specification, readOnly), _value(value)
 		{
 
 		}

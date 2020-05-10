@@ -1,8 +1,8 @@
 #include "NumberInputView.hpp"
 #include "ui_NumberInputView.h"
 
-#include <Elpida/Engine/Configuration/ConfigurationValue.hpp>
-#include <Elpida/Engine/Configuration/ConfigurationSpecificationBase.hpp>
+#include <Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp>
+#include <Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp>
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Config.hpp>

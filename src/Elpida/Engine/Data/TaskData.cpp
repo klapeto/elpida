@@ -2,7 +2,7 @@
 // Created by klapeto on 19/4/20.
 //
 
-#include "Elpida/Engine/Configuration/ConfigurationValue.hpp"
+#include "Elpida/Engine/Data/TaskData.hpp"
 
 namespace Elpida
 {

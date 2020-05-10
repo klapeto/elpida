@@ -3,6 +3,8 @@
 //
 
 #include "ConfigurationValueViewBase.hpp"
-namespace Elpida {
+
+namespace Elpida
+{
 
 }

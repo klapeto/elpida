@@ -7,7 +7,7 @@
 
 #include <string>
 #include <utility>
-#include "ConfigurationType.hpp"
+#include "Elpida/Engine/Configuration/ConfigurationType.hpp"
 
 namespace Elpida
 {
@@ -20,14 +20,17 @@ namespace Elpida
 		{
 			return _name;
 		}
+
 		[[nodiscard]] const std::string& getDescription() const
 		{
 			return _description;
 		}
+
 		[[nodiscard]] ConfigurationType::Type getType() const
 		{
 			return _type;
 		}
+
 		[[nodiscard]] bool isRequired() const
 		{
 			return _required;

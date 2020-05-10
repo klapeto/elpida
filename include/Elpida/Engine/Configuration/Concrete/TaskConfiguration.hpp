@@ -13,6 +13,7 @@ namespace Elpida
 {
 	class ConfigurationValueBase;
 	class TaskSpecification;
+	class TaskBuilder;
 
 	/**
 	 * Configuration values for a specific Task instance
@@ -43,27 +44,29 @@ namespace Elpida
 			return *_taskSpecification;
 		}
 
-		explicit TaskConfiguration(const TaskSpecification& taskSpecification)
-			: _taskSpecification(&taskSpecification), _enabled(true), _ownsData(true)
+		const TaskBuilder& getTaskBuilder() const
+		{
+			return *_taskBuilder;
+		}
+
+		explicit TaskConfiguration(const TaskSpecification& taskSpecification, const TaskBuilder& taskBuilder)
+			: _taskSpecification(&taskSpecification), _taskBuilder(&taskBuilder), _enabled(true)
 		{
 
 		};
 
-		explicit TaskConfiguration(const TaskSpecification& taskSpecification,
-			std::unordered_map<std::string, ConfigurationValueBase*> configuration)
-			: _configuration(std::move(configuration)), _taskSpecification(&taskSpecification), _enabled(true),
-			  _ownsData(false)
-		{
-
-		}
+		TaskConfiguration(const TaskConfiguration& other);
+		TaskConfiguration& operator=(const TaskConfiguration& other);
 		TaskConfiguration(TaskConfiguration&&) = default;
 		TaskConfiguration& operator=(TaskConfiguration&&) = default;
 		~TaskConfiguration();
 	private:
 		std::unordered_map<std::string, ConfigurationValueBase*> _configuration;
 		const TaskSpecification* _taskSpecification;
+		const TaskBuilder* _taskBuilder;
 		bool _enabled;
-		bool _ownsData;
+
+		void copy(const TaskConfiguration& other);
 	};
 }
 

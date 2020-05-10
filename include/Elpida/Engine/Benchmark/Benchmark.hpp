@@ -6,26 +6,26 @@
 #define INCLUDE_ELPIDA_ENGINE_BENCHMARK_HPP
 
 #include <vector>
-#include "Elpida/Engine/Configuration/ConfigurationSpecificationGroups.hpp"
+#include "Elpida/Engine/Configuration/Specification/TaskConfigurationSpecifications.hpp"
+#include "BenchmarkTaskInstance.hpp"
+#include <string>
 
 namespace Elpida
 {
-	class Task;
 	class TaskAffinity;
-	class TaskSpecification;
 	class BenchmarkConfiguration;
 	class BenchmarkScoreCalculator;
+	class TaskBuilder;
 
 	class Benchmark
 	{
 	public:
-		[[nodiscard]] std::vector<TaskConfigurationSpecifications> getConfigurationSpecifications() const;
-		[[nodiscard]] std::vector<Task*> createNewTasks(const TaskAffinity& affinity,
+		[[nodiscard]] std::vector<BenchmarkTaskInstance> createNewTasks(const TaskAffinity& affinity,
 			const BenchmarkConfiguration& configuration) const;
 
 		[[nodiscard]] size_t getTotalTasksCount() const
 		{
-			return _taskSpecifications.size();
+			return _taskBuilders.size();
 		}
 
 		[[nodiscard]] const BenchmarkScoreCalculator& getScoreCalculator() const
@@ -43,14 +43,19 @@ namespace Elpida
 			return _id;
 		}
 
+		[[nodiscard]] const std::vector<TaskBuilder*>& getTaskBuilders() const
+		{
+			return _taskBuilders;
+		}
+
 		Benchmark(std::string name,
-			std::vector<TaskSpecification*>&& taskSpecifications,
+			std::vector<TaskBuilder*>&& taskSpecifications,
 			BenchmarkScoreCalculator* scoreCalculator);
 		Benchmark(const Benchmark&) = delete;
 		Benchmark& operator=(const Benchmark&) = delete;
 		virtual ~Benchmark();
 	protected:
-		std::vector<TaskSpecification*> _taskSpecifications;
+		std::vector<TaskBuilder*> _taskBuilders;
 		std::string _name;
 		std::string _id;
 		BenchmarkScoreCalculator* _scoreCalculator;
