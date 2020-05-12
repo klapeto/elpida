@@ -16,19 +16,18 @@ extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 	using Plugin = BenchmarksContainerPlugin<Elpida::Benchmark>;
 
 	auto plugin = new Plugin();
-	//"/media/klapeto/Αρχεία/Isos/neon-user-20200326-1117.iso"
-	//"/media/klapeto/Αρχεία/Isos/TEST.iso"
-
 
 	auto& readFile = (new TaskBuilder(*new ReadFileSpecification))
 		->shouldBeCountedOnResults()
 		.canBeMultiThreaded(false)
-		.canBeDisabled(false);
+		.canBeDisabled(false)
+		.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath, ConfigurationType::FilePath("/media/klapeto/Αρχεία/Isos/neon-user-20200326-1117.iso"));
 
 	auto& writeFile = (new TaskBuilder(*new WriteFileSpecification))
 		->shouldBeCountedOnResults()
 		.canBeMultiThreaded(false)
-		.canBeDisabled(false);
+		.canBeDisabled(false)
+		.withDefaultConfiguration(WriteFileSpecification::Settings::OutputFilePath, ConfigurationType::FilePath("/media/klapeto/Αρχεία/Isos/TEST.iso"));;
 
 	auto benchmark = new Benchmark("Test Benchmark", {
 		&readFile,

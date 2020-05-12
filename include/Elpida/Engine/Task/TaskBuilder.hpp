@@ -8,9 +8,13 @@
 #include <utility>
 #include <unordered_map>
 #include <vector>
+#include "Elpida/Config.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/Engine/Configuration/Specification/TaskConfigurationSpecifications.hpp"
 #include "Elpida/Engine/Configuration/ConfigurationInstance.hpp"
+#include "Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp"
 #include "Elpida/Engine/Data/Adapters/ForwardingAdapter.hpp"
+#include "Elpida/Engine/Task/TaskSpecification.hpp"
 
 namespace Elpida
 {
@@ -31,22 +35,23 @@ namespace Elpida
 		TaskBuilder& canBeMultiThreaded(bool canBeMultiThreaded = true);
 		TaskBuilder& shouldBeCountedOnResults(bool shouldBeCountedOnResults = true);
 
-		/**
-		 * Applies a fixed configuration for this builder. Fixed configuration becomes not configurable
-		 * and overrides the global.
-		 *
-		 * @note The configuration lifetime is passed to the builder.
-		 * @param name The name of the configuration
-		 * @param configuration The configuration value (Lifetime is passed to the builder)
-		 * @return The same TaskBuilder
-		 */
-		TaskBuilder& withFixedConfiguration(const std::string& name, ConfigurationValueBase& configuration);
-
-		TaskBuilder& withDefaultConfiguration(const std::string& name, ConfigurationValueBase& configuration);
-
-		const TaskConfiguration& getDefaultConfiguration() const
+		template<typename T>
+		TaskBuilder& withFixedConfiguration(const std::string& name, const T& value)
 		{
-			return _defaultConfiguration;
+			addPredefinedConfigurationValue(name, value, true);
+			return *this;
+		}
+
+		template<typename T>
+		TaskBuilder& withDefaultConfiguration(const std::string& name, const T& value)
+		{
+			addPredefinedConfigurationValue(name, value, false);
+			return *this;
+		}
+
+		TaskConfiguration getDefaultConfiguration() const
+		{
+			return generateDefaultConfiguration();
 		}
 
 		[[nodiscard]] const TaskSpecification& getTaskSpecification() const
@@ -78,7 +83,6 @@ namespace Elpida
 
 		explicit TaskBuilder(TaskSpecification& specification)
 			:
-			_defaultConfiguration(specification, *this),
 			_taskSpecification(&specification),
 			_dataAdapter(nullptr),
 			_shouldBeCountedOnResults(false),
@@ -87,13 +91,11 @@ namespace Elpida
 		{
 			fillConfigurationMap();
 			setNewDataAdapter(*new ForwardingAdapter());
-			generateDefaultConfiguration();
 		}
 		virtual ~TaskBuilder();
 	private:
 		std::unordered_map<std::string, ConfigurationSpecificationBase*> _configurationMap;
 		std::unordered_map<std::string, ConfigurationInstance> _predefinedConfigurationsValues;
-		TaskConfiguration _defaultConfiguration;
 		TaskSpecification* _taskSpecification;
 		DataAdapter* _dataAdapter;
 		bool _shouldBeCountedOnResults;
@@ -103,8 +105,33 @@ namespace Elpida
 		void fillConfigurationMap();
 
 		void setNewDataAdapter(DataAdapter& newDataAdapter);
-		void addPredefinedConfigurationValue(const std::string& name, ConfigurationValueBase& value, bool fixed);
-		void generateDefaultConfiguration();
+
+		TaskConfiguration generateDefaultConfiguration() const;
+
+		template<typename T>
+		void addPredefinedConfigurationValue(const std::string& name, const T& value, bool fixed)
+		{
+			auto itr = _configurationMap.find(name);
+			if (itr != _configurationMap.end())
+			{
+				auto existing = _predefinedConfigurationsValues.find(name);
+				if (existing != _predefinedConfigurationsValues.end())
+				{
+					_predefinedConfigurationsValues.erase(existing);
+				}
+				_predefinedConfigurationsValues.emplace(name,
+					ConfigurationInstance(*itr->second, new ConfigurationValue<T>(*itr->second, value, fixed), fixed));
+			}
+			else
+			{
+				throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("Setting '",
+						name,
+						"' is not valid for this Task Specification: '",
+						_taskSpecification->getName(),
+						"'"));
+			}
+		}
 	};
 }
 

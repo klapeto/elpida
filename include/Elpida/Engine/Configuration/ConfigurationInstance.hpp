@@ -28,18 +28,21 @@ namespace Elpida
 		{
 			return _fixed;
 		}
-		
+
 		explicit ConfigurationInstance(const ConfigurationSpecificationBase& configurationSpecification,
 			const ConfigurationValueBase* value, bool fixed)
 			: _configurationSpecification(&configurationSpecification), _value(value), _fixed(fixed)
 		{
 
 		}
+		ConfigurationInstance(ConfigurationInstance&& other);
+		ConfigurationInstance& operator=(ConfigurationInstance&& other);
 		virtual ~ConfigurationInstance();
 	private:
 		const ConfigurationSpecificationBase* _configurationSpecification;
 		const ConfigurationValueBase* _value;
 		bool _fixed;
+		void move(ConfigurationInstance&& other);
 	};
 }
 

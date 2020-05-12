@@ -8,13 +8,11 @@
 namespace Elpida
 {
 
-	const char* WriteFileSpecification::filePathSetting = "Output File Name";
-
 	Task* WriteFileSpecification::createNewTask(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
 		auto filepath = getSettingAndValidate<std::string>(configuration,
-			filePathSetting,
+			Settings::OutputFilePath,
 			ConfigurationType::Type::FilePath);
 		return new WriteFile(*this, std::move(affinity), filepath.getValue());
 	}
@@ -28,7 +26,7 @@ namespace Elpida
 
 		withConfiguration(new ConfigurationSpecification<ConfigurationType::FilePath>(ConfigurationType::Type::FilePath,
 			"",
-			filePathSetting,
+			Settings::OutputFilePath,
 			"The absolute file path",
 			true));
 	}

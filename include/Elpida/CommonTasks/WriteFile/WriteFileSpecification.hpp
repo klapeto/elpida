@@ -11,7 +11,11 @@ namespace Elpida {
 	class WriteFileSpecification final : public TaskSpecification
 	{
 	public:
-		static const char* filePathSetting;
+		class Settings
+		{
+		public:
+			static inline const char* OutputFilePath = "Output File Name";
+		};
 
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
 			const TaskAffinity& affinity) const override;
