@@ -7,7 +7,6 @@
 #include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
-#include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
 
 extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
@@ -35,12 +34,6 @@ extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 	}, new DefaultBenchmarkScoreCalculator());
 
 	plugin->add(benchmark);
-
-//	benchmark = new Benchmark("Test Allocate Memory", {
-//		new AllocateMemorySpecification()
-//	}, new DefaultBenchmarkScoreCalculator());
-//
-//	plugin->add(benchmark);
 
 	return plugin;
 }

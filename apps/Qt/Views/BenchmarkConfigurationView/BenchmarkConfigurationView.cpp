@@ -58,11 +58,14 @@ namespace Elpida
 			_ui->lwTasks->addItem(itm);
 			for (auto& confValuePair: taskConfPair.getAllConfigurations())
 			{
-				auto view = _configurationViewsPool.rentViewForConfiguration(*confValuePair.second);
-				view->show();
-				_rentedViews.push_back(view);
-				view->setConfiguration(confValuePair.second);
-				_containerLayout->addWidget(view);
+				if (!confValuePair.second->isReadOnly())
+				{
+					auto view = _configurationViewsPool.rentViewForConfiguration(*confValuePair.second);
+					view->show();
+					_rentedViews.push_back(view);
+					view->setConfiguration(confValuePair.second);
+					_containerLayout->addWidget(view);
+				}
 			}
 		}
 	}
