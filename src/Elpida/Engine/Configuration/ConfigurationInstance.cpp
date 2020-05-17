@@ -13,18 +13,18 @@ namespace Elpida
 		delete _value;
 	}
 
-	ConfigurationInstance::ConfigurationInstance(ConfigurationInstance&& other)
+	ConfigurationInstance::ConfigurationInstance(ConfigurationInstance&& other) noexcept
 	{
 		move(std::move(other));
 	}
 
-	ConfigurationInstance& ConfigurationInstance::operator=(ConfigurationInstance&& other)
+	ConfigurationInstance& ConfigurationInstance::operator=(ConfigurationInstance&& other) noexcept
 	{
 		move(std::move(other));
 		return *this;
 	}
 
-	void ConfigurationInstance::move(ConfigurationInstance&& other)
+	void ConfigurationInstance::move(ConfigurationInstance&& other) noexcept
 	{
 		_configurationSpecification = other._configurationSpecification;
 		other._configurationSpecification = nullptr;

@@ -8,7 +8,6 @@
 #include <Elpida/Config.hpp>
 
 #include <QComboBox>
-
 namespace Elpida
 {
 
@@ -16,7 +15,6 @@ namespace Elpida
 		: ConfigurationValueViewBase(), _ui(new Ui::NumberInputView), _configurationValue(nullptr)
 	{
 		_ui->setupUi(this);
-		_ui->dsbNumber->setMaximum(1024);
 		_ui->cbStandard->addItem("IEC");
 		_ui->cbStandard->addItem("SI");
 
@@ -49,29 +47,39 @@ namespace Elpida
 			switch (spec.getType())
 			{
 			case ConfigurationType::Type::Int:
-				_ui->dsbNumber->setDecimals(0);
-				_ui->dsbNumber->setMinimum(-99);
-				_ui->dsbNumber
-					->setValue(configurationValue->as<ConfigurationValue<ConfigurationType::Int>>().getValue());
+				assignValueToUi(configurationValue->as<ConfigurationValue<ConfigurationType::Int>>().getValue());
 				break;
 			case ConfigurationType::Type::UnsignedInt:
-				_ui->dsbNumber->setDecimals(0);
 				_ui->dsbNumber->setMinimum(0);
-				_ui->dsbNumber
-					->setValue(configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>().getValue());
+				assignValueToUi(configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>()
+					.getValue());
 				break;
 			case ConfigurationType::Type::Float:
-				_ui->dsbNumber->setMinimum(-99.9999);
-				_ui->dsbNumber
-					->setValue(configurationValue->as<ConfigurationValue<ConfigurationType::Float>>().getValue());
+				assignValueToUi(configurationValue->as<ConfigurationValue<ConfigurationType::Float>>().getValue());
 				break;
 			default:
 				throw ElpidaException(FUNCTION_NAME, "Invalid Configuration! Expected number configuration");
-				break;
 			}
 			_ui->lblPropertyName->setText(QString::fromStdString(spec.getName()));
 		}
 		_configurationValue = configurationValue;
+	}
+
+	void NumberInputView::assignValueToUi(double value) const
+	{
+		auto& scaleValues = _ui->cbStandard->currentIndex() == 0 ? Vu::ScaleValuesIEC : Vu::ScaleValuesSI;
+		double denominator = 0;
+		auto index = 0u;
+		for (; index < Vu::getArrayLength(scaleValues); ++index)
+		{
+			denominator = scaleValues[index];
+			if (value / denominator <= denominator)
+			{
+				break;
+			}
+		}
+		_ui->cbUnitScale->setCurrentIndex(index);
+		_ui->dsbNumber->setValue(value / denominator);
 	}
 
 	ConfigurationValueBase* NumberInputView::getConfiguration()
@@ -101,7 +109,6 @@ namespace Elpida
 				break;
 			default:
 				throw ElpidaException(FUNCTION_NAME, "Invalid Configuration! Expected number configuration");
-				break;
 			}
 		}
 	}
@@ -109,11 +116,11 @@ namespace Elpida
 	double NumberInputView::getValue() const
 	{
 		auto index = _ui->cbUnitScale->currentIndex();
-		if ((unsigned int)index < ((sizeof Vu::ScaleValuesSI) / (sizeof Vu::ScaleValuesSI[0])) &&
-			(unsigned int)index < ((sizeof Vu::ScaleValuesIEC) / (sizeof Vu::ScaleValuesIEC[0])))
+		auto& scaleValues = _ui->cbStandard->currentIndex() == 0 ? Vu::ScaleValuesIEC : Vu::ScaleValuesSI;;
+		auto size = Vu::getArrayLength(scaleValues);
+		if ((unsigned int)index < size)
 		{
-			auto scale = _ui->cbStandard->currentIndex() == 0 ? Vu::ScaleValuesIEC[index] : Vu::ScaleValuesSI[index];
-			return _ui->dsbNumber->value() * scale;
+			return _ui->dsbNumber->value() * scaleValues[index];;
 		}
 		else
 		{

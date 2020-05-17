@@ -35,6 +35,7 @@ namespace Elpida
 		void onScaleChanged(int state);
 		void onValueChanged(double newValue);
 
+		void assignValueToUi(double value) const;
 	};
 
 

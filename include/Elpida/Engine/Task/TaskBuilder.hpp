@@ -114,6 +114,7 @@ namespace Elpida
 			auto itr = _configurationMap.find(name);
 			if (itr != _configurationMap.end())
 			{
+				// TODO: Type checking
 				auto existing = _predefinedConfigurationsValues.find(name);
 				if (existing != _predefinedConfigurationsValues.end())
 				{

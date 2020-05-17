@@ -35,14 +35,14 @@ namespace Elpida
 		{
 
 		}
-		ConfigurationInstance(ConfigurationInstance&& other);
-		ConfigurationInstance& operator=(ConfigurationInstance&& other);
+		ConfigurationInstance(ConfigurationInstance&& other) noexcept;
+		ConfigurationInstance& operator=(ConfigurationInstance&& other) noexcept;
 		virtual ~ConfigurationInstance();
 	private:
 		const ConfigurationSpecificationBase* _configurationSpecification;
 		const ConfigurationValueBase* _value;
 		bool _fixed;
-		void move(ConfigurationInstance&& other);
+		void move(ConfigurationInstance&& other) noexcept;
 	};
 }
 
