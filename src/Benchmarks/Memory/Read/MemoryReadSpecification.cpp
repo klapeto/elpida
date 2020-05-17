@@ -8,28 +8,17 @@
 namespace Elpida
 {
 
-	MemoryReadSpecification::MemoryReadSpecification(
-		bool shouldBeCountedOnResults,
-		bool canBeDisabled,
-		bool enableMultiThreading)
+	MemoryReadSpecification::MemoryReadSpecification()
 		: TaskSpecification("Memory Read Bandwidth",
-		"Reads continuously memory regions provided to measure peak bandwidth",
-		"Memory regions to read",
-		"bytes",
-		"Memory regions to that were read",
-		"bytes",
-		"B",
-		{},
-		true,
-		true,
-		shouldBeCountedOnResults,
-		enableMultiThreading,
-		canBeDisabled)
+		ResultSpecification("Read Rate", "B", ResultSpecification::Throughput, ResultSpecification::Accumulative))
 	{
+		withDescription("Reads continuously a memory region to determine Memory Read Bandwidth");
+		withInputData(DataSpecification("Input Memory", "B",  32 * sizeof(RegisterSize),"The allocated memory region to read"));
 	}
-	Task* MemoryReadSpecification::createNewTaskImpl(const TaskConfiguration& configuration,
+
+	Task* MemoryReadSpecification::createNewTask(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
-		return new MemoryRead(*this, affinity, shouldBeCountedOnResults());
+		return new MemoryRead(*this, affinity);
 	}
 }

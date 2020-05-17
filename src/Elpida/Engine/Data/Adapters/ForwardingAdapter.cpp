@@ -8,7 +8,9 @@
 namespace Elpida
 {
 
-	TaskInput ForwardingAdapter::transformOutputToInput(const TaskOutput& output, const TaskAffinity& affinity) const
+	TaskInput ForwardingAdapter::transformOutputToInput(const TaskOutput& output,
+		const TaskAffinity& affinity,
+		const DataSpecification& inputDataSpecification) const
 	{
 		return TaskInput(output.createPassiveWrappers());
 	}

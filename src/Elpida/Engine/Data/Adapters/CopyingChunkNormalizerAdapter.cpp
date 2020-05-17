@@ -10,6 +10,7 @@
 #include "Elpida/Engine/Task/TaskOutput.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
+#include "Elpida/Engine/Data/DataSpecification.hpp"
 
 #include <cstring>
 #include <cmath>
@@ -18,7 +19,8 @@ namespace Elpida
 {
 
 	TaskInput CopyingChunkNormalizerAdapter::transformOutputToInput(const TaskOutput& output,
-		const TaskAffinity& affinity) const
+		const TaskAffinity& affinity,
+		const DataSpecification& inputDataSpecification) const
 	{
 		auto& processors = affinity.getProcessorNodes();
 		auto targetChunksCount = processors.size();
@@ -27,6 +29,12 @@ namespace Elpida
 		auto outputTotalSize = getAccumulatedSizeOfChunks(outputChunks);
 
 		size_t targetChunkSize = std::ceil(outputTotalSize / (float)targetChunksCount);
+		const auto divisibleBy = inputDataSpecification.getSizeShouldBeDivisibleBy();
+
+		while (targetChunkSize % divisibleBy != 0)
+		{
+			targetChunkSize++;
+		}
 
 		std::vector<TaskData*> targetChunksVec;
 		targetChunksVec.reserve(targetChunksCount);

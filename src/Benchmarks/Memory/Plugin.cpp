@@ -24,12 +24,12 @@
  *      Author: klapeto
  */
 
-#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
-#include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
+#include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
+#include <Elpida/Engine/Task/TaskBuilder.hpp>
 #include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
-#include "Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp"
 
 extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 {
@@ -38,22 +38,24 @@ extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 
 	auto plugin = new Plugin();
 
-	auto benchmark = new Benchmark("Memory Read Bandwidth",{
-		new AllocateMemorySpecification(true, false, true),
-		new MemoryReadSpecification(true, false,true),
-	}, new DefaultBenchmarkScoreCalculator());
+	auto& allocateMemory = (new TaskBuilder(*new AllocateMemorySpecification))
+		->shouldBeCountedOnResults(false)
+		.canBeMultiThreaded(false)
+		.canBeDisabled(false)
+		.withDefaultConfiguration(AllocateMemorySpecification::Settings::MemorySize, ConfigurationType::UnsignedInt(4096));
 
-	plugin->add(benchmark);
+	auto& memoryRead = (new TaskBuilder(*new MemoryReadSpecification))
+		->shouldBeCountedOnResults(true)
+		.canBeMultiThreaded(true)
+		.canBeDisabled(false);
 
-
-	benchmark = new Benchmark("Memory Read Latency",{
-		new AllocateMemorySpecification(true, false, false),
-		new MemoryReadLatencySpecification(true, false,false),
+	auto benchmark = new Benchmark("Memory Read Bandwidth", {
+		&allocateMemory,
+		&memoryRead,
 	}, new DefaultBenchmarkScoreCalculator());
 
 	plugin->add(benchmark);
 
 	return plugin;
 }
-
 

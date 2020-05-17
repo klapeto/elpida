@@ -1,5 +1,5 @@
 #add_subdirectory(Image)
-#add_subdirectory(Memory)
+add_subdirectory(Memory)
 add_subdirectory(Testing)
 
 if (ELPIDA_DEBUG_BUILD EQUAL 1)

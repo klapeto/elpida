@@ -30,13 +30,12 @@
 namespace Elpida
 {
 
-	MemoryRead::MemoryRead(const TaskSpecification& specification,
-		const TaskAffinity& affinity,
-		bool toBeCountedOnResults)
-		: Task(specification, affinity, toBeCountedOnResults), _taskData(nullptr), _iterations(1)
+	MemoryRead::MemoryRead(const TaskSpecification& specification, const TaskAffinity& affinity)
+		: Task(specification, affinity), _taskData(nullptr), _iterations(1)
 	{
 
 	}
+
 	void MemoryRead::prepareImpl()
 	{
 		_taskData = getInput().getTaskData().front();
@@ -51,9 +50,60 @@ namespace Elpida
 		return TaskOutput(getInput().createPassiveWrappers());
 	}
 
-	size_t MemoryRead::getActualProcessedDataSize() const
+	size_t MemoryRead::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return _taskData->getSize() * _iterations;
+		return _taskData->getSize() * _iterations;;
 	}
+
+	void MemoryRead::execute()
+	{
+		volatile auto* ptr = (volatile RegisterSize*)_taskData->getData();
+		volatile RegisterSize* const start = ptr;
+		volatile const RegisterSize* const end = (RegisterSize*)((RegisterSize)start + _taskData->getSize());
+		const auto iterations = _iterations;
+		auto x = RegisterSize();
+		for (auto i = 0ul; i < iterations; ++i)
+		{
+			ptr = start;
+			while (ptr < end)
+			{
+				x = *ptr;
+				x = *(ptr + 1);
+				x = *(ptr + 2);
+				x = *(ptr + 3);
+				x = *(ptr + 4);
+				x = *(ptr + 5);
+				x = *(ptr + 6);
+				x = *(ptr + 7);
+				x = *(ptr + 8);
+				x = *(ptr + 9);
+				x = *(ptr + 10);
+				x = *(ptr + 11);
+				x = *(ptr + 12);
+				x = *(ptr + 13);
+				x = *(ptr + 14);
+				x = *(ptr + 15);
+				x = *(ptr + 16);
+				x = *(ptr + 17);
+				x = *(ptr + 18);
+				x = *(ptr + 19);
+				x = *(ptr + 20);
+				x = *(ptr + 21);
+				x = *(ptr + 22);
+				x = *(ptr + 23);
+				x = *(ptr + 24);
+				x = *(ptr + 25);
+				x = *(ptr + 26);
+				x = *(ptr + 27);
+				x = *(ptr + 28);
+				x = *(ptr + 29);
+				x = *(ptr + 30);
+				x = *(ptr + 31);
+				ptr += 32;
+			}
+		}
+		auto dummy = x;
+	}
+
 } /* namespace Elpida */
 

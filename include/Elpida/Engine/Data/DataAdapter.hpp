@@ -11,11 +11,14 @@ namespace Elpida
 {
 	class TaskOutput;
 	class TaskAffinity;
+	class DataSpecification;
 
 	class DataAdapter
 	{
 	public:
-		[[nodiscard]] virtual TaskInput transformOutputToInput(const TaskOutput& output, const TaskAffinity& affinity) const = 0;
+		[[nodiscard]] virtual TaskInput transformOutputToInput(const TaskOutput& output,
+			const TaskAffinity& affinity,
+			const DataSpecification& inputDataSpecification) const = 0;
 		virtual ~DataAdapter() = default;
 	protected:
 		static size_t getAccumulatedSizeOfChunks(const std::vector<TaskData*>& outputChunks);

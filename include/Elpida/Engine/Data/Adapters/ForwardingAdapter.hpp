@@ -13,7 +13,8 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]] TaskInput transformOutputToInput(const TaskOutput& output,
-			const TaskAffinity& affinity) const override;
+			const TaskAffinity& affinity,
+			const DataSpecification& inputDataSpecification) const override;
 
 		ForwardingAdapter()= default;
 		~ForwardingAdapter() override = default;

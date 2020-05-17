@@ -16,17 +16,25 @@ namespace Elpida
 		{
 			return _name;
 		}
+
 		[[nodiscard]] const std::string& getDescription() const
 		{
 			return _description;
 		}
+
 		[[nodiscard]] const std::string& getUnit() const
 		{
 			return _unit;
 		}
 
+		[[nodiscard]] size_t getSizeShouldBeDivisibleBy() const
+		{
+			return _sizeShouldBeDivisibleBy;
+		}
+
 		DataSpecification() = default;
 		DataSpecification(std::string name, std::string unit, std::string description = std::string());
+		DataSpecification(std::string name, std::string unit, size_t sizeShouldBeDivisibleBy, std::string description = std::string());
 		DataSpecification(DataSpecification&&) = default;
 		DataSpecification(const DataSpecification&) = default;
 		DataSpecification& operator=(DataSpecification&&) = default;
@@ -36,6 +44,7 @@ namespace Elpida
 		std::string _name;
 		std::string _description;
 		std::string _unit;
+		size_t _sizeShouldBeDivisibleBy;
 	};
 }
 

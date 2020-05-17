@@ -42,7 +42,7 @@ namespace Elpida
 			auto& previousTask = previousTaskInstance->getTask();
 			auto& previousOutput = previousTask.getOutput();
 			nextTask.setInput(nextTaskInstance->getTaskBuilder().getDataAdapter()
-				.transformOutputToInput(previousOutput, affinity));
+				.transformOutputToInput(previousOutput, affinity, nextSpec.getInputDataSpecification()));
 		}
 	}
 
