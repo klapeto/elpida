@@ -19,7 +19,7 @@ namespace Elpida
 			return _duration;
 		}
 
-		[[nodiscard]] size_t getResultValue() const
+		[[nodiscard]] double getResultValue() const
 		{
 			return _resultValue;
 		}
@@ -30,7 +30,7 @@ namespace Elpida
 			return ((double)Division::den * _duration.count()) / (double)Division::num;
 		}
 
-		explicit TaskMetrics(const Duration& duration, size_t resultValue);
+		explicit TaskMetrics(const Duration& duration, double resultValue);
 		TaskMetrics(TaskMetrics&&) = default;
 		TaskMetrics(const TaskMetrics&) = default;
 		TaskMetrics& operator=(TaskMetrics&&) = default;
@@ -38,7 +38,7 @@ namespace Elpida
 		~TaskMetrics() = default;
 	private:
 		Duration _duration;
-		size_t _resultValue;
+		double _resultValue;
 	};
 
 }

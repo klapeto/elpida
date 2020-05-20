@@ -5,8 +5,8 @@ project(MemoryBenchmarks VERSION 0.0.1
 set(MEMORY_BENCHMARKS_SOURCES
         Plugin.cpp
         WorkingSetSizes.cpp
-        #Latency/MemoryReadLatency.cpp
-        #Latency/MemoryReadLatencySpecification.cpp
+        Latency/MemoryReadLatency.cpp
+        Latency/MemoryReadLatencySpecification.cpp
         Read/MemoryRead.cpp
         Read/MemoryReadSpecification.cpp)
 

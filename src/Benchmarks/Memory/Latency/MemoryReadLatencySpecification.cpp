@@ -8,28 +8,20 @@
 namespace Elpida
 {
 
-	MemoryReadLatencySpecification::MemoryReadLatencySpecification(bool shouldBeCountedOnResults,
-		bool canBeDisabled,
-		bool enableMultiThreading)
+	MemoryReadLatencySpecification::MemoryReadLatencySpecification()
 		: TaskSpecification("Memory Read Latency",
-		"Reads random positions of continuous memory to measure worst read latency",
-		"Memory regions to read",
-		"bytes",
-		"Memory regions to that were read",
-		"bytes",
-		"B",
-		{},
-		true,
-		true,
-		shouldBeCountedOnResults,
-		enableMultiThreading,
-		canBeDisabled)
+		ResultSpecification("Access time", "s", ResultSpecification::Raw, ResultSpecification::Average))
 	{
-
+		withDescription("Reads continuously a memory region to determine memory read latency");
+		withInputData(DataSpecification("Input Memory",
+			"B",
+			32 * sizeof(RegisterSize),
+			"The allocated memory region to read"));
 	}
-	Task* MemoryReadLatencySpecification::createNewTaskImpl(const TaskConfiguration& configuration,
+
+	Task* MemoryReadLatencySpecification::createNewTask(const TaskConfiguration& configuration,
 		const TaskAffinity& affinity) const
 	{
-		return new MemoryReadLatency(*this, affinity, false);
+		return new MemoryReadLatency(*this, affinity);
 	}
 }

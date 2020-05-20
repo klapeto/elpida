@@ -26,11 +26,19 @@
 
 #include "Benchmarks/Memory/Latency/MemoryReadLatency.hpp"
 #include <Elpida/ElpidaException.hpp>
+#include <Elpida/Utilities/Duration.hpp>
 #include <utility>
 #include <ctime>
 
 namespace Elpida
 {
+
+	MemoryReadLatency::MemoryReadLatency(const TaskSpecification& specification,
+		TaskAffinity affinity)
+		: Task(specification, std::move(affinity)), _taskData(nullptr), _iterations(1)
+	{
+
+	}
 
 	void MemoryReadLatency::prepareImpl()
 	{
@@ -48,24 +56,66 @@ namespace Elpida
 		{
 			ptr[i] = std::rand() / ((RAND_MAX + 1u) / (size - 1));
 		}
-
-	}
-	MemoryReadLatency::MemoryReadLatency(const TaskSpecification& specification,
-		TaskAffinity affinity,
-		bool toBeCountedOnResults)
-		: Task(specification, std::move(affinity), toBeCountedOnResults), _taskData(nullptr), _iterations(1)
-	{
-
-	}
-
-	size_t MemoryReadLatency::getActualProcessedDataSize() const
-	{
-		return 0;
 	}
 
 	TaskOutput MemoryReadLatency::finalizeAndGetOutputData()
 	{
 		return TaskOutput();
+	}
+
+	void MemoryReadLatency::execute()
+	{
+		volatile auto* ptr = (volatile RegisterSize*)_taskData->getData();
+		volatile RegisterSize* start = ptr;
+		volatile auto* end = (volatile RegisterSize*)((unsigned char*)ptr + _taskData->getSize());
+		const auto iterations = _iterations;
+		auto x = RegisterSize();
+		for (auto i = 0ul; i < iterations; ++i)
+		{
+			ptr = start;
+			while (ptr < end)
+			{
+				x = ptr[*ptr];
+				x = ptr[*(ptr + 1)];
+				x = ptr[*(ptr + 2)];
+				x = ptr[*(ptr + 3)];
+				x = ptr[*(ptr + 4)];
+				x = ptr[*(ptr + 5)];
+				x = ptr[*(ptr + 6)];
+				x = ptr[*(ptr + 7)];
+				x = ptr[*(ptr + 8)];
+				x = ptr[*(ptr + 9)];
+				x = ptr[*(ptr + 10)];
+				x = ptr[*(ptr + 11)];
+				x = ptr[*(ptr + 12)];
+				x = ptr[*(ptr + 13)];
+				x = ptr[*(ptr + 14)];
+				x = ptr[*(ptr + 15)];
+				x = ptr[*(ptr + 16)];
+				x = ptr[*(ptr + 17)];
+				x = ptr[*(ptr + 18)];
+				x = ptr[*(ptr + 19)];
+				x = ptr[*(ptr + 20)];
+				x = ptr[*(ptr + 21)];
+				x = ptr[*(ptr + 22)];
+				x = ptr[*(ptr + 23)];
+				x = ptr[*(ptr + 24)];
+				x = ptr[*(ptr + 25)];
+				x = ptr[*(ptr + 26)];
+				x = ptr[*(ptr + 27)];
+				x = ptr[*(ptr + 28)];
+				x = ptr[*(ptr + 29)];
+				x = ptr[*(ptr + 30)];
+				x = ptr[*(ptr + 31)];
+				ptr += 32;
+			}
+		}
+		auto dummy = x;
+	}
+
+	double MemoryReadLatency::calculateTaskResultValue(const Duration& taskElapsedTime) const
+	{
+		return taskElapsedTime.count() / ((double)_iterations * ((double)_taskData->getSize() / sizeof(RegisterSize)));
 	}
 
 } /* namespace Elpida */

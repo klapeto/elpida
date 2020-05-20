@@ -57,7 +57,7 @@ namespace Elpida
 
 		virtual void prepareImpl() = 0;
 		virtual TaskOutput finalizeAndGetOutputData() = 0;
-		[[nodiscard]] virtual size_t calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
+		[[nodiscard]] virtual double calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
 	private:
 		TaskOutput _outputData;
 		TaskInput _inputData;

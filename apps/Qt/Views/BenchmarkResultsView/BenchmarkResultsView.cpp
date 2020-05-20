@@ -35,13 +35,12 @@ namespace Elpida
 		}
 		else
 		{
-			return std::to_string(metrics.getResultValue()) + resultSpec.getUnit();
+			return Vu::Cs(Vu::getValueScaleStringSI(metrics.getResultValue()), resultSpec.getUnit());
 		}
 	}
 
 	void BenchmarkResultsView::onItemAdded(const BenchmarkResult& item)
 	{
-
 		auto parent = new QTreeWidgetItem();
 		parent->setText(0, QString::fromStdString(item.getBenchmark().getName()));
 		for (const auto& result: item.getTaskResults())

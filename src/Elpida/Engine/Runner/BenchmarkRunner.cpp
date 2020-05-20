@@ -120,7 +120,7 @@ namespace Elpida
 
 		task.finalize();
 
-		return task.calculateTaskResult(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start));
+		return task.calculateTaskResult(end - start);
 	}
 
 	void BenchmarkRunner::raiseBenchmarkStarted(const Benchmark& benchmark)

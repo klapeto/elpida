@@ -70,7 +70,7 @@ namespace Elpida
 		return TaskOutput(new PassiveTaskData( _memory.getPointer(), _size ));
 	}
 
-	size_t AllocateMemory::calculateTaskResultValue(const Duration& taskElapsedTime) const
+	double AllocateMemory::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
 		return _size;
 	}

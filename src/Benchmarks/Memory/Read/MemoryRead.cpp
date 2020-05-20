@@ -50,16 +50,16 @@ namespace Elpida
 		return TaskOutput(getInput().createPassiveWrappers());
 	}
 
-	size_t MemoryRead::calculateTaskResultValue(const Duration& taskElapsedTime) const
+	double MemoryRead::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return _taskData->getSize() * _iterations;;
+		return (double)_taskData->getSize() * (double)_iterations;;
 	}
 
 	void MemoryRead::execute()
 	{
 		volatile auto* ptr = (volatile RegisterSize*)_taskData->getData();
 		volatile RegisterSize* const start = ptr;
-		volatile const RegisterSize* const end = (RegisterSize*)((RegisterSize)start + _taskData->getSize());
+		volatile const RegisterSize* const end = (RegisterSize*)((unsigned char*)start + _taskData->getSize());
 		const auto iterations = _iterations;
 		auto x = RegisterSize();
 		for (auto i = 0ul; i < iterations; ++i)

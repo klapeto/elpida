@@ -12,12 +12,11 @@ namespace Elpida {
 	class MemoryReadLatencySpecification: public TaskSpecification
 	{
 	public:
-		MemoryReadLatencySpecification(bool shouldBeCountedOnResults, bool canBeDisabled, bool enableMultiThreading);
-		~MemoryReadLatencySpecification() override = default;
 
-	protected:
-		[[nodiscard]] Task* createNewTaskImpl(const TaskConfiguration& configuration,
-			const TaskAffinity& affinity) const override;
+		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const override;
+
+		MemoryReadLatencySpecification();
+		~MemoryReadLatencySpecification() override = default;
 	};
 }
 

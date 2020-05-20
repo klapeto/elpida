@@ -52,7 +52,7 @@ namespace Elpida
 
 		void prepareImpl() override;
 		TaskOutput finalizeAndGetOutputData() override;
-		[[nodiscard]] size_t calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	};
 
 } /* namespace Elpida */

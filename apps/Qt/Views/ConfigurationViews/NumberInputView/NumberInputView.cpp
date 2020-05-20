@@ -65,12 +65,17 @@ namespace Elpida
 		_configurationValue = configurationValue;
 	}
 
-	void NumberInputView::assignValueToUi(double value) const
+	struct ScaleResults
 	{
-		auto& scaleValues = _ui->cbStandard->currentIndex() == 0 ? Vu::ScaleValuesIEC : Vu::ScaleValuesSI;
-		double denominator = 0;
+		size_t index;
+		double denominator;
+	};
+
+	static ScaleResults getResult(double value, const double scaleValues[], size_t arraySize)
+	{
 		auto index = 0u;
-		for (; index < Vu::getArrayLength(scaleValues); ++index)
+		double denominator = 0;
+		for (; index < arraySize; ++index)
 		{
 			denominator = scaleValues[index];
 			if (value / denominator <= denominator)
@@ -78,8 +83,20 @@ namespace Elpida
 				break;
 			}
 		}
-		_ui->cbUnitScale->setCurrentIndex(index);
-		_ui->dsbNumber->setValue(value / denominator);
+		return { index, denominator };
+	}
+
+	void NumberInputView::assignValueToUi(double value) const
+	{
+		auto results =
+			_ui->cbStandard->currentIndex() == 0 ?
+			getResult(value, Vu::ScaleValuesIEC, Vu::getArrayLength(Vu::ScaleValuesIEC))
+												 : getResult(value,
+				Vu::ScaleValuesSI,
+				Vu::getArrayLength(Vu::ScaleValuesSI));
+
+		_ui->cbUnitScale->setCurrentIndex(results.index);
+		_ui->dsbNumber->setValue(value / results.denominator);
 	}
 
 	ConfigurationValueBase* NumberInputView::getConfiguration()
@@ -116,8 +133,15 @@ namespace Elpida
 	double NumberInputView::getValue() const
 	{
 		auto index = _ui->cbUnitScale->currentIndex();
-		auto& scaleValues = _ui->cbStandard->currentIndex() == 0 ? Vu::ScaleValuesIEC : Vu::ScaleValuesSI;;
-		auto size = Vu::getArrayLength(scaleValues);
+		return _ui->cbStandard->currentIndex() == 0 ?
+			   getScaledValue(index, Vu::ScaleValuesIEC, Vu::getArrayLength(Vu::ScaleValuesIEC))
+													: getScaledValue(index,
+				Vu::ScaleValuesSI,
+				Vu::getArrayLength(Vu::ScaleValuesSI));
+	}
+
+	double NumberInputView::getScaledValue(int index, const double scaleValues[], size_t size) const
+	{
 		if ((unsigned int)index < size)
 		{
 			return _ui->dsbNumber->value() * scaleValues[index];;

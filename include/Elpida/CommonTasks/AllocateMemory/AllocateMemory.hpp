@@ -50,7 +50,7 @@ namespace Elpida
 		void prepareImpl() override;
 		TaskOutput finalizeAndGetOutputData() override;
 
-		[[nodiscard]] size_t calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		NumaMemory _memory;
 		std::size_t _size;

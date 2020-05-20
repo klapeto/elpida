@@ -27,75 +27,29 @@
 #include "Elpida/Utilities/ValueUtilities.hpp"
 
 #include <iomanip>
-#include <ratio>
 #include <sstream>
 
 namespace Elpida
 {
-//	const char* ValueUtilities::PrefixesSI[] = {
-//		"",
-//		"K",
-//		"M",
-//		"G",
-//		"T",
-//		"P",
-//		"E",
-//		"Z",
-//		"Y"
-//	};
-//
-//	const char* ValueUtilities::PrefixesIEC[] = {
-//		"",
-//		"Ki",
-//		"Mi",
-//		"Gi",
-//		"Ti",
-//		"Pi",
-//		"Ei",
-//		"Zi",
-//		"Yi"
-//	};
-//
-//	const double ValueUtilities::ScaleValuesSI[] = {
-//		1.0,
-//		1000.0,
-//		1000.0 * 1000.0,
-//		1000.0 * 1000.0 * 1000.0,
-//		1000.0 * 1000.0 * 1000.0 * 1000.0,
-//		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-//		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-//		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-//		1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0
-//	};
-//
-//	const double ValueUtilities::ScaleValuesIEC[] = {
-//		1.0,
-//		1024.0,
-//		1024.0 * 1024.0,
-//		1024.0 * 1024.0 * 1024.0,
-//		1024.0 * 1024.0 * 1024.0 * 1024.0,
-//		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-//		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-//		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-//		1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
-//	};
 
-	std::string ValueUtilities::getValueScaleStringImpl(double value, double denominator, const char* prefixes[], size_t arraySize)
+	std::string ValueUtilities::getValueScaleStringImpl(double value,
+		const double denominators[],
+		const char* prefixes[],
+		size_t arraySize,
+		int decimals)
 	{
 		std::ostringstream returnString;
-		double accumulator = denominator;
-		size_t i = 0;
-		while (i < arraySize)
+		size_t i = arraySize - 1;
+		while (i > 0)
 		{
-			if (value < accumulator)
+			if (value >= denominators[i])
 			{
-				returnString << std::fixed << std::setprecision(2) << value / accumulator * denominator << " "
-							 << prefixes[i];
-				return returnString.str();
+				break;
 			}
-
-			i++;
-			accumulator *= denominator;
+			i--;
 		}
+		returnString << std::fixed << std::setprecision(decimals) << value / denominators[i] << " "
+					 << prefixes[i];
+		return returnString.str();
 	}
 } /* namespace Elpida */

@@ -41,6 +41,10 @@ namespace Elpida
 
 		enum class SIPrefixes
 		{
+			Pico,
+			Nano,
+			Micro,
+			Milli,
 			None,
 			Kilo,
 			Mega,
@@ -66,6 +70,10 @@ namespace Elpida
 		};
 
 		static inline const char* PrefixesSI[(int)SIPrefixes::Yotta + 1] = {
+			"p",
+			"n",
+			"μ",
+			"m",
 			"",
 			"K",
 			"M",
@@ -90,6 +98,10 @@ namespace Elpida
 		};
 
 		static inline const double ScaleValuesSI[] = {
+			1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0,
+			1.0 / 1000.0 / 1000.0 / 1000.0,
+			1.0 / 1000.0 / 1000.0,
+			1.0 / 1000.0,
 			1.0,
 			1000.0,
 			1000.0 * 1000.0,
@@ -122,14 +134,14 @@ namespace Elpida
 			return N;
 		}
 
-		static std::string getValueScaleStringSI(double value)
+		static std::string getValueScaleStringSI(double value, int decimals = 2)
 		{
-			return getValueScaleStringImpl(value, SIDenominator, PrefixesSI, getArrayLength(PrefixesSI));
+			return getValueScaleStringImpl(value, ScaleValuesSI, PrefixesSI, getArrayLength(PrefixesSI), decimals);
 		}
 
-		static std::string getValueScaleStringIEC(double value)
+		static std::string getValueScaleStringIEC(double value, int decimals = 2)
 		{
-			return getValueScaleStringImpl(value, IECDenominator, PrefixesIEC, getArrayLength(PrefixesIEC));
+			return getValueScaleStringImpl(value, ScaleValuesIEC, PrefixesIEC, getArrayLength(PrefixesIEC), decimals);
 		}
 
 		template<typename ... TArgs>
@@ -148,9 +160,10 @@ namespace Elpida
 
 	private:
 		static std::string getValueScaleStringImpl(double value,
-			double denominator,
+			const double denominators[],
 			const char* prefixes[],
-			size_t arraySize);
+			size_t arraySize,
+			int decimals);
 
 		template<typename T, typename ... TRest>
 		inline static void concatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)

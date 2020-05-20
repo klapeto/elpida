@@ -82,9 +82,9 @@ namespace Elpida
 		return TaskOutput(std::move(accumulatedOutputs));
 	}
 
-	size_t MultiThreadTask::calculateTaskResultValue(const Duration& taskElapsedTime) const
+	double MultiThreadTask::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		size_t accumulator = 0;
+		double accumulator = 0;
 		for (auto& thread: _createdThreads)
 		{
 			accumulator += thread.getTaskToRun().calculateTaskResultValue(taskElapsedTime);

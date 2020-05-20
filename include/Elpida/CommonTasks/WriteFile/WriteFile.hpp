@@ -47,7 +47,7 @@ namespace Elpida
 	protected:
 		void prepareImpl() override;
 		TaskOutput finalizeAndGetOutputData() override;
-		size_t calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::string _outputPath;
 	};

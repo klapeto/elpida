@@ -7,7 +7,7 @@
 namespace Elpida
 {
 
-	TaskMetrics::TaskMetrics(const Elpida::Duration& duration, size_t resultValue)
+	TaskMetrics::TaskMetrics(const Elpida::Duration& duration, double resultValue)
 		: _duration(duration), _resultValue(resultValue)
 	{
 

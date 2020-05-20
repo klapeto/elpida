@@ -41,61 +41,7 @@ namespace Elpida
 	{
 	public:
 
-		void execute() override
-		{
-			auto ptr = (volatile RegisterSize*)_taskData->getData();
-			auto start = ptr;
-			auto end = (RegisterSize*)((RegisterSize)start + _taskData->getSize());
-			auto iterations = _iterations;
-			auto x = RegisterSize();
-
-			for (auto i = 0ul; i < iterations; ++i)
-			{
-				ptr = start;
-				while (ptr < end)
-				{
-					x = ptr[*ptr];
-					x = ptr[*(ptr + 1)];
-					x = ptr[*(ptr + 2)];
-					x = ptr[*(ptr + 3)];
-					x = ptr[*(ptr + 4)];
-					x = ptr[*(ptr + 5)];
-					x = ptr[*(ptr + 6)];
-					x = ptr[*(ptr + 7)];
-					x = ptr[*(ptr + 8)];
-					x = ptr[*(ptr + 9)];
-					x = ptr[*(ptr + 10)];
-					x = ptr[*(ptr + 11)];
-					x = ptr[*(ptr + 12)];
-					x = ptr[*(ptr + 13)];
-					x = ptr[*(ptr + 14)];
-					x = ptr[*(ptr + 15)];
-					x = ptr[*(ptr + 16)];
-					x = ptr[*(ptr + 17)];
-					x = ptr[*(ptr + 18)];
-					x = ptr[*(ptr + 19)];
-					x = ptr[*(ptr + 20)];
-					x = ptr[*(ptr + 21)];
-					x = ptr[*(ptr + 22)];
-					x = ptr[*(ptr + 23)];
-					x = ptr[*(ptr + 24)];
-					x = ptr[*(ptr + 25)];
-					x = ptr[*(ptr + 26)];
-					x = ptr[*(ptr + 27)];
-					x = ptr[*(ptr + 28)];
-					x = ptr[*(ptr + 29)];
-					x = ptr[*(ptr + 30)];
-					x = ptr[*(ptr + 31)];
-					ptr += 32;
-
-				}
-
-			}
-			auto dummy = x;
-		}
-
-		[[nodiscard]] size_t getActualProcessedDataSize() const override;
-	public:
+		void execute() override;
 
 //		void calculateResults(const TaskMetrics& metrics) override
 //		{
@@ -110,14 +56,13 @@ namespace Elpida
 //		}
 
 		explicit MemoryReadLatency(const TaskSpecification& specification,
-			TaskAffinity affinity,
-			bool toBeCountedOnResults);
+			TaskAffinity affinity);
 
 		~MemoryReadLatency() override = default;
-
 	protected:
-		TaskOutput finalizeAndGetOutputData() override;
 		void prepareImpl() override;
+		TaskOutput finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		TaskData* _taskData;
 		unsigned long _iterations;

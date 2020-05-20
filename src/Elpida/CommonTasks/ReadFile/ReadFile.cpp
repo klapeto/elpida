@@ -59,8 +59,8 @@ namespace Elpida
 		return TaskOutput(new PassiveTaskData(_file.getData(), _file.getSize()));;
 	}
 
-	size_t ReadFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
+	double ReadFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return _file.getSize();;
+		return _file.getSize();
 	}
 } /* namespace Elpida */
