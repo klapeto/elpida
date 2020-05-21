@@ -32,6 +32,8 @@
 #include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
 #include "Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp"
 
+#include "Benchmarks/Memory/WorkingSetSizes.hpp"
+
 Elpida::Benchmark* createMemoryReadBandwidth();
 Elpida::Benchmark* createMemoryReadLatency();
 
@@ -50,21 +52,26 @@ extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 
 Elpida::Benchmark* createMemoryReadLatency()
 {
-	auto& allocateMemory = (new Elpida::TaskBuilder(*new Elpida::AllocateMemorySpecification))
-		->shouldBeCountedOnResults(false)
-		.canBeMultiThreaded(false)
-		.canBeDisabled(false)
-		.withFixedConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize, Elpida::ConfigurationType::UnsignedInt(8*1024*1024));
+	std::vector<Elpida::TaskBuilder*> tasksBuilders;
 
-	auto& memoryLatency = (new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
-		->shouldBeCountedOnResults(true)
-		.canBeMultiThreaded(false)
-		.canBeDisabled(false);
+	for (auto size : Elpida::WorkingSetSizes::Values)
+	{
+		auto& allocateMemory = (new Elpida::TaskBuilder(*new Elpida::AllocateMemorySpecification))
+			->shouldBeCountedOnResults(false)
+			.canBeMultiThreaded(false)
+			.canBeDisabled(false)
+			.withFixedConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize, Elpida::ConfigurationType::UnsignedInt(size));
 
-	auto benchmark = new Elpida::Benchmark("Memory Read Latency", {
-		&allocateMemory,
-		&memoryLatency,
-	}, new Elpida::DefaultBenchmarkScoreCalculator());
+		auto& memoryLatency = (new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
+			->shouldBeCountedOnResults(true)
+			.canBeMultiThreaded(false)
+			.canBeDisabled(false);
+
+		tasksBuilders.push_back(&allocateMemory);
+		tasksBuilders.push_back(&memoryLatency);
+	}
+
+	auto benchmark = new Elpida::Benchmark("Memory Read Latency", std::move(tasksBuilders), new Elpida::DefaultBenchmarkScoreCalculator());
 	return benchmark;
 }
 

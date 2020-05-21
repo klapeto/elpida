@@ -43,18 +43,6 @@ namespace Elpida
 
 		void execute() override;
 
-//		void calculateResults(const TaskMetrics& metrics) override
-//		{
-//			auto size = _iterations * _memory.getSize();
-//			auto time = metrics.getDurationSubdivision<TaskMetrics::NanoSecond>();
-//			_runResult.setOriginalValue((double)time / (double)size);
-//			_runResult.setCustom(true);
-//			_runResult.setMultiplier(1000);
-//			_runResult.setTestedDataValue(_memory.getSize());
-//			_runResult.setValueName("ns");
-//			addResult(_runResult);
-//		}
-
 		explicit MemoryReadLatency(const TaskSpecification& specification,
 			TaskAffinity affinity);
 
@@ -67,7 +55,7 @@ namespace Elpida
 		TaskData* _taskData;
 		unsigned long _iterations;
 		static constexpr inline double _iterationConstant =
-			100000000000; // rough estimate, to be passed on construction later once we find the latency
+			1000000000; // rough estimate, to be passed on construction later once we find the latency
 	};
 
 } /* namespace Elpida */

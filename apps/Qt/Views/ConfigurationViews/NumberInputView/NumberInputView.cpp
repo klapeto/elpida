@@ -95,6 +95,7 @@ namespace Elpida
 				Vu::ScaleValuesSI,
 				Vu::getArrayLength(Vu::ScaleValuesSI));
 
+		_ui->dsbNumber->setMaximum(_ui->cbStandard->currentIndex() == 0 ? 1023 : 1000);
 		_ui->cbUnitScale->setCurrentIndex(results.index);
 		_ui->dsbNumber->setValue(value / results.denominator);
 	}
