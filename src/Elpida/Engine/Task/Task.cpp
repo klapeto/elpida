@@ -48,9 +48,20 @@ namespace Elpida
 		_outputData = finalizeAndGetOutputData();
 	}
 
+	static size_t getInputDataSize(const TaskInput& input)
+	{
+		auto accumulator = 0ul;
+		for (const auto& data: input.getTaskData())
+		{
+			accumulator += data->getSize();
+		}
+		return accumulator;
+	}
+
 	TaskResult Task::calculateTaskResult(const Duration& taskElapsedTime) const
 	{
-		return TaskResult(_specification, TaskMetrics(taskElapsedTime, calculateTaskResultValue(taskElapsedTime)));
+		return TaskResult(_specification,
+			TaskMetrics(taskElapsedTime, calculateTaskResultValue(taskElapsedTime), getInputDataSize(_inputData)));
 	}
 
 }

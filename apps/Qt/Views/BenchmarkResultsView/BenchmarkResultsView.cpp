@@ -47,7 +47,17 @@ namespace Elpida
 		{
 			auto child = new QTreeWidgetItem();
 
-			child->setText(0, QString::fromStdString(result.getTaskSpecification().getName()));
+			auto name = result.getTaskSpecification().getName();
+			if (result.getTaskSpecification().acceptsInput())
+			{
+				name = Vu::Cs(name,
+					" [",
+					Vu::getValueScaleStringSI(result.getMetrics().getInputDataSize()),
+					result.getTaskSpecification().getInputDataSpecification().getUnit(),
+					"]");
+			}
+
+			child->setText(0, QString::fromStdString(name));
 			child->setText(1,
 				QString::fromStdString(getResultString(result)));
 			parent->addChild(child);

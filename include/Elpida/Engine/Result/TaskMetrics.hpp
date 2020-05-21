@@ -24,13 +24,18 @@ namespace Elpida
 			return _resultValue;
 		}
 
+		[[nodiscard]] size_t getInputDataSize() const
+		{
+			return _inputDataSize;
+		}
+
 		template<typename Division>
 		[[nodiscard]] double getDurationSubdivision() const
 		{
 			return ((double)Division::den * _duration.count()) / (double)Division::num;
 		}
 
-		explicit TaskMetrics(const Duration& duration, double resultValue);
+		explicit TaskMetrics(const Elpida::Duration& duration, double resultValue, size_t inputDataSize);
 		TaskMetrics(TaskMetrics&&) = default;
 		TaskMetrics(const TaskMetrics&) = default;
 		TaskMetrics& operator=(TaskMetrics&&) = default;
@@ -39,6 +44,7 @@ namespace Elpida
 	private:
 		Duration _duration;
 		double _resultValue;
+		size_t _inputDataSize;
 	};
 
 }
