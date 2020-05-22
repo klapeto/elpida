@@ -12,7 +12,8 @@ namespace Elpida
 {
 
 	NumberInputView::NumberInputView()
-		: ConfigurationValueViewBase(), _ui(new Ui::NumberInputView), _configurationValue(nullptr)
+		: ConfigurationValueViewBase(), _ui(new Ui::NumberInputView), _configurationValue(nullptr), _currentRawValue(0.0),
+		  _updating(false)
 	{
 		_ui->setupUi(this);
 		_ui->cbStandard->addItem("IEC");
@@ -47,15 +48,15 @@ namespace Elpida
 			switch (spec.getType())
 			{
 			case ConfigurationType::Type::Int:
-				assignValueToUi(configurationValue->as<ConfigurationValue<ConfigurationType::Int>>().getValue());
+				setValue(configurationValue->as<ConfigurationValue<ConfigurationType::Int>>().getValue());
 				break;
 			case ConfigurationType::Type::UnsignedInt:
 				_ui->dsbNumber->setMinimum(0);
-				assignValueToUi(configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>()
+				setValue(configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>()
 					.getValue());
 				break;
 			case ConfigurationType::Type::Float:
-				assignValueToUi(configurationValue->as<ConfigurationValue<ConfigurationType::Float>>().getValue());
+				setValue(configurationValue->as<ConfigurationValue<ConfigurationType::Float>>().getValue());
 				break;
 			default:
 				throw ElpidaException(FUNCTION_NAME, "Invalid Configuration! Expected number configuration");
@@ -71,33 +72,35 @@ namespace Elpida
 		double denominator;
 	};
 
-	static ScaleResults getResult(double value, const double scaleValues[], size_t arraySize)
+	static ScaleResults getScaledResult(double value, const double* scaleValues, size_t arraySize)
 	{
-		auto index = 0u;
-		double denominator = 0;
-		for (; index < arraySize; ++index)
+		size_t i = arraySize - 1;
+		while (i > 0)
 		{
-			denominator = scaleValues[index];
-			if (value / denominator <= denominator)
+			if (value >= scaleValues[i])
 			{
 				break;
 			}
+			i--;
 		}
-		return { index, denominator };
+
+		return { i, scaleValues[i] };
 	}
 
-	void NumberInputView::assignValueToUi(double value) const
+	void NumberInputView::setValue(double value)
 	{
+		_updating = true;
 		auto results =
 			_ui->cbStandard->currentIndex() == 0 ?
-			getResult(value, Vu::ScaleValuesIEC, Vu::getArrayLength(Vu::ScaleValuesIEC))
-												 : getResult(value,
-				Vu::ScaleValuesSI,
-				Vu::getArrayLength(Vu::ScaleValuesSI));
+			getScaledResult(value, Vu::ScaleValuesIEC, Vu::getArrayLength(Vu::ScaleValuesIEC))
+			: getScaledResult(value, Vu::ScaleValuesSI, Vu::getArrayLength(Vu::ScaleValuesSI));
+
+		_currentRawValue = value;
 
 		_ui->dsbNumber->setMaximum(_ui->cbStandard->currentIndex() == 0 ? 1023 : 1000);
 		_ui->cbUnitScale->setCurrentIndex(results.index);
 		_ui->dsbNumber->setValue(value / results.denominator);
+		_updating = false;
 	}
 
 	ConfigurationValueBase* NumberInputView::getConfiguration()
@@ -109,21 +112,21 @@ namespace Elpida
 	{
 		if (_configurationValue != nullptr)
 		{
-			auto value = getValue();
+			auto currentValue = getScaledValue();
 			auto& spec = _configurationValue->getConfigurationSpecification();
 
 			switch (spec.getType())
 			{
 			case ConfigurationType::Type::Int:
-				_configurationValue->as<ConfigurationValue<ConfigurationType::Int>>().setValue(value);
+				_configurationValue->as<ConfigurationValue<ConfigurationType::Int>>().setValue(currentValue);
 				break;
 			case ConfigurationType::Type::UnsignedInt:
 				_configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>()
-					.setValue(value);
+					.setValue(currentValue);
 				break;
 			case ConfigurationType::Type::Float:
 				_configurationValue->as<ConfigurationValue<ConfigurationType::Float>>()
-					.setValue(value);
+					.setValue(currentValue);
 				break;
 			default:
 				throw ElpidaException(FUNCTION_NAME, "Invalid Configuration! Expected number configuration");
@@ -131,17 +134,16 @@ namespace Elpida
 		}
 	}
 
-	double NumberInputView::getValue() const
+	double NumberInputView::getScaledValue() const
 	{
 		auto index = _ui->cbUnitScale->currentIndex();
+
 		return _ui->cbStandard->currentIndex() == 0 ?
-			   getScaledValue(index, Vu::ScaleValuesIEC, Vu::getArrayLength(Vu::ScaleValuesIEC))
-													: getScaledValue(index,
-				Vu::ScaleValuesSI,
-				Vu::getArrayLength(Vu::ScaleValuesSI));
+			   calculateScaledValue(index, Vu::ScaleValuesIEC, Vu::getArrayLength(Vu::ScaleValuesIEC))
+			   : calculateScaledValue(index, Vu::ScaleValuesSI, Vu::getArrayLength(Vu::ScaleValuesSI));
 	}
 
-	double NumberInputView::getScaledValue(int index, const double scaleValues[], size_t size) const
+	double NumberInputView::calculateScaledValue(int index, const double* scaleValues, size_t size) const
 	{
 		if ((unsigned int)index < size)
 		{
@@ -155,6 +157,7 @@ namespace Elpida
 
 	void NumberInputView::reInitializePrefix()
 	{
+		_updating = true;
 		_ui->cbUnitScale->clear();
 
 		if (_ui->cbStandard->currentIndex() == 0)
@@ -171,7 +174,9 @@ namespace Elpida
 				_ui->cbUnitScale->addItem(scl);
 			}
 		}
+		setValue(_currentRawValue);
 		saveSetting();
+		_updating = false;
 	}
 
 	void NumberInputView::onStandardChanged(int state)
@@ -181,12 +186,19 @@ namespace Elpida
 
 	void NumberInputView::onValueChanged(double value)
 	{
-		saveSetting();
+		if (!_updating)
+		{
+			saveSetting();
+		}
 	}
 
 	void NumberInputView::onScaleChanged(int state)
 	{
-		saveSetting();
+		if (!_updating)
+		{
+			setValue(getScaledValue());
+			saveSetting();
+		}
 	}
 
 } // namespace Elpida

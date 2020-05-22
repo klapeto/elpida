@@ -18,8 +18,6 @@ namespace Elpida
 			static inline const char* MemorySize = "Memory size";
 		};
 
-
-
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
 			const TaskAffinity& affinity) const override;
 

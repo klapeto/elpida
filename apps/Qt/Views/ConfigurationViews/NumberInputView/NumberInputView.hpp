@@ -27,7 +27,9 @@ namespace Elpida
 	private:
 		Ui::NumberInputView* _ui;
 		ConfigurationValueBase* _configurationValue;
-		double getValue() const;
+		double _currentRawValue;
+		bool _updating;
+		double getScaledValue() const;
 		void reInitializePrefix();
 
 	private slots:
@@ -35,8 +37,8 @@ namespace Elpida
 		void onScaleChanged(int state);
 		void onValueChanged(double newValue);
 
-		void assignValueToUi(double value) const;
-		double getScaledValue(int index, const double scaleValues[], size_t size) const;
+		void setValue(double value);
+		double calculateScaledValue(int index, const double* scaleValues, size_t size) const;
 	};
 
 
