@@ -6,7 +6,6 @@
 
 namespace Elpida
 {
-
 	namespace Ui
 	{
 		class NumberInputView;
@@ -41,6 +40,6 @@ namespace Elpida
 		double calculateScaledValue(int index, const double* scaleValues, size_t size) const;
 	};
 
-
 } // namespace Elpida
+
 #endif // ELPIDA_NUMBERINPUTVIEW_HPP

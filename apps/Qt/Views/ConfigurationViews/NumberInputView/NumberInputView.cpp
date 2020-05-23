@@ -12,7 +12,8 @@ namespace Elpida
 {
 
 	NumberInputView::NumberInputView()
-		: ConfigurationValueViewBase(), _ui(new Ui::NumberInputView), _configurationValue(nullptr), _currentRawValue(0.0),
+		: ConfigurationValueViewBase(), _ui(new Ui::NumberInputView), _configurationValue(nullptr),
+		  _currentRawValue(0.0),
 		  _updating(false)
 	{
 		_ui->setupUi(this);
@@ -93,7 +94,9 @@ namespace Elpida
 		auto results =
 			_ui->cbStandard->currentIndex() == 0 ?
 			getScaledResult(value, Vu::ScaleValuesIEC, Vu::getArrayLength(Vu::ScaleValuesIEC))
-			: getScaledResult(value, Vu::ScaleValuesSI, Vu::getArrayLength(Vu::ScaleValuesSI));
+												 : getScaledResult(value,
+				Vu::ScaleValuesSI,
+				Vu::getArrayLength(Vu::ScaleValuesSI));
 
 		_currentRawValue = value;
 
@@ -140,7 +143,9 @@ namespace Elpida
 
 		return _ui->cbStandard->currentIndex() == 0 ?
 			   calculateScaledValue(index, Vu::ScaleValuesIEC, Vu::getArrayLength(Vu::ScaleValuesIEC))
-			   : calculateScaledValue(index, Vu::ScaleValuesSI, Vu::getArrayLength(Vu::ScaleValuesSI));
+													: calculateScaledValue(index,
+				Vu::ScaleValuesSI,
+				Vu::getArrayLength(Vu::ScaleValuesSI));
 	}
 
 	double NumberInputView::calculateScaledValue(int index, const double* scaleValues, size_t size) const

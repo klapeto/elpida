@@ -52,57 +52,52 @@ namespace Elpida
 
 	double MemoryRead::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return (double)_taskData->getSize() * (double)_iterations;;
+		return (double)_taskData->getSize() * (double)_iterations;
 	}
 
 	void MemoryRead::execute()
 	{
-		volatile auto* ptr = (volatile RegisterSize*)_taskData->getData();
-		volatile RegisterSize* const start = ptr;
-		volatile const RegisterSize* const end = (RegisterSize*)((unsigned char*)start + _taskData->getSize());
+		volatile auto* ptr = (RegisterSize*)_taskData->getData();
 		const auto iterations = _iterations;
-		auto x = RegisterSize();
+		const auto size = _taskData->getSize() / sizeof(RegisterSize);
 		for (auto i = 0ul; i < iterations; ++i)
 		{
-			ptr = start;
-			while (ptr < end)
+			for (auto j = 0ul; j < size; j += 32)
 			{
-				x = *ptr;
-				x = *(ptr + 1);
-				x = *(ptr + 2);
-				x = *(ptr + 3);
-				x = *(ptr + 4);
-				x = *(ptr + 5);
-				x = *(ptr + 6);
-				x = *(ptr + 7);
-				x = *(ptr + 8);
-				x = *(ptr + 9);
-				x = *(ptr + 10);
-				x = *(ptr + 11);
-				x = *(ptr + 12);
-				x = *(ptr + 13);
-				x = *(ptr + 14);
-				x = *(ptr + 15);
-				x = *(ptr + 16);
-				x = *(ptr + 17);
-				x = *(ptr + 18);
-				x = *(ptr + 19);
-				x = *(ptr + 20);
-				x = *(ptr + 21);
-				x = *(ptr + 22);
-				x = *(ptr + 23);
-				x = *(ptr + 24);
-				x = *(ptr + 25);
-				x = *(ptr + 26);
-				x = *(ptr + 27);
-				x = *(ptr + 28);
-				x = *(ptr + 29);
-				x = *(ptr + 30);
-				x = *(ptr + 31);
-				ptr += 32;
+				ptr[j];
+				ptr[j + 1];
+				ptr[j + 2];
+				ptr[j + 3];
+				ptr[j + 4];
+				ptr[j + 5];
+				ptr[j + 6];
+				ptr[j + 7];
+				ptr[j + 8];
+				ptr[j + 9];
+				ptr[j + 10];
+				ptr[j + 11];
+				ptr[j + 12];
+				ptr[j + 13];
+				ptr[j + 14];
+				ptr[j + 15];
+				ptr[j + 16];
+				ptr[j + 17];
+				ptr[j + 18];
+				ptr[j + 19];
+				ptr[j + 20];
+				ptr[j + 21];
+				ptr[j + 22];
+				ptr[j + 23];
+				ptr[j + 24];
+				ptr[j + 25];
+				ptr[j + 26];
+				ptr[j + 27];
+				ptr[j + 28];
+				ptr[j + 29];
+				ptr[j + 30];
+				ptr[j + 31];
 			}
 		}
-		auto dummy = x;
 	}
 
 } /* namespace Elpida */
