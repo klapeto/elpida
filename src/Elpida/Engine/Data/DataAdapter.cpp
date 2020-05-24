@@ -3,12 +3,12 @@
 //
 
 #include "Elpida/Engine/Data/DataAdapter.hpp"
-#include "Elpida/Engine/Data/TaskData.hpp"
+#include "Elpida/Utilities/RawData.hpp"
 
 namespace Elpida
 {
 
-	size_t DataAdapter::getAccumulatedSizeOfChunks(const std::vector<TaskData*>& outputChunks)
+	size_t DataAdapter::getAccumulatedSizeOfChunks(const std::vector<const RawData*>& outputChunks)
 	{
 		size_t outputTotalSize = 0;
 		for (auto& data : outputChunks)

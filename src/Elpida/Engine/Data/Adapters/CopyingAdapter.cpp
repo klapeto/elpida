@@ -3,40 +3,38 @@
 //
 
 
-#include "Elpida/Engine/Data/Adapters/CopyingChunkNormalizerAdapter.hpp"
+#include "Elpida/Engine/Data/Adapters/CopyingAdapter.hpp"
 
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
 #include "Elpida/Engine/Data/ActiveTaskData.hpp"
-#include "Elpida/Engine/Task/TaskOutput.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Data/DataSpecification.hpp"
+#include "Elpida/Config.hpp"
 
 #include <cstring>
+#include <vector>
 #include <cmath>
 
 namespace Elpida
 {
-
-	TaskInput CopyingChunkNormalizerAdapter::transformOutputToInput(const TaskOutput& output,
-		const TaskAffinity& affinity,
-		const DataSpecification& inputDataSpecification) const
+	std::vector<RawData*> CopyingAdapter::breakIntoChunksImpl(const std::vector<const RawData*>& input,
+		const std::vector<int>& processorsOsIndices,
+		size_t chunksDivisibleBy)
 	{
-		auto& processors = affinity.getProcessorNodes();
-		auto targetChunksCount = processors.size();
-		auto& outputChunks = output.getTaskData();
+		auto targetChunksCount = processorsOsIndices.size();
+		auto& outputChunks = input;
 
-		auto outputTotalSize = getAccumulatedSizeOfChunks(outputChunks);
+		auto outputTotalSize = getAccumulatedSizeOfChunks(input);
 
 		size_t targetChunkSize = std::ceil(outputTotalSize / (float)targetChunksCount);
-		const auto divisibleBy = inputDataSpecification.getSizeShouldBeDivisibleBy();
 
-		while (targetChunkSize % divisibleBy != 0)
+		while (targetChunkSize % chunksDivisibleBy != 0)
 		{
 			targetChunkSize++;
 		}
 
-		std::vector<TaskData*> targetChunksVec;
+		std::vector<RawData*> targetChunksVec;
 		targetChunksVec.reserve(targetChunksCount);
 
 		size_t currentChunkIndex = 0;
@@ -54,7 +52,7 @@ namespace Elpida
 				{
 					// create new chunk with the defined target size
 					currentChunk = new ActiveTaskData(targetChunkSize,
-						SystemTopology::getNumaNodeOfProcessor((int)processors[currentChunkIndex]->getOsIndex()));
+						SystemTopology::getNumaNodeOfProcessor(processorsOsIndices[currentChunkIndex]));
 					targetChunksVec.push_back(currentChunk);
 				}
 
@@ -90,7 +88,25 @@ namespace Elpida
 				}
 			}
 		}
+		return targetChunksVec;
+	}
 
-		return TaskInput(std::move(targetChunksVec));
+	std::vector<RawData*> CopyingAdapter::breakIntoChunks(const RawData& input,
+		const TaskAffinity& affinity,
+		const DataSpecification& inputDataSpecification) const
+	{
+		std::vector<int> processorsOsIndices;
+		for (auto processor : affinity.getProcessorNodes())
+		{
+			processorsOsIndices.push_back(processor->getOsIndex());
+		}
+		return breakIntoChunksImpl({ &input },
+			processorsOsIndices,
+			inputDataSpecification.getSizeShouldBeDivisibleBy());
+	}
+
+	RawData* CopyingAdapter::mergeIntoSingleChunk(const std::vector<const RawData*>& inputData) const
+	{
+		return breakIntoChunksImpl(inputData, { 0 }, 1).front();
 	}
 }

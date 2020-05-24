@@ -35,7 +35,7 @@ namespace Elpida
 
 	void Task::prepare()
 	{
-		if (_specification.acceptsInput() && _inputData.getTaskData().empty())
+		if (_specification.acceptsInput() && _inputData.getTaskData() == nullptr)
 		{
 			throw ElpidaException(FUNCTION_NAME,
 				Vu::Cs("'", _specification.getName(), "' task needs input and it was not provided!"));
@@ -50,12 +50,7 @@ namespace Elpida
 
 	static size_t getInputDataSize(const TaskInput& input)
 	{
-		auto accumulator = 0ul;
-		for (const auto& data: input.getTaskData())
-		{
-			accumulator += data->getSize();
-		}
-		return accumulator;
+		return input.getTaskData() != nullptr ? input.getTaskData()->getSize() : 0;
 	}
 
 	TaskResult Task::calculateTaskResult(const Duration& taskElapsedTime) const

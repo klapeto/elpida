@@ -46,7 +46,7 @@ namespace Elpida
 		MemoryRead(const TaskSpecification& specification, const TaskAffinity& affinity);
 		~MemoryRead() override = default;
 	protected:
-		TaskData* _taskData;
+		RawData* _taskData;
 		unsigned long _iterations;
 		static constexpr inline double _iterationConstant = 100000000000; // rough estimate
 

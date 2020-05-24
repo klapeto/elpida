@@ -8,31 +8,33 @@
 namespace Elpida
 {
 
-	TaskOutput::TaskOutput(TaskData* data)
+	TaskOutput::TaskOutput()
+		: _taskData(nullptr)
 	{
-		_taskData.push_back(data);
+
 	}
 
-	TaskOutput::TaskOutput(std::vector<TaskData*>&& taskData)
-		: _taskData(std::move(taskData))
+	TaskOutput::TaskOutput(RawData& data)
+		: _taskData(&data)
 	{
 	}
 
 	TaskOutput::~TaskOutput()
 	{
-		for (auto data: _taskData)
-		{
-			delete data;
-		}
+		delete _taskData;
 	}
 
-	std::vector<TaskData*> TaskOutput::createPassiveWrappers() const
+	TaskOutput::TaskOutput(TaskOutput&& other) noexcept
 	{
-		std::vector<TaskData*> data;
-		for (auto& d : _taskData)
-		{
-			data.push_back(new PassiveTaskData(*d));
-		}
-		return data;
+		_taskData = other._taskData;
+		other._taskData = nullptr;
 	}
+
+	TaskOutput& TaskOutput::operator=(TaskOutput&& other) noexcept
+	{
+		_taskData = other._taskData;
+		other._taskData = nullptr;
+		return *this;
+	}
+
 }

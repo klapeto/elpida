@@ -10,32 +10,26 @@
 
 namespace Elpida
 {
-	class TaskData;
+	class RawData;
 
 	class TaskInput final
 	{
 	public:
 
-		[[nodiscard]] const std::vector<TaskData*>& getTaskData() const
+		[[nodiscard]] RawData* getTaskData() const
 		{
 			return _taskData;
 		}
 
-
-		[[nodiscard]] std::vector<TaskData*> createPassiveWrappers() const;
-
-		TaskInput() = default;
-		explicit TaskInput(std::vector<TaskData*>&& taskData)
-			: _taskData(std::move(taskData))
-		{
-		}
+		TaskInput();
+		explicit TaskInput(RawData& taskData);
 		TaskInput(const TaskInput&) = delete;
 		TaskInput& operator=(const TaskInput&) = delete;
-		TaskInput(TaskInput&&) = default;
-		TaskInput& operator=(TaskInput&&) = default;
+		TaskInput(TaskInput&& other) noexcept;
+		TaskInput& operator=(TaskInput&& other) noexcept;
 		~TaskInput();
 	private:
-		std::vector<TaskData*> _taskData;
+		RawData* _taskData;
 	};
 }
 

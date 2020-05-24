@@ -28,7 +28,7 @@
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Utilities/Duration.hpp>
 #include <utility>
-#include <ctime>
+#include <Elpida/Engine/Data/PassiveTaskData.hpp>
 
 namespace Elpida
 {
@@ -42,11 +42,11 @@ namespace Elpida
 
 	void MemoryReadLatency::prepareImpl()
 	{
-		_taskData = getInput().getTaskData().front();
+		_taskData = getInput().getTaskData();
 		if (_taskData->getSize() % (32 * sizeof(RegisterSize)) != 0)
 			throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
 
-		_iterations = (unsigned long)(_iterationConstant / (double)_taskData->getSize());
+		_iterations = (unsigned long)std::max(_iterationConstant / (double)_taskData->getSize(), 1.0);
 
 		auto size = _taskData->getSize() / sizeof(RegisterSize);
 
@@ -63,7 +63,7 @@ namespace Elpida
 
 	TaskOutput MemoryReadLatency::finalizeAndGetOutputData()
 	{
-		return TaskOutput();
+		return TaskOutput(*new PassiveTaskData(*_taskData));
 	}
 
 	void MemoryReadLatency::execute()

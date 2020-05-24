@@ -67,7 +67,7 @@ namespace Elpida
 		{
 			memset(_memory.getPointer(), 0, _memory.getSize());
 		}
-		return TaskOutput(new PassiveTaskData( _memory.getPointer(), _size ));
+		return TaskOutput(*new PassiveTaskData(_memory.getPointer(), _size));
 	}
 
 	double AllocateMemory::calculateTaskResultValue(const Duration& taskElapsedTime) const

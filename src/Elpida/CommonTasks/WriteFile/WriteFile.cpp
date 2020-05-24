@@ -46,7 +46,7 @@ namespace Elpida
 
 	void WriteFile::execute()
 	{
-		auto input = getInput().getTaskData().front();
+		const auto& input = getInput().getTaskData();
 		MemoryFile(input->getData(), input->getSize()).writeToFile(_outputPath);
 	}
 
@@ -62,7 +62,7 @@ namespace Elpida
 
 	double WriteFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return getInput().getTaskData().front()->getSize();
+		return getInput().getTaskData()->getSize();
 	}
 } /* namespace Elpida */
 

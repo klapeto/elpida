@@ -3,27 +3,39 @@
 //
 
 #include "Elpida/Engine/Task/TaskInput.hpp"
-#include "Elpida/Engine/Data/TaskData.hpp"
+#include "Elpida/Utilities/RawData.hpp"
 #include "Elpida/Engine/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {
 
-	TaskInput::~TaskInput()
+	TaskInput::TaskInput()
+		: _taskData(nullptr)
 	{
-		for (auto data: _taskData)
-		{
-			delete data;
-		}
+
 	}
 
-	std::vector<TaskData*> TaskInput::createPassiveWrappers() const
+	TaskInput::TaskInput(RawData& taskData)
+		: _taskData(&taskData)
 	{
-		std::vector<TaskData*> returnVector;
-		for (auto data: _taskData)
-		{
-			returnVector.push_back(new PassiveTaskData(data->getData(), data->getSize()));
-		}
-		return returnVector;
 	}
+
+	TaskInput::~TaskInput()
+	{
+		delete _taskData;
+	}
+
+	TaskInput::TaskInput(TaskInput&& other) noexcept
+	{
+		_taskData = other._taskData;
+		other._taskData = nullptr;
+	}
+
+	TaskInput& TaskInput::operator=(TaskInput&& other) noexcept
+	{
+		_taskData = other._taskData;
+		other._taskData = nullptr;
+		return *this;
+	}
+
 }

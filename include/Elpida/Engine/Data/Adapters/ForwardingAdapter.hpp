@@ -12,9 +12,11 @@ namespace Elpida
 	class ForwardingAdapter: public DataAdapter
 	{
 	public:
-		[[nodiscard]] TaskInput transformOutputToInput(const TaskOutput& output,
+		[[nodiscard]] std::vector<RawData*> breakIntoChunks(const RawData& input,
 			const TaskAffinity& affinity,
 			const DataSpecification& inputDataSpecification) const override;
+
+		virtual RawData* mergeIntoSingleChunk(const std::vector<const RawData*>& inputData) const override;
 
 		ForwardingAdapter()= default;
 		~ForwardingAdapter() override = default;

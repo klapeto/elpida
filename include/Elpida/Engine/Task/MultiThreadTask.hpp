@@ -30,6 +30,7 @@ namespace Elpida
 		std::condition_variable _wakeNotifier;
 		std::vector<TaskThread> _createdThreads;
 		const TaskConfiguration& _configuration;
+		const TaskBuilder& _taskBuilder;
 		bool _threadsShouldWake;
 
 	};

@@ -14,6 +14,7 @@
 #include "Elpida/Engine/Configuration/ConfigurationInstance.hpp"
 #include "Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp"
 #include "Elpida/Engine/Data/Adapters/ForwardingAdapter.hpp"
+#include "Elpida/Engine/Data/Adapters/CopyingAdapter.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 
 namespace Elpida

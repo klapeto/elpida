@@ -5,11 +5,11 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_TASK_DATA_PASSIVETASKDATA_HPP
 #define INCLUDE_ELPIDA_ENGINE_TASK_DATA_PASSIVETASKDATA_HPP
 
-#include "TaskData.hpp"
+#include "Elpida/Utilities/RawData.hpp"
 
 namespace Elpida
 {
-	class PassiveTaskData : public TaskData
+	class PassiveTaskData : public RawData
 	{
 	public:
 
@@ -28,7 +28,7 @@ namespace Elpida
 
 		}
 
-		explicit PassiveTaskData(const TaskData& data)
+		explicit PassiveTaskData(const RawData& data)
 			: _data(data.getData()), _size(data.getSize())
 		{
 

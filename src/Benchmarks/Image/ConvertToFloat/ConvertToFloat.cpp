@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "TaskBatches/Image/ConvertToFloat.hpp"
+#include "Benchmarks/Image/ConvertToFloat.hpp"
 
 namespace Elpida
 {

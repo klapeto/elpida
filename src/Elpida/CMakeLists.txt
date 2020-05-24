@@ -47,7 +47,7 @@ set(ELPIDA_SOURCES
         Engine/Configuration/Concrete/ConfigurationValueBase.cpp
         Engine/Task/Task.cpp
         Engine/Task/TaskSpecification.cpp
-        Engine/Data/TaskData.cpp
+        Utilities/RawData.cpp
         Engine/Runner/BenchmarkRunner.cpp
         Engine/Result/BenchmarkResult.cpp
         Engine/Result/TaskResult.cpp
@@ -71,8 +71,7 @@ set(ELPIDA_SOURCES
         Engine/Task/TaskBuilder.cpp
         Engine/Data/DataAdapter.cpp
         Engine/Benchmark/BenchmarkTaskInstance.cpp
-        Engine/Data/Adapters/CopyingChunkNormalizerAdapter.cpp
-        Engine/Data/Adapters/CopyingUnifyingAdapter.cpp
+        Engine/Data/Adapters/CopyingAdapter.cpp
         Engine/Data/Adapters/ForwardingAdapter.cpp
         Engine/Configuration/ConfigurationInstance.cpp)
 

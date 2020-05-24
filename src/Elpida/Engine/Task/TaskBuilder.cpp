@@ -6,8 +6,6 @@
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
-#include "Elpida/Engine/Data/Adapters/CopyingChunkNormalizerAdapter.hpp"
-#include "Elpida/Engine/Data/Adapters/CopyingUnifyingAdapter.hpp"
 
 namespace Elpida
 {
@@ -27,14 +25,6 @@ namespace Elpida
 	TaskBuilder& TaskBuilder::canBeMultiThreaded(bool canBeMultiThreaded)
 	{
 		_canBeMultiThreaded = canBeMultiThreaded;
-		if (canBeMultiThreaded)
-		{
-			setNewDataAdapter(*new CopyingChunkNormalizerAdapter());
-		}
-		else
-		{
-			setNewDataAdapter(*new CopyingUnifyingAdapter());
-		}
 		return *this;
 	}
 

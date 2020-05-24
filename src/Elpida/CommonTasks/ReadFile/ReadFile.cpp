@@ -56,7 +56,7 @@ namespace Elpida
 
 	TaskOutput ReadFile::finalizeAndGetOutputData()
 	{
-		return TaskOutput(new PassiveTaskData(_file.getData(), _file.getSize()));;
+		return TaskOutput(*new PassiveTaskData(_file.getData(), _file.getSize()));;
 	}
 
 	double ReadFile::calculateTaskResultValue(const Duration& taskElapsedTime) const

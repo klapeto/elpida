@@ -32,8 +32,7 @@ namespace Elpida
 	}
 
 	static void assignInput(BenchmarkTaskInstance* previousTaskInstance,
-		BenchmarkTaskInstance* nextTaskInstance,
-		const TaskAffinity& affinity)
+		BenchmarkTaskInstance* nextTaskInstance)
 	{
 		auto& nextTask = nextTaskInstance->getTask();
 		auto& nextSpec = nextTask.getSpecification();
@@ -41,8 +40,7 @@ namespace Elpida
 		{
 			auto& previousTask = previousTaskInstance->getTask();
 			auto& previousOutput = previousTask.getOutput();
-			nextTask.setInput(nextTaskInstance->getTaskBuilder().getDataAdapter()
-				.transformOutputToInput(previousOutput, affinity, nextSpec.getInputDataSpecification()));
+			nextTask.setInput(TaskInput(*new PassiveTaskData(previousOutput.getTaskData())));
 		}
 	}
 
@@ -68,7 +66,7 @@ namespace Elpida
 					auto& task = taskInstance.getTask();
 					raiseTaskStarted(task);
 
-					assignInput(previousTask, &taskInstance, taskAffinity);
+					assignInput(previousTask, &taskInstance);
 
 					auto result = runTask(task);
 

@@ -25,7 +25,10 @@
  */
 
 #include <Elpida/ElpidaException.hpp>
+#include <Elpida/Engine/Data/PassiveTaskData.hpp>
 #include "Benchmarks/Memory/Read/MemoryRead.hpp"
+
+#include <cmath>
 
 namespace Elpida
 {
@@ -38,16 +41,16 @@ namespace Elpida
 
 	void MemoryRead::prepareImpl()
 	{
-		_taskData = getInput().getTaskData().front();
+		_taskData = getInput().getTaskData();
 		if (_taskData->getSize() % (32 * sizeof(RegisterSize)) != 0)
 			throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
 
-		_iterations = (unsigned long)(_iterationConstant / (double)_taskData->getSize());
+		_iterations = (unsigned long)std::max((_iterationConstant / (double)_taskData->getSize()), 1.0);
 	}
 
 	TaskOutput MemoryRead::finalizeAndGetOutputData()
 	{
-		return TaskOutput(getInput().createPassiveWrappers());
+		return TaskOutput(*new PassiveTaskData(*_taskData));
 	}
 
 	double MemoryRead::calculateTaskResultValue(const Duration& taskElapsedTime) const

@@ -5,7 +5,7 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_TASK_TASKOUTPUT_HPP
 #define INCLUDE_ELPIDA_ENGINE_TASK_TASKOUTPUT_HPP
 
-#include "Elpida/Engine/Data/TaskData.hpp"
+#include "Elpida/Utilities/RawData.hpp"
 #include "TaskInput.hpp"
 #include <vector>
 
@@ -14,23 +14,20 @@ namespace Elpida
 	class TaskOutput
 	{
 	public:
-		[[nodiscard]] const std::vector<TaskData*>& getTaskData() const
+		[[nodiscard]] const RawData& getTaskData() const
 		{
-			return _taskData;
+			return *_taskData;
 		}
 
-		[[nodiscard]] std::vector<TaskData*> createPassiveWrappers() const;
-
-		TaskOutput() = default;
-		explicit TaskOutput(TaskData* data);
-		explicit TaskOutput(std::vector<TaskData*>&& taskData);
+		TaskOutput();
+		explicit TaskOutput(RawData& data);
 		TaskOutput(const TaskOutput&) = delete;
 		TaskOutput& operator=(const TaskOutput&) = delete;
-		TaskOutput(TaskOutput&&) = default;
-		TaskOutput& operator=(TaskOutput&&) = default;
+		TaskOutput(TaskOutput&& other) noexcept ;
+		TaskOutput& operator=(TaskOutput&& other) noexcept ;
 		virtual ~TaskOutput();
 	private:
-		std::vector<TaskData*> _taskData;
+		RawData* _taskData;
 	};
 }
 

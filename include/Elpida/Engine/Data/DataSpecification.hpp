@@ -32,7 +32,7 @@ namespace Elpida
 			return _sizeShouldBeDivisibleBy;
 		}
 
-		DataSpecification() = default;
+		DataSpecification();
 		DataSpecification(std::string name, std::string unit, std::string description = std::string());
 		DataSpecification(std::string name, std::string unit, size_t sizeShouldBeDivisibleBy, std::string description = std::string());
 		DataSpecification(DataSpecification&&) = default;

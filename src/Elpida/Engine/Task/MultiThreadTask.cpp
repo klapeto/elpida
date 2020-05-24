@@ -16,7 +16,8 @@ namespace Elpida
 	MultiThreadTask::MultiThreadTask(const TaskBuilder& taskBuilder,
 		const TaskConfiguration& configuration,
 		const TaskAffinity& affinity)
-		: Task(taskBuilder.getTaskSpecification(), affinity), _configuration(configuration), _threadsShouldWake(false)
+		: Task(taskBuilder.getTaskSpecification(), affinity), _configuration(configuration), _taskBuilder(taskBuilder),
+		  _threadsShouldWake(false)
 	{
 
 	}
@@ -40,11 +41,16 @@ namespace Elpida
 
 	void MultiThreadTask::prepareImpl()
 	{
+		auto& adapter = _taskBuilder.getDataAdapter();
 		const auto& processors = _affinity.getProcessorNodes();
 		const size_t processorCount = processors.size();
 
-		_createdThreads.reserve(processorCount);
 		auto& input = getInput();
+		auto newData =
+			adapter.breakIntoChunks(*input.getTaskData(), _affinity, _specification.getInputDataSpecification());
+
+		_createdThreads.reserve(processorCount);
+
 		size_t i = 0;
 		for (auto processor : processors)
 		{
@@ -53,33 +59,34 @@ namespace Elpida
 
 			if (_specification.acceptsInput())
 			{
-				auto& data = input.getTaskData()[i];
-				task->setInput(TaskInput({ new PassiveTaskData(data->getData(), data->getSize()) }));
+				if (newData.size() <= i) break;	// Not enough chunks. We need to handle that
+				auto& data = newData[i];
+				task->setInput(TaskInput(*data));
 			}
 
 			task->prepare();
-			_createdThreads.push_back(std::move(TaskThread(*task,
+			_createdThreads.emplace_back(*task,
 				_wakeNotifier,
 				_mutex,
 				_threadsShouldWake,
-				processor->getOsIndex())));
+				processor->getOsIndex());
 			_createdThreads.back().start();
+			i++;
 		}
 	}
 
 	TaskOutput MultiThreadTask::finalizeAndGetOutputData()
 	{
-		std::vector<TaskData*> accumulatedOutputs;
+		auto& adapter = _taskBuilder.getDataAdapter();
+
+		std::vector<const RawData*> accumulatedOutputs;
 		for (auto& thread: _createdThreads)
 		{
 			thread.getTaskToRun().finalize();
-			for (auto& out : thread.getTaskToRun().getOutput().getTaskData())
-			{
-				accumulatedOutputs.push_back(new PassiveTaskData(*out));
-			}
+			accumulatedOutputs.push_back(&thread.getTaskToRun().getOutput().getTaskData());
 		}
 
-		return TaskOutput(std::move(accumulatedOutputs));
+		return TaskOutput(*adapter.mergeIntoSingleChunk(accumulatedOutputs));
 	}
 
 	double MultiThreadTask::calculateTaskResultValue(const Duration& taskElapsedTime) const

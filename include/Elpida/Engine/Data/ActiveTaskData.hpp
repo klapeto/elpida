@@ -6,12 +6,12 @@
 #define INCLUDE_ELPIDA_ENGINE_TASK_DATA_ACTIVETASKDATA_HPP
 
 
-#include "TaskData.hpp"
+#include "Elpida/Utilities/RawData.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
 
 namespace Elpida
 {
-	class ActiveTaskData : public TaskData
+	class ActiveTaskData : public RawData
 	{
 	public:
 

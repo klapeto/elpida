@@ -9,7 +9,7 @@
 
 namespace Elpida
 {
-	class TaskData
+	class RawData
 	{
 	public:
 		using Data = unsigned char;
@@ -18,12 +18,12 @@ namespace Elpida
 		[[nodiscard]] virtual pData getData() const = 0;
 		[[nodiscard]] virtual size_t getSize() const = 0;
 
-		TaskData() = default;
-		TaskData(const TaskData&) = delete;
-		TaskData& operator=(const TaskData&) = delete;
-		TaskData(TaskData&&) = default;
-		TaskData& operator=(TaskData&&) = default;
-		virtual ~TaskData() = default;
+		RawData() = default;
+		RawData(const RawData&) = delete;
+		RawData& operator=(const RawData&) = delete;
+		RawData(RawData&&) = default;
+		RawData& operator=(RawData&&) = default;
+		virtual ~RawData() = default;
 	};
 }
 

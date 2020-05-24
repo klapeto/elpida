@@ -16,12 +16,16 @@ namespace Elpida
 	class DataAdapter
 	{
 	public:
-		[[nodiscard]] virtual TaskInput transformOutputToInput(const TaskOutput& output,
+
+		[[nodiscard]] virtual std::vector<RawData*> breakIntoChunks(const RawData& input,
 			const TaskAffinity& affinity,
-			const DataSpecification& inputDataSpecification) const = 0;
+			const DataSpecification& targetDataSpecification) const = 0;
+
+		[[nodiscard]] virtual RawData* mergeIntoSingleChunk(const std::vector<const RawData*>& inputData) const = 0;
+
 		virtual ~DataAdapter() = default;
 	protected:
-		static size_t getAccumulatedSizeOfChunks(const std::vector<TaskData*>& outputChunks);
+		static size_t getAccumulatedSizeOfChunks(const std::vector<const RawData*>& outputChunks);
 	};
 }
 
