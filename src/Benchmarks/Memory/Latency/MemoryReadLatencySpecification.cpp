@@ -20,8 +20,8 @@ namespace Elpida
 	}
 
 	Task* MemoryReadLatencySpecification::createNewTask(const TaskConfiguration& configuration,
-		const TaskAffinity& affinity) const
+		const ProcessorNode& processorToRun) const
 	{
-		return new MemoryReadLatency(*this, affinity);
+		return new MemoryReadLatency(*this, processorToRun);
 	}
 }

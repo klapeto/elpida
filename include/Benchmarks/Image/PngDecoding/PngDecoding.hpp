@@ -18,15 +18,37 @@
  *************************************************************************/
 
 /*
- * ConvertToUInt8.cpp
+ * PngLoad.hpp
  *
- *  Created on: 12 Ιουν 2018
+ *  Created on: 18 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Image/ConvertToUInt8.hpp"
+#ifndef TASKSBATCHES_IMAGE_PNGDECODING_HPP_
+#define TASKSBATCHES_IMAGE_PNGDECODING_HPP_
+
+#include "Benchmarks/Image/ImageTaskBase.hpp"
 
 namespace Elpida
 {
 
+	class PngDecoding : public ImageTaskBase
+	{
+	public:
+		void execute() override;
+
+		PngDecoding(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		~PngDecoding() override = default;
+	protected:
+		void prepareImpl() override;
+		TaskDataDto finalizeAndGetOutputData() override;
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+	private:
+		RawData* _outputData;
+		size_t _width;
+		size_t _height;
+	};
+
 } /* namespace Elpida */
+
+#endif /* TASKSBATCHES_IMAGE_PNGDECODING_HPP_ */

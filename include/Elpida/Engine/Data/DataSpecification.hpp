@@ -6,6 +6,7 @@
 #define INCLUDE_ELPIDA_ENGINE_TASK_DATA_DATASPECIFICATION_HPP
 
 #include <string>
+#include <vector>
 
 namespace Elpida
 {
@@ -32,15 +33,29 @@ namespace Elpida
 			return _sizeShouldBeDivisibleBy;
 		}
 
+		[[nodiscard]] const std::vector<std::string>& getRequiredPropertiesNames() const
+		{
+			return _requiredPropertiesNames;
+		}
+
 		DataSpecification();
 		DataSpecification(std::string name, std::string unit, std::string description = std::string());
-		DataSpecification(std::string name, std::string unit, size_t sizeShouldBeDivisibleBy, std::string description = std::string());
+		DataSpecification(std::string name,
+			std::string unit,
+			size_t sizeShouldBeDivisibleBy,
+			std::string description = std::string());
+		DataSpecification(std::string name,
+			std::string unit,
+			size_t sizeShouldBeDivisibleBy,
+			std::vector<std::string> requiredProperties,
+			std::string description = std::string());
 		DataSpecification(DataSpecification&&) = default;
 		DataSpecification(const DataSpecification&) = default;
 		DataSpecification& operator=(DataSpecification&&) = default;
 		DataSpecification& operator=(const DataSpecification&) = default;
 		~DataSpecification() = default;
 	private:
+		std::vector<std::string> _requiredPropertiesNames;
 		std::string _name;
 		std::string _description;
 		std::string _unit;

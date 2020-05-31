@@ -30,10 +30,9 @@
 #include "Elpida/Engine/Task/Task.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
 
-
 namespace Elpida
 {
-	class Memory;
+	class ActiveTaskData;
 
 	class AllocateMemory final : public Task
 	{
@@ -41,20 +40,18 @@ namespace Elpida
 		void execute() override;
 
 		AllocateMemory(const TaskSpecification& specification,
-			const TaskAffinity& affinity,
-			std::size_t size,
-			bool initialize = false);
+			const ProcessorNode& processorToRun,
+			std::size_t size);
 
 		~AllocateMemory() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskOutput finalizeAndGetOutputData() override;
+		TaskDataDto finalizeAndGetOutputData() override;
 
 		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		NumaMemory _memory;
+		ActiveTaskData* _memory;
 		std::size_t _size;
-		bool _initialize;
 	};
 
 } /* namespace Elpida */

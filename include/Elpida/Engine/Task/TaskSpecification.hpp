@@ -20,6 +20,7 @@ namespace Elpida
 
 	class Task;
 	class TaskConfiguration;
+	class DataPropertiesTransformer;
 
 	/**
 	 * Standard information regarding a Task
@@ -72,7 +73,12 @@ namespace Elpida
 			return _resultSpecification;
 		}
 
-		[[nodiscard]] virtual Task* createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const = 0;
+		[[nodiscard]] DataPropertiesTransformer* getDataPropertiesTransformer() const
+		{
+			return _dataPropertiesTransformer;
+		}
+
+		[[nodiscard]] virtual Task* createNewTask(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const = 0;
 
 		virtual ~TaskSpecification();
 	private:
@@ -83,6 +89,7 @@ namespace Elpida
 		DataSpecification _outputDataSpecification;
 		ResultSpecification _resultSpecification;
 		std::vector<ConfigurationSpecificationBase*> _configurationSpecifications;
+		DataPropertiesTransformer* _dataPropertiesTransformer;
 		bool _acceptsInput;
 		bool _exportsOutput;
 	protected:
@@ -131,10 +138,15 @@ namespace Elpida
 			_inputDataSpecification = std::move(inputDataSpecification);
 		}
 
-		void withOutputData(DataSpecification&& inputDataSpecification)
+		void withOutputData(DataSpecification&& outputDataSpecification)
 		{
 			_exportsOutput = true;
-			_inputDataSpecification = std::move(inputDataSpecification);
+			_outputDataSpecification= std::move(outputDataSpecification);
+		}
+
+		void withDataPropertiesTransformer(DataPropertiesTransformer* dataPropertiesTransformer)
+		{
+			_dataPropertiesTransformer = dataPropertiesTransformer;
 		}
 
 		friend class TaskBuilder;

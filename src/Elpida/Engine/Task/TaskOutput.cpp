@@ -26,12 +26,14 @@ namespace Elpida
 
 	TaskOutput::TaskOutput(TaskOutput&& other) noexcept
 	{
+		delete _taskData;
 		_taskData = other._taskData;
 		other._taskData = nullptr;
 	}
 
 	TaskOutput& TaskOutput::operator=(TaskOutput&& other) noexcept
 	{
+		delete _taskData;
 		_taskData = other._taskData;
 		other._taskData = nullptr;
 		return *this;

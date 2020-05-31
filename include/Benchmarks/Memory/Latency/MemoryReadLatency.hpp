@@ -43,13 +43,12 @@ namespace Elpida
 
 		void execute() override;
 
-		explicit MemoryReadLatency(const TaskSpecification& specification,
-			TaskAffinity affinity);
+		explicit MemoryReadLatency(const TaskSpecification& specification, const ProcessorNode& processorToRun);
 
 		~MemoryReadLatency() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskOutput finalizeAndGetOutputData() override;
+		TaskDataDto finalizeAndGetOutputData() override;
 		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		RawData* _taskData;

@@ -90,7 +90,7 @@ Elpida::Benchmark* createMemoryReadBandwidth()
 
 	auto benchmark = new Elpida::Benchmark("Memory Read Bandwidth", {
 		&allocateMemory,
-		&memoryRead,
+		&memoryRead
 	}, new Elpida::DefaultBenchmarkScoreCalculator());
 	return benchmark;
 }

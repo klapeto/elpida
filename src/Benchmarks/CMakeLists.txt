@@ -1,4 +1,4 @@
-#add_subdirectory(Image)
+add_subdirectory(Image)
 add_subdirectory(Memory)
 add_subdirectory(Testing)
 

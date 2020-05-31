@@ -19,12 +19,13 @@ namespace Elpida
 		{
 			return _memory.getPointer();
 		}
+
 		[[nodiscard]] size_t getSize() const override
 		{
 			return _memory.getSize();
 		}
 
-		ActiveTaskData(size_t size, int numaNode)
+		ActiveTaskData(size_t size, int numaNode)	// TODO: Pass ProcessorNode
 			: _memory(size, numaNode)
 		{
 			_memory.allocate();

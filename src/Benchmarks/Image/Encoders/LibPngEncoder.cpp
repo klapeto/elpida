@@ -1,18 +1,18 @@
 /*******************************************************************************
  *   Elpida - Benchmark library
- *   
+ *
  *   Copyright (C) 2018  Ioannis Panagiotopoulos
- *   
+ *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
- *   
+ *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
- *   
+ *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *******************************************************************************/
@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include "TaskBatches/Image/Encoders/LibPngEncoder.hpp"
+#include "Benchmarks/Image/Encoders/LibPngEncoder.hpp"
 
 #include <cstdint>
 
@@ -43,23 +43,15 @@ namespace Elpida
 		{
 			img.format = PNG_FORMAT_RGBA;
 
-			auto data = new unsigned char[PNG_IMAGE_SIZE(img)];
+			auto newData = new unsigned char[PNG_IMAGE_SIZE(img)];
 
-			if (data == nullptr)
-			{
-				png_image_free(&img);
-				return ImageEncoder::ImageDecodeInfo
-					{ nullptr, 0, 0, 0 };
-			}
 			png_image_finish_read(&img, nullptr, data, 0, nullptr);
 
-			return ImageEncoder::ImageDecodeInfo
-				{ data, img.width, img.height, 4 };
+			return ImageEncoder::ImageDecodeInfo{ newData, img.width, img.height, 4 };
 
 		}
 		png_image_free(&img);
-		return ImageEncoder::ImageDecodeInfo
-			{ nullptr, 0, 0, 0 };
+		return ImageEncoder::ImageDecodeInfo{ nullptr, 0, 0, 0 };
 	}
 
 	ImageEncoder::ImageEncodeInfo LibPngEncoder::encode(std::size_t imageWidth,
@@ -79,21 +71,13 @@ namespace Elpida
 		if (png_image_write_to_memory(&img, nullptr, &outputSize, 0, inputData, 0, nullptr))
 		{
 			auto outputBuffer = new uint8_t[outputSize];
-			if (outputBuffer == nullptr)
-			{
-				png_image_free(&img);
-				return ImageEncoder::ImageEncodeInfo
-					{ nullptr, 0 };
-			}
 			if (png_image_write_to_memory(&img, outputBuffer, &outputSize, 0, inputData, 0, nullptr))
 			{
-				return ImageEncoder::ImageEncodeInfo
-					{ outputBuffer, outputSize };
+				return ImageEncoder::ImageEncodeInfo{ outputBuffer, outputSize };
 			}
 		}
 		png_image_free(&img);
-		return ImageEncoder::ImageEncodeInfo
-			{ nullptr, 0 };
+		return ImageEncoder::ImageEncodeInfo{ nullptr, 0 };
 	}
 
 } /* namespace Elpida */

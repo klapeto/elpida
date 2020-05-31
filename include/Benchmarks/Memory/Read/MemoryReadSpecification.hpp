@@ -13,7 +13,7 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration, const TaskAffinity& affinity) const override;
+		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const override;
 
 		MemoryReadSpecification();
 		~MemoryReadSpecification() override = default;

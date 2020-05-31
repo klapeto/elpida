@@ -27,40 +27,73 @@
 #include "Elpida/CommonTasks/ReadFile/ReadFile.hpp"
 
 #include <utility>
+#include <fstream>
+#include <Elpida/Topology/SystemTopology.hpp>
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/Engine/Task/TaskAffinity.hpp"
+#include "Elpida/Engine/Data/ActiveTaskData.hpp"
 #include "Elpida/Engine/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {
 
 	ReadFile::ReadFile(const TaskSpecification& specification,
-		const TaskAffinity& affinity,
+		const ProcessorNode& processorToRun,
 		std::string filePath)
-		: Task(specification, affinity),
-		  _file(affinity.getProcessorNodes().front()->getOsIndex()),
-		  _filePath(std::move(filePath))
+		: Task(specification, processorToRun),
+		  _filePath(std::move(filePath)),
+		  _data(nullptr)
 	{
 
 	}
 
 	void ReadFile::execute()
 	{
-		_file.load(_filePath);
+		std::ifstream file(_filePath, std::ifstream::binary);
+		try
+		{
+			file.read((char*)_data->getData(), _data->getSize());
+		}
+		catch (...)
+		{
+			delete _data;
+			if (file.is_open())
+			{
+				file.close();
+			}
+			throw;
+		}
 	}
 
 	void ReadFile::prepareImpl()
 	{
+		std::ifstream file(_filePath, std::ifstream::binary);
+		try
+		{
+			file.exceptions(std::ios::failbit);
+			file.seekg(0, std::ifstream::end);
+			size_t size = file.tellg();
+			file.seekg(0, std::ifstream::beg);
 
+			_data = new ActiveTaskData(size, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+		}
+		catch (...)
+		{
+			delete _data;
+			if (file.is_open())
+			{
+				file.close();
+			}
+			throw;
+		}
 	}
 
-	TaskOutput ReadFile::finalizeAndGetOutputData()
+	TaskDataDto ReadFile::finalizeAndGetOutputData()
 	{
-		return TaskOutput(*new PassiveTaskData(_file.getData(), _file.getSize()));;
+		return TaskDataDto(*_data);
 	}
 
 	double ReadFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return _file.getSize();
+		return _data->getSize();
 	}
 } /* namespace Elpida */

@@ -7,8 +7,11 @@
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
-#include "Elpida/Engine/Data/PassiveTaskData.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
+#include "Elpida/Engine/Data/DataAdapter.hpp"
+#include "Elpida/Engine/Data/DataPropertiesTransformer.hpp"
+
+#include <unordered_set>
 
 namespace Elpida
 {
@@ -16,7 +19,10 @@ namespace Elpida
 	MultiThreadTask::MultiThreadTask(const TaskBuilder& taskBuilder,
 		const TaskConfiguration& configuration,
 		const TaskAffinity& affinity)
-		: Task(taskBuilder.getTaskSpecification(), affinity), _configuration(configuration), _taskBuilder(taskBuilder),
+		: Task(taskBuilder.getTaskSpecification(), *affinity.getProcessorNodes().front()),
+		  _affinity(affinity),
+		  _configuration(configuration),
+		  _taskBuilder(taskBuilder),
 		  _threadsShouldWake(false)
 	{
 
@@ -41,27 +47,42 @@ namespace Elpida
 
 	void MultiThreadTask::prepareImpl()
 	{
-		auto& adapter = _taskBuilder.getDataAdapter();
 		const auto& processors = _affinity.getProcessorNodes();
 		const size_t processorCount = processors.size();
 
-		auto& input = getInput();
-		auto newData =
-			adapter.breakIntoChunks(*input.getTaskData(), _affinity, _specification.getInputDataSpecification());
+		auto input = getInput();
+
+		_allocatedChunks =
+			DataAdapter::breakIntoChunks(*input.getTaskData(), _affinity, _specification.getInputDataSpecification());
 
 		_createdThreads.reserve(processorCount);
+
+		auto dataPropertiesTransformer = _specification.getDataPropertiesTransformer();
 
 		size_t i = 0;
 		for (auto processor : processors)
 		{
-			auto task = _specification
-				.createNewTask(_configuration, TaskAffinity(std::vector<const ProcessorNode*>{ processor }));
+			auto task = _specification.createNewTask(_configuration, *processor);
 
 			if (_specification.acceptsInput())
 			{
-				if (newData.size() <= i) break;	// Not enough chunks. We need to handle that
-				auto& data = newData[i];
-				task->setInput(TaskInput(*data));
+				if (_allocatedChunks.size() < i)
+				{
+					delete task;
+					break;    // Not enough chunks. We need to handle that
+				}
+				auto& data = _allocatedChunks[i];
+				if (dataPropertiesTransformer == nullptr)
+				{
+					task->setInput(TaskDataDto(*data, input.getDefinedProperties()));
+				}
+				else
+				{
+					task->setInput(TaskDataDto(*data,
+						dataPropertiesTransformer->transform(input.getTaskData()->getSize(),
+							input.getDefinedProperties(),
+							data->getSize())));
+				}
 			}
 
 			task->prepare();
@@ -75,18 +96,30 @@ namespace Elpida
 		}
 	}
 
-	TaskOutput MultiThreadTask::finalizeAndGetOutputData()
+	TaskDataDto MultiThreadTask::finalizeAndGetOutputData()
 	{
-		auto& adapter = _taskBuilder.getDataAdapter();
-
-		std::vector<const RawData*> accumulatedOutputs;
+		std::unordered_set<const RawData*> accumulatedOutputs;
 		for (auto& thread: _createdThreads)
 		{
 			thread.getTaskToRun().finalize();
-			accumulatedOutputs.push_back(&thread.getTaskToRun().getOutput().getTaskData());
+			accumulatedOutputs.emplace(thread.getTaskToRun().getOutput().getTaskData());
 		}
 
-		return TaskOutput(*adapter.mergeIntoSingleChunk(accumulatedOutputs));
+		auto returnData = DataAdapter::mergeIntoSingleChunk(std::vector<const RawData*>(accumulatedOutputs.begin(),
+			accumulatedOutputs.end()));
+
+		// This becomes the delete 'list'
+		for (auto data: _allocatedChunks)
+		{
+			// We need to add the original chunks to delete list too if tasks created their own chunks
+			accumulatedOutputs.emplace(data);
+		}
+
+		for (auto data: accumulatedOutputs)
+		{
+			delete data;    // delete any original chunks and chunks created by the tasks
+		}
+		return TaskDataDto(*returnData, getInput().getDefinedProperties());
 	}
 
 	double MultiThreadTask::calculateTaskResultValue(const Duration& taskElapsedTime) const
@@ -99,5 +132,4 @@ namespace Elpida
 		return _specification.getResultSpecification().getAggregationType() == ResultSpecification::Accumulative
 			   ? accumulator : accumulator / _createdThreads.size();
 	}
-
 }

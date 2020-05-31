@@ -18,52 +18,38 @@
  *************************************************************************/
 
 /*
- * PngWrite.cpp
+ * Grayscale.hpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 8 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Image/PngEncoding.hpp"
+#ifndef TASKSBATCHES_IMAGE_GRAYSCALEAVERAGE_HPP_
+#define TASKSBATCHES_IMAGE_GRAYSCALEAVERAGE_HPP_
 
-#include "Elpida/TaskMetrics.hpp"
-#include "TaskBatches/Image/Encoders/LibPngEncoder.hpp"
+#include "Benchmarks/Image/ImageTaskBase.hpp"
+#include "Benchmarks/Image/Config.hpp"
 
 namespace Elpida
 {
+	template<typename T>
+	class Image;
 
-	PngEncoding::PngEncoding(const Image<Data>& inputImage)
-		:
-		Task("Png Encoding"),
-		_runResult("Data process rate", "Bytes"),
-		_inputImage(inputImage),
-		_encodedData(nullptr),
-		_encodedDataSize(0)
+	class GrayscaleAverage : public ImageTaskBase
 	{
-	}
+	public:
+		void execute() override;
 
-	PngEncoding::~PngEncoding()
-	{
-		if (_encodedData != nullptr)
-		{
-			delete[] _encodedData;
-		}
-	}
-
-	void PngEncoding::run()
-	{
-		LibPngEncoder encoder;
-		auto encodeResult =
-			encoder.encode(_inputImage.getWidth(), _inputImage.getHeight(), (DataPtr)_inputImage.getData(),
-				_inputImage.getTotalSizeInBytes());
-		_encodedData = encodeResult.data;
-		_encodedDataSize = encodeResult.dataSize;
-	}
-
-	void PngEncoding::calculateResults(const TaskMetrics& metrics)
-	{
-		_runResult.setOriginalValue(_inputImage.getTotalSize() * 4);
-		addResult(_runResult);
-	}
+		GrayscaleAverage(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		~GrayscaleAverage() override;
+	protected:
+		void prepareImpl() override;
+		TaskDataDto finalizeAndGetOutputData() override;
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+	private:
+		Image<PixelFloat>* _inputImage;
+	};
 
 } /* namespace Elpida */
+
+#endif /* TASKSBATCHES_IMAGE_GRAYSCALEAVERAGE_HPP_ */

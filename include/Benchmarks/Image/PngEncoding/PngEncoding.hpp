@@ -18,15 +18,39 @@
  *************************************************************************/
 
 /*
- * FloydSteinberg.cpp
+ * PngWrite.hpp
  *
- *  Created on: 11 Ιουν 2018
+ *  Created on: 18 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "TaskBatches/Image/FloydSteinberg.hpp"
+#ifndef TASKSBATCHES_IMAGE_PNGENCODING_HPP_
+#define TASKSBATCHES_IMAGE_PNGENCODING_HPP_
+
+#include <Benchmarks/Image/Config.hpp>
+#include "Benchmarks/Image/ImageTaskBase.hpp"
 
 namespace Elpida
 {
+	template<typename T>
+	class Image;
+
+	class PngEncoding : public ImageTaskBase
+	{
+	public:
+
+		void execute() override;
+		PngEncoding(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		~PngEncoding() override;
+	protected:
+		void prepareImpl() override;
+		TaskDataDto finalizeAndGetOutputData() override;
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+	private:
+		RawData* _outputData;
+		Image<PixelInt>* _inputImage;
+	};
 
 } /* namespace Elpida */
+
+#endif /* TASKSBATCHES_IMAGE_PNGENCODING_HPP_ */

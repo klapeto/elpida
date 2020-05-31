@@ -6,7 +6,7 @@
 #define INCLUDE_ELPIDA_ENGINE_TASK_TASKOUTPUT_HPP
 
 #include "Elpida/Utilities/RawData.hpp"
-#include "TaskInput.hpp"
+#include "TaskDataDto.hpp"
 #include <vector>
 
 namespace Elpida

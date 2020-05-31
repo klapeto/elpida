@@ -29,61 +29,30 @@
 
 #include <cstddef>
 
-#include "Elpida/Task.hpp"
-#include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Utilities/Imaging/Image.hpp"
+#include "Benchmarks/Image/Config.hpp"
+#include "Benchmarks/Image/ImageTaskBase.hpp"
+
 
 namespace Elpida
 {
+	template<typename T>
+	class Image;
 
-	class TaskMetrics;
-
-	template<typename T, typename R = float>
-	class ConvertToFloat final : public Task
+	class ConvertToFloat final : public ImageTaskBase
 	{
 	public:
+		void execute() override;
 
-		Image<R>& getImage()
-		{
-			return _convertedImage;
-		}
-
-		void run()
-		{
-			std::size_t size = _sourceImage.getTotalSize();
-			Pixel<T>* sourceData = _sourceImage.getData();
-			Pixel<R>* convertedData = _convertedImage.getData();
-			for (std::size_t i = 0; i < size; ++i)
-			{
-				convertedData[i].R = sourceData[i].R / (R)255.0;
-				convertedData[i].G = sourceData[i].G / (R)255.0;
-				convertedData[i].B = sourceData[i].B / (R)255.0;
-				convertedData[i].A = sourceData[i].A / (R)255.0;
-			}
-		}
-
-		void calculateResults(const TaskMetrics& metrics) override
-		{
-			_runResult.setOriginalValue(_sourceImage.getTotalSizeInBytes());
-			addResult(_runResult);
-		}
-
-		void prepare() override
-		{
-			_convertedImage = Image<R>(_sourceImage.getWidth(), _sourceImage.getHeight());
-		}
-
-		explicit ConvertToFloat(const Image<T>& sourceImage)
-			: Task("Convert to Float"), _sourceImage(sourceImage), _runResult("Data convert rate", "Bytes")
-		{
-
-		}
-
-		~ConvertToFloat() override = default;
+		ConvertToFloat(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		~ConvertToFloat() override;
+	protected:
+		void prepareImpl() override;
+		TaskDataDto finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		const Image<T>& _sourceImage;
-		Image<R> _convertedImage;
-		TaskRunResult _runResult;
+		RawData* _outputData;
+		Image<PixelInt>* _inputImage;
+		Image<PixelFloat>* _outputImage;
 	};
 
 } /* namespace Elpida */

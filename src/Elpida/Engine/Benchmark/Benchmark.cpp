@@ -62,7 +62,7 @@ namespace Elpida
 						}
 						else
 						{
-							tasks.emplace_back(*builder->build(*taskConfiguration, affinity), *builder);
+							tasks.emplace_back(*builder->build(*taskConfiguration, *affinity.getProcessorNodes().front()), *builder);
 						}
 					}
 				}

@@ -19,7 +19,7 @@ namespace Elpida
 		};
 
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
-			const TaskAffinity& affinity) const override;
+			const ProcessorNode& processorToRun) const override;
 
 		ReadFileSpecification();
 		~ReadFileSpecification() override = default;

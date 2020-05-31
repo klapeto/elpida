@@ -24,9 +24,63 @@
  *      Author: klapeto
  */
 
-#include "Benchmarks/Image/ConvertToFloat.hpp"
+#include "Benchmarks/Image/ConvertToFloat/ConvertToFloat.hpp"
+
+#include <Elpida/Engine/Data/ActiveTaskData.hpp>
+#include <Elpida/Topology/SystemTopology.hpp>
+#include <Elpida/Topology/ProcessorNode.hpp>
+#include <Elpida/Utilities/Imaging/Image.hpp>
 
 namespace Elpida
 {
 
+	ConvertToFloat::ConvertToFloat(const TaskSpecification& specification, const ProcessorNode& processorToRun)
+		: ImageTaskBase(specification, processorToRun), _outputData(nullptr), _inputImage(nullptr),
+		  _outputImage(nullptr)
+	{
+
+	}
+
+	void ConvertToFloat::prepareImpl()
+	{
+		const auto& input = getInput();
+
+		auto properties = getImageProperties(input);
+
+		_inputImage = new Image<PixelInt>(*input.getTaskData(), properties.width, properties.height);
+		_outputData = new ActiveTaskData(properties.width * properties.height * 4 * sizeof(PixelFloat),
+			SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+		_outputImage = new Image<PixelFloat>(*_outputData, properties.width, properties.height);
+
+	}
+
+	TaskDataDto ConvertToFloat::finalizeAndGetOutputData()
+	{
+		return TaskDataDto(*_outputData, getInput().getDefinedProperties());
+	}
+
+	double ConvertToFloat::calculateTaskResultValue(const Duration& taskElapsedTime) const
+	{
+		return _outputImage->getTotalSize();
+	}
+
+	void ConvertToFloat::execute()
+	{
+		auto size = _inputImage->getTotalSize();
+		auto inputData = _inputImage->getData();
+		auto outputData = _outputImage->getData();
+		for (std::size_t i = 0; i < size; ++i)
+		{
+			outputData[i].R = inputData[i].R / (PixelFloat)255.0;
+			outputData[i].G = inputData[i].G / (PixelFloat)255.0;
+			outputData[i].B = inputData[i].B / (PixelFloat)255.0;
+			outputData[i].A = inputData[i].A / (PixelFloat)255.0;
+		}
+	}
+
+	ConvertToFloat::~ConvertToFloat()
+	{
+		delete _inputImage;
+		delete _outputImage;
+	}
 } /* namespace Elpida */

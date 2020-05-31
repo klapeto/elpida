@@ -33,8 +33,8 @@
 namespace Elpida
 {
 
-	MemoryRead::MemoryRead(const TaskSpecification& specification, const TaskAffinity& affinity)
-		: Task(specification, affinity), _taskData(nullptr), _iterations(1)
+	MemoryRead::MemoryRead(const TaskSpecification& specification, const ProcessorNode& processorToRun)
+		: Task(specification, processorToRun), _taskData(nullptr), _iterations(1)
 	{
 
 	}
@@ -48,9 +48,9 @@ namespace Elpida
 		_iterations = (unsigned long)std::max((_iterationConstant / (double)_taskData->getSize()), 1.0);
 	}
 
-	TaskOutput MemoryRead::finalizeAndGetOutputData()
+	TaskDataDto MemoryRead::finalizeAndGetOutputData()
 	{
-		return TaskOutput(*new PassiveTaskData(*_taskData));
+		return TaskDataDto(*_taskData);
 	}
 
 	double MemoryRead::calculateTaskResultValue(const Duration& taskElapsedTime) const

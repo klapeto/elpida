@@ -29,4 +29,15 @@ namespace Elpida
 	{
 
 	}
+	DataSpecification::DataSpecification(std::string name,
+		std::string unit,
+		size_t sizeShouldBeDivisibleBy,
+		std::vector<std::string> requiredProperties,
+		std::string description)
+		: _requiredPropertiesNames(std::move(requiredProperties)), _name(std::move(name)),
+		  _description(std::move(description)), _unit(std::move(unit)),
+		  _sizeShouldBeDivisibleBy(sizeShouldBeDivisibleBy)
+	{
+
+	}
 }

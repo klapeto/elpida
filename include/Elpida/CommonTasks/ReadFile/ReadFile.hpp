@@ -34,22 +34,22 @@
 
 namespace Elpida
 {
-	class TaskMetrics;
+	class ActiveTaskData;
 
 	class ReadFile : public Task
 	{
 	public:
 		void execute() override;
 
-		ReadFile(const TaskSpecification& specification, const TaskAffinity& affinity, std::string filePath);
+		ReadFile(const TaskSpecification& specification, const ProcessorNode& processorToRun, std::string filePath);
 		~ReadFile() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskOutput finalizeAndGetOutputData() override;
+		TaskDataDto finalizeAndGetOutputData() override;
 		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		MemoryFile _file;
 		std::string _filePath;
+		ActiveTaskData* _data;
 	};
 
 } /* namespace Elpida */

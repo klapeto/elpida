@@ -13,12 +13,15 @@ namespace Elpida
 		ResultSpecification("Read Rate", "B", ResultSpecification::Throughput, ResultSpecification::Accumulative))
 	{
 		withDescription("Reads continuously a memory region to determine Memory Read Bandwidth");
-		withInputData(DataSpecification("Input Memory", "B",  32 * sizeof(RegisterSize),"The allocated memory region to read"));
+		withInputData(DataSpecification("Input Memory",
+			"B",
+			32 * sizeof(RegisterSize),
+			"The allocated memory region to read"));
 	}
 
 	Task* MemoryReadSpecification::createNewTask(const TaskConfiguration& configuration,
-		const TaskAffinity& affinity) const
+		const ProcessorNode& processorToRun) const
 	{
-		return new MemoryRead(*this, affinity);
+		return new MemoryRead(*this, processorToRun);
 	}
 }

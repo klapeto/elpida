@@ -39,14 +39,13 @@ namespace Elpida
 	class WriteFile : public Task
 	{
 	public:
-
 		void execute() override;
 
-		WriteFile(const TaskSpecification& specification, const TaskAffinity& affinity, std::string filePath);
+		WriteFile(const TaskSpecification& specification, const ProcessorNode& processorToRun, std::string filePath);
 		~WriteFile() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskOutput finalizeAndGetOutputData() override;
+		TaskDataDto finalizeAndGetOutputData() override;
 		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::string _outputPath;

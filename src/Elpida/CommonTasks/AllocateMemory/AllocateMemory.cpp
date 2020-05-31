@@ -26,10 +26,9 @@
 
 #include "Elpida/CommonTasks/AllocateMemory/AllocateMemory.hpp"
 
-#include "Elpida/ElpidaException.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/Engine/Data/PassiveTaskData.hpp"
+#include "Elpida/Engine/Data/ActiveTaskData.hpp"
 
 #include <cstring>
 
@@ -37,37 +36,28 @@ namespace Elpida
 {
 
 	AllocateMemory::AllocateMemory(const TaskSpecification& specification,
-		const TaskAffinity& affinity,
-		std::size_t size, bool initialize)
-		: Task(specification, affinity),
-		  _memory(size,
-			  SystemTopology::getNumaNodeOfProcessor((int)affinity.getProcessorNodes().front()->getOsIndex())),
-		  _size(size),
-		  _initialize(initialize)
+		const ProcessorNode& processorToRun,
+		std::size_t size)
+		: Task(specification, processorToRun),
+		  _memory(nullptr),
+		  _size(size)
 	{
 
 	}
 	void AllocateMemory::execute()
 	{
-		_memory.allocate();
+		_memory = new ActiveTaskData(_size, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+		memset(_memory->getData(), 0, _memory->getSize());
 	}
 
 	void AllocateMemory::prepareImpl()
 	{
-		_memory.deallocate();
+
 	}
 
-	TaskOutput AllocateMemory::finalizeAndGetOutputData()
+	TaskDataDto AllocateMemory::finalizeAndGetOutputData()
 	{
-		if (_memory.getPointer() == nullptr)
-		{
-			throw ElpidaException("Allocate Memory", "Memory Allocation failed");
-		}
-		if (_initialize)
-		{
-			memset(_memory.getPointer(), 0, _memory.getSize());
-		}
-		return TaskOutput(*new PassiveTaskData(_memory.getPointer(), _size));
+		return TaskDataDto(*_memory);
 	}
 
 	double AllocateMemory::calculateTaskResultValue(const Duration& taskElapsedTime) const

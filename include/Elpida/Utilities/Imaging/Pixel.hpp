@@ -44,24 +44,20 @@ namespace Elpida
 		T A;
 
 		inline Pixel()
+			: Pixel(0, 0, 0, 0)
 		{
-
 		}
 
 		inline Pixel(T r, T g, T b, T a)
 			: R(r), G(g), B(b), A(a)
 		{
-
 		}
 
-		inline ~Pixel()
-		{
+		inline ~Pixel() = default;
 
-		}
-
-		inline Pixel(Pixel&&) = default;
+		inline Pixel(Pixel&&) noexcept = default;
 		inline Pixel(const Pixel&) = default;
-		inline Pixel& operator=(Pixel&&) = default;
+		inline Pixel& operator=(Pixel&&) noexcept = default;
 		inline Pixel& operator=(const Pixel&) = default;
 	};
 

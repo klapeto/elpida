@@ -13,7 +13,6 @@ namespace Elpida
 	TaskBuilder::~TaskBuilder()
 	{
 		delete _taskSpecification;
-		delete _dataAdapter;
 	}
 
 	TaskBuilder& TaskBuilder::canBeDisabled(bool canBeDisabled)
@@ -34,9 +33,9 @@ namespace Elpida
 		return *this;
 	}
 
-	Task* TaskBuilder::build(const TaskConfiguration& configuration, const TaskAffinity& affinity) const
+	Task* TaskBuilder::build(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const
 	{
-		return _taskSpecification->createNewTask(configuration, affinity);
+		return _taskSpecification->createNewTask(configuration, processorToRun);
 	}
 
 	void TaskBuilder::fillConfigurationMap()
@@ -45,12 +44,6 @@ namespace Elpida
 		{
 			_configurationMap.emplace(config->getName(), config);
 		}
-	}
-
-	void TaskBuilder::setNewDataAdapter(DataAdapter& newDataAdapter)
-	{
-		delete _dataAdapter;
-		_dataAdapter = &newDataAdapter;
 	}
 
 	TaskConfiguration TaskBuilder::generateDefaultConfiguration() const

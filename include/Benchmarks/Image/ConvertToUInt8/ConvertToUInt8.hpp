@@ -18,57 +18,42 @@
  *************************************************************************/
 
 /*
- * PngLoad.hpp
+ * ConvertToUInt8.hpp
  *
- *  Created on: 18 Μαρ 2018
+ *  Created on: 12 Ιουν 2018
  *      Author: klapeto
  */
 
-#ifndef TASKSBATCHES_IMAGE_PNGDECODING_HPP_
-#define TASKSBATCHES_IMAGE_PNGDECODING_HPP_
+#ifndef TASKSBATCHES_IMAGE_CONVERTTOUINT8_HPP_
+#define TASKSBATCHES_IMAGE_CONVERTTOUINT8_HPP_
 
-#include <cstddef>
-
-#include "Elpida/Task.hpp"
-#include "Elpida/TaskRunResult.hpp"
-#include "Elpida/Utilities/Imaging/Image.hpp"
+#include "Benchmarks/Image/Config.hpp"
+#include "Benchmarks/Image/ImageTaskBase.hpp"
 
 namespace Elpida
 {
-	class TaskMetrics;
+	template<typename T>
+	class Image;
 
-	class PngDecoding : public Task
+	class ConvertToUInt8 final : public ImageTaskBase
 	{
 	public:
+		void execute() override;
 
-		typedef unsigned char Data;
-		typedef Data* DataPtr;
+		ConvertToUInt8(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		~ConvertToUInt8() override;
+	protected:
+		void prepareImpl() override;
+		TaskDataDto finalizeAndGetOutputData() override;
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 
-		[[nodiscard]] const Image<Data>& getImage() const
-		{
-			return _image;
-		}
-
-		Image<Data>& getImage()
-		{
-			return _image;
-		}
-
-		void run() override;
-		void calculateResults(const TaskMetrics& metrics) override;
-
-		PngDecoding(const DataPtr& inputData, const std::size_t& dataSize);
-		~PngDecoding() override = default;
-
-		PngDecoding(PngDecoding&&) = default;
-		PngDecoding(const PngDecoding&) = default;
 	private:
-		Image<Data> _image;
-		TaskRunResult _runResult;
-		const DataPtr& _inputData;
-		const std::size_t& _dataSize;
+		RawData* _outputData;
+		Image<PixelInt>* _outputImage;
+		Image<PixelFloat>* _inputImage;
+
 	};
 
 } /* namespace Elpida */
 
-#endif /* TASKSBATCHES_IMAGE_PNGDECODING_HPP_ */
+#endif /* TASKSBATCHES_IMAGE_CONVERTTOUINT8_HPP_ */

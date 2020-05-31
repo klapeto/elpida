@@ -33,9 +33,8 @@
 namespace Elpida
 {
 
-	MemoryReadLatency::MemoryReadLatency(const TaskSpecification& specification,
-		TaskAffinity affinity)
-		: Task(specification, std::move(affinity)), _taskData(nullptr), _iterations(1)
+	MemoryReadLatency::MemoryReadLatency(const TaskSpecification& specification, const ProcessorNode& processorToRun)
+		: Task(specification, processorToRun), _taskData(nullptr), _iterations(1)
 	{
 
 	}
@@ -61,9 +60,9 @@ namespace Elpida
 		}
 	}
 
-	TaskOutput MemoryReadLatency::finalizeAndGetOutputData()
+	TaskDataDto MemoryReadLatency::finalizeAndGetOutputData()
 	{
-		return TaskOutput(*new PassiveTaskData(*_taskData));
+		return TaskDataDto(*_taskData);
 	}
 
 	void MemoryReadLatency::execute()

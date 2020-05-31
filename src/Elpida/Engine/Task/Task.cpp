@@ -2,7 +2,6 @@
 // Created by klapeto on 19/4/20.
 //
 
-
 #include "Elpida/Engine/Task/Task.hpp"
 
 #include "Elpida/Config.hpp"
@@ -11,25 +10,33 @@
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
 #include "Elpida/ElpidaException.hpp"
+#include "Elpida/Engine/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {
 
-	Task::Task(const TaskSpecification& specification, TaskAffinity affinity)
-		: _affinity(std::move(affinity)), _specification(specification)
+	Task::Task(const TaskSpecification& specification, const ProcessorNode& processorToRun)
+		: _processorToRun(processorToRun), _specification(specification)
 	{
-		if (_affinity.getProcessorNodes().empty())
-		{
-			throw ElpidaException(FUNCTION_NAME, "Task Affinity is empty!");
-		}
+
 	}
 
 	void Task::applyAffinity()
 	{
-		auto nodes = _affinity.getProcessorNodes();
-		if (!nodes.empty())
+		TaskThread::setCurrentThreadAffinity((int)_processorToRun.getOsIndex());
+	}
+
+	static void validateDataProperties(const DataSpecification& specification, const TaskDataDto& taskDataDto)
+	{
+		auto& propertiesNames = specification.getRequiredPropertiesNames();
+		auto& definedProperties = taskDataDto.getDefinedProperties();
+		for (auto& propertyName: propertiesNames)
 		{
-			TaskThread::setCurrentThreadAffinity((int)nodes[0]->getOsIndex());
+			if (definedProperties.find(propertyName) == definedProperties.end())
+			{
+				throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("'", propertyName, "' property was not defined!"));
+			}
 		}
 	}
 
@@ -40,23 +47,29 @@ namespace Elpida
 			throw ElpidaException(FUNCTION_NAME,
 				Vu::Cs("'", _specification.getName(), "' task needs input and it was not provided!"));
 		}
+
+		validateDataProperties(_specification.getInputDataSpecification(), _inputData);
+
 		prepareImpl();
 	}
 
 	void Task::finalize()
 	{
 		_outputData = finalizeAndGetOutputData();
+		validateDataProperties(_specification.getOutputDataSpecification(), _outputData);
 	}
 
-	static size_t getInputDataSize(const TaskInput& input)
+	static size_t getInputDataSize(RawData* input)
 	{
-		return input.getTaskData() != nullptr ? input.getTaskData()->getSize() : 0;
+		return input != nullptr ? input->getSize() : 0;
 	}
 
 	TaskResult Task::calculateTaskResult(const Duration& taskElapsedTime) const
 	{
 		return TaskResult(_specification,
-			TaskMetrics(taskElapsedTime, calculateTaskResultValue(taskElapsedTime), getInputDataSize(_inputData)));
+			TaskMetrics(taskElapsedTime,
+				calculateTaskResultValue(taskElapsedTime),
+				getInputDataSize(_inputData.getTaskData())));
 	}
 
 }

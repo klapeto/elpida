@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 #include "TaskOutput.hpp"
-#include "TaskInput.hpp"
+#include "TaskDataDto.hpp"
 #include "Elpida/Engine/Result/TaskResult.hpp"
 #include "Elpida/Utilities/Duration.hpp"
 #include "TaskAffinity.hpp"
@@ -21,17 +21,17 @@ namespace Elpida
 	{
 	public:
 
-		void setInput(TaskInput&& input)
+		void setInput(const TaskDataDto& input)
 		{
-			_inputData = std::move(input);
+			_inputData = input;
 		}
 
-		TaskOutput& getOutput()
+		const TaskDataDto& getOutput() const
 		{
 			return _outputData;
 		}
 
-		[[nodiscard]] inline const TaskInput& getInput() const
+		[[nodiscard]] inline const TaskDataDto& getInput() const
 		{
 			return _inputData;
 		}
@@ -49,18 +49,18 @@ namespace Elpida
 
 		virtual void applyAffinity();
 
-		Task(const TaskSpecification& specification, TaskAffinity affinity);
+		Task(const TaskSpecification& specification, const ProcessorNode& processorToRun);
 		virtual ~Task() = default;
 	protected:
-		TaskAffinity _affinity;
+		const ProcessorNode& _processorToRun;
 		const TaskSpecification& _specification;
 
 		virtual void prepareImpl() = 0;
-		virtual TaskOutput finalizeAndGetOutputData() = 0;
+		virtual TaskDataDto finalizeAndGetOutputData() = 0;
 		[[nodiscard]] virtual double calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
 	private:
-		TaskOutput _outputData;
-		TaskInput _inputData;
+		TaskDataDto _inputData;
+		TaskDataDto _outputData;
 
 		friend class MultiThreadTask;
 	};

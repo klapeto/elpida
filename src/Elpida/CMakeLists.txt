@@ -62,7 +62,7 @@ set(ELPIDA_SOURCES
         Engine/Configuration/Specification/TaskConfigurationSpecifications.cpp
         Engine/Runner/BenchmarkRunRequest.cpp
         Engine/Configuration/Specification/ConfigurationSpecificationBase.cpp
-        Engine/Task/TaskInput.cpp
+        Engine/Task/TaskDataDto.cpp
         Engine/Task/TaskOutput.cpp
         Engine/Data/PassiveTaskData.cpp
         Engine/Data/ActiveTaskData.cpp
@@ -71,9 +71,7 @@ set(ELPIDA_SOURCES
         Engine/Task/TaskBuilder.cpp
         Engine/Data/DataAdapter.cpp
         Engine/Benchmark/BenchmarkTaskInstance.cpp
-        Engine/Data/Adapters/CopyingAdapter.cpp
-        Engine/Data/Adapters/ForwardingAdapter.cpp
-        Engine/Configuration/ConfigurationInstance.cpp)
+        Engine/Configuration/ConfigurationInstance.cpp Engine/Data/DataPropertiesTransformer.cpp ../../include/Elpida/Engine/Data/DataPropertiesTransformer.hpp)
 
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

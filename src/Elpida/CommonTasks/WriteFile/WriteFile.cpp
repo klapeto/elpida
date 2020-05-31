@@ -30,24 +30,24 @@
 
 #include "Elpida/Utilities/MemoryFile.hpp"
 #include "Elpida/ElpidaException.hpp"
-#include "Elpida/Engine/Task/TaskInput.hpp"
-
+#include "Elpida/Engine/Task/TaskDataDto.hpp"
 
 namespace Elpida
 {
 
 	WriteFile::WriteFile(const TaskSpecification& specification,
-		const TaskAffinity& affinity,
+		const ProcessorNode& processorToRun,
 		std::string filePath)
-		: Task(specification, affinity), _outputPath(std::move(filePath))
+		: Task(specification, processorToRun),
+		_outputPath(std::move(filePath))
 	{
 
 	}
 
 	void WriteFile::execute()
 	{
-		const auto& input = getInput().getTaskData();
-		MemoryFile(input->getData(), input->getSize()).writeToFile(_outputPath);
+		const auto& input = getInput();
+		MemoryFile(input.getTaskData()->getData(), input.getTaskData()->getSize()).writeToFile(_outputPath);
 	}
 
 	void WriteFile::prepareImpl()
@@ -55,9 +55,9 @@ namespace Elpida
 
 	}
 
-	TaskOutput WriteFile::finalizeAndGetOutputData()
+	TaskDataDto WriteFile::finalizeAndGetOutputData()
 	{
-		return TaskOutput();
+		return TaskDataDto();
 	}
 
 	double WriteFile::calculateTaskResultValue(const Duration& taskElapsedTime) const

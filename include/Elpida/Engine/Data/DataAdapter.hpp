@@ -5,27 +5,32 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_TASK_DATA_DATAADAPTER_HPP
 #define INCLUDE_ELPIDA_ENGINE_TASK_DATA_DATAADAPTER_HPP
 
-#include "Elpida/Engine/Task/TaskInput.hpp"
+#include <vector>
 
 namespace Elpida
 {
-	class TaskOutput;
+	class Task;
 	class TaskAffinity;
 	class DataSpecification;
+	class RawData;
 
 	class DataAdapter
 	{
 	public:
+		static void adaptAndForwardTaskData(Task* previous, Task* next);
 
-		[[nodiscard]] virtual std::vector<RawData*> breakIntoChunks(const RawData& input,
+		[[nodiscard]] static std::vector<RawData*> breakIntoChunks(const RawData& input,
 			const TaskAffinity& affinity,
-			const DataSpecification& targetDataSpecification) const = 0;
+			const DataSpecification& targetDataSpecification);
 
-		[[nodiscard]] virtual RawData* mergeIntoSingleChunk(const std::vector<const RawData*>& inputData) const = 0;
+		[[nodiscard]] static RawData* mergeIntoSingleChunk(const std::vector<const RawData*>& inputData);
 
 		virtual ~DataAdapter() = default;
 	protected:
 		static size_t getAccumulatedSizeOfChunks(const std::vector<const RawData*>& outputChunks);
+		static std::vector<RawData*> breakIntoChunksImpl(const std::vector<const RawData*>& input,
+			const std::vector<int>& processorsOsIndices,
+			size_t chunksDivisibleBy);
 	};
 }
 

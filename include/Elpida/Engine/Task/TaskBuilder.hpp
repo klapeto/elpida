@@ -13,8 +13,6 @@
 #include "Elpida/Engine/Configuration/Specification/TaskConfigurationSpecifications.hpp"
 #include "Elpida/Engine/Configuration/ConfigurationInstance.hpp"
 #include "Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp"
-#include "Elpida/Engine/Data/Adapters/ForwardingAdapter.hpp"
-#include "Elpida/Engine/Data/Adapters/CopyingAdapter.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 
 namespace Elpida
@@ -26,7 +24,6 @@ namespace Elpida
 	class TaskAffinity;
 	class ConfigurationSpecificationBase;
 	class ConfigurationValueBase;
-	class DataAdapter;
 
 	class TaskBuilder
 	{
@@ -60,7 +57,7 @@ namespace Elpida
 			return *_taskSpecification;
 		}
 
-		[[nodiscard]] Task* build(const TaskConfiguration& configuration, const TaskAffinity& affinity) const;
+		[[nodiscard]] Task* build(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const;
 
 		bool isShouldBeCountedOnResults() const
 		{
@@ -77,35 +74,26 @@ namespace Elpida
 			return _canBeDisabled;
 		}
 
-		const DataAdapter& getDataAdapter() const
-		{
-			return *_dataAdapter;
-		}
-
 		explicit TaskBuilder(TaskSpecification& specification)
 			:
 			_taskSpecification(&specification),
-			_dataAdapter(nullptr),
 			_shouldBeCountedOnResults(false),
 			_canBeMultiThreaded(false),
 			_canBeDisabled(false)
 		{
 			fillConfigurationMap();
-			setNewDataAdapter(*new ForwardingAdapter());
 		}
+
 		virtual ~TaskBuilder();
 	private:
 		std::unordered_map<std::string, ConfigurationSpecificationBase*> _configurationMap;
 		std::unordered_map<std::string, ConfigurationInstance> _predefinedConfigurationsValues;
 		TaskSpecification* _taskSpecification;
-		DataAdapter* _dataAdapter;
 		bool _shouldBeCountedOnResults;
 		bool _canBeMultiThreaded;
 		bool _canBeDisabled;
 
 		void fillConfigurationMap();
-
-		void setNewDataAdapter(DataAdapter& newDataAdapter);
 
 		TaskConfiguration generateDefaultConfiguration() const;
 

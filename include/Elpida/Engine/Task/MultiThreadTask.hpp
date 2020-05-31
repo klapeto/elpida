@@ -23,12 +23,14 @@ namespace Elpida
 		~MultiThreadTask() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskOutput finalizeAndGetOutputData() override;
-		virtual double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		TaskDataDto finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::mutex _mutex;
 		std::condition_variable _wakeNotifier;
 		std::vector<TaskThread> _createdThreads;
+		std::vector<RawData*> _allocatedChunks;
+		TaskAffinity _affinity;
 		const TaskConfiguration& _configuration;
 		const TaskBuilder& _taskBuilder;
 		bool _threadsShouldWake;
