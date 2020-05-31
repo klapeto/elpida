@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,14 +32,16 @@
 
 #ifdef ELPIDA_LINUX
 #include <numa.h>
+#include <sys/resource.h>
 #else
-#include <windows.h>
+#include <Windows.h>
+#include <iostream>
 #endif
 
 namespace Elpida
 {
 	SystemTopology::SystemTopology()
-		: _root(nullptr)
+		: _root(nullptr), _depth(0), _totalLogicalCores(0), _totalPhysicalCores(0)
 	{
 		reload();
 	}
@@ -51,10 +53,7 @@ namespace Elpida
 
 	void SystemTopology::reload()
 	{
-		if (_root != nullptr)
-		{
-			delete _root;
-		}
+		delete _root;
 		hwloc_topology_t topo;
 		hwloc_topology_init(&topo);
 		hwloc_topology_set_all_types_filter(topo, HWLOC_TYPE_FILTER_KEEP_ALL);
@@ -94,6 +93,26 @@ namespace Elpida
 
 		GetNumaProcessorNode(processorId, &NodeNumber);
 		return NodeNumber;
+#endif
+	}
+
+	void SystemTopology::setProcessPriority(SystemTopology::ProcessPriority priority)
+	{
+#ifdef ELPIDA_LINUX
+		switch (priority)
+		{
+		case ProcessPriority::High:
+			setpriority(PRIO_PROCESS, 0, PRIO_MIN);
+			break;
+		default:
+			setpriority(PRIO_PROCESS, 0, 0);
+			break;
+		}
+#else
+		if(!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
+		{
+			std::cout << "Warning! Failed to set process priority: " << GetLastError() << std::endl;
+		}
 #endif
 	}
 

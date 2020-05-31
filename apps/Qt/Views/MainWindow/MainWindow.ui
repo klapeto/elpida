@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Elpida::MainWindow</class>
+ <widget class="QMainWindow" name="Elpida::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>153</width>
+    <height>50</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Elpida</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../Images/Images.qrc">
+    <normaloff>:/Elpida-icon.svg</normaloff>:/Elpida-icon.svg</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/*============ QWidget ============*/
+QTabWidget,QFrame,QLabel,QCheckBox,QGroupBox,QScrollArea{
+background-color: rgba(229,232,253,0);
+}
+
+#scrollAreaWidgetContents{
+background-color: rgba(229,232,253,0);
+} 
+
+QTreeWidget QWidget {
+	background-color: rgba(229,232,253,255); 
+}
+
+QMainWindow{
+	background-color: rgba(229,232,253,255); 
+	image: url(:/Elpida.svg);
+	image-position: bottom right;
+}
+
+#centralWidget {
+background-color: rgba(229,232,253,245);
+}
+#menuBar {
+background-color: rgba(229,232,253,245);
+}
+
+QWidget :disabled {
+	background-color: rgba(199, 202, 226,255);
+}
+
+QScrollBar {
+    background-color: rgba(229,232,253,255);
+}
+
+
+/*==================================*/
+/*============ QGroupBox ============*/
+QGroupBox {
+	border: 1px solid rgb(179, 179, 179);
+	margin-top: 3ex;
+}
+
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top center; 
+}
+/*==================================*/
+/*============ QCheckBox ============*/
+QCheckBox::indicator {
+	border: 1px solid rgb(179, 179, 179);
+}
+
+QCheckBox::indicator:hover, QCheckBox::indicator:hover:unchecked {
+	background-color: rgb(221, 219, 243);
+}
+
+QCheckBox::indicator:checked:hover  {
+	background-color:rgb(110, 122, 231);
+}
+
+QCheckBox::indicator:pressed,  QCheckBox::indicator:unchecked:pressed, QPushButton:disabled {
+	background-color: rgb(199, 202, 226);
+} 
+
+QCheckBox::indicator:checked:pressed {
+	background-color: rgb(137, 142, 226);
+}
+
+QCheckBox::indicator:checked {
+	background-color: rgb(155, 195, 255);
+}
+
+
+QListWidget::indicator {
+	border: 1px solid rgb(179, 179, 179);
+}
+
+QListWidget::indicator:hover, QListWidget::indicator:hover:unchecked {
+	background-color: rgb(221, 219, 243);
+}
+
+QListWidget::indicator:checked:hover  {
+	background-color:rgb(110, 122, 231);
+}
+
+QListWidget::indicator:pressed,  QListWidget::indicator:unchecked:pressed {
+	background-color: rgb(199, 202, 226);
+} 
+
+QListWidget::indicator:checked:pressed {
+	background-color: rgb(137, 142, 226);
+}
+
+QListWidget::indicator:checked {
+	background-color: rgb(155, 195, 255);
+}
+
+/*==================================*/
+/*============ QPushButton ============*/
+QPushButton {
+	border: 1px solid rgb(158, 159, 238);
+	background-color: rgba(203, 199, 247,255);
+	min-width: 5em;
+}
+
+QPushButton:hover {
+	background-color: rgba(221, 219, 243,255);
+}
+
+QPushButton:pressed  {
+	background-color: rgba(137, 142, 226,255);
+}
+
+QPushButton:flat {
+	border: none; 
+}
+
+QPushButton:default {
+	border-color: rgb(84, 115, 202); 
+}
+/*==================================*/
+/*============ QToolButton ============*/
+/*QToolButton {
+	border: 1px solid rgb(158, 159, 238);
+	background-color:rgb(214, 217, 243);
+	padding: 2px;
+}
+
+QToolButton:hover {
+	background-color: rgb(229, 229, 245);
+}
+
+QToolButton:pressed  {
+	background-color: rgb(137, 142, 226);
+}*/
+/*==================================*/
+/*============ QLineEdit ============*/
+QLineEdit {
+	border: 1px solid rgb(179, 179, 179);
+	background-color: rgb(244, 243, 255);
+}
+/*==================================*/</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QTabWidget" name="tbwMain">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>153</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuElpida">
+    <property name="title">
+     <string>E&amp;lpida</string>
+    </property>
+    <addaction name="actionShowLogs"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>Hel&amp;p</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuElpida"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <action name="actionExit">
+   <property name="text">
+    <string>&amp;Exit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionShowLogs">
+   <property name="text">
+    <string>&amp;Show Logs</string>
+   </property>
+   <property name="toolTip">
+    <string>Shows the Logs Dialog</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="../../Images/Images.qrc"/>
+ </resources>
+ <connections/>
+</ui>

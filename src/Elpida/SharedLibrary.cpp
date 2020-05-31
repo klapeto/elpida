@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include "Elpida/SharedLibrary.hpp"
 
 #include "Elpida/Config.hpp"
-#include "Elpida/Exceptions/ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <dirent.h>
@@ -36,6 +36,7 @@
 #include <Windows.h>
 #include <strsafe.h>
 #include <string>
+#include "Elpida/Utilities/WindowsUtils.hpp"
 #endif
 
 namespace Elpida
@@ -43,6 +44,19 @@ namespace Elpida
 #ifdef ELPIDA_WINDOWS
 	static std::string GetWindowsError();
 #endif
+
+	SharedLibrary::SharedLibrary(SharedLibrary&& other) noexcept
+	{
+		this->_handle = other._handle;
+		other._handle = nullptr;
+	}
+
+	SharedLibrary& SharedLibrary::operator=(SharedLibrary&& other) noexcept
+	{
+		this->_handle = other._handle;
+		other._handle = nullptr;
+		return *this;
+	}
 
 	SharedLibrary::SharedLibrary(const std::string& libraryPath)
 	{
@@ -61,7 +75,7 @@ namespace Elpida
 #ifdef ELPIDA_LINUX
 				(errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
 #else
-			GetWindowsError());
+			WindowsUtils::GetLastErrorString());
 #endif
 		}
 	}
@@ -89,31 +103,6 @@ namespace Elpida
 								  :
 			   nullptr;
 	}
-
-#ifdef ELPIDA_WINDOWS
-	static std::string GetWindowsError()
-	{
-		LPVOID lpMsgBuf;
-		LPVOID lpDisplayBuf;
-		DWORD dw = GetLastError();
-
-		FormatMessage(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER |
-				FORMAT_MESSAGE_FROM_SYSTEM |
-				FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-
-		lpDisplayBuf = (LPVOID) LocalAlloc(LMEM_ZEROINIT,
-				(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) "Error") + 40) * sizeof(TCHAR));
-		StringCchPrintf((LPTSTR) lpDisplayBuf, LocalSize(lpDisplayBuf) / sizeof(TCHAR), TEXT("%s failed with error %d: %s"), "Error",
-				dw, lpMsgBuf);
-		std::string returnString((const char*)lpDisplayBuf);
-		LocalFree(lpMsgBuf);
-		LocalFree(lpDisplayBuf);
-
-		return returnString;
-	}
-#endif
 
 }
 /* namespace Elpida */

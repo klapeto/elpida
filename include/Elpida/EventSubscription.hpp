@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 
 #include <list>
 #include "Elpida/Utilities/NonCopyable.hpp"
+#include "Elpida/EventSubscriptionBase.hpp"
 #include <functional>
 
 namespace Elpida
@@ -37,35 +38,32 @@ namespace Elpida
 	class Event;
 
 	template<typename ... T>
-	class EventSubscription : public NonCopyable
+	class EventSubscription : public NonCopyable, public EventSubscriptionBase
 	{
 	public:
-
 		typedef std::function<void(T...)> EventHandler;
 
-		void unsubscribe()
+		void unsubscribe() override
 		{
 			_owner.unsubScribe(*this);
 		}
 
-		EventSubscription(EventSubscription<T...>&& other)
-			: _iterator(std::move(other._iterator)), _owner(other._owner), _handler(other._handler)
-		{
-		}
-
-		~EventSubscription()
+		EventSubscription(EventSubscription<T...>&& other) noexcept
+			: _iterator(std::move(other._iterator)), _owner(other._owner), _handler(std::move(other._handler))
 		{
 
 		}
+
+		~EventSubscription() override = default;
 	private:
-		typedef typename std::list<EventSubscription<T...>>::iterator Iterator;
+		using Iterator = typename std::list<EventSubscription<T...>>::iterator;
 
 		Iterator _iterator;
-		Event<T...>& _owner;
+		const Event<T...>& _owner;
 		EventHandler _handler;
 
-		EventSubscription(Event<T...>& owner, EventHandler&& hanlder)
-			: _owner(owner), _handler(hanlder)
+		EventSubscription(const Event<T...>& owner, EventHandler&& handler)
+			: _owner(owner), _handler(std::move(handler))
 		{
 
 		}

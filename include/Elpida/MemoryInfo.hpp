@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -37,38 +37,23 @@ namespace Elpida
 	class MemoryInfo final : public NonCopyable
 	{
 	public:
-
-		static MemoryInfo& getInfo()
-		{
-			static MemoryInfo instance;
-			return instance;
-		}
-
-		std::size_t getMemorySize() const
+		[[nodiscard]] std::size_t getMemorySize() const
 		{
 			return _memorySize;
 		}
 
-		std::size_t getPageSize() const
+		[[nodiscard]] std::size_t getPageSize() const
 		{
 			return _pageSize;
 		}
 
-		std::size_t getAvailableFreeMemory() const;
+		[[nodiscard]] std::size_t getAvailableFreeMemory() const;
 
-		~MemoryInfo()
-		{
-		}
+		MemoryInfo();
+		~MemoryInfo() override = default;
 	private:
-
 		std::size_t _memorySize;
 		std::size_t _pageSize;
-
-		MemoryInfo()
-			: _memorySize(0), _pageSize(0)
-		{
-			getValues();
-		}
 
 		void getValues();
 	};

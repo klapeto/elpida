@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -42,23 +42,13 @@ namespace Elpida
 			return (T)getFunctionPointerImpl(functionName);
 		}
 
-		SharedLibrary(const std::string& libraryPath);
+		explicit SharedLibrary(const std::string& libraryPath);
+		SharedLibrary(SharedLibrary&& other) noexcept;
+		SharedLibrary& operator=(SharedLibrary&& other) noexcept;
+		~SharedLibrary();
+
 		SharedLibrary(const SharedLibrary&) = delete;
 		SharedLibrary& operator=(const SharedLibrary&) = delete;
-
-		SharedLibrary(SharedLibrary&& other)
-		{
-			this->_handle = other._handle;
-			other._handle = nullptr;
-		}
-		SharedLibrary& operator=(SharedLibrary&& other)
-		{
-			this->_handle = other._handle;
-			other._handle = nullptr;
-			return *this;
-		}
-
-		~SharedLibrary();
 	private:
 		void* _handle;
 		void* getFunctionPointerImpl(const std::string& functionName) const;

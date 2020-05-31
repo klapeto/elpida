@@ -18,6 +18,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
+git submodule update --init
+
 if [ ! -d "build" ]; then
 	mkdir "build"
 fi

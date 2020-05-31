@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,50 +27,29 @@
 #include "Elpida/Utilities/ValueUtilities.hpp"
 
 #include <iomanip>
-#include <ratio>
 #include <sstream>
 
 namespace Elpida
 {
-	std::string ValueUtilities::getValueScaleString(double value)
+
+	std::string ValueUtilities::getValueScaleStringImpl(double value,
+		const double denominators[],
+		const char* prefixes[],
+		size_t arraySize,
+		int decimals)
 	{
 		std::ostringstream returnString;
-		if (value < std::kilo::num)
+		size_t i = arraySize - 1;
+		while (i > 0)
 		{
-			returnString << std::fixed << std::setprecision(2) << value;
-			return returnString.str();
+			if (value >= denominators[i])
+			{
+				break;
+			}
+			i--;
 		}
-
-		if (value < std::mega::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::kilo::num << " K";
-			return returnString.str();
-		}
-
-		if (value < std::giga::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::mega::num << " M";
-			return returnString.str();
-		}
-
-		if (value < std::tera::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::giga::num << " G";
-			return returnString.str();
-		}
-
-		if (value < std::peta::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::tera::num << " T";
-			return returnString.str();
-		}
-
-		if (value < std::exa::num)
-		{
-			returnString << std::fixed << std::setprecision(2) << value / std::peta::num << " P";
-			return returnString.str();
-		}
-		returnString << std::fixed << std::setprecision(2) << value / std::exa::num << " E";
+		returnString << std::fixed << std::setprecision(decimals) << value / denominators[i] << " "
+					 << prefixes[i];
 		return returnString.str();
 	}
 } /* namespace Elpida */

@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,28 +31,29 @@
 #include <unordered_map>
 
 #include "Elpida/SharedLibrary.hpp"
+#include "Elpida/Config.hpp"
 
 namespace Elpida
 {
 
-	class SharedLibraryLoader
+	class SharedLibraryLoader final
 	{
 	public:
-		const std::unordered_map<std::string, SharedLibrary>& getLoadedPlugins() const
+		static const std::string LibrariesExtension;
+
+		const std::unordered_map<std::string, SharedLibrary>& getLoadedLibraries() const
 		{
 			return _loadedLibraries;
 		}
-
-		virtual void loadFromFolder(const std::string& path, const std::string& orderFile = std::string());
 		void load(const std::string& path);
 		void unload(const std::string& path);
 
-		SharedLibraryLoader();
-		virtual ~SharedLibraryLoader();
+		void unloadAll();
 
+		SharedLibraryLoader() = default;
+		~SharedLibraryLoader() = default;
 	protected:
 		std::unordered_map<std::string, SharedLibrary> _loadedLibraries;
-		void unloadEverything();
 	};
 
 } /* namespace Elpida */

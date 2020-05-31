@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #define ELPIDA_UTILITIES_VALUEUTILITIES_HPP_
 
 #include <string>
+#include <sstream>
 
 namespace Elpida
 {
@@ -35,9 +36,156 @@ namespace Elpida
 	class ValueUtilities
 	{
 	public:
-		static std::string getValueScaleString(double value);
-	};
+		ValueUtilities() = delete;
+		~ValueUtilities() = delete;
 
+		enum class SIPrefixes
+		{
+			Pico,
+			Nano,
+			Micro,
+			Milli,
+			None,
+			Kilo,
+			Mega,
+			Giga,
+			Tera,
+			Peta,
+			Exa,
+			Zetta,
+			Yotta
+		};
+
+		enum class IECPrefixes
+		{
+			None,
+			Kibi,
+			Mebi,
+			Gibi,
+			Tebi,
+			Pebi,
+			Exbi,
+			Zebi,
+			Yobi
+		};
+
+		static inline const char* PrefixesSI[(int)SIPrefixes::Yotta + 1] = {
+			"p",
+			"n",
+			"μ",
+			"m",
+			"",
+			"K",
+			"M",
+			"G",
+			"T",
+			"P",
+			"E",
+			"Z",
+			"Y"
+		};
+
+		static inline const char* PrefixesIEC[(int)IECPrefixes::Yobi + 1] = {
+			"",
+			"Ki",
+			"Mi",
+			"Gi",
+			"Ti",
+			"Pi",
+			"Ei",
+			"Zi",
+			"Yi"
+		};
+
+		static inline const double ScaleValuesSI[] = {
+			1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0,
+			1.0 / 1000.0 / 1000.0 / 1000.0,
+			1.0 / 1000.0 / 1000.0,
+			1.0 / 1000.0,
+			1.0,
+			1000.0,
+			1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0
+		};
+
+		static inline const double ScaleValuesIEC[] = {
+			1.0,
+			1024.0,
+			1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
+		};
+
+		static inline constexpr double SIDenominator = 1000.0;
+		static inline constexpr double IECDenominator = 1024.0;
+
+		template<class T, size_t N>
+		static constexpr size_t getArrayLength(T (&)[N])
+		{
+			return N;
+		}
+
+		static std::string getValueScaleStringSI(double value, int decimals = 2)
+		{
+			return getValueScaleStringImpl(value, ScaleValuesSI, PrefixesSI, getArrayLength(PrefixesSI), decimals);
+		}
+
+		static std::string getValueScaleStringIEC(double value, int decimals = 2)
+		{
+			return getValueScaleStringImpl(value, ScaleValuesIEC, PrefixesIEC, getArrayLength(PrefixesIEC), decimals);
+		}
+
+		template<typename ... TArgs>
+		inline static std::string concatenateToString(TArgs&& ... args)
+		{
+			std::ostringstream stream;
+			concatenateToStringImpl(stream, std::forward<TArgs>(args)...);
+			return stream.str();
+		}
+
+		template<typename ... TArgs>
+		inline static std::string Cs(TArgs&& ... args)
+		{
+			return concatenateToString(std::forward<TArgs>(args)...);
+		}
+
+	private:
+		static std::string getValueScaleStringImpl(double value,
+			const double denominators[],
+			const char* prefixes[],
+			size_t arraySize,
+			int decimals);
+
+		template<typename T, typename ... TRest>
+		inline static void concatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)
+		{
+			str << first;
+			concatenateToStringImpl(str, std::forward<TRest>(rest)...);
+		}
+
+		template<typename T>
+		inline static void concatenateToStringImpl(std::ostringstream&)
+		{
+
+		}
+
+		template<typename T>
+		inline static void concatenateToStringImpl(std::ostringstream& str, T arg)
+		{
+			str << arg;
+		}
+
+	};
+	using Vu = ValueUtilities;
 } /* namespace Elpida */
 
 #endif /* ELPIDA_UTILITIES_VALUEUTILITIES_HPP_ */

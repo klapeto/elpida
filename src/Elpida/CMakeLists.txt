@@ -1,54 +1,72 @@
 set(ELPIDA_SOURCES
-        CpuFeature.cpp
-        CpuInfo.cpp
         Event.cpp
         EventSubscription.cpp
         MemoryInfo.cpp
-        MultiThreadTask.cpp
         OffThreadExecutor.cpp
-        Runner.cpp
         SharedLibrary.cpp
         SharedLibraryLoader.cpp
-        Task.cpp
-        TaskBatch.cpp
-        TaskAffinity.cpp
-        TaskBatchWrapper.cpp
-        TaskFactory.cpp
-        TaskMetrics.cpp
-        TaskRunResult.cpp
-        TaskThread.cpp
-        TaskThroughput.cpp
+        Engine/Task/TaskAffinity.cpp
+        Engine/Task/TaskThread.cpp
         Timer.cpp
 
-        Exceptions/ElpidaException.cpp
-        Exceptions/IOException.cpp
-        Exceptions/OutOfRangeException.cpp
-        Exceptions/ParserException.cpp
+        ElpidaException.cpp
 
         Topology/ProcessorNode.cpp
         Topology/SystemTopology.cpp
+        Topology/CpuFeature.cpp
+        Topology/CpuInfo.cpp
 
-        Utilities/CommandParser.cpp
         Utilities/FileSystem.cpp
         Utilities/Imaging/Image.cpp
-        Utilities/Imaging/ImageEncoder.cpp
-        Utilities/Logger.cpp
+        Utilities/Logging/Logger.cpp
+        Utilities/Logging/LogAppender.cpp
         Utilities/MemoryFile.cpp
         Utilities/NonCopyable.cpp
         Utilities/Imaging/Pixel.cpp
-        Utilities/Singleton.cpp
         Utilities/ValueUtilities.cpp
+        Utilities/WindowsUtils.cpp
+        Utilities/Plugin/Plugin.cpp
+        Utilities/Plugin/BenchmarksContainerPlugin.cpp
+        Utilities/Uuid.cpp
+        Utilities/Memory.cpp
+        Utilities/NumaMemory.cpp
 
-        CommonTasks/AlignedMemory.cpp
-        CommonTasks/AllocateMemory.cpp
-        CommonTasks/Memory.cpp
-        CommonTasks/MemoryChunk.cpp
-        CommonTasks/NumaAllocatePerThread.cpp
-        CommonTasks/NumaMemory.cpp
-        CommonTasks/ReadFile.cpp
-        CommonTasks/UnalignedMemory.cpp
-        CommonTasks/WriteFile.cpp
-        )
+        CommonTasks/AllocateMemory/AllocateMemory.cpp
+        CommonTasks/AllocateMemory/AllocateMemorySpecification.cpp
+        CommonTasks/ReadFile/ReadFile.cpp
+        CommonTasks/ReadFile/ReadFileSpecification.cpp
+        CommonTasks/WriteFile/WriteFile.cpp
+        CommonTasks/WriteFile/WriteFileSpecification.cpp
+
+        Engine/Benchmark/Benchmark.cpp
+        Engine/Configuration/Concrete/TaskConfiguration.cpp
+        Engine/Configuration/Concrete/ConfigurationValue.cpp
+        Engine/Configuration/Concrete/ConfigurationValueBase.cpp
+        Engine/Task/Task.cpp
+        Engine/Task/TaskSpecification.cpp
+        Utilities/RawData.cpp
+        Engine/Runner/BenchmarkRunner.cpp
+        Engine/Result/BenchmarkResult.cpp
+        Engine/Result/TaskResult.cpp
+        Engine/Result/TaskMetrics.cpp
+        Engine/BenchmarkScoreCalculator.cpp
+        Engine/DefaultBenchmarkScoreCalculator.cpp
+        Engine/Runner/EventArgs/BenchmarkEventArgs.cpp
+        Engine/Runner/EventArgs/TaskEventArgs.cpp
+        Engine/Task/MultiThreadTask.cpp
+        Engine/Configuration/Concrete/BenchmarkConfiguration.cpp
+        Engine/Configuration/Specification/ConfigurationSpecification.cpp
+        Engine/Runner/BenchmarkRunRequest.cpp
+        Engine/Configuration/Specification/ConfigurationSpecificationBase.cpp
+        Engine/Task/TaskDataDto.cpp
+        Engine/Data/PassiveTaskData.cpp
+        Engine/Data/ActiveTaskData.cpp
+        Engine/Data/DataSpecification.cpp
+        Engine/Result/ResultSpecification.cpp
+        Engine/Task/TaskBuilder.cpp
+        Engine/Data/DataAdapter.cpp
+        Engine/Benchmark/BenchmarkTaskInstance.cpp
+        Engine/Configuration/ConfigurationInstance.cpp Engine/Data/DataPropertiesTransformer.cpp ../../include/Elpida/Engine/Data/DataPropertiesTransformer.hpp)
 
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
@@ -68,3 +86,8 @@ endif()
 target_link_libraries(elpida hwloc)
 
 target_include_directories(elpida PUBLIC "${ELPIDA_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+
+install(DIRECTORY ${ELPIDA_INCLUDE_DIR}/Elpida DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h*")
+install(TARGETS elpida
+        PUBLIC_HEADER DESTINATION ${ELPIDA_HEADER_INSTALL_DIR}
+        LIBRARY DESTINATION ${ELPIDA_LIB_INSTALL_DIR})

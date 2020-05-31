@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -40,9 +40,9 @@ namespace Elpida
 	{
 	public:
 #ifdef ELPIDA_LINUX
-		static constexpr char pathSeperator = '/';
+		static constexpr char _pathSeparator = '/';
 #else
-		static constexpr char pathSeperator = '\\';
+		static constexpr char _pathSeparator = '\\';
 #endif
 
 		static void iterateDirectory(const std::string& directory, std::function<void(const std::string&)> func);
@@ -66,20 +66,22 @@ namespace Elpida
 		template<typename T, typename ... Rest>
 		static void concatPathsIml(std::ostringstream& buffer, T arg, Rest ... rest)
 		{
-			buffer << pathSeperator << arg;
+			buffer << _pathSeparator << arg;
 			concatPathsIml(buffer, rest...);
 		}
 
 		template<typename T>
 		static void concatPathsIml(std::ostringstream& buffer, T arg)
 		{
-			buffer << pathSeperator << arg;
+			buffer << _pathSeparator << arg;
 		}
 
 		static inline void concatPathsIml(std::ostringstream& buffer)
 		{
 
 		}
+
+		static void iterateDirectoryImpl(const char* path, std::function<void(const std::string&)>& func);
 	};
 
 } /* namespace Elpida */

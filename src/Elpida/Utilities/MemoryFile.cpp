@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,75 +27,99 @@
 #include "Elpida/Utilities/MemoryFile.hpp"
 
 #include <fstream>
-
-#include "Elpida/Exceptions/IOException.hpp"
+#include "Elpida/Config.hpp"
+#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Utilities/NumaMemory.hpp"
+#include "Elpida/Topology/SystemTopology.hpp"
 
 namespace Elpida
 {
 
-	MemoryFile::MemoryFile()
-		: _data(nullptr), _size(0), _deleteData(true)
+	MemoryFile::MemoryFile(unsigned int processorAffinity)
+		: _data(nullptr), _allocatedMemory(nullptr), _size(0), _processorAffinity(processorAffinity), _deleteData(true)
 	{
 
-	}
-
-	MemoryFile::MemoryFile(std::size_t size)
-		: _size(size), _deleteData(true)
-	{
-		_data = new Data[_size];
 	}
 
 	MemoryFile::MemoryFile(void* data, std::size_t size)
-		: _data((DataPtr)data), _size(size), _deleteData(false)
+		: _data((pData)data), _allocatedMemory(nullptr), _size(size), _processorAffinity(-1), _deleteData(false)
 	{
 
 	}
 
 	MemoryFile::~MemoryFile()
 	{
-		if (_data != nullptr && _deleteData)
-		{
-			delete[] _data;
-		}
+		destroyData();
 	}
 
 	void MemoryFile::load(const std::string& path)
 	{
-		if (_data != nullptr && _deleteData)
+		if (_deleteData)
 		{
-			delete[] _data;
-		}
-		_size = 0;
-		std::ifstream file(path, std::ifstream::binary);
-		if (file.good())
-		{
-			file.seekg(0, file.end);
-			_size = file.tellg();
-			file.seekg(0, file.beg);
+			destroyData();
+			_size = 0;
+			std::ifstream file(path, std::ifstream::binary);
+			try
+			{
+				file.exceptions(std::ios::failbit);
+				file.seekg(0, std::ifstream::end);
+				_size = file.tellg();
+				file.seekg(0, std::ifstream::beg);
 
-			_data = new Data[_size];
-			file.read((char*)_data, _size);
-			file.close();
+				allocateData();
+				file.read((char*)_data, _size);
+			}
+			catch (...)
+			{
+				destroyData();
+				if (file.is_open())
+				{
+					file.close();
+				}
+				throw;
+			}
 		}
 		else
 		{
-			throw IOException("MemoryFile", "Failed to open file: " + path);
+			throw ElpidaException(FUNCTION_NAME, "Attempted to load a file when it was constructed with existing data");
+		}
+
+	}
+
+	void MemoryFile::destroyData()
+	{
+		if (_deleteData)
+		{
+			delete _allocatedMemory;
+			_allocatedMemory = nullptr;
 		}
 	}
 
 	void MemoryFile::writeToFile(const std::string& path) const
 	{
 		std::ofstream file(path, std::ofstream::binary);
-		if (file.good())
+		try
 		{
+			file.exceptions(std::ios::failbit);
 			file.write((char*)_data, _size);
 			file.flush();
 			file.close();
 		}
-		else
+		catch (...)
 		{
-			throw IOException("MemoryFile", "Failed to write file: " + path);
+			if (file.is_open())
+			{
+				file.close();
+			}
+			throw;
 		}
+	}
+
+	void MemoryFile::allocateData()
+	{
+		_allocatedMemory = new NumaMemory(_size, SystemTopology::getNumaNodeOfProcessor(_processorAffinity));
+		_allocatedMemory->allocate();
+		_data = static_cast<pData>(_allocatedMemory->getPointer());
 	}
 
 } /* namespace Elpida */

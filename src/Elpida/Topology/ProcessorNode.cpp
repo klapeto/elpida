@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,17 +27,16 @@
 #include "Elpida/Topology/ProcessorNode.hpp"
 
 #include <string>
-#include <vector>
 
 #include <hwloc.h>
 
 namespace Elpida
 {
 
-	static constexpr const char* UnknownOsIndexStr = "[No Index]";
+	static inline constexpr const char* UnknownOsIndexStr = "[No Index]";
 
-	ProcessorNode::ProcessorNode(ProcessorNode* parrent, void* node)
-		: _type(Type::Unknown), _value(0), _parrent(parrent)
+	ProcessorNode::ProcessorNode(ProcessorNode* parent, void* node)
+		: _type(Type::Unknown), _value(0), _osIndex(0), _parent(parent)
 	{
 		switch (((hwloc_obj_t)node)->type)
 		{

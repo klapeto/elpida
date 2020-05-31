@@ -78,7 +78,7 @@ git pull
 * Copy scripts on sources root folder
 
 ``` bash
-cp Scripts/MSYS2/bash/*.sh .
+cp scripts/MSYS2/bash/*.sh .
 ```
 
 * Build Elpida
@@ -109,7 +109,7 @@ git clone https://gitlab.com/dev-hood/elpida/elpida.git elpida
 
 ``` bash
 cd elpida
-cp Scripts/Linux/* .
+cp scripts/Linux/* .
 chmod u+x ./*.sh
 ```
 

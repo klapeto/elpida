@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,25 +27,26 @@
 #ifndef ELPIDA_UTILITIES_MEMORYFILE_HPP_
 #define ELPIDA_UTILITIES_MEMORYFILE_HPP_
 
-#include <cstddef>
 #include <string>
 
 namespace Elpida
 {
 
+	class Memory;
+
 	class MemoryFile
 	{
 	public:
 
-		typedef unsigned char Data;
-		typedef Data* DataPtr;
+		using Data = unsigned char;
+		using pData = Data*;
 
-		const DataPtr& getData() const
+		[[nodiscard]] const pData& getData() const
 		{
 			return _data;
 		}
 
-		const std::size_t& getSize() const
+		[[nodiscard]] const std::size_t& getSize() const
 		{
 			return _size;
 		}
@@ -53,19 +54,23 @@ namespace Elpida
 		void load(const std::string& path);
 		void writeToFile(const std::string& path) const;
 
-		MemoryFile();
-		MemoryFile(std::size_t size);
+		explicit MemoryFile(unsigned int processorAffinity);
 		MemoryFile(void* data, std::size_t size);
 		virtual ~MemoryFile();
 
 		MemoryFile(MemoryFile&&) = default;
-		MemoryFile(const MemoryFile&) = default;
+		MemoryFile(const MemoryFile&) = delete;
 		MemoryFile& operator=(MemoryFile&&) = default;
-		MemoryFile& operator=(const MemoryFile&) = default;
+		MemoryFile& operator=(const MemoryFile&) = delete;
 	private:
-		DataPtr _data;
+		pData _data;
+		Memory* _allocatedMemory;
 		std::size_t _size;
+		unsigned int _processorAffinity;
 		bool _deleteData;
+
+		void allocateData();
+		void destroyData();
 	};
 
 } /* namespace Elpida */

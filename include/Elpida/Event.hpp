@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace Elpida
 	class Event final
 	{
 	public:
-		typedef typename EventSubscription<T...>::EventHandler EventHandler;
+		using EventHandler = typename EventSubscription<T...>::EventHandler;
 
 		void raise(T ... eventArguments)
 		{
@@ -49,8 +49,8 @@ namespace Elpida
 			}
 		}
 
-		template<typename TCallbable>
-		EventSubscription<T...>& subscribe(TCallbable handler)
+		template<typename TCallable>
+		EventSubscription<T...>& subscribe(TCallable handler) const
 		{
 			std::lock_guard<std::mutex> lock(_mutex);
 			auto itr = _subscribers.insert(_subscribers.end(), EventSubscription<T...>(*this, EventHandler(handler)));
@@ -58,16 +58,15 @@ namespace Elpida
 			return *itr;
 		}
 
-		void unsubScribe(EventSubscription<T...>& subscription)
+		void unsubScribe(EventSubscription<T...>& subscription) const
 		{
 			std::lock_guard<std::mutex> lock(_mutex);
 			_subscribers.erase(subscription.getIterator());
 		}
 
-		Event()
-		{
 
-		}
+		Event() = default;
+
 		~Event()
 		{
 			std::lock_guard<std::mutex> lock(_mutex);
@@ -75,9 +74,8 @@ namespace Elpida
 		}
 
 	private:
-		std::mutex _mutex;
-		std::list<EventSubscription<T...>> _subscribers;
-
+		mutable std::mutex _mutex;
+		mutable std::list<EventSubscription<T...>> _subscribers;
 	};
 
 } /* namespace Elpida */

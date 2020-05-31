@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 #ifndef ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
 #define ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
 
-#include <cstddef>
 #include <vector>
 
 namespace Elpida
@@ -38,41 +37,42 @@ namespace Elpida
 	class SystemTopology final
 	{
 	public:
-		const std::vector<const ProcessorNode*>& getAllProcessors() const
+		enum class ProcessPriority
+		{
+			Normal, High,
+		};
+
+		[[nodiscard]] const std::vector<const ProcessorNode*>& getAllProcessors() const
 		{
 			return _allProcessors;
 		}
 
-		std::size_t getDepth() const
+		[[nodiscard]] std::size_t getDepth() const
 		{
 			return _depth;
 		}
 
-		const ProcessorNode* getRoot() const
+		[[nodiscard]] const ProcessorNode* getRoot() const
 		{
 			return _root;
 		}
 
-		std::size_t getTotalLogicalCores() const
+		[[nodiscard]] std::size_t getTotalLogicalCores() const
 		{
 			return _totalLogicalCores;
 		}
 
-		std::size_t getTotalPhysicalCores() const
+		[[nodiscard]] std::size_t getTotalPhysicalCores() const
 		{
 			return _totalPhysicalCores;
 		}
 
 		static int getNumaNodeOfProcessor(int processorId);
 
-		static const SystemTopology& getTopology()
-		{
-			static SystemTopology topo;
-			return topo;
-		}
+		static void setProcessPriority(ProcessPriority priority);
 
+		SystemTopology();
 		~SystemTopology();
-
 	private:
 		std::vector<const ProcessorNode*> _allProcessors;
 		ProcessorNode* _root;
@@ -81,7 +81,6 @@ namespace Elpida
 		std::size_t _totalLogicalCores;
 		std::size_t _totalPhysicalCores;
 
-		SystemTopology();
 		void reload();
 		void accumulateCores(const ProcessorNode& node);
 	};
