@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,13 +36,13 @@ namespace Elpida
 {
 
 	MemoryFile::MemoryFile(unsigned int processorAffinity)
-		: _data(nullptr), _allocatedMemory(nullptr), _processorAffinity(processorAffinity), _size(0), _deleteData(true)
+		: _data(nullptr), _allocatedMemory(nullptr), _size(0), _processorAffinity(processorAffinity), _deleteData(true)
 	{
 
 	}
 
 	MemoryFile::MemoryFile(void* data, std::size_t size)
-		: _data((pData)data), _allocatedMemory(nullptr), _processorAffinity(-1), _size(size), _deleteData(false)
+		: _data((pData)data), _allocatedMemory(nullptr), _size(size), _processorAffinity(-1), _deleteData(false)
 	{
 
 	}

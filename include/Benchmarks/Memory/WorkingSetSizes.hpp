@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -82,7 +82,6 @@ namespace Elpida
 			KiB_1, KiB_2, KiB_4, KiB_8, KiB_16, KiB_32, KiB_64, KiB_128, KiB_256, KiB_512,
 			MiB_1, MiB_2, MiB_4, MiB_8, MiB_16, MiB_32, MiB_64, MiB_128, MiB_256, MiB_512,
 		};
-
 
 		WorkingSetSizes() = delete;
 		~WorkingSetSizes() = delete;

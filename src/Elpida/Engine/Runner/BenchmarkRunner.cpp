@@ -1,29 +1,36 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 //
 // Created by klapeto on 19/4/20.
 //
 
-
 #include "Elpida/Engine/Runner/BenchmarkRunner.hpp"
-
-#include <cmath>
-#include <cstring>
-
 
 #include "Elpida/Timer.hpp"
 #include "Elpida/Engine/Task/Task.hpp"
-#include "Elpida/Engine/Task/TaskDataDto.hpp"
-#include "Elpida/Engine/Task/TaskOutput.hpp"
 #include "Elpida/Engine/BenchmarkScoreCalculator.hpp"
 #include "Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp"
 #include "Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp"
-#include "Elpida/Engine/Task/TaskSpecification.hpp"
-#include "Elpida/Engine/Data/ActiveTaskData.hpp"
-#include "Elpida/Engine/Data/PassiveTaskData.hpp"
-#include "Elpida/Utilities/NumaMemory.hpp"
-#include "Elpida/Topology/SystemTopology.hpp"
-#include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
+#include "Elpida/Engine/Benchmark/Benchmark.hpp"
 
 namespace Elpida
 {

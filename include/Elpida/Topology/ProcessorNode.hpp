@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 #ifndef ELPIDA_TOPOLOGY_PROCESSORNODE_HPP_
 #define ELPIDA_TOPOLOGY_PROCESSORNODE_HPP_
 
-#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -91,7 +90,7 @@ namespace Elpida
 			return _value;
 		}
 
-		~ProcessorNode()= default;
+		~ProcessorNode() = default;
 	private:
 		ProcessorNode(ProcessorNode* parent, void* node);    // Evil casting to avoid header inclusion
 

@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,10 +28,9 @@
 
 #include <utility>
 #include <fstream>
-#include <Elpida/Topology/SystemTopology.hpp>
+#include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Data/ActiveTaskData.hpp"
-#include "Elpida/Engine/Data/PassiveTaskData.hpp"
 
 namespace Elpida
 {

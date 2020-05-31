@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -60,7 +60,8 @@ Elpida::Benchmark* createMemoryReadLatency()
 			->shouldBeCountedOnResults(false)
 			.canBeMultiThreaded(false)
 			.canBeDisabled(false)
-			.withFixedConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize, Elpida::ConfigurationType::UnsignedInt(size));
+			.withFixedConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize,
+				Elpida::ConfigurationType::UnsignedInt(size));
 
 		auto& memoryLatency = (new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
 			->shouldBeCountedOnResults(true)
@@ -71,7 +72,9 @@ Elpida::Benchmark* createMemoryReadLatency()
 		tasksBuilders.push_back(&memoryLatency);
 	}
 
-	auto benchmark = new Elpida::Benchmark("Memory Read Latency", std::move(tasksBuilders), new Elpida::DefaultBenchmarkScoreCalculator());
+	auto benchmark = new Elpida::Benchmark("Memory Read Latency",
+		std::move(tasksBuilders),
+		new Elpida::DefaultBenchmarkScoreCalculator());
 	return benchmark;
 }
 
@@ -81,7 +84,8 @@ Elpida::Benchmark* createMemoryReadBandwidth()
 		->shouldBeCountedOnResults(false)
 		.canBeMultiThreaded(false)
 		.canBeDisabled(false)
-		.withDefaultConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize, Elpida::ConfigurationType::UnsignedInt(4096));
+		.withDefaultConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize,
+			Elpida::ConfigurationType::UnsignedInt(4096));
 
 	auto& memoryRead = (new Elpida::TaskBuilder(*new Elpida::MemoryReadSpecification))
 		->shouldBeCountedOnResults(true)

@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ namespace Elpida
 	};
 
 	TopologyView::TopologyView(const SystemTopology& topology)
-		: QWidget(), _topology(topology), _ui(new Ui::TopologyView), _rootFrame(nullptr)
+		: QWidget(), _ui(new Ui::TopologyView), _rootFrame(nullptr), _topology(topology)
 	{
 		_ui->setupUi(this);
 		setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));

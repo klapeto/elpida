@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@
 #include "Elpida/Utilities/FileSystem.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Config.hpp"
-
-#include <fstream>
 
 #ifdef ELPIDA_LINUX
 #include <dirent.h>

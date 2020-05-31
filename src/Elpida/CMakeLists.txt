@@ -16,10 +16,8 @@ set(ELPIDA_SOURCES
         Topology/CpuFeature.cpp
         Topology/CpuInfo.cpp
 
-        Utilities/CommandParser.cpp
         Utilities/FileSystem.cpp
         Utilities/Imaging/Image.cpp
-        Utilities/Imaging/ImageEncoder.cpp
         Utilities/Logging/Logger.cpp
         Utilities/Logging/LogAppender.cpp
         Utilities/MemoryFile.cpp
@@ -31,7 +29,6 @@ set(ELPIDA_SOURCES
         Utilities/Plugin/BenchmarksContainerPlugin.cpp
         Utilities/Uuid.cpp
         Utilities/Memory.cpp
-        Utilities/MemoryChunk.cpp
         Utilities/NumaMemory.cpp
 
         CommonTasks/AllocateMemory/AllocateMemory.cpp
@@ -59,11 +56,9 @@ set(ELPIDA_SOURCES
         Engine/Task/MultiThreadTask.cpp
         Engine/Configuration/Concrete/BenchmarkConfiguration.cpp
         Engine/Configuration/Specification/ConfigurationSpecification.cpp
-        Engine/Configuration/Specification/TaskConfigurationSpecifications.cpp
         Engine/Runner/BenchmarkRunRequest.cpp
         Engine/Configuration/Specification/ConfigurationSpecificationBase.cpp
         Engine/Task/TaskDataDto.cpp
-        Engine/Task/TaskOutput.cpp
         Engine/Data/PassiveTaskData.cpp
         Engine/Data/ActiveTaskData.cpp
         Engine/Data/DataSpecification.cpp

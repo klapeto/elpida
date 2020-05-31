@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 #ifndef ELPIDA_COMMONTASKS_WRITEFILE_HPP_
 #define ELPIDA_COMMONTASKS_WRITEFILE_HPP_
 
-#include <cstddef>
 #include <string>
 
 #include "Elpida/Engine/Task/Task.hpp"

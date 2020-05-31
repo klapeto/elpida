@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,10 +21,7 @@
 #define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
 
 #include <QWidget>
-#include <string>
-#include <Elpida/Utilities/Logging/Logger.hpp>
 #include "Core/QModelLogAppender.hpp"
-
 
 namespace Elpida
 {
@@ -33,6 +30,8 @@ namespace Elpida
 	{
 		class LogsView;
 	}
+
+	class Logger;
 
 	class LogsView final : public QWidget
 	{

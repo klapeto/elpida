@@ -1,3 +1,22 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 #include "BenchmarkListView.hpp"
 #include "ui_BenchmarkListView.h"
 
@@ -7,7 +26,7 @@
 #include <Elpida/SharedLibraryLoader.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
-#include "Models/BenchmarksModel.hpp"
+#include "Models/Abstractions/ListModel/ListModel.hpp"
 #include "Core/Commands/GetBenchmarksToRunCommand.hpp"
 #include "Core/Commands/SelectedBenchmarkChangedEvent.hpp"
 #include "Core/Abstractions/Mediator.hpp"
@@ -16,7 +35,7 @@ namespace Elpida
 {
 
 	BenchmarkListView::BenchmarkListView(const ListModel<Benchmark*>& model, Mediator& mediator)
-		: QWidget(), CollectionModelObserver<Benchmark*>(model), _mediator(mediator), _ui(new Ui::BenchmarkListView)
+		: QWidget(), CollectionModelObserver<Benchmark*>(model), _ui(new Ui::BenchmarkListView), _mediator(mediator)
 	{
 		_ui->setupUi(this);
 
@@ -24,7 +43,10 @@ namespace Elpida
 		{
 			addItem(itm.getValue());
 		}
-		QWidget::connect(_ui->lvTaskBatches, &QListWidget::itemSelectionChanged, this, &BenchmarkListView::onSelectionChanged);
+		QWidget::connect(_ui->lvTaskBatches,
+			&QListWidget::itemSelectionChanged,
+			this,
+			&BenchmarkListView::onSelectionChanged);
 	}
 
 	BenchmarkListView::~BenchmarkListView()
@@ -38,8 +60,6 @@ namespace Elpida
 		if (!selectedIndexes.empty())
 		{
 			auto variant = selectedIndexes.first()->data(Qt::UserRole);
-			// Dirty hack because QtTaskBatchWrapper is derived from QWidget and QVariant special handles that
-			// which we do not want here.
 			return (Benchmark*)variant.value<void*>();
 		}
 		return nullptr;

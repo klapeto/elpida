@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,8 +25,6 @@
  */
 
 #include "Benchmarks/Image/PngEncoding/PngEncoding.hpp"
-
-#include "Benchmarks/Image/Encoders/LibPngEncoder.hpp"
 
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Topology/ProcessorNode.hpp>

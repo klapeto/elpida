@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@ namespace Elpida
 		}
 
 		explicit SharedLibrary(const std::string& libraryPath);
-		SharedLibrary(SharedLibrary&& other) noexcept ;
-		SharedLibrary& operator=(SharedLibrary&& other) noexcept ;
+		SharedLibrary(SharedLibrary&& other) noexcept;
+		SharedLibrary& operator=(SharedLibrary&& other) noexcept;
 		~SharedLibrary();
 
 		SharedLibrary(const SharedLibrary&) = delete;

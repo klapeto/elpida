@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace Elpida
 				data[index].B = newColorB;
 				data[index].A = 1.0;
 
-				if (x + 1 < width)
+				if (x + 1u < width)
 				{
 					data[index + 1].R += (quantizationErrorR * 7.0) / 16.0;    // [x + 1, y]
 					data[index + 1].G += (quantizationErrorG * 7.0) / 16.0;
@@ -77,9 +77,9 @@ namespace Elpida
 					data[index + 1].A = 1.0;
 				}
 
-				if (y + 1 < height)
+				if (y + 1u < height)
 				{
-					if (x - 1 >= 0)
+					if (x - 1u >= 0u)
 					{
 						data[index + width - 1].R += (quantizationErrorR * 3.0) / 16.0;    // [x - 1, y + 1]
 						data[index + width - 1].G += (quantizationErrorG * 3.0) / 16.0;

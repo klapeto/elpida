@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,9 +24,11 @@
  *      Author: klapeto
  */
 
-#include <Elpida/ElpidaException.hpp>
-#include <Elpida/Engine/Data/PassiveTaskData.hpp>
 #include "Benchmarks/Memory/Read/MemoryRead.hpp"
+
+#include <Elpida/ElpidaException.hpp>
+#include <Elpida/Utilities/RawData.hpp>
+#include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
 #include <cmath>
 

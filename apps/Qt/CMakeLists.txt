@@ -53,7 +53,6 @@ set(ELPIDA_QT_SOURCES
 
         Controllers/BenchmarksController.cpp
         Controllers/BenchmarkRunnerController.cpp
-        Controllers/MainViewController.cpp
         Controllers/BenchmarkConfigurationController.cpp
 
         QCustomApplication.cpp

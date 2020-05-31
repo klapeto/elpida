@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@
  *  Created on: 18 Μαρ 2018
  *      Author: klapeto
  */
-
-
 
 #include "Benchmarks/Image/PngDecoding/PngDecoding.hpp"
 

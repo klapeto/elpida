@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <random>
 
 #include <Elpida/Engine/Task/Task.hpp>
-#include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
 namespace Elpida
 {

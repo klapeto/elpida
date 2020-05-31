@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2018  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,12 +27,7 @@
 #ifndef TASKBATCHES_MEMORY_READ_MEMORYREAD_HPP_
 #define TASKBATCHES_MEMORY_READ_MEMORYREAD_HPP_
 
-#include <cstdint>
-#include <string>
 #include <Elpida/Engine/Task/Task.hpp>
-#include <utility>
-#include "Benchmarks/Memory/WorkingSetSizes.hpp"
-
 
 namespace Elpida
 {

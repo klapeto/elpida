@@ -1,6 +1,27 @@
+/**************************************************************************
+ *   Elpida - Benchmark library
+ *
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>
+ *************************************************************************/
+
 //
 // Created by klapeto on 14/4/20.
 //
+
+#include "BenchmarksController.hpp"
 
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Utilities/FileSystem.hpp>
@@ -8,12 +29,9 @@
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/Configuration/Specification/TaskConfigurationSpecifications.hpp>
 #include <Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp>
-#include <Elpida/Engine/Configuration/Concrete/TaskConfiguration.hpp>
-#include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
-#include "BenchmarksController.hpp"
+#include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 
 namespace Elpida
 {
@@ -21,8 +39,7 @@ namespace Elpida
 	BenchmarksController::BenchmarksController(ListModel<Benchmark*>& model,
 		AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
 		Logger& logger)
-		:
-		_model(model), _configurationsModel(configurationsModel), _logger(logger)
+		: _logger(logger), _model(model), _configurationsModel(configurationsModel)
 	{
 #if ELPIDA_DEBUG_BUILD
 		_benchmarksPath = TASK_BATCH_DEBUG_DIR;
@@ -139,7 +156,8 @@ namespace Elpida
 					BenchmarkConfiguration configuration(*benchmark);
 					for (const auto& builder : benchmark->getTaskBuilders())
 					{
-						configuration.addConfiguration(builder->getTaskSpecification(), builder->getDefaultConfiguration());
+						configuration
+							.addConfiguration(builder->getTaskSpecification(), builder->getDefaultConfiguration());
 					}
 					_configurationsModel.add(benchmark->getId(), std::move(configuration));
 					_model.add(benchmark);
