@@ -50,14 +50,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include "QCustomApplication.hpp"
 
-
 using namespace Elpida;
-
-#ifdef ELPIDA_LINUX
-#include <execinfo.h>
-#include <csignal>
-#include <cstdlib>
-#include <unistd.h>
 
 void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget);
 
@@ -67,6 +60,13 @@ void initializeTaskTab(MainWindow& mainWindow,
 	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
 	BenchmarkRunnerControlsView& taskBatchRunnerControlsView,
 	BenchmarkConfigurationView& benchmarkConfigurationView);
+
+#ifdef ELPIDA_LINUX
+#include <execinfo.h>
+#include <csignal>
+#include <cstdlib>
+#include <unistd.h>
+
 void segFaultHandler(int sig)
 {
 	void* array[20];

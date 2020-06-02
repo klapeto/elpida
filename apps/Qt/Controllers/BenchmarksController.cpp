@@ -44,7 +44,7 @@ namespace Elpida
 #if ELPIDA_DEBUG_BUILD
 		_benchmarksPath = TASK_BATCH_DEBUG_DIR;
 #else
-		_taskBatchPath = "./TaskBatches";	// TODO: Think of something more portable
+		_benchmarksPath = "./Benchmarks";	// TODO: Think of something more portable
 #endif
 	}
 

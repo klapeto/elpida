@@ -118,24 +118,25 @@ namespace Elpida
 
 	TaskDataDto MultiThreadTask::finalizeAndGetOutputData()
 	{
-		std::unordered_set<const RawData*> accumulatedOutputs;
+		std::unordered_set<const RawData*> outputsSet;
+		std::vector<const RawData*> accumulatedOutputs;
 		for (auto& thread: _createdThreads)
 		{
 			thread.getTaskToRun().finalize();
-			accumulatedOutputs.emplace(thread.getTaskToRun().getOutput().getTaskData());
+			accumulatedOutputs.push_back(thread.getTaskToRun().getOutput().getTaskData());
+			outputsSet.emplace(thread.getTaskToRun().getOutput().getTaskData());
 		}
 
-		auto returnData = DataAdapter::mergeIntoSingleChunk(std::vector<const RawData*>(accumulatedOutputs.begin(),
-			accumulatedOutputs.end()));
+		auto returnData = DataAdapter::mergeIntoSingleChunk(accumulatedOutputs);
 
 		// This becomes the delete 'list'
 		for (auto data: _allocatedChunks)
 		{
 			// We need to add the original chunks to delete list too if tasks created their own chunks
-			accumulatedOutputs.emplace(data);
+			outputsSet.emplace(data);
 		}
 
-		for (auto data: accumulatedOutputs)
+		for (auto data: outputsSet)
 		{
 			delete data;    // delete any original chunks and chunks created by the tasks
 		}
