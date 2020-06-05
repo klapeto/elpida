@@ -75,8 +75,7 @@ namespace Elpida
 
 		TaskConfiguration(const TaskConfiguration& other);
 		TaskConfiguration& operator=(const TaskConfiguration& other);
-		TaskConfiguration(TaskConfiguration&&) = default;
-		TaskConfiguration& operator=(TaskConfiguration&&) = default;
+		TaskConfiguration(TaskConfiguration&&) noexcept ;
 		~TaskConfiguration();
 	private:
 		std::unordered_map<std::string, ConfigurationValueBase*> _configuration;

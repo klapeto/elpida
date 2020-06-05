@@ -48,7 +48,7 @@ namespace Elpida
 
 		void addConfiguration(const TaskSpecification& taskSpecification, TaskConfiguration&& configuration)
 		{
-			addConfigurationIml(taskSpecification, configuration);
+			addConfigurationIml(taskSpecification, std::move(configuration));
 		}
 
 		void addConfiguration(const TaskSpecification& taskSpecification, const TaskConfiguration& configuration)
@@ -59,6 +59,8 @@ namespace Elpida
 		explicit BenchmarkConfiguration(const Benchmark& benchmark);
 		BenchmarkConfiguration(BenchmarkConfiguration&&) = default;
 		BenchmarkConfiguration& operator=(BenchmarkConfiguration&&) = default;
+		BenchmarkConfiguration(const BenchmarkConfiguration&) = delete;
+		BenchmarkConfiguration& operator=(const BenchmarkConfiguration&) = delete;
 		~BenchmarkConfiguration() = default;
 	private:
 		std::vector<TaskConfiguration> _orderedConfigurations;
@@ -66,7 +68,8 @@ namespace Elpida
 		const TaskConfiguration* getConfigurationImpl(const TaskSpecification& taskSpecification) const;
 
 		template<typename T>
-		void addConfigurationIml(const TaskSpecification& taskSpecification, T&& configuration){
+		void addConfigurationIml(const TaskSpecification& taskSpecification, T&& configuration)
+		{
 			auto itr = _taskConfigurations.find(taskSpecification.getId());
 			if (itr == _taskConfigurations.end())
 			{

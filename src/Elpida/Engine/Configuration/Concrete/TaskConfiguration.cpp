@@ -77,4 +77,11 @@ namespace Elpida
 		_enabled = other._enabled;
 		_taskBuilder = other._taskBuilder;
 	}
+
+	TaskConfiguration::TaskConfiguration(TaskConfiguration&& other) noexcept
+		: _configuration(std::move(other._configuration)), _taskSpecification(other._taskSpecification),
+		  _taskBuilder(other._taskBuilder), _enabled(other._enabled)
+	{
+
+	}
 }
