@@ -53,6 +53,10 @@ namespace Elpida
 			_value = value;
 		}
 
+
+		ConfigurationValue(const ConfigurationValue<T>&) = delete;
+		ConfigurationValue<T>& operator=(const ConfigurationValue<T>&) = delete;
+
 		explicit ConfigurationValue(const ConfigurationSpecificationBase& specification, T value, bool readOnly = false)
 			: ConfigurationValueBase(specification, readOnly), _value(value)
 		{

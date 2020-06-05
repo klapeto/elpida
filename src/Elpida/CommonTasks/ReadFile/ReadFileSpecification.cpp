@@ -33,7 +33,7 @@ namespace Elpida
 	Task* ReadFileSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun) const
 	{
-		auto filePath = getSettingAndValidate<std::string>(configuration,
+		auto& filePath = getSettingAndValidate<ConfigurationType::FilePath>(configuration,
 			Settings::InputFilePath,
 			ConfigurationType::Type::FilePath);
 		return new ReadFile(*this, processorToRun, filePath.getValue());

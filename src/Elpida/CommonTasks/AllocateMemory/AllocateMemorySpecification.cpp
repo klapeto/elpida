@@ -35,7 +35,7 @@ namespace Elpida
 	Task* AllocateMemorySpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun) const
 	{
-		auto& size = getSettingAndValidate<size_t>(configuration,
+		auto& size = getSettingAndValidate<ConfigurationType::UnsignedInt>(configuration,
 			std::string(Settings::MemorySize),
 			ConfigurationType::Type::UnsignedInt);
 

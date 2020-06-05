@@ -58,6 +58,9 @@ namespace Elpida
 			return static_cast<T&>(*this);
 		}
 
+		ConfigurationValueBase(const ConfigurationValueBase&) = delete;
+		ConfigurationValueBase& operator=(const ConfigurationValueBase&) = delete;
+
 		virtual ~ConfigurationValueBase() = default;
 	protected:
 		explicit ConfigurationValueBase(const ConfigurationSpecificationBase& configurationSpecification, bool readOnly)

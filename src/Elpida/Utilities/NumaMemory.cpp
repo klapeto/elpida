@@ -27,6 +27,7 @@
 #include "Elpida/Utilities/NumaMemory.hpp"
 
 #include "Elpida/Config.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <numa.h>
@@ -65,7 +66,16 @@ namespace Elpida
 			(UCHAR)_node
 		);
 #endif
-		memset(_pointer, 0, _size);
+		if (_pointer != nullptr)
+		{
+			memset(_pointer, 0, _size);
+		}
+		else
+		{
+			throw ElpidaException(FUNCTION_NAME,
+				Vu::Cs("Failed to allocate", std::to_string(_size), " bytes of memory!"));
+		}
+
 	}
 
 	void NumaMemory::deallocateImpl()
