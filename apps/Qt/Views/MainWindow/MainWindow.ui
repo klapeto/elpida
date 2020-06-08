@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>Elpida::MainWindow</class>
  <widget class="QMainWindow" name="Elpida::MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>153</width>
-    <height>50</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Elpida</string>
   </property>
@@ -131,6 +123,11 @@ QPushButton:pressed  {
 	background-color: rgba(137, 142, 226,255);
 }
 
+QPushButton:checked  {
+	background-color: rgba(137, 142, 226,255);
+	color: rgba(255, 255, 255,255);
+}
+
 QPushButton:flat {
 	border: none; 
 }
@@ -162,13 +159,14 @@ QLineEdit {
 /*==================================*/</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTabWidget" name="tbwMain">
-      <property name="currentIndex">
-       <number>-1</number>
-      </property>
+     <widget class="QWidget" name="wNavBar" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout"/>
      </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="swPages"/>
     </item>
    </layout>
   </widget>
@@ -177,7 +175,7 @@ QLineEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>153</width>
+     <width>24</width>
      <height>30</height>
     </rect>
    </property>

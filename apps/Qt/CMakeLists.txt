@@ -15,6 +15,7 @@ set(ELPIDA_QT_SOURCES
         Views/ConfigurationViews/ConfigurationValueViewBase.cpp
         Views/ConfigurationViews/TaskConfigurationListItemViewBase.cpp
         Views/ConfigurationViews/NumberInputView/NumberInputView.cpp
+        Views/NavigationBarView/NavigationBarView.cpp
 
         Views/MainWindow/MainWindow.ui
         Views/BenchmarkListView/BenchmarkListView.ui
@@ -29,6 +30,7 @@ set(ELPIDA_QT_SOURCES
         Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
         Views/ConfigurationViews/FileInputView/FileInputView.ui
         Views/ConfigurationViews/NumberInputView/NumberInputView.ui
+        Views/NavigationBarView/NavigationBarView.ui
 
         Main.cpp
 
@@ -50,6 +52,8 @@ set(ELPIDA_QT_SOURCES
         Models/Abstractions/ListModel/ListModelItem.cpp
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
         Models/BenchmarkConfigurationModel.cpp
+        Models/ScreensModel.cpp
+        Models/ScreenItem.cpp
 
         Controllers/BenchmarksController.cpp
         Controllers/BenchmarkRunnerController.cpp

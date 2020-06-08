@@ -33,6 +33,7 @@ SOURCES += \
     Views/ConfigurationViews/TaskListItemView/TaskListItemView.cpp \
     Views/LogsView/LogsView.cpp \
     Views/MainWindow/MainWindow.cpp \
+    Views/NavigationBarView/NavigationBarView.cpp \
     Views/SystemInfoView/SystemInfoView.cpp \
     Views/BenchmarkResultsView/BenchmarkResultsView.cpp \
     Views/TopologyNodeFrame/TopologyNodeFrame.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     Views/ConfigurationViews/TaskListItemView/TaskListItemView.hpp \
     Views/LogsView/LogsView.hpp \
     Views/MainWindow/MainWindow.hpp \
+    Views/NavigationBarView/NavigationBarView.hpp \
     Views/SystemInfoView/SystemInfoView.hpp \
     Views/BenchmarkResultsView/BenchmarkResultsView.hpp \
     Views/TopologyNodeFrame/TopologyNodeFrame.hpp \
@@ -62,6 +64,7 @@ FORMS += \
     Views/ConfigurationViews/FileInputView/FileInputView.ui \
     Views/LogsView/LogsView.ui \
     Views/MainWindow/MainWindow.ui \
+    Views/NavigationBarView/NavigationBarView.ui \
     Views/SystemInfoView/SystemInfoView.ui \
     Views/BenchmarkResultsView/BenchmarkResultsView.ui \
     Views/TopologyNodeFrame/TopologyNodeFrame.ui \

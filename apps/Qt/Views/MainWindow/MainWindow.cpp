@@ -17,27 +17,47 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include <QtWidgets/QMessageBox>
+
 #include "ui_MainWindow.h"
 #include "MainWindow.hpp"
 
 #include "Core/Commands/ShowLogsDialogCommand.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
+#include "Models/ScreensModel.hpp"
+
+#include <QMessageBox>
 
 namespace Elpida
 {
 
-	MainWindow::MainWindow(Mediator& mediator)
-		: QMainWindow(), _mediator(mediator), _ui(new Ui::MainWindow)
+	MainWindow::MainWindow(Mediator& mediator, ScreensModel& screensModel)
+		: QMainWindow(), _navigationBarView(screensModel), _mediator(mediator), _ui(new Ui::MainWindow),
+		  _screensModel(screensModel)
 	{
 		_ui->setupUi(this);
-		QWidget::connect(this, &MainWindow::showMessageRequested, this, &MainWindow::showMessageRequestedHandler);
-	}
 
-	void MainWindow::addTab(QWidget& widget, const std::string& name)
-	{
-		_ui->tbwMain->addTab(&widget, QString::fromStdString(name));
+		for (auto& itm: screensModel.getItems())
+		{
+			on_screen_added(&itm.getValue());
+		}
+
+		addSubscription(_screensModel.itemAdded.subscribe([this](const CollectionChangedEventArgs<ScreenItem>& item)
+		{
+			emit screensModelItemAdded(&item.getItem().getValue());
+		}));
+
+		addSubscription(_screensModel.selectionChanged.subscribe([this](ScreenItem& item)
+		{
+			emit screensModelSelectedItemChanged(&item);
+		}));
+
+		QWidget::connect(this, &MainWindow::showMessageRequested, this, &MainWindow::showMessageRequestedHandler);
+		QWidget::connect(this, &MainWindow::screensModelItemAdded, this, &MainWindow::on_screen_added);
+		QWidget::connect(this,
+			&MainWindow::screensModelSelectedItemChanged, this, &MainWindow::on_selected_screen_changed);
+
+		_ui->wNavBar->layout()->addWidget(&_navigationBarView);
 	}
 
 	MainWindow::~MainWindow()
@@ -83,6 +103,19 @@ namespace Elpida
 			QMessageBox::critical(this, "Error", message);
 			break;
 		}
+	}
+
+	void MainWindow::on_screen_added(const ScreenItem* screen)
+	{
+		auto index = _ui->swPages->count();
+		_ui->swPages->addWidget(screen->getWidget());
+		_screensMaps.emplace(screen, index);
+	}
+
+	void MainWindow::on_selected_screen_changed(const ScreenItem* screen)
+	{
+		auto index = _screensMaps.at(screen);
+		_ui->swPages->setCurrentIndex(index);
 	}
 
 }  // namespace Elpida
