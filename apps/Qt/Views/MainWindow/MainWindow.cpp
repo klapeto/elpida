@@ -39,7 +39,7 @@ namespace Elpida
 
 		for (auto& itm: screensModel.getItems())
 		{
-			on_screen_added(&itm.getValue());
+			onScreenAdded(&itm.getValue());
 		}
 
 		addSubscription(_screensModel.itemAdded.subscribe([this](const CollectionChangedEventArgs<ScreenItem>& item)
@@ -53,9 +53,9 @@ namespace Elpida
 		}));
 
 		QWidget::connect(this, &MainWindow::showMessageRequested, this, &MainWindow::showMessageRequestedHandler);
-		QWidget::connect(this, &MainWindow::screensModelItemAdded, this, &MainWindow::on_screen_added);
+		QWidget::connect(this, &MainWindow::screensModelItemAdded, this, &MainWindow::onScreenAdded);
 		QWidget::connect(this,
-			&MainWindow::screensModelSelectedItemChanged, this, &MainWindow::on_selected_screen_changed);
+			&MainWindow::screensModelSelectedItemChanged, this, &MainWindow::onSelectedScreenChanged);
 
 		_ui->wNavBar->layout()->addWidget(&_navigationBarView);
 	}
@@ -105,14 +105,14 @@ namespace Elpida
 		}
 	}
 
-	void MainWindow::on_screen_added(const ScreenItem* screen)
+	void MainWindow::onScreenAdded(const ScreenItem* screen)
 	{
 		auto index = _ui->swPages->count();
 		_ui->swPages->addWidget(screen->getWidget());
 		_screensMaps.emplace(screen, index);
 	}
 
-	void MainWindow::on_selected_screen_changed(const ScreenItem* screen)
+	void MainWindow::onSelectedScreenChanged(const ScreenItem* screen)
 	{
 		auto index = _screensMaps.at(screen);
 		_ui->swPages->setCurrentIndex(index);

@@ -56,8 +56,8 @@ namespace Elpida
 		void on_actionShowLogs_triggered();
 		void showMessageRequestedHandler(const QString& message, int type);
 
-		void on_screen_added(const ScreenItem* screen);
-		void on_selected_screen_changed(const ScreenItem* screen);
+		void onScreenAdded(const ScreenItem* screen);
+		void onSelectedScreenChanged(const ScreenItem* screen);
 
 	signals:
 		void showMessageRequested(const QString& message, int type);
