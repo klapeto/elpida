@@ -17,28 +17,51 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-//
-// Created by klapeto on 30/5/20.
-//
+#ifndef ELPIDA_NAVIGATIONBARVIEW_HPP
+#define ELPIDA_NAVIGATIONBARVIEW_HPP
 
-#ifndef INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-#define INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-
+#include <QWidget>
 #include <unordered_map>
-#include <string>
+#include <Elpida/EventsSubscriber.hpp>
+
+class QHBoxLayout;
+class QButtonGroup;
+class QAbstractButton;
 
 namespace Elpida
 {
-	class DataPropertiesTransformer
+
+	class ScreenItem;
+	class ScreensModel;
+
+	namespace Ui
 	{
+		class NavigationBarView;
+	}
+
+	class NavigationBarView : public QWidget, public EventsSubscriber
+	{
+	Q_OBJECT
+
 	public:
-		[[nodiscard]] virtual std::unordered_map<std::string, double> transform(size_t originalSize,
-			const std::unordered_map<std::string, double>& originalProperties,
-			size_t targetSize) const = 0;
+		explicit NavigationBarView(ScreensModel& model);
+		~NavigationBarView() override;
 
-		DataPropertiesTransformer() = default;
-		virtual ~DataPropertiesTransformer() = default;
+	signals:
+		void onViewAdded(ScreenItem& screen);
+
+	private:
+		std::unordered_map<int, ScreenItem*> _screenMap;
+		Ui::NavigationBarView* _ui;
+		ScreensModel& _model;
+		QHBoxLayout* _layout;
+		QButtonGroup* _buttonGroup;
+
+	private slots:
+		void onViewAdded_handler(ScreenItem& screen);
+		void onButton_Toggled(QAbstractButton* button, bool checked);
 	};
-}
 
-#endif //INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
+} // namespace Elpida
+
+#endif // ELPIDA_NAVIGATIONBARVIEW_HPP

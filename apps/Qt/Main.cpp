@@ -30,6 +30,7 @@
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 #include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
+#include "Models/ScreensModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
 #include "Views/SystemInfoView/SystemInfoView.hpp"
@@ -39,6 +40,7 @@
 #include "Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp"
 #include "Views/BenchmarkListView/BenchmarkListView.hpp"
 #include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
+#include "Views/NavigationBarView/NavigationBarView.hpp"
 
 #include "Core/ElpidaMediator.hpp"
 
@@ -52,9 +54,9 @@
 
 using namespace Elpida;
 
-void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget);
+void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWidget);
 
-void initializeTaskTab(MainWindow& mainWindow,
+void initializeTaskTab(ScreensModel& screensModel,
 	BenchmarkListView& taskBatchesListWidget,
 	BenchmarkResultsView& taskResultsWidget,
 	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
@@ -93,7 +95,9 @@ int main(int argc, char* argv[])
 
 	QCustomApplication application(argc, argv, mediator);
 
-	MainWindow mainWindow(mediator);
+	ScreensModel screensModel;
+
+	MainWindow mainWindow(mediator, screensModel);
 
 	ConfigurationViewsPool configurationViewsPool;
 
@@ -101,11 +105,11 @@ int main(int argc, char* argv[])
 	SystemTopology topology;
 
 	SystemInfoView systemInfoView(cpuInfo, topology);
-	mainWindow.addTab(systemInfoView, "CPU Info");
+	screensModel.add(ScreenItem("CPU Info", systemInfoView));
 
 	TopologyView topologyView(topology);
 
-	initializeTopologyTab(mainWindow, topologyView);
+	initializeTopologyTab(screensModel, topologyView);
 
 	Logger logger;
 	BenchmarksModel taskBatchesModel;
@@ -113,15 +117,17 @@ int main(int argc, char* argv[])
 	BenchmarkResultsModel taskRunResultsModel;
 	BenchmarkConfigurationModel benchmarkConfigurationModel;
 	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
-	BenchmarksController taskBatchesController(taskBatchesModel,benchmarkConfigurationsModel, logger);
+	BenchmarksController taskBatchesController(taskBatchesModel, benchmarkConfigurationsModel, logger);
 	taskBatchesController.reload();
-	BenchmarkRunnerController runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel);
+	BenchmarkRunnerController
+		runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel);
 	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
 	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel);
 	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationModel, configurationViewsPool);
-	BenchmarkConfigurationController benchmarkConfigurationController(benchmarkConfigurationsModel, benchmarkConfigurationModel);
+	BenchmarkConfigurationController
+		benchmarkConfigurationController(benchmarkConfigurationsModel, benchmarkConfigurationModel);
 
 	mediator.registerCommandHandler(runnerController);
 	mediator.registerCommandHandler(taskBatchesListView);
@@ -129,7 +135,7 @@ int main(int argc, char* argv[])
 	mediator.registerCommandHandler(mainWindow);
 	mediator.registerCommandHandler(benchmarkConfigurationController);
 
-	initializeTaskTab(mainWindow,
+	initializeTaskTab(screensModel,
 		taskBatchesListView,
 		benchmarkResultsView,
 		benchmarkRunnerStatusView,
@@ -141,7 +147,7 @@ int main(int argc, char* argv[])
 	return QApplication::exec();
 }
 
-void initializeTaskTab(MainWindow& mainWindow,
+void initializeTaskTab(ScreensModel& screensModel,
 	BenchmarkListView& taskBatchesListWidget,
 	BenchmarkResultsView& taskResultsWidget,
 	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
@@ -161,10 +167,10 @@ void initializeTaskTab(MainWindow& mainWindow,
 	rootLayout->addWidget(&taskBatchRunnerControlsView);
 	rootWidget->setLayout(rootLayout);
 
-	mainWindow.addTab(*rootWidget, "Benchmarks");
+	screensModel.add(ScreenItem("Benchmarks", *rootWidget));
 }
 
-void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget)
+void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWidget)
 {
 	auto container = new QWidget;
 	auto scrollArea = new QScrollArea;
@@ -181,5 +187,5 @@ void initializeTopologyTab(MainWindow& mainWindow, TopologyView& topologyWidget)
 
 	topologyWidget.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
-	mainWindow.addTab(*container, "System Topology");
+	screensModel.add(ScreenItem("System Topology", *container));
 }

@@ -25,6 +25,7 @@
 
 #include <Elpida/Config.hpp>
 #include <Elpida/ElpidaException.hpp>
+#include <stdexcept>
 
 namespace Elpida
 {

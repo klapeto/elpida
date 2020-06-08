@@ -18,27 +18,12 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 30/5/20.
+// Created by klapeto on 8/6/20.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-#define INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-
-#include <unordered_map>
-#include <string>
+#include "ScreenItem.hpp"
 
 namespace Elpida
 {
-	class DataPropertiesTransformer
-	{
-	public:
-		[[nodiscard]] virtual std::unordered_map<std::string, double> transform(size_t originalSize,
-			const std::unordered_map<std::string, double>& originalProperties,
-			size_t targetSize) const = 0;
 
-		DataPropertiesTransformer() = default;
-		virtual ~DataPropertiesTransformer() = default;
-	};
 }
-
-#endif //INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP

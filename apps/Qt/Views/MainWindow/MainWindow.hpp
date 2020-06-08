@@ -21,29 +21,34 @@
 #define APPS_QT_UI_MAINWINDOW_MAINWINDOW_HPP
 
 #include <QMainWindow>
+#include <Elpida/EventsSubscriber.hpp>
+#include "Views/NavigationBarView/NavigationBarView.hpp"
 
 #include "Core/Abstractions/CommandHandler.hpp"
+
+class QHBoxLayout;
+class QPushButton;
 
 namespace Elpida
 {
 	class Mediator;
+	class ScreensModel;
+	class ScreenItem;
 
 	namespace Ui
 	{
 		class MainWindow;
 	}  // namespace Views
 
-	class MainWindow final : public QMainWindow, public CommandHandler
+	class MainWindow final : public QMainWindow, public CommandHandler, public EventsSubscriber
 	{
 	Q_OBJECT
 
 	public:
 
-		void handle(ShowMessageCommand &command) override;
+		void handle(ShowMessageCommand& command) override;
 
-		void addTab(QWidget& widget, const std::string& name);
-
-		explicit MainWindow(Mediator& mediator);
+		explicit MainWindow(Mediator& mediator, ScreensModel& screensModel);
 		~MainWindow() override;
 	private slots:
 		void on_actionExit_triggered();
@@ -51,12 +56,21 @@ namespace Elpida
 		void on_actionShowLogs_triggered();
 		void showMessageRequestedHandler(const QString& message, int type);
 
-		signals:
+		void onScreenAdded(const ScreenItem* screen);
+		void onSelectedScreenChanged(const ScreenItem* screen);
+
+	signals:
 		void showMessageRequested(const QString& message, int type);
+		void screensModelItemAdded(const ScreenItem* screen);
+		void screensModelSelectedItemChanged(const ScreenItem* screen);
 
 	private:
+		std::unordered_map<const ScreenItem*, int> _screensMaps;
+		NavigationBarView _navigationBarView;
 		Mediator& _mediator;
 		Ui::MainWindow* _ui;
+		ScreensModel& _screensModel;
+
 	};
 
 }  // namespace Elpida

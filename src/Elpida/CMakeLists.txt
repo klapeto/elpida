@@ -8,6 +8,7 @@ set(ELPIDA_SOURCES
         Engine/Task/TaskAffinity.cpp
         Engine/Task/TaskThread.cpp
         Timer.cpp
+        EventsSubscriber.cpp
 
         ElpidaException.cpp
 
@@ -66,7 +67,9 @@ set(ELPIDA_SOURCES
         Engine/Task/TaskBuilder.cpp
         Engine/Data/DataAdapter.cpp
         Engine/Benchmark/BenchmarkTaskInstance.cpp
-        Engine/Configuration/ConfigurationInstance.cpp Engine/Data/DataPropertiesTransformer.cpp ../../include/Elpida/Engine/Data/DataPropertiesTransformer.hpp)
+        Engine/Configuration/ConfigurationInstance.cpp
+        Engine/Data/DataPropertiesTransformer.cpp
+        )
 
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

@@ -18,27 +18,34 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 30/5/20.
+// Created by klapeto on 8/6/20.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-#define INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
+#ifndef INCLUDE_ELPIDA_EVENTSSUBSCRIBER_HPP
+#define INCLUDE_ELPIDA_EVENTSSUBSCRIBER_HPP
 
-#include <unordered_map>
-#include <string>
+#include <vector>
 
 namespace Elpida
 {
-	class DataPropertiesTransformer
+
+	class EventSubscriptionBase;
+
+	class EventsSubscriber
 	{
 	public:
-		[[nodiscard]] virtual std::unordered_map<std::string, double> transform(size_t originalSize,
-			const std::unordered_map<std::string, double>& originalProperties,
-			size_t targetSize) const = 0;
 
-		DataPropertiesTransformer() = default;
-		virtual ~DataPropertiesTransformer() = default;
+		EventsSubscriber() = default;
+		virtual ~EventsSubscriber();
+	private:
+		std::vector<EventSubscriptionBase*> _subscriptions;
+
+	protected:
+		void addSubscription(EventSubscriptionBase& subscription)
+		{
+			_subscriptions.push_back(&subscription);
+		}
 	};
 }
 
-#endif //INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
+#endif //INCLUDE_ELPIDA_EVENTSSUBSCRIBER_HPP

@@ -18,27 +18,48 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 30/5/20.
+// Created by klapeto on 8/6/20.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-#define INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
+#ifndef APPS_QT_MODELS_SCREENSMODEL_HPP
+#define APPS_QT_MODELS_SCREENSMODEL_HPP
 
-#include <unordered_map>
-#include <string>
+#include "Models/Abstractions/ListModel/ListModel.hpp"
+#include "ScreenItem.hpp"
 
 namespace Elpida
 {
-	class DataPropertiesTransformer
+	/**
+	 * Weird model to use for QT only
+	 */
+	class ScreensModel : public ListModel<ScreenItem>
 	{
 	public:
-		[[nodiscard]] virtual std::unordered_map<std::string, double> transform(size_t originalSize,
-			const std::unordered_map<std::string, double>& originalProperties,
-			size_t targetSize) const = 0;
 
-		DataPropertiesTransformer() = default;
-		virtual ~DataPropertiesTransformer() = default;
+		Event<ScreenItem&> selectionChanged;
+
+		ScreenItem* getSelectedScreen() const
+		{
+			return _currentScreen;
+		}
+
+		void setSelectedScreen(ScreenItem* currentIndex)
+		{
+			_currentScreen = currentIndex;
+			onDataChanged();
+			selectionChanged.raise(*_currentScreen);
+		}
+
+		ScreensModel()
+			: _currentScreen(nullptr)
+		{
+		}
+
+		~ScreensModel() override = default;
+	private:
+		ScreenItem* _currentScreen;
 	};
 }
 
-#endif //INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
+
+#endif //APPS_QT_MODELS_SCREENSMODEL_HPP

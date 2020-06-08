@@ -18,27 +18,45 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 30/5/20.
+// Created by klapeto on 8/6/20.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-#define INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
+#ifndef APPS_QT_MODELS_SCREENITEM_HPP
+#define APPS_QT_MODELS_SCREENITEM_HPP
 
-#include <unordered_map>
 #include <string>
+#include <utility>
+
+class QWidget;
 
 namespace Elpida
 {
-	class DataPropertiesTransformer
+
+	class ScreenItem final
 	{
 	public:
-		[[nodiscard]] virtual std::unordered_map<std::string, double> transform(size_t originalSize,
-			const std::unordered_map<std::string, double>& originalProperties,
-			size_t targetSize) const = 0;
 
-		DataPropertiesTransformer() = default;
-		virtual ~DataPropertiesTransformer() = default;
+		[[nodiscard]] QWidget* getWidget() const
+		{
+			return _widget;
+		}
+
+		[[nodiscard]] const std::string& getName() const
+		{
+			return _name;
+		}
+
+		explicit ScreenItem(std::string name, QWidget& widget)
+			: _name(std::move(name)), _widget(&widget)
+		{
+		}
+
+		~ScreenItem() = default;
+	private:
+		std::string _name;
+		QWidget* _widget;
 	};
 }
 
-#endif //INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
+
+#endif //APPS_QT_MODELS_SCREENITEM_HPP
