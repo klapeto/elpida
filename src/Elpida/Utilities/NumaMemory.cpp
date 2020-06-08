@@ -28,10 +28,10 @@
 
 #include "Elpida/Config.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <numa.h>
-#include "Elpida/ElpidaException.hpp"
 #else
 #include <windows.h>
 #endif
