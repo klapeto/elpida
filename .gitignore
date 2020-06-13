@@ -5,4 +5,7 @@
 /.vscode
 *.[oa]
 /.idea/**
+/.vs/**
+/build/**
+/out/**
 /cmake-build-debug/**

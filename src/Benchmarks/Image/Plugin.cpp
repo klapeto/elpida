@@ -106,7 +106,7 @@ static Elpida::Benchmark* createBenchmark()
 
 }
 
-extern "C" Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
+extern "C" ELPIDA_EXPORT Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
 {
 	using namespace Elpida;
 	using Plugin = BenchmarksContainerPlugin<Elpida::Benchmark>;

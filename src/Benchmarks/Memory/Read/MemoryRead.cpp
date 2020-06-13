@@ -30,7 +30,7 @@
 #include <Elpida/Utilities/RawData.hpp>
 #include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
-#include <cmath>
+#include <algorithm>
 
 namespace Elpida
 {

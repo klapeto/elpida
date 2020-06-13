@@ -31,8 +31,6 @@
 namespace Elpida
 {
 
-	const std::string SharedLibraryLoader::LibrariesExtension{ELPIDA_SHARED_LIBRARY_EXTENSION};
-
 	void SharedLibraryLoader::load(const std::string& path)
 	{
 		_loadedLibraries.emplace(path, SharedLibrary(path));

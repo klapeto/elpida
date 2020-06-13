@@ -86,6 +86,12 @@ namespace Elpida
 			}
 		}
 
+		void clear() 
+		{
+			_values.clear();
+			CollectionModel<Pair>::onCleared();
+		}
+
 		AssociativeModel() = default;
 		~AssociativeModel() override = default;
 	private:

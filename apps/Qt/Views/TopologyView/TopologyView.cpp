@@ -241,7 +241,7 @@ namespace Elpida
 	TopologyNodeFrame* TopologyView::appendChildren(const Elpida::ProcessorNode& node)
 	{
 		const auto& children = node.getChildren();
-		unsigned maxChildren = 0;
+		size_t maxChildren = 0;
 		for (auto sibling : node.getSiblings())
 		{
 			if (sibling->getChildren().size() > maxChildren)
