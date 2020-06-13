@@ -25,6 +25,7 @@
 #define INCLUDE_ELPIDA_ENGINE_TASK_TASKDATADTO_HPP
 
 #include <unordered_map>
+#include <string>
 
 namespace Elpida
 {
