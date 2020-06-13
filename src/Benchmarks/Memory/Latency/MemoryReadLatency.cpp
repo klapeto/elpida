@@ -32,6 +32,10 @@
 #include <Elpida/Utilities/Duration.hpp>
 #include <Elpida/Utilities/RawData.hpp>
 
+#include <emmintrin.h>
+
+#define lfence() _mm_lfence()
+
 namespace Elpida
 {
 
@@ -78,69 +82,69 @@ namespace Elpida
 			for (auto j = 0ul; j < size; j += 32)
 			{
 				x = ptr[ptr[j]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 1]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 2]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 3]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 4]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 5]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 6]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 7]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 8]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 9]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 10]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 11]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 12]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 13]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 14]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 15]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 16]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 17]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 18]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 19]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 20]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 21]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 22]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 23]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 24]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 25]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 26]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 27]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 28]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 29]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 30]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 				x = ptr[ptr[j + 31]];
-				asm volatile ("mfence":: : "memory");
+				lfence();
 			}
 		}
 		ptr[x] = x;
