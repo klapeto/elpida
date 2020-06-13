@@ -48,17 +48,20 @@ namespace Elpida
 		}
 
 		explicit ConfigurationInstance(const ConfigurationSpecificationBase& configurationSpecification,
-			const ConfigurationValueBase* value, bool fixed)
+			ConfigurationValueBase* value, bool fixed)
 			: _configurationSpecification(&configurationSpecification), _value(value), _fixed(fixed)
 		{
 
 		}
+
+		ConfigurationInstance(const ConfigurationInstance& other) = delete;
+		ConfigurationInstance& operator=(const ConfigurationInstance& other) = delete;
 		ConfigurationInstance(ConfigurationInstance&& other) noexcept;
 		ConfigurationInstance& operator=(ConfigurationInstance&& other) noexcept;
 		virtual ~ConfigurationInstance();
 	private:
 		const ConfigurationSpecificationBase* _configurationSpecification;
-		const ConfigurationValueBase* _value;
+		ConfigurationValueBase* _value;
 		bool _fixed;
 		void move(ConfigurationInstance&& other) noexcept;
 	};

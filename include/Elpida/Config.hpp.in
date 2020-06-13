@@ -46,8 +46,10 @@
 
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW64__)
 #define FUNCTION_NAME __PRETTY_FUNCTION__
+#define ELPIDA_EXPORT
 #else	//MSVC?
 #define FUNCTION_NAME __FUNCSIG__
+#define ELPIDA_EXPORT __declspec(dllexport)
 #endif
 #else
 

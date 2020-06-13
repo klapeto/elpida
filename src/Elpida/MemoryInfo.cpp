@@ -27,10 +27,11 @@
 #include "Elpida/MemoryInfo.hpp"
 
 #include "Elpida/Config.hpp"
-#include <unistd.h>
 
 #ifdef ELPIDA_WINDOWS
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 namespace Elpida

@@ -29,6 +29,7 @@
 #include <Elpida/ElpidaException.hpp>
 #include <iomanip>
 #include <cmath>
+#include <sstream>
 
 namespace Elpida
 {

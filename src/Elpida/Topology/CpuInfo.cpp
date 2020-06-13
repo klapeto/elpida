@@ -26,7 +26,12 @@
 
 #include "Elpida/Topology/CpuInfo.hpp"
 
+#ifdef _MSC_VER
+#include <intrin.h>
+#else
 #include <cpuid.h>
+#endif
+
 #include <chrono>
 #include <utility>
 #include <cstddef>
@@ -41,6 +46,19 @@
 #define addFeature(category, name, reg, bit) category.push_back( { name, FeaturesNames[name], featureCheck(reg, bit) })
 
 #define vendorByteSize 12
+
+static void cpuid(unsigned func, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
+#ifdef _MSC_VER
+	int regs[4] = { -1 };
+	__cpuid(regs, func);
+	*eax = regs[0];
+	*ebx = regs[1];
+	*ecx = regs[2];
+	*edx = regs[3];
+#else
+	__get_cpuid(func, eax, ebx, ecx, edx);
+#endif
+}
 
 namespace Elpida
 {
@@ -78,15 +96,9 @@ namespace Elpida
 		_hyperThreading(false),
 		_rdtscp(false)
 	{
-
-		if (__get_cpuid_max(0, nullptr) == 0)
-		{
-			return;
-		}
-
 		unsigned eax = 0, ebx = 0, ecx = 0, edx = 0;
 
-		__get_cpuid(0x0, &eax, &ebx, &ecx, &edx);
+		cpuid(0x0, &eax, &ebx, &ecx, &edx);
 
 		if (ebx != 0)
 		{
@@ -94,12 +106,12 @@ namespace Elpida
 			_vendorString.append((char*)&ebx, 4);
 			_vendorString.append((char*)&edx, 4);
 			_vendorString.append((char*)&ecx, 4);
-			__get_cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
+			cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
 			_maximumExtendedFunction = eax;
 		}
 		else
 		{
-			__get_cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
+			cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
 			_maximumExtendedFunction = eax;
 			_vendorString.append((char*)&ebx, 4);
 			_vendorString.append((char*)&edx, 4);
@@ -140,15 +152,17 @@ namespace Elpida
 
 	static inline unsigned long rdtscp()
 	{
+#ifdef _MSC_VER
+			return __rdtsc();
+#else
 		unsigned long a, d, c;
-		__asm__ volatile("rdtscp" : "=a" (a), "=d" (d), "=c" (c));
+		asm volatile("rdtscp" : "=a" (a), "=d" (d), "=c" (c));
 		return (a | (d << 32));
+#endif		
 	}
 
 	void CpuInfo::getTscFrequency()
 	{
-
-
 		size_t nowOverhead = Timer::getNowOverhead();
 		TaskThread::setCurrentThreadAffinity(0);
 
@@ -175,7 +189,7 @@ namespace Elpida
 	{
 		unsigned eax, ebx, edx, ecx;
 
-		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+		cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 
 		_stepping = ((eax >> 0) & 0xF);
 
@@ -200,7 +214,7 @@ namespace Elpida
 
 		}
 
-		__get_cpuid(0x0000001, &eax, &ebx, &ecx, &edx);
+		cpuid(0x0000001, &eax, &ebx, &ecx, &edx);
 
 		if (featureCheck(edx, 19))
 		{
@@ -214,19 +228,19 @@ namespace Elpida
 
 		for (int i = 2; i <= 4; ++i)
 		{
-			__get_cpuid(0x80000000 + i, &eax, &ebx, &ecx, &edx);
+			cpuid(0x80000000 + i, &eax, &ebx, &ecx, &edx);
 			_processorBrand.append((char*)(&eax), 4);
 			_processorBrand.append((char*)(&ebx), 4);
 			_processorBrand.append((char*)(&ecx), 4);
 			_processorBrand.append((char*)(&edx), 4);
 		}
 
-		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+		cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "CMOV", edx, 15);
 		addFeature(_instructionExtensions, "MMX", edx, 23);
 		addFeature(_instructionExtensions, "MmxExt", edx, 22);
 
-		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
+		cpuid(0x1, &eax, &ebx, &ecx, &edx);
 		_rdtscp = featureCheck(edx, 4);
 		addFeature(_instructionExtensions, "SSE", edx, 25);
 		addFeature(_instructionExtensions, "SSE2", edx, 26);
@@ -235,22 +249,22 @@ namespace Elpida
 		addFeature(_instructionExtensions, "SSE41", ecx, 19);
 		addFeature(_instructionExtensions, "SSE42", ecx, 20);
 
-		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+		cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "SSE4A", ecx, 6);
 
-		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
+		cpuid(0x1, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "FMA", ecx, 12);
 
-		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+		cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "FMA4", ecx, 16);
 
-		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
+		cpuid(0x1, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "AES", ecx, 25);
 		addFeature(_instructionExtensions, "AVX", ecx, 28);
 
 		if (_maximumStandardFunction >= 0x7)
 		{
-			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
+			cpuid(0x7, &eax, &ebx, &ecx, &edx);
 		}
 		else
 		{
@@ -279,7 +293,7 @@ namespace Elpida
 		addFeature(_instructionExtensions, "SHA", ebx, 29);
 		addFeature(_instructionExtensions, "SGX", 0, 2);
 
-		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+		cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "XOP", ecx, 11);
 		addFeature(_instructionExtensions, "3DNow", edx, 31);
 		addFeature(_instructionExtensions, "3DNowExt", edx, 30);
@@ -287,7 +301,7 @@ namespace Elpida
 
 		if (_maximumStandardFunction >= 0x7)
 		{
-			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
+			cpuid(0x7, &eax, &ebx, &ecx, &edx);
 		}
 		else
 		{
@@ -297,17 +311,17 @@ namespace Elpida
 		addFeature(_instructionExtensions, "BMI1", ebx, 3);
 		addFeature(_instructionExtensions, "BMI2", ebx, 8);
 
-		__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+		cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "ABM", ecx, 5);
 
-		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
+		cpuid(0x1, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "F16C", ecx, 29);
 		addFeature(_instructionExtensions, "RDRAND", ecx, 30);
 
 		if (_maximumExtendedFunction >= 0x80000005)
 		{
 
-			__get_cpuid(0x80000005, &eax, &ebx, &ecx, &edx);
+			cpuid(0x80000005, &eax, &ebx, &ecx, &edx);
 			Cache tmpCache;
 
 			tmpCache.name = "L1 Instruction Cache (Per Core)";
@@ -324,7 +338,7 @@ namespace Elpida
 			tmpCache.lineSize = getRegisterValue(ecx, 0, 0xFF);
 			_caches.push_back(tmpCache);
 
-			__get_cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
+			cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 
 			tmpCache.name = "L2 Cache (Per Core)";
 			tmpCache.size = (getRegisterValue(ecx, 16, 0xFFFF) * 1000);
@@ -343,7 +357,7 @@ namespace Elpida
 
 		if (_maximumExtendedFunction >= 0x80000007)
 		{
-			__get_cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
+			cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
 			_turboBoost = featureCheck(edx, 9);
 			_invariantTsc = featureCheck(edx, 8);
 		}
@@ -364,7 +378,7 @@ namespace Elpida
 	{
 		unsigned eax, ebx, edx, ecx;
 
-		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
+		cpuid(0x1, &eax, &ebx, &ecx, &edx);
 
 		_stepping = ((eax >> 0) & 0xF);
 		{
@@ -417,7 +431,7 @@ namespace Elpida
 
 		if (_maximumStandardFunction >= 7)
 		{
-			__get_cpuid(0x7, &eax, &ebx, &ecx, &edx);
+			cpuid(0x7, &eax, &ebx, &ecx, &edx);
 		}
 		else
 		{
@@ -455,13 +469,13 @@ namespace Elpida
 		addFeature(_instructionExtensions, "BMI2", ebx, 8);
 		addFeature(_instructionExtensions, "ABM", 0, 0);
 
-		__get_cpuid(0x1, &eax, &ebx, &ecx, &edx);
+		cpuid(0x1, &eax, &ebx, &ecx, &edx);
 		addFeature(_instructionExtensions, "F16C", ecx, 29);
 		addFeature(_instructionExtensions, "RDRAND", ecx, 30);
 
 		for (int i = 2; i <= 4; ++i)
 		{
-			__get_cpuid(0x80000000 + i, &eax, &ebx, &ecx, &edx);
+			cpuid(0x80000000 + i, &eax, &ebx, &ecx, &edx);
 			_processorBrand.append((char*)(&eax), 4);
 			_processorBrand.append((char*)(&ebx), 4);
 			_processorBrand.append((char*)(&ecx), 4);
@@ -470,7 +484,7 @@ namespace Elpida
 
 		if (_maximumStandardFunction >= 0x6)
 		{
-			__get_cpuid(0x6, &eax, &ebx, &ecx, &edx);
+			cpuid(0x6, &eax, &ebx, &ecx, &edx);
 			_turboBoost = featureCheck(eax, 1);
 			_turboBoost3 = featureCheck(eax, 14);
 		}
@@ -482,10 +496,9 @@ namespace Elpida
 
 			while (true)
 			{
-				asm volatile("cpuid;"
-				: "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
-				: "0"(0x4), "1"(0), "2"(i), "3"(0));
-
+				eax = ebx = edx = 0;
+				ecx = i;
+				cpuid(0x4, &eax, &ebx, &ecx, &edx);
 				if (getRegisterValue(eax, 0, 0x1F) == 0) break;
 
 				Cache tmpCache;
@@ -505,7 +518,7 @@ namespace Elpida
 		}
 		if (_maximumExtendedFunction >= 0x80000007)
 		{
-			__get_cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
+			cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
 			_invariantTsc = featureCheck(edx, 8);
 		}
 

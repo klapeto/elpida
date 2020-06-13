@@ -83,6 +83,7 @@ namespace Elpida
 
 	void BenchmarksController::destroyAll()
 	{
+		_configurationsModel.clear();
 		for (auto plugin: _createdPlugins)
 		{
 			delete plugin;
