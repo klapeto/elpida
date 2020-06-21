@@ -27,18 +27,28 @@
 #include "Elpida/Config.hpp"
 #include <string>
 
-namespace Elpida{
+namespace Elpida
+{
+	struct OsInfo
+	{
+		std::string category;
+		std::string name;
+		std::string version;
+	};
+
 	class OsUtilities
 	{
 	public:
 
+		static OsInfo getOsInfo();
+
 #ifdef ELPIDA_WINDOWS
 		static std::string GetLastErrorString();
+		static std::wstring ReadRegistryKeyFromHKLM(const std::wstring& regSubKey, const std::wstring& regValue);
 #endif
 		OsUtilities() = delete;
 	};
 }
-
 
 
 #endif //INCLUDE_ELPIDA_UTILITIES_OSUTILITIES_HPP
