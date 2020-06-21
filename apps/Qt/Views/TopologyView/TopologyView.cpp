@@ -66,7 +66,7 @@ namespace Elpida
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(label);
-		label->setText(QString::fromStdString(node.getName()));
+		label->setText(QString::fromStdString(node.getName()) + ": " + QString::fromStdString(std::to_string(node.getOsIndex())));
 		widget->setDefaultStyle(QString("background-color: #b1b1b1;border-radius: 8px;"));
 		widget->setMouseOverStyle(QString("background-color: #d8d8d8;border-radius: 8px;"));
 		widget->setClickedStyle(QString("background-color: #fdfdfd;border-radius: 8px;"));
@@ -82,7 +82,7 @@ namespace Elpida
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QHBoxLayout);
 		widget->layout()->addWidget(label);
-		label->setText(QString::fromStdString(node.getName()));
+		label->setText(QString::fromStdString(node.getName()) + ": "+ QString::fromStdString(std::to_string(node.getOsIndex())));
 		widget->setDefaultStyle(QString("background-color: #99da9f;"));
 		widget->setMouseOverStyle(QString("background-color: #bcebc1;"));
 		widget->setClickedStyle(QString("background-color: #d4f4d7;"));
@@ -97,7 +97,7 @@ namespace Elpida
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(label);
-		//label->setText(QString::fromStdString(node.getName()));
+		//label->setText(QString::fromStdString(node.getName()) + ": " + QString::fromStdString(std::to_string(node.getOsIndex())));
 		widget->setDefaultStyle(QString("background-color: #db8ced;"));
 		widget->setMouseOverStyle(QString("background-color: #eebff9;"));
 		widget->setClickedStyle(QString("background-color: #f7dcfd;"));
@@ -112,7 +112,7 @@ namespace Elpida
 		widget->setLayout(new QHBoxLayout);
 		widget->layout()->addWidget(label);
 		label->setText(QString::fromStdString(
-			node.getName() + "\n" + ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
+			node.getName() + ": " + std::to_string(node.getOsIndex()) + "\n" + ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
 		widget->setStyleSheet(QString("background-color: #acb4ec;"));
 		return widget;
 	}
@@ -166,7 +166,7 @@ namespace Elpida
 		auto label = new QLabel();
 		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-		auto layout = node.getChildren().size() > 1 ? (QLayout*)new QVBoxLayout : (QLayout*)new QVBoxLayout;
+		auto layout = new QVBoxLayout;
 		widget->setLayout(layout);
 		layout->addWidget(label);
 		label->setText(QString::fromStdString(
@@ -186,7 +186,7 @@ namespace Elpida
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(label);
-		label->setText(QString::fromStdString(node.getName()));
+		label->setText(QString::fromStdString(node.getName()) + ": " + QString::fromStdString(std::to_string(node.getOsIndex())));
 		widget->setDefaultStyle(QString("background-color: #9297e3;"));
 		widget->setMouseOverStyle(QString("background-color: #a0a4f2;"));
 		widget->setClickedStyle(QString("background-color: #aeb2ff;"));
