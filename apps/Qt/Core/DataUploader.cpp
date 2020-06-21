@@ -61,7 +61,7 @@ namespace Elpida
 	{
 		QNetworkRequest request;
 		request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-		request.setUrl(QUrl("https://localhost:5001/api/result"));
+		request.setUrl(QUrl("https://beta.elpida.dev/api/result"));
 		auto serialized = _resultFormatter.serialize(*result);
 		auto reply = _networkAccessManager.post(request, QByteArray(serialized.c_str(),serialized.size()));
 		connect(reply, &QIODevice::readyRead, [reply](){
