@@ -55,11 +55,13 @@ namespace Elpida
 					 << prefixes[i];
 		return returnString.str();
 	}
+
 	std::wstring ValueUtilities::stringToWstring(const std::string& string)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 		return converter.from_bytes(string);
 	}
+	
 	std::string ValueUtilities::wstringTostring(const std::wstring& wstring)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;

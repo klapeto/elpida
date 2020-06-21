@@ -23,6 +23,9 @@
 
 #include "Elpida/Utilities/OsUtilities.hpp"
 
+#include "Elpida/Utilities/ValueUtilities.hpp"
+#include "Elpida/ElpidaException.hpp"
+
 #ifdef ELPIDA_WINDOWS
 #include <Windows.h>
 #include <strsafe.h>
@@ -36,14 +39,44 @@ namespace Elpida
 {
 #ifdef ELPIDA_WINDOWS
 
-
-	std::wstring OsUtilities::ReadRegistryKeyFromHKLM(const std::wstring& regSubKey, const std::wstring& regValue)
+	std::string OsUtilities::GetErrorString(HRESULT errorId)
 	{
+		LPSTR messageBuffer = nullptr;
+		try
+		{
+			if (errorId == 0) return std::string();
+
+			size_t size = FormatMessageA(
+					FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+					NULL, errorId, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), (LPSTR) & messageBuffer, 0, NULL);
+
+			std::string message(messageBuffer, size);
+
+			LocalFree(messageBuffer);
+			return message;
+		}
+		catch (...)
+		{
+			if (messageBuffer != nullptr)
+			{
+				LocalFree(messageBuffer);
+			}
+
+			throw;
+		}
+
+	}
+
+	std::string OsUtilities::ReadRegistryKeyFromHKLM(const std::string& subKey, const std::string& key)
+	{
+		// Modified version of https://stackoverflow.com/a/50821858
+		auto regSubKey = Vu::stringToWstring(subKey);
+		auto regValue = Vu::stringToWstring(key);
 		size_t bufferSize = 0xFFF; // If too small, will be resized down below.
 		std::wstring valueBuf; // Contiguous buffer since C++11.
 		valueBuf.resize(bufferSize);
 		auto cbData = static_cast<DWORD>(bufferSize * sizeof(wchar_t));
-		auto rc = RegGetValueW(
+		HRESULT rc = RegGetValueW(
 			HKEY_LOCAL_MACHINE,
 			regSubKey.c_str(),
 			regValue.c_str(),
@@ -80,42 +113,17 @@ namespace Elpida
 		{
 			cbData /= sizeof(wchar_t);
 			valueBuf.resize(static_cast<size_t>(cbData - 1)); // remove end null character
-			return valueBuf;
+			return Vu::wstringTostring(valueBuf);
 		}
 		else
 		{
-			throw std::runtime_error("Windows system error code: " + std::to_string(rc));
+			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to get Registry key: '",subKey, "' and value: '",key,"'. Reason: ",GetErrorString(rc)));
 		}
 	}
 
 	std::string OsUtilities::GetLastErrorString()
 	{
-
-		LPSTR messageBuffer = nullptr;
-		try
-		{
-			DWORD errorMessageID = GetLastError();
-			if (errorMessageID == 0) return std::string();
-
-			size_t size = FormatMessageA(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (LPSTR) & messageBuffer, 0, NULL);
-
-			std::string message(messageBuffer, size);
-
-			LocalFree(messageBuffer);
-			return message;
-		}
-		catch (...)
-		{
-			if (messageBuffer != nullptr)
-			{
-				LocalFree(messageBuffer);
-			}
-
-			throw;
-		}
-
+		return GetErrorString(GetLastError());
 	}
 #endif
 
@@ -177,7 +185,6 @@ namespace Elpida
 			osRelease.close();
 		}
 
-
 		utsname unameInfo;
 		uname(&unameInfo);
 
@@ -186,13 +193,44 @@ namespace Elpida
 #else
 	static OsInfo getOsInfoImpl()
 	{
-		return { "", "", ""};
+		std::string name;
+		std::string version;
+
+		try
+		{
+			name = OsUtilities::ReadRegistryKeyFromHKLM("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "ProductName");
+		}
+		catch (const std::exception&)
+		{
+			// does not exist?
+			name = "Unknown Windows";
+		}
+
+		try
+		{
+			version = OsUtilities::ReadRegistryKeyFromHKLM("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "ReleaseId");
+		}
+		catch (const std::exception&)
+		{
+			// does not exist?
+		}
+
+		try
+		{
+			version  += "." + OsUtilities::ReadRegistryKeyFromHKLM("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "CurrentBuild");
+		}
+		catch (const std::exception&)
+		{
+			// does not exist?
+		}
+
+		return { "Windows", name, version};
 	}
 #endif
 
-
 	OsInfo OsUtilities::getOsInfo()
 	{
+		// static, it is pointless to calculate/acquire this info every time
 		static OsInfo osInfo = getOsInfoImpl();
 		return osInfo;
 	}

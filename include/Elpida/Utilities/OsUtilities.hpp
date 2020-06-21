@@ -25,6 +25,10 @@
 #define INCLUDE_ELPIDA_UTILITIES_OSUTILITIES_HPP
 
 #include "Elpida/Config.hpp"
+
+#ifdef ELPIDA_WINDOWS
+#include <Windows.h>
+#endif
 #include <string>
 
 namespace Elpida
@@ -44,7 +48,8 @@ namespace Elpida
 
 #ifdef ELPIDA_WINDOWS
 		static std::string GetLastErrorString();
-		static std::wstring ReadRegistryKeyFromHKLM(const std::wstring& regSubKey, const std::wstring& regValue);
+		static std::string GetErrorString(HRESULT errorId);
+		static std::string ReadRegistryKeyFromHKLM(const std::string& regSubKey, const std::string& regValue);
 #endif
 		OsUtilities() = delete;
 	};
