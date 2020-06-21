@@ -44,6 +44,8 @@
 
 #include "Core/ElpidaMediator.hpp"
 
+#include "Core/DataUploader.hpp"
+
 #include <Elpida/Topology/CpuInfo.hpp>
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
@@ -96,6 +98,9 @@ int main(int argc, char* argv[])
 	setupPlatformSpecifics();
 
 	ElpidaMediator mediator;
+
+	DataUploader uploader(mediator);
+	mediator.registerCommandHandler(uploader);
 
 	QCustomApplication application(argc, argv, mediator);
 

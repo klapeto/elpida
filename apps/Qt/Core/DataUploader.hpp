@@ -18,23 +18,42 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 20/6/20.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#ifndef APPS_QT_CORE_DATAUPLOADER_HPP
+#define APPS_QT_CORE_DATAUPLOADER_HPP
 
-namespace Elpida {
-	class Command;
-	class ShowLogsDialogCommand;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
-	class ShowMessageCommand;
-	class GetTaskAffinityCommand;
-	class SelectedBenchmarkChangedEvent;
-	class HttpResponseEvent;
-	class UploadResultCommand;
+#include <Elpida/Engine/Result/BenchmarkResult.hpp>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkReply>
+#include "Core/Abstractions/CommandHandler.hpp"
+
+namespace Elpida
+{
+	class Mediator;
+
+	class DataUploader final: public QObject, public CommandHandler
+	{
+	Q_OBJECT
+	public:
+		void uploadResult(const BenchmarkResult& result);
+
+		void handle(UploadResultCommand &command) override;
+
+		explicit DataUploader(Mediator& mediator);
+		~DataUploader() override = default;
+	private:
+		QNetworkAccessManager _networkAccessManager;
+		Mediator& _mediator;
+
+		signals:
+		void uploadRequest(const BenchmarkResult* result);
+
+	private slots:
+		void onUploadRequested(const BenchmarkResult* result);
+		void onFinished(QNetworkReply *reply);
+	};
 }
 
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#endif //APPS_QT_CORE_DATAUPLOADER_HPP

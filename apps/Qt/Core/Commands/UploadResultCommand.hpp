@@ -18,23 +18,37 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 20/6/20.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#ifndef APPS_QT_CORE_COMMANDS_UPLOADRESULTCOMMAND_HPP
+#define APPS_QT_CORE_COMMANDS_UPLOADRESULTCOMMAND_HPP
 
-namespace Elpida {
-	class Command;
-	class ShowLogsDialogCommand;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
-	class ShowMessageCommand;
-	class GetTaskAffinityCommand;
-	class SelectedBenchmarkChangedEvent;
-	class HttpResponseEvent;
-	class UploadResultCommand;
+#include "Core/Abstractions/TypedCommand.hpp"
+
+namespace Elpida
+{
+
+	class BenchmarkResult;
+
+	class UploadResultCommand final : public TypedCommand<UploadResultCommand>
+	{
+	public:
+
+		[[nodiscard]] const BenchmarkResult& getBenchmarkResult() const
+		{
+			return _benchmarkResult;
+		}
+
+		explicit UploadResultCommand(const BenchmarkResult& benchmarkResult)
+			: _benchmarkResult(benchmarkResult)
+		{
+		}
+		~UploadResultCommand() override = default;
+	private:
+		const BenchmarkResult& _benchmarkResult;
+	};
 }
 
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+
+#endif //APPS_QT_CORE_COMMANDS_UPLOADRESULTCOMMAND_HPP

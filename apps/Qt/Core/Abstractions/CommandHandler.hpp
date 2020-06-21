@@ -55,6 +55,13 @@ namespace Elpida
 		virtual void handle(SelectedBenchmarkChangedEvent& command)
 		{
 		}
+		virtual void handle(HttpResponseEvent& command)
+		{
+		}
+		virtual void handle(UploadResultCommand& command)
+		{
+		}
+
 
 		virtual ~CommandHandler() = default;
 	};

@@ -18,23 +18,32 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 20/6/20.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#ifndef APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP
+#define APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP
+
+#include "Core/Abstractions/TypedCommand.hpp"
+#include <string>
 
 namespace Elpida {
-	class Command;
-	class ShowLogsDialogCommand;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
-	class ShowMessageCommand;
-	class GetTaskAffinityCommand;
-	class SelectedBenchmarkChangedEvent;
-	class HttpResponseEvent;
-	class UploadResultCommand;
+	class HttpResponseEvent final : public TypedCommand<HttpResponseEvent>{
+	public:
+		[[nodiscard]] const std::string& getResponse() const
+		{
+			return _response;
+		}
+
+		explicit HttpResponseEvent(const std::string& response)
+		: _response(response)
+		{
+		}
+		~HttpResponseEvent() override = default;
+	private:
+		std::string _response;
+	};
 }
 
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+
+#endif //APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP

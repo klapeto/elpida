@@ -35,7 +35,7 @@
 #else
 #include <Windows.h>
 #include <strsafe.h>
-#include "Elpida/Utilities/WindowsUtils.hpp"
+#include "Elpida/Utilities/OsUtilities.hpp"
 #endif
 
 namespace Elpida
@@ -101,7 +101,7 @@ namespace Elpida
 		}
 		else
 		{
-			throw ElpidaException("Iterate directory", WindowsUtils::GetLastErrorString());
+			throw ElpidaException("Iterate directory", OsUtilities::GetLastErrorString());
 		}
 
 #endif
