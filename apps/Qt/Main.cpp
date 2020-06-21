@@ -45,6 +45,7 @@
 #include "Core/ElpidaMediator.hpp"
 
 #include "Core/DataUploader.hpp"
+#include "Core/JsonResultFormatter.hpp"
 
 #include <Elpida/Topology/CpuInfo.hpp>
 #include <Elpida/Topology/SystemTopology.hpp>
@@ -89,6 +90,9 @@ static void setupPlatformSpecifics()
 #endif
 }
 
+#include <Elpida/Utilities/OsUtilities.hpp>
+#include <Elpida/MemoryInfo.hpp>
+
 int main(int argc, char* argv[])
 {
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
@@ -97,9 +101,6 @@ int main(int argc, char* argv[])
 	setupPlatformSpecifics();
 
 	ElpidaMediator mediator;
-
-	DataUploader uploader(mediator);
-	mediator.registerCommandHandler(uploader);
 
 	QCustomApplication application(argc, argv, mediator);
 
@@ -149,6 +150,13 @@ int main(int argc, char* argv[])
 		benchmarkRunnerStatusView,
 		benchmarkRunnerControlsView,
 		benchmarkConfigurationView);
+
+
+	MemoryInfo memoryInfo;
+	JsonResultFormatter formatter(topology, cpuInfo, OsUtilities::getOsInfo(), memoryInfo);
+
+	DataUploader uploader(mediator, formatter);
+	mediator.registerCommandHandler(uploader);
 
 	mainWindow.show();
 

@@ -34,7 +34,7 @@ namespace Elpida {
 	{
 	public:
 
-		virtual std::string serialize(const BenchmarkResult& result) = 0;
+		virtual std::string serialize(const BenchmarkResult& result) const = 0;
 
 		ResultFormatter() = default;
 		virtual ~ResultFormatter() = default;

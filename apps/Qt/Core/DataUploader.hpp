@@ -26,26 +26,27 @@
 
 #include <Elpida/Engine/Result/BenchmarkResult.hpp>
 #include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkReply>
 #include "Core/Abstractions/CommandHandler.hpp"
+
+class QNetworkReply;
 
 namespace Elpida
 {
 	class Mediator;
+	class ResultFormatter;
 
 	class DataUploader final: public QObject, public CommandHandler
 	{
 	Q_OBJECT
 	public:
-		void uploadResult(const BenchmarkResult& result);
-
 		void handle(UploadResultCommand &command) override;
 
-		explicit DataUploader(Mediator& mediator);
+		explicit DataUploader(Mediator& mediator, const ResultFormatter& resultFormatter);
 		~DataUploader() override = default;
 	private:
 		QNetworkAccessManager _networkAccessManager;
 		Mediator& _mediator;
+		const ResultFormatter& _resultFormatter;
 
 		signals:
 		void uploadRequest(const BenchmarkResult* result);

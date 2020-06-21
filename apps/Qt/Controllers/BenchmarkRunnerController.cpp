@@ -108,8 +108,7 @@ namespace Elpida
 								{
 									for (auto& result: results)
 									{
-										model.add(result);
-										_mediator.execute(UploadResultCommand(result));
+										_mediator.execute(UploadResultCommand(model.add(result)));
 									}
 								});
 							_runnerModel.transactional<BenchmarkRunnerModel>([&benches](BenchmarkRunnerModel& model)

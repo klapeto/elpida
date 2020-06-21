@@ -26,36 +26,19 @@
 #include "Commands/UploadResultCommand.hpp"
 #include "Commands/HttpResponseEvent.hpp"
 #include "Core/Abstractions/Mediator.hpp"
-#include "Commands/HttpResponseEvent.hpp"
+#include "Core/Abstractions/ResultFormatter.hpp"
+
+#include <QtNetwork/QNetworkReply>
 
 namespace Elpida
 {
 
-	void DataUploader::uploadResult(const BenchmarkResult& result)
-	{
-		QNetworkRequest request;
-		request.setUrl(QUrl("https://localhost:5001/api/result"));
-		QNetworkReply *reply = _networkAccessManager.get(request);
-//		QObject::connect(reply, &QNetworkReply::readyRead, [reply, this](){
-//			_mediator.execute(HttpResponseEvent(reply->readAll().toStdString()));
-//		});
-//		QObject::connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), [reply, this](QNetworkReply::NetworkError err)
-//		{
-//			_mediator.execute(HttpResponseEvent(reply->readAll().toStdString()));
-//		});
-//		QObject::connect(reply, &QNetworkReply::sslErrors,[reply, this](QList<QSslError> errors)
-//		{
-//			_mediator.execute(HttpResponseEvent(reply->readAll().toStdString()));
-//		});
-	}
-
-	DataUploader::DataUploader(Mediator& mediator)
-		:_networkAccessManager(), _mediator(mediator)
+	DataUploader::DataUploader(Mediator& mediator, const ResultFormatter& resultFormatter)
+		: _networkAccessManager(), _mediator(mediator), _resultFormatter(resultFormatter)
 	{
 		QObject::connect(&_networkAccessManager, &QNetworkAccessManager::finished, this, &DataUploader::onFinished);
 		QObject::connect(this, &DataUploader::uploadRequest, this, &DataUploader::onUploadRequested);
 	}
-
 
 	void DataUploader::handle(UploadResultCommand& command)
 	{
@@ -77,8 +60,10 @@ namespace Elpida
 	void DataUploader::onUploadRequested(const BenchmarkResult* result)
 	{
 		QNetworkRequest request;
+		request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
 		request.setUrl(QUrl("https://localhost:5001/api/result"));
-		auto reply = _networkAccessManager.get(request);
+		auto serialized = _resultFormatter.serialize(*result);
+		auto reply = _networkAccessManager.post(request, QByteArray(serialized.c_str(),serialized.size()));
 		connect(reply, &QIODevice::readyRead, [reply](){
 			if (reply->error()) {
 				qDebug() << reply->errorString();

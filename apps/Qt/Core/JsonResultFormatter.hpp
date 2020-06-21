@@ -29,18 +29,25 @@
 namespace Elpida
 {
 	class SystemTopology;
+	class CpuInfo;
+	class OsInfo;
+	class MemoryInfo;
 
 	class JsonResultFormatter : public ResultFormatter
 	{
-		std::string serialize(const BenchmarkResult& result) override;
-
-		JsonResultFormatter() = default;
 	public:
-		JsonResultFormatter(const SystemTopology& systemTopology);
-	private:
+		[[nodiscard]] std::string serialize(const BenchmarkResult& result) const override;
+
+		JsonResultFormatter(const SystemTopology& systemTopology,
+			const CpuInfo& cpuInfo,
+			const OsInfo& osInfo,
+			const MemoryInfo& memoryInfo);
 		~JsonResultFormatter() override = default;
 	private:
 		const SystemTopology& _systemTopology;
+		const CpuInfo& _cpuInfo;
+		const OsInfo& _osInfo;
+		const MemoryInfo& _memoryInfo;
 	};
 
 }
