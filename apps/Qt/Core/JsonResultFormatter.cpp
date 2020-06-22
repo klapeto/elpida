@@ -242,7 +242,7 @@ namespace Elpida
 	{
 		json resultJ;
 
-		resultJ["benchmarkName"] = result.getBenchmark().getName();
+		resultJ["name"] = result.getBenchmark().getName();
 		{
 			auto taskResults = json::array();
 			for (auto& taskResult: result.getTaskResults())
