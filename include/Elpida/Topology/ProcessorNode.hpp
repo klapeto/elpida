@@ -55,6 +55,8 @@ namespace Elpida
 			Unknown
 		};
 
+		static inline std::string UnknownOsIndexStr = "[No Index]";
+
 		[[nodiscard]] unsigned int getOsIndex() const
 		{
 			return _osIndex;
@@ -69,6 +71,8 @@ namespace Elpida
 		{
 			return _siblings;
 		}
+
+		[[nodiscard]] bool isOsIndexValid() const;
 
 		[[nodiscard]] const std::vector<ProcessorNode>& getMemoryChildren() const
 		{

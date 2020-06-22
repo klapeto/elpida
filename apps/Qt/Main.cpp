@@ -152,8 +152,9 @@ int main(int argc, char* argv[])
 		benchmarkConfigurationView);
 
 
+	OsInfo opInfo = OsUtilities::getOsInfo();
 	MemoryInfo memoryInfo;
-	JsonResultFormatter formatter(topology, cpuInfo, OsUtilities::getOsInfo(), memoryInfo);
+	JsonResultFormatter formatter(topology, cpuInfo, opInfo, memoryInfo);
 
 	DataUploader uploader(mediator, formatter);
 	mediator.registerCommandHandler(uploader);
