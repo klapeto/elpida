@@ -50,13 +50,13 @@
 static void cpuid(unsigned func, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
 #ifdef _MSC_VER
 	int regs[4] = { -1 };
-	__cpuid(regs, func);
+	__cpuidex(regs, func, *exc);
 	*eax = regs[0];
 	*ebx = regs[1];
 	*ecx = regs[2];
 	*edx = regs[3];
 #else
-	__get_cpuid(func, eax, ebx, ecx, edx);
+	__get_cpuid_count(func, *ecx, eax, ebx, ecx, edx);
 #endif
 }
 
@@ -158,7 +158,7 @@ namespace Elpida
 		unsigned long a, d, c;
 		asm volatile("rdtscp" : "=a" (a), "=d" (d), "=c" (c));
 		return (a | (d << 32));
-#endif		
+#endif
 	}
 
 	void CpuInfo::getTscFrequency()
