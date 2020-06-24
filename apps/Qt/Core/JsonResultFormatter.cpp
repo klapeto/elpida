@@ -132,7 +132,7 @@ namespace Elpida
 
 		nodeJ["nodeType"] = node.getType();
 		nodeJ["name"] = node.getName();
-		nodeJ["osIndex"] = node.getOsIndex();
+		nodeJ["osIndex"] = node.isOsIndexValid() ? node.getOsIndex() : 0;
 		if (node.getValue() > 0)
 		{
 			nodeJ["value"] = node.getValue();

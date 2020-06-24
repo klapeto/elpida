@@ -66,7 +66,9 @@ namespace Elpida
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(label);
-		label->setText(QString::fromStdString(node.getName()) + ": " + (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex())) : QString()) + QString::fromStdString(std::to_string(node.getOsIndex())));
+		label->setText(QString::fromStdString(node.getName()) + ": "
+			+ (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex()) + ": ") : QString())
+			+ QString::fromStdString(std::to_string(node.getOsIndex())));
 		widget->setDefaultStyle(QString("background-color: #b1b1b1;border-radius: 8px;"));
 		widget->setMouseOverStyle(QString("background-color: #d8d8d8;border-radius: 8px;"));
 		widget->setClickedStyle(QString("background-color: #fdfdfd;border-radius: 8px;"));
@@ -82,7 +84,8 @@ namespace Elpida
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QHBoxLayout);
 		widget->layout()->addWidget(label);
-		label->setText(QString::fromStdString(node.getName()) + ": " + (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex())) : QString()));
+		label->setText(QString::fromStdString(node.getName()) + ": "
+			+ (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex()) + ": ") : QString()));
 		widget->setDefaultStyle(QString("background-color: #99da9f;"));
 		widget->setMouseOverStyle(QString("background-color: #bcebc1;"));
 		widget->setClickedStyle(QString("background-color: #d4f4d7;"));
@@ -112,7 +115,8 @@ namespace Elpida
 		widget->setLayout(new QHBoxLayout);
 		widget->layout()->addWidget(label);
 		label->setText(QString::fromStdString(
-			node.getName() + ": " + (node.isOsIndexValid() ? std::to_string(node.getOsIndex()) : "") + "\n" + ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
+			node.getName() + ": " + (node.isOsIndexValid() ? std::to_string(node.getOsIndex()) : "") + "\n"
+				+ ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
 		widget->setStyleSheet(QString("background-color: #acb4ec;"));
 		return widget;
 	}
@@ -170,7 +174,8 @@ namespace Elpida
 		widget->setLayout(layout);
 		layout->addWidget(label);
 		label->setText(QString::fromStdString(
-			node.getName() + ": " + (node.isOsIndexValid() ? std::to_string(node.getOsIndex()) : "") + ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
+			node.getName() + ": " + (node.isOsIndexValid() ? std::to_string(node.getOsIndex()) + ": " : "")
+				+ ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
 		auto styles = getCacheStyleSheet(node);
 		widget->setDefaultStyle(styles.defaultStyle);
 		widget->setMouseOverStyle(styles.mouseOverStyle);
@@ -186,7 +191,8 @@ namespace Elpida
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 		widget->setLayout(new QVBoxLayout);
 		widget->layout()->addWidget(label);
-		label->setText(QString::fromStdString(node.getName()) + ": " + (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex())) : QString()));
+		label->setText(QString::fromStdString(node.getName()) + ": "
+			+ (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex()) + ": ") : QString()));
 		widget->setDefaultStyle(QString("background-color: #9297e3;"));
 		widget->setMouseOverStyle(QString("background-color: #a0a4f2;"));
 		widget->setClickedStyle(QString("background-color: #aeb2ff;"));

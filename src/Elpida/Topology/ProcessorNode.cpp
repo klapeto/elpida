@@ -199,7 +199,7 @@ namespace Elpida
 	}
 	bool ProcessorNode::isOsIndexValid() const
 	{
-		return _osIndex == HWLOC_UNKNOWN_INDEX;
+		return _osIndex != HWLOC_UNKNOWN_INDEX;
 	}
 
 } /* namespace Elpida */
