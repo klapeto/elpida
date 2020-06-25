@@ -29,14 +29,17 @@
 #include "Core/Abstractions/ResultFormatter.hpp"
 
 #include <QtNetwork/QNetworkReply>
+#include <Elpida/Utilities/Logging/Logger.hpp>
+#include <Elpida/Utilities/ValueUtilities.hpp>
 
 namespace Elpida
 {
 
-	DataUploader::DataUploader(Mediator& mediator, const ResultFormatter& resultFormatter)
-		: _networkAccessManager(), _mediator(mediator), _resultFormatter(resultFormatter)
+	DataUploader::DataUploader(Mediator& mediator, const ResultFormatter& resultFormatter, Logger& logger)
+		: _networkAccessManager(), _mediator(mediator), _resultFormatter(resultFormatter), _logger(logger)
 	{
 		QObject::connect(&_networkAccessManager, &QNetworkAccessManager::finished, this, &DataUploader::onFinished);
+		QObject::connect(&_networkAccessManager, &QNetworkAccessManager::sslErrors, this, &DataUploader::onSslErrors);
 		QObject::connect(this, &DataUploader::uploadRequest, this, &DataUploader::onUploadRequested);
 	}
 
@@ -47,66 +50,36 @@ namespace Elpida
 
 	void DataUploader::onFinished(QNetworkReply* reply)
 	{
-		if (reply->error()) {
-			qDebug() << reply->errorString();
+		auto responseCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+		if (reply->error())
+		{
+			auto err = reply->errorString();
+			_mediator.execute(HttpResponseEvent(err.toStdString(), responseCode.value<int>()));
 			return;
 		}
-
 		QString answer = reply->readAll();
-
-		qDebug() << answer;
+		_mediator.execute(HttpResponseEvent(answer.toStdString(), responseCode.value<int>()));
 	}
 
 	void DataUploader::onUploadRequested(const BenchmarkResult* result)
 	{
 		QNetworkRequest request;
 		request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-		request.setUrl(QUrl("https://beta.elpida.dev/api/result"));
+		request.setUrl(QUrl(apiUrl));
 		auto serialized = _resultFormatter.serialize(*result);
-		auto reply = _networkAccessManager.post(request, QByteArray(serialized.c_str(),serialized.size()));
-		connect(reply, &QIODevice::readyRead, [reply](){
-			if (reply->error()) {
-				qDebug() << reply->errorString();
-				return;
-			}
+		_networkAccessManager.post(request, QByteArray(serialized.c_str(), serialized.size()));
+	}
 
-			QString answer = reply->readAll();
-
-			qDebug() << answer;
-		});
-
-		connect(reply, &QIODevice::readyRead,[reply](){
-			if (reply->error()) {
-				qDebug() << reply->errorString();
-				return;
-			}
-
-			QString answer = reply->readAll();
-
-			qDebug() << answer;
-		});
-		connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),[reply](){
-			if (reply->error()) {
-				qDebug() << reply->errorString();
-				return;
-			}
-
-			QString answer = reply->readAll();
-
-			qDebug() << answer;
-		});
-		connect(reply, &QNetworkReply::sslErrors,[reply](){
-			reply->ignoreSslErrors();
-			return;
-			if (reply->error()) {
-				qDebug() << reply->errorString();
-				return;
-			}
-
-			QString answer = reply->readAll();
-
-			qDebug() << answer;
-		});
+	void DataUploader::onSslErrors(QNetworkReply* reply, const QList<QSslError>& errors)
+	{
+		for (const auto& err: errors)
+		{
+			_logger.log(LogType::Error, Vu::Cs(
+				"SSL Errors occurred when handling the request: '",
+				reply != nullptr ? reply->request().url().toString().toStdString() : "[Unknown]",
+				"'. ",
+				err.errorString().toStdString()));
+		}
 	}
 
 }

@@ -34,26 +34,31 @@ namespace Elpida
 {
 	class Mediator;
 	class ResultFormatter;
+	class Logger;
 
-	class DataUploader final: public QObject, public CommandHandler
+	class DataUploader final : public QObject, public CommandHandler
 	{
 	Q_OBJECT
 	public:
-		void handle(UploadResultCommand &command) override;
+		void handle(UploadResultCommand& command) override;
 
-		explicit DataUploader(Mediator& mediator, const ResultFormatter& resultFormatter);
+		explicit DataUploader(Mediator& mediator, const ResultFormatter& resultFormatter, Logger& logger);
 		~DataUploader() override = default;
 	private:
 		QNetworkAccessManager _networkAccessManager;
 		Mediator& _mediator;
 		const ResultFormatter& _resultFormatter;
+		Logger& _logger;
 
-		signals:
+		static inline const char* apiUrl = "https://beta.elpida.dev/api/result";
+
+	signals:
 		void uploadRequest(const BenchmarkResult* result);
 
 	private slots:
 		void onUploadRequested(const BenchmarkResult* result);
-		void onFinished(QNetworkReply *reply);
+		void onFinished(QNetworkReply* reply);
+		void onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
 	};
 }
 

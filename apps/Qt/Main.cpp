@@ -92,6 +92,7 @@ static void setupPlatformSpecifics()
 
 #include <Elpida/Utilities/OsUtilities.hpp>
 #include <Elpida/MemoryInfo.hpp>
+#include <Controllers/UploadController.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -154,9 +155,12 @@ int main(int argc, char* argv[])
 
 	OsInfo opInfo = OsUtilities::getOsInfo();
 	MemoryInfo memoryInfo;
-	JsonResultFormatter formatter(topology, cpuInfo, opInfo, memoryInfo);
 
-	DataUploader uploader(mediator, formatter);
+	UploadController uploadController(mediator, taskRunResultsModel, logger);
+	mediator.registerCommandHandler(uploadController);
+
+	JsonResultFormatter formatter(topology, cpuInfo, opInfo, memoryInfo);
+	DataUploader uploader(mediator, formatter, logger);
 	mediator.registerCommandHandler(uploader);
 
 	mainWindow.show();

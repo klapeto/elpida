@@ -18,42 +18,37 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 20/6/20.
+// Created by klapeto on 25/6/20.
 //
 
-#ifndef APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP
-#define APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP
+#ifndef APPS_QT_CONTROLLERS_UPLOADCONTROLLER_HPP
+#define APPS_QT_CONTROLLERS_UPLOADCONTROLLER_HPP
 
-#include "Core/Abstractions/TypedCommand.hpp"
-#include <string>
-#include <utility>
+#include "Core/Abstractions/CommandHandler.hpp"
 
 namespace Elpida
 {
-	class HttpResponseEvent final : public TypedCommand<HttpResponseEvent>
+	class Mediator;
+	class BenchmarkResultsModel;
+	class Logger;
+	class BenchmarkResult;
+
+	class UploadController final : public CommandHandler
 	{
 	public:
+		void handle(HttpResponseEvent& command) override;
 
-		[[nodiscard]] int getResponseCode() const
-		{
-			return _responseCode;
-		}
-
-		[[nodiscard]] const std::string& getResponse() const
-		{
-			return _response;
-		}
-
-		explicit HttpResponseEvent(std::string response, int responseCode)
-			: _response(std::move(response)), _responseCode(responseCode)
-		{
-		}
-		~HttpResponseEvent() override = default;
+		UploadController(Mediator& mediator,
+			const BenchmarkResultsModel& benchmarkResultsModel,
+			Logger& logger);
+		~UploadController() override = default;
 	private:
-		std::string _response;
-		int _responseCode;
+		Mediator& _mediator;
+		const BenchmarkResultsModel& _benchmarkResultsModel;
+		Logger& _logger;
+
+		void onResultAdded(const BenchmarkResult& result);
 	};
 }
 
-
-#endif //APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP
+#endif //APPS_QT_CONTROLLERS_UPLOADCONTROLLER_HPP

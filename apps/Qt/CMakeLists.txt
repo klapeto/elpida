@@ -61,10 +61,11 @@ set(ELPIDA_QT_SOURCES
 		Controllers/BenchmarksController.cpp
 		Controllers/BenchmarkRunnerController.cpp
 		Controllers/BenchmarkConfigurationController.cpp
+		Controllers/UploadController.cpp
 
 		QCustomApplication.cpp
 		ConfigurationViewsPool.cpp
-		)
+        )
 
 
 if (MSVC)

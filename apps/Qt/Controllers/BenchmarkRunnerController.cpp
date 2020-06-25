@@ -27,7 +27,6 @@
 #include "Core/Commands/GetBenchmarksToRunCommand.hpp"
 #include "Core/Commands/GetTaskAffinityCommand.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
-#include "Core/Commands/UploadResultCommand.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
@@ -108,7 +107,7 @@ namespace Elpida
 								{
 									for (auto& result: results)
 									{
-										_mediator.execute(UploadResultCommand(model.add(result)));
+										model.add(result);
 									}
 								});
 							_runnerModel.transactional<BenchmarkRunnerModel>([&benches](BenchmarkRunnerModel& model)
