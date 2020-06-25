@@ -18,23 +18,37 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 21/6/20.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#ifndef APPS_QT_CORE_JSONRESULTFORMATTER_HPP
+#define APPS_QT_CORE_JSONRESULTFORMATTER_HPP
 
-namespace Elpida {
-	class Command;
-	class ShowLogsDialogCommand;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
-	class ShowMessageCommand;
-	class GetTaskAffinityCommand;
-	class SelectedBenchmarkChangedEvent;
-	class HttpResponseEvent;
-	class UploadResultCommand;
+#include "Core/Abstractions/ResultFormatter.hpp"
+
+namespace Elpida
+{
+	class SystemTopology;
+	class CpuInfo;
+	class OsInfo;
+	class MemoryInfo;
+
+	class JsonResultFormatter : public ResultFormatter
+	{
+	public:
+		[[nodiscard]] std::string serialize(const BenchmarkResult& result) const override;
+
+		JsonResultFormatter(const SystemTopology& systemTopology,
+			const CpuInfo& cpuInfo,
+			const OsInfo& osInfo,
+			const MemoryInfo& memoryInfo);
+		~JsonResultFormatter() override = default;
+	private:
+		const SystemTopology& _systemTopology;
+		const CpuInfo& _cpuInfo;
+		const OsInfo& _osInfo;
+		const MemoryInfo& _memoryInfo;
+	};
+
 }
-
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#endif //APPS_QT_CORE_JSONRESULTFORMATTER_HPP

@@ -25,12 +25,12 @@ set(ELPIDA_SOURCES
         Utilities/NonCopyable.cpp
         Utilities/Imaging/Pixel.cpp
         Utilities/ValueUtilities.cpp
-        Utilities/WindowsUtils.cpp
         Utilities/Plugin/Plugin.cpp
         Utilities/Plugin/BenchmarksContainerPlugin.cpp
         Utilities/Uuid.cpp
         Utilities/Memory.cpp
         Utilities/NumaMemory.cpp
+        Utilities/OsUtilities.cpp
 
         CommonTasks/AllocateMemory/AllocateMemory.cpp
         CommonTasks/AllocateMemory/AllocateMemorySpecification.cpp
@@ -76,7 +76,7 @@ set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 configure_file("${ELPIDA_INCLUDE_DIR}/Elpida/Config.hpp.in" "Elpida/Config.hpp")
 
-add_library(elpida SHARED ${ELPIDA_SOURCES})
+add_library(elpida SHARED ${ELPIDA_SOURCES} Utilities/OsUtilities.cpp ../../include/Elpida/Utilities/OsUtilities.hpp)
 
 if (UNIX)
     include(FindThreads)

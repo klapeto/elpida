@@ -18,27 +18,42 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 11/4/20.
+// Created by klapeto on 20/6/20.
 //
 
-#ifndef INCLUDE_ELPIDA_UTILITIES_WINDOWSUTILS_HPP
-#define INCLUDE_ELPIDA_UTILITIES_WINDOWSUTILS_HPP
+#ifndef APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP
+#define APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP
 
-#include "Elpida/Config.hpp"
+#include "Core/Abstractions/TypedCommand.hpp"
 #include <string>
+#include <utility>
 
 namespace Elpida
 {
-	class WindowsUtils
+	class HttpResponseEvent final : public TypedCommand<HttpResponseEvent>
 	{
 	public:
 
-#ifdef ELPIDA_WINDOWS
-		static std::string GetLastErrorString();
-#endif
-		WindowsUtils() = delete;
+		[[nodiscard]] int getResponseCode() const
+		{
+			return _responseCode;
+		}
+
+		[[nodiscard]] const std::string& getResponse() const
+		{
+			return _response;
+		}
+
+		explicit HttpResponseEvent(std::string response, int responseCode)
+			: _response(std::move(response)), _responseCode(responseCode)
+		{
+		}
+		~HttpResponseEvent() override = default;
+	private:
+		std::string _response;
+		int _responseCode;
 	};
 }
 
 
-#endif //INCLUDE_ELPIDA_UTILITIES_WINDOWSUTILS_HPP
+#endif //APPS_QT_CORE_COMMANDS_HTTPRESPONSEEVENT_HPP

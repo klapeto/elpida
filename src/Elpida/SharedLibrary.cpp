@@ -36,14 +36,11 @@
 #include <Windows.h>
 #include <strsafe.h>
 #include <string>
-#include "Elpida/Utilities/WindowsUtils.hpp"
+#include "Elpida/Utilities/OsUtilities.hpp"
 #endif
 
 namespace Elpida
 {
-#ifdef ELPIDA_WINDOWS
-	static std::string GetWindowsError();
-#endif
 
 	SharedLibrary::SharedLibrary(SharedLibrary&& other) noexcept
 	{
@@ -75,7 +72,7 @@ namespace Elpida
 #ifdef ELPIDA_LINUX
 				(errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
 #else
-			WindowsUtils::GetLastErrorString());
+			OsUtilities::GetLastErrorString());
 #endif
 		}
 	}

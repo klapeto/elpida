@@ -86,7 +86,7 @@ namespace Elpida
 
 			if (_specification.acceptsInput())
 			{
-				if (_allocatedChunks.size() < i)
+				if (_allocatedChunks.size() <= i)	// TODO: Move it up to avoid task creation
 				{
 					delete task;
 					break;    // Not enough chunks. We need to handle that

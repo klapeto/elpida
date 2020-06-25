@@ -103,7 +103,7 @@ namespace Elpida
 							auto results = _runner.runBenchmarks(benches, aff);
 							_runnerModel.setRunning(false);
 							_benchmarkResultsModel
-								.transactional<BenchmarkResultsModel>([&results](BenchmarkResultsModel& model)
+								.transactional<BenchmarkResultsModel>([&results, this](BenchmarkResultsModel& model)
 								{
 									for (auto& result: results)
 									{

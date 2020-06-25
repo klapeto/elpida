@@ -38,6 +38,9 @@ set(ELPIDA_QT_SOURCES
 
 		Core/ElpidaMediator.cpp
 		Core/QModelLogAppender.cpp
+		Core/DataUploader.cpp
+		Core/Abstractions/ResultFormatter.cpp
+		Core/JsonResultFormatter.cpp
 
 		Models/BenchmarksModel.cpp
 		Models/Abstractions/CollectionModel.cpp
@@ -58,10 +61,11 @@ set(ELPIDA_QT_SOURCES
 		Controllers/BenchmarksController.cpp
 		Controllers/BenchmarkRunnerController.cpp
 		Controllers/BenchmarkConfigurationController.cpp
+		Controllers/UploadController.cpp
 
 		QCustomApplication.cpp
 		ConfigurationViewsPool.cpp
-		)
+        )
 
 
 if (MSVC)
@@ -111,10 +115,10 @@ if (MSVC)
 		set(Qt5_DIR "${QT_PATH}/lib/cmake/Qt5/")
 		set(Qt5Test_DIR "${QT_PATH}/lib/cmake/Qt5Test")
 	endif()
-	
+
 endif()
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Network REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -132,6 +136,6 @@ endif ()
 add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
 
 target_include_directories(elpida-qt PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(elpida-qt elpida Qt5::Widgets)
+target_link_libraries(elpida-qt elpida Qt5::Widgets Qt5::Network)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION ${ELPIDA_APP_INSTALL_DIR})

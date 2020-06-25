@@ -18,23 +18,12 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 21/6/20.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#include "ResultFormatter.hpp"
 
-namespace Elpida {
-	class Command;
-	class ShowLogsDialogCommand;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
-	class ShowMessageCommand;
-	class GetTaskAffinityCommand;
-	class SelectedBenchmarkChangedEvent;
-	class HttpResponseEvent;
-	class UploadResultCommand;
+namespace Elpida
+{
+
 }
-
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP

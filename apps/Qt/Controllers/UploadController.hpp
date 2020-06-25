@@ -18,47 +18,37 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 11/4/20.
+// Created by klapeto on 25/6/20.
 //
 
-#include "Elpida/Utilities/WindowsUtils.hpp"
+#ifndef APPS_QT_CONTROLLERS_UPLOADCONTROLLER_HPP
+#define APPS_QT_CONTROLLERS_UPLOADCONTROLLER_HPP
 
-#ifdef ELPIDA_WINDOWS
-#include <Windows.h>
-#include <strsafe.h>
-#endif
+#include "Core/Abstractions/CommandHandler.hpp"
+
 namespace Elpida
 {
+	class Mediator;
+	class BenchmarkResultsModel;
+	class Logger;
+	class BenchmarkResult;
 
-#ifdef ELPIDA_WINDOWS
-	std::string WindowsUtils::GetLastErrorString()
+	class UploadController final : public CommandHandler
 	{
+	public:
+		void handle(HttpResponseEvent& command) override;
 
-		LPSTR messageBuffer = nullptr;
-		try
-		{
-			DWORD errorMessageID = GetLastError();
-			if (errorMessageID == 0) return std::string();
+		UploadController(Mediator& mediator,
+			const BenchmarkResultsModel& benchmarkResultsModel,
+			Logger& logger);
+		~UploadController() override = default;
+	private:
+		Mediator& _mediator;
+		const BenchmarkResultsModel& _benchmarkResultsModel;
+		Logger& _logger;
 
-			size_t size = FormatMessageA(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (LPSTR) & messageBuffer, 0, NULL);
-
-			std::string message(messageBuffer, size);
-
-			LocalFree(messageBuffer);
-			return message;
-		}
-		catch (...)
-		{
-			if (messageBuffer != nullptr)
-			{
-				LocalFree(messageBuffer);
-			}
-
-			throw;
-		}
-
-	}
-#endif
+		void onResultAdded(const BenchmarkResult& result);
+	};
 }
+
+#endif //APPS_QT_CONTROLLERS_UPLOADCONTROLLER_HPP

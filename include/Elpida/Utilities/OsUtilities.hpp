@@ -18,23 +18,42 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 21/6/20.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#ifndef INCLUDE_ELPIDA_UTILITIES_OSUTILITIES_HPP
+#define INCLUDE_ELPIDA_UTILITIES_OSUTILITIES_HPP
 
-namespace Elpida {
-	class Command;
-	class ShowLogsDialogCommand;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
-	class ShowMessageCommand;
-	class GetTaskAffinityCommand;
-	class SelectedBenchmarkChangedEvent;
-	class HttpResponseEvent;
-	class UploadResultCommand;
+#include "Elpida/Config.hpp"
+
+#ifdef ELPIDA_WINDOWS
+#include <Windows.h>
+#endif
+#include <string>
+
+namespace Elpida
+{
+	struct OsInfo
+	{
+		std::string category;
+		std::string name;
+		std::string version;
+	};
+
+	class OsUtilities
+	{
+	public:
+
+		static OsInfo getOsInfo();
+
+#ifdef ELPIDA_WINDOWS
+		static std::string GetLastErrorString();
+		static std::string GetErrorString(HRESULT errorId);
+		static std::string ReadRegistryKeyFromHKLM(const std::string& regSubKey, const std::string& regValue);
+#endif
+		OsUtilities() = delete;
+	};
 }
 
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+
+#endif //INCLUDE_ELPIDA_UTILITIES_OSUTILITIES_HPP

@@ -33,8 +33,6 @@
 namespace Elpida
 {
 
-	static inline constexpr const char* UnknownOsIndexStr = "[No Index]";
-
 	ProcessorNode::ProcessorNode(ProcessorNode* parent, void* node)
 		: _type(Type::Unknown), _value(0), _osIndex(0), _parent(parent)
 	{
@@ -77,21 +75,21 @@ namespace Elpida
 
 	static std::string getStringFromOsIndex(unsigned int osIndex)
 	{
-		return ((osIndex != HWLOC_UNKNOWN_INDEX) ? std::to_string(osIndex) : std::string(UnknownOsIndexStr));
+		return ((osIndex != HWLOC_UNKNOWN_INDEX) ? std::to_string(osIndex) : ProcessorNode::UnknownOsIndexStr);
 	}
 
 	void ProcessorNode::loadMachine(void* node)
 	{
 		_type = Type::Machine;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
-		_name = "Machine: " + getStringFromOsIndex(_osIndex);
+		_name = "Machine";
 	}
 
 	void ProcessorNode::loadPackage(void* node)
 	{
 		_type = Type::Package;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
-		_name = "Package: " + getStringFromOsIndex(_osIndex);
+		_name = "Package";
 	}
 
 	void ProcessorNode::loadNumaNode(void* node)
@@ -99,7 +97,7 @@ namespace Elpida
 		_type = Type::NumaNode;
 		_value = ((hwloc_obj_t)node)->attr->numanode.local_memory;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
-		_name = "Numa Node: " + getStringFromOsIndex(_osIndex);
+		_name = "Numa Node";
 	}
 
 	void ProcessorNode::loadGroup(void* node)
@@ -112,7 +110,7 @@ namespace Elpida
 	{
 		_type = Type::Core;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
-		_name = "Core: " + getStringFromOsIndex(_osIndex);
+		_name = "Core";
 	}
 
 	void ProcessorNode::loadCache(void* node)
@@ -164,7 +162,7 @@ namespace Elpida
 	{
 		_type = Type::ExecutionUnit;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
-		_name = "EU: " + getStringFromOsIndex(_osIndex);
+		_name = "EU";
 	}
 
 	void ProcessorNode::loadChildren(void* node)
@@ -198,6 +196,10 @@ namespace Elpida
 			}
 			child.loadSiblings();
 		}
+	}
+	bool ProcessorNode::isOsIndexValid() const
+	{
+		return _osIndex != HWLOC_UNKNOWN_INDEX;
 	}
 
 } /* namespace Elpida */

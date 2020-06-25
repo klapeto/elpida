@@ -44,6 +44,9 @@
 
 #include "Core/ElpidaMediator.hpp"
 
+#include "Core/DataUploader.hpp"
+#include "Core/JsonResultFormatter.hpp"
+
 #include <Elpida/Topology/CpuInfo.hpp>
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
@@ -87,9 +90,12 @@ static void setupPlatformSpecifics()
 #endif
 }
 
+#include <Elpida/Utilities/OsUtilities.hpp>
+#include <Elpida/MemoryInfo.hpp>
+#include <Controllers/UploadController.hpp>
+
 int main(int argc, char* argv[])
 {
-	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
@@ -145,6 +151,17 @@ int main(int argc, char* argv[])
 		benchmarkRunnerStatusView,
 		benchmarkRunnerControlsView,
 		benchmarkConfigurationView);
+
+
+	OsInfo opInfo = OsUtilities::getOsInfo();
+	MemoryInfo memoryInfo;
+
+	UploadController uploadController(mediator, taskRunResultsModel, logger);
+	mediator.registerCommandHandler(uploadController);
+
+	JsonResultFormatter formatter(topology, cpuInfo, opInfo, memoryInfo);
+	DataUploader uploader(mediator, formatter, logger);
+	mediator.registerCommandHandler(uploader);
 
 	mainWindow.show();
 

@@ -18,23 +18,31 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 21/6/20.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#ifndef APPS_QT_CORE_RESULTFORMATTER_HPP
+#define APPS_QT_CORE_RESULTFORMATTER_HPP
+
+#include <string>
 
 namespace Elpida {
-	class Command;
-	class ShowLogsDialogCommand;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
-	class ShowMessageCommand;
-	class GetTaskAffinityCommand;
-	class SelectedBenchmarkChangedEvent;
-	class HttpResponseEvent;
-	class UploadResultCommand;
+
+	class BenchmarkResult;
+
+	class ResultFormatter
+	{
+	public:
+
+		virtual std::string serialize(const BenchmarkResult& result) const = 0;
+
+		ResultFormatter() = default;
+		virtual ~ResultFormatter() = default;
+	};
 }
 
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+
+
+
+
+#endif //APPS_QT_CORE_RESULTFORMATTER_HPP

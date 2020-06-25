@@ -158,6 +158,9 @@ namespace Elpida
 			return concatenateToString(std::forward<TArgs>(args)...);
 		}
 
+		static std::string wstringTostring(const std::wstring& wstring);
+		static std::wstring stringToWstring(const std::string& string);
+
 	private:
 		static std::string getValueScaleStringImpl(double value,
 			const double denominators[],

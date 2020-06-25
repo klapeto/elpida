@@ -35,7 +35,7 @@ namespace Elpida {
 	public:
 
 		template<typename TR>
-		void add(TR&& item)
+		const T& add(TR&& item)
 		{
 			auto itr = _items.insert(_items.end(), ListModelItem<T>(*this, std::forward<TR>(item)));
 			auto& insItem = _items.back();
@@ -43,6 +43,7 @@ namespace Elpida {
 			insItem._iterator = itr;
 			CollectionModel<T>::onDataChanged();
 			CollectionModel<T>::onItemAdded(insItem);
+			return insItem.getValue();
 		}
 
 		void remove(ListModelItem<T>& item)

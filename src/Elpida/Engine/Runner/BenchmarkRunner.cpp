@@ -82,7 +82,7 @@ namespace Elpida
 				raiseBenchmarkEnded(benchmark);
 
 				BenchmarkResult::Score score = benchmark.getScoreCalculator().calculate(taskResults);
-				benchmarkResults.emplace_back(benchmark, std::move(taskResults), score);
+				benchmarkResults.emplace_back(benchmark, std::move(taskResults), taskAffinity, score);
 			}
 			catch (...)
 			{
