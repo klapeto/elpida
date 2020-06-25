@@ -26,13 +26,14 @@
 #include <QMessageBox>
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
+#include <Elpida/Utilities/Logging/Logger.hpp>
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
 
 namespace Elpida
 {
-	QCustomApplication::QCustomApplication(int& argc, char** argv, Mediator& mediator)
-		: QApplication(argc, argv), _mediator(mediator)
+	QCustomApplication::QCustomApplication(int& argc, char** argv, Mediator& mediator, Logger& logger)
+		: QApplication(argc, argv), _mediator(mediator), _logger(logger)
 	{
 
 	}
@@ -54,14 +55,18 @@ namespace Elpida
 		catch (const ElpidaException& ex)
 		{
 			auto exComponentPresent = !ex.getComponent().empty();
-			_mediator
-				.execute(ShowMessageCommand(Vu::concatenateToString(exComponentPresent ? "Error occurred in: " : "",
-					exComponentPresent ? ex.getComponent() : "", exComponentPresent ? "\n" : "",
-					ex.what()), ShowMessageCommand::Type::Error));
+			auto message = Vu::concatenateToString(exComponentPresent ? "Error occurred in: " : "",
+				exComponentPresent ? ex.getComponent() : "", exComponentPresent ? "\n" : "",
+				ex.what());
+			_logger.log(LogType::Error, message, ex);
+			_mediator.execute(ShowMessageCommand(message, ShowMessageCommand::Type::Error));
 			return false;
 		}
 		catch (const std::exception& ex)
 		{
+			_logger.log(LogType::Error,
+				Vu::Cs("Critical unhandled error on object: '", qPrintable(obj->objectName()), "'"),
+				ex);
 			qFatal("Error %s sending event to object (%s)",
 				ex.what(),
 				qPrintable(obj->objectName()));
