@@ -34,9 +34,6 @@ namespace Elpida
 		virtual void handle(Command& command)
 		{
 		}
-		virtual void handle(ShowLogsDialogCommand& command)
-		{
-		}
 		virtual void handle(StartBenchmarkingCommand& command)
 		{
 		}

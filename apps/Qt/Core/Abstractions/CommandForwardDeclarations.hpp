@@ -26,7 +26,6 @@
 
 namespace Elpida {
 	class Command;
-	class ShowLogsDialogCommand;
 	class StartBenchmarkingCommand;
 	class StopBenchmarkingCommand;
 	class GetBenchmarksToRunCommand;

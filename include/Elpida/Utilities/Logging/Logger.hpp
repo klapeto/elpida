@@ -43,8 +43,6 @@ namespace Elpida
 	class Logger final
 	{
 	public:
-
-
 		using TimeStamp = std::chrono::time_point<std::chrono::system_clock>;
 
 		void addAppender(LogAppender& appender);

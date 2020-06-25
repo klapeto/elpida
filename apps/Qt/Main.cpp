@@ -30,7 +30,7 @@
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 #include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
-#include "Models/ScreensModel.hpp"
+#include "Models/Screens/ScreensModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
 #include "Views/SystemInfoView/SystemInfoView.hpp"
@@ -40,10 +40,9 @@
 #include "Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp"
 #include "Views/BenchmarkListView/BenchmarkListView.hpp"
 #include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
-#include "Views/NavigationBarView/NavigationBarView.hpp"
+#include "Views/LogsView/LogsView.hpp"
 
 #include "Core/ElpidaMediator.hpp"
-
 #include "Core/DataUploader.hpp"
 #include "Core/JsonResultFormatter.hpp"
 
@@ -152,6 +151,8 @@ int main(int argc, char* argv[])
 		benchmarkRunnerControlsView,
 		benchmarkConfigurationView);
 
+	LogsView logsView(logger);
+	screensModel.add(ScreenItem("Logs",logsView));
 
 	OsInfo opInfo = OsUtilities::getOsInfo();
 	MemoryInfo memoryInfo;

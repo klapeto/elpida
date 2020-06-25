@@ -20,7 +20,7 @@
 #include "NavigationBarView.hpp"
 #include "ui_NavigationBarView.h"
 
-#include "Models/ScreensModel.hpp"
+#include "Models/Screens/ScreensModel.hpp"
 
 #include <QtWidgets/QPushButton>
 #include <QHBoxLayout>
