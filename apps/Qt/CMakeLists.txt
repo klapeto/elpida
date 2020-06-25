@@ -55,8 +55,8 @@ set(ELPIDA_QT_SOURCES
 		Models/Abstractions/ListModel/ListModelItem.cpp
 		Models/Abstractions/AssociativeModel/AssociativeItem.cpp
 		Models/BenchmarkConfigurationModel.cpp
-		Models/ScreensModel.cpp
-		Models/ScreenItem.cpp
+		Models/Screens/ScreensModel.cpp
+		Models/Screens/ScreenItem.cpp
 
 		Controllers/BenchmarksController.cpp
 		Controllers/BenchmarkRunnerController.cpp
@@ -65,7 +65,7 @@ set(ELPIDA_QT_SOURCES
 
 		QCustomApplication.cpp
 		ConfigurationViewsPool.cpp
-        )
+		)
 
 
 if (MSVC)

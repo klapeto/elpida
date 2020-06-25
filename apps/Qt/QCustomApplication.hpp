@@ -29,6 +29,7 @@
 namespace Elpida
 {
 	class Mediator;
+	class Logger;
 
 	class QCustomApplication : public QApplication
 	{
@@ -36,11 +37,11 @@ namespace Elpida
 
 		bool notify(QObject*, QEvent*) override;
 
-		QCustomApplication(int& argc, char** argv, Mediator& mediator);
+		QCustomApplication(int& argc, char** argv, Mediator& mediator, Logger& logger);
 		~QCustomApplication() override = default;
-
 	private:
 		Mediator& _mediator;
+		Logger& _logger;
 	};
 }
 

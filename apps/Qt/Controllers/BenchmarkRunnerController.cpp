@@ -36,15 +36,17 @@
 #include <Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
+#include <Elpida/Utilities/Logging/Logger.hpp>
 
 namespace Elpida
 {
 	BenchmarkRunnerController::BenchmarkRunnerController(Mediator& mediator,
 		BenchmarkResultsModel& benchmarkResultsModel,
 		BenchmarkRunnerModel& runnerModel,
-		BenchmarkConfigurationsCollectionModel& configurationsModel)
+		BenchmarkConfigurationsCollectionModel& configurationsModel,
+		Logger& logger)
 		: _benchmarkResultsModel(benchmarkResultsModel), _runnerModel(runnerModel),
-		  _configurationsModel(configurationsModel), _mediator(mediator)
+		  _configurationsModel(configurationsModel), _mediator(mediator), _logger(logger)
 	{
 
 		_runner.benchmarkStarted.subscribe([this](const auto& ev)
@@ -122,6 +124,7 @@ namespace Elpida
 						{
 							_runnerModel.setRunning(false);
 							_taskRunnerThread.detach();
+							_logger.log(LogType::Error, "Error occurred while executing benchmarks", ex);
 							_mediator.execute(ShowMessageCommand(Vu::concatenateToString(
 								"Error occurred while running task batches: ",
 								ex.what()), ShowMessageCommand::Type::Error));

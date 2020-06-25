@@ -21,10 +21,9 @@
 #include "ui_MainWindow.h"
 #include "MainWindow.hpp"
 
-#include "Core/Commands/ShowLogsDialogCommand.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
-#include "Models/ScreensModel.hpp"
+#include "Models/Screens/ScreensModel.hpp"
 
 #include <QMessageBox>
 
@@ -77,11 +76,6 @@ namespace Elpida
 			"About: Elpida",
 			"Elpida is an open source x86 Cpu/Algorithm benchmarking tool. It is released under the General Public License v3 (GPL v3). More info at: https://gitlab.com/dev-hood/elpida/elpida");
 
-	}
-
-	void Elpida::MainWindow::on_actionShowLogs_triggered()
-	{
-		_mediator.execute(ShowLogsDialogCommand());
 	}
 
 	void MainWindow::handle(ShowMessageCommand& command)

@@ -43,7 +43,6 @@ namespace Elpida
 	class MainWindow final : public QMainWindow, public CommandHandler, public EventsSubscriber
 	{
 	Q_OBJECT
-
 	public:
 
 		void handle(ShowMessageCommand& command) override;
@@ -53,7 +52,6 @@ namespace Elpida
 	private slots:
 		void on_actionExit_triggered();
 		void on_actionAbout_triggered();
-		void on_actionShowLogs_triggered();
 		void showMessageRequestedHandler(const QString& message, int type);
 
 		void onScreenAdded(const ScreenItem* screen);

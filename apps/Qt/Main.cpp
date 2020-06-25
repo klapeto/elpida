@@ -30,7 +30,7 @@
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 #include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
-#include "Models/ScreensModel.hpp"
+#include "Models/Screens/ScreensModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
 #include "Views/SystemInfoView/SystemInfoView.hpp"
@@ -40,10 +40,9 @@
 #include "Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp"
 #include "Views/BenchmarkListView/BenchmarkListView.hpp"
 #include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
-#include "Views/NavigationBarView/NavigationBarView.hpp"
+#include "Views/LogsView/LogsView.hpp"
 
 #include "Core/ElpidaMediator.hpp"
-
 #include "Core/DataUploader.hpp"
 #include "Core/JsonResultFormatter.hpp"
 
@@ -102,8 +101,9 @@ int main(int argc, char* argv[])
 	setupPlatformSpecifics();
 
 	ElpidaMediator mediator;
+	Logger logger;
 
-	QCustomApplication application(argc, argv, mediator);
+	QCustomApplication application(argc, argv, mediator, logger);
 
 	ScreensModel screensModel;
 
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 
 	initializeTopologyTab(screensModel, topologyView);
 
-	Logger logger;
+
 	BenchmarksModel taskBatchesModel;
 	BenchmarkRunnerModel taskRunnerModel;
 	BenchmarkResultsModel taskRunResultsModel;
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
 	BenchmarksController taskBatchesController(taskBatchesModel, benchmarkConfigurationsModel, logger);
 	taskBatchesController.reload();
 	BenchmarkRunnerController
-		runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel);
+		runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel, logger);
 	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
@@ -152,6 +152,8 @@ int main(int argc, char* argv[])
 		benchmarkRunnerControlsView,
 		benchmarkConfigurationView);
 
+	LogsView logsView(logger);
+	screensModel.add(ScreenItem("Logs", logsView));
 
 	OsInfo opInfo = OsUtilities::getOsInfo();
 	MemoryInfo memoryInfo;

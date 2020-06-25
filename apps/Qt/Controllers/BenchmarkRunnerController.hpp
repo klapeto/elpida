@@ -27,7 +27,6 @@
 
 #include <Elpida/Engine/Runner/BenchmarkRunner.hpp>
 #include <Elpida/OffThreadExecutor.hpp>
-
 #include "Core/Abstractions/CommandHandler.hpp"
 
 namespace Elpida
@@ -37,6 +36,7 @@ namespace Elpida
 	class BenchmarkRunnerModel;
 	class BenchmarkConfigurationsCollectionModel;
 	class Mediator;
+	class Logger;
 
 	class BenchmarkRunnerController : public CommandHandler
 	{
@@ -47,7 +47,8 @@ namespace Elpida
 		BenchmarkRunnerController(Mediator& mediator,
 			BenchmarkResultsModel& benchmarkResultsModel,
 			BenchmarkRunnerModel& runnerModel,
-			BenchmarkConfigurationsCollectionModel& configurationsModel);
+			BenchmarkConfigurationsCollectionModel& configurationsModel,
+			Logger& logger);
 	private:
 		OffThreadExecutor _taskRunnerThread;
 		BenchmarkRunner _runner;
@@ -55,6 +56,7 @@ namespace Elpida
 		BenchmarkRunnerModel& _runnerModel;
 		BenchmarkConfigurationsCollectionModel& _configurationsModel;
 		Mediator& _mediator;
+		Logger& _logger;
 
 		void onTaskBatchStarted(const BenchmarkEventArgs& ev);
 		void onTaskStarted(const TaskEventArgs& ev);
