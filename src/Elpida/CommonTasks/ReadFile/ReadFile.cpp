@@ -31,6 +31,9 @@
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Data/ActiveTaskData.hpp"
+#include "Elpida/Utilities/OsUtilities.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {
@@ -47,7 +50,7 @@ namespace Elpida
 
 	void ReadFile::execute()
 	{
-		std::ifstream file(_filePath, std::ifstream::binary);
+		std::ifstream file(OsUtilities::getOsEncodedPath(_filePath), std::ifstream::binary);
 		try
 		{
 			file.read((char*)_data->getData(), _data->getSize());
@@ -65,24 +68,24 @@ namespace Elpida
 
 	void ReadFile::prepareImpl()
 	{
-		std::ifstream file(_filePath, std::ifstream::binary);
+		std::ifstream file(OsUtilities::getOsEncodedPath(_filePath), std::ifstream::binary);
 		try
 		{
-			file.exceptions(std::ios::failbit);
+			file.exceptions(std::ios::badbit | std::ios::failbit);
 			file.seekg(0, std::ifstream::end);
 			size_t size = file.tellg();
 			file.seekg(0, std::ifstream::beg);
 
 			_data = new ActiveTaskData(size, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
 		}
-		catch (...)
+		catch (const std::ifstream::failure& e)
 		{
 			delete _data;
 			if (file.is_open())
 			{
 				file.close();
 			}
-			throw;
+			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to read file: '", _filePath, "'. ", e.what(), " Error Code: ", e.code().message()));
 		}
 	}
 

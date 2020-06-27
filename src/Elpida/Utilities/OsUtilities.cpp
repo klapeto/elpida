@@ -234,4 +234,13 @@ namespace Elpida
 		static OsInfo osInfo = getOsInfoImpl();
 		return osInfo;
 	}
+
+	std::string OsUtilities::getOsEncodedPath(const std::string& path)
+	{
+#ifdef ELPIDA_LINUX
+		return path;
+#else
+		return std::string((const char*)Vu::stringToWstring(path).data());
+#endif
+	}
 }

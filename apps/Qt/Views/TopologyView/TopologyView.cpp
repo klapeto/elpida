@@ -69,9 +69,9 @@ namespace Elpida
 		label->setText(QString::fromStdString(node.getName()) + ": "
 			+ (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex()) + ": ") : QString())
 			+ QString::fromStdString(std::to_string(node.getOsIndex())));
-		widget->setDefaultStyle(QString("background-color: #b1b1b1;border-radius: 8px;"));
-		widget->setMouseOverStyle(QString("background-color: #d8d8d8;border-radius: 8px;"));
-		widget->setClickedStyle(QString("background-color: #fdfdfd;border-radius: 8px;"));
+		widget->setDefaultStyle(QString("background-color: #b1b1b1;border-radius: 0.5em;"));
+		widget->setMouseOverStyle(QString("background-color: #d8d8d8;border-radius: 0.5em;"));
+		widget->setClickedStyle(QString("background-color: #fdfdfd;border-radius: 0.5em;"));
 
 		return widget;
 	}

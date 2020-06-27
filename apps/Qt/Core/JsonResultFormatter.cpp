@@ -234,6 +234,7 @@ namespace Elpida
 		resultJ["type"] = result.getTaskSpecification().getResultSpecification().getType();
 		resultJ["suffix"] = result.getTaskSpecification().getResultSpecification().getUnit();
 		resultJ["inputSize"] = result.getMetrics().getInputDataSize();
+		resultJ["inputSuffix"] = result.getTaskSpecification().getInputDataSpecification().getUnit();
 
 		return resultJ;
 	}
