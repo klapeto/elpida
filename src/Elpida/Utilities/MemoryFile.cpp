@@ -27,6 +27,7 @@
 #include "Elpida/Utilities/MemoryFile.hpp"
 
 #include <fstream>
+#include "Elpida/Utilities/FileSystem.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
@@ -58,7 +59,7 @@ namespace Elpida
 		{
 			destroyData();
 			_size = 0;
-			std::ifstream file(path, std::ifstream::binary);
+			auto file = FileSystem::openFile(path, std::ios::in | std::ios::binary);
 			try
 			{
 				file.exceptions(std::ios::failbit);
@@ -97,7 +98,7 @@ namespace Elpida
 
 	void MemoryFile::writeToFile(const std::string& path) const
 	{
-		std::ofstream file(path, std::ofstream::binary);
+		auto file = FileSystem::openFile(path, std::ios::out | std::ios::binary);
 		try
 		{
 			file.exceptions(std::ios::failbit);
