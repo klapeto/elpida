@@ -234,4 +234,5 @@ namespace Elpida
 		static OsInfo osInfo = getOsInfoImpl();
 		return osInfo;
 	}
+
 }

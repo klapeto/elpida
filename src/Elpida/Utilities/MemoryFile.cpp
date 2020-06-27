@@ -27,6 +27,8 @@
 #include "Elpida/Utilities/MemoryFile.hpp"
 
 #include <fstream>
+#include "Elpida/Utilities/FileSystem.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
@@ -58,7 +60,7 @@ namespace Elpida
 		{
 			destroyData();
 			_size = 0;
-			std::ifstream file(path, std::ifstream::binary);
+			auto file = FileSystem::openFile(path, std::ios::in | std::ios::binary);
 			try
 			{
 				file.exceptions(std::ios::failbit);
@@ -69,14 +71,15 @@ namespace Elpida
 				allocateData();
 				file.read((char*)_data, _size);
 			}
-			catch (...)
+			catch (const std::fstream::failure& e)
 			{
 				destroyData();
 				if (file.is_open())
 				{
 					file.close();
 				}
-				throw;
+				throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("Failed to read file: '", path, "'. Error: ", e.what()));
 			}
 		}
 		else
@@ -97,7 +100,7 @@ namespace Elpida
 
 	void MemoryFile::writeToFile(const std::string& path) const
 	{
-		std::ofstream file(path, std::ofstream::binary);
+		auto file = FileSystem::openFile(path, std::ios::out | std::ios::binary);
 		try
 		{
 			file.exceptions(std::ios::failbit);
@@ -105,13 +108,14 @@ namespace Elpida
 			file.flush();
 			file.close();
 		}
-		catch (...)
+		catch (const std::fstream::failure& e)
 		{
 			if (file.is_open())
 			{
 				file.close();
 			}
-			throw;
+			throw ElpidaException(FUNCTION_NAME,
+				Vu::Cs("Failed to read file: '", path, "'. Error: ", e.what()));
 		}
 	}
 

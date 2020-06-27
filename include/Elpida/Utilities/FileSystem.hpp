@@ -29,6 +29,7 @@
 
 #include <functional>
 #include <sstream>
+#include <fstream>
 #include <string>
 
 #include "Elpida/Config.hpp"
@@ -47,6 +48,7 @@ namespace Elpida
 
 		static void iterateDirectory(const std::string& directory, std::function<void(const std::string&)> func);
 		static bool fileExists(const std::string& file);
+		static std::fstream openFile(const std::string& path, std::ios::openmode mode);
 
 		template<typename ... T>
 		static std::string concatPaths(T ... args)

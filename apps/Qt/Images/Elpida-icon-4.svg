@@ -14,8 +14,8 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.0 (1.0+r73+1)"
-   sodipodi:docname="Elpida-icon.svg"
-   inkscape:export-filename="/media/klapeto/Αρχεία/Code/elpida/apps/Qt/Images/Elpida-icon.png"
+   sodipodi:docname="Elpida-icon-4.svg"
+   inkscape:export-filename="/media/klapeto/Αρχεία/Code/elpida/apps/Qt/Images/Elpida-icon-2.png"
    inkscape:export-xdpi="52.965519"
    inkscape:export-ydpi="52.965519">
   <title
@@ -68,14 +68,14 @@
        y2="88.578743" />
     <clipPath
        clipPathUnits="userSpaceOnUse"
-       id="clipPath1944">
+       id="clipPath1037">
       <rect
-         style="opacity:1;fill:#fbbb07;stroke:#ffffff;stroke-width:0.335388;stroke-linecap:round;stroke-linejoin:round"
-         id="rect1946"
-         width="383.31046"
-         height="383.31046"
-         x="311.46759"
-         y="-310.15103" />
+         y="-246.38968"
+         x="370.11816"
+         height="256.93884"
+         width="256.93884"
+         id="rect1039"
+         style="opacity:1;fill:#fbbb07;stroke:#ffffff;stroke-width:0.224816;stroke-linecap:round;stroke-linejoin:round" />
     </clipPath>
   </defs>
   <sodipodi:namedview
@@ -85,9 +85,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.5"
-     inkscape:cx="-522.46511"
-     inkscape:cy="408.76954"
+     inkscape:zoom="0.125"
+     inkscape:cx="-6127.8234"
+     inkscape:cy="123.10211"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -153,10 +153,17 @@
      id="layer2"
      inkscape:label="χρώματα"
      transform="translate(-712.53195,311.4691)">
+    <rect
+       y="-311.33682"
+       x="712.66425"
+       height="383.64584"
+       width="383.64584"
+       id="rect994"
+       style="opacity:1;fill:#e5e8fd;fill-opacity:1;stroke:#ffffff;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round" />
     <g
        id="g1151"
-       transform="translate(401.23212,-1.1503987)"
-       clip-path="url(#clipPath1944)">
+       transform="matrix(1.4918354,0,0,1.4918354,160.54434,56.27142)"
+       clip-path="url(#clipPath1037)">
       <g
          id="g1006">
         <path
