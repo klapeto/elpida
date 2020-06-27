@@ -28,6 +28,7 @@
 
 #include <fstream>
 #include "Elpida/Utilities/FileSystem.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
@@ -70,14 +71,15 @@ namespace Elpida
 				allocateData();
 				file.read((char*)_data, _size);
 			}
-			catch (...)
+			catch (const std::ifstream::failure& e)
 			{
 				destroyData();
 				if (file.is_open())
 				{
 					file.close();
 				}
-				throw;
+				throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("Failed to read file: '", path, "'. Error Code: ", e.code().message()));
 			}
 		}
 		else
@@ -106,13 +108,14 @@ namespace Elpida
 			file.flush();
 			file.close();
 		}
-		catch (...)
+		catch (const std::ifstream::failure& e)
 		{
 			if (file.is_open())
 			{
 				file.close();
 			}
-			throw;
+			throw ElpidaException(FUNCTION_NAME,
+				Vu::Cs("Failed to read file: '", path, "'. Error Code: ", e.code().message()));
 		}
 	}
 
