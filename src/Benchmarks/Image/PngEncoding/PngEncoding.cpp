@@ -29,6 +29,7 @@
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Utilities/Imaging/Image.hpp>
+#include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Data/ActiveTaskData.hpp>
 
 #include "png.h"
@@ -69,13 +70,15 @@ namespace Elpida
 				0,
 				nullptr))
 			{
-				throw ElpidaException(FUNCTION_NAME, "Failed to encode image");
+				std::string error(img.message);
+				throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to encode image: ", error));
 			}
 		}
 		else
 		{
+			std::string error(img.message);
 			png_image_free(&img);
-			throw ElpidaException(FUNCTION_NAME, "Failed to encode image");
+			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to encode image: ", error));
 		}
 	}
 

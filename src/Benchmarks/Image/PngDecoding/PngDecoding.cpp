@@ -30,6 +30,7 @@
 #include <Elpida/Topology/SystemTopology.hpp>
 #include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Config.hpp>
+#include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/ElpidaException.hpp>
 
 #include "png.h"
@@ -56,7 +57,8 @@ namespace Elpida
 			img.format = PNG_FORMAT_RGBA;
 
 			auto newSize = PNG_IMAGE_SIZE(img);
-			_outputData = new ActiveTaskData(newSize, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+			_outputData =
+				new ActiveTaskData(newSize, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
 
 			png_image_finish_read(&img, nullptr, _outputData->getData(), 0, nullptr);
 
@@ -66,8 +68,9 @@ namespace Elpida
 		}
 		else
 		{
+			std::string error(img.message);
 			png_image_free(&img);
-			throw ElpidaException(FUNCTION_NAME, "Failed to decode image");
+			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to encode image: ", error));
 		}
 	}
 
