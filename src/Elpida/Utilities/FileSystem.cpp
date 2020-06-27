@@ -36,6 +36,7 @@
 #include <Windows.h>
 #include <strsafe.h>
 #include "Elpida/Utilities/OsUtilities.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
 #endif
 
 namespace Elpida
