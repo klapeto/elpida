@@ -71,7 +71,7 @@ namespace Elpida
 				allocateData();
 				file.read((char*)_data, _size);
 			}
-			catch (const std::ifstream::failure& e)
+			catch (const std::fstream::failure& e)
 			{
 				destroyData();
 				if (file.is_open())
@@ -79,7 +79,7 @@ namespace Elpida
 					file.close();
 				}
 				throw ElpidaException(FUNCTION_NAME,
-					Vu::Cs("Failed to read file: '", path, "'. Error Code: ", e.code().message()));
+					Vu::Cs("Failed to read file: '", path, "'. Error: ", e.what()));
 			}
 		}
 		else
@@ -108,14 +108,14 @@ namespace Elpida
 			file.flush();
 			file.close();
 		}
-		catch (const std::ifstream::failure& e)
+		catch (const std::fstream::failure& e)
 		{
 			if (file.is_open())
 			{
 				file.close();
 			}
 			throw ElpidaException(FUNCTION_NAME,
-				Vu::Cs("Failed to read file: '", path, "'. Error Code: ", e.code().message()));
+				Vu::Cs("Failed to read file: '", path, "'. Error: ", e.what()));
 		}
 	}
 

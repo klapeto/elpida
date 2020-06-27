@@ -55,7 +55,7 @@ namespace Elpida
 		{
 			file.read((char*)_data->getData(), _data->getSize());
 		}
-		catch (const std::ifstream::failure& e)
+		catch (const std::fstream::failure& e)
 		{
 			delete _data;
 			if (file.is_open())
@@ -63,7 +63,7 @@ namespace Elpida
 				file.close();
 			}
 			throw ElpidaException(FUNCTION_NAME,
-				Vu::Cs("Failed to read file: '", _filePath, "'. Error Code: ", e.code().message()));
+				Vu::Cs("Failed to read file: '", _filePath, "'. Error: ", e.what()));
 		}
 	}
 
@@ -79,7 +79,7 @@ namespace Elpida
 
 			_data = new ActiveTaskData(size, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
 		}
-		catch (const std::ifstream::failure& e)
+		catch (const std::fstream::failure& e)
 		{
 			delete _data;
 			if (file.is_open())
@@ -87,7 +87,7 @@ namespace Elpida
 				file.close();
 			}
 			throw ElpidaException(FUNCTION_NAME,
-				Vu::Cs("Failed to read file: '", _filePath, "'. Error Code: ", e.code().message()));
+				Vu::Cs("Failed to read file: '", _filePath, "'. Error: ", e.what()));
 		}
 	}
 
