@@ -31,7 +31,7 @@
 #include "Elpida/Topology/SystemTopology.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Data/ActiveTaskData.hpp"
-#include "Elpida/Utilities/OsUtilities.hpp"
+#include "Elpida/Utilities/FileSystem.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/ElpidaException.hpp"
 
@@ -50,7 +50,7 @@ namespace Elpida
 
 	void ReadFile::execute()
 	{
-		std::ifstream file(OsUtilities::getOsEncodedPath(_filePath), std::ifstream::binary);
+		auto file = FileSystem::openFile(_filePath, std::ios::in | std::ios::binary);
 		try
 		{
 			file.read((char*)_data->getData(), _data->getSize());
@@ -68,7 +68,7 @@ namespace Elpida
 
 	void ReadFile::prepareImpl()
 	{
-		std::ifstream file(OsUtilities::getOsEncodedPath(_filePath), std::ifstream::binary);
+		auto file = FileSystem::openFile(_filePath, std::ios::in | std::ios::binary);
 		try
 		{
 			file.exceptions(std::ios::badbit | std::ios::failbit);

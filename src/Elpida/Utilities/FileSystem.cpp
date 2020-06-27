@@ -122,4 +122,13 @@ namespace Elpida
 		return attrib != INVALID_FILE_ATTRIBUTES;
 #endif
 	}
+
+	std::fstream FileSystem::openFile(const std::string& path, std::ios::openmode mode)
+	{
+#ifdef ELPIDA_LINUX
+		return std::fstream(path, mode);
+#else
+		return std::fstream(Vu::stringToWstring(path).c_str(), mode);
+#endif
+	}
 } /* namespace Elpida */

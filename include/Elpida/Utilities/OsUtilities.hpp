@@ -44,7 +44,6 @@ namespace Elpida
 	{
 	public:
 
-		static std::string getOsEncodedPath(const std::string& path);
 		static OsInfo getOsInfo();
 
 #ifdef ELPIDA_WINDOWS
