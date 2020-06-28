@@ -27,8 +27,6 @@
 #include "Benchmarks/Image/ConvertToFloat/ConvertToFloat.hpp"
 
 #include <Elpida/Engine/Data/ActiveTaskData.hpp>
-#include <Elpida/Topology/SystemTopology.hpp>
-#include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Utilities/Imaging/Image.hpp>
 
 namespace Elpida
@@ -48,8 +46,7 @@ namespace Elpida
 		auto properties = getImageProperties(input);
 
 		_inputImage = new Image<PixelInt>(*input.getTaskData(), properties.width, properties.height);
-		_outputData = new ActiveTaskData(properties.width * properties.height * 4 * sizeof(PixelFloat),
-			SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+		_outputData = new ActiveTaskData(properties.width * properties.height * 4 * sizeof(PixelFloat), _processorToRun);
 		_outputImage = new Image<PixelFloat>(*_outputData, properties.width, properties.height);
 
 	}

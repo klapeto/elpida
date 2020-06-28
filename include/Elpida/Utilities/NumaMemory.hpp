@@ -33,14 +33,15 @@
 
 namespace Elpida
 {
+	class ProcessorNode;
 
 	class NumaMemory final : public Memory
 	{
 	public:
-		NumaMemory(std::size_t size, int node);
+		NumaMemory(std::size_t size, const ProcessorNode& processor);
 		~NumaMemory() override;
 	private:
-		int _node;
+		const ProcessorNode& _processor;
 	protected:
 		void allocateImpl() override;
 		void deallocateImpl() override;

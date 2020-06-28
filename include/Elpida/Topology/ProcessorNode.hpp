@@ -94,6 +94,8 @@ namespace Elpida
 			return _value;
 		}
 
+		[[nodiscard]] int getNumaNodeId() const;
+
 		~ProcessorNode() = default;
 	private:
 		ProcessorNode(ProcessorNode* parent, void* node);    // Evil casting to avoid header inclusion

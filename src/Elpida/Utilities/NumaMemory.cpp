@@ -29,6 +29,7 @@
 #include "Elpida/Config.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/ElpidaException.hpp"
+#include "Elpida/Topology/ProcessorNode.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <numa.h>
@@ -38,8 +39,8 @@
 
 namespace Elpida
 {
-	NumaMemory::NumaMemory(std::size_t size, int node)
-		: Memory(size), _node(node)
+	NumaMemory::NumaMemory(std::size_t size, const ProcessorNode& processor)
+		: Memory(size), _processor(processor)
 	{
 	}
 
@@ -56,7 +57,7 @@ namespace Elpida
 			throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
 		}
 		numa_set_strict(1);
-		_pointer = (pData)numa_alloc_onnode(_size, _node);
+		_pointer = (pData)numa_alloc_onnode(_size, _processor.getNumaNodeId());
 #else
 		_pointer = (pData)VirtualAllocExNuma(
 			GetCurrentProcess(),
@@ -64,7 +65,7 @@ namespace Elpida
 			_size,
 			MEM_RESERVE | MEM_COMMIT,
 			PAGE_READWRITE,
-			(UCHAR)_node
+			(UCHAR)_processor.getNumaNodeId()
 		);
 #endif
 		if (_pointer != nullptr)
@@ -76,7 +77,6 @@ namespace Elpida
 			throw ElpidaException(FUNCTION_NAME,
 				Vu::Cs("Failed to allocate", std::to_string(_size), " bytes of memory!"));
 		}
-
 	}
 
 	void NumaMemory::deallocateImpl()

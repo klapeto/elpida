@@ -26,8 +26,6 @@
 
 #include "Benchmarks/Image/PngEncoding/PngEncoding.hpp"
 
-#include <Elpida/Topology/SystemTopology.hpp>
-#include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Utilities/Imaging/Image.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Data/ActiveTaskData.hpp>
@@ -60,8 +58,7 @@ namespace Elpida
 
 		if (png_image_write_to_memory(&img, nullptr, &outputSize, 0, _inputImage->getRawData().getData(), 0, nullptr))
 		{
-			_outputData = new ActiveTaskData(outputSize,
-				SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+			_outputData = new ActiveTaskData(outputSize, _processorToRun);
 			if (!png_image_write_to_memory(&img,
 				_outputData->getData(),
 				&outputSize,

@@ -67,8 +67,6 @@ namespace Elpida
 			return _totalPhysicalCores;
 		}
 
-		static int getNumaNodeOfProcessor(int processorId);
-
 		static void setProcessPriority(ProcessPriority priority);
 
 		SystemTopology();

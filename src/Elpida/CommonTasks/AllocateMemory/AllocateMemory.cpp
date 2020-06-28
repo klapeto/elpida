@@ -26,8 +26,6 @@
 
 #include "Elpida/CommonTasks/AllocateMemory/AllocateMemory.hpp"
 
-#include "Elpida/Topology/SystemTopology.hpp"
-#include "Elpida/Topology/ProcessorNode.hpp"
 #include "Elpida/Engine/Data/ActiveTaskData.hpp"
 
 #include <cstring>
@@ -46,7 +44,7 @@ namespace Elpida
 	}
 	void AllocateMemory::execute()
 	{
-		_memory = new ActiveTaskData(_size, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+		_memory = new ActiveTaskData(_size, _processorToRun);
 		memset(_memory->getData(), 0, _memory->getSize());
 	}
 
