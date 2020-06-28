@@ -30,7 +30,7 @@ namespace Elpida
 
 	ResultSpecification::ResultSpecification(std::string name,
 		std::string unit,
-		Type type,
+		ResultType type,
 		AggregationType aggregationType,
 		std::string description)
 		: _name(std::move(name)), _unit(std::move(unit)), _description(std::move(description)), _type(type),

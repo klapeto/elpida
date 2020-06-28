@@ -39,7 +39,7 @@ namespace Elpida
 		: TaskSpecification("Convert to Gray Scale (Average)",
 		ResultSpecification("Conversion Rate",
 			"Pixels",
-			ResultSpecification::Throughput,
+			ResultType::Throughput,
 			ResultSpecification::Accumulative,
 			"Pixel conversion rate"))
 	{

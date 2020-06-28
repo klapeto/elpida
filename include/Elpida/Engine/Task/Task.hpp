@@ -59,6 +59,11 @@ namespace Elpida
 			return _specification;
 		}
 
+		const ProcessorNode& getProcessorToRun() const
+		{
+			return _processorToRun;
+		}
+
 		void prepare();
 		void finalize();
 		virtual void execute() = 0;

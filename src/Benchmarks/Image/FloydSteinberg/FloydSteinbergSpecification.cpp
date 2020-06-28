@@ -41,7 +41,7 @@ namespace Elpida
 		: TaskSpecification("Floyd-Steinberg Dithering",
 		ResultSpecification("Conversion Rate",
 			"Pixels",
-			ResultSpecification::Throughput,
+			ResultType::Throughput,
 			ResultSpecification::Accumulative))
 	{
 

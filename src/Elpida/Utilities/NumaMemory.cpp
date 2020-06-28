@@ -55,6 +55,7 @@ namespace Elpida
 		{
 			throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
 		}
+		numa_set_strict(1);
 		_pointer = (pData)numa_alloc_onnode(_size, _node);
 #else
 		_pointer = (pData)VirtualAllocExNuma(

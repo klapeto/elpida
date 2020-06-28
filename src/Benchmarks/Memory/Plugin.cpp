@@ -26,9 +26,10 @@
 
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
+#include <Elpida/Engine/AccumulativeScoreCalculator.hpp>
 #include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
+#include <Elpida/Engine/AverageScoreCalculator.hpp>
 #include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
 #include "Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp"
 
@@ -74,7 +75,7 @@ Elpida::Benchmark* createMemoryReadLatency()
 
 	auto benchmark = new Elpida::Benchmark("Memory Read Latency",
 		std::move(tasksBuilders),
-		new Elpida::DefaultBenchmarkScoreCalculator());
+		new Elpida::AverageScoreCalculator("s"));
 	return benchmark;
 }
 
@@ -95,7 +96,7 @@ Elpida::Benchmark* createMemoryReadBandwidth()
 	auto benchmark = new Elpida::Benchmark("Memory Read Bandwidth", {
 		&allocateMemory,
 		&memoryRead
-	}, new Elpida::DefaultBenchmarkScoreCalculator());
+	}, new Elpida::AccumulativeScoreCalculator("B", Elpida::ResultType::Throughput));
 	return benchmark;
 }
 

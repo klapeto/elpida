@@ -39,7 +39,7 @@ namespace Elpida
 
 	WriteFileSpecification::WriteFileSpecification()
 		: TaskSpecification("Write from memory to file",
-		ResultSpecification("Write Rate", "B", ResultSpecification::Throughput, ResultSpecification::Accumulative))
+		ResultSpecification("Write Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative))
 	{
 		withDescription("Writes data received from other tasks to file on disk");
 		withInputData(DataSpecification("Data to write", "B", "The bytes to write to file"));

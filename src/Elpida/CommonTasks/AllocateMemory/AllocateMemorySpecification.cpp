@@ -44,7 +44,7 @@ namespace Elpida
 
 	AllocateMemorySpecification::AllocateMemorySpecification()
 		: TaskSpecification("Allocate Memory",
-		ResultSpecification("Allocation Rate", "B", ResultSpecification::Throughput, ResultSpecification::Accumulative))
+		ResultSpecification("Allocation Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative))
 	{
 		withDescription("Allocates memory to be used by other tasks on the benchmark");
 

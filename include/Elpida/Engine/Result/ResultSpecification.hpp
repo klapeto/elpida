@@ -25,18 +25,13 @@
 #define INCLUDE_ELPIDA_ENGINE_RESULT_RESULTSPECIFICATION_HPP
 
 #include <string>
+#include "ResultType.hpp"
 
 namespace Elpida
 {
 	class ResultSpecification final
 	{
 	public:
-		enum Type
-		{
-			Throughput,
-			Raw
-		};
-
 		enum AggregationType
 		{
 			Accumulative,
@@ -63,14 +58,14 @@ namespace Elpida
 			return _description;
 		}
 
-		[[nodiscard]] Type getType() const
+		[[nodiscard]] ResultType getType() const
 		{
 			return _type;
 		}
 
 		explicit ResultSpecification(std::string name,
 			std::string unit,
-			Type type,
+			ResultType type,
 			AggregationType aggregationType,
 			std::string description = std::string());
 		ResultSpecification(ResultSpecification&&) = default;
@@ -82,7 +77,7 @@ namespace Elpida
 		std::string _name;
 		std::string _unit;
 		std::string _description;
-		Type _type;
+		ResultType _type;
 		AggregationType _aggregationType;
 	};
 }

@@ -51,7 +51,7 @@ set(ELPIDA_SOURCES
         Engine/Result/TaskResult.cpp
         Engine/Result/TaskMetrics.cpp
         Engine/BenchmarkScoreCalculator.cpp
-        Engine/DefaultBenchmarkScoreCalculator.cpp
+        Engine/AccumulativeScoreCalculator.cpp
         Engine/Runner/EventArgs/BenchmarkEventArgs.cpp
         Engine/Runner/EventArgs/TaskEventArgs.cpp
         Engine/Task/MultiThreadTask.cpp
@@ -69,6 +69,7 @@ set(ELPIDA_SOURCES
         Engine/Benchmark/BenchmarkTaskInstance.cpp
         Engine/Configuration/ConfigurationInstance.cpp
         Engine/Data/DataPropertiesTransformer.cpp
+        Engine/AverageScoreCalculator.cpp
         )
 
 

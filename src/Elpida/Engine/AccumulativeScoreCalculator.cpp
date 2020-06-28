@@ -21,14 +21,14 @@
 // Created by klapeto on 19/4/20.
 //
 
-#include "Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp"
+#include "Elpida/Engine/AccumulativeScoreCalculator.hpp"
 
 namespace Elpida
 {
 
-	BenchmarkResult::Score DefaultBenchmarkScoreCalculator::calculate(const std::vector<TaskResult>& taskResults) const
+	BenchmarkResult::Score AccumulativeScoreCalculator::calculate(const std::vector<TaskResult>& taskResults) const
 	{
-		auto accumulator = 0ul;
+		auto accumulator = 0.0;
 
 		for (auto& res: taskResults)
 		{
@@ -36,5 +36,11 @@ namespace Elpida
 		}
 
 		return accumulator;
+	}
+
+	AccumulativeScoreCalculator::AccumulativeScoreCalculator(const std::string& suffix, ResultType resultType)
+		: BenchmarkScoreCalculator(suffix, resultType)
+	{
+
 	}
 }
