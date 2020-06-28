@@ -38,7 +38,7 @@ namespace Elpida
 		: TaskSpecification("Convert To Float",
 		ResultSpecification("Convert Rate",
 			"Pixels",
-			ResultSpecification::Type::Throughput,
+			ResultType::Throughput,
 			ResultSpecification::AggregationType::Accumulative))
 	{
 

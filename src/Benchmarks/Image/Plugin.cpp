@@ -26,7 +26,7 @@
 
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
+#include <Elpida/Engine/AccumulativeScoreCalculator.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
 
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
@@ -101,7 +101,7 @@ static Elpida::Benchmark* createBenchmark()
 
 	auto benchmark = new Elpida::Benchmark("Image Benchmarks",
 		std::move(tasksBuilders),
-		new Elpida::DefaultBenchmarkScoreCalculator());
+		new Elpida::AccumulativeScoreCalculator());
 	return benchmark;
 
 }

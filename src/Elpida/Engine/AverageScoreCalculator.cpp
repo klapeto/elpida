@@ -18,26 +18,37 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 19/4/20.
+// Created by klapeto on 28/6/20.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_DEFAULTBENCHMARKSCORECALCULATOR_HPP
-#define INCLUDE_ELPIDA_ENGINE_DEFAULTBENCHMARKSCORECALCULATOR_HPP
+#include "Elpida/Engine/AverageScoreCalculator.hpp"
 
-
-#include "BenchmarkScoreCalculator.hpp"
+#include "Elpida/Engine/Result/TaskResult.hpp"
+#include "Elpida/Engine/Result/ResultSpecification.hpp"
+#include "Elpida/Engine/Task/TaskSpecification.hpp"
+#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Config.hpp"
 
 namespace Elpida
 {
-	class DefaultBenchmarkScoreCalculator final : public BenchmarkScoreCalculator
+
+	BenchmarkResult::Score AverageScoreCalculator::calculate(const std::vector<TaskResult>& taskResults) const
 	{
-	public:
+		if (!taskResults.empty())
+		{
+			BenchmarkResult::Score score = 0.0;
+			for (const auto& result: taskResults)
+			{
+				score += result.getMetrics().getResultValue();
+			}
+			return score / (double)taskResults.size();
+		}
+		return 0;
+	}
 
-		BenchmarkResult::Score calculate(const std::vector<TaskResult>& taskResults) const override;
+	AverageScoreCalculator::AverageScoreCalculator(const std::string& suffix)
+		: BenchmarkScoreCalculator(suffix, ResultType::Raw)
+	{
 
-		DefaultBenchmarkScoreCalculator() = default;
-		~DefaultBenchmarkScoreCalculator() override = default;
-	};
+	}
 }
-
-#endif //INCLUDE_ELPIDA_ENGINE_DEFAULTBENCHMARKSCORECALCULATOR_HPP

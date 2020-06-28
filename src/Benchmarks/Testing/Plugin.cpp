@@ -23,7 +23,7 @@
 
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/DefaultBenchmarkScoreCalculator.hpp>
+#include <Elpida/Engine/AccumulativeScoreCalculator.hpp>
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
@@ -52,7 +52,7 @@ extern "C" ELPIDA_EXPORT Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* c
 	auto benchmark = new Benchmark("Test Benchmark", {
 		&readFile,
 		&writeFile,
-	}, new DefaultBenchmarkScoreCalculator());
+	}, new AccumulativeScoreCalculator());
 
 	plugin->add(benchmark);
 

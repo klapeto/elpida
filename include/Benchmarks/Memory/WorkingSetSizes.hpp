@@ -78,7 +78,7 @@ namespace Elpida
 		};
 
 		static constexpr inline int Values[] = {
-			B_4, B_8, B_16, B_32, B_64, B_128, B_256, B_512,
+			B_256, B_512,
 			KiB_1, KiB_2, KiB_4, KiB_8, KiB_16, KiB_32, KiB_64, KiB_128, KiB_256, KiB_512,
 			MiB_1, MiB_2, MiB_4, MiB_8, MiB_16, MiB_32, MiB_64, MiB_128, MiB_256, MiB_512,
 		};

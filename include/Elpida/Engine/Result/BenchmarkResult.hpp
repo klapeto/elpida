@@ -37,7 +37,7 @@ namespace Elpida
 	class BenchmarkResult
 	{
 	public:
-		using Score = size_t;
+		using Score = double;
 
 		[[nodiscard]] const Benchmark& getBenchmark() const
 		{

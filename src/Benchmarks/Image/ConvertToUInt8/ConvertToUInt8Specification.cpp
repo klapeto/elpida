@@ -39,7 +39,7 @@ namespace Elpida
 		: TaskSpecification("Convert to UInt8",
 		ResultSpecification("Conversion Rate",
 			"Pixels",
-			ResultSpecification::Throughput,
+			ResultType::Throughput,
 			ResultSpecification::Accumulative,
 			"The rate the pixels are converted from float to int"))
 	{

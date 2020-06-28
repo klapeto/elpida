@@ -18,31 +18,26 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 28/4/20.
+// Created by klapeto on 28/6/20.
 //
 
-#include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
+#ifndef SRC_ELPIDA_ENGINE_AVERAGESCORECALCULATOR_HPP
+#define SRC_ELPIDA_ENGINE_AVERAGESCORECALCULATOR_HPP
 
-#include "Benchmarks/Memory/Read/MemoryRead.hpp"
-#include "Benchmarks/Memory/WorkingSetSizes.hpp"
+#include "BenchmarkScoreCalculator.hpp"
 
 namespace Elpida
 {
-
-	MemoryReadSpecification::MemoryReadSpecification()
-		: TaskSpecification("Memory Read Bandwidth",
-		ResultSpecification("Read Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative))
+	class AverageScoreCalculator : public BenchmarkScoreCalculator
 	{
-		withDescription("Reads continuously a memory region to determine Memory Read Bandwidth");
-		withInputData(DataSpecification("Input Memory",
-			"B",
-			32 * sizeof(RegisterSize),
-			"The allocated memory region to read"));
-	}
+	public:
+		[[nodiscard]] BenchmarkResult::Score calculate(const std::vector<TaskResult>& taskResults) const override;
 
-	Task* MemoryReadSpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
-	{
-		return new MemoryRead(*this, processorToRun);
-	}
+		AverageScoreCalculator() = default;
+		explicit AverageScoreCalculator(const std::string& suffix);
+		~AverageScoreCalculator() override = default;
+	};
 }
+
+
+#endif //SRC_ELPIDA_ENGINE_AVERAGESCORECALCULATOR_HPP

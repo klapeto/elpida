@@ -25,5 +25,14 @@
 
 namespace Elpida
 {
+	BenchmarkScoreCalculator::BenchmarkScoreCalculator(const std::string& suffix, ResultType resultType)
+		: _suffix(suffix), _resultType(resultType)
+	{
+	}
 
+	BenchmarkScoreCalculator::BenchmarkScoreCalculator()
+		: _resultType(ResultType::Raw)
+	{
+
+	}
 }

@@ -22,6 +22,7 @@
 
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
+#include <Elpida/Engine/BenchmarkScoreCalculator.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 
 #include <QTreeWidgetItem>
@@ -45,7 +46,7 @@ namespace Elpida
 	{
 		auto& metrics = result.getMetrics();
 		auto& resultSpec = result.getTaskSpecification().getResultSpecification();
-		if (resultSpec.getType() == ResultSpecification::Throughput)
+		if (resultSpec.getType() == ResultType::Throughput)
 		{
 			return Vu::Cs(Vu::getValueScaleStringSI(
 				metrics.getResultValue() / metrics.getDurationSubdivision<Second>()),
@@ -58,15 +59,43 @@ namespace Elpida
 		}
 	}
 
+	static Duration getTotalDuration(const std::vector<TaskResult>& results)
+	{
+		auto accumulator = 0.0;
+		for (auto& result: results)
+		{
+			accumulator += result.getMetrics().getDuration().count();
+		}
+		return Duration(accumulator);
+	}
+
+	static std::string getScoreString(const std::vector<TaskResult>& results,
+		const BenchmarkScoreCalculator& calculator)
+	{
+		if (calculator.getResultType() == ResultType::Throughput)
+		{
+			return Vu::Cs(Vu::getValueScaleStringSI(
+				calculator.calculate(results) / (getTotalDuration(results).count() * Second::den) / Second::num),
+				calculator.getSuffix(),
+				"/s");
+		}
+		else
+		{
+			return Vu::Cs(Vu::getValueScaleStringSI(calculator.calculate(results)), calculator.getSuffix());
+		}
+	}
+
 	void BenchmarkResultsView::onItemAdded(const BenchmarkResult& item)
 	{
 		auto parent = new QTreeWidgetItem();
 		parent->setText(0, QString::fromStdString(item.getBenchmark().getName()));
-		for (const auto& result: item.getTaskResults())
+		auto& results = item.getTaskResults();
+		for (const auto& result: results)
 		{
 			auto child = new QTreeWidgetItem();
 
 			auto name = result.getTaskSpecification().getName();
+
 			if (result.getTaskSpecification().acceptsInput())
 			{
 				name = Vu::Cs(name,
@@ -81,6 +110,8 @@ namespace Elpida
 				QString::fromStdString(getResultString(result)));
 			parent->addChild(child);
 		}
+		auto& scoreCalculator = item.getBenchmark().getScoreCalculator();
+		parent->setText(1, QString::fromStdString(getScoreString(results, scoreCalculator)));
 		_createdItems.emplace(item.getId(), parent);
 		_ui->twResultList->addTopLevelItem(parent);
 	}

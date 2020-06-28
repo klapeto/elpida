@@ -153,7 +153,7 @@ namespace Elpida
 				auto& prevOutput = previous->getOutput();
 
 				auto chunks = breakIntoChunksImpl({ prevOutput.getTaskData() },
-					{ 0 },
+					{ (int)previous->getProcessorToRun().getOsIndex() },
 					nextSpec.getInputDataSpecification().getSizeShouldBeDivisibleBy());
 
 				auto propertiesTransformer = nextSpec.getDataPropertiesTransformer();

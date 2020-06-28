@@ -36,7 +36,7 @@ namespace Elpida
 
 	PngDecodingSpecification::PngDecodingSpecification()
 		: TaskSpecification("Png Decoding",
-		ResultSpecification("Decode Rate", "B", ResultSpecification::Throughput, ResultSpecification::Accumulative))
+		ResultSpecification("Decode Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative))
 	{
 		withDescription("Decodes raw Png data to RGBA pixel array");
 		withInputData(DataSpecification("Input file data", "B", "The raw png file data"));

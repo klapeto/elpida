@@ -37,7 +37,7 @@ namespace Elpida
 		: TaskSpecification("Encode to PNG",
 		ResultSpecification("Encode rate",
 			"Pixels",
-			ResultSpecification::Throughput,
+			ResultType::Throughput,
 			ResultSpecification::Accumulative,
 			"The rate that pixels are encoded into PNG format"))
 	{

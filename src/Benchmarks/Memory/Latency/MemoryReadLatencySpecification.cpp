@@ -31,7 +31,7 @@ namespace Elpida
 
 	MemoryReadLatencySpecification::MemoryReadLatencySpecification()
 		: TaskSpecification("Memory Read Latency",
-		ResultSpecification("Access time", "s", ResultSpecification::Raw, ResultSpecification::Average))
+		ResultSpecification("Access time", "s", ResultType::Raw, ResultSpecification::Average))
 	{
 		withDescription("Reads continuously a memory region to determine memory read latency");
 		withInputData(DataSpecification("Input Memory",
