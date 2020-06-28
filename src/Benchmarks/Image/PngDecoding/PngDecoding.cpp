@@ -27,8 +27,6 @@
 #include "Benchmarks/Image/PngDecoding/PngDecoding.hpp"
 
 #include <Elpida/Engine/Data/ActiveTaskData.hpp>
-#include <Elpida/Topology/SystemTopology.hpp>
-#include <Elpida/Topology/ProcessorNode.hpp>
 #include <Elpida/Config.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/ElpidaException.hpp>
@@ -57,8 +55,7 @@ namespace Elpida
 			img.format = PNG_FORMAT_RGBA;
 
 			auto newSize = PNG_IMAGE_SIZE(img);
-			_outputData =
-				new ActiveTaskData(newSize, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+			_outputData = new ActiveTaskData(newSize, _processorToRun);
 
 			png_image_finish_read(&img, nullptr, _outputData->getData(), 0, nullptr);
 

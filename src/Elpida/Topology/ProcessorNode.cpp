@@ -26,9 +26,15 @@
 
 #include "Elpida/Topology/ProcessorNode.hpp"
 
-#include <string>
-
 #include <hwloc.h>
+#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Config.hpp"
+
+#ifdef ELPIDA_LINUX
+#include <numa.h>
+#else
+#include <Windows.h>
+#endif
 
 namespace Elpida
 {
@@ -71,11 +77,6 @@ namespace Elpida
 		}
 
 		loadChildren(node);
-	}
-
-	static std::string getStringFromOsIndex(unsigned int osIndex)
-	{
-		return ((osIndex != HWLOC_UNKNOWN_INDEX) ? std::to_string(osIndex) : ProcessorNode::UnknownOsIndexStr);
 	}
 
 	void ProcessorNode::loadMachine(void* node)
@@ -197,9 +198,29 @@ namespace Elpida
 			child.loadSiblings();
 		}
 	}
+
 	bool ProcessorNode::isOsIndexValid() const
 	{
 		return _osIndex != HWLOC_UNKNOWN_INDEX;
+	}
+
+	int ProcessorNode::getNumaNodeId() const
+	{
+		if (_type == Type::ExecutionUnit)
+		{
+#ifdef ELPIDA_LINUX
+			return numa_node_of_cpu((int)_osIndex);
+#else
+			UCHAR NodeNumber;
+
+			GetNumaProcessorNode(_osIndex, &NodeNumber);
+			return NodeNumber;
+#endif
+		}
+		else
+		{
+			throw ElpidaException(FUNCTION_NAME, "Cannot get Numa Node id from a non EU type processor node!");
+		}
 	}
 
 } /* namespace Elpida */

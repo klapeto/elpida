@@ -43,8 +43,8 @@ namespace Elpida
 			return _memory.getSize();
 		}
 
-		ActiveTaskData(size_t size, int numaNode)	// TODO: Pass ProcessorNode
-			: _memory(size, numaNode)
+		ActiveTaskData(size_t size, const ProcessorNode& processor)
+			: _memory(size, processor)
 		{
 			_memory.allocate();
 		}

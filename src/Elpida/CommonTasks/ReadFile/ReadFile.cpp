@@ -77,7 +77,7 @@ namespace Elpida
 			size_t size = file.tellg();
 			file.seekg(0, std::ifstream::beg);
 
-			_data = new ActiveTaskData(size, SystemTopology::getNumaNodeOfProcessor((int)_processorToRun.getOsIndex()));
+			_data = new ActiveTaskData(size, _processorToRun);
 		}
 		catch (const std::fstream::failure& e)
 		{

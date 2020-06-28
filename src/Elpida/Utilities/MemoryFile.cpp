@@ -33,18 +33,19 @@
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
 #include "Elpida/Topology/SystemTopology.hpp"
+#include "Elpida/Topology/ProcessorNode.hpp"
 
 namespace Elpida
 {
 
-	MemoryFile::MemoryFile(unsigned int processorAffinity)
-		: _data(nullptr), _allocatedMemory(nullptr), _size(0), _processorAffinity(processorAffinity), _deleteData(true)
+	MemoryFile::MemoryFile(const ProcessorNode& processor)
+		: _data(nullptr), _allocatedMemory(nullptr), _size(0), _processor(&processor), _deleteData(true)
 	{
 
 	}
 
 	MemoryFile::MemoryFile(void* data, std::size_t size)
-		: _data((pData)data), _allocatedMemory(nullptr), _size(size), _processorAffinity(-1), _deleteData(false)
+		: _data((pData)data), _allocatedMemory(nullptr), _size(size), _processor(nullptr), _deleteData(false)
 	{
 
 	}
@@ -121,7 +122,7 @@ namespace Elpida
 
 	void MemoryFile::allocateData()
 	{
-		_allocatedMemory = new NumaMemory(_size, SystemTopology::getNumaNodeOfProcessor(_processorAffinity));
+		_allocatedMemory = new NumaMemory(_size,  *_processor);
 		_allocatedMemory->allocate();
 		_data = static_cast<pData>(_allocatedMemory->getPointer());
 	}

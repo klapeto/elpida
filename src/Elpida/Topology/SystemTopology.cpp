@@ -31,7 +31,6 @@
 #include "hwloc.h"
 
 #ifdef ELPIDA_LINUX
-#include <numa.h>
 #include <sys/resource.h>
 #else
 #include <Windows.h>
@@ -82,18 +81,6 @@ namespace Elpida
 			}
 			accumulateCores(child);
 		}
-	}
-
-	int SystemTopology::getNumaNodeOfProcessor(int processorId)
-	{
-#ifdef ELPIDA_LINUX
-		return numa_node_of_cpu(processorId);
-#else
-		UCHAR NodeNumber;
-
-		GetNumaProcessorNode(processorId, &NodeNumber);
-		return NodeNumber;
-#endif
 	}
 
 	void SystemTopology::setProcessPriority(SystemTopology::ProcessPriority priority)

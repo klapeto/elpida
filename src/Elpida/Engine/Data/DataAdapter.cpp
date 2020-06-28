@@ -42,10 +42,10 @@ namespace Elpida
 {
 
 	std::vector<RawData*> DataAdapter::breakIntoChunksImpl(const std::vector<const RawData*>& input,
-		const std::vector<int>& processorsOsIndices,
+		const std::vector<const ProcessorNode*>& processors,
 		size_t chunksDivisibleBy)
 	{
-		auto targetChunksCount = processorsOsIndices.size();
+		auto targetChunksCount = processors.size();
 		auto& outputChunks = input;
 
 		auto outputTotalSize = getAccumulatedSizeOfChunks(input);
@@ -74,8 +74,7 @@ namespace Elpida
 				if (currentChunk == nullptr)
 				{
 					// create new chunk with the defined target size
-					currentChunk = new ActiveTaskData(targetChunkSize,
-						SystemTopology::getNumaNodeOfProcessor(processorsOsIndices[currentChunkIndex]));
+					currentChunk = new ActiveTaskData(targetChunkSize, *processors[currentChunkIndex]);
 					targetChunksVec.push_back(currentChunk);
 				}
 
@@ -118,19 +117,14 @@ namespace Elpida
 		const TaskAffinity& affinity,
 		const DataSpecification& inputDataSpecification)
 	{
-		std::vector<int> processorsOsIndices;
-		for (auto processor : affinity.getProcessorNodes())
-		{
-			processorsOsIndices.push_back(processor->getOsIndex());
-		}
 		return breakIntoChunksImpl({ &input },
-			processorsOsIndices,
+			affinity.getProcessorNodes(),
 			inputDataSpecification.getSizeShouldBeDivisibleBy());
 	}
 
-	RawData* DataAdapter::mergeIntoSingleChunk(const std::vector<const RawData*>& inputData)
+	RawData* DataAdapter::mergeIntoSingleChunk(const std::vector<const RawData*>& inputData, const ProcessorNode& processor)
 	{
-		return breakIntoChunksImpl(inputData, { 0 }, 1).front();
+		return breakIntoChunksImpl(inputData, { &processor }, 1).front();
 	}
 
 	size_t DataAdapter::getAccumulatedSizeOfChunks(const std::vector<const RawData*>& outputChunks)
@@ -153,7 +147,7 @@ namespace Elpida
 				auto& prevOutput = previous->getOutput();
 
 				auto chunks = breakIntoChunksImpl({ prevOutput.getTaskData() },
-					{ (int)previous->getProcessorToRun().getOsIndex() },
+					{ &previous->getProcessorToRun() },
 					nextSpec.getInputDataSpecification().getSizeShouldBeDivisibleBy());
 
 				auto propertiesTransformer = nextSpec.getDataPropertiesTransformer();

@@ -32,6 +32,7 @@ namespace Elpida
 	class TaskAffinity;
 	class DataSpecification;
 	class RawData;
+	class ProcessorNode;
 
 	class DataAdapter
 	{
@@ -42,13 +43,13 @@ namespace Elpida
 			const TaskAffinity& affinity,
 			const DataSpecification& targetDataSpecification);
 
-		[[nodiscard]] static RawData* mergeIntoSingleChunk(const std::vector<const RawData*>& inputData);
+		[[nodiscard]] static RawData* mergeIntoSingleChunk(const std::vector<const RawData*>& inputData, const ProcessorNode& processor);
 
 		virtual ~DataAdapter() = default;
 	protected:
 		static size_t getAccumulatedSizeOfChunks(const std::vector<const RawData*>& outputChunks);
 		static std::vector<RawData*> breakIntoChunksImpl(const std::vector<const RawData*>& input,
-			const std::vector<int>& processorsOsIndices,
+			const std::vector<const ProcessorNode*>& processors,
 			size_t chunksDivisibleBy);
 	};
 }

@@ -33,6 +33,7 @@ namespace Elpida
 {
 
 	class Memory;
+	class ProcessorNode;
 
 	class MemoryFile
 	{
@@ -54,7 +55,7 @@ namespace Elpida
 		void load(const std::string& path);
 		void writeToFile(const std::string& path) const;
 
-		explicit MemoryFile(unsigned int processorAffinity);
+		explicit MemoryFile(const ProcessorNode& processor);
 		MemoryFile(void* data, std::size_t size);
 		virtual ~MemoryFile();
 
@@ -66,7 +67,7 @@ namespace Elpida
 		pData _data;
 		Memory* _allocatedMemory;
 		std::size_t _size;
-		unsigned int _processorAffinity;
+		const ProcessorNode* _processor;
 		bool _deleteData;
 
 		void allocateData();

@@ -127,7 +127,7 @@ namespace Elpida
 			outputsSet.emplace(thread.getTaskToRun().getOutput().getTaskData());
 		}
 
-		auto returnData = DataAdapter::mergeIntoSingleChunk(accumulatedOutputs);
+		auto returnData = DataAdapter::mergeIntoSingleChunk(accumulatedOutputs, *_affinity.getProcessorNodes().front());
 
 		// This becomes the delete 'list'
 		for (auto data: _allocatedChunks)
