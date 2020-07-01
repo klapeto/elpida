@@ -42,7 +42,7 @@ set(ELPIDA_QT_SOURCES
 		Core/Abstractions/ResultFormatter.cpp
 		Core/JsonResultFormatter.cpp
 
-		Models/BenchmarksModel.cpp
+		Models/Benchmarks/BenchmarksModel.cpp
 		Models/Abstractions/CollectionModel.cpp
 		Models/Abstractions/CollectionItem.cpp
 		Models/Abstractions/EventArgs/CollectionChangedEventArgs.cpp
@@ -57,6 +57,7 @@ set(ELPIDA_QT_SOURCES
 		Models/BenchmarkConfigurationModel.cpp
 		Models/Screens/ScreensModel.cpp
 		Models/Screens/ScreenItem.cpp
+		Models/Benchmarks/BenchmarkGroup.cpp
 
 		Controllers/BenchmarksController.cpp
 		Controllers/BenchmarkRunnerController.cpp

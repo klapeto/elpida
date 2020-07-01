@@ -69,19 +69,22 @@ namespace Elpida
 		returnAllViewsToPool();
 		returnAllTaskListItems();
 		auto configuration = _benchmarkConfigurationModel.getBenchmarkConfiguration();
-		for (auto& taskConfPair: configuration->getAllTaskConfigurations())
+		if (configuration != nullptr)
 		{
-			auto itm = _configurationViewsPool.rentViewForTaskList(const_cast<TaskConfiguration&>(taskConfPair));
-			_ui->lwTasks->addItem(itm);
-			for (auto& confValuePair: taskConfPair.getAllConfigurations())
+			for (auto& taskConfPair: configuration->getAllTaskConfigurations())
 			{
-				if (!confValuePair.second->isReadOnly())
+				auto itm = _configurationViewsPool.rentViewForTaskList(const_cast<TaskConfiguration&>(taskConfPair));
+				_ui->lwTasks->addItem(itm);
+				for (auto& confValuePair: taskConfPair.getAllConfigurations())
 				{
-					auto view = _configurationViewsPool.rentViewForConfiguration(*confValuePair.second);
-					view->show();
-					_rentedViews.push_back(view);
-					view->setConfiguration(confValuePair.second);
-					_containerLayout->addWidget(view);
+					if (!confValuePair.second->isReadOnly())
+					{
+						auto view = _configurationViewsPool.rentViewForConfiguration(*confValuePair.second);
+						view->show();
+						_rentedViews.push_back(view);
+						view->setConfiguration(confValuePair.second);
+						_containerLayout->addWidget(view);
+					}
 				}
 			}
 		}

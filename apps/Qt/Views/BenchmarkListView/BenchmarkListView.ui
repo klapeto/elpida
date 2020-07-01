@@ -21,7 +21,13 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QListWidget" name="lvTaskBatches"/>
+       <widget class="QTreeWidget" name="lvBenchmarkGroups">
+        <column>
+         <property name="text">
+          <string>Group</string>
+         </property>
+        </column>
+       </widget>
       </item>
      </layout>
     </widget>

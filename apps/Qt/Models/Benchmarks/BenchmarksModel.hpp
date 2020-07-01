@@ -21,55 +21,21 @@
 // Created by klapeto on 12/4/20.
 //
 
-#ifndef INCLUDE_ELPIDA_UTILITIES_PLUGIN_BENCHMARKSCONTAINERPLUGIN_HPP
-#define INCLUDE_ELPIDA_UTILITIES_PLUGIN_BENCHMARKSCONTAINERPLUGIN_HPP
+#ifndef APPS_QT_CORE_MODELS_TASKBATCHESMODEL_HPP
+#define APPS_QT_CORE_MODELS_TASKBATCHESMODEL_HPP
 
-#include <utility>
-#include <vector>
-#include <string>
-#include "Elpida/Utilities/Plugin/Plugin.hpp"
+#include "Models/Abstractions/ListModel/ListModel.hpp"
+#include "BenchmarkGroup.hpp"
 
 namespace Elpida
 {
+	class Benchmark;
 
-	template<typename T>
-	class BenchmarksContainerPlugin : public Plugin<std::vector<T*>>
+	class BenchmarksModel : public ListModel<BenchmarkGroup>
 	{
-	public:
 
-		using Factory = BenchmarksContainerPlugin<T>* (*)();
-
-		const std::vector<T*>& getUnderlyingData() const override
-		{
-			return _data;
-		}
-
-		void add(T* data)
-		{
-			_data.push_back(data);
-		}
-
-		[[nodiscard]] const std::string& getGroupName() const
-		{
-			return _groupName;
-		}
-
-		explicit BenchmarksContainerPlugin(std::string groupName = std::string())
-			: _groupName(std::move(groupName))
-		{
-
-		}
-		virtual ~BenchmarksContainerPlugin()
-		{
-			for (auto ptr : _data)
-			{
-				delete ptr;
-			}
-		}
-	private:
-		std::vector<T*> _data;
-		std::string _groupName;
 	};
 }
 
-#endif //INCLUDE_ELPIDA_UTILITIES_PLUGIN_BENCHMARKSCONTAINERPLUGIN_HPP
+
+#endif //APPS_QT_CORE_MODELS_TASKBATCHESMODEL_HPP

@@ -18,23 +18,39 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 12/4/20.
+// Created by klapeto on 29/6/20.
 //
 
-#ifndef APPS_QT_CORE_MODELS_TASKBATCHESMODEL_HPP
-#define APPS_QT_CORE_MODELS_TASKBATCHESMODEL_HPP
+#ifndef APPS_QT_MODELS_BENCHMARKGROUP_HPP
+#define APPS_QT_MODELS_BENCHMARKGROUP_HPP
 
-#include "Models/Abstractions/ListModel/ListModel.hpp"
+#include <string>
+#include <vector>
 
 namespace Elpida
 {
 	class Benchmark;
 
-	class BenchmarksModel : public ListModel<Benchmark*>
+	class BenchmarkGroup final
 	{
+	public:
 
+		[[nodiscard]] const std::vector<Benchmark*>& getBenchmarks() const
+		{
+			return _benchmarks;
+		}
+
+		[[nodiscard]] const std::string& getName() const
+		{
+			return _name;
+		}
+
+		BenchmarkGroup(const std::string& name, const std::vector<Benchmark*>& benchmarks);
+		~BenchmarkGroup() = default;
+	private:
+		std::string _name;
+		std::vector<Benchmark*> _benchmarks;
 	};
 }
 
-
-#endif //APPS_QT_CORE_MODELS_TASKBATCHESMODEL_HPP
+#endif //APPS_QT_MODELS_BENCHMARKGROUP_HPP
