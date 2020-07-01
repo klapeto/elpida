@@ -25,7 +25,7 @@
 #include "Controllers/BenchmarkRunnerController.hpp"
 #include "Controllers/BenchmarkConfigurationController.hpp"
 
-#include "Models/BenchmarksModel.hpp"
+#include "Models/Benchmarks/BenchmarksModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 #include "Models/BenchmarkConfigurationModel.hpp"
@@ -127,8 +127,8 @@ int main(int argc, char* argv[])
 	BenchmarkResultsModel taskRunResultsModel;
 	BenchmarkConfigurationModel benchmarkConfigurationModel;
 	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
-	BenchmarksController taskBatchesController(taskBatchesModel, benchmarkConfigurationsModel, logger);
-	taskBatchesController.reload();
+	BenchmarksController benchmarksController(taskBatchesModel, benchmarkConfigurationsModel, logger);
+	benchmarksController.reload();
 	BenchmarkRunnerController
 		runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel, logger);
 	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);

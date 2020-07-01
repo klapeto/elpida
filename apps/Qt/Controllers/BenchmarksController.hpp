@@ -26,13 +26,13 @@
 
 
 #include "Models/Abstractions/ListModel/ListModel.hpp"
+#include "Models/Benchmarks/BenchmarkGroup.hpp"
 #include "Models/Abstractions/AssociativeModel/AssociativeModel.hpp"
 #include <Elpida/SharedLibraryLoader.hpp>
 
 namespace Elpida
 {
 	class Logger;
-	class Benchmark;
 	class BenchmarkConfiguration;
 
 	template<typename T>
@@ -45,7 +45,7 @@ namespace Elpida
 		void reload();
 		void destroyAll();
 
-		explicit BenchmarksController(ListModel<Benchmark*>& model,
+		explicit BenchmarksController(ListModel<BenchmarkGroup>& model,
 			AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
 			Logger& logger);
 		virtual ~BenchmarksController();
@@ -54,7 +54,7 @@ namespace Elpida
 		SharedLibraryLoader _libraryLoader;
 		std::string _benchmarksPath;
 		Logger& _logger;
-		ListModel<Benchmark*>& _model;
+		ListModel<BenchmarkGroup>& _model;
 		AssociativeModel<std::string, BenchmarkConfiguration>& _configurationsModel;
 
 		void reloadLibraries();

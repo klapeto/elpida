@@ -22,15 +22,15 @@
 
 #include <QWidget>
 #include "Models/Abstractions/CollectionModelObserver.hpp"
+#include "Models/Benchmarks/BenchmarkGroup.hpp"
 #include "Core/Abstractions/CommandHandler.hpp"
 
 #include <unordered_map>
 
-class QListWidgetItem;
+class QTreeWidgetItem;
 
 namespace Elpida
 {
-	class Benchmark;
 	class Mediator;
 
 	template<typename T>
@@ -41,7 +41,7 @@ namespace Elpida
 		class BenchmarkListView;
 	}
 
-	class BenchmarkListView : public QWidget, public CollectionModelObserver<Benchmark*>, public CommandHandler
+	class BenchmarkListView : public QWidget, public CollectionModelObserver<BenchmarkGroup>, public CommandHandler
 	{
 	Q_OBJECT
 
@@ -49,19 +49,19 @@ namespace Elpida
 
 		void handle(GetBenchmarksToRunCommand &command) override;
 
-		explicit BenchmarkListView(const ListModel<Benchmark*>& model, Mediator& mediator);
+		explicit BenchmarkListView(const ListModel<BenchmarkGroup>& model, Mediator& mediator);
 		~BenchmarkListView() override;
 	private:
 		Ui::BenchmarkListView* _ui;
-		std::unordered_map<const Benchmark*, QListWidgetItem*> _createdItems;
+		std::unordered_map<const BenchmarkGroup*, QTreeWidgetItem*> _createdItems;
 		Mediator& _mediator;
 		Benchmark* getSelectedBenchmark();
 	protected:
 
-		void onItemAdded(Benchmark* const& item) override;
-		void onItemRemoved(Benchmark* const& item) override;
+		void onItemAdded(const BenchmarkGroup& item) override;
+		void onItemRemoved(const BenchmarkGroup& item) override;
 		void onCollectionCleared() override;
-		void addItem(Benchmark* const& item);
+		void addItem(const BenchmarkGroup& item);
 
 	private slots:
 		void onSelectionChanged();

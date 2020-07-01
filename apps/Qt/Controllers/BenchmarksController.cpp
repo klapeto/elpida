@@ -36,7 +36,7 @@
 namespace Elpida
 {
 
-	BenchmarksController::BenchmarksController(ListModel<Benchmark*>& model,
+	BenchmarksController::BenchmarksController(ListModel<BenchmarkGroup>& model,
 		AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
 		Logger& logger)
 		: _logger(logger), _model(model), _configurationsModel(configurationsModel)
@@ -152,6 +152,7 @@ namespace Elpida
 				}
 				const auto& benchmarks = pPlugin->getUnderlyingData();
 				_createdPlugins.push_back(pPlugin);
+				//std::vector<Benchmark*>
 				for (auto benchmark : benchmarks)
 				{
 					BenchmarkConfiguration configuration(*benchmark);
@@ -161,8 +162,9 @@ namespace Elpida
 							.addConfiguration(builder->getTaskSpecification(), builder->getDefaultConfiguration());
 					}
 					_configurationsModel.add(benchmark->getId(), std::move(configuration));
-					_model.add(benchmark);
+					//_model.add(benchmark);
 				}
+				_model.add(BenchmarkGroup(pPlugin->getGroupName(), benchmarks));
 			}
 		}
 	}

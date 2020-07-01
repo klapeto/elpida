@@ -38,7 +38,7 @@
 #include "Benchmarks/Image/PngEncoding/PngEncodingSpecification.hpp"
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
 
-static Elpida::Benchmark* createBenchmark()
+static Elpida::Benchmark* createPngEncodingDecoding()
 {
 	using namespace Elpida;
 	std::vector<TaskBuilder*> tasksBuilders;
@@ -48,21 +48,55 @@ static Elpida::Benchmark* createBenchmark()
 		.canBeMultiThreaded(false)
 		.canBeDisabled(false)
 		.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
-			ConfigurationType::FilePath("/home/klapeto/Εικόνες/shinobu.png"));
+			ConfigurationType::FilePath("./Benchmark Material/shinobu.png"));
 
 	auto& pngDecode = (new TaskBuilder(*new PngDecodingSpecification))
 		->shouldBeCountedOnResults(true)
 		.canBeDisabled(false)
 		.canBeMultiThreaded(false);
 
+	auto& pngEncoding =(new TaskBuilder(*new PngEncodingSpecification))
+		->shouldBeCountedOnResults(true)
+		.canBeDisabled(false)
+		.canBeMultiThreaded(false);
+
+
+	tasksBuilders.push_back(&readFile);
+	tasksBuilders.push_back(&pngDecode);
+	tasksBuilders.push_back(&pngEncoding);
+
+	auto benchmark = new Elpida::Benchmark("Png Encoding/Decoding",
+		std::move(tasksBuilders),
+		new Elpida::AccumulativeScoreCalculator());
+	return benchmark;
+
+}
+
+static Elpida::Benchmark* createFloydSteinberg()
+{
+	using namespace Elpida;
+	std::vector<TaskBuilder*> tasksBuilders;
+
+	auto& readFile = (new TaskBuilder(*new ReadFileSpecification))
+		->shouldBeCountedOnResults(false)
+		.canBeMultiThreaded(false)
+		.canBeDisabled(false)
+		.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
+			ConfigurationType::FilePath("./Benchmark Material/shinobu.png"));
+
+	auto& pngDecode = (new TaskBuilder(*new PngDecodingSpecification))
+		->shouldBeCountedOnResults(false)
+		.canBeDisabled(false)
+		.canBeMultiThreaded(false);
+
 
 	auto& convertToFloat=(new TaskBuilder(*new ConvertToFloatSpecification))
-		->shouldBeCountedOnResults(true)
+		->shouldBeCountedOnResults(false)
 		.canBeDisabled(false)
 		.canBeMultiThreaded(true);
 
 	auto& grayscale = (new TaskBuilder(*new GrayscaleAverageSpecification))
-		->shouldBeCountedOnResults(true)
+		->shouldBeCountedOnResults(false)
 		.canBeDisabled(false)
 		.canBeMultiThreaded(true);
 
@@ -72,12 +106,12 @@ static Elpida::Benchmark* createBenchmark()
 		.canBeMultiThreaded(false);
 
 	auto& convertToUInt8 =(new TaskBuilder(*new ConvertToUInt8Specification))
-		->shouldBeCountedOnResults(true)
+		->shouldBeCountedOnResults(false)
 		.canBeDisabled(false)
 		.canBeMultiThreaded(true);
 
 	auto& pngEncoding =(new TaskBuilder(*new PngEncodingSpecification))
-		->shouldBeCountedOnResults(true)
+		->shouldBeCountedOnResults(false)
 		.canBeDisabled(false)
 		.canBeMultiThreaded(false);
 
@@ -87,7 +121,7 @@ static Elpida::Benchmark* createBenchmark()
 		.canBeDisabled(true)
 		.canBeMultiThreaded(false)
 		.withDefaultConfiguration(WriteFileSpecification::Settings::OutputFilePath,
-			ConfigurationType::FilePath("/home/klapeto/Εικόνες/shinobu_out.png"));
+			ConfigurationType::FilePath("./Benchmark Outputs/shinobu_Floyd_Steinberg.png"));
 
 
 	tasksBuilders.push_back(&readFile);
@@ -99,7 +133,7 @@ static Elpida::Benchmark* createBenchmark()
 	tasksBuilders.push_back(&pngEncoding);
 	tasksBuilders.push_back(&writeFile);
 
-	auto benchmark = new Elpida::Benchmark("Image Benchmarks",
+	auto benchmark = new Elpida::Benchmark("Floyd Steinberg Dithering",
 		std::move(tasksBuilders),
 		new Elpida::AccumulativeScoreCalculator());
 	return benchmark;
@@ -111,8 +145,9 @@ extern "C" ELPIDA_EXPORT Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* c
 	using namespace Elpida;
 	using Plugin = BenchmarksContainerPlugin<Elpida::Benchmark>;
 
-	auto plugin = new Plugin();
+	auto plugin = new Plugin("Image Benchmarks");
 
-	plugin->add(createBenchmark());
+	plugin->add(createFloydSteinberg());
+	plugin->add(createPngEncodingDecoding());
 	return plugin;
 }

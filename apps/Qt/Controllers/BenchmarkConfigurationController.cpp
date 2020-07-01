@@ -39,13 +39,19 @@ namespace Elpida
 
 	void BenchmarkConfigurationController::handle(SelectedBenchmarkChangedEvent& command)
 	{
-		auto& currentBenchmark = command.getCurrentBenchmark();
-		auto& conf = _benchmarkConfigurationsCollectionModel.get(currentBenchmark.getId());
+		auto currentBenchmark = command.getCurrentBenchmark();
+		BenchmarkConfiguration* conf = nullptr;
+		if (currentBenchmark != nullptr)
+		{
+			conf = &_benchmarkConfigurationsCollectionModel.get(currentBenchmark->getId());
+		}
+
 		_configurationModel
 			.transactional<BenchmarkConfigurationModel>([&currentBenchmark, &conf](BenchmarkConfigurationModel& model)
 			{
-				model.setBenchmark(&currentBenchmark);
-				model.setBenchmarkConfiguration(&conf);
+				model.setBenchmark(currentBenchmark);
+				model.setBenchmarkConfiguration(conf);
 			});
+
 	}
 }

@@ -43,7 +43,7 @@ extern "C" ELPIDA_EXPORT Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* c
 	using namespace Elpida;
 	using Plugin = BenchmarksContainerPlugin<Elpida::Benchmark>;
 
-	auto plugin = new Plugin();
+	auto plugin = new Plugin("Memory Benchmarks");
 
 	plugin->add(createMemoryReadBandwidth());
 	plugin->add(createMemoryReadLatency());
