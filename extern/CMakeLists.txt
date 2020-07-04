@@ -129,7 +129,7 @@ set(HWLOC_IMPLIB ${HWLOC_BIN}/lib/libhwloc${CMAKE_IMPORT_LIBRARY_SUFFIX})
 
 set(HWLOC_INCLUDES ${HWLOC_BIN}/include)
 
-file(MAKE_DIRECTORY ${HWLOC_INCLUDES})
+#file(MAKE_DIRECTORY ${HWLOC_INCLUDES})
 
 ExternalProject_Add(
         libhwloc
