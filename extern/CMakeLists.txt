@@ -119,8 +119,6 @@ endif()
 set(HWLOC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/hwloc)
 set(HWLOC_BIN ${CMAKE_INSTALL_PREFIX})
 
-message(${HWLOC_BIN})
-
 if (UNIX)
     set(HWLOC_LIB ${HWLOC_BIN}/lib/libhwloc.so)
 else ()
