@@ -119,7 +119,7 @@ endif()
 set(HWLOC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/hwloc)
 
 if (DEFINED SNAP_INSTALL_PREFIX)
-    set(HWLOC_BIN ${SNAP_INSTALL})
+    set(HWLOC_BIN ${SNAP_INSTALL_PREFIX})
 else()
     set(HWLOC_BIN ${CMAKE_INSTALL_PREFIX})
 endif()
@@ -143,7 +143,7 @@ ExternalProject_Add(
         DOWNLOAD_COMMAND cd ${HWLOC_DIR} && git clean -dfX && ${HWLOC_DIR}/autogen.sh
         CONFIGURE_COMMAND ${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN}
         #        CONFIGURE_COMMAND sh -c "${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN} --enable-static=yes --disable-shared LDFLAGS=-static"
-        BUILD_COMMAND make install -j${N}
+        BUILD_COMMAND make install
         INSTALL_COMMAND make install
         BUILD_BYPRODUCTS ${HWLOC_LIB} ${HWLOC_IMPLIB}
 )
