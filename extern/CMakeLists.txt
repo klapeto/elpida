@@ -117,7 +117,12 @@ if(NOT N EQUAL 0)
 endif()
 
 set(HWLOC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/hwloc)
-set(HWLOC_BIN ${CMAKE_INSTALL_PREFIX})
+
+if (DEFINED SNAP_INSTALL_PREFIX)
+    set(HWLOC_BIN ${SNAP_INSTALL})
+else()
+    set(HWLOC_BIN ${CMAKE_INSTALL_PREFIX})
+endif()
 
 if (UNIX)
     set(HWLOC_LIB ${HWLOC_BIN}/lib/libhwloc.so)
@@ -129,7 +134,7 @@ set(HWLOC_IMPLIB ${HWLOC_BIN}/lib/libhwloc${CMAKE_IMPORT_LIBRARY_SUFFIX})
 
 set(HWLOC_INCLUDES ${HWLOC_BIN}/include)
 
-#file(MAKE_DIRECTORY ${HWLOC_INCLUDES})
+file(MAKE_DIRECTORY ${HWLOC_INCLUDES})
 
 ExternalProject_Add(
         libhwloc
