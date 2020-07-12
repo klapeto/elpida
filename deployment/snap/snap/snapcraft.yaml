@@ -17,11 +17,14 @@ parts:
     plugin: cmake
     configflags:
       - "-DSNAP_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL"
+      - "-DKDE_INSTALL_USE_QT_SYS_PATHS=ON"
     #source: ../../.
     source: https://gitlab.com/dev-hood/elpida/elpida.git
     source-branch: 20-linux-deployment
+    build-snaps:
+      - kde-frameworks-5-core18-sdk
+      - kde-frameworks-5-core18
     build-packages:
-      - qt5-default
       - libnuma-dev
       - g++
       - make
@@ -29,10 +32,7 @@ parts:
       - libtool
       - pkg-config
     stage-packages:
-      - qt5-default
       - libnuma-dev
-      - libqt5network5
-      - libqt5core5a
 apps:
   elpida-qt:
     common-id: dev.elpida

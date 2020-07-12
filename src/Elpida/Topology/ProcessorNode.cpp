@@ -26,7 +26,7 @@
 
 #include "Elpida/Topology/ProcessorNode.hpp"
 
-#include <hwloc.h>
+#include "hwloc.h"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Config.hpp"
 

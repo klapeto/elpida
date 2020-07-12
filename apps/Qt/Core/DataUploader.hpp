@@ -50,7 +50,7 @@ namespace Elpida
 		const ResultFormatter& _resultFormatter;
 		Logger& _logger;
 
-		static inline const char* apiUrl = "https://beta.elpida.dev/api/result";
+		static inline const char* apiUrl = "https://api.elpida.dev/api/v1/result";
 
 	signals:
 		void uploadRequest(const BenchmarkResult* result);
