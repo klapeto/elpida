@@ -77,7 +77,7 @@ set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 configure_file("${ELPIDA_INCLUDE_DIR}/Elpida/Config.hpp.in" "Elpida/Config.hpp")
 
-add_library(elpida SHARED ${ELPIDA_SOURCES} Utilities/OsUtilities.cpp ../../include/Elpida/Utilities/OsUtilities.hpp)
+add_library(elpida SHARED ${ELPIDA_SOURCES})
 
 if (UNIX)
     include(FindThreads)

@@ -17,33 +17,32 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
-#define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+//
+// Created by klapeto on 21/6/20.
+//
 
-#include <QWidget>
-#include "QModelLogAppender.hpp"
+#ifndef APPS_QT_CORE_RESULTFORMATTER_HPP
+#define APPS_QT_CORE_RESULTFORMATTER_HPP
 
-namespace Elpida
-{
+#include <string>
 
-	namespace Ui
+namespace Elpida {
+
+	class BenchmarkResult;
+
+	class ResultFormatter
 	{
-		class LogsView;
-	}
-
-	class Logger;
-
-	class LogsView final : public QWidget
-	{
-	Q_OBJECT
-
 	public:
-		explicit LogsView(Logger& logger);
-		~LogsView() override;
-	private:
-		QModelLogAppender _logAppender;
-		Ui::LogsView* _ui;
-	};
 
-} // namespace Elpida
-#endif //APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+		[[nodiscard]] virtual std::string serialize(const BenchmarkResult& result) const = 0;
+
+		ResultFormatter() = default;
+		virtual ~ResultFormatter() = default;
+	};
+}
+
+
+
+
+
+#endif //APPS_QT_CORE_RESULTFORMATTER_HPP

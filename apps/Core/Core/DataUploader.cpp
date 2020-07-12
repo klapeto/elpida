@@ -17,33 +17,31 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
-#define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+//
+// Created by klapeto on 20/6/20.
+//
 
-#include <QWidget>
-#include "QModelLogAppender.hpp"
+#include "DataUploader.hpp"
+
+#include "Commands/UploadResultCommand.hpp"
+#include "Commands/HttpResponseEvent.hpp"
+#include "Abstractions/Mediator.hpp"
+#include "Abstractions/ResultFormatter.hpp"
+
+
+#include <Elpida/Utilities/Logging/Logger.hpp>
+#include <Elpida/Utilities/ValueUtilities.hpp>
 
 namespace Elpida
 {
 
-	namespace Ui
+	DataUploader::DataUploader(Mediator& mediator, const ResultFormatter& resultFormatter, Logger& logger)
+		: _mediator(mediator), _resultFormatter(resultFormatter), _logger(logger)
 	{
-		class LogsView;
 	}
 
-	class Logger;
-
-	class LogsView final : public QWidget
+	void DataUploader::handle(UploadResultCommand& command)
 	{
-	Q_OBJECT
 
-	public:
-		explicit LogsView(Logger& logger);
-		~LogsView() override;
-	private:
-		QModelLogAppender _logAppender;
-		Ui::LogsView* _ui;
-	};
-
-} // namespace Elpida
-#endif //APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+	}
+}

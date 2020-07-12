@@ -17,33 +17,36 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
-#define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+//
+// Created by klapeto on 20/6/20.
+//
 
-#include <QWidget>
-#include "QModelLogAppender.hpp"
+#ifndef APPS_QT_CORE_DATAUPLOADER_HPP
+#define APPS_QT_CORE_DATAUPLOADER_HPP
+
+#include <Elpida/Engine/Result/BenchmarkResult.hpp>
+#include "Abstractions/CommandHandler.hpp"
 
 namespace Elpida
 {
-
-	namespace Ui
-	{
-		class LogsView;
-	}
-
+	class Mediator;
+	class ResultFormatter;
 	class Logger;
 
-	class LogsView final : public QWidget
+	class DataUploader final : public CommandHandler
 	{
-	Q_OBJECT
-
 	public:
-		explicit LogsView(Logger& logger);
-		~LogsView() override;
-	private:
-		QModelLogAppender _logAppender;
-		Ui::LogsView* _ui;
-	};
+		void handle(UploadResultCommand& command) override;
 
-} // namespace Elpida
-#endif //APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+		explicit DataUploader(Mediator& mediator, const ResultFormatter& resultFormatter, Logger& logger);
+		~DataUploader() override = default;
+	private:
+		Mediator& _mediator;
+		const ResultFormatter& _resultFormatter;
+		Logger& _logger;
+
+		static inline const char* apiUrl = "https://beta.elpida.dev/api/result";
+	};
+}
+
+#endif //APPS_QT_CORE_DATAUPLOADER_HPP

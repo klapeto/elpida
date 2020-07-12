@@ -17,33 +17,49 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
-#define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+//
+// Created by klapeto on 8/6/20.
+//
 
-#include <QWidget>
-#include "QModelLogAppender.hpp"
+#ifndef APPS_QT_MODELS_SCREENSMODEL_HPP
+#define APPS_QT_MODELS_SCREENSMODEL_HPP
+
+#include "Models/Abstractions/ListModel/ListModel.hpp"
+#include "Models/Screens/ScreenItem.hpp"
 
 namespace Elpida
 {
-
-	namespace Ui
+	/**
+	 * Weird model to use for QT only
+	 */
+	class ScreensModel : public ListModel<ScreenItem>
 	{
-		class LogsView;
-	}
-
-	class Logger;
-
-	class LogsView final : public QWidget
-	{
-	Q_OBJECT
-
 	public:
-		explicit LogsView(Logger& logger);
-		~LogsView() override;
-	private:
-		QModelLogAppender _logAppender;
-		Ui::LogsView* _ui;
-	};
 
-} // namespace Elpida
-#endif //APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+		Event<ScreenItem&> selectionChanged;
+
+		ScreenItem* getSelectedScreen() const
+		{
+			return _currentScreen;
+		}
+
+		void setSelectedScreen(ScreenItem* currentIndex)
+		{
+			_currentScreen = currentIndex;
+			onDataChanged();
+			selectionChanged.raise(*_currentScreen);
+		}
+
+		ScreensModel()
+			: _currentScreen(nullptr)
+		{
+		}
+
+		~ScreensModel() override = default;
+	private:
+		ScreenItem* _currentScreen;
+	};
+}
+
+
+#endif //APPS_QT_MODELS_SCREENSMODEL_HPP
