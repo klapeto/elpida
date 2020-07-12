@@ -2,12 +2,20 @@
 <ui version="4.0">
  <class>Elpida::MainWindow</class>
  <widget class="QMainWindow" name="Elpida::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>24</width>
+    <height>60</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Elpida</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../Images/Images.qrc">
-    <normaloff>:/Elpida-icon.svg</normaloff>:/Elpida-icon.svg</iconset>
+    <normaloff>:/Elpida-icon-transp.svg</normaloff>:/Elpida-icon-transp.svg</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">/*============ QWidget ============*/
