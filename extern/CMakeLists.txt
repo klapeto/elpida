@@ -140,7 +140,7 @@ ExternalProject_Add(
         libhwloc
         PREFIX ${HWLOC_BIN}
         SOURCE_DIR ${HWLOC_DIR}
-        DOWNLOAD_COMMAND cd ${HWLOC_DIR} && git clean -dfX && ${HWLOC_DIR}/autogen.sh
+        DOWNLOAD_COMMAND ${HWLOC_DIR}/autogen.sh
         CONFIGURE_COMMAND ${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN}
         #        CONFIGURE_COMMAND sh -c "${HWLOC_DIR}/configure --srcdir=${HWLOC_DIR} --prefix=${HWLOC_BIN} --enable-static=yes --disable-shared LDFLAGS=-static"
         BUILD_COMMAND make install
