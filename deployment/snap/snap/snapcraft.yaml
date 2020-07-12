@@ -1,0 +1,46 @@
+name: elpida # you probably want to 'snapcraft register <name>'
+version: '0.0.1' # just for humans, typically '1.2+git' or '1.3.2'
+summary: Open Source Benchmarking Framework # 79 char long summary
+description: |
+  Elpida is an Open Source (GPLv3) Benchmarking framework for measuring performance of computer hardware or algorithms.
+  It's goal is to be as transparent and open as possible as well as exensible by the community. It comes with a library (libelpida),
+  a Qt application and a set of predefined benchmarks for measuring computer hardware capabilities.
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: devmode # use 'strict' once you have the right plugs and slots
+
+base: core18
+
+parts:
+  elpida-qt:
+    # See 'snapcraft plugins'
+    plugin: cmake
+    configflags:
+      - "-DSNAP_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL"
+      - "-DKDE_INSTALL_USE_QT_SYS_PATHS=ON"
+    #source: ../../.
+    source: https://gitlab.com/dev-hood/elpida/elpida.git
+    source-branch: 20-linux-deployment
+    build-snaps:
+      - kde-frameworks-5-core18-sdk
+      - kde-frameworks-5-core18
+    build-packages:
+      - libnuma-dev
+      - g++
+      - make
+      - automake
+      - libtool
+      - pkg-config
+    stage-packages:
+      - libnuma-dev
+apps:
+  elpida-qt:
+    common-id: dev.elpida
+    command: elpida-qt
+    plugs:
+      - x11
+      - home
+      - opengl
+      - network
+      - network-bind
+      - pulseaudio

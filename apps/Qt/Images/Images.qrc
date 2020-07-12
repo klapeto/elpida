@@ -1,8 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>Elpida.svg</file>
-        <file>BG-tile.svg</file>
-        <file>Elpida-icon.svg</file>
+        <file>Elpida-icon-transp.svg</file>
         <file>PlayButton.svg</file>
         <file>Wrench.svg</file>
     </qresource>
