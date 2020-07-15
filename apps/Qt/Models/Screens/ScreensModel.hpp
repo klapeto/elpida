@@ -21,9 +21,45 @@
 // Created by klapeto on 8/6/20.
 //
 
-#include "Models/Screens/ScreensModel.hpp"
+#ifndef APPS_QT_MODELS_SCREENSMODEL_HPP
+#define APPS_QT_MODELS_SCREENSMODEL_HPP
+
+#include "Models/Abstractions/ListModel/ListModel.hpp"
+#include "ScreenItem.hpp"
 
 namespace Elpida
 {
+	/**
+	 * Weird model to use for QT only
+	 */
+	class ScreensModel : public ListModel<ScreenItem>
+	{
+	public:
 
+		Event<ScreenItem&> selectionChanged;
+
+		ScreenItem* getSelectedScreen() const
+		{
+			return _currentScreen;
+		}
+
+		void setSelectedScreen(ScreenItem* currentIndex)
+		{
+			_currentScreen = currentIndex;
+			onDataChanged();
+			selectionChanged.raise(*_currentScreen);
+		}
+
+		ScreensModel()
+			: _currentScreen(nullptr)
+		{
+		}
+
+		~ScreensModel() override = default;
+	private:
+		ScreenItem* _currentScreen;
+	};
 }
+
+
+#endif //APPS_QT_MODELS_SCREENSMODEL_HPP

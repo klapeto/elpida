@@ -38,6 +38,9 @@ set(ELPIDA_QT_SOURCES
 
 		Main.cpp
 
+		Models/Screens/ScreensModel.cpp
+		Models/Screens/ScreenItem.cpp
+
 		Images/Images.qrc
 
 		QCustomApplication.cpp

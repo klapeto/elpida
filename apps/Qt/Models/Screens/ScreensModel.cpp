@@ -21,7 +21,7 @@
 // Created by klapeto on 8/6/20.
 //
 
-#include "Models/Screens/ScreenItem.hpp"
+#include "ScreensModel.hpp"
 
 namespace Elpida
 {

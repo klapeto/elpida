@@ -21,8 +21,6 @@ set(ELPIDA_CORE_SOURCES
         Models/Abstractions/ListModel/ListModelItem.cpp
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
         Models/BenchmarkConfigurationModel.cpp
-        Models/Screens/ScreensModel.cpp
-        Models/Screens/ScreenItem.cpp
         Models/Benchmarks/BenchmarkGroup.cpp
 
         Controllers/BenchmarksController.cpp
