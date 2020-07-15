@@ -29,8 +29,12 @@
 #include "Abstractions/ResultFormatter.hpp"
 
 
+#include "httplib.hpp"
+#ifdef ELPIDA_WINDOWS
+#include <Windows.h>
+#endif
+
 #include <Elpida/Utilities/Logging/Logger.hpp>
-#include <Elpida/Utilities/ValueUtilities.hpp>
 
 namespace Elpida
 {
@@ -42,6 +46,12 @@ namespace Elpida
 
 	void DataUploader::handle(UploadResultCommand& command)
 	{
-
+		httplib::SSLClient cli(apiUrl, 443);
+		auto res = cli.Post("/api/v1/result", _resultFormatter.serialize(command.getBenchmarkResult()),"application/json");
+		if (res) {
+			_mediator.execute(HttpResponseEvent(res->body, res->status));
+		} else {
+			_logger.log(LogType::Error, "Error occurred when handling the http request to Elpida Result server");
+		}
 	}
 }

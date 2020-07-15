@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include "Elpida/Config.hpp"
+#include <Elpida/Config.hpp>
 
 #include "ConfigurationViewsPool.hpp"
 
@@ -30,7 +30,7 @@
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 #include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
-#include "Models/Screens/ScreensModel.hpp"
+#include "UiModels/Screens/ScreensModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
 #include "Views/SystemInfoView/SystemInfoView.hpp"

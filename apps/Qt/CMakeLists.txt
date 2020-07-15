@@ -38,8 +38,8 @@ set(ELPIDA_QT_SOURCES
 
 		Main.cpp
 
-		Models/Screens/ScreensModel.cpp
-		Models/Screens/ScreenItem.cpp
+        UiModels/Screens/ScreensModel.cpp
+        UiModels/Screens/ScreenItem.cpp
 
 		Images/Images.qrc
 
@@ -99,7 +99,7 @@ if (MSVC)
 
 endif()
 
-find_package(Qt5 COMPONENTS Widgets Network REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -112,6 +112,6 @@ endif ()
 add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
 
 target_include_directories(elpida-qt PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(elpida-qt elpidaCore Qt5::Widgets Qt5::Network)
+target_link_libraries(elpida-qt elpida elpidaCore Qt5::Widgets)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION ${ELPIDA_APP_INSTALL_DIR})
