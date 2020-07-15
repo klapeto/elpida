@@ -40,6 +40,11 @@ add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
 include(FindOpenSSL)
 
 target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL)
+
+if(MSYS)
+    target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL ws2_32 Crypt32)
+endif()
+
 target_include_directories(elpidaCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_include_directories(elpida PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
