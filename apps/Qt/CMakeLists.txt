@@ -1,3 +1,7 @@
+project(elpida-qt VERSION 0.0.1
+		DESCRIPTION "Elpida Qt Interface"
+		LANGUAGES CXX C)
+
 set(ELPIDA_QT_SOURCES
 		Views/LogsView/LogsView.cpp
 		Views/MainWindow/MainWindow.cpp
@@ -34,37 +38,13 @@ set(ELPIDA_QT_SOURCES
 
 		Main.cpp
 
+        UiModels/Screens/ScreensModel.cpp
+        UiModels/Screens/ScreenItem.cpp
+
 		Images/Images.qrc
 
-		Core/ElpidaMediator.cpp
-		Core/QModelLogAppender.cpp
-		Core/DataUploader.cpp
-		Core/Abstractions/ResultFormatter.cpp
-		Core/JsonResultFormatter.cpp
-
-		Models/Benchmarks/BenchmarksModel.cpp
-		Models/Abstractions/CollectionModel.cpp
-		Models/Abstractions/CollectionItem.cpp
-		Models/Abstractions/EventArgs/CollectionChangedEventArgs.cpp
-		Models/Abstractions/CollectionModelObserver.cpp
-		Models/BenchmarkResultsModel.cpp
-		Models/BenchmarkRunnerModel.cpp
-		Models/BenchmarkConfigurationsCollectionModel.cpp
-		Models/Abstractions/AssociativeModel/AssociativeModel.cpp
-		Models/Abstractions/ListModel/ListModel.cpp
-		Models/Abstractions/ListModel/ListModelItem.cpp
-		Models/Abstractions/AssociativeModel/AssociativeItem.cpp
-		Models/BenchmarkConfigurationModel.cpp
-		Models/Screens/ScreensModel.cpp
-		Models/Screens/ScreenItem.cpp
-		Models/Benchmarks/BenchmarkGroup.cpp
-
-		Controllers/BenchmarksController.cpp
-		Controllers/BenchmarkRunnerController.cpp
-		Controllers/BenchmarkConfigurationController.cpp
-		Controllers/UploadController.cpp
-
 		QCustomApplication.cpp
+		QModelLogAppender.cpp
 		ConfigurationViewsPool.cpp
 		)
 
@@ -119,7 +99,7 @@ if (MSVC)
 
 endif()
 
-find_package(Qt5 COMPONENTS Widgets Network REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -129,14 +109,9 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif ()
 
-if (ELPIDA_DEBUG_BUILD EQUAL 1)
-	add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
-endif ()
-
-
 add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
 
 target_include_directories(elpida-qt PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(elpida-qt elpida Qt5::Widgets Qt5::Network)
+target_link_libraries(elpida-qt elpida elpidaCore Qt5::Widgets)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION ${ELPIDA_APP_INSTALL_DIR})
