@@ -23,7 +23,7 @@
 
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
-#include "Models/Screens/ScreensModel.hpp"
+#include "UiModels/Screens/ScreensModel.hpp"
 
 #include <QMessageBox>
 

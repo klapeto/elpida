@@ -17,33 +17,17 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#ifndef APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
-#define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+//
+// Created by klapeto on 29/6/20.
+//
 
-#include <QWidget>
-#include "QModelLogAppender.hpp"
+#include "Models/Benchmarks/BenchmarkGroup.hpp"
 
 namespace Elpida
 {
 
-	namespace Ui
+	BenchmarkGroup::BenchmarkGroup(const std::string& name, const std::vector<Benchmark*>& benchmarks)
+		: _name(name), _benchmarks(benchmarks)
 	{
-		class LogsView;
 	}
-
-	class Logger;
-
-	class LogsView final : public QWidget
-	{
-	Q_OBJECT
-
-	public:
-		explicit LogsView(Logger& logger);
-		~LogsView() override;
-	private:
-		QModelLogAppender _logAppender;
-		Ui::LogsView* _ui;
-	};
-
-} // namespace Elpida
-#endif //APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
+}
