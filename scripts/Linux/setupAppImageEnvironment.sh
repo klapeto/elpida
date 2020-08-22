@@ -23,6 +23,8 @@ if [ -f /etc/lsb-release ]; then
     export DEBIAN_FRONTEND=noninteractive
     apt install -y python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev
 
+    pip3 install appimage-builder
+
    # Install appimagetool AppImage
    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /opt/appimagetool
    chmod +x /opt/appimagetool
