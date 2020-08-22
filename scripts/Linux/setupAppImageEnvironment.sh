@@ -23,10 +23,13 @@ if [ -f /etc/lsb-release ]; then
     export DEBIAN_FRONTEND=noninteractive
     apt install -y python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev
 
-    # Install appimagetool AppImage
-    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
-    chmod +x /usr/local/bin/appimagetool
-    pip3 install appimage-builder
+   # Install appimagetool AppImage
+   wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /opt/appimagetool
+   chmod +x /opt/appimagetool
+   cd /opt/
+   /opt/appimagetool --appimage-extract
+   mv /opt/squashfs-root /opt/appimagetool.AppDir
+   ln -s /opt/appimagetool.AppDir/AppRun /usr/local/bin/appimagetool
 else
 	echo This linux distribution is unsupported by this script. You have to manually install these packages: git g++ 4.8+ cmake automake libtool pkg-config qt5
 fi
