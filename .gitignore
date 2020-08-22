@@ -9,3 +9,6 @@
 /build/**
 /out/**
 /cmake-build-debug/**
+/AppDir/**
+/appimage-builder-cache/**
+*.AppImage

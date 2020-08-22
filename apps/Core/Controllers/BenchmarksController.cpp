@@ -33,19 +33,18 @@
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
 #include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 
+#include "Models/GlobalConfigurationModel.hpp"
+
 namespace Elpida
 {
 
 	BenchmarksController::BenchmarksController(ListModel<BenchmarkGroup>& model,
 		AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
+		const GlobalConfigurationModel& globalConfigurationModel,
 		Logger& logger)
-		: _logger(logger), _model(model), _configurationsModel(configurationsModel)
+		: _logger(logger), _model(model), _configurationsModel(configurationsModel), _globalConfigurationModel(globalConfigurationModel)
 	{
-#if ELPIDA_DEBUG_BUILD
-		_benchmarksPath = TASK_BATCH_DEBUG_DIR;
-#else
-		_benchmarksPath = "./Benchmarks";	// TODO: Think of something more portable
-#endif
+
 	}
 
 	BenchmarksController::~BenchmarksController()
@@ -95,11 +94,13 @@ namespace Elpida
 
 	void BenchmarksController::reloadLibraries()
 	{
+		const auto& benchmarksPath = _globalConfigurationModel.getBenchmarksPath();
 		try
 		{
 			_libraryLoader.unloadAll();
-			FileSystem::iterateDirectory(_benchmarksPath, [this](const std::string& path)
+			FileSystem::iterateDirectory(benchmarksPath, [this](const std::string& path)
 			{
+
 				if (hasLibraryExtension(path))
 				{
 					try
@@ -115,7 +116,7 @@ namespace Elpida
 		}
 		catch (const std::exception& ex)
 		{
-			_logger.log(LogType::Error, "Failed to iterate Directory:'" + _benchmarksPath + "'", ex);
+			_logger.log(LogType::Error, "Failed to iterate Directory:'" + benchmarksPath + "'", ex);
 		}
 	}
 

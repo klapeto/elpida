@@ -27,13 +27,9 @@ set(ELPIDA_CORE_SOURCES
         Controllers/BenchmarkRunnerController.cpp
         Controllers/BenchmarkConfigurationController.cpp
         Controllers/UploadController.cpp
-        )
+        Models/GlobalConfigurationModel.cpp)
 
 add_library(elpidaCore ${ELPIDA_CORE_SOURCES})
-
-if (ELPIDA_DEBUG_BUILD EQUAL 1)
-    add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
-endif()
 
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
 
