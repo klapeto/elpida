@@ -27,7 +27,7 @@ set(ELPIDA_CORE_SOURCES
         Controllers/BenchmarkRunnerController.cpp
         Controllers/BenchmarkConfigurationController.cpp
         Controllers/UploadController.cpp
-        Models/GlobalConfigurationModel.cpp Models/GlobalConfigurationModel.hpp)
+        Models/GlobalConfigurationModel.cpp)
 
 add_library(elpidaCore ${ELPIDA_CORE_SOURCES})
 
