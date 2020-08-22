@@ -9,6 +9,7 @@ build:
     - ./downloadPackages.sh
     - git submodule update --init
     - ./rebuildElpida.sh
+    - ./setupAppImageEnvironment.sh
     - ./createAppImage.sh
   artifacts:
     paths:
