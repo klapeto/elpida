@@ -34,6 +34,7 @@ namespace Elpida
 {
 	class Logger;
 	class BenchmarkConfiguration;
+	class GlobalConfigurationModel;
 
 	template<typename T>
 	class BenchmarksContainerPlugin;
@@ -47,15 +48,16 @@ namespace Elpida
 
 		explicit BenchmarksController(ListModel<BenchmarkGroup>& model,
 			AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
+			const GlobalConfigurationModel& globalConfigurationModel,
 			Logger& logger);
 		virtual ~BenchmarksController();
 	private:
 		std::vector<BenchmarksContainerPlugin<Benchmark>*> _createdPlugins;
 		SharedLibraryLoader _libraryLoader;
-		std::string _benchmarksPath;
 		Logger& _logger;
 		ListModel<BenchmarkGroup>& _model;
 		AssociativeModel<std::string, BenchmarkConfiguration>& _configurationsModel;
+		const GlobalConfigurationModel& _globalConfigurationModel;
 
 		void reloadLibraries();
 	};

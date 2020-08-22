@@ -30,6 +30,7 @@
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 #include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
+#include "Models/GlobalConfigurationModel.hpp"
 #include "UiModels/Screens/ScreensModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
@@ -54,16 +55,24 @@
 #include <QtWidgets/QVBoxLayout>
 #include "QCustomApplication.hpp"
 
+#include <getopt.h>
+#include <iostream>
+
+#define NON_EXIT_CODE -1
+
 using namespace Elpida;
 
 void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWidget);
-
+void loadGlobalConfiguration(GlobalConfigurationModel& configurationModel);
+int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configurationModel, int argC, char** argV);
 void initializeTaskTab(ScreensModel& screensModel,
 	BenchmarkListView& taskBatchesListWidget,
 	BenchmarkResultsView& taskResultsWidget,
 	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
 	BenchmarkRunnerControlsView& taskBatchRunnerControlsView,
 	BenchmarkConfigurationView& benchmarkConfigurationView);
+void printHelp();
+void printVersion();
 
 #ifdef ELPIDA_LINUX
 #include <execinfo.h>
@@ -95,10 +104,20 @@ static void setupPlatformSpecifics()
 
 int main(int argc, char* argv[])
 {
+	setupPlatformSpecifics();
+
+	GlobalConfigurationModel globalConfigurationModel;
+
+	loadGlobalConfiguration(globalConfigurationModel);
+
+	auto exitCode = processArgumentsAndCheckIfWeMustExit(globalConfigurationModel, argc, argv);
+	if (exitCode != NON_EXIT_CODE)
+	{
+		return exitCode;
+	}
+
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-
-	setupPlatformSpecifics();
 
 	ElpidaMediator mediator;
 	Logger logger;
@@ -121,13 +140,13 @@ int main(int argc, char* argv[])
 
 	initializeTopologyTab(screensModel, topologyView);
 
-
 	BenchmarksModel taskBatchesModel;
 	BenchmarkRunnerModel taskRunnerModel;
 	BenchmarkResultsModel taskRunResultsModel;
 	BenchmarkConfigurationModel benchmarkConfigurationModel;
 	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
-	BenchmarksController benchmarksController(taskBatchesModel, benchmarkConfigurationsModel, logger);
+	BenchmarksController
+		benchmarksController(taskBatchesModel, benchmarkConfigurationsModel, globalConfigurationModel, logger);
 	benchmarksController.reload();
 	BenchmarkRunnerController
 		runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel, logger);
@@ -211,4 +230,81 @@ void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWid
 	topologyWidget.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
 	screensModel.add(ScreenItem("System Topology", *container));
+}
+
+void loadGlobalConfiguration(GlobalConfigurationModel& configurationModel)
+{
+	configurationModel.transactional<GlobalConfigurationModel>([](GlobalConfigurationModel& configurationModel)
+	{
+#if ELPIDA_DEBUG_BUILD
+		configurationModel.setBenchmarksPath(TASK_BATCH_DEBUG_DIR);
+#else
+		configurationModel.setBenchmarksPath("./Benchmarks");
+#endif
+	});
+}
+
+int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configurationModel, int argC, char* argV[])
+{
+	enum Opts
+	{
+		Arg_Version,
+		Arg_Help,
+		Arg_BenchmarkPath,
+	};
+	struct option options[] = {
+		{ "version", no_argument, nullptr, 'v' },
+		{ "help", no_argument, nullptr, 'h' },
+		{ "benchmarksPath", required_argument, nullptr, 'p' },
+		{ nullptr, 0, nullptr, 0 }
+	};
+
+	int option_index = 0;
+	int c = 0;
+	while ((c = getopt_long(argC, argV, "v:h:p:", options, &option_index)) != -1)
+	{
+		switch (c)
+		{
+		case 'v':
+			printVersion();
+			return EXIT_SUCCESS;
+		case 'h':
+			printHelp();
+			return EXIT_SUCCESS;
+		case 'p':
+			if (optarg != nullptr)
+			{
+				configurationModel.setBenchmarksPath(optarg);
+			}
+			else
+			{
+				std::cerr << "--benchmarksPath requires a path eg: --benchmarksPath=./Benchmarks";
+				return EXIT_FAILURE;
+			}
+			break;
+		case '?':
+			return EXIT_FAILURE;
+		default:
+			break;
+		}
+	}
+	return NON_EXIT_CODE;
+}
+
+void printVersion()
+{
+	std::cout << "Elpida Qt: " << ELPIDA_VERSION << std::endl;
+	std::cout << "Compiler: " << ELPIDA_COMPILER_NAME << " Version: " << ELPIDA_COMPILER_VERSION << std::endl;
+}
+
+void printHelp()
+{
+	std::cout << "Elpida Qt: " << ELPIDA_VERSION << std::endl;
+	std::cout << "Usage: " << std::endl;
+	std::cout << "       -v, --version" << std::endl;
+	std::cout << "           Prints the version and exits" << std::endl;
+	std::cout << "       -h, --help" << std::endl;
+	std::cout << "           Prints this help and exits" << std::endl;
+	std::cout << "       -p=DIRECTORY, --benchmarksPath=DIRECTORY" << std::endl;
+	std::cout << "           Overrides the directory to load the Benchmarks from" << std::endl;
 }

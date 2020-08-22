@@ -9,8 +9,8 @@ build:
     - ./downloadPackages.sh
     - git submodule update --init
     - ./rebuildElpida.sh
-    - ls -alh apps/Qt/
+    - ./createAppImage.sh
   artifacts:
     paths:
-      - apps/Qt/
+      - Elpida-latest-x86_64.AppImage
     expire_in: 2 days

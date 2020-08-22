@@ -99,6 +99,10 @@ if (MSVC)
 
 endif()
 
+if (ELPIDA_DEBUG_BUILD EQUAL 1)
+	add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
+endif()
+
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
