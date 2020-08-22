@@ -2,7 +2,7 @@
 #-------------------------------------------------------------------------------
 # Elpida - Benchmark library
 #
-# Copyright (C) 2018  Ioannis Panagiotopoulos
+# Copyright (C) 2020  Ioannis Panagiotopoulos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,14 +18,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
-
 if [ -f /etc/lsb-release ]; then
     #Debian
     export DEBIAN_FRONTEND=noninteractive
-    apt install -y git g++ cmake libgtest-dev libnuma-dev automake libtool pkg-config qtbase5-dev
-elif [ -f /etc/redhat-release ]; then
-    # Fedora
-    dnf install -y git gcc-c++ cmake libnuma-devel automake libtool pkg-config qtbase5-devel
+    apt install -y python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev
+
+    # Install appimagetool AppImage
+    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
+    chmod +x /usr/local/bin/appimagetool
+    pip3 install appimage-builder
 else
 	echo This linux distribution is unsupported by this script. You have to manually install these packages: git g++ 4.8+ cmake automake libtool pkg-config qt5
 fi
