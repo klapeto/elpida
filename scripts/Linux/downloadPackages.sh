@@ -22,10 +22,10 @@
 if [ -f /etc/lsb-release ]; then
     #Debian
     export DEBIAN_FRONTEND=noninteractive
-    apt install -y git g++ cmake libgtest-dev libnuma-dev automake libtool pkg-config qtbase5-dev libssl-dev wget
+    apt-get install -y git g++ cmake libnuma-dev pkg-config qtbase5-dev libssl-dev wget
 elif [ -f /etc/redhat-release ]; then
     # Fedora
-    dnf install -y git gcc-c++ cmake libnuma-devel automake libtool pkg-config qtbase5-devel libssl-devel wget
+    dnf install -y git gcc-c++ cmake libnuma-devel pkg-config qtbase5-devel libssl-devel wget
 else
 	echo This linux distribution is unsupported by this script. You have to manually install these packages: git g++ 4.8+ cmake automake libtool pkg-config qt5 libssl
 fi

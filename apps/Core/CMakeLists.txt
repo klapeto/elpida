@@ -38,7 +38,7 @@ include(FindOpenSSL)
 target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL)
 
 if(MSYS)
-    target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL ws2_32 Crypt32)
+    target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL ws2_32 crypt32)
 endif()
 
 target_include_directories(elpidaCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

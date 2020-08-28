@@ -95,6 +95,7 @@ AppDir:
     - libxxf86vm1
     - plasma-integration
     - qt5-image-formats-plugins
+    - libhwloc-dev
     exclude: []
   files:
     exclude:

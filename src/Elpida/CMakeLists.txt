@@ -87,6 +87,10 @@ if (UNIX)
     target_link_libraries(elpida numa dl ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
+include(FindHWLOC)
+
+find_package(HWLOC REQUIRED)
+
 target_link_libraries(elpida hwloc)
 
 target_include_directories(elpida PUBLIC "${ELPIDA_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
@@ -94,4 +98,6 @@ target_include_directories(elpida PUBLIC "${ELPIDA_INCLUDE_DIR}" "${CMAKE_CURREN
 install(DIRECTORY ${ELPIDA_INCLUDE_DIR}/Elpida DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h*")
 install(TARGETS elpida
         PUBLIC_HEADER DESTINATION ${ELPIDA_HEADER_INSTALL_DIR}
-        LIBRARY DESTINATION ${ELPIDA_LIB_INSTALL_DIR})
+        LIBRARY DESTINATION ${ELPIDA_LIB_INSTALL_DIR}
+        ARCHIVE DESTINATION ${ELPIDA_LIB_INSTALL_DIR}
+        )

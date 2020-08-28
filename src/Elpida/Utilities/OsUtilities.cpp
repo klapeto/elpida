@@ -27,7 +27,7 @@
 #include "Elpida/ElpidaException.hpp"
 
 #ifdef ELPIDA_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #include <strsafe.h>
 #else
 #include <sys/utsname.h>

@@ -56,7 +56,7 @@ namespace Elpida
 	{
 		if (!path.empty())
 		{
-			auto& ext = SharedLibraryLoader::LibrariesExtension;
+			auto ext = std::string(SharedLibraryLoader::LibrariesExtension);
 			if (!ext.empty())
 			{
 				const auto pSize = path.size();

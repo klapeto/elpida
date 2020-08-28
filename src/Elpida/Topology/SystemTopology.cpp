@@ -28,12 +28,12 @@
 
 #include "Elpida/Config.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "hwloc.h"
+#include <hwloc.h>
 
 #ifdef ELPIDA_LINUX
 #include <sys/resource.h>
 #else
-#include <Windows.h>
+#include <windows.h>
 #include <iostream>
 #endif
 

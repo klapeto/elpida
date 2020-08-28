@@ -1,17 +1,46 @@
-image: ubuntu
+stages:
+  - build-containers
+  - build
 
-build:
+include:
+  - local: 'ci/docker-image-linux.yml'
+ # - local: 'ci/docker-image-windows.yml' # Do not run this because it takes a lot of time. Run and upload manually
+
+build:linux:
+  image: $CI_REGISTRY_IMAGE/build-environment/linux
   stage: build
   script:
-    - apt update
-    - cp scripts/Linux/* .
-    - chmod u+x ./*.sh
-    - ./downloadPackages.sh
     - git submodule update --init
-    - ./rebuildElpida.sh
-    - ./setupAppImageEnvironment.sh
-    - ./createAppImage.sh
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./AppDir
+    - make -C build install
+    - mkdir -p ./AppDir/usr/share/icons/default/apps/32/
+    - cp -u ./images/Elpida-icon.svg ./AppDir/usr/share/icons/default/apps/32/elpida.svg
+    - appimage-builder --skip-tests
   artifacts:
     paths:
       - Elpida-latest-x86_64.AppImage
     expire_in: 2 days
+
+build:windows:
+  image: $CI_REGISTRY_IMAGE/build-environment/windows
+  stage: build
+  script:
+    - git submodule update --init
+    - x86_64-w64-mingw32.shared-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install
+    - make -C build install
+    - mkdir AppDir
+    - /mxe/tools/copydlldeps.sh -c -f ./install/bin/elpida-qt.exe -S "/mxe/usr/x86_64-w64-mingw32.shared/bin/ /mxe/usr/x86_64-w64-mingw32.shared/qt5/bin/" -R "./install ./build" -d ./AppDir
+    - make -C build install -j$(nproc)
+    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/iconengines ./AppDir
+    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/imageformats ./AppDir
+    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/platforms ./AppDir
+    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/platformthemes ./AppDir
+    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/styles ./AppDir
+    - cp /mxe/usr/x86_64-w64-mingw32.shared/qt5/bin/Qt5Svg.dll ./AppDir
+    - mkdir ./AppDir/Benchmarks
+    - find ./build/src/Benchmarks -type f -name '*.dll' -exec cp "{}" ./AppDir/Benchmarks \;
+    - cp ./install/bin/elpida-qt.exe ./AppDir
+    - tar -C ./AppDir -cvf Elpida-latest-x86_64.tar .
+  artifacts:
+    paths:
+      - Elpida-latest-x86_64.tar

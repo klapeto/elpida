@@ -34,7 +34,7 @@
 #ifdef ELPIDA_LINUX
 #include <sched.h>
 #else
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 namespace Elpida
