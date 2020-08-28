@@ -1,0 +1,17 @@
+build-docker-image:windows:
+  image: docker:latest
+  stage: build-containers
+  timeout: 8h 30m
+  variables:
+    IMAGE_NAME: "$CI_REGISTRY_IMAGE/build-environment/windows:latest"
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker build --pull -t $IMAGE_NAME docker/build-environment/windows/
+    - docker push $IMAGE_NAME
+  only:
+    changes:
+      - docker/windows/Dockerfile
+      - ci/docker-image-windows.yml

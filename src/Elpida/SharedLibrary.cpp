@@ -33,7 +33,7 @@
 #include <dirent.h>
 #include <dlfcn.h>
 #else
-#include <Windows.h>
+#include <windows.h>
 #include <strsafe.h>
 #include <string>
 #include "Elpida/Utilities/OsUtilities.hpp"
