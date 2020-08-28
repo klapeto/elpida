@@ -26,7 +26,7 @@
 #ifdef ELPIDA_LINUX
 #include <fstream>
 #else
-#include <Windows.h>
+#include <windows.h>
 #include <sstream>
 #include <iomanip>
 #endif

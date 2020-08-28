@@ -4,6 +4,3 @@
 [submodule "extern/libpng"]
 	path = extern/libpng
 	url = https://github.com/glennrp/libpng.git
-[submodule "extern/hwloc"]
-	path = extern/hwloc
-	url = https://github.com/open-mpi/hwloc.git

@@ -39,7 +39,7 @@ namespace Elpida
 	class SharedLibraryLoader final
 	{
 	public:
-		static inline std::string LibrariesExtension{ELPIDA_SHARED_LIBRARY_EXTENSION};
+		static inline constexpr const char* LibrariesExtension{ELPIDA_SHARED_LIBRARY_EXTENSION};
 
 		const std::unordered_map<std::string, SharedLibrary>& getLoadedLibraries() const
 		{

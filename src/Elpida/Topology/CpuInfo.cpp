@@ -50,7 +50,7 @@
 static void cpuid(unsigned func, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
 #ifdef _MSC_VER
 	int regs[4] = { -1 };
-	__cpuidex(regs, func, *exc);
+	__cpuidex(regs, func, *ecx);
 	*eax = regs[0];
 	*ebx = regs[1];
 	*ecx = regs[2];
