@@ -40,7 +40,11 @@ build:windows:
     - mkdir ./AppDir/Benchmarks
     - find ./build/src/Benchmarks -type f -name '*.dll' -exec cp "{}" ./AppDir/Benchmarks \;
     - cp ./install/bin/elpida-qt.exe ./AppDir
-    - tar -C ./AppDir -cvf Elpida-latest-x86_64.tar .
+    - cd ./AppDir
+    - zip z -r .
+    - cp ./z.zip ../Elpida-latest-x86_64.zip
+    - cd ..
   artifacts:
     paths:
-      - Elpida-latest-x86_64.tar
+      - Elpida-latest-x86_64.zip
+    expire_in: 2 days
