@@ -11,6 +11,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         libnuma-dev \
         pkg-config \
         qtbase5-dev \
+        libqt5svg5 \
+        libqt5x11extras5 \
+        qt5-image-formats-plugins \
         libssl-dev \
         wget \
         libhwloc-dev \
