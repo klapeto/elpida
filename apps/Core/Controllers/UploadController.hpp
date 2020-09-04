@@ -32,6 +32,7 @@ namespace Elpida
 	class BenchmarkResultsModel;
 	class Logger;
 	class BenchmarkResult;
+	class GlobalConfigurationModel;
 
 	class UploadController final : public CommandHandler
 	{
@@ -40,11 +41,13 @@ namespace Elpida
 
 		UploadController(Mediator& mediator,
 			const BenchmarkResultsModel& benchmarkResultsModel,
+			const GlobalConfigurationModel& globalConfigurationModel,
 			Logger& logger);
 		~UploadController() override = default;
 	private:
 		Mediator& _mediator;
 		const BenchmarkResultsModel& _benchmarkResultsModel;
+		const GlobalConfigurationModel& _globalConfigurationModel;
 		Logger& _logger;
 
 		void onResultAdded(const BenchmarkResult& result);

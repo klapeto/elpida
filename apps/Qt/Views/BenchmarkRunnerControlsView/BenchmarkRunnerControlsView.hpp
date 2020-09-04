@@ -32,6 +32,7 @@ namespace Elpida
 
 	class BenchmarkRunnerModel;
 	class EventSubscriptionBase;
+	class GlobalConfigurationModel;
 	class Mediator;
 
 	class BenchmarkRunnerControlsView : public QWidget
@@ -39,21 +40,25 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		explicit BenchmarkRunnerControlsView(Mediator& mediator, const BenchmarkRunnerModel& model);
+		explicit BenchmarkRunnerControlsView(Mediator& mediator, const BenchmarkRunnerModel& model, GlobalConfigurationModel& globalConfigurationModel);
 		~BenchmarkRunnerControlsView() override;
 	private:
 		Ui::BenchmarkRunnerControlsView* _ui;
 		const BenchmarkRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
+		EventSubscriptionBase* _configurationChangedEventSubscription;
+		GlobalConfigurationModel& _globalConfigurationModel;
 		Mediator& _mediator;
 		bool _running;
 	signals:
 		void onDataChanged();
-
+		void onConfigurationChanged();
 	private slots:
 		void updateUi();
 		void startClicked(bool checked);
 		void stopClicked(bool checked);
+		void onUploadStateChanged(int state);
+		void updateUploadCheckboxState() const;
 	};
 
 } // namespace Elpida
