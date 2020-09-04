@@ -24,6 +24,7 @@
 #include "UploadController.hpp"
 
 #include "Models/BenchmarkResultsModel.hpp"
+#include "Models/GlobalConfigurationModel.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/UploadResultCommand.hpp"
 #include "Core/Commands/HttpResponseEvent.hpp"
@@ -34,8 +35,10 @@ namespace Elpida
 {
 	UploadController::UploadController(Mediator& mediator,
 		const BenchmarkResultsModel& benchmarkResultsModel,
+		const GlobalConfigurationModel& globalConfigurationModel,
 		Logger& logger)
-		: _mediator(mediator), _benchmarkResultsModel(benchmarkResultsModel), _logger(logger)
+		: _mediator(mediator), _benchmarkResultsModel(benchmarkResultsModel),
+		  _globalConfigurationModel(globalConfigurationModel), _logger(logger)
 	{
 		_benchmarkResultsModel.itemAdded.subscribe([this](const CollectionChangedEventArgs<BenchmarkResult>& item)
 		{
@@ -58,6 +61,9 @@ namespace Elpida
 
 	void UploadController::onResultAdded(const BenchmarkResult& result)
 	{
-		_mediator.execute(UploadResultCommand(result));
+		if (_globalConfigurationModel.isUploadResults())
+		{
+			_mediator.execute(UploadResultCommand(result));
+		}
 	}
 }

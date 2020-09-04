@@ -44,10 +44,21 @@ namespace Elpida
 			onDataChanged();
 		}
 
+		bool isUploadResults() const
+		{
+			return _uploadResults;
+		}
+
+		void setUploadResults(bool uploadResults)
+		{
+			_uploadResults = uploadResults;
+		}
+
 		GlobalConfigurationModel() = default;
 		~GlobalConfigurationModel() override = default;
 	private:
 		std::string _benchmarksPath;
+		bool _uploadResults = true;
 	};
 }
 

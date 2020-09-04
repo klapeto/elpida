@@ -21,6 +21,7 @@
 #include "ui_BenchmarkRunnerControlsView.h"
 
 #include "Models/BenchmarkRunnerModel.hpp"
+#include "Models/GlobalConfigurationModel.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/StartBenchmarkingCommand.hpp"
 #include "Core/Commands/StopBenchmarkingCommand.hpp"
@@ -28,8 +29,11 @@
 namespace Elpida
 {
 
-	BenchmarkRunnerControlsView::BenchmarkRunnerControlsView(Mediator& mediator, const BenchmarkRunnerModel& model)
-		: QWidget(), _ui(new Ui::BenchmarkRunnerControlsView), _model(model), _mediator(mediator), _running(false)
+	BenchmarkRunnerControlsView::BenchmarkRunnerControlsView(Mediator& mediator,
+		const BenchmarkRunnerModel& model,
+		GlobalConfigurationModel& globalConfigurationModel)
+		: QWidget(), _ui(new Ui::BenchmarkRunnerControlsView), _model(model),
+		  _globalConfigurationModel(globalConfigurationModel), _mediator(mediator), _running(false)
 	{
 		_ui->setupUi(this);
 
@@ -38,17 +42,36 @@ namespace Elpida
 			&BenchmarkRunnerControlsView::onDataChanged,
 			this,
 			&BenchmarkRunnerControlsView::updateUi);
+
+		QWidget::connect(this,
+			&BenchmarkRunnerControlsView::onConfigurationChanged,
+			this,
+			&BenchmarkRunnerControlsView::updateUi);
+
 		_dataChangedEventSubscription = &_model.dataChanged.subscribe([this]
 		{
 			emit onDataChanged();
 		});
+
+		_configurationChangedEventSubscription = &_globalConfigurationModel.dataChanged.subscribe([this]
+		{
+			emit onConfigurationChanged();
+		});
+
 		QWidget::connect(_ui->pbRun, &QPushButton::clicked, this, &BenchmarkRunnerControlsView::startClicked);
 		QWidget::connect(_ui->pbStop, &QPushButton::clicked, this, &BenchmarkRunnerControlsView::stopClicked);
+		QWidget::connect(_ui->chkUploadResults,
+			&QCheckBox::stateChanged,
+			this,
+			&BenchmarkRunnerControlsView::onUploadStateChanged);
+
+		updateUploadCheckboxState();
 	}
 
 	BenchmarkRunnerControlsView::~BenchmarkRunnerControlsView()
 	{
 		_dataChangedEventSubscription->unsubscribe();
+		_configurationChangedEventSubscription->unsubscribe();
 		delete _ui;
 	}
 
@@ -66,7 +89,22 @@ namespace Elpida
 			_ui->pbStop->setEnabled(false);
 			_running = false;
 		}
+
+		updateUploadCheckboxState();
 	}
+
+	void BenchmarkRunnerControlsView::updateUploadCheckboxState() const
+	{
+		if (_globalConfigurationModel.isUploadResults())
+		{
+			_ui->chkUploadResults->setCheckState(Qt::Checked);
+		}
+		else
+		{
+			_ui->chkUploadResults->setCheckState(Qt::Unchecked);
+		}
+	}
+
 	void BenchmarkRunnerControlsView::startClicked(bool checked)
 	{
 		_mediator.execute(StartBenchmarkingCommand());
@@ -75,6 +113,11 @@ namespace Elpida
 	void BenchmarkRunnerControlsView::stopClicked(bool checked)
 	{
 		_mediator.execute(StopBenchmarkingCommand());
+	}
+
+	void BenchmarkRunnerControlsView::onUploadStateChanged(int state)
+	{
+		_globalConfigurationModel.setUploadResults(state == 2);
 	}
 
 } // namespace Elpida

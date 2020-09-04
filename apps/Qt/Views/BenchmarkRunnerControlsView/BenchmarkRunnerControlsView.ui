@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Elpida::BenchmarkRunnerControlsView</class>
  <widget class="QWidget" name="Elpida::BenchmarkRunnerControlsView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>551</width>
+    <height>46</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -35,6 +43,13 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="chkUploadResults">
+     <property name="text">
+      <string>Upload results anonymously to official Elpida website</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

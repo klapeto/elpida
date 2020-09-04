@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
 	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
-	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel);
+	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel, globalConfigurationModel);
 	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationModel, configurationViewsPool);
 	BenchmarkConfigurationController
 		benchmarkConfigurationController(benchmarkConfigurationsModel, benchmarkConfigurationModel);
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
 	OsInfo opInfo = OsUtilities::getOsInfo();
 	MemoryInfo memoryInfo;
 
-	UploadController uploadController(mediator, taskRunResultsModel, logger);
+	UploadController uploadController(mediator, taskRunResultsModel, globalConfigurationModel, logger);
 	mediator.registerCommandHandler(uploadController);
 
 	JsonResultFormatter formatter(topology, cpuInfo, opInfo, memoryInfo);
