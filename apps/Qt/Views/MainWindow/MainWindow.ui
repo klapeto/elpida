@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../../Images/Images.qrc">
-    <normaloff>:/Elpida-icon-transp.svg</normaloff>:/Elpida-icon-transp.svg</iconset>
+    <normaloff>:/Elpida-icon-minimal-circle-bg.svg</normaloff>:/Elpida-icon-minimal-circle-bg.svg</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">/*============ QWidget ============*/

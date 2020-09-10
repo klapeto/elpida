@@ -14,7 +14,7 @@ build:linux:
     - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./AppDir
     - make -C build install
     - mkdir -p ./AppDir/usr/share/icons/default/apps/32/
-    - cp -u ./images/Elpida-icon.svg ./AppDir/usr/share/icons/default/apps/32/elpida.svg
+    - cp -u ./images/Elpida-icon-minimal-circle-bg.svg ./AppDir/usr/share/icons/default/apps/32/elpida.svg
     - appimage-builder --skip-tests
   artifacts:
     paths:

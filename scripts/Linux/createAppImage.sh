@@ -19,6 +19,6 @@
 #-------------------------------------------------------------------------------
 
 mkdir -p ./AppDir/usr/share/icons/default/apps/32/
-cp -u ./images/Elpida-icon.svg ./AppDir/usr/share/icons/default/apps/32/elpida.svg
+cp -u ./images/Elpida-icon-minimal-circle-bg.svg ./AppDir/usr/share/icons/default/apps/32/elpida.svg
 appimage-builder --skip-tests
 
