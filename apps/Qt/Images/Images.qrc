@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>Elpida.svg</file>
         <file>Elpida-icon-transp.svg</file>
+        <file>Elpida-icon-minimal-circle-bg.svg</file>
         <file>PlayButton.svg</file>
         <file>Wrench.svg</file>
     </qresource>
