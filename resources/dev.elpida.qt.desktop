@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=Elpida
+Comment=Benchmarking framework
+Categories=Utility;Qt;
+
+Icon=elpida
+Exec=elpida-qt
+Terminal=false
