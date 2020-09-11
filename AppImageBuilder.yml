@@ -2,7 +2,7 @@ version: 1
 AppDir:
   path: ./AppDir
   app_info:
-    id: dev.elpida
+    id: dev.elpida.qt
     name: Elpida
     icon: 'elpida'
     version: latest

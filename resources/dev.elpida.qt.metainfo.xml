@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>dev.elpida.qt</id>
+
+    <name>Elpida</name>
+    <summary>CPU/Algorithm benchmarking framework</summary>
+
+    <metadata_license>FSFAP</metadata_license>
+    <project_license>GPL-3.0-or-later</project_license>
+
+    <description>
+        <p>
+            Elpida is an Open Source (GPLv3) Benchmarking framework for measuring performance of computer hardware or
+            algorithms. It&apos;s goal is to be as transparent and open as possible as well as extensible by the
+            community. It comes with a library (libelpida), a Qt application and a set of predefined benchmarks for
+            measuring computer hardware capabilities.
+        </p>
+    </description>
+
+    <launchable type="desktop-id">dev.elpida.qt.desktop</launchable>
+    <!--  <screenshots>-->
+    <!--    <screenshot type="default">-->
+    <!--      <image>https://beta.elpida.dev/assets/icons/Elpida-icon-128x128.png</image>-->
+    <!--    </screenshot>-->
+    <!--  </screenshots>-->
+</component>

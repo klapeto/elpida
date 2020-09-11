@@ -20,5 +20,8 @@
 
 mkdir -p ./AppDir/usr/share/icons/default/apps/32/
 cp -u ./images/Elpida-icon-minimal-circle-bg.svg ./AppDir/usr/share/icons/default/apps/32/elpida.svg
+mkdir -p ./AppDir/usr/share/metainfo/
+cp -u ./resources/dev.elpida.qt.metainfo.xml ./AppDir/usr/share/metainfo/dev.elpida.qt.metainfo.xml
+cp -u ./resources/dev.elpida.qt.metainfo.xml ./AppDir/usr/share/metainfo/dev.elpida.qt.appdata.xml
 appimage-builder --skip-tests
 
