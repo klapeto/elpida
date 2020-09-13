@@ -37,6 +37,10 @@ include(FindOpenSSL)
 
 target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL)
 
+if (ELPIDA_WEB_API_KEY)
+    add_definitions(-DELPIDA_WEB_API_KEY="${ELPIDA_WEB_API_KEY}")
+endif()
+
 if(MSYS)
     target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL ws2_32 crypt32)
 endif()
