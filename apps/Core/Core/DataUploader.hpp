@@ -31,6 +31,8 @@
 #define ELPIDA_WEB_API_KEY "Test API Key"
 #endif
 
+//#define ELPIDA_DEBUG_SERVER
+
 namespace Elpida
 {
 	class Mediator;

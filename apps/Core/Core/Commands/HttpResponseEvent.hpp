@@ -27,6 +27,7 @@
 #include "Core/Abstractions/TypedCommand.hpp"
 #include <string>
 #include <utility>
+#include <unordered_map>
 
 namespace Elpida
 {
@@ -44,13 +45,21 @@ namespace Elpida
 			return _response;
 		}
 
-		explicit HttpResponseEvent(std::string response, int responseCode)
-			: _response(std::move(response)), _responseCode(responseCode)
+		const std::unordered_map<std::string, std::string>& getResponseHeaders() const
+		{
+			return _responseHeaders;
+		}
+
+		explicit HttpResponseEvent(std::string response,
+			int responseCode,
+			std::unordered_map<std::string, std::string> responseHeaders)
+			: _response(std::move(response)), _responseHeaders(std::move(responseHeaders)), _responseCode(responseCode)
 		{
 		}
 		~HttpResponseEvent() override = default;
 	private:
 		std::string _response;
+		std::unordered_map<std::string, std::string> _responseHeaders;
 		int _responseCode;
 	};
 }

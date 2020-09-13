@@ -52,6 +52,18 @@ namespace Elpida
 		void setUploadResults(bool uploadResults)
 		{
 			_uploadResults = uploadResults;
+			onDataChanged();
+		}
+
+		bool isOpenResultsWebPage() const
+		{
+			return _openResultsWebPage;
+		}
+
+		void setOpenResultsWebPage(bool openResultsWebPage)
+		{
+			_openResultsWebPage = openResultsWebPage;
+			onDataChanged();
 		}
 
 		GlobalConfigurationModel() = default;
@@ -59,6 +71,7 @@ namespace Elpida
 	private:
 		std::string _benchmarksPath;
 		bool _uploadResults = true;
+		bool _openResultsWebPage = false;
 	};
 }
 

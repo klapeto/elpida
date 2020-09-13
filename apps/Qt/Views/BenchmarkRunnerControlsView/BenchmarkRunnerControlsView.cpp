@@ -64,8 +64,12 @@ namespace Elpida
 			&QCheckBox::stateChanged,
 			this,
 			&BenchmarkRunnerControlsView::onUploadStateChanged);
+		QWidget::connect(_ui->chkOpenWebPage,
+			&QCheckBox::stateChanged,
+			this,
+			&BenchmarkRunnerControlsView::onOpenWebPageStateChanged);
 
-		updateUploadCheckboxState();
+		updateCheckboxes();
 	}
 
 	BenchmarkRunnerControlsView::~BenchmarkRunnerControlsView()
@@ -90,18 +94,22 @@ namespace Elpida
 			_running = false;
 		}
 
-		updateUploadCheckboxState();
+		updateCheckboxes();
 	}
 
-	void BenchmarkRunnerControlsView::updateUploadCheckboxState() const
+	void BenchmarkRunnerControlsView::updateCheckboxes() const
 	{
 		if (_globalConfigurationModel.isUploadResults())
 		{
 			_ui->chkUploadResults->setCheckState(Qt::Checked);
+			_ui->chkOpenWebPage->setEnabled(true);
+			_ui->chkOpenWebPage
+				->setCheckState(_globalConfigurationModel.isOpenResultsWebPage() ? Qt::Checked : Qt::Unchecked);
 		}
 		else
 		{
 			_ui->chkUploadResults->setCheckState(Qt::Unchecked);
+			_ui->chkOpenWebPage->setEnabled(false);
 		}
 	}
 
@@ -118,6 +126,12 @@ namespace Elpida
 	void BenchmarkRunnerControlsView::onUploadStateChanged(int state)
 	{
 		_globalConfigurationModel.setUploadResults(state == 2);
+		_ui->chkOpenWebPage->setEnabled(state == 2);
+	}
+
+	void BenchmarkRunnerControlsView::onOpenWebPageStateChanged(int state)
+	{
+		_globalConfigurationModel.setOpenResultsWebPage(state == 2);
 	}
 
 } // namespace Elpida
