@@ -27,6 +27,10 @@
 #include <Elpida/Engine/Result/BenchmarkResult.hpp>
 #include "Abstractions/CommandHandler.hpp"
 
+#ifndef ELPIDA_WEB_API_KEY
+#define ELPIDA_WEB_API_KEY "Test API Key"
+#endif
+
 namespace Elpida
 {
 	class Mediator;
@@ -45,7 +49,17 @@ namespace Elpida
 		const ResultFormatter& _resultFormatter;
 		Logger& _logger;
 
+#ifdef ELPIDA_DEBUG_SERVER
+		const int apiPort = 5000;
+		static inline const char* apiUrl = "localhost";
+#else
+		const int apiPort = 443;
 		static inline const char* apiUrl = "api.elpida.dev";
+#endif
+		static inline const char* resultPath = "/api/v1/result";
+		static inline const char* contentType = "application/json";
+		static inline const char* apiKey = ELPIDA_WEB_API_KEY;
+		static inline const char* apiKeyHeader = "api_key";
 	};
 }
 

@@ -11,7 +11,7 @@ build:linux:
   stage: build
   script:
     - git submodule update --init
-    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./AppDir
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./AppDir -DELPIDA_WEB_API_KEY="$ELPIDA_WEB_API_KEY"
     - make -C build install
     - mkdir -p ./AppDir/usr/share/icons/default/apps/32/
     - mkdir -p ./AppDir/usr/share/metainfo/
@@ -31,7 +31,7 @@ build:windows:
   stage: build
   script:
     - git submodule update --init
-    - x86_64-w64-mingw32.shared-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install
+    - x86_64-w64-mingw32.shared-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install -DELPIDA_WEB_API_KEY="$ELPIDA_WEB_API_KEY"
     - make -C build install
     - mkdir AppDir
     - /mxe/tools/copydlldeps.sh -c -f ./install/bin/elpida-qt.exe -S "/mxe/usr/x86_64-w64-mingw32.shared/bin/ /mxe/usr/x86_64-w64-mingw32.shared/qt5/bin/" -R "./install ./build" -d ./AppDir
