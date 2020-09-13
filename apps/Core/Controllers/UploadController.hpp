@@ -51,6 +51,8 @@ namespace Elpida
 		Logger& _logger;
 
 		void onResultAdded(const BenchmarkResult& result);
+
+		static inline const char* frontEndResultUrl = "https://beta.elpida.dev/#/result/";
 	};
 }
 

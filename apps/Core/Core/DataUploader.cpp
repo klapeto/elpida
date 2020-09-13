@@ -58,7 +58,7 @@ namespace Elpida
 				contentType);
 		if (res)
 		{
-			_mediator.execute(HttpResponseEvent(res->body, res->status));
+			_mediator.execute(HttpResponseEvent(res->body, res->status, std::unordered_map<std::string, std::string>(res->headers.begin(), res->headers.end())));
 		}
 		else
 		{

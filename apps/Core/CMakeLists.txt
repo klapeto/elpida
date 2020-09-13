@@ -22,12 +22,15 @@ set(ELPIDA_CORE_SOURCES
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
         Models/BenchmarkConfigurationModel.cpp
         Models/Benchmarks/BenchmarkGroup.cpp
+        Models/GlobalConfigurationModel.cpp
 
         Controllers/BenchmarksController.cpp
         Controllers/BenchmarkRunnerController.cpp
         Controllers/BenchmarkConfigurationController.cpp
         Controllers/UploadController.cpp
-        Models/GlobalConfigurationModel.cpp)
+
+        Utilities/OsUtilities.cpp
+        Utilities/xdg-open.c)
 
 add_library(elpidaCore ${ELPIDA_CORE_SOURCES})
 

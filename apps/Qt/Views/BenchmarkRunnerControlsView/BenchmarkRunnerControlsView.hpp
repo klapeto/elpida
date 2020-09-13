@@ -58,7 +58,8 @@ namespace Elpida
 		void startClicked(bool checked);
 		void stopClicked(bool checked);
 		void onUploadStateChanged(int state);
-		void updateUploadCheckboxState() const;
+		void onOpenWebPageStateChanged(int state);
+		void updateCheckboxes() const;
 	};
 
 } // namespace Elpida

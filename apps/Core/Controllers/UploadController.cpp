@@ -28,6 +28,7 @@
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/UploadResultCommand.hpp"
 #include "Core/Commands/HttpResponseEvent.hpp"
+#include "Utilities/OsUtilities.hpp"
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 
@@ -56,6 +57,31 @@ namespace Elpida
 					"'. Message: '",
 					command.getResponse(),
 					"'"));
+			return;
+		}
+		if (_globalConfigurationModel.isOpenResultsWebPage())
+		{
+			auto itr = command.getResponseHeaders().find("Location");
+
+			if (itr != command.getResponseHeaders().end())
+			{
+				auto index = itr->second.find_last_of('/') + 1;	// API returns a URI to api. We need only the id
+				if (index < itr->second.size())
+				{
+					auto id = itr->second.substr(index);
+					OsUtilities::openUrl(std::string(frontEndResultUrl) + id);
+				}
+				else
+				{
+					_logger.log(LogType::Warning,
+						"Elpida server accepted the result but did not provide the a valid result URL on its headers");
+				}
+			}
+			else
+			{
+				_logger.log(LogType::Warning,
+					"Elpida server accepted the result but did not provide the result URL on its headers");
+			}
 		}
 	}
 
