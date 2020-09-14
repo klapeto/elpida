@@ -21,9 +21,11 @@ build:linux:
     - cp -u ./resources/dev.elpida.qt.metainfo.xml ./AppDir/usr/share/metainfo/dev.elpida.qt.appdata.xml
     - cp -u ./resources/dev.elpida.qt.desktop ./AppDir/usr/share/applications/
     - appimage-builder --skip-tests
+    - sha256sum ./Elpida-latest-x86_64.AppImage > SHA256SUMS
   artifacts:
     paths:
       - Elpida-latest-x86_64.AppImage
+      - SHA256SUMS
     expire_in: 2 days
 
 build:windows:
@@ -49,7 +51,9 @@ build:windows:
     - zip z -r .
     - cp ./z.zip ../Elpida-latest-x86_64.zip
     - cd ..
+    - sha256sum ./Elpida-latest-x86_64.zip > SHA256SUMS
   artifacts:
     paths:
       - Elpida-latest-x86_64.zip
+      - SHA256SUMS
     expire_in: 2 days
