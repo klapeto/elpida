@@ -42,6 +42,7 @@
 #include "Views/BenchmarkListView/BenchmarkListView.hpp"
 #include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
 #include "Views/LogsView/LogsView.hpp"
+#include "Views/QuickStartView/QuickStartView.hpp"
 
 #include "Core/ElpidaMediator.hpp"
 #include "Core/DataUploader.hpp"
@@ -132,6 +133,11 @@ int main(int argc, char* argv[])
 
 	CpuInfo cpuInfo;
 	SystemTopology topology;
+
+
+	QuickStartView quickStartView;
+
+	screensModel.add(ScreenItem("Quick Start", quickStartView));
 
 	SystemInfoView systemInfoView(cpuInfo, topology);
 	screensModel.add(ScreenItem("CPU Info", systemInfoView));

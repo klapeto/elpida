@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Elpida::QuickStartView</class>
+ <widget class="QWidget" name="Elpida::QuickStartView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1315</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;3. Click 'Benchmarks' from the navigator above&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" rowspan="4">
+    <widget class="QLabel" name="label_4">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>4. Select which benchmark to run</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" rowspan="3">
+    <widget class="QLabel" name="label_2">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;2. Select which processors you want to run benchmarks by clicking the EUs you want or you can click entire groups of EUs by clicking the group they belong&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>1. Click 'System Topology' on the navigator above</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1" colspan="2">
+    <widget class="QWidget" name="widget_3" native="true">
+     <property name="styleSheet">
+      <string notr="true">image: url(:/Qs3.svg);
+image-position: center left;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" rowspan="4" colspan="4">
+    <widget class="QWidget" name="widget_4" native="true">
+     <property name="styleSheet">
+      <string notr="true">image: url(:/Qs4.svg);
+image-position: center left;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" rowspan="3" colspan="4">
+    <widget class="QWidget" name="widget_2" native="true">
+     <property name="styleSheet">
+      <string notr="true">image: url(:/Qs2.svg);
+image-position: center left;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2">
+    <widget class="QWidget" name="widget" native="true">
+     <property name="styleSheet">
+      <string notr="true">image: url(:/Qs1.svg);
+image-position: center left;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="5" rowspan="5">
+    <widget class="QLabel" name="label_5">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>5. Optionaly configure the benchmark</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="6" rowspan="5" colspan="4">
+    <widget class="QWidget" name="widget_5" native="true">
+     <property name="styleSheet">
+      <string notr="true">image: url(:/Qs5.svg);
+image-position: center left;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="5">
+    <widget class="QLabel" name="label_6">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>6. Click 'Run' to begin benchmarking</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="6" colspan="2">
+    <widget class="QWidget" name="widget_6" native="true">
+     <property name="styleSheet">
+      <string notr="true">image: url(:/Qs6.svg);
+image-position: center left;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="5">
+    <widget class="QLabel" name="label_7">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>7. Once it finishes, the results will be added there</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="6" rowspan="3" colspan="4">
+    <widget class="QWidget" name="widget_7" native="true">
+     <property name="styleSheet">
+      <string notr="true">image: url(:/Qs7.svg);
+image-position: center left;</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
