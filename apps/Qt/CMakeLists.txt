@@ -20,6 +20,7 @@ set(ELPIDA_QT_SOURCES
 		Views/ConfigurationViews/TaskConfigurationListItemViewBase.cpp
 		Views/ConfigurationViews/NumberInputView/NumberInputView.cpp
 		Views/NavigationBarView/NavigationBarView.cpp
+		Views/QuickStartView/QuickStartView.cpp
 
 		Views/MainWindow/MainWindow.ui
 		Views/BenchmarkListView/BenchmarkListView.ui
@@ -35,6 +36,7 @@ set(ELPIDA_QT_SOURCES
 		Views/ConfigurationViews/FileInputView/FileInputView.ui
 		Views/ConfigurationViews/NumberInputView/NumberInputView.ui
 		Views/NavigationBarView/NavigationBarView.ui
+		Views/QuickStartView/QuickStartView.ui
 
 		Main.cpp
 

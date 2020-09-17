@@ -34,6 +34,7 @@ SOURCES += \
     Views/LogsView/LogsView.cpp \
     Views/MainWindow/MainWindow.cpp \
     Views/NavigationBarView/NavigationBarView.cpp \
+    Views/QuickStartView/QuickStartView.cpp \
     Views/SystemInfoView/SystemInfoView.cpp \
     Views/BenchmarkResultsView/BenchmarkResultsView.cpp \
     Views/TopologyNodeFrame/TopologyNodeFrame.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     Views/LogsView/LogsView.hpp \
     Views/MainWindow/MainWindow.hpp \
     Views/NavigationBarView/NavigationBarView.hpp \
+    Views/QuickStartView/QuickStartView.hpp \
     Views/SystemInfoView/SystemInfoView.hpp \
     Views/BenchmarkResultsView/BenchmarkResultsView.hpp \
     Views/TopologyNodeFrame/TopologyNodeFrame.hpp \
@@ -65,6 +67,7 @@ FORMS += \
     Views/LogsView/LogsView.ui \
     Views/MainWindow/MainWindow.ui \
     Views/NavigationBarView/NavigationBarView.ui \
+    Views/QuickStartView/QuickStartView.ui \
     Views/SystemInfoView/SystemInfoView.ui \
     Views/BenchmarkResultsView/BenchmarkResultsView.ui \
     Views/TopologyNodeFrame/TopologyNodeFrame.ui \
