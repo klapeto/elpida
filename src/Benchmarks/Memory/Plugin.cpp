@@ -64,13 +64,15 @@ Elpida::Benchmark* createMemoryReadLatency()
 			.withFixedConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize,
 				Elpida::ConfigurationType::UnsignedInt(size));
 
-		auto& memoryLatency = (new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
+		tasksBuilders.push_back(&allocateMemory);
+		tasksBuilders.push_back(&(new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
+			->shouldBeCountedOnResults(false)
+			.canBeMultiThreaded(false)
+			.canBeDisabled(false));
+		tasksBuilders.push_back(&(new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
 			->shouldBeCountedOnResults(true)
 			.canBeMultiThreaded(false)
-			.canBeDisabled(false);
-
-		tasksBuilders.push_back(&allocateMemory);
-		tasksBuilders.push_back(&memoryLatency);
+			.canBeDisabled(false));
 	}
 
 	auto benchmark = new Elpida::Benchmark("Memory Read Latency",
@@ -88,14 +90,16 @@ Elpida::Benchmark* createMemoryReadBandwidth()
 		.withDefaultConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize,
 			Elpida::ConfigurationType::UnsignedInt(4096));
 
-	auto& memoryRead = (new Elpida::TaskBuilder(*new Elpida::MemoryReadSpecification))
-		->shouldBeCountedOnResults(true)
-		.canBeMultiThreaded(true)
-		.canBeDisabled(false);
-
 	auto benchmark = new Elpida::Benchmark("Memory Read Bandwidth", {
 		&allocateMemory,
-		&memoryRead
+		&(new Elpida::TaskBuilder(*new Elpida::MemoryReadSpecification))
+			->shouldBeCountedOnResults(false)
+			.canBeMultiThreaded(true)
+			.canBeDisabled(false),
+		&(new Elpida::TaskBuilder(*new Elpida::MemoryReadSpecification))
+			->shouldBeCountedOnResults(true)
+			.canBeMultiThreaded(true)
+			.canBeDisabled(false)
 	}, new Elpida::AccumulativeScoreCalculator("B", Elpida::ResultType::Throughput));
 	return benchmark;
 }
