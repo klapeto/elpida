@@ -26,7 +26,6 @@ build:linux:
     paths:
       - Elpida-latest-x86_64.AppImage
       - SHA256SUMS
-    expire_in: 2 days
 
 build:windows:
   image: $CI_REGISTRY_IMAGE/build-environment/windows
@@ -56,4 +55,3 @@ build:windows:
     paths:
       - Elpida-latest-x86_64.zip
       - SHA256SUMS
-    expire_in: 2 days
