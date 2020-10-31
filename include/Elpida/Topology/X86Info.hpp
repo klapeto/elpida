@@ -17,30 +17,40 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * Cpu.cpp
- *
- *  Created on: 10 Μαρ 2018
- *      Author: klapeto
- */
+//
+// Created by klapeto on 27/10/20.
+//
 
-#include "Elpida/Topology/CpuInfo.hpp"
-#include "Elpida/Topology/X86Info.hpp"
+#ifndef INCLUDE_ELPIDA_TOPOLOGY_X86INFO_HPP
+#define INCLUDE_ELPIDA_TOPOLOGY_X86INFO_HPP
+
+#include "CpuInfo.hpp"
 
 namespace Elpida
 {
-
-	const CpuInfo& CpuInfo::get()
+	class X86Info : public CpuInfo
 	{
-		static
-#if __x86_64__ || _M_X64
-		X86Info
-#else
-#error "Unsupported Platform"
-#endif
-		cpuInfo;
+	public:
+		static inline const std::string stepping = "Stepping";
+		static inline const std::string model = "Model";
+		static inline const std::string family = "Family";
+		static inline const std::string turboBoost = "Turbo Boost";
+		static inline const std::string turboBoost3 = "Turbo Boost 3";
 
-		return cpuInfo;
-	}
-} /* namespace Elpida */
+		X86Info();
+		~X86Info() override = default;
+	private:
+		unsigned _maximumStandardFunction = 0;
+		unsigned _maximumExtendedFunction = 0;
+		bool _rdtscp = false;
 
+		void getTscFrequency();
+		void getAMDFeatures();
+		void getIntelFeatures();
+
+		void addFeature(const std::string& name, unsigned reg, unsigned bit);
+	};
+
+}
+
+#endif //INCLUDE_ELPIDA_TOPOLOGY_X86INFO_HPP

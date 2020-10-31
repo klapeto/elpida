@@ -17,30 +17,13 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * Cpu.cpp
- *
- *  Created on: 10 Μαρ 2018
- *      Author: klapeto
- */
+//
+// Created by klapeto on 27/10/20.
+//
 
-#include "Elpida/Topology/CpuInfo.hpp"
-#include "Elpida/Topology/X86Info.hpp"
+#include "Elpida/Topology/CpuCache.hpp"
 
 namespace Elpida
 {
 
-	const CpuInfo& CpuInfo::get()
-	{
-		static
-#if __x86_64__ || _M_X64
-		X86Info
-#else
-#error "Unsupported Platform"
-#endif
-		cpuInfo;
-
-		return cpuInfo;
-	}
-} /* namespace Elpida */
-
+}

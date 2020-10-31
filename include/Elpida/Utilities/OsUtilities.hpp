@@ -46,6 +46,8 @@ namespace Elpida
 
 		static OsInfo getOsInfo();
 
+		static void setCurrentThreadAffinity(unsigned int cpuId);
+
 #ifdef ELPIDA_WINDOWS
 		static std::string GetLastErrorString();
 		static std::string GetErrorString(HRESULT errorId);

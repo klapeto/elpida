@@ -30,6 +30,7 @@
 
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/Task.hpp"
+#include "Elpida/Utilities/OsUtilities.hpp"
 
 #ifdef ELPIDA_LINUX
 #include <sched.h>
@@ -87,7 +88,7 @@ namespace Elpida
 
 	void TaskThread::runTask()
 	{
-		setCurrentThreadAffinity(_affinity);
+		OsUtilities::setCurrentThreadAffinity(_affinity);
 		std::unique_lock<std::mutex> lock(_mutex);
 		while (!_shouldWake)
 		{
@@ -95,21 +96,6 @@ namespace Elpida
 		}
 		lock.unlock();
 		_taskToRun->execute();
-	}
-
-	void TaskThread::setCurrentThreadAffinity(unsigned int cpuId)
-	{
-#ifdef ELPIDA_LINUX
-		cpu_set_t mask;
-		CPU_ZERO(&mask);
-		CPU_SET(cpuId, &mask);
-		if (sched_setaffinity(0, sizeof(cpu_set_t), &mask))
-		{
-			std::cout << "Warning! Failed to set affinity to " << cpuId << " on a thread!" << std::endl;
-		}
-#else
-		SetThreadAffinityMask(GetCurrentThread(), 1 << (int)cpuId);
-#endif
 	}
 
 } /* namespace Elpida */

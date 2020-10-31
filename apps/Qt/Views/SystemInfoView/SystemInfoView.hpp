@@ -46,6 +46,9 @@ namespace Elpida
 		Ui::SystemInfoView* _ui;
 
 		void loadCpuInfo(const CpuInfo& cpuInfo, const SystemTopology& topology);
+		void loadBasicInfo(const CpuInfo& cpuInfo, const SystemTopology& topology);
+		void loadFeatures(const CpuInfo& cpuInfo);
+		void loadCaches(const CpuInfo& cpuInfo);
 	};
 
 } // namespace Elpida

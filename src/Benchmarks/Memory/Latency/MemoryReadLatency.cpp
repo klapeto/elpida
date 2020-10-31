@@ -32,9 +32,16 @@
 #include <Elpida/Utilities/Duration.hpp>
 #include <Elpida/Utilities/RawData.hpp>
 
+#ifdef __x86_64__
 #include <emmintrin.h>
+#endif
 
-#define lfence() _mm_lfence()
+static inline void lfence()
+{
+#ifdef __x86_64__
+	_mm_lfence();
+#endif
+}
 
 namespace Elpida
 {

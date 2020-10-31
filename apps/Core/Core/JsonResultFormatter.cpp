@@ -74,18 +74,18 @@ namespace Elpida
 		return elpida;
 	}
 
-	static json getCaches(const std::vector<CpuInfo::Cache>& caches)
+	static json getCaches(const std::vector<CpuCache>& caches)
 	{
 		json cachesJ;
 
 		for (auto& cache: caches)
 		{
 			auto c = json::object();
-			c["name"] = cache.name;
-			c["size"] = cache.size;
-			c["associativity"] = cache.associativity;
-			c["lineSize"] = cache.lineSize;
-			c["linesPerTag"] = cache.linesPerTag;
+			c["name"] = cache.getName();
+			c["size"] = cache.getSize();
+			c["associativity"] = cache.getAssociativity();
+			c["lineSize"] = cache.getLineSize();
+			c["linesPerTag"] = cache.getLinesPerTag();
 			cachesJ.push_back(c);
 		}
 
@@ -105,23 +105,31 @@ namespace Elpida
 		return featuresJ;
 	}
 
+	static json getAdditionalCpuInfo(const CpuInfo& cpuInfo)
+	{
+		json info;
+
+		for (const auto& pair: cpuInfo.getAdditionalInformation())
+		{
+			info[pair.first] = pair.second;
+		}
+
+		return info;
+	}
+
 	static json getCpu(const CpuInfo& cpuInfo)
 	{
 		json cpu;
 
 		cpu["vendor"] = cpuInfo.getVendorString();
 		cpu["brand"] = cpuInfo.getProcessorBrand();
-		cpu["model"] = cpuInfo.getModel();
-		cpu["family"] = cpuInfo.getFamily();
-		cpu["stepping"] = cpuInfo.getStepping();
-		cpu["frequency"] = (unsigned long)cpuInfo.getTscFequency();
-		cpu["turboBoost"] = cpuInfo.isTurboBoost();
-		cpu["turboBoost3"] = cpuInfo.isTurboBoost3();
-		cpu["smt"] = cpuInfo.isHyperThreading();
+		cpu["additionalInfo"] = getAdditionalCpuInfo(cpuInfo);
+		cpu["frequency"] = (unsigned long)cpuInfo.getFrequency();
+		cpu["smt"] = cpuInfo.isSmt();
 
 		cpu["caches"] = getCaches(cpuInfo.getCaches());
 
-		cpu["features"] = getCpuExtensions(cpuInfo.getInstructionExtensions());
+		cpu["features"] = getCpuExtensions(cpuInfo.getFeatures());
 
 		return cpu;
 	}

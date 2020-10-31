@@ -16,6 +16,7 @@ set(ELPIDA_SOURCES
         Topology/SystemTopology.cpp
         Topology/CpuFeature.cpp
         Topology/CpuInfo.cpp
+        Topology/CpuCache.cpp
 
         Utilities/FileSystem.cpp
         Utilities/Imaging/Image.cpp
@@ -72,6 +73,11 @@ set(ELPIDA_SOURCES
         Engine/AverageScoreCalculator.cpp
         )
 
+
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^x86_64*")
+    set(ELPIDA_SOURCES ${ELPIDA_SOURCES} Topology/X86Info.cpp)
+endif()
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
