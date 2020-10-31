@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
 
 	ConfigurationViewsPool configurationViewsPool;
 
-	CpuInfo cpuInfo;
+	const CpuInfo& cpuInfo = CpuInfo::get();
 	SystemTopology topology;
 
 

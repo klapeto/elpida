@@ -41,19 +41,17 @@ namespace Elpida
 		void start();
 		void join();
 
-		Task& getTaskToRun() const
+		[[nodiscard]] Task& getTaskToRun() const
 		{
 			return *_taskToRun;
 		}
-
-		static void setCurrentThreadAffinity(unsigned int cpuId);
 
 		TaskThread(Task& taskToRun,
 			std::condition_variable& waitNotifier,
 			std::mutex& mutex,
 			const bool& shouldWake,
 			unsigned int affinity);
-		virtual ~TaskThread();
+		~TaskThread();
 
 		TaskThread(TaskThread&& other) noexcept;
 	private:

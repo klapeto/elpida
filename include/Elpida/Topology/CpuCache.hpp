@@ -17,23 +17,19 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * CpuFeature.hpp
- *
- *  Created on: 11 Μαρ 2018
- *      Author: klapeto
- */
+//
+// Created by klapeto on 27/10/20.
+//
 
-#ifndef ELPIDA_CPUFEATURE_HPP_
-#define ELPIDA_CPUFEATURE_HPP_
+#ifndef INCLUDE_ELPIDA_TOPOLOGY_CPUCACHE_HPP
+#define INCLUDE_ELPIDA_TOPOLOGY_CPUCACHE_HPP
 
 #include <string>
 #include <utility>
 
 namespace Elpida
 {
-
-	class CpuFeature
+	class CpuCache final
 	{
 	public:
 
@@ -41,40 +37,50 @@ namespace Elpida
 		{
 			return _name;
 		}
-
-		[[nodiscard]] const std::string& getDescription() const
+		[[nodiscard]] const std::string& getAssociativity() const
 		{
-			return _description;
+			return _associativity;
+		}
+		[[nodiscard]] unsigned getSize() const
+		{
+			return _size;
 		}
 
-		[[nodiscard]] bool isSupported() const
+		[[nodiscard]] unsigned getLinesPerTag() const
 		{
-			return _supported;
+			return _linesPerTag;
 		}
 
-		CpuFeature()
-			: _supported(false)
+		[[nodiscard]] unsigned getLineSize() const
 		{
-
+			return _lineSize;
 		}
 
-		CpuFeature(std::string name, std::string description, bool supported = false)
-			: _name(std::move(name)), _description(std::move(description)), _supported(supported)
+		[[nodiscard]] unsigned int getLevel() const
 		{
-
+			return _level;
 		}
-		~CpuFeature() = default;
-		CpuFeature(CpuFeature&&) = default;
-		CpuFeature(const CpuFeature&) = default;
-		CpuFeature& operator=(CpuFeature&&) = default;
-		CpuFeature& operator=(const CpuFeature&) = default;
 
+		CpuCache(unsigned level,
+			std::string name,
+			std::string associativity,
+			unsigned size,
+			unsigned linesPerTag,
+			unsigned lineSize)
+			: _name(std::move(name)), _associativity(std::move(associativity)), _level(level), _size(size),
+			  _linesPerTag(linesPerTag),
+			  _lineSize(lineSize)
+		{
+		}
+		~CpuCache() = default;
 	private:
 		std::string _name;
-		std::string _description;
-		bool _supported;
+		std::string _associativity;
+		unsigned _level;
+		unsigned _size;
+		unsigned _linesPerTag;
+		unsigned _lineSize;
 	};
+}
 
-} /* namespace Elpida */
-
-#endif /* ELPIDA_CPUFEATURE_HPP_ */
+#endif //INCLUDE_ELPIDA_TOPOLOGY_CPUCACHE_HPP

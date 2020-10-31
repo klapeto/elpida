@@ -235,4 +235,19 @@ namespace Elpida
 		return osInfo;
 	}
 
+	void OsUtilities::setCurrentThreadAffinity(unsigned int cpuId)
+	{
+#ifdef ELPIDA_LINUX
+		cpu_set_t mask;
+		CPU_ZERO(&mask);
+		CPU_SET(cpuId, &mask);
+		if (sched_setaffinity(0, sizeof(cpu_set_t), &mask))
+		{
+			throw ElpidaException("Failed to set thread affinity to: " + std::to_string(cpuId));
+		}
+#else
+		SetThreadAffinityMask(GetCurrentThread(), 1 << (int)cpuId);
+#endif
+	}
+
 }

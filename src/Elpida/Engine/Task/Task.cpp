@@ -25,7 +25,7 @@
 
 #include "Elpida/Config.hpp"
 #include "Elpida/Topology/ProcessorNode.hpp"
-#include "Elpida/Engine/Task/TaskThread.hpp"
+#include "Elpida/Utilities/OsUtilities.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/RawData.hpp"
@@ -41,7 +41,7 @@ namespace Elpida
 
 	void Task::applyAffinity()
 	{
-		TaskThread::setCurrentThreadAffinity((int)_processorToRun.getOsIndex());
+		OsUtilities::setCurrentThreadAffinity((int)_processorToRun.getOsIndex());
 	}
 
 	static void validateDataProperties(const DataSpecification& specification, const TaskDataDto& taskDataDto)
