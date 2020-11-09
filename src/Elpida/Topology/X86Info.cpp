@@ -65,7 +65,7 @@ static inline unsigned long rdtscp()
 	return __rdtsc();
 #else
 	unsigned long a, d, c;
-	asm volatile("rdtscp" : "=a" (a), "=d" (d), "=c" (c));
+	asm volatile("rdtsc" : "=a" (a), "=d" (d), "=c" (c));
 	return (a | (d << 32u));
 #endif
 }
