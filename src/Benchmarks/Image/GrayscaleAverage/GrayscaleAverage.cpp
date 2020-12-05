@@ -31,8 +31,10 @@
 namespace Elpida
 {
 
-	GrayscaleAverage::GrayscaleAverage(const TaskSpecification& specification, const ProcessorNode& processorToRun)
-		: ImageTaskBase(specification, processorToRun), _inputImage(nullptr)
+	GrayscaleAverage::GrayscaleAverage(const TaskSpecification& specification,
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun), _inputImage(nullptr)
 	{
 
 	}
@@ -61,6 +63,9 @@ namespace Elpida
 
 	TaskDataDto GrayscaleAverage::finalizeAndGetOutputData()
 	{
+		delete _inputImage;
+		_inputImage = nullptr;
+
 		return getInput();
 	}
 

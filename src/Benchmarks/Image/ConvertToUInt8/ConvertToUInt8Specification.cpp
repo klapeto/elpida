@@ -30,9 +30,10 @@ namespace Elpida
 {
 
 	Task* ConvertToUInt8Specification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun) const
 	{
-		return new ConvertToUInt8(*this, processorToRun);
+		return new ConvertToUInt8(*this, processorToRun, iterationsToRun);
 	}
 
 	ConvertToUInt8Specification::ConvertToUInt8Specification()

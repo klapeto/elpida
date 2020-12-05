@@ -29,12 +29,13 @@ namespace Elpida
 {
 
 	Task* FloydSteinbergSpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun) const
 	{
 		auto threshold = getSettingAndValidate<ConfigurationType::Float>(configuration,
 			Settings::Threshold,
 			ConfigurationType::Type::Float).getValue();
-		return new FloydSteinberg(*this, processorToRun, threshold);
+		return new FloydSteinberg(*this, processorToRun, threshold, iterationsToRun);
 	}
 
 	FloydSteinbergSpecification::FloydSteinbergSpecification()

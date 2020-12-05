@@ -31,12 +31,13 @@ namespace Elpida
 {
 
 	Task* ReadFileSpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun) const
 	{
 		auto& filePath = getSettingAndValidate<ConfigurationType::FilePath>(configuration,
 			Settings::InputFilePath,
 			ConfigurationType::Type::FilePath);
-		return new ReadFile(*this, processorToRun, filePath.getValue());
+		return new ReadFile(*this, processorToRun, filePath.getValue(), iterationsToRun);
 	}
 
 	ReadFileSpecification::ReadFileSpecification()

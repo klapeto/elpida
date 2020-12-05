@@ -40,7 +40,9 @@ namespace Elpida
 	public:
 		void execute() override;
 
-		GrayscaleAverage(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		GrayscaleAverage(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun);
 		~GrayscaleAverage() override;
 	protected:
 		void prepareImpl() override;

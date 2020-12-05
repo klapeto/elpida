@@ -41,8 +41,9 @@ namespace Elpida
 	}
 
 	Task* MemoryReadSpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun) const
 	{
-		return new MemoryRead(*this, processorToRun);
+		return new MemoryRead(*this, processorToRun, iterationsToRun);
 	}
 }

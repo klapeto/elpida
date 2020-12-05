@@ -1,22 +1,20 @@
 set(ELPIDA_SOURCES
         Event.cpp
         EventSubscription.cpp
-        MemoryInfo.cpp
         OffThreadExecutor.cpp
         SharedLibrary.cpp
         SharedLibraryLoader.cpp
-        Engine/Task/TaskAffinity.cpp
-        Engine/Task/TaskThread.cpp
         Timer.cpp
         EventsSubscriber.cpp
 
         ElpidaException.cpp
 
-        Topology/ProcessorNode.cpp
-        Topology/SystemTopology.cpp
-        Topology/CpuFeature.cpp
-        Topology/CpuInfo.cpp
-        Topology/CpuCache.cpp
+        SystemInfo/ProcessorNode.cpp
+        SystemInfo/SystemTopology.cpp
+        SystemInfo/CpuFeature.cpp
+        SystemInfo/CpuInfo.cpp
+        SystemInfo/CpuCache.cpp
+        SystemInfo/MemoryInfo.cpp
 
         Utilities/FileSystem.cpp
         Utilities/Imaging/Image.cpp
@@ -32,6 +30,7 @@ set(ELPIDA_SOURCES
         Utilities/Memory.cpp
         Utilities/NumaMemory.cpp
         Utilities/OsUtilities.cpp
+        Utilities/RawData.cpp
 
         CommonTasks/AllocateMemory/AllocateMemory.cpp
         CommonTasks/AllocateMemory/AllocateMemorySpecification.cpp
@@ -46,13 +45,14 @@ set(ELPIDA_SOURCES
         Engine/Configuration/Concrete/ConfigurationValueBase.cpp
         Engine/Task/Task.cpp
         Engine/Task/TaskSpecification.cpp
-        Utilities/RawData.cpp
+        Engine/Task/TaskAffinity.cpp
+        Engine/Task/TaskThread.cpp
         Engine/Runner/BenchmarkRunner.cpp
         Engine/Result/BenchmarkResult.cpp
         Engine/Result/TaskResult.cpp
         Engine/Result/TaskMetrics.cpp
-        Engine/BenchmarkScoreCalculator.cpp
-        Engine/AccumulativeScoreCalculator.cpp
+        Engine/Calculators/BenchmarkScoreCalculator.cpp
+        Engine/Calculators/Benchmark/AccumulativeScoreCalculator.cpp
         Engine/Runner/EventArgs/BenchmarkEventArgs.cpp
         Engine/Runner/EventArgs/TaskEventArgs.cpp
         Engine/Task/MultiThreadTask.cpp
@@ -70,13 +70,14 @@ set(ELPIDA_SOURCES
         Engine/Benchmark/BenchmarkTaskInstance.cpp
         Engine/Configuration/ConfigurationInstance.cpp
         Engine/Data/DataPropertiesTransformer.cpp
-        Engine/AverageScoreCalculator.cpp
-        )
+        Engine/Calculators/Benchmark/AverageScoreCalculator.cpp
+        Engine/Calculators/TaskResultCalculator.cpp
+        Engine/Calculators/Task/AverageTaskResultCalculator.cpp)
 
 
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "^x86_64*")
-    set(ELPIDA_SOURCES ${ELPIDA_SOURCES} Topology/X86Info.cpp)
+    set(ELPIDA_SOURCES ${ELPIDA_SOURCES} SystemInfo/X86Info.cpp)
 endif()
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

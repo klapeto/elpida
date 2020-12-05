@@ -37,9 +37,10 @@ namespace Elpida
 
 	WriteFile::WriteFile(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
-		std::string filePath)
-		: Task(specification, processorToRun),
-		_outputPath(std::move(filePath))
+		std::string filePath,
+		size_t iterationsToRun)
+		: Task(specification, processorToRun, iterationsToRun),
+		  _outputPath(std::move(filePath))
 	{
 
 	}
@@ -62,7 +63,7 @@ namespace Elpida
 
 	double WriteFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return getInput().getTaskData()->getSize();
+		return getInput().getTaskData() ? getInput().getTaskData()->getSize() : 0.0;
 	}
 } /* namespace Elpida */
 

@@ -30,7 +30,7 @@
 #include "Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp"
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
 #include "Elpida/Utilities/Uuid.hpp"
-#include "Elpida/Engine/BenchmarkScoreCalculator.hpp"
+#include "Elpida/Engine/Calculators/BenchmarkScoreCalculator.hpp"
 
 namespace Elpida
 {
@@ -75,7 +75,7 @@ namespace Elpida
 					{
 						if (builder->isCanBeMultiThreaded())
 						{
-							tasks.emplace_back(*new MultiThreadTask(*builder, *taskConfiguration, affinity), *builder);
+							tasks.emplace_back(*new MultiThreadTask(*builder, *taskConfiguration, affinity, builder->getIterationsToRun()), *builder);
 						}
 						else
 						{

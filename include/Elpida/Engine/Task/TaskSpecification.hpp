@@ -95,7 +95,9 @@ namespace Elpida
 			return _dataPropertiesTransformer;
 		}
 
-		[[nodiscard]] virtual Task* createNewTask(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const = 0;
+		[[nodiscard]] virtual Task* createNewTask(const TaskConfiguration& configuration,
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun) const = 0;
 
 		virtual ~TaskSpecification();
 	private:
@@ -158,7 +160,7 @@ namespace Elpida
 		void withOutputData(DataSpecification&& outputDataSpecification)
 		{
 			_exportsOutput = true;
-			_outputDataSpecification= std::move(outputDataSpecification);
+			_outputDataSpecification = std::move(outputDataSpecification);
 		}
 
 		void withDataPropertiesTransformer(DataPropertiesTransformer* dataPropertiesTransformer)

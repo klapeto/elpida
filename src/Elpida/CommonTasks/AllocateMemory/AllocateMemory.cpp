@@ -35,8 +35,9 @@ namespace Elpida
 
 	AllocateMemory::AllocateMemory(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
-		std::size_t size)
-		: Task(specification, processorToRun),
+		std::size_t size,
+		size_t iterationsToRun)
+		: Task(specification, processorToRun, iterationsToRun),
 		  _memory(nullptr),
 		  _size(size)
 	{

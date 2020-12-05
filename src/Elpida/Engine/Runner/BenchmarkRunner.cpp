@@ -25,12 +25,13 @@
 
 #include "Elpida/Timer.hpp"
 #include "Elpida/Engine/Task/Task.hpp"
-#include "Elpida/Engine/BenchmarkScoreCalculator.hpp"
+#include "Elpida/Engine/Calculators/BenchmarkScoreCalculator.hpp"
 #include "Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp"
 #include "Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
 #include "Elpida/Engine/Benchmark/Benchmark.hpp"
+#include "Elpida/Utilities/RawData.hpp"
 
 namespace Elpida
 {
@@ -40,9 +41,32 @@ namespace Elpida
 
 	}
 
-	static void assignInput(Task* previousTask, Task* nextTask)
+	static void cleanTask(Task* task)
 	{
+		if (task)
+		{
+			auto input = task->getInput().getTaskData();
+			auto output = task->getOutput().getTaskData();
+			delete input;
+
+			if (input != output)	// if the task hasn't propagated the input
+			{
+				delete output;
+			}
+			task->resetInputOutput();
+		}
+	}
+
+	static void assignInput(Task* previousTask, Task* nextTask, bool moreIterationsPending)
+	{
+		cleanTask(nextTask);	// Destroy input/output of next task
+
 		DataAdapter::adaptAndForwardTaskData(previousTask, nextTask);
+
+		if (!moreIterationsPending)
+		{
+			cleanTask(previousTask); // On last iteration we destroy the previous task data
+		}
 	}
 
 	std::vector<BenchmarkResult> BenchmarkRunner::runBenchmarks(const std::vector<BenchmarkRunRequest>& benchmarkRequests,
@@ -50,47 +74,80 @@ namespace Elpida
 	{
 		_mustStop = false;
 		std::vector<BenchmarkResult> benchmarkResults;
-		Task* previousTask = nullptr;
+		Task* lastExecutedTask = nullptr;
 		for (const auto& benchmarkRequest : benchmarkRequests)
 		{
 			if (_mustStop) break;
+
 			const auto& benchmark = benchmarkRequest.getBenchmark();
 			raiseBenchmarkStarted(benchmark);
 
 			auto benchmarkTaskInstances = benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration());
 			try
 			{
-				std::vector<TaskResult> taskResults;
+				std::vector<TaskResult> finalTaskResults;
+
 				for (auto& taskInstance : benchmarkTaskInstances)
 				{
 					if (_mustStop) break;
-					auto& task = taskInstance.getTask();
-					raiseTaskStarted(task);
 
-					assignInput(previousTask, &task);
+					auto& currentTask = taskInstance.getTask();
 
-					previousTask = &task;
-					auto result = runTask(task);
+					raiseTaskStarted(currentTask);
+
+					auto iterations = currentTask.getIterationsToRun();
+
+					std::vector<TaskResult> currentTaskResults;
+
+					for (auto i = 0u; i < iterations; ++i)
+					{
+						if (_mustStop) break;
+
+						bool morePendingIterations = i < (iterations - 1);
+
+						assignInput(lastExecutedTask, &currentTask, morePendingIterations);
+
+						auto result = runTask(currentTask);
+
+						if (taskInstance.getTaskBuilder().isShouldBeCountedOnResults())
+						{
+							currentTaskResults.push_back(std::move(result));
+						}
+					}
+
 
 					if (taskInstance.getTaskBuilder().isShouldBeCountedOnResults())
 					{
-						taskResults.push_back(std::move(result));
+						auto calculator = taskInstance.getTaskBuilder().getTaskResultCalculator();
+						if (calculator)
+						{
+							finalTaskResults.push_back(calculator->calculateAggregateResult(currentTaskResults));
+						}
+						else
+						{
+							finalTaskResults.push_back(currentTaskResults.back());
+						}
 					}
-					raiseTasksEnded(task);
+
+					cleanTask(lastExecutedTask);  // lastExecutedTask = previous executed task
+
+					lastExecutedTask = &currentTask;	// set as lastExecutedTask the one we just completed
+					raiseTasksEnded(currentTask);
 				}
-				assignInput(previousTask, nullptr);
+
+				cleanTask(lastExecutedTask);    // lastExecutedTask = last (final) executed Task
+
 				raiseBenchmarkEnded(benchmark);
 
-				BenchmarkResult::Score score = benchmark.getScoreCalculator().calculate(taskResults);
-				benchmarkResults.emplace_back(benchmark, std::move(taskResults), taskAffinity, score);
+				BenchmarkResult::Score score = benchmark.getScoreCalculator().calculate(finalTaskResults);
+				benchmarkResults.emplace_back(benchmark, std::move(finalTaskResults), taskAffinity, score);
 			}
 			catch (...)
 			{
-				assignInput(previousTask, nullptr);
+				cleanTask(lastExecutedTask);    // lastExecutedTask = last executed Task (Not failing one)
 				throw;
 			}
 		}
-
 
 		return benchmarkResults;
 	}
@@ -103,17 +160,26 @@ namespace Elpida
 	TaskResult BenchmarkRunner::runTask(Task& task)
 	{
 		task.applyAffinity();
-		task.prepare();
+		try
+		{
+			task.prepare();
 
-		auto start = Timer::now();
-		task.execute();
-		auto end = Timer::now();
+			auto start = Timer::now();
+			task.execute();
+			auto end = Timer::now();
 
-		auto result = task.calculateTaskResult(end - start);
+			auto result = task.calculateTaskResult(end - start - (Timer::getNowOverhead<>() * 2));
 
-		task.finalize();
+			task.finalize();
 
-		return result;
+			return result;
+		}
+		catch (...)
+		{
+			task.finalize();    // Finalize the task to clean it's internal resources
+			cleanTask(&task);   // Destroy Input/output
+			throw;
+		}
 	}
 
 	void BenchmarkRunner::raiseBenchmarkStarted(const Benchmark& benchmark)

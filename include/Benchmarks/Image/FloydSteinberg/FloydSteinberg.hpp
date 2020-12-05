@@ -41,7 +41,10 @@ namespace Elpida
 	public:
 		void execute() override;
 
-		FloydSteinberg(const TaskSpecification& specification, const ProcessorNode& processorToRun, double threshold);
+		FloydSteinberg(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			double threshold,
+			size_t iterationsToRun);
 		~FloydSteinberg() override;
 	protected:
 		void prepareImpl() override;

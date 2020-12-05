@@ -46,8 +46,10 @@ static inline void lfence()
 namespace Elpida
 {
 
-	MemoryReadLatency::MemoryReadLatency(const TaskSpecification& specification, const ProcessorNode& processorToRun)
-		: Task(specification, processorToRun), _taskData(nullptr), _iterations(1)
+	MemoryReadLatency::MemoryReadLatency(const TaskSpecification& specification,
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun)
+		: Task(specification, processorToRun, iterationsToRun), _taskData(nullptr), _iterations(1)
 	{
 
 	}

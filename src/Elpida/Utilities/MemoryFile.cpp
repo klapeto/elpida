@@ -32,8 +32,8 @@
 #include "Elpida/Config.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
-#include "Elpida/Topology/SystemTopology.hpp"
-#include "Elpida/Topology/ProcessorNode.hpp"
+#include "Elpida/SystemInfo/SystemTopology.hpp"
+#include "Elpida/SystemInfo/ProcessorNode.hpp"
 
 namespace Elpida
 {

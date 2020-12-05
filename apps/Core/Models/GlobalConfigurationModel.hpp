@@ -44,6 +44,17 @@ namespace Elpida
 			onDataChanged();
 		}
 
+		const std::string& getDataPath() const
+		{
+			return _dataPath;
+		}
+
+		void setDataPath(const std::string& dataPath)
+		{
+			_dataPath = dataPath;
+			onDataChanged();
+		}
+
 		bool isUploadResults() const
 		{
 			return _uploadResults;
@@ -70,6 +81,7 @@ namespace Elpida
 		~GlobalConfigurationModel() override = default;
 	private:
 		std::string _benchmarksPath;
+		std::string _dataPath;
 		bool _uploadResults = true;
 		bool _openResultsWebPage = false;
 	};

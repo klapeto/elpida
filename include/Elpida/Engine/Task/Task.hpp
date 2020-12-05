@@ -54,6 +54,11 @@ namespace Elpida
 			return _inputData;
 		}
 
+		[[nodiscard]] size_t getIterationsToRun() const
+		{
+			return _iterationsToRun;
+		}
+
 		[[nodiscard]] const TaskSpecification& getSpecification() const
 		{
 			return _specification;
@@ -68,11 +73,13 @@ namespace Elpida
 		void finalize();
 		virtual void execute() = 0;
 
+		void resetInputOutput();
+
 		[[nodiscard]] TaskResult calculateTaskResult(const Duration& taskElapsedTime) const;
 
 		virtual void applyAffinity();
 
-		Task(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		Task(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun);
 		virtual ~Task() = default;
 	protected:
 		const ProcessorNode& _processorToRun;
@@ -84,6 +91,7 @@ namespace Elpida
 	private:
 		TaskDataDto _inputData;
 		TaskDataDto _outputData;
+		size_t _iterationsToRun;
 
 		friend class MultiThreadTask;
 	};

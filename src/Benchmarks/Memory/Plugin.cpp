@@ -26,10 +26,11 @@
 
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/AccumulativeScoreCalculator.hpp>
+#include <Elpida/Engine/Calculators/Benchmark/AccumulativeScoreCalculator.hpp>
 #include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
-#include <Elpida/Engine/AverageScoreCalculator.hpp>
+#include <Elpida/Engine/Calculators/Benchmark/AverageScoreCalculator.hpp>
+#include <Elpida/Engine/Calculators/Task/AverageTaskResultCalculator.hpp>
 #include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
 #include "Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp"
 
@@ -66,11 +67,9 @@ Elpida::Benchmark* createMemoryReadLatency()
 
 		tasksBuilders.push_back(&allocateMemory);
 		tasksBuilders.push_back(&(new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
-			->shouldBeCountedOnResults(false)
-			.canBeMultiThreaded(false)
-			.canBeDisabled(false));
-		tasksBuilders.push_back(&(new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
 			->shouldBeCountedOnResults(true)
+			.withIterationsToRun(2)
+			.withTaskResultCalculator(new Elpida::AverageTaskResultCalculator())
 			.canBeMultiThreaded(false)
 			.canBeDisabled(false));
 	}
@@ -93,11 +92,8 @@ Elpida::Benchmark* createMemoryReadBandwidth()
 	auto benchmark = new Elpida::Benchmark("Memory Read Bandwidth", {
 		&allocateMemory,
 		&(new Elpida::TaskBuilder(*new Elpida::MemoryReadSpecification))
-			->shouldBeCountedOnResults(false)
-			.canBeMultiThreaded(true)
-			.canBeDisabled(false),
-		&(new Elpida::TaskBuilder(*new Elpida::MemoryReadSpecification))
 			->shouldBeCountedOnResults(true)
+			.withIterationsToRun(2)
 			.canBeMultiThreaded(true)
 			.canBeDisabled(false)
 	}, new Elpida::AccumulativeScoreCalculator("B", Elpida::ResultType::Throughput));

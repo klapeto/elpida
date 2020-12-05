@@ -32,8 +32,10 @@
 namespace Elpida
 {
 
-	ConvertToFloat::ConvertToFloat(const TaskSpecification& specification, const ProcessorNode& processorToRun)
-		: ImageTaskBase(specification, processorToRun), _outputData(nullptr), _inputImage(nullptr),
+	ConvertToFloat::ConvertToFloat(const TaskSpecification& specification,
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _inputImage(nullptr),
 		  _outputImage(nullptr)
 	{
 
@@ -46,13 +48,20 @@ namespace Elpida
 		auto properties = getImageProperties(input);
 
 		_inputImage = new Image<PixelInt>(*input.getTaskData(), properties.width, properties.height);
-		_outputData = new ActiveTaskData(properties.width * properties.height * 4 * sizeof(PixelFloat), _processorToRun);
+		_outputData =
+			new ActiveTaskData(properties.width * properties.height * 4 * sizeof(PixelFloat), _processorToRun);
 		_outputImage = new Image<PixelFloat>(*_outputData, properties.width, properties.height);
 
 	}
 
 	TaskDataDto ConvertToFloat::finalizeAndGetOutputData()
 	{
+		delete _inputImage;
+		_inputImage = nullptr;
+
+		delete _outputImage;
+		_outputImage = nullptr;
+
 		return TaskDataDto(*_outputData, getInput().getDefinedProperties());
 	}
 

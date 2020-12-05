@@ -42,7 +42,9 @@ namespace Elpida
 
 		void execute() override;
 
-		explicit MemoryReadLatency(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		explicit MemoryReadLatency(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun);
 
 		~MemoryReadLatency() override = default;
 	protected:

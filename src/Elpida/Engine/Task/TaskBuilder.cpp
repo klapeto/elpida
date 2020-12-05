@@ -32,6 +32,7 @@ namespace Elpida
 	TaskBuilder::~TaskBuilder()
 	{
 		delete _taskSpecification;
+		delete _taskResultCalculator;
 	}
 
 	TaskBuilder& TaskBuilder::canBeDisabled(bool canBeDisabled)
@@ -54,7 +55,7 @@ namespace Elpida
 
 	Task* TaskBuilder::build(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const
 	{
-		return _taskSpecification->createNewTask(configuration, processorToRun);
+		return _taskSpecification->createNewTask(configuration, processorToRun, _iterationsToRun);
 	}
 
 	void TaskBuilder::fillConfigurationMap()

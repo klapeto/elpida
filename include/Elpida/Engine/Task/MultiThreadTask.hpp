@@ -41,7 +41,8 @@ namespace Elpida
 
 		MultiThreadTask(const TaskBuilder& taskBuilder,
 			const TaskConfiguration& configuration,
-			const TaskAffinity& affinity);
+			const TaskAffinity& affinity,
+			size_t iterationsToRun);
 		~MultiThreadTask() override = default;
 	protected:
 		void prepareImpl() override;

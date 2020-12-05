@@ -25,13 +25,13 @@
 
 #include <Elpida/Config.hpp>
 #include <Elpida/Utilities/OsUtilities.hpp>
-#include <Elpida/Topology/CpuInfo.hpp>
-#include <Elpida/Topology/SystemTopology.hpp>
-#include <Elpida/Topology/ProcessorNode.hpp>
+#include <Elpida/SystemInfo/CpuInfo.hpp>
+#include <Elpida/SystemInfo/SystemTopology.hpp>
+#include <Elpida/SystemInfo/ProcessorNode.hpp>
 #include <Elpida/Engine/Result/BenchmarkResult.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
-#include <Elpida/MemoryInfo.hpp>
+#include <Elpida/SystemInfo/MemoryInfo.hpp>
 
 #include "json.hpp"
 

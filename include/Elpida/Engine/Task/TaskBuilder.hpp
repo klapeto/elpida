@@ -26,6 +26,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <Elpida/Engine/Calculators/TaskResultCalculator.hpp>
 #include "Elpida/Config.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/Engine/Configuration/ConfigurationInstance.hpp"
@@ -49,6 +50,25 @@ namespace Elpida
 		TaskBuilder& canBeMultiThreaded(bool canBeMultiThreaded = true);
 		TaskBuilder& shouldBeCountedOnResults(bool shouldBeCountedOnResults = true);
 
+		TaskBuilder& withIterationsToRun(size_t iterationsToRun)
+		{
+			if (iterationsToRun != 0)
+			{
+				_iterationsToRun = iterationsToRun;
+				return *this;
+			}
+			else
+			{
+				throw ElpidaException(FUNCTION_NAME, "iterations must be at least 1");
+			}
+		}
+
+		TaskBuilder& withTaskResultCalculator(TaskResultCalculator* taskResultCalculator)
+		{
+			_taskResultCalculator = taskResultCalculator;
+			return *this;
+		}
+
 		template<typename T>
 		TaskBuilder& withFixedConfiguration(const std::string& name, const T& value)
 		{
@@ -66,6 +86,11 @@ namespace Elpida
 		TaskConfiguration getDefaultConfiguration() const
 		{
 			return generateDefaultConfiguration();
+		}
+
+		[[nodiscard]] const TaskResultCalculator* getTaskResultCalculator() const
+		{
+			return _taskResultCalculator;
 		}
 
 		[[nodiscard]] const TaskSpecification& getTaskSpecification() const
@@ -90,9 +115,16 @@ namespace Elpida
 			return _canBeDisabled;
 		}
 
+		size_t getIterationsToRun() const
+		{
+			return _iterationsToRun;
+		}
+
 		explicit TaskBuilder(TaskSpecification& specification)
 			:
 			_taskSpecification(&specification),
+			_taskResultCalculator(nullptr),
+			_iterationsToRun(1),
 			_shouldBeCountedOnResults(false),
 			_canBeMultiThreaded(false),
 			_canBeDisabled(false)
@@ -105,6 +137,8 @@ namespace Elpida
 		std::unordered_map<std::string, ConfigurationSpecificationBase*> _configurationMap;
 		std::unordered_map<std::string, ConfigurationInstance> _predefinedConfigurationsValues;
 		TaskSpecification* _taskSpecification;
+		TaskResultCalculator* _taskResultCalculator;
+		size_t _iterationsToRun;
 		bool _shouldBeCountedOnResults;
 		bool _canBeMultiThreaded;
 		bool _canBeDisabled;

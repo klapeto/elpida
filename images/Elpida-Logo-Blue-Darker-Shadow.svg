@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="344.66711"
+   height="144.14107"
+   viewBox="0 0 91.193178 38.137325"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="Elpida-Logo-Blue-Darker-Shadow.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="114.50307"
+     inkscape:cy="140.06096"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1015"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:snap-intersection-paths="false"
+     inkscape:snap-others="true"
+     inkscape:snap-bbox="true"
+     units="px" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Στρώση 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(56.756574,-58.589584)">
+    <g
+       id="g857">
+      <g
+         style="fill:#717ede;fill-opacity:1"
+         transform="matrix(3.5402854,0,0,3.5402854,463.9879,-163.98211)"
+         id="g1082-3-6-2-4-2">
+        <path
+           id="path855-6-0-0-8-0-6-2"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23332977px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';letter-spacing:0px;word-spacing:0px;fill:#717ede;fill-opacity:1;stroke:none;stroke-width:0.87643367"
+           d="m -147.0911,73.640678 h 7.26449 l 3.72075,-10.222623 -7.26596,0.004 -0.7237,1.988359 h 4.62867 l -0.69282,1.903507 h -3.38726 l -0.72522,1.992517 h 3.38726 l -0.85232,2.341722 h -4.62867 z"
+           sodipodi:nodetypes="ccccccccccccc"
+           inkscape:connector-curvature="0" />
+        <path
+           sodipodi:nodetypes="cccc"
+           id="path859-7-6-7-8-6-9-6"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23332977px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';letter-spacing:0px;word-spacing:0px;fill:#717ede;fill-opacity:1;stroke:none;stroke-width:0.87643391"
+           d="m -134.43782,65.814387 -2.71147,7.826291 h 5.41609 z"
+           inkscape:connector-curvature="0" />
+        <path
+           id="path865-5-2-1-8-4-8-4-4"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23332977px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';letter-spacing:0px;word-spacing:0px;fill:#717ede;fill-opacity:1;stroke:none;stroke-width:0.87643391"
+           d="M -129.07305,73.640678 -132.8272,63.41789 h 2.64985 l 0.64364,1.862424 h 4.12197 l 0.65049,-1.862424 h 2.64984 l -3.78648,10.222788 z m 1.60032,-2.396497 1.40367,-4.067209 h -2.80048 z"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccccccccccccc" />
+      </g>
+      <g
+         style="fill:#e5e8fd;fill-opacity:1"
+         transform="matrix(3.5402853,0,0,3.5402853,466.74583,-165.92784)"
+         id="g1082-3-6-2-4">
+        <path
+           id="path855-6-0-0-8-0-6"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23332977px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';letter-spacing:0px;word-spacing:0px;fill:#e5e8fd;fill-opacity:1;stroke:none;stroke-width:0.87643367"
+           d="m -147.0911,73.640678 h 7.26449 l 3.72075,-10.222623 -7.26596,0.004 -0.7237,1.988359 h 4.62867 l -0.69282,1.903507 h -3.38726 l -0.72522,1.992517 h 3.38726 l -0.85232,2.341722 h -4.62867 z"
+           sodipodi:nodetypes="ccccccccccccc"
+           inkscape:connector-curvature="0" />
+        <path
+           sodipodi:nodetypes="cccc"
+           id="path859-7-6-7-8-6-9"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23332977px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';letter-spacing:0px;word-spacing:0px;fill:#e5e8fd;fill-opacity:1;stroke:none;stroke-width:0.87643391"
+           d="m -134.43782,65.814387 -2.71147,7.826291 h 5.41609 z"
+           inkscape:connector-curvature="0" />
+        <path
+           id="path865-5-2-1-8-4-8-4"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23332977px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';letter-spacing:0px;word-spacing:0px;fill:#e5e8fd;fill-opacity:1;stroke:none;stroke-width:0.87643391"
+           d="M -129.07305,73.640678 -132.8272,63.41789 h 2.64985 l 0.64364,1.862424 h 4.12197 l 0.65049,-1.862424 h 2.64984 l -3.78648,10.222788 z m 1.60032,-2.396497 1.40367,-4.067209 h -2.80048 z"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccccccccccccc" />
+      </g>
+    </g>
+  </g>
+</svg>

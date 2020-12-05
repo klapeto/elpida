@@ -40,7 +40,9 @@ namespace Elpida
 	public:
 		void execute() override;
 
-		ConvertToUInt8(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		ConvertToUInt8(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun);
 		~ConvertToUInt8() override;
 	protected:
 		void prepareImpl() override;

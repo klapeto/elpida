@@ -32,8 +32,9 @@ namespace Elpida
 	{
 	public:
 
-		virtual Task* createNewTask(const TaskConfiguration& configuration,
-			const ProcessorNode& processorToRun) const override;
+		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun) const override;
 
 		PngEncodingSpecification();
 		~PngEncodingSpecification() override = default;

@@ -32,8 +32,10 @@
 namespace Elpida
 {
 
-	ConvertToUInt8::ConvertToUInt8(const TaskSpecification& specification, const ProcessorNode& processorToRun)
-		: ImageTaskBase(specification, processorToRun), _outputData(nullptr), _outputImage(nullptr),
+	ConvertToUInt8::ConvertToUInt8(const TaskSpecification& specification,
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _outputImage(nullptr),
 		  _inputImage(nullptr)
 	{
 
@@ -66,6 +68,12 @@ namespace Elpida
 
 	TaskDataDto ConvertToUInt8::finalizeAndGetOutputData()
 	{
+		delete _inputImage;
+		_inputImage = nullptr;
+
+		delete _outputImage;
+		_outputImage = nullptr;
+
 		return TaskDataDto(*_outputData, getInput().getDefinedProperties());
 	}
 

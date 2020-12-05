@@ -29,12 +29,13 @@ namespace Elpida
 {
 
 	Task* WriteFileSpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun) const
 	{
 		auto& filepath = getSettingAndValidate<ConfigurationType::FilePath>(configuration,
 			Settings::OutputFilePath,
 			ConfigurationType::Type::FilePath);
-		return new WriteFile(*this, processorToRun, filepath.getValue());
+		return new WriteFile(*this, processorToRun, filepath.getValue(), iterationsToRun);
 	}
 
 	WriteFileSpecification::WriteFileSpecification()

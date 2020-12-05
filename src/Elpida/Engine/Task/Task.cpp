@@ -24,7 +24,7 @@
 #include "Elpida/Engine/Task/Task.hpp"
 
 #include "Elpida/Config.hpp"
-#include "Elpida/Topology/ProcessorNode.hpp"
+#include "Elpida/SystemInfo/ProcessorNode.hpp"
 #include "Elpida/Utilities/OsUtilities.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/ElpidaException.hpp"
@@ -33,8 +33,8 @@
 namespace Elpida
 {
 
-	Task::Task(const TaskSpecification& specification, const ProcessorNode& processorToRun)
-		: _processorToRun(processorToRun), _specification(specification)
+	Task::Task(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun)
+		: _processorToRun(processorToRun), _specification(specification), _iterationsToRun(iterationsToRun)
 	{
 
 	}
@@ -90,4 +90,9 @@ namespace Elpida
 				getInputDataSize(_inputData.getTaskData())));
 	}
 
+	void Task::resetInputOutput()
+	{
+		_inputData = TaskDataDto();
+		_outputData = TaskDataDto();
+	}
 }

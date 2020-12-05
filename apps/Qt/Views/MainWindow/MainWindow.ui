@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>24</width>
-    <height>60</height>
+    <width>36</width>
+    <height>65</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../../Images/Images.qrc">
-    <normaloff>:/Elpida-icon-minimal-circle-bg.svg</normaloff>:/Elpida-icon-minimal-circle-bg.svg</iconset>
+    <normaloff>:/Elpida_Icon.svg</normaloff>:/Elpida_Icon.svg</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">/*============ QWidget ============*/
@@ -37,7 +37,7 @@ QTableView QWidget {
 
 QMainWindow{
 	background-color: rgba(229,232,253,255); 
-	image: url(:/Elpida.svg);
+	image: url(:/Elpida_Cut.svg);
 	image-position: bottom right;
 }
 
@@ -174,8 +174,8 @@ QLineEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>24</width>
-     <height>30</height>
+     <width>36</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuElpida">

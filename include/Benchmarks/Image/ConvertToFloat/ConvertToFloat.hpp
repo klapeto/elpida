@@ -43,7 +43,9 @@ namespace Elpida
 	public:
 		void execute() override;
 
-		ConvertToFloat(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		ConvertToFloat(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun);
 		~ConvertToFloat() override;
 	protected:
 		void prepareImpl() override;

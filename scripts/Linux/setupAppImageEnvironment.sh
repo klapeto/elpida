@@ -33,5 +33,5 @@ if [ -f /etc/lsb-release ]; then
    mv /opt/squashfs-root /opt/appimagetool.AppDir
    ln -s /opt/appimagetool.AppDir/AppRun /usr/local/bin/appimagetool
 else
-	echo This linux distribution is unsupported by this script. You have to manually install these packages: git g++ 4.8+ cmake automake libtool pkg-config qt5
+	echo This linux distribution is unsupported by this script.
 fi

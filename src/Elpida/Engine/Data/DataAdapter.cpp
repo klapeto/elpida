@@ -23,11 +23,10 @@
 
 #include "Elpida/Engine/Data/DataAdapter.hpp"
 
-
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
 #include "Elpida/Engine/Data/ActiveTaskData.hpp"
-#include "Elpida/Topology/SystemTopology.hpp"
-#include "Elpida/Topology/ProcessorNode.hpp"
+#include "Elpida/SystemInfo/SystemTopology.hpp"
+#include "Elpida/SystemInfo/ProcessorNode.hpp"
 #include "Elpida/Engine/Data/DataSpecification.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Config.hpp"
@@ -163,17 +162,7 @@ namespace Elpida
 				{
 					next->setInput(TaskDataDto(*chunks.front(), prevOutput.getDefinedProperties()));
 				}
-
 			}
-
-			auto prevInput = previous->getInput().getTaskData();
-			auto prevOutput = previous->getOutput().getTaskData();
-			delete prevInput;
-			if (prevInput != prevOutput)
-			{
-				delete prevOutput;
-			}
-			previous->setInput(TaskDataDto());
 		}
 	}
 }

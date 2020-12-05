@@ -24,19 +24,14 @@
  *      Author: klapeto
  */
 
+#include <cstring>
 #include "Elpida/Utilities/NumaMemory.hpp"
 
 #include "Elpida/Config.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
+#include "Elpida/Utilities/OsUtilities.hpp"
 #include "Elpida/ElpidaException.hpp"
-#include "Elpida/Topology/ProcessorNode.hpp"
-
-#ifdef ELPIDA_LINUX
-#include <numa.h>
-#else
-#define _WIN32_WINNT 0x0600
-#include <windows.h>
-#endif
+#include "Elpida/SystemInfo/ProcessorNode.hpp"
 
 namespace Elpida
 {
@@ -52,26 +47,10 @@ namespace Elpida
 
 	void NumaMemory::allocateImpl()
 	{
-#ifdef ELPIDA_LINUX
-		if (numa_available() < 0)
-		{
-			throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
-		}
-		numa_set_strict(1);
-		_pointer = (pData)numa_alloc_onnode(_size, _processor.getNumaNodeId());
-#else
-		_pointer = (pData)VirtualAllocExNuma(
-			GetCurrentProcess(),
-			NULL,
-			_size,
-			MEM_RESERVE | MEM_COMMIT,
-			PAGE_READWRITE,
-			(UCHAR)_processor.getNumaNodeId()
-		);
-#endif
+		_pointer = (pData)OsUtilities::allocateOnNumaNode(_size, _processor.getNumaNodeId());
 		if (_pointer != nullptr)
 		{
-			memset(_pointer, 0, _size);
+			std::memset(_pointer, 0, _size);
 		}
 		else
 		{
@@ -82,11 +61,7 @@ namespace Elpida
 
 	void NumaMemory::deallocateImpl()
 	{
-#ifdef ELPIDA_LINUX
-		numa_free(_pointer, _size);
-#else
-		VirtualFree(_pointer, 0, MEM_RELEASE);
-#endif
+		OsUtilities::deallocateOnNumaNode(_pointer, _size);
 	}
 
 } /* namespace Elpida */
