@@ -40,7 +40,10 @@ namespace Elpida
 	public:
 		void execute() override;
 
-		WriteFile(const TaskSpecification& specification, const ProcessorNode& processorToRun, std::string filePath);
+		WriteFile(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			std::string filePath,
+			size_t iterationsToRun);
 		~WriteFile() override = default;
 	protected:
 		void prepareImpl() override;

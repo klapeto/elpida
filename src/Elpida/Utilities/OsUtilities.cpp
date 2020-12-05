@@ -31,14 +31,16 @@
 #include <strsafe.h>
 #else
 #include <sys/utsname.h>
+#include <numa.h>
+#include <cstring>
+#include <cerrno>
 #endif
 
 #include <fstream>
 
 namespace Elpida
 {
-#ifdef ELPIDA_WINDOWS
-
+#if defined(ELPIDA_WINDOWS)
 	std::string OsUtilities::GetErrorString(HRESULT errorId)
 	{
 		LPSTR messageBuffer = nullptr;
@@ -117,17 +119,23 @@ namespace Elpida
 		}
 		else
 		{
-			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to get Registry key: '",subKey, "' and value: '",key,"'. Reason: ",GetErrorString(rc)));
+			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to get Registry key: '",subKey, "' and value: '",key,"'. Reason: ", GetErrorString(rc)));
 		}
-	}
-
-	std::string OsUtilities::GetLastErrorString()
-	{
-		return GetErrorString(GetLastError());
 	}
 #endif
 
-#ifdef ELPIDA_LINUX
+	std::string OsUtilities::GetLastErrorString()
+	{
+#if defined(ELPIDA_LINUX)
+		return std::string(strerror(errno));
+#elif defined(ELPIDA_WINDOWS)
+		return GetErrorString(GetLastError());
+#else
+#error "Unsupported Platform"
+#endif
+	}
+
+#if defined(ELPIDA_LINUX)
 
 	static std::string getVariable(const std::string& line, const std::string& name)
 	{
@@ -190,7 +198,7 @@ namespace Elpida
 
 		return { unameInfo.sysname, name, unameInfo.release };
 	}
-#else
+#elif defined(ELPIDA_WINDOWS)
 	static OsInfo getOsInfoImpl()
 	{
 		std::string name;
@@ -226,6 +234,8 @@ namespace Elpida
 
 		return { "Windows", name, version};
 	}
+#else
+#error "Unsupported Platform"
 #endif
 
 	OsInfo OsUtilities::getOsInfo()
@@ -237,17 +247,63 @@ namespace Elpida
 
 	void OsUtilities::setCurrentThreadAffinity(unsigned int cpuId)
 	{
-#ifdef ELPIDA_LINUX
+		bool fail = false;
+#if defined(ELPIDA_LINUX)
 		cpu_set_t mask;
 		CPU_ZERO(&mask);
 		CPU_SET(cpuId, &mask);
-		if (sched_setaffinity(0, sizeof(cpu_set_t), &mask))
-		{
-			throw ElpidaException("Failed to set thread affinity to: " + std::to_string(cpuId));
-		}
+
+		fail = sched_setaffinity(0, sizeof(cpu_set_t), &mask);
+#elif defined(ELPIDA_WINDOWS)
+		fail = !SetThreadAffinityMask(GetCurrentThread(), 1 << (int)cpuId);
 #else
-		SetThreadAffinityMask(GetCurrentThread(), 1 << (int)cpuId);
+#error "Unsupported Platform"
 #endif
+
+		if (fail)
+		{
+			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to set thread affinity to: " ,cpuId, ". Error: ", GetLastErrorString()));
+		}
+	}
+	void OsUtilities::deallocateOnNumaNode(void* data, size_t size)
+	{
+#if defined(ELPIDA_LINUX)
+		numa_free(data, size);
+#elif defined(ELPIDA_WINDOWS)
+		VirtualFree(data, 0, MEM_RELEASE);
+#else
+#error "Unsupported Platform"
+#endif
+	}
+
+	void* OsUtilities::allocateOnNumaNode(size_t size, int numaNode)
+	{
+		void* ptr;
+#if defined(ELPIDA_LINUX)
+		if (numa_available() < 0)
+		{
+			throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
+		}
+		numa_set_strict(1);
+		ptr = (void*)numa_alloc_onnode(size, numaNode);
+#elif defined(ELPIDA_WINDOWS)
+		ptr = (void*)VirtualAllocExNuma(
+			GetCurrentProcess(),
+			NULL,
+			size,
+			MEM_RESERVE | MEM_COMMIT,
+			PAGE_READWRITE,
+			(UCHAR)numaNode
+		);
+#else
+#error "Unsupported Platform"
+#endif
+		if  (ptr == nullptr)
+		{
+			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to allocate to numa node " , numaNode, ". Memory of size: ", Vu::getValueScaleStringIEC(size), "B. Error: ", GetLastErrorString()));
+		}
+
+		return ptr;
 	}
 
 }

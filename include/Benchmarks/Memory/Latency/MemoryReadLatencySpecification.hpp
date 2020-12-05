@@ -34,7 +34,8 @@ namespace Elpida
 	public:
 
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
-			const ProcessorNode& processorToRun) const override;
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun) const override;
 
 		MemoryReadLatencySpecification();
 		~MemoryReadLatencySpecification() override = default;

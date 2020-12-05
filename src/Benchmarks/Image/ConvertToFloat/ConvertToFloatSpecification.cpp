@@ -29,9 +29,10 @@ namespace Elpida
 {
 
 	Task* ConvertToFloatSpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun) const
 	{
-		return new ConvertToFloat(*this, processorToRun);
+		return new ConvertToFloat(*this, processorToRun, iterationsToRun);
 	}
 
 	ConvertToFloatSpecification::ConvertToFloatSpecification()

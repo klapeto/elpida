@@ -34,8 +34,10 @@
 
 namespace Elpida
 {
-	PngEncoding::PngEncoding(const TaskSpecification& specification, const ProcessorNode& processorToRun)
-		: ImageTaskBase(specification, processorToRun), _outputData(nullptr), _inputImage(nullptr)
+	PngEncoding::PngEncoding(const TaskSpecification& specification,
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _inputImage(nullptr)
 	{
 
 	}
@@ -90,6 +92,9 @@ namespace Elpida
 
 	TaskDataDto PngEncoding::finalizeAndGetOutputData()
 	{
+		delete _inputImage;
+		_inputImage = nullptr;
+
 		return TaskDataDto(*_outputData);
 	}
 	double PngEncoding::calculateTaskResultValue(const Duration& taskElapsedTime) const

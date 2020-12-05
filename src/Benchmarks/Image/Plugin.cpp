@@ -26,7 +26,8 @@
 
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/AccumulativeScoreCalculator.hpp>
+#include <Elpida/Engine/Calculators/Benchmark/AccumulativeScoreCalculator.hpp>
+#include <Elpida/Engine/Calculators/Benchmark/AverageScoreCalculator.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
 
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
@@ -102,6 +103,7 @@ static Elpida::Benchmark* createFloydSteinberg()
 
 	auto& floydSteinberg = (new TaskBuilder(*new FloydSteinbergSpecification))
 		->shouldBeCountedOnResults(true)
+		.withIterationsToRun(2)
 		.canBeDisabled(false)
 		.canBeMultiThreaded(false);
 

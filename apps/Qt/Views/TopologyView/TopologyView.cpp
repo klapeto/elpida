@@ -26,8 +26,8 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <algorithm>
-#include <Elpida/Topology/SystemTopology.hpp>
-#include <Elpida/Topology/ProcessorNode.hpp>
+#include <Elpida/SystemInfo/SystemTopology.hpp>
+#include <Elpida/SystemInfo/ProcessorNode.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/ElpidaException.hpp>
 #include "Views/TopologyNodeFrame/TopologyNodeFrame.hpp"

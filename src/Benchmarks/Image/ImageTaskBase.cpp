@@ -45,8 +45,10 @@ namespace Elpida
 		}
 	}
 
-	ImageTaskBase::ImageTaskBase(const TaskSpecification& specification, const ProcessorNode& processorToRun)
-		: Task(specification, processorToRun)
+	ImageTaskBase::ImageTaskBase(const TaskSpecification& specification,
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun)
+		: Task(specification, processorToRun, iterationsToRun)
 	{
 
 	}

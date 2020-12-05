@@ -22,7 +22,7 @@
 
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/BenchmarkScoreCalculator.hpp>
+#include <Elpida/Engine/Calculators/BenchmarkScoreCalculator.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 
 #include <QTreeWidgetItem>

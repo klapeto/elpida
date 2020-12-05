@@ -27,6 +27,8 @@
 #include "Elpida/Config.hpp"
 
 #ifdef ELPIDA_WINDOWS
+#define WINVER 0x0601
+#define _WIN32_WINNT 0x0601
 #include <windows.h>
 #endif
 #include <string>
@@ -48,8 +50,12 @@ namespace Elpida
 
 		static void setCurrentThreadAffinity(unsigned int cpuId);
 
-#ifdef ELPIDA_WINDOWS
 		static std::string GetLastErrorString();
+
+		static void* allocateOnNumaNode(size_t size, int numaNode);
+		static void deallocateOnNumaNode(void* data, size_t size);
+
+#ifdef ELPIDA_WINDOWS
 		static std::string GetErrorString(HRESULT errorId);
 		static std::string ReadRegistryKeyFromHKLM(const std::string& regSubKey, const std::string& regValue);
 #endif

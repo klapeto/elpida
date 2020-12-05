@@ -32,7 +32,9 @@ namespace Elpida
 	class ImageTaskBase : public Task
 	{
 	public:
-		ImageTaskBase(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		ImageTaskBase(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun);
 		~ImageTaskBase() override = default;
 	protected:
 		struct InputImageProperties

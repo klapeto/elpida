@@ -23,7 +23,7 @@
 
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
 
-#include "Elpida/Topology/ProcessorNode.hpp"
+#include "Elpida/SystemInfo/ProcessorNode.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
@@ -38,8 +38,8 @@ namespace Elpida
 
 	MultiThreadTask::MultiThreadTask(const TaskBuilder& taskBuilder,
 		const TaskConfiguration& configuration,
-		const TaskAffinity& affinity)
-		: Task(taskBuilder.getTaskSpecification(), *affinity.getProcessorNodes().front()),
+		const TaskAffinity& affinity, size_t iterationsToRun)
+		: Task(taskBuilder.getTaskSpecification(), *affinity.getProcessorNodes().front(), iterationsToRun),
 		  _affinity(affinity),
 		  _configuration(configuration),
 		  _taskBuilder(taskBuilder),
@@ -82,7 +82,7 @@ namespace Elpida
 		size_t i = 0;
 		for (auto processor : processors)
 		{
-			auto task = _specification.createNewTask(_configuration, *processor);
+			auto task = _specification.createNewTask(_configuration, *processor, 1);
 
 			if (_specification.acceptsInput())
 			{
@@ -140,6 +140,10 @@ namespace Elpida
 		{
 			delete data;    // delete any original chunks and chunks created by the tasks
 		}
+
+		_createdThreads.clear();
+		_allocatedChunks.clear();
+
 		return TaskDataDto(*returnData, getInput().getDefinedProperties());
 	}
 

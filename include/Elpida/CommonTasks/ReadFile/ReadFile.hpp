@@ -40,7 +40,10 @@ namespace Elpida
 	public:
 		void execute() override;
 
-		ReadFile(const TaskSpecification& specification, const ProcessorNode& processorToRun, std::string filePath);
+		ReadFile(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			std::string filePath,
+			size_t iterationsToRun);
 		~ReadFile() override = default;
 	protected:
 		void prepareImpl() override;

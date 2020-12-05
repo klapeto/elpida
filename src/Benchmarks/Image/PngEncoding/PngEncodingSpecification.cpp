@@ -28,9 +28,10 @@
 namespace Elpida
 {
 	Task* PngEncodingSpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun) const
 	{
-		return new PngEncoding(*this, processorToRun);
+		return new PngEncoding(*this, processorToRun, iterationsToRun);
 	}
 
 	PngEncodingSpecification::PngEncodingSpecification()

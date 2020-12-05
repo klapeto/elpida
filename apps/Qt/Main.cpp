@@ -24,6 +24,7 @@
 #include "Controllers/BenchmarksController.hpp"
 #include "Controllers/BenchmarkRunnerController.hpp"
 #include "Controllers/BenchmarkConfigurationController.hpp"
+#include "Controllers/UploadController.hpp"
 
 #include "Models/Benchmarks/BenchmarksModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
@@ -48,9 +49,12 @@
 #include "Core/DataUploader.hpp"
 #include "Core/JsonResultFormatter.hpp"
 
-#include <Elpida/Topology/CpuInfo.hpp>
-#include <Elpida/Topology/SystemTopology.hpp>
+#include <Elpida/SystemInfo/CpuInfo.hpp>
+#include <Elpida/SystemInfo/SystemTopology.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
+#include <Elpida/Utilities/OsUtilities.hpp>
+#include <Elpida/SystemInfo/MemoryInfo.hpp>
+
 
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QVBoxLayout>
@@ -87,7 +91,7 @@ void segFaultHandler(int sig)
 	size_t size = backtrace(array, 20);
 
 	backtrace_symbols_fd(array, size, STDERR_FILENO);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 #endif
 
@@ -98,10 +102,6 @@ static void setupPlatformSpecifics()
 	signal(SIGABRT, segFaultHandler);
 #endif
 }
-
-#include <Elpida/Utilities/OsUtilities.hpp>
-#include <Elpida/MemoryInfo.hpp>
-#include <Controllers/UploadController.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -247,6 +247,7 @@ void loadGlobalConfiguration(GlobalConfigurationModel& configurationModel)
 #else
 		configurationModel.setBenchmarksPath("./Benchmarks");
 #endif
+		configurationModel.setDataPath("./Data");
 	});
 }
 
@@ -261,13 +262,14 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 	struct option options[] = {
 		{ "version", no_argument, nullptr, 'v' },
 		{ "help", no_argument, nullptr, 'h' },
-		{ "benchmarksPath", required_argument, nullptr, 'p' },
+		{ "benchmarksPath", required_argument, nullptr, 'b' },
+		{ "dataPath", required_argument, nullptr, 'd' },
 		{ nullptr, 0, nullptr, 0 }
 	};
 
 	int option_index = 0;
 	int c = 0;
-	while ((c = getopt_long(argC, argV, "v:h:p:", options, &option_index)) != -1)
+	while ((c = getopt_long(argC, argV, "v:h:b:d:", options, &option_index)) != -1)
 	{
 		switch (c)
 		{
@@ -277,7 +279,7 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 		case 'h':
 			printHelp();
 			return EXIT_SUCCESS;
-		case 'p':
+		case 'b':
 			if (optarg != nullptr)
 			{
 				configurationModel.setBenchmarksPath(optarg);
@@ -285,6 +287,17 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 			else
 			{
 				std::cerr << "--benchmarksPath requires a path eg: --benchmarksPath=./Benchmarks";
+				return EXIT_FAILURE;
+			}
+			break;
+		case 'd':
+			if (optarg != nullptr)
+			{
+				configurationModel.setDataPath(optarg);
+			}
+			else
+			{
+				std::cerr << "--dataPath requires a path eg: --dataPath=./Images";
 				return EXIT_FAILURE;
 			}
 			break;
@@ -311,6 +324,8 @@ void printHelp()
 	std::cout << "           Prints the version and exits" << std::endl;
 	std::cout << "       -h, --help" << std::endl;
 	std::cout << "           Prints this help and exits" << std::endl;
-	std::cout << "       -p=DIRECTORY, --benchmarksPath=DIRECTORY" << std::endl;
+	std::cout << "       -b=DIRECTORY, --benchmarksPath=DIRECTORY" << std::endl;
 	std::cout << "           Overrides the directory to load the Benchmarks from" << std::endl;
+	std::cout << "       -d=DIRECTORY, --dataPath=DIRECTORY" << std::endl;
+	std::cout << "           Overrides the directory where the benchmarks will get their data" << std::endl;
 }

@@ -36,8 +36,10 @@
 namespace Elpida
 {
 
-	PngDecoding::PngDecoding(const TaskSpecification& specification, const ProcessorNode& processorToRun)
-		: ImageTaskBase(specification, processorToRun), _outputData(nullptr), _width(0), _height(0)
+	PngDecoding::PngDecoding(const TaskSpecification& specification,
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _width(0), _height(0)
 	{
 
 	}

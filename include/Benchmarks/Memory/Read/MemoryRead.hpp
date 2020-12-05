@@ -38,7 +38,7 @@ namespace Elpida
 	public:
 		void execute() override;
 
-		MemoryRead(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		MemoryRead(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun);
 		~MemoryRead() override = default;
 	protected:
 		RawData* _taskData;

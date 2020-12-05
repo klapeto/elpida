@@ -20,8 +20,8 @@
 #include "SystemInfoView.hpp"
 #include "ui_SystemInfoView.h"
 
-#include <Elpida/Topology/CpuInfo.hpp>
-#include <Elpida/Topology/SystemTopology.hpp>
+#include <Elpida/SystemInfo/CpuInfo.hpp>
+#include <Elpida/SystemInfo/SystemTopology.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 
 #include <cmath>

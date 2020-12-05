@@ -28,8 +28,8 @@
 
 #include <utility>
 #include <fstream>
-#include "Elpida/Topology/SystemTopology.hpp"
-#include "Elpida/Topology/ProcessorNode.hpp"
+#include "Elpida/SystemInfo/SystemTopology.hpp"
+#include "Elpida/SystemInfo/ProcessorNode.hpp"
 #include "Elpida/Engine/Data/ActiveTaskData.hpp"
 #include "Elpida/Utilities/FileSystem.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
@@ -40,8 +40,8 @@ namespace Elpida
 
 	ReadFile::ReadFile(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
-		std::string filePath)
-		: Task(specification, processorToRun),
+		std::string filePath, size_t iterationsToRun)
+		: Task(specification, processorToRun, iterationsToRun),
 		  _filePath(std::move(filePath)),
 		  _data(nullptr)
 	{
@@ -58,6 +58,7 @@ namespace Elpida
 		catch (const std::fstream::failure& e)
 		{
 			delete _data;
+			_data = nullptr;
 			if (file.is_open())
 			{
 				file.close();
@@ -82,6 +83,7 @@ namespace Elpida
 		catch (const std::fstream::failure& e)
 		{
 			delete _data;
+			_data = nullptr;
 			if (file.is_open())
 			{
 				file.close();
@@ -98,6 +100,6 @@ namespace Elpida
 
 	double ReadFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return _data->getSize();
+		return _data ? _data->getSize() : 0.0;
 	}
 } /* namespace Elpida */

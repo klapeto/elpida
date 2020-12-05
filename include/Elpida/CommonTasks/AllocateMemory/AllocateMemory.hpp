@@ -41,7 +41,8 @@ namespace Elpida
 
 		AllocateMemory(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
-			std::size_t size);
+			std::size_t size,
+			size_t iterationsToRun);
 
 		~AllocateMemory() override = default;
 	protected:

@@ -7,7 +7,8 @@
 
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 
-namespace Elpida {
+namespace Elpida
+{
 	class WriteFileSpecification final : public TaskSpecification
 	{
 	public:
@@ -18,7 +19,8 @@ namespace Elpida {
 		};
 
 		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
-			const ProcessorNode& processorToRun) const override;
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun) const override;
 
 		WriteFileSpecification();
 		~WriteFileSpecification() override = default;

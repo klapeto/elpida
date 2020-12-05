@@ -40,13 +40,19 @@ namespace Elpida
 
 		static Clock::time_point now();
 
-		static int64_t getNowOverhead()
+		template<typename T = double>
+		static std::chrono::duration<T> getNowOverhead()
 		{
-			static int64_t returnValue = getNowOverheadImpl();
-			return returnValue;
+			return std::chrono::duration<T>(getNowOverheadNanoseconds());
 		}
 
 	private:
+		static std::chrono::nanoseconds getNowOverheadNanoseconds()
+		{
+			static int64_t returnValue = getNowOverheadImpl();
+			return std::chrono::nanoseconds(returnValue);
+		}
+
 		static int64_t getNowOverheadImpl()
 		{
 			int64_t returnValue = 0xFFFFFFFF;

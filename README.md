@@ -1,7 +1,7 @@
 # Elpida
 [![pipeline status](https://gitlab.com/dev-hood/elpida/elpida/badges/develop/pipeline.svg)](https://gitlab.com/dev-hood/elpida/elpida/-/commits/develop)
 
-Elpida is a simple x86 CPU/Algorithm benchmarking library, aimed to be as transparent and as accurate as can be.
+Elpida is a simple CPU/Algorithm benchmarking library, aimed to be as transparent and as accurate as can be.
 Elpida is under development.
 
 ## Contents

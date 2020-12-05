@@ -40,7 +40,9 @@ namespace Elpida
 	public:
 
 		void execute() override;
-		PngEncoding(const TaskSpecification& specification, const ProcessorNode& processorToRun);
+		PngEncoding(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			size_t iterationsToRun);
 		~PngEncoding() override;
 	protected:
 		void prepareImpl() override;

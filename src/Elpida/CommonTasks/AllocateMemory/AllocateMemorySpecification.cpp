@@ -33,13 +33,14 @@ namespace Elpida
 {
 
 	Task* AllocateMemorySpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun) const
+		const ProcessorNode& processorToRun,
+		size_t iterationsToRun) const
 	{
 		auto& size = getSettingAndValidate<ConfigurationType::UnsignedInt>(configuration,
 			std::string(Settings::MemorySize),
 			ConfigurationType::Type::UnsignedInt);
 
-		return new AllocateMemory(*this, processorToRun, size.getValue());
+		return new AllocateMemory(*this, processorToRun, size.getValue(), iterationsToRun);
 	}
 
 	AllocateMemorySpecification::AllocateMemorySpecification()

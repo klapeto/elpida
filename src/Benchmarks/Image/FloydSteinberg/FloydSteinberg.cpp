@@ -34,8 +34,9 @@ namespace Elpida
 
 	FloydSteinberg::FloydSteinberg(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
-		double threshold)
-		: ImageTaskBase(specification, processorToRun), _inputImage(nullptr), _threshold(threshold)
+		double threshold,
+		size_t iterationsToRun)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun), _inputImage(nullptr), _threshold(threshold)
 	{
 
 	}
@@ -79,7 +80,7 @@ namespace Elpida
 
 				if (y + 1u < height)
 				{
-					if (x - 1u >= 0u)
+					if (x - 1 >= 0)
 					{
 						data[index + width - 1].R += (quantizationErrorR * 3.0) / 16.0;    // [x - 1, y + 1]
 						data[index + width - 1].G += (quantizationErrorG * 3.0) / 16.0;
@@ -113,6 +114,9 @@ namespace Elpida
 
 	TaskDataDto FloydSteinberg::finalizeAndGetOutputData()
 	{
+		delete _inputImage;
+		_inputImage = nullptr;
+
 		return getInput();
 	}
 
