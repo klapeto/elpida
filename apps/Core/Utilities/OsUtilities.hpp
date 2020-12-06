@@ -26,7 +26,8 @@
 
 #include <string>
 
-namespace Elpida {
+namespace Elpida
+{
 	class OsUtilities
 	{
 	public:
