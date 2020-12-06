@@ -56,8 +56,8 @@ namespace Elpida
 
 			version["major"] = ELPIDA_VERSION_MAJOR;
 			version["minor"] = ELPIDA_VERSION_MINOR;
-			version["revision"] = ELPIDA_VERSION_PATCH;
-			version["build"] = 0;
+			version["revision"] = ELPIDA_VERSION_REVISION;
+			version["build"] = ELPIDA_VERSION_BUILD;
 
 			elpida["version"] = version;
 		}

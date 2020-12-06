@@ -28,7 +28,7 @@ build=$7 || build=1000
 
 git submodule update --init
 
-cmake -S . \
+x86_64-w64-mingw32.shared-cmake -S . \
   -B "$buildDir" \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="$installDir" \

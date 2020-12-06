@@ -1,0 +1,79 @@
+build:linux:
+  image: $CI_REGISTRY_IMAGE/build-environment/linux
+  stage: build
+  script:
+    - git submodule update --init
+    - cmake -S .
+      -B "$BUILD_DIR"
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+      -DELPIDA_WEB_API_KEY="$ELPIDA_WEB_API_KEY"
+      -DELPIDA_VERSION_MAJOR=$ELPIDA_VERSION_MAJOR
+      -DELPIDA_VERSION_MINOR=$ELPIDA_VERSION_MINOR
+      -DELPIDA_VERSION_REVISION=$ELPIDA_VERSION_REVISION
+      -DELPIDA_VERSION_BUILD=$ELPIDA_VERSION_BUILD
+    - make -C "$BUILD_DIR" -j$(nproc) install
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $BUILD_DIR
+      - $INSTALL_DIR
+
+package:linux:
+  image: $CI_REGISTRY_IMAGE/build-environment/linux
+  stage: package
+#  only:
+#    - master
+#    - develop
+  dependencies:
+    - build:linux
+  script:
+    - mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/"
+      "$INSTALL_DIR/usr/share/metainfo/"
+      "$INSTALL_DIR/usr/share/applications/"
+    - cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/usr/share/icons/default/apps/32/elpida.svg"
+    - cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
+    - cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
+    - cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
+    - appimage-builder --skip-tests
+    - mv "Elpida-latest-x86_64.AppImage" "$PACKAGE_FILENAME.AppImage"
+    - sha256sum "$PACKAGE_FILENAME.AppImage" > SHA256SUMS
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $PACKAGE_FILENAME.AppImage
+      - SHA256SUMS
+
+deploy:master:linux:
+  stage: deploy
+#  only:
+#    - master
+  dependencies:
+    - package:linux
+  script:
+    - cp "$PACKAGE_FILENAME.AppImage" "$PACKAGE_FILENAME_DEPLOY.AppImage"
+    - sha256sum "$PACKAGE_FILENAME.AppImage" > $PACKAGE_FILENAME.AppImage.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY.AppImage" > $PACKAGE_FILENAME_DEPLOY.AppImage.SHA256SUMS
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME_DEPLOY.AppImage
+      - $PACKAGE_FILENAME.AppImage
+      - $PACKAGE_FILENAME_DEPLOY.AppImage.SHA256SUMS
+      - $PACKAGE_FILENAME.AppImage.SHA256SUMS
+
+deploy:beta:linux:
+  stage: deploy
+#  only:
+#    - develop
+  dependencies:
+    - package:linux
+  script:
+    - cp "$PACKAGE_FILENAME.AppImage" "$PACKAGE_FILENAME_DEPLOY_BETA.AppImage"
+    - sha256sum "$PACKAGE_FILENAME.AppImage" > $PACKAGE_FILENAME.AppImage.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY_BETA.AppImage" > $PACKAGE_FILENAME_DEPLOY_BETA.AppImage.SHA256SUMS
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME_DEPLOY_BETA.AppImage
+      - $PACKAGE_FILENAME.AppImage
+      - $PACKAGE_FILENAME_DEPLOY_BETA.AppImage.SHA256SUMS
+      - $PACKAGE_FILENAME.AppImage.SHA256SUMS

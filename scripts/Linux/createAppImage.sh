@@ -18,12 +18,29 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 #-------------------------------------------------------------------------------
 
-mkdir -p ./AppDir/usr/share/icons/default/apps/32/
-mkdir -p ./AppDir/usr/share/metainfo/
-mkdir -p ./AppDir/usr/share/applications/
-cp -u ./images/Elpida_Icon.svg ./AppDir/usr/share/icons/default/apps/32/elpida.svg
-cp -u ./resources/dev.elpida.qt.metainfo.xml ./AppDir/usr/share/metainfo/dev.elpida.qt.metainfo.xml
-cp -u ./resources/dev.elpida.qt.metainfo.xml ./AppDir/usr/share/metainfo/dev.elpida.qt.appdata.xml
-cp -u ./resources/dev.elpida.qt.desktop ./AppDir/usr/share/applications/
+installDir=$1 || printHelpAndExit
+rootDir=$2 || printHelpAndExit
+major=$3 || major=0
+minor=$4 || minor=0
+revision=$5 || revision=1
+build=$6 || build=1000
+
+# Fix version on AppImageBuilder.yml
+cp ./AppImageBuilder.yml ./AppImageBuilder.yml.old
+sed  s/"version: latest"/"version: $major.$minor.$revision.$build"/ < ./AppImageBuilder.yml.old > ./AppImageBuilder.yml
+
+mkdir -p "$installDir/usr/share/icons/default/apps/32/" \
+  "$installDir/usr/share/metainfo/" \
+  "$installDir/usr/share/applications/"
+
+cp -u "$rootDir/images/Elpida_Icon.svg" "$installDir/usr/share/icons/default/apps/32/elpida.svg"
+cp -u "$rootDir/resources/dev.elpida.qt.metainfo.xml" "$installDir/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
+cp -u "$rootDir/resources/dev.elpida.qt.metainfo.xml" "$installDir/usr/share/metainfo/dev.elpida.qt.appdata.xml"
+cp -u "$rootDir/resources/dev.elpida.qt.desktop" "$installDir/usr/share/applications/"
+
 appimage-builder --skip-tests
 
+function printHelpAndExit() {
+   echo "Usage: ./createAppImage 'Installed directory' 'root repo directory'"
+   exit
+}

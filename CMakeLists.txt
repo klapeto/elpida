@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Elpida VERSION 0.0.1
+include(cmake-modules/GetElpidaVersion.cmake)
+
+project(Elpida VERSION ${ELPIDA_VERSION_MAJOR}.${ELPIDA_VERSION_MINOR}.${ELPIDA_VERSION_REVISION}.${ELPIDA_VERSION_BUILD}
         DESCRIPTION "Simple Benchmarking Framework"
+        HOMEPAGE_URL "https://beta.elpida.dev"
         LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
