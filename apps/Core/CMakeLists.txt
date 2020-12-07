@@ -23,6 +23,7 @@ set(ELPIDA_CORE_SOURCES
         Models/BenchmarkConfigurationModel.cpp
         Models/Benchmarks/BenchmarkGroup.cpp
         Models/GlobalConfigurationModel.cpp
+        Models/AffinityModel.cpp
 
         Controllers/BenchmarksController.cpp
         Controllers/BenchmarkRunnerController.cpp

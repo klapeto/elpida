@@ -32,6 +32,7 @@
 #include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
 #include "Models/GlobalConfigurationModel.hpp"
+#include "Models/AffinityModel.hpp"
 #include "UiModels/Screens/ScreensModel.hpp"
 
 #include "Views/MainWindow/MainWindow.hpp"
@@ -126,14 +127,14 @@ int main(int argc, char* argv[])
 	QCustomApplication application(argc, argv, mediator, logger);
 
 	ScreensModel screensModel;
+	AffinityModel affinityModel;
 
-	MainWindow mainWindow(mediator, screensModel);
+	MainWindow mainWindow(mediator, screensModel, affinityModel);
 
 	ConfigurationViewsPool configurationViewsPool;
 
 	const CpuInfo& cpuInfo = CpuInfo::get();
 	SystemTopology topology;
-
 
 	QuickStartView quickStartView;
 
@@ -142,7 +143,8 @@ int main(int argc, char* argv[])
 	SystemInfoView systemInfoView(cpuInfo, topology);
 	screensModel.add(ScreenItem("CPU Info", systemInfoView));
 
-	TopologyView topologyView(topology);
+
+	TopologyView topologyView(topology,affinityModel);
 
 	initializeTopologyTab(screensModel, topologyView);
 
@@ -155,7 +157,7 @@ int main(int argc, char* argv[])
 		benchmarksController(taskBatchesModel, benchmarkConfigurationsModel, globalConfigurationModel, logger);
 	benchmarksController.reload();
 	BenchmarkRunnerController
-		runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel, logger);
+		runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel, affinityModel, logger);
 	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
@@ -166,7 +168,6 @@ int main(int argc, char* argv[])
 
 	mediator.registerCommandHandler(runnerController);
 	mediator.registerCommandHandler(taskBatchesListView);
-	mediator.registerCommandHandler(topologyView);
 	mediator.registerCommandHandler(mainWindow);
 	mediator.registerCommandHandler(benchmarkConfigurationController);
 

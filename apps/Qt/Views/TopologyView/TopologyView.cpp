@@ -31,7 +31,7 @@
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/ElpidaException.hpp>
 #include "Views/TopologyNodeFrame/TopologyNodeFrame.hpp"
-#include "Core/Commands/GetTaskAffinityCommand.hpp"
+#include "Models/AffinityModel.hpp"
 
 #include <vector>
 #include <cmath>
@@ -45,8 +45,8 @@ namespace Elpida
 		QString mouseClickStyle;
 	};
 
-	TopologyView::TopologyView(const SystemTopology& topology)
-		: QWidget(), _ui(new Ui::TopologyView), _rootFrame(nullptr), _topology(topology)
+	TopologyView::TopologyView(const SystemTopology& topology, AffinityModel& affinityModel)
+		: QWidget(), _ui(new Ui::TopologyView), _rootFrame(nullptr), _topology(topology), _affinityModel(affinityModel)
 	{
 		_ui->setupUi(this);
 		setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -388,15 +388,16 @@ namespace Elpida
 				else
 				{
 					checkBox->setChecked(true);
-					if (std::none_of(_selectedNodes.begin(), _selectedNodes.end(), [&](const ProcessorNode* nd)
-					{ return &node->getProcessorNode() == nd; }))
+					if (std::none_of(_selectedNodes.begin(),_selectedNodes.end(),
+						[&](auto nd) { return &node->getProcessorNode() == nd; }))
 					{
 						_selectedNodes.push_front(&node->getProcessorNode());
 					}
 				}
 			}
 		}
-		_affinity = TaskAffinity(_selectedNodes);
+		_selectedNodes.sort([](auto a, auto b) { return a->getOsIndex() < b->getOsIndex();});
+		_affinityModel.setCurrentAffinity(TaskAffinity(_selectedNodes));
 	}
 
 	void TopologyView::onClearPressed()
@@ -407,11 +408,7 @@ namespace Elpida
 			clearChildrenState(child);
 		}
 		_selectedNodes.clear();
-	}
-
-	void TopologyView::handle(GetTaskAffinityCommand& command)
-	{
-		command.setAffinity(_affinity);
+		_affinityModel.setCurrentAffinity(TaskAffinity());
 	}
 
 } // namespace Elpida

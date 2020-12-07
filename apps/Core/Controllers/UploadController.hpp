@@ -25,6 +25,7 @@
 #define APPS_QT_CONTROLLERS_UPLOADCONTROLLER_HPP
 
 #include "Core/Abstractions/CommandHandler.hpp"
+#include <Elpida/Config.hpp>
 
 namespace Elpida
 {
@@ -52,7 +53,7 @@ namespace Elpida
 
 		void onResultAdded(const BenchmarkResult& result);
 
-		static inline const char* frontEndResultUrl = "https://beta.elpida.dev/#/result/";
+		static inline const char* frontEndResultUrl = ELPIDA_WEBSITE_URL "/#/result/";
 	};
 }
 

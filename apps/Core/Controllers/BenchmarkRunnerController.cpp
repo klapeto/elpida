@@ -25,11 +25,11 @@
 #include "BenchmarkRunnerController.hpp"
 
 #include "Core/Commands/GetBenchmarksToRunCommand.hpp"
-#include "Core/Commands/GetTaskAffinityCommand.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
+#include "Models/AffinityModel.hpp"
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 
 #include <Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp>
@@ -44,9 +44,10 @@ namespace Elpida
 		BenchmarkResultsModel& benchmarkResultsModel,
 		BenchmarkRunnerModel& runnerModel,
 		BenchmarkConfigurationsCollectionModel& configurationsModel,
+		const AffinityModel& affinityModel,
 		Logger& logger)
 		: _benchmarkResultsModel(benchmarkResultsModel), _runnerModel(runnerModel),
-		  _configurationsModel(configurationsModel), _mediator(mediator), _logger(logger)
+		  _configurationsModel(configurationsModel), _mediator(mediator), _affinityModel(affinityModel), _logger(logger)
 	{
 
 		_runner.benchmarkStarted.subscribe([this](const auto& ev)
@@ -79,9 +80,7 @@ namespace Elpida
 			auto& benchmarks = getSelectedCmd.getBenchmarks();
 			if (!benchmarks.empty())
 			{
-				GetTaskAffinityCommand getAffinityCmd;
-				_mediator.execute(getAffinityCmd);
-				auto& affinity = getAffinityCmd.getAffinity();
+				auto& affinity = _affinityModel.getCurrentAffinity();
 				if (!affinity.getProcessorNodes().empty())
 				{
 					std::vector<BenchmarkRunRequest> benchmarkRunRequests;

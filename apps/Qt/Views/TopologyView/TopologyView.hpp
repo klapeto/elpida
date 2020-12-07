@@ -30,13 +30,14 @@ namespace Elpida
 	class TopologyNodeFrame;
 	class ProcessorNode;
 	class SystemTopology;
+	class AffinityModel;
 
 	namespace Ui
 	{
 		class TopologyView;
 	}
 
-	class TopologyView : public QWidget, public CommandHandler
+	class TopologyView : public QWidget
 	{
 	Q_OBJECT
 
@@ -47,15 +48,14 @@ namespace Elpida
 			return _affinity;
 		}
 
-		void handle(GetTaskAffinityCommand &command) override;
-
-		explicit TopologyView(const SystemTopology& topology);
+		explicit TopologyView(const SystemTopology& topology, AffinityModel& affinityModel);
 		~TopologyView() override;
 	private:
 		TaskAffinity _affinity;
 		Ui::TopologyView* _ui;
 		TopologyNodeFrame* _rootFrame;
 		const SystemTopology& _topology;
+		AffinityModel& _affinityModel;
 		std::forward_list<const ProcessorNode*> _selectedNodes;
 
 		void loadTopology();
