@@ -17,23 +17,38 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
+
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 7/12/20.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#ifndef APPS_CORE_MODELS_AFFINITYMODEL_HPP
+#define APPS_CORE_MODELS_AFFINITYMODEL_HPP
+
+#include <Elpida/Engine/Task/TaskAffinity.hpp>
+#include "Abstractions/Model.hpp"
 
 namespace Elpida
 {
-	class Command;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
-	class ShowMessageCommand;
-	class SelectedBenchmarkChangedEvent;
-	class HttpResponseEvent;
-	class UploadResultCommand;
+	class AffinityModel: public Model
+	{
+	public:
+		const TaskAffinity& getCurrentAffinity() const
+		{
+			return _currentAffinity;
+		}
+
+		void setCurrentAffinity(TaskAffinity&& currentAffinity)
+		{
+			_currentAffinity = std::move(currentAffinity);
+			onDataChanged();
+		}
+
+		AffinityModel() = default;
+		~AffinityModel() override = default;
+	private:
+		TaskAffinity _currentAffinity;
+	};
 }
 
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#endif //APPS_CORE_MODELS_AFFINITYMODEL_HPP

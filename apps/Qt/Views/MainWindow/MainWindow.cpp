@@ -24,15 +24,30 @@
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
 #include "UiModels/Screens/ScreensModel.hpp"
+#include "Models/AffinityModel.hpp"
+#include "Utilities/OsUtilities.hpp"
+
+#include <Elpida/Config.hpp>
+#include <Elpida/SystemInfo/ProcessorNode.hpp>
 
 #include <QMessageBox>
+#include <QLabel>
+#include <sstream>
 
 namespace Elpida
 {
+	constexpr const char* aboutText= "<h2>Elpida " ELPIDA_VERSION "</h2>"
+		"<p>Elpida is an Open Source (GPLv3) Benchmarking framework for measuring "
+  		"performance of computer hardware or algorithms.</p>"
+  		"<p>It's goal is to be as transparent and open as possible "
+	  	"as well as extensible by the community. It comes with a library (libelpida), a Qt application and a "
+   		"set of predefined benchmarks for measuring computer hardware capabilities.</p>"
+	 	"More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
 
-	MainWindow::MainWindow(Mediator& mediator, ScreensModel& screensModel)
+
+	MainWindow::MainWindow(Mediator& mediator, ScreensModel& screensModel, const AffinityModel& affinityModel)
 		: QMainWindow(), _navigationBarView(screensModel), _mediator(mediator), _ui(new Ui::MainWindow),
-		  _screensModel(screensModel)
+		  _screensModel(screensModel), _affinityModel(affinityModel)
 	{
 		_ui->setupUi(this);
 
@@ -51,12 +66,30 @@ namespace Elpida
 			emit screensModelSelectedItemChanged(&item);
 		}));
 
+		addSubscription(_affinityModel.dataChanged.subscribe([this]
+		{
+			emit affinityChanged();
+		}));
+
 		QWidget::connect(this, &MainWindow::showMessageRequested, this, &MainWindow::showMessageRequestedHandler);
 		QWidget::connect(this, &MainWindow::screensModelItemAdded, this, &MainWindow::onScreenAdded);
 		QWidget::connect(this,
 			&MainWindow::screensModelSelectedItemChanged, this, &MainWindow::onSelectedScreenChanged);
 
+		QWidget::connect(this, &MainWindow::affinityChanged, this, &MainWindow::onAffinityChanged);
+
 		_ui->wNavBar->layout()->addWidget(&_navigationBarView);
+
+		_ui->statusBar
+			->addPermanentWidget(new QLabel(QString("Elpida Version: " ELPIDA_VERSION " " ELPIDA_COMPILER_NAME " " ELPIDA_COMPILER_VERSION)));
+
+		_ui->statusBar->addWidget(new QLabel("Selected processors:"));
+
+		_processorsLabel = new QLabel();
+		_processorsLabel->setWordWrap(true);
+		_ui->statusBar->addWidget(_processorsLabel,1);
+
+		onAffinityChanged();
 	}
 
 	MainWindow::~MainWindow()
@@ -71,11 +104,12 @@ namespace Elpida
 
 	void MainWindow::on_actionAbout_triggered()
 	{
-		QMessageBox::about(
-			QApplication::activeWindow(),
-			"About: Elpida",
-			"Elpida is an open source x86 Cpu/Algorithm benchmarking tool. It is released under the General Public License v3 (GPL v3). More info at: https://gitlab.com/dev-hood/elpida/elpida");
+		QMessageBox::about(QApplication::activeWindow(),"About: Elpida", aboutText);
+	}
 
+	void MainWindow::on_actionVisit_Website_triggered()
+	{
+		OsUtilities::openUrl(ELPIDA_WEBSITE_URL);
 	}
 
 	void MainWindow::handle(ShowMessageCommand& command)
@@ -110,6 +144,28 @@ namespace Elpida
 	{
 		auto index = _screensMaps.at(screen);
 		_ui->swPages->setCurrentIndex(index);
+	}
+
+	void MainWindow::onAffinityChanged()
+	{
+		auto& processors = _affinityModel.getCurrentAffinity().getProcessorNodes();
+		if (!processors.empty())
+		{
+			std::stringstream affinityStr;
+
+			affinityStr << std::to_string(processors[0]->getOsIndex());
+
+			for (size_t i = 1; i < processors.size(); ++i)
+			{
+				affinityStr << ',' << std::to_string(processors[i]->getOsIndex());
+			}
+			_processorsLabel->setText(QString::fromStdString(affinityStr.str()));
+		}
+		else
+		{
+			_processorsLabel
+				->setText("<strong><span style=\"color: #d73e3e\">No processors selected.</span> Please select from 'System Topology' tab before running benchmarks.</strong>");
+		}
 	}
 
 }  // namespace Elpida

@@ -22,9 +22,9 @@ build:windows:
 package:windows:
   image: $CI_REGISTRY_IMAGE/build-environment/windows
   stage: package
-#  only:
-#    - master
-#    - develop
+  only:
+    - master
+    - develop
   dependencies:
     - build:windows
   script:
@@ -58,8 +58,8 @@ package:windows:
 
 deploy:master:windows:
   stage: deploy
-#  only:
-#    - master
+  only:
+    - master
   dependencies:
     - package:windows
   script:
@@ -75,8 +75,8 @@ deploy:master:windows:
 
 deploy:beta:windows:
   stage: deploy
-#  only:
-#    - develop
+  only:
+    - develop
   dependencies:
     - package:windows
   script:

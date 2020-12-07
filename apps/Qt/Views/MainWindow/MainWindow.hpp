@@ -28,12 +28,14 @@
 
 class QHBoxLayout;
 class QPushButton;
+class QLabel;
 
 namespace Elpida
 {
 	class Mediator;
 	class ScreensModel;
 	class ScreenItem;
+	class AffinityModel;
 
 	namespace Ui
 	{
@@ -47,28 +49,32 @@ namespace Elpida
 
 		void handle(ShowMessageCommand& command) override;
 
-		explicit MainWindow(Mediator& mediator, ScreensModel& screensModel);
+		explicit MainWindow(Mediator& mediator, ScreensModel& screensModel, const AffinityModel& affinityModel);
 		~MainWindow() override;
 	private slots:
 		void on_actionExit_triggered();
 		void on_actionAbout_triggered();
+		void on_actionVisit_Website_triggered();
 		void showMessageRequestedHandler(const QString& message, int type);
 
 		void onScreenAdded(const ScreenItem* screen);
 		void onSelectedScreenChanged(const ScreenItem* screen);
+		void onAffinityChanged();
 
 	signals:
 		void showMessageRequested(const QString& message, int type);
 		void screensModelItemAdded(const ScreenItem* screen);
 		void screensModelSelectedItemChanged(const ScreenItem* screen);
+		void affinityChanged();
 
 	private:
 		std::unordered_map<const ScreenItem*, int> _screensMaps;
 		NavigationBarView _navigationBarView;
 		Mediator& _mediator;
 		Ui::MainWindow* _ui;
+		QLabel* _processorsLabel;
 		ScreensModel& _screensModel;
-
+		const AffinityModel& _affinityModel;
 	};
 
 }  // namespace Elpida

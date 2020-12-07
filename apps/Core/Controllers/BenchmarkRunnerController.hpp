@@ -35,6 +35,7 @@ namespace Elpida
 	class BenchmarkResultsModel;
 	class BenchmarkRunnerModel;
 	class BenchmarkConfigurationsCollectionModel;
+	class AffinityModel;
 	class Mediator;
 	class Logger;
 
@@ -48,6 +49,7 @@ namespace Elpida
 			BenchmarkResultsModel& benchmarkResultsModel,
 			BenchmarkRunnerModel& runnerModel,
 			BenchmarkConfigurationsCollectionModel& configurationsModel,
+			const AffinityModel& affinityModel,
 			Logger& logger);
 	private:
 		OffThreadExecutor _taskRunnerThread;
@@ -56,6 +58,7 @@ namespace Elpida
 		BenchmarkRunnerModel& _runnerModel;
 		BenchmarkConfigurationsCollectionModel& _configurationsModel;
 		Mediator& _mediator;
+		const AffinityModel& _affinityModel;
 		Logger& _logger;
 
 		void onTaskBatchStarted(const BenchmarkEventArgs& ev);

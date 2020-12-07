@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>36</width>
-    <height>65</height>
+    <width>436</width>
+    <height>250</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,9 +41,14 @@ QMainWindow{
 	image-position: bottom right;
 }
 
+#statusBar {
+background-color: rgba(229,232,253,245);
+}
+
 #centralWidget {
 background-color: rgba(229,232,253,245);
 }
+
 #menuBar {
 background-color: rgba(229,232,253,245);
 }
@@ -174,7 +179,7 @@ QLineEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>36</width>
+     <width>436</width>
      <height>23</height>
     </rect>
    </property>
@@ -182,6 +187,7 @@ QLineEdit {
     <property name="title">
      <string>E&amp;lpida</string>
     </property>
+    <addaction name="actionVisit_Website"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -194,6 +200,7 @@ QLineEdit {
    <addaction name="menuElpida"/>
    <addaction name="menuAbout"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
    <property name="text">
     <string>&amp;Exit</string>
@@ -202,6 +209,14 @@ QLineEdit {
   <action name="actionAbout">
    <property name="text">
     <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionVisit_Website">
+   <property name="text">
+    <string>&amp;Visit Website</string>
+   </property>
+   <property name="toolTip">
+    <string>Visit the Elpida Website</string>
    </property>
   </action>
  </widget>
