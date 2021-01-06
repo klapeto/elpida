@@ -12,5 +12,5 @@ build-docker-image:linux:
     - docker push $IMAGE_NAME
   only:
     changes:
-      - docker/linux/Dockerfile
+      - docker/build-environment/linux/Dockerfile
       - ci/docker-image-linux.yml

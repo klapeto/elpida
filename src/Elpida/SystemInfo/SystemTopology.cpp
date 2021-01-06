@@ -57,8 +57,32 @@ namespace Elpida
 		hwloc_topology_init(&topo);
 		hwloc_topology_set_all_types_filter(topo, HWLOC_TYPE_FILTER_KEEP_ALL);
 		hwloc_topology_load(topo);
-		_root = new ProcessorNode(nullptr, hwloc_get_root_obj(topo));
+
+		auto kindsN = hwloc_cpukinds_get_nr(topo, 0);
+		if (kindsN != -1)
+		{
+			for (auto i = 0; i < kindsN; ++i)
+			{
+				int efficiency = 0;
+				unsigned int nrInfos = 0;
+				hwloc_info_s* hwInfos;
+				std::unordered_map<std::string, std::string> infos;
+				if (!hwloc_cpukinds_get_info(topo, i, nullptr, &efficiency, &nrInfos, &hwInfos, 0))
+				{
+					for (auto j = 0u; j < nrInfos; ++j)
+					{
+						infos.emplace(hwInfos[j].name, hwInfos[j].value);
+					}
+				}
+				_cpuKinds.emplace_back(efficiency, std::move(infos));
+			}
+		}
+
+		//hwloc_cpukinds_get_info(&topo,)
+
+		_root = new ProcessorNode(nullptr, _cpuKinds, topo, hwloc_get_root_obj(topo));
 		_root->loadSiblings();    // Now its safe to attempt to recursively load all siblings
+
 		hwloc_topology_destroy(topo);
 		accumulateCores(*_root);
 	}

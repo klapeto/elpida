@@ -141,6 +141,16 @@ namespace Elpida
 		nodeJ["nodeType"] = node.getType();
 		nodeJ["name"] = node.getName();
 		nodeJ["osIndex"] = node.isOsIndexValid() ? node.getOsIndex() : 0;
+
+		if (node.getCpuKind() != nullptr)
+		{
+			nodeJ["efficiency"] = node.getCpuKind()->getEfficiency();
+		}
+		else
+		{
+			nodeJ["efficiency"] = nullptr;
+		}
+
 		if (node.getValue() > 0)
 		{
 			nodeJ["value"] = node.getValue();

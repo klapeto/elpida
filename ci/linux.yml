@@ -22,9 +22,6 @@ build:linux:
 package:linux:
   image: $CI_REGISTRY_IMAGE/build-environment/linux
   stage: package
-  only:
-    - master
-    - develop
   dependencies:
     - build:linux
   script:

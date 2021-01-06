@@ -28,6 +28,7 @@
 #define ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
 
 #include <vector>
+#include "CpuKind.hpp"
 
 namespace Elpida
 {
@@ -73,6 +74,7 @@ namespace Elpida
 		~SystemTopology();
 	private:
 		std::vector<const ProcessorNode*> _allProcessors;
+		std::vector<CpuKind> _cpuKinds;
 		ProcessorNode* _root;
 
 		std::size_t _depth;

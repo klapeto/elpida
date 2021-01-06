@@ -53,6 +53,11 @@ namespace Elpida
 			&NavigationBarView::onButton_Toggled);
 
 		QObject::connect(this, &NavigationBarView::onViewAdded, this, &NavigationBarView::onViewAdded_handler);
+
+		for (auto& itm: model.getItems())
+		{
+			onViewAdded(const_cast<ScreenItem&>(itm.getValue()));
+		}
 	}
 
 	NavigationBarView::~NavigationBarView()

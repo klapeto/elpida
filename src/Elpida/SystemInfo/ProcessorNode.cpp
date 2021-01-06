@@ -39,8 +39,8 @@
 namespace Elpida
 {
 
-	ProcessorNode::ProcessorNode(ProcessorNode* parent, void* node)
-		: _type(Type::Unknown), _value(0), _osIndex(0), _parent(parent)
+	ProcessorNode::ProcessorNode(ProcessorNode* parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
+		: _value(0), _parent(parent), _cpuKind(nullptr), _type(Type::Unknown), _osIndex(0)
 	{
 		switch (((hwloc_obj_t)node)->type)
 		{
@@ -70,13 +70,22 @@ namespace Elpida
 			loadPackage(node);
 			break;
 		case HWLOC_OBJ_PU:
+		{
 			loadExecutionUnit(node);
+
+			auto kindIndex = hwloc_cpukinds_get_by_cpuset((hwloc_topology_t)rootObj, ((hwloc_obj_t)node)->cpuset, 0);
+
+			if (kindIndex != -1)
+			{
+				_cpuKind = &cpuKinds.at(kindIndex);
+			}
+		}
 			break;
 		default:
 			break;
 		}
 
-		loadChildren(node);
+		loadChildren(cpuKinds, rootObj, node);
 	}
 
 	void ProcessorNode::loadMachine(void* node)
@@ -166,21 +175,21 @@ namespace Elpida
 		_name = "EU";
 	}
 
-	void ProcessorNode::loadChildren(void* node)
+	void ProcessorNode::loadChildren(const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
 	{
 		auto memChild = ((hwloc_obj_t)node)->memory_first_child;
 		for (auto i = 0u; i < ((hwloc_obj_t)node)->memory_arity; ++i)
 		{
 			if (memChild != nullptr)
 			{
-				_memoryChildren.push_back(ProcessorNode(this, memChild));
+				_memoryChildren.push_back(ProcessorNode(this, cpuKinds, rootObj, memChild));
 			}
 			memChild = memChild->next_sibling;
 		}
 
 		for (auto i = 0u; i < ((hwloc_obj_t)node)->arity; ++i)
 		{
-			_children.push_back(ProcessorNode(this, ((hwloc_obj_t)node)->children[i]));
+			_children.push_back(ProcessorNode(this, cpuKinds, rootObj, ((hwloc_obj_t)node)->children[i]));
 		}
 	}
 
