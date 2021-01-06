@@ -30,6 +30,8 @@
 #include <string>
 #include <vector>
 
+#include "CpuKind.hpp"
+
 namespace Elpida
 {
 
@@ -94,11 +96,16 @@ namespace Elpida
 			return _value;
 		}
 
+		[[nodiscard]] const CpuKind* getCpuKind() const
+		{
+			return _cpuKind;
+		}
+
 		[[nodiscard]] int getNumaNodeId() const;
 
 		~ProcessorNode() = default;
 	private:
-		ProcessorNode(ProcessorNode* parent, void* node);    // Evil casting to avoid header inclusion
+		ProcessorNode(ProcessorNode* parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);    // Evil casting to avoid header inclusion
 
 		void addSibling(ProcessorNode& node)
 		{
@@ -106,10 +113,11 @@ namespace Elpida
 		}
 
 		std::string _name;
-		Type _type;
 		std::size_t _value;
-		unsigned int _osIndex;
 		ProcessorNode* _parent;
+		const CpuKind* _cpuKind;
+		Type _type;
+		unsigned int _osIndex;
 
 		std::vector<ProcessorNode> _children;
 		std::vector<ProcessorNode> _memoryChildren;
@@ -122,7 +130,7 @@ namespace Elpida
 		void loadCache(void* node);
 		void loadExecutionUnit(void* node);
 
-		void loadChildren(void* node);
+		void loadChildren(const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 		void loadSiblings();
 		friend class SystemTopology;
 	};

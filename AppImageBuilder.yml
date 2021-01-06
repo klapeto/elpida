@@ -10,7 +10,7 @@ AppDir:
     exec_args: --benchmarksPath=$APPDIR/bin/Benchmarks $@
   runtime:
     env:
-      APPDIR_LIBRARY_PATH: $APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/lib/x86_64-linux-gnu:$APPDIR/lib
+      APPDIR_LIBRARY_PATH: $APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/lib/x86_64-linux-gnu:$APPDIR/lib:$APPDIR/usr/local/lib
   apt:
     arch: amd64
     sources:
@@ -34,7 +34,6 @@ AppDir:
     - libqt5x11extras5
     - libssl1.1
     - qt5-image-formats-plugins
-    - libhwloc-dev
     exclude: []
   files:
     exclude:

@@ -120,6 +120,11 @@ int main(int argc, char* argv[])
 
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+	QCoreApplication::setOrganizationName("Elpida");
+	QCoreApplication::setOrganizationDomain(ELPIDA_WEBSITE_URL);
+	QCoreApplication::setApplicationName("Elpida Qt");
 
 	ElpidaMediator mediator;
 	Logger logger;

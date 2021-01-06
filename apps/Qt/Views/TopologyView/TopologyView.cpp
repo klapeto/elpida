@@ -189,8 +189,10 @@ namespace Elpida
 		auto label = new QLabel();
 		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
 		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-		widget->setLayout(new QVBoxLayout);
-		widget->layout()->addWidget(label);
+		auto layout =new QVBoxLayout;
+
+		widget->setLayout(layout);
+		layout->addWidget(label);
 		label->setText(QString::fromStdString(node.getName()) + ": "
 			+ (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex()) + ": ") : QString()));
 		widget->setDefaultStyle(QString("background-color: #9297e3;"));
@@ -272,6 +274,16 @@ namespace Elpida
 			{
 				rootLayout->addWidget(getNumaWidget(memChild), currRow++, 0, 1, maxColumns);
 			}
+		}
+
+		if (node.getCpuKind() != nullptr)
+		{
+			rootLayout->addWidget(new QLabel(QString("Eff: ") + QString::fromStdString(std::to_string(node.getCpuKind()->getEfficiency()))));
+			// Disable for now
+//			for (const auto& pair: node.getCpuKind()->getInfos())
+//			{
+//				layout->addWidget(new QLabel( QString::fromStdString(pair.first) + ": " + QString::fromStdString(pair.second)));
+//			}
 		}
 
 		for (auto& child : children)

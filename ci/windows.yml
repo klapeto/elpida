@@ -22,9 +22,6 @@ build:windows:
 package:windows:
   image: $CI_REGISTRY_IMAGE/build-environment/windows
   stage: package
-  only:
-    - master
-    - develop
   dependencies:
     - build:windows
   script:
