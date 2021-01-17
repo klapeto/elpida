@@ -22,6 +22,8 @@ set(IMAGE_BENCHMARKS_SOURCES
         PngDecoding/PngDecodingSpecification.cpp
 
         Plugin.cpp
+        Image.cpp
+        Pixel.cpp
         ImageTaskBase.cpp
         ImageDataPropertiesTransformer.cpp
         )

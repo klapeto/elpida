@@ -25,47 +25,49 @@
 #define APPS_QT_MODELS_BENCHMARKCONFIGURATIONMODEL_HPP
 
 #include "Models/Abstractions/Model.hpp"
+#include <Elpida/Utilities/OptionalReference.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
 namespace Elpida
 {
-	class Benchmark;
 	class BenchmarkConfiguration;
 
 	class BenchmarkConfigurationModel : public Model
 	{
 	public:
 
-		Benchmark* getBenchmark() const
+		OptionalReference<Benchmark> getBenchmark() const
 		{
 			return _benchmark;
 		}
 
-		BenchmarkConfiguration* getBenchmarkConfiguration() const
+		OptionalReference<BenchmarkConfiguration> getBenchmarkConfiguration() const
 		{
 			return _benchmarkConfiguration;
 		}
 
-		void setBenchmark(Benchmark* benchmark)
+		void setBenchmark(OptionalReference<Benchmark> benchmark)
 		{
 			_benchmark = benchmark;
 			onDataChanged();
 		}
 
-		void setBenchmarkConfiguration(BenchmarkConfiguration* benchmarkConfiguration)
+		void setBenchmarkConfiguration(OptionalReference<BenchmarkConfiguration> benchmarkConfiguration)
 		{
 			_benchmarkConfiguration = benchmarkConfiguration;
 			onDataChanged();
 		}
 
 		BenchmarkConfigurationModel()
-			: _benchmark(nullptr), _benchmarkConfiguration(nullptr)
+			: _benchmark(std::nullopt),
+			_benchmarkConfiguration(std::nullopt)
 		{
 
 		}
 		~BenchmarkConfigurationModel() override = default;
 	private:
-		Benchmark* _benchmark;
-		BenchmarkConfiguration* _benchmarkConfiguration;
+		OptionalReference<Benchmark> _benchmark;
+		OptionalReference<BenchmarkConfiguration> _benchmarkConfiguration;
 	};
 }
 

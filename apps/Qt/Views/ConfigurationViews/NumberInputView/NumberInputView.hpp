@@ -36,15 +36,18 @@ namespace Elpida
 
 	public:
 
-		void setConfiguration(ConfigurationValueBase* configurationValue) override;
-		ConfigurationValueBase* getConfiguration() override;
+		void setConfiguration(const std::shared_ptr<ConfigurationValueBase>& configurationValue) override;
+		std::shared_ptr<ConfigurationValueBase> getConfiguration() override
+		{
+			return _configurationValue;
+		}
 		void saveSetting() override;
 
 		explicit NumberInputView();
 		~NumberInputView() override;
 	private:
 		Ui::NumberInputView* _ui;
-		ConfigurationValueBase* _configurationValue;
+		std::shared_ptr<ConfigurationValueBase> _configurationValue;
 		double _currentRawValue;
 		bool _updating;
 		double getScaledValue() const;

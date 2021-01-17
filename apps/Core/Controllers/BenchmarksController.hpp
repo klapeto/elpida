@@ -52,7 +52,7 @@ namespace Elpida
 			Logger& logger);
 		virtual ~BenchmarksController();
 	private:
-		std::vector<BenchmarksContainerPlugin<Benchmark>*> _createdPlugins;
+		std::vector<std::tuple<std::reference_wrapper<const SharedLibrary>, BenchmarksContainerPlugin<Benchmark>*>> _createdPlugins;
 		SharedLibraryLoader _libraryLoader;
 		Logger& _logger;
 		ListModel<BenchmarkGroup>& _model;

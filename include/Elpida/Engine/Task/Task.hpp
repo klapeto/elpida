@@ -29,6 +29,7 @@
 #include "TaskDataDto.hpp"
 #include "Elpida/Engine/Result/TaskResult.hpp"
 #include "Elpida/Utilities/Duration.hpp"
+#include "Elpida/Utilities/OptionalReference.hpp"
 
 namespace Elpida
 {
@@ -39,19 +40,9 @@ namespace Elpida
 	{
 	public:
 
-		void setInput(const TaskDataDto& input)
+		void setTaskData(TaskDataDto& taskData)
 		{
-			_inputData = input;
-		}
-
-		const TaskDataDto& getOutput() const
-		{
-			return _outputData;
-		}
-
-		[[nodiscard]] inline const TaskDataDto& getInput() const
-		{
-			return _inputData;
+			_taskData = &taskData;
 		}
 
 		[[nodiscard]] size_t getIterationsToRun() const
@@ -64,35 +55,49 @@ namespace Elpida
 			return _specification;
 		}
 
-		const ProcessorNode& getProcessorToRun() const
+		[[nodiscard]] const ProcessorNode& getProcessorToRun() const
 		{
 			return _processorToRun;
 		}
 
 		void prepare();
-		void finalize();
 		virtual void execute() = 0;
-
-		void resetInputOutput();
+		void finalize();
 
 		[[nodiscard]] TaskResult calculateTaskResult(const Duration& taskElapsedTime) const;
 
 		virtual void applyAffinity();
 
-		Task(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun);
 		virtual ~Task() = default;
 	protected:
+		Task(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun);
+
 		const ProcessorNode& _processorToRun;
 		const TaskSpecification& _specification;
 
-		virtual void prepareImpl() = 0;
-		virtual TaskDataDto finalizeAndGetOutputData() = 0;
+		virtual void prepareImpl()
+		{
+		}
+		virtual std::optional<TaskDataDto> finalizeAndGetOutputData()
+		{
+			return std::nullopt;
+		}
 		[[nodiscard]] virtual double calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
+
+		[[nodiscard]] TaskDataDto& getInput() const
+		{
+			return *_taskData;
+		}
+
+		TaskDataDto propagateInput()
+		{
+			return TaskDataDto(std::move(*_taskData));
+		}
 	private:
-		TaskDataDto _inputData;
-		TaskDataDto _outputData;
+		TaskDataDto* _taskData;
 		size_t _iterationsToRun;
 
+		friend class TaskThread;
 		friend class MultiThreadTask;
 	};
 }

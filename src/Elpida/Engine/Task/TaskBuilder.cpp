@@ -25,15 +25,10 @@
 
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
+#include "Elpida/Engine/Task/Task.hpp"
 
 namespace Elpida
 {
-
-	TaskBuilder::~TaskBuilder()
-	{
-		delete _taskSpecification;
-		delete _taskResultCalculator;
-	}
 
 	TaskBuilder& TaskBuilder::canBeDisabled(bool canBeDisabled)
 	{
@@ -53,7 +48,7 @@ namespace Elpida
 		return *this;
 	}
 
-	Task* TaskBuilder::build(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const
+	std::unique_ptr<Task> TaskBuilder::build(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const
 	{
 		return _taskSpecification->createNewTask(configuration, processorToRun, _iterationsToRun);
 	}
@@ -75,11 +70,11 @@ namespace Elpida
 			auto itr = _predefinedConfigurationsValues.find(confSpec.first);
 			if (itr != _predefinedConfigurationsValues.end())
 			{
-				config.setConfiguration(itr->first, *itr->second.getValue()->clone());
+				config.setConfiguration(itr->first, itr->second.getValue().clone());
 			}
 			else
 			{
-				config.setConfiguration(confSpec.first, *confSpec.second->createDefault());
+				config.setConfiguration(confSpec.first, confSpec.second->createDefault());
 			}
 		}
 		return config;

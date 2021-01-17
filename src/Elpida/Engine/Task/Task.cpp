@@ -28,13 +28,15 @@
 #include "Elpida/Utilities/OsUtilities.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/ElpidaException.hpp"
-#include "Elpida/Utilities/RawData.hpp"
 
 namespace Elpida
 {
 
 	Task::Task(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun)
-		: _processorToRun(processorToRun), _specification(specification), _iterationsToRun(iterationsToRun)
+		: _processorToRun(processorToRun),
+		  _specification(specification),
+		  _taskData(nullptr),
+		  _iterationsToRun(iterationsToRun)
 	{
 
 	}
@@ -60,26 +62,36 @@ namespace Elpida
 
 	void Task::prepare()
 	{
-		if (_specification.acceptsInput() && _inputData.getTaskData() == nullptr)
+		if (_specification.acceptsInput())
 		{
-			throw ElpidaException(FUNCTION_NAME,
-				Vu::Cs("'", _specification.getName(), "' task needs input and it was not provided!"));
-		}
+			if (!_taskData || (_taskData && !_taskData->hasData()))
+			{
+				throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("'", _specification.getName(), "' task needs input and it was not provided!"));
+			}
 
-		validateDataProperties(_specification.getInputDataSpecification(), _inputData);
+			validateDataProperties(_specification.getInputDataSpecification(), *_taskData);
+		}
 
 		prepareImpl();
 	}
 
 	void Task::finalize()
 	{
-		_outputData = finalizeAndGetOutputData();
-		validateDataProperties(_specification.getOutputDataSpecification(), _outputData);
+		if (_taskData)
+		{
+			auto output = finalizeAndGetOutputData();
+			if (output.has_value())
+			{
+				*_taskData = std::move(output.value());
+				validateDataProperties(_specification.getOutputDataSpecification(), *_taskData);
+			}
+		}
 	}
 
-	static size_t getInputDataSize(RawData* input)
+	static size_t getInputDataSize(const TaskDataDto* input)
 	{
-		return input != nullptr ? input->getSize() : 0;
+		return input && input->hasData() ? input->getTaskData()->getSize() : 0;
 	}
 
 	TaskResult Task::calculateTaskResult(const Duration& taskElapsedTime) const
@@ -87,12 +99,6 @@ namespace Elpida
 		return TaskResult(_specification,
 			TaskMetrics(taskElapsedTime,
 				calculateTaskResultValue(taskElapsedTime),
-				getInputDataSize(_inputData.getTaskData())));
-	}
-
-	void Task::resetInputOutput()
-	{
-		_inputData = TaskDataDto();
-		_outputData = TaskDataDto();
+				getInputDataSize(_taskData)));
 	}
 }

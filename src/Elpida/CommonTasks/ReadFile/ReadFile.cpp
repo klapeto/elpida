@@ -28,10 +28,12 @@
 
 #include <utility>
 #include <fstream>
+#include <filesystem>
+
+#include "Elpida/Config.hpp"
 #include "Elpida/SystemInfo/SystemTopology.hpp"
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
-#include "Elpida/Engine/Data/ActiveTaskData.hpp"
-#include "Elpida/Utilities/FileSystem.hpp"
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/ElpidaException.hpp"
 
@@ -43,22 +45,60 @@ namespace Elpida
 		std::string filePath, size_t iterationsToRun)
 		: Task(specification, processorToRun, iterationsToRun),
 		  _filePath(std::move(filePath)),
-		  _data(nullptr)
+		  _size(0)
 	{
 
 	}
 
+	void ReadFile::prepareImpl()
+	{
+		_size = 0;
+		auto path = std::filesystem::u8path(_filePath);
+
+		if (!std::filesystem::exists(path))
+		{
+			throw ElpidaException(FUNCTION_NAME,
+				Vu::Cs("Failed to read file: '", _filePath, "' does not exist."));
+		}
+
+		auto file = std::fstream(path, std::ios::in | std::ios::binary);
+		try
+		{
+			file.exceptions(std::ios::badbit | std::ios::failbit);
+			file.seekg(0, std::ifstream::end);
+			_size = file.tellg();
+			file.seekg(0, std::ifstream::beg);
+
+			if (_size == 0)
+			{
+				throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("Failed to read file: '", _filePath, "' has no data."));
+			}
+
+			_data = std::make_unique<RawTaskData>(_size, _processorToRun);
+		}
+		catch (const std::fstream::failure& e)
+		{
+			_data.reset();
+			if (file.is_open())
+			{
+				file.close();
+			}
+			throw ElpidaException(FUNCTION_NAME,
+				Vu::Cs("Failed to read file: '", _filePath, "'. Error: ", e.what()));
+		}
+	}
+
 	void ReadFile::execute()
 	{
-		auto file = FileSystem::openFile(_filePath, std::ios::in | std::ios::binary);
+		auto file = std::fstream(std::filesystem::u8path(_filePath), std::ios::in | std::ios::binary);
 		try
 		{
 			file.read((char*)_data->getData(), _data->getSize());
 		}
 		catch (const std::fstream::failure& e)
 		{
-			delete _data;
-			_data = nullptr;
+			_data.reset();
 			if (file.is_open())
 			{
 				file.close();
@@ -68,38 +108,13 @@ namespace Elpida
 		}
 	}
 
-	void ReadFile::prepareImpl()
+	std::optional<TaskDataDto> ReadFile::finalizeAndGetOutputData()
 	{
-		auto file = FileSystem::openFile(_filePath, std::ios::in | std::ios::binary);
-		try
-		{
-			file.exceptions(std::ios::badbit | std::ios::failbit);
-			file.seekg(0, std::ifstream::end);
-			size_t size = file.tellg();
-			file.seekg(0, std::ifstream::beg);
-
-			_data = new ActiveTaskData(size, _processorToRun);
-		}
-		catch (const std::fstream::failure& e)
-		{
-			delete _data;
-			_data = nullptr;
-			if (file.is_open())
-			{
-				file.close();
-			}
-			throw ElpidaException(FUNCTION_NAME,
-				Vu::Cs("Failed to read file: '", _filePath, "'. Error: ", e.what()));
-		}
-	}
-
-	TaskDataDto ReadFile::finalizeAndGetOutputData()
-	{
-		return TaskDataDto(*_data);
+		return TaskDataDto(std::move(_data));
 	}
 
 	double ReadFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return _data ? _data->getSize() : 0.0;
+		return _size;
 	}
 } /* namespace Elpida */

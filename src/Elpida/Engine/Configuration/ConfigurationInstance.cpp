@@ -28,11 +28,6 @@
 namespace Elpida
 {
 
-	ConfigurationInstance::~ConfigurationInstance()
-	{
-		delete _value;
-	}
-
 	ConfigurationInstance::ConfigurationInstance(ConfigurationInstance&& other) noexcept
 	{
 		move(std::move(other));
@@ -48,7 +43,7 @@ namespace Elpida
 	{
 		_configurationSpecification = other._configurationSpecification;
 		other._configurationSpecification = nullptr;
-		_value = other._value;
+		_value = std::move(other._value);
 		other._value = nullptr;
 		_fixed = other._fixed;
 	}

@@ -29,7 +29,10 @@ namespace Elpida
 {
 
 	DataSpecification::DataSpecification(std::string name, std::string unit, std::string description)
-		: DataSpecification(std::move(name), std::move(unit), 8, std::move(description))
+		: DataSpecification(std::move(name),
+		std::move(unit),
+		8,
+		std::move(description))
 	{
 
 	}
@@ -37,7 +40,9 @@ namespace Elpida
 		std::string unit,
 		size_t sizeShouldBeDivisibleBy,
 		std::string description)
-		: _name(std::move(name)), _description(std::move(description)), _unit(std::move(unit)),
+		: _name(std::move(name)),
+		  _description(std::move(description)),
+		  _unit(std::move(unit)),
 		  _sizeShouldBeDivisibleBy(sizeShouldBeDivisibleBy)
 	{
 
@@ -54,9 +59,38 @@ namespace Elpida
 		size_t sizeShouldBeDivisibleBy,
 		std::vector<std::string> requiredProperties,
 		std::string description)
-		: _requiredPropertiesNames(std::move(requiredProperties)), _name(std::move(name)),
-		  _description(std::move(description)), _unit(std::move(unit)),
+		: _requiredPropertiesNames(std::move(requiredProperties)),
+		  _name(std::move(name)),
+		  _description(std::move(description)),
+		  _unit(std::move(unit)),
 		  _sizeShouldBeDivisibleBy(sizeShouldBeDivisibleBy)
+	{
+
+	}
+
+	DataSpecification::DataSpecification(std::string name,
+		std::string unit,
+		std::string sizeShouldBeDivisibleByProperty,
+		std::string description)
+		: _name(std::move(name)),
+		  _description(std::move(description)),
+		  _unit(std::move(unit)),
+		  _sizeShouldBeDivisibleByProperty(std::move(sizeShouldBeDivisibleByProperty)),
+		  _sizeShouldBeDivisibleBy(0)
+	{
+
+	}
+	DataSpecification::DataSpecification(std::string name,
+		std::string unit,
+		std::string sizeShouldBeDivisibleByProperty,
+		std::vector<std::string> requiredProperties,
+		std::string description)
+		: _requiredPropertiesNames(std::move(requiredProperties)),
+		  _name(std::move(name)),
+		  _description(std::move(description)),
+		  _unit(std::move(unit)),
+		  _sizeShouldBeDivisibleByProperty(std::move(sizeShouldBeDivisibleByProperty)),
+		  _sizeShouldBeDivisibleBy(0)
 	{
 
 	}

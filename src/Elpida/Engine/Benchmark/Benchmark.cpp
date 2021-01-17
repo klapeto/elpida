@@ -25,7 +25,6 @@
 
 #include <utility>
 #include "Elpida/Config.hpp"
-#include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp"
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
@@ -36,21 +35,10 @@ namespace Elpida
 {
 
 	Benchmark::Benchmark(std::string name,
-		std::vector<TaskBuilder*>&& taskSpecifications,
-		BenchmarkScoreCalculator* scoreCalculator)
-		: _taskBuilders(std::move(taskSpecifications)),
-		  _name(std::move(name)), _scoreCalculator(scoreCalculator)
+		std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator)
+		: _name(std::move(name)), _scoreCalculator(std::move(scoreCalculator))
 	{
 		_id = Uuid::create();
-	}
-
-	Benchmark::~Benchmark()
-	{
-		for (auto builder: _taskBuilders)
-		{
-			delete builder;
-		}
-		delete _scoreCalculator;
 	}
 
 	std::vector<BenchmarkTaskInstance> Benchmark::createNewTasks(const TaskAffinity& affinity,
@@ -61,25 +49,33 @@ namespace Elpida
 			std::vector<BenchmarkTaskInstance> tasks;
 			try
 			{
-				for (auto builder : _taskBuilders)
+				for (const auto& builder : _taskBuilders)
 				{
-					auto taskConfiguration = configuration.getConfigurationForTask(builder->getTaskSpecification());
-					if (taskConfiguration == nullptr && !builder->getDefaultConfiguration().getAllConfigurations().empty())
+					auto taskConfiguration = configuration.getConfigurationForTask(builder);
+					if (!taskConfiguration.has_value()
+						&& !builder.getDefaultConfiguration().getAllConfigurations().empty())
 					{
 						throw ElpidaException(FUNCTION_NAME,
 							Vu::Cs("Task: '",
-								builder->getTaskSpecification().getName(),
+								builder.getTaskSpecification().getName(),
 								"' requires configuration that was not provided!"));
 					}
-					if (!builder->isCanBeDisabled() || taskConfiguration->isEnabled())
+					if (!builder.canBeDisabled() || taskConfiguration->get().isEnabled())
 					{
-						if (builder->isCanBeMultiThreaded())
+						if (builder.canBeMultiThreaded())
 						{
-							tasks.emplace_back(*new MultiThreadTask(*builder, *taskConfiguration, affinity, builder->getIterationsToRun()), *builder);
+							tasks.emplace_back(std::make_unique<MultiThreadTask>(builder,
+								*taskConfiguration,
+								affinity,
+								builder.getIterationsToRun()), builder);
 						}
 						else
 						{
-							tasks.emplace_back(*builder->build(*taskConfiguration, *affinity.getProcessorNodes().front()), *builder);
+							tasks.emplace_back(
+								builder.build(
+									*taskConfiguration,
+									*affinity.getProcessorNodes().front()),
+									builder);
 						}
 					}
 				}

@@ -41,12 +41,11 @@ namespace Elpida
 		MemoryRead(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun);
 		~MemoryRead() override = default;
 	protected:
-		RawData* _taskData;
+		const RawTaskData* _taskData;
 		unsigned long _iterations;
 		static constexpr inline double _iterationConstant = 100000000000; // rough estimate
 
 		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
 		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	};
 

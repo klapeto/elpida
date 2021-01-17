@@ -30,6 +30,8 @@
 #include <thread>
 #include <condition_variable>
 #include <vector>
+#include <Elpida/Utilities/Duration.hpp>
+#include "TaskDataDto.hpp"
 
 namespace Elpida
 {
@@ -41,12 +43,17 @@ namespace Elpida
 		void start();
 		void join();
 
-		[[nodiscard]] Task& getTaskToRun() const
+		void prepare();
+		void finalize();
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const;
+
+		TaskDataDto& getTaskData()
 		{
-			return *_taskToRun;
+			return _taskData;
 		}
 
-		TaskThread(Task& taskToRun,
+		TaskThread(std::unique_ptr<Task> taskToRun,
+			TaskDataDto input,
 			std::condition_variable& waitNotifier,
 			std::mutex& mutex,
 			const bool& shouldWake,
@@ -56,9 +63,11 @@ namespace Elpida
 		TaskThread(TaskThread&& other) noexcept;
 	private:
 		std::thread _runnerThread;
-		Task* _taskToRun;
+		std::unique_ptr<Task> _taskToRun;
 		std::condition_variable& _waitNotifier;
 		std::mutex& _mutex;
+		TaskDataDto _taskData;
+
 		const bool& _shouldWake;
 		unsigned int _affinity;
 

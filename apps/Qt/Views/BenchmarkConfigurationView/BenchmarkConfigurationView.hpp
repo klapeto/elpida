@@ -21,6 +21,8 @@
 #define ELPIDA_BENCHMARKCONFIGURATIONVIEW_HPP
 
 #include <QWidget>
+#include "Views/ConfigurationViews/TaskConfigurationListItemViewBase.hpp"
+#include "Views/ConfigurationViews/ConfigurationValueViewBase.hpp"
 
 class QVBoxLayout;
 class QListWidgetItem;
@@ -30,7 +32,6 @@ namespace Elpida
 	class BenchmarkConfigurationModel;
 	class EventSubscriptionBase;
 	class ConfigurationViewsPool;
-	class ConfigurationValueViewBase;
 
 	namespace Ui
 	{
@@ -45,9 +46,9 @@ namespace Elpida
 		explicit BenchmarkConfigurationView(BenchmarkConfigurationModel& benchmarkConfigurationModel,
 			ConfigurationViewsPool& configurationViewsPool);
 		~BenchmarkConfigurationView() override;
-
 	private:
-		std::vector<ConfigurationValueViewBase*> _rentedViews;
+		std::vector<std::unique_ptr<ConfigurationValueViewBase>> _rentedViews;
+		std::unordered_map<void*, std::unique_ptr<TaskConfigurationListItemViewBase>> _rentedItems;
 		BenchmarkConfigurationModel& _benchmarkConfigurationModel;
 		ConfigurationViewsPool& _configurationViewsPool;
 		EventSubscriptionBase* _dataChangedSubscription;
@@ -60,7 +61,7 @@ namespace Elpida
 	private slots:
 		void dataChangedHandler();
 		void returnAllViewsToPool();
-		void returnAllTaskListItems() const;
+		void returnAllTaskListItems();
 		static void taskListItemClicked(QListWidgetItem* item);
 	};
 

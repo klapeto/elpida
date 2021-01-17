@@ -29,22 +29,22 @@ namespace Elpida
 {
 	void ElpidaMediator::execute(Command& command)
 	{
-		for (auto handler : _handlers)
+		for (auto& handler : _handlers)
 		{
-			command.accept(*handler);
+			command.accept(handler);
 		}
 	}
 
 	void ElpidaMediator::registerCommandHandler(CommandHandler& handler)
 	{
-		_handlers.push_back(&handler);
+		_handlers.emplace_back(handler);
 	}
 
 	void ElpidaMediator::execute(Command&& command)
 	{
-		for (auto handler : _handlers)
+		for (auto& handler : _handlers)
 		{
-			command.accept(*handler);
+			command.accept(handler);
 		}
 	}
 }

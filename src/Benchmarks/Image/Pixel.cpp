@@ -17,28 +17,16 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-//
-// Created by klapeto on 30/5/20.
-//
+/*
+ * Pixel.cpp
+ *
+ *  Created on: 13 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#ifndef INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-#define INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
-
-#include <unordered_map>
-#include <string>
+#include "Benchmarks/Image/Pixel.hpp"
 
 namespace Elpida
 {
-	class DataPropertiesTransformer
-	{
-	public:
-		[[nodiscard]] virtual std::unordered_map<std::string, double> transform(size_t originalSize,
-			const std::unordered_map<std::string, double>& originalProperties,
-			size_t targetSize) const = 0;
 
-		DataPropertiesTransformer() = default;
-		virtual ~DataPropertiesTransformer() = default;
-	};
-}
-
-#endif //INCLUDE_ELPIDA_ENGINE_DATA_DATAPROPERTIESTRANSFORMER_HPP
+} /* namespace Elpida */

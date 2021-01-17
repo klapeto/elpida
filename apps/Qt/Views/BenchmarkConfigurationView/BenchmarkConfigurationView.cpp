@@ -69,28 +69,29 @@ namespace Elpida
 		returnAllViewsToPool();
 		returnAllTaskListItems();
 		auto configuration = _benchmarkConfigurationModel.getBenchmarkConfiguration();
-		if (configuration != nullptr)
+		if (configuration.has_value())
 		{
-			for (auto& taskConfPair: configuration->getAllTaskConfigurations())
+			for (auto& taskConfPair: configuration->get().getAllTaskConfigurations())
 			{
 				auto itm = _configurationViewsPool.rentViewForTaskList(const_cast<TaskConfiguration&>(taskConfPair));
-				_ui->lwTasks->addItem(itm);
+				_ui->lwTasks->addItem(itm.get());
+				_rentedItems.emplace(itm.get(), std::move(itm));
 				for (auto& confValuePair: taskConfPair.getAllConfigurations())
 				{
 					if (!confValuePair.second->isReadOnly())
 					{
-						auto view = _configurationViewsPool.rentViewForConfiguration(*confValuePair.second);
+						auto view = _configurationViewsPool.rentViewForConfiguration(confValuePair.second);
 						view->show();
-						_rentedViews.push_back(view);
 						view->setConfiguration(confValuePair.second);
-						_containerLayout->addWidget(view);
+						_containerLayout->addWidget(view.get());
+						_rentedViews.push_back(std::move(view));
 					}
 				}
 			}
 		}
 	}
 
-	void BenchmarkConfigurationView::returnAllTaskListItems() const
+	void BenchmarkConfigurationView::returnAllTaskListItems()
 	{
 		auto size = _ui->lwTasks->count();
 		for (auto i = size - 1; i >= 0; --i)
@@ -99,20 +100,22 @@ namespace Elpida
 			if (itm != nullptr)
 			{
 				itm->saveSetting();
-				_configurationViewsPool.returnViewForTaskList(itm);
+				_configurationViewsPool.returnViewForTaskList(std::move(_rentedItems.at(itm)));
+				_rentedItems.erase(itm);
 			}
 		}
 	}
 
 	void BenchmarkConfigurationView::returnAllViewsToPool()
 	{
-		for (auto view : _rentedViews)
+		for (auto& view : _rentedViews)
 		{
 			view->saveSetting();
-			_containerLayout->removeWidget(view);
-			view->setParent(nullptr);
-			_configurationViewsPool.returnView(view);
 			view->hide();
+			_containerLayout->removeWidget(view.get());
+			view->setParent(nullptr);
+			_configurationViewsPool.returnView(std::move(view));
+
 		}
 		_rentedViews.clear();
 	}

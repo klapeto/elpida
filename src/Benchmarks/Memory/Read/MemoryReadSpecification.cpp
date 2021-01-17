@@ -40,10 +40,10 @@ namespace Elpida
 			"The allocated memory region to read"));
 	}
 
-	Task* MemoryReadSpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> MemoryReadSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
-		return new MemoryRead(*this, processorToRun, iterationsToRun);
+		return std::make_unique<MemoryRead>(*this, processorToRun, iterationsToRun);
 	}
 }

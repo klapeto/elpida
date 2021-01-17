@@ -57,17 +57,38 @@ namespace Elpida
 			return _requiredPropertiesNames;
 		}
 
+		[[nodiscard]] bool divisibleByProperty() const
+		{
+			return _sizeShouldBeDivisibleBy == 0;
+		}
+
+		[[nodiscard]] const std::string& getSizeDivisibleByPropertyName() const
+		{
+			return _sizeShouldBeDivisibleByProperty;
+		}
+
 		DataSpecification();
-		DataSpecification(std::string name, std::string unit, std::string description = std::string());
+		DataSpecification(std::string name,
+			std::string unit,
+			std::string description);
 		DataSpecification(std::string name,
 			std::string unit,
 			size_t sizeShouldBeDivisibleBy,
-			std::string description = std::string());
+			std::string description);
 		DataSpecification(std::string name,
 			std::string unit,
 			size_t sizeShouldBeDivisibleBy,
 			std::vector<std::string> requiredProperties,
-			std::string description = std::string());
+			std::string description);
+		DataSpecification(std::string name,
+			std::string unit,
+			std::string sizeShouldBeDivisibleByProperty,
+			std::string description);
+		DataSpecification(std::string name,
+			std::string unit,
+			std::string sizeShouldBeDivisibleByProperty,
+			std::vector<std::string> requiredProperties,
+			std::string description);
 		DataSpecification(DataSpecification&&) = default;
 		DataSpecification(const DataSpecification&) = default;
 		DataSpecification& operator=(DataSpecification&&) = default;
@@ -78,6 +99,7 @@ namespace Elpida
 		std::string _name;
 		std::string _description;
 		std::string _unit;
+		std::string _sizeShouldBeDivisibleByProperty;
 		size_t _sizeShouldBeDivisibleBy;
 	};
 }

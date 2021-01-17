@@ -46,9 +46,7 @@ namespace Elpida
 			size_t iterationsToRun);
 		~WriteFile() override = default;
 	protected:
-		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
-		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::string _outputPath;
 	};

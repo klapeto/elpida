@@ -25,8 +25,11 @@
 #define INCLUDE_ELPIDA_ENGINE_TASK_TASKSPECIFICATION_HPP
 
 #include <string>
+#include <memory>
+#include "Elpida/Engine/Data/DataTransformer.hpp"
 #include "Elpida/Engine/Result/ResultSpecification.hpp"
 #include "Elpida/Engine/Data/DataSpecification.hpp"
+#include "Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp"
 #include "Elpida/Engine/Configuration/Specification/ConfigurationSpecification.hpp"
 #include "Elpida/Engine/Configuration/Concrete/TaskConfiguration.hpp"
 #include "Elpida/ElpidaException.hpp"
@@ -36,7 +39,6 @@ namespace Elpida
 {
 
 	class Task;
-	class DataPropertiesTransformer;
 	class ProcessorNode;
 
 	/**
@@ -55,14 +57,9 @@ namespace Elpida
 			return _description;
 		}
 
-		[[nodiscard]] const std::vector<ConfigurationSpecificationBase*>& getConfigurationSpecifications() const
+		[[nodiscard]] const std::vector<std::shared_ptr<ConfigurationSpecificationBase>>& getConfigurationSpecifications() const
 		{
 			return _configurationSpecifications;
-		}
-
-		[[nodiscard]] const std::string& getId() const
-		{
-			return _id;
 		}
 
 		[[nodiscard]] bool acceptsInput() const
@@ -70,9 +67,9 @@ namespace Elpida
 			return _acceptsInput;
 		}
 
-		[[nodiscard]] bool exportsOutput() const
+		[[nodiscard]] bool producesOutput() const
 		{
-			return _exportsOutput;
+			return _producesOutput;
 		}
 
 		[[nodiscard]] const DataSpecification& getInputDataSpecification() const
@@ -90,29 +87,35 @@ namespace Elpida
 			return _resultSpecification;
 		}
 
-		[[nodiscard]] DataPropertiesTransformer* getDataPropertiesTransformer() const
+		[[nodiscard]] std::shared_ptr<DataTransformer> getDataTransformer() const
 		{
-			return _dataPropertiesTransformer;
+			return _dataTransformer;
 		}
 
-		[[nodiscard]] virtual Task* createNewTask(const TaskConfiguration& configuration,
+		[[nodiscard]] virtual std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
 			size_t iterationsToRun) const = 0;
 
-		virtual ~TaskSpecification();
+		virtual ~TaskSpecification() = default;
 	private:
-		std::string _id;
 		std::string _name;
 		std::string _description;
 		DataSpecification _inputDataSpecification;
 		DataSpecification _outputDataSpecification;
 		ResultSpecification _resultSpecification;
-		std::vector<ConfigurationSpecificationBase*> _configurationSpecifications;
-		DataPropertiesTransformer* _dataPropertiesTransformer;
+		std::vector<std::shared_ptr<ConfigurationSpecificationBase>> _configurationSpecifications;
+		std::shared_ptr<DataTransformer> _dataTransformer;
 		bool _acceptsInput;
-		bool _exportsOutput;
+		bool _producesOutput;
 	protected:
-		TaskSpecification(std::string name, ResultSpecification resultSpecification);
+		TaskSpecification(std::string name, ResultSpecification resultSpecification)
+			: _name(std::move(name)),
+			  _resultSpecification(std::move(resultSpecification)),
+			  _dataTransformer(nullptr),
+			  _acceptsInput(false),
+			  _producesOutput(false)
+		{
+		}
 
 		template<typename T>
 		ConfigurationValue<T>& getSettingAndValidate(const TaskConfiguration& configuration,
@@ -120,11 +123,11 @@ namespace Elpida
 			ConfigurationType::Type type) const
 		{
 			auto config = configuration.getConfiguration(name);
-			if (config != nullptr)
+			if (config)
 			{
-				if (config->getConfigurationSpecification().getType() == type)
+				if (config.value()->getConfigurationSpecification().getType() == type)
 				{
-					return config->as<ConfigurationValue<T>>();
+					return config.value()->as<ConfigurationValue<T>>();
 				}
 				else
 				{
@@ -141,9 +144,9 @@ namespace Elpida
 			}
 		}
 
-		void withConfiguration(ConfigurationSpecificationBase* specification)
+		void withConfiguration(std::shared_ptr<ConfigurationSpecificationBase> specification)
 		{
-			_configurationSpecifications.push_back(specification);
+			_configurationSpecifications.push_back(std::move(specification));
 		}
 
 		void withDescription(std::string&& description)
@@ -159,13 +162,13 @@ namespace Elpida
 
 		void withOutputData(DataSpecification&& outputDataSpecification)
 		{
-			_exportsOutput = true;
+			_producesOutput = true;
 			_outputDataSpecification = std::move(outputDataSpecification);
 		}
 
-		void withDataPropertiesTransformer(DataPropertiesTransformer* dataPropertiesTransformer)
+		void withDataPropertiesTransformer(std::shared_ptr<DataTransformer> dataPropertiesTransformer)
 		{
-			_dataPropertiesTransformer = dataPropertiesTransformer;
+			_dataTransformer = std::move(dataPropertiesTransformer);
 		}
 
 		friend class TaskBuilder;

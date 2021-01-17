@@ -21,26 +21,29 @@
 // Created by klapeto on 31/5/20.
 //
 
+#include <cmath>
 #include "Benchmarks/Image/ImageDataPropertiesTransformer.hpp"
 
 namespace Elpida
 {
 
-	std::unordered_map<std::string, double> ImageDataPropertiesTransformer::transform(size_t originalSize,
+	std::unordered_map<std::string, double> ImageDataPropertiesTransformer::transformDataProperties(size_t originalSize,
 		const std::unordered_map<std::string, double>& originalProperties,
-		size_t targetSize) const
+		size_t targetSize, float targetRatioToOriginal) const
 	{
 		auto width = originalProperties.at("width");
-		auto height = originalProperties.at("height");
+		auto stride = originalProperties.at("stride");
+		auto fullSize = targetSize / targetRatioToOriginal;
 
-		auto ratio = originalSize / targetSize;
-
-		auto targetWidth = width;    // This probably won't work for all cases
-		auto targetHeight = height / ratio;
+		auto targetWidth = width;
+		auto ratio = originalSize / (float)fullSize;
+		auto targetStride = std::round(stride / ratio);
+		auto targetHeight = std::round(targetSize / targetStride);
 
 		return {
 			{ "width", targetWidth },
-			{ "height", targetHeight }
+			{ "height", targetHeight },
+			{ "stride", targetStride }
 		};
 	}
 }

@@ -41,27 +41,29 @@
 namespace Elpida
 {
 
-	TaskThread::TaskThread(Task& taskToRun,
+	TaskThread::TaskThread(std::unique_ptr<Task> taskToRun,
+		TaskDataDto input,
 		std::condition_variable& waitNotifier,
 		std::mutex& mutex,
 		const bool& shouldWake,
 		unsigned int affinity)
-		: _taskToRun(&taskToRun),
+		: _taskToRun(std::move(taskToRun)),
 		  _waitNotifier(waitNotifier),
 		  _mutex(mutex),
+		  _taskData(std::move(input)),
 		  _shouldWake(shouldWake),
 		  _affinity(affinity)
 	{
 	}
 
 	TaskThread::TaskThread(TaskThread&& other) noexcept
-		: _taskToRun(other._taskToRun),
+		: _taskToRun(std::move(other._taskToRun)),
 		  _waitNotifier(other._waitNotifier),
 		  _mutex(other._mutex),
+		  _taskData(std::move(other._taskData)),
 		  _shouldWake(other._shouldWake),
 		  _affinity(other._affinity)
 	{
-		other._taskToRun = nullptr;
 	}
 
 	TaskThread::~TaskThread()
@@ -70,7 +72,6 @@ namespace Elpida
 		{
 			_runnerThread.join();
 		}
-		delete _taskToRun;
 	}
 
 	void TaskThread::start()
@@ -96,6 +97,22 @@ namespace Elpida
 		}
 		lock.unlock();
 		_taskToRun->execute();
+	}
+
+	void TaskThread::prepare()
+	{
+		_taskToRun->setTaskData(_taskData);
+		_taskToRun->prepare();
+	}
+
+	void TaskThread::finalize()
+	{
+		_taskToRun->finalize();
+	}
+
+	double TaskThread::calculateTaskResultValue(const Duration& taskElapsedTime) const
+	{
+		return _taskToRun->calculateTaskResultValue(taskElapsedTime);
 	}
 
 } /* namespace Elpida */

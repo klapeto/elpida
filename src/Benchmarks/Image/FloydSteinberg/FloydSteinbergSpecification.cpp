@@ -28,14 +28,14 @@
 namespace Elpida
 {
 
-	Task* FloydSteinbergSpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> FloydSteinbergSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
 		auto threshold = getSettingAndValidate<ConfigurationType::Float>(configuration,
 			Settings::Threshold,
 			ConfigurationType::Type::Float).getValue();
-		return new FloydSteinberg(*this, processorToRun, threshold, iterationsToRun);
+		return std::make_unique<FloydSteinberg>(*this, processorToRun, threshold, iterationsToRun);
 	}
 
 	FloydSteinbergSpecification::FloydSteinbergSpecification()
@@ -50,16 +50,16 @@ namespace Elpida
 
 		withInputData(DataSpecification("Input Image Data",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"Input image data in Grayscale and RGBA float pixels"));
 		withOutputData(DataSpecification("Output Image Data",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"Output image data in Black-White dithered and RGBA float pixels"));
 
-		withConfiguration(new ConfigurationSpecification<ConfigurationType::Float>(0.5,
+		withConfiguration(std::make_shared<ConfigurationSpecification<ConfigurationType::Float>>(0.5,
 			"Threshold",
 			"The threshold to use for determining if a pixel should be black or white",
 			true));

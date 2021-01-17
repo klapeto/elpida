@@ -26,7 +26,7 @@
 
 #include "Elpida/CommonTasks/AllocateMemory/AllocateMemory.hpp"
 
-#include "Elpida/Engine/Data/ActiveTaskData.hpp"
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 
 #include <cstring>
 
@@ -43,20 +43,16 @@ namespace Elpida
 	{
 
 	}
+
 	void AllocateMemory::execute()
 	{
-		_memory = new ActiveTaskData(_size, _processorToRun);
+		_memory = std::make_unique<RawTaskData>(_size, _processorToRun);
 		memset(_memory->getData(), 0, _memory->getSize());
 	}
 
-	void AllocateMemory::prepareImpl()
+	std::optional<TaskDataDto> AllocateMemory::finalizeAndGetOutputData()
 	{
-
-	}
-
-	TaskDataDto AllocateMemory::finalizeAndGetOutputData()
-	{
-		return TaskDataDto(*_memory);
+		return TaskDataDto(std::move(_memory));
 	}
 
 	double AllocateMemory::calculateTaskResultValue(const Duration& taskElapsedTime) const

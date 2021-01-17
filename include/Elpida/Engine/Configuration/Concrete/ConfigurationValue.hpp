@@ -43,9 +43,9 @@ namespace Elpida
 			return _value;
 		}
 
-		[[nodiscard]] ConfigurationValueBase* clone() const override
+		[[nodiscard]] std::unique_ptr<ConfigurationValueBase> clone() const override
 		{
-			return new ConfigurationValue<T>(_configurationSpecification, (const T&)_value, isReadOnly());
+			return std::make_unique<ConfigurationValue<T>>(_configurationSpecification, (const T&)_value, isReadOnly());
 		}
 
 		void setValue(T value)

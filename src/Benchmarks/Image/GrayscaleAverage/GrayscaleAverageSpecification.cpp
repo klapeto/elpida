@@ -29,11 +29,11 @@
 namespace Elpida
 {
 
-	Task* GrayscaleAverageSpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> GrayscaleAverageSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
-		return new GrayscaleAverage(*this, processorToRun, iterationsToRun);
+		return std::make_unique<GrayscaleAverage>(*this, processorToRun, iterationsToRun);
 	}
 
 	GrayscaleAverageSpecification::GrayscaleAverageSpecification()
@@ -48,15 +48,15 @@ namespace Elpida
 
 		withInputData(DataSpecification("Input Image data",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"The image to convert to grayscale in float pixels"));
 		withOutputData(DataSpecification("Output Image data",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"The converted image in float pixels"));
 
-		withDataPropertiesTransformer(new ImageDataPropertiesTransformer());
+		withDataPropertiesTransformer(std::make_shared<ImageDataPropertiesTransformer>());
 	}
 }

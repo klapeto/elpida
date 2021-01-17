@@ -26,8 +26,8 @@
 
 #include "Benchmarks/Image/ConvertToFloat/ConvertToFloat.hpp"
 
-#include <Elpida/Engine/Data/ActiveTaskData.hpp>
-#include <Elpida/Utilities/Imaging/Image.hpp>
+#include <Elpida/Engine/Data/RawTaskData.hpp>
+#include <Benchmarks/Image/Image.hpp>
 
 namespace Elpida
 {
@@ -35,8 +35,7 @@ namespace Elpida
 	ConvertToFloat::ConvertToFloat(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _inputImage(nullptr),
-		  _outputImage(nullptr)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun)
 	{
 
 	}
@@ -47,22 +46,24 @@ namespace Elpida
 
 		auto properties = getImageProperties(input);
 
-		_inputImage = new Image<PixelInt>(*input.getTaskData(), properties.width, properties.height);
-		_outputData =
-			new ActiveTaskData(properties.width * properties.height * 4 * sizeof(PixelFloat), _processorToRun);
-		_outputImage = new Image<PixelFloat>(*_outputData, properties.width, properties.height);
-
+		_inputImage = std::make_unique<Image<PixelInt>>(*input.getTaskData(), properties.width, properties.height);
+		_outputData = std::make_unique<RawTaskData>(properties.width * properties.height * 4 * sizeof(PixelFloat), _processorToRun);
+		_outputImage = std::make_unique<Image<PixelFloat>>(*_outputData, properties.width, properties.height);
 	}
 
-	TaskDataDto ConvertToFloat::finalizeAndGetOutputData()
+	std::optional<TaskDataDto> ConvertToFloat::finalizeAndGetOutputData()
 	{
-		delete _inputImage;
-		_inputImage = nullptr;
+		_inputImage.reset();
+		_outputImage.reset();
 
-		delete _outputImage;
-		_outputImage = nullptr;
+		auto properties = getImageProperties(getInput());
 
-		return TaskDataDto(*_outputData, getInput().getDefinedProperties());
+		return TaskDataDto(std::move(_outputData),
+			{
+				{"width", properties.width },
+				{"height", properties.height},
+				{"stride", properties.width * 4 * sizeof(PixelFloat) }
+			});
 	}
 
 	double ConvertToFloat::calculateTaskResultValue(const Duration& taskElapsedTime) const
@@ -82,11 +83,5 @@ namespace Elpida
 			outputData[i].B = inputData[i].B / (PixelFloat)255.0;
 			outputData[i].A = inputData[i].A / (PixelFloat)255.0;
 		}
-	}
-
-	ConvertToFloat::~ConvertToFloat()
-	{
-		delete _inputImage;
-		delete _outputImage;
 	}
 } /* namespace Elpida */

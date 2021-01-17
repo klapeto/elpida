@@ -27,26 +27,27 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <memory>
 #include "Elpida/Utilities/Plugin/Plugin.hpp"
 
 namespace Elpida
 {
 
 	template<typename T>
-	class BenchmarksContainerPlugin : public Plugin<std::vector<T*>>
+	class BenchmarksContainerPlugin : public Plugin<std::vector<std::unique_ptr<T>>>
 	{
 	public:
 
 		using Factory = BenchmarksContainerPlugin<T>* (*)();
 
-		const std::vector<T*>& getUnderlyingData() const override
+		const std::vector<std::unique_ptr<T>>& getUnderlyingData() const override
 		{
 			return _data;
 		}
 
-		void add(T* data)
+		void add(std::unique_ptr<T> data)
 		{
-			_data.push_back(data);
+			_data.push_back(std::move(data));
 		}
 
 		[[nodiscard]] const std::string& getGroupName() const
@@ -59,15 +60,9 @@ namespace Elpida
 		{
 
 		}
-		virtual ~BenchmarksContainerPlugin()
-		{
-			for (auto ptr : _data)
-			{
-				delete ptr;
-			}
-		}
+		~BenchmarksContainerPlugin() = default;
 	private:
-		std::vector<T*> _data;
+		std::vector<std::unique_ptr<T>> _data;
 		std::string _groupName;
 	};
 }

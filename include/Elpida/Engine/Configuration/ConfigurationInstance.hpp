@@ -24,12 +24,14 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_CONFIGURATION_CONFIGURATIONINSTANCE_HPP
 #define INCLUDE_ELPIDA_ENGINE_CONFIGURATION_CONFIGURATIONINSTANCE_HPP
 
+#include <memory>
+#include "Elpida/Engine/Configuration/Specification/ConfigurationSpecification.hpp"
+#include "Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp"
+
 namespace Elpida
 {
-	class ConfigurationSpecificationBase;
-	class ConfigurationValueBase;
 
-	class ConfigurationInstance
+	class ConfigurationInstance final
 	{
 	public:
 		[[nodiscard]] const ConfigurationSpecificationBase& getConfigurationSpecification() const
@@ -37,9 +39,9 @@ namespace Elpida
 			return *_configurationSpecification;
 		}
 
-		[[nodiscard]] const ConfigurationValueBase* getValue() const
+		[[nodiscard]] const ConfigurationValueBase& getValue() const
 		{
-			return _value;
+			return *_value;
 		}
 
 		[[nodiscard]] bool isFixed() const
@@ -47,9 +49,11 @@ namespace Elpida
 			return _fixed;
 		}
 
-		explicit ConfigurationInstance(const ConfigurationSpecificationBase& configurationSpecification,
-			ConfigurationValueBase* value, bool fixed)
-			: _configurationSpecification(&configurationSpecification), _value(value), _fixed(fixed)
+		explicit ConfigurationInstance(std::shared_ptr<ConfigurationSpecificationBase> configurationSpecification,
+			std::unique_ptr<ConfigurationValueBase> value, bool fixed)
+			: _configurationSpecification(std::move(configurationSpecification)),
+			  _value(std::move(value)),
+			  _fixed(fixed)
 		{
 
 		}
@@ -58,10 +62,10 @@ namespace Elpida
 		ConfigurationInstance& operator=(const ConfigurationInstance& other) = delete;
 		ConfigurationInstance(ConfigurationInstance&& other) noexcept;
 		ConfigurationInstance& operator=(ConfigurationInstance&& other) noexcept;
-		virtual ~ConfigurationInstance();
+		~ConfigurationInstance() = default;
 	private:
-		const ConfigurationSpecificationBase* _configurationSpecification;
-		ConfigurationValueBase* _value;
+		std::shared_ptr<ConfigurationSpecificationBase> _configurationSpecification;
+		std::unique_ptr<ConfigurationValueBase> _value;
 		bool _fixed;
 		void move(ConfigurationInstance&& other) noexcept;
 	};

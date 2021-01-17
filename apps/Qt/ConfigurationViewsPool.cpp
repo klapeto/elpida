@@ -40,37 +40,31 @@ namespace Elpida
 		fillPool<NumberInputView>(_numberViews);
 	}
 
-	ConfigurationViewsPool::~ConfigurationViewsPool()
+	void ConfigurationViewsPool::returnView(std::unique_ptr<ConfigurationValueViewBase>&& view)
 	{
-		destroyPool(_fileViews);
-		destroyPool(_taskListItemViews);
-		destroyPool(_numberViews);
-	}
-
-	void ConfigurationViewsPool::returnView(ConfigurationValueViewBase* view)
-	{
-		if (view != nullptr)
+		if (view)
 		{
-			switch (view->getConfiguration()->getConfigurationSpecification().getType())
+			auto type = view->getConfiguration()->getConfigurationSpecification().getType();
+			view->setConfiguration(nullptr);
+			switch (type)
 			{
 			case ConfigurationType::Type::FilePath:
-				_fileViews.push(view);
+				_fileViews.push(std::move(view));
 				break;
 			case ConfigurationType::Type::Float:
 			case ConfigurationType::Type::Int:
 			case ConfigurationType::Type::UnsignedInt:
-				_numberViews.push(view);
+				_numberViews.push(std::move(view));
 				break;
 			default:
 				throw ElpidaException(FUNCTION_NAME, "Not implemented!");
 			}
-			view->setConfiguration(nullptr);
 		}
 	}
 
-	ConfigurationValueViewBase* ConfigurationViewsPool::rentViewForConfiguration(const ConfigurationValueBase& spec)
+	std::unique_ptr<ConfigurationValueViewBase> ConfigurationViewsPool::rentViewForConfiguration(const std::shared_ptr<ConfigurationValueBase>& spec)
 	{
-		switch (spec.getConfigurationSpecification().getType())
+		switch (spec->getConfigurationSpecification().getType())
 		{
 		case ConfigurationType::Type::FilePath:
 			return getFromStack<FileInputView>(_fileViews);
@@ -83,19 +77,19 @@ namespace Elpida
 		}
 	}
 
-	TaskConfigurationListItemViewBase* ConfigurationViewsPool::rentViewForTaskList(TaskConfiguration& spec)
+	std::unique_ptr<TaskConfigurationListItemViewBase> ConfigurationViewsPool::rentViewForTaskList(TaskConfiguration& spec)
 	{
 		auto view = getFromStack<TaskListItemView>(_taskListItemViews);
-		view->setTaskConfiguration(&spec);
+		view->setTaskConfiguration(spec);
 		return view;
 	}
 
-	void ConfigurationViewsPool::returnViewForTaskList(TaskConfigurationListItemViewBase* view)
+	void ConfigurationViewsPool::returnViewForTaskList(std::unique_ptr<TaskConfigurationListItemViewBase>&& view)
 	{
-		if (view != nullptr)
+		if (view)
 		{
-			_taskListItemViews.push(view);
-			view->setTaskConfiguration(nullptr);
+			view->setTaskConfiguration(std::nullopt);
+			_taskListItemViews.push(std::move(view));
 		}
 	}
 }

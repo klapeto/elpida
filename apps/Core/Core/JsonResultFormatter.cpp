@@ -142,9 +142,9 @@ namespace Elpida
 		nodeJ["name"] = node.getName();
 		nodeJ["osIndex"] = node.isOsIndexValid() ? node.getOsIndex() : 0;
 
-		if (node.getCpuKind() != nullptr)
+		if (node.getCpuKind().has_value())
 		{
-			nodeJ["efficiency"] = node.getCpuKind()->getEfficiency();
+			nodeJ["efficiency"] = node.getCpuKind()->get().getEfficiency();
 		}
 		else
 		{
@@ -203,7 +203,7 @@ namespace Elpida
 		topologyJ["totalPhysicalCores"] = topology.getTotalPhysicalCores();
 		topologyJ["totalDepth"] = topology.getDepth();
 
-		topologyJ["root"] = getNode(*topology.getRoot());
+		topologyJ["root"] = getNode(topology.getRoot());
 
 		return topologyJ;
 	}

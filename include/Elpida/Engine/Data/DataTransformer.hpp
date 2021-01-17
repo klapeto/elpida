@@ -18,12 +18,27 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 26/4/20.
+// Created by klapeto on 30/5/20.
 //
 
-#include "Elpida/Engine/Data/PassiveTaskData.hpp"
+#ifndef INCLUDE_ELPIDA_ENGINE_DATA_DATATRANSFORMER_HPP
+#define INCLUDE_ELPIDA_ENGINE_DATA_DATATRANSFORMER_HPP
+
+#include <unordered_map>
+#include <string>
 
 namespace Elpida
 {
+	class DataTransformer
+	{
+	public:
+		[[nodiscard]] virtual std::unordered_map<std::string, double> transformDataProperties(size_t originalSize,
+			const std::unordered_map<std::string, double>& originalProperties,
+			size_t targetSize, float targetRatioToOriginal) const = 0;
 
+		DataTransformer() = default;
+		virtual ~DataTransformer() = default;
+	};
 }
+
+#endif //INCLUDE_ELPIDA_ENGINE_DATA_DATATRANSFORMER_HPP

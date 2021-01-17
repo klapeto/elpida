@@ -30,13 +30,13 @@ namespace Elpida
 	{
 	public:
 
-		void setTaskConfiguration(TaskConfiguration* configuration) override;
+		void setTaskConfiguration(OptionalReference<TaskConfiguration> configuration) override;
 		void saveSetting() override;
 
 		explicit TaskListItemView();
 		~TaskListItemView() override = default;
 	private:
-		TaskConfiguration* _taskConfiguration;
+		OptionalReference<TaskConfiguration> _taskConfiguration;
 	};
 
 } // namespace Elpida

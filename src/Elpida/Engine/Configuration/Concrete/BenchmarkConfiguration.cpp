@@ -28,14 +28,19 @@
 namespace Elpida
 {
 
-	const TaskConfiguration* BenchmarkConfiguration::getConfigurationForTask(const TaskSpecification& taskSpecification) const
+	std::optional<std::reference_wrapper<const TaskConfiguration>> BenchmarkConfiguration::getConfigurationForTask(const TaskBuilder& taskBuilder) const
 	{
-		return getConfigurationImpl(taskSpecification);
+		auto ptr = getConfigurationImpl(taskBuilder);
+		if (ptr)
+		{
+			return std::cref(*ptr);
+		}
+		return std::nullopt;
 	}
 
-	const TaskConfiguration* BenchmarkConfiguration::getConfigurationImpl(const TaskSpecification& taskSpecification) const
+	TaskConfiguration* BenchmarkConfiguration::getConfigurationImpl(const TaskBuilder& taskBuilder) const
 	{
-		auto itr = _taskConfigurations.find(taskSpecification.getId());
+		auto itr = _taskConfigurations.find(taskBuilder.getId());
 		if (itr != _taskConfigurations.end())
 		{
 			return itr->second;
@@ -43,9 +48,14 @@ namespace Elpida
 		return nullptr;
 	}
 
-	TaskConfiguration* BenchmarkConfiguration::getConfigurationForTask(const TaskSpecification& taskSpecification)
+	std::optional<std::reference_wrapper<TaskConfiguration>> BenchmarkConfiguration::getConfigurationForTask(const TaskBuilder& taskBuilder)
 	{
-		return const_cast<TaskConfiguration*>(getConfigurationImpl(taskSpecification));
+		auto ptr = getConfigurationImpl(taskBuilder);
+		if (ptr)
+		{
+			return *ptr;
+		}
+		return std::nullopt;
 	}
 
 	BenchmarkConfiguration::BenchmarkConfiguration(const Benchmark& benchmark)

@@ -32,7 +32,7 @@
 namespace Elpida
 {
 
-	Task* AllocateMemorySpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> AllocateMemorySpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
@@ -40,7 +40,7 @@ namespace Elpida
 			std::string(Settings::MemorySize),
 			ConfigurationType::Type::UnsignedInt);
 
-		return new AllocateMemory(*this, processorToRun, size.getValue(), iterationsToRun);
+		return std::make_unique<AllocateMemory>(*this, processorToRun, size.getValue(), iterationsToRun);
 	}
 
 	AllocateMemorySpecification::AllocateMemorySpecification()
@@ -51,7 +51,7 @@ namespace Elpida
 
 		withOutputData(DataSpecification("Allocated Bytes", "B", "The allocated memory"));
 
-		withConfiguration(new ConfigurationSpecification<ConfigurationType::UnsignedInt>(256ul,
+		withConfiguration(std::make_shared<ConfigurationSpecification<ConfigurationType::UnsignedInt>>(256ul,
 			Settings::MemorySize,
 			"The amount of memory to allocate",
 			true));

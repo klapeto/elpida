@@ -27,15 +27,12 @@
 #ifndef TASKSBATCHES_IMAGE_FLOYDSTEINBERG_HPP_
 #define TASKSBATCHES_IMAGE_FLOYDSTEINBERG_HPP_
 
-
 #include "Benchmarks/Image/Config.hpp"
 #include "Benchmarks/Image/ImageTaskBase.hpp"
+#include <Benchmarks/Image/Image.hpp>
 
 namespace Elpida
 {
-	template<typename T>
-	class Image;
-
 	class FloydSteinberg final : public ImageTaskBase
 	{
 	public:
@@ -45,13 +42,13 @@ namespace Elpida
 			const ProcessorNode& processorToRun,
 			double threshold,
 			size_t iterationsToRun);
-		~FloydSteinberg() override;
+		~FloydSteinberg() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
-		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		Image<PixelFloat>* _inputImage;
+		std::unique_ptr<Image<PixelFloat>> _inputImage;
 		double _threshold;
 	};
 

@@ -21,44 +21,48 @@
 // Created by klapeto on 26/4/20.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_TASK_DATA_PASSIVETASKDATA_HPP
-#define INCLUDE_ELPIDA_ENGINE_TASK_DATA_PASSIVETASKDATA_HPP
+#ifndef INCLUDE_ELPIDA_ENGINE_TASK_DATA_ACTIVETASKDATA_HPP
+#define INCLUDE_ELPIDA_ENGINE_TASK_DATA_ACTIVETASKDATA_HPP
 
-#include "Elpida/Utilities/RawData.hpp"
+#include "Elpida/Utilities/NumaMemory.hpp"
 
 namespace Elpida
 {
-	class PassiveTaskData : public RawData
+	class RawTaskData final
 	{
 	public:
+		using Data = unsigned char;
+		using pData = Data*;
 
-		[[nodiscard]] pData getData() const override
+		[[nodiscard]] pData getData() const
 		{
-			return _data;
-		}
-		[[nodiscard]] size_t getSize() const override
-		{
-			return _size;
+			return _memory.getPointer();
 		}
 
-		PassiveTaskData(pData data, size_t size)
-			: _data(data), _size(size)
+		[[nodiscard]] size_t getSize() const
 		{
-
+			return _memory.getSize();
 		}
 
-		explicit PassiveTaskData(const RawData& data)
-			: _data(data.getData()), _size(data.getSize())
+		[[nodiscard]] const ProcessorNode& getProcessorNode() const
 		{
-
+			return _processorNode;
 		}
 
-		~PassiveTaskData() override = default;
+		RawTaskData(size_t size, const ProcessorNode& processor)
+			: _memory(size, processor), _processorNode(processor)
+		{
+			_memory.allocate();
+		}
+
+		RawTaskData(const RawTaskData&) = delete;
+		RawTaskData& operator=(const RawTaskData&) = delete;
+		~RawTaskData() = default;
 	private:
-		pData _data;
-		size_t _size;
+		NumaMemory _memory;
+		const ProcessorNode& _processorNode;
 	};
 }
 
 
-#endif //INCLUDE_ELPIDA_ENGINE_TASK_DATA_PASSIVETASKDATA_HPP
+#endif //INCLUDE_ELPIDA_ENGINE_TASK_DATA_ACTIVETASKDATA_HPP

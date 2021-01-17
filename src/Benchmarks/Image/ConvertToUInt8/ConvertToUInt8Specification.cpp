@@ -29,11 +29,11 @@
 namespace Elpida
 {
 
-	Task* ConvertToUInt8Specification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> ConvertToUInt8Specification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
-		return new ConvertToUInt8(*this, processorToRun, iterationsToRun);
+		return std::make_unique<ConvertToUInt8>(*this, processorToRun, iterationsToRun);
 	}
 
 	ConvertToUInt8Specification::ConvertToUInt8Specification()
@@ -48,15 +48,15 @@ namespace Elpida
 		withDescription("Converts the image data from float to integer");
 		withInputData(DataSpecification("Input image data",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"The input image data to convert to integer"));
 		withOutputData(DataSpecification("Output image data",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"The output image data that were converted to integer"));
 
-		withDataPropertiesTransformer(new ImageDataPropertiesTransformer());
+		withDataPropertiesTransformer(std::make_shared<ImageDataPropertiesTransformer>());
 	}
 }

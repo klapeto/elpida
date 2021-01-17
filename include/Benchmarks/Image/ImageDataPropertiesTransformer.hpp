@@ -24,16 +24,16 @@
 #ifndef INCLUDE_BENCHMARKS_IMAGE_IMAGEDATAPROPERTIESTRANSFORMER_HPP
 #define INCLUDE_BENCHMARKS_IMAGE_IMAGEDATAPROPERTIESTRANSFORMER_HPP
 
-#include <Elpida/Engine/Data/DataPropertiesTransformer.hpp>
+#include <Elpida/Engine/Data/DataTransformer.hpp>
 
 namespace Elpida
 {
-	class ImageDataPropertiesTransformer : public DataPropertiesTransformer
+	class ImageDataPropertiesTransformer : public DataTransformer
 	{
 	public:
-		[[nodiscard]] std::unordered_map<std::string, double> transform(size_t originalSize,
+		[[nodiscard]] std::unordered_map<std::string, double> transformDataProperties(size_t originalSize,
 			const std::unordered_map<std::string, double>& originalProperties,
-			size_t targetSize) const override;
+			size_t targetSize, float targetRatioToOriginal) const override;
 
 		ImageDataPropertiesTransformer() = default;
 		~ImageDataPropertiesTransformer() override = default;

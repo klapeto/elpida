@@ -29,12 +29,10 @@
 
 #include "Benchmarks/Image/ImageTaskBase.hpp"
 #include "Benchmarks/Image/Config.hpp"
+#include <Benchmarks/Image/Image.hpp>
 
 namespace Elpida
 {
-	template<typename T>
-	class Image;
-
 	class GrayscaleAverage : public ImageTaskBase
 	{
 	public:
@@ -43,13 +41,13 @@ namespace Elpida
 		GrayscaleAverage(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
 			size_t iterationsToRun);
-		~GrayscaleAverage() override;
+		~GrayscaleAverage() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
-		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		Image<PixelFloat>* _inputImage;
+		std::unique_ptr<Image<PixelFloat>> _inputImage;
 	};
 
 } /* namespace Elpida */

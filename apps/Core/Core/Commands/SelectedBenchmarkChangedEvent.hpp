@@ -25,6 +25,7 @@
 #define APPS_QT_CORE_COMMANDS_SELECTEDBENCHMARKCHANGEDEVENT_HPP
 
 #include "Core/Abstractions/TypedCommand.hpp"
+#include <Elpida/Utilities/OptionalReference.hpp>
 
 namespace Elpida
 {
@@ -33,24 +34,25 @@ namespace Elpida
 	class SelectedBenchmarkChangedEvent final : public TypedCommand<SelectedBenchmarkChangedEvent>
 	{
 	public:
-		[[nodiscard]] Benchmark* getCurrentBenchmark() const
+		[[nodiscard]] OptionalReference<Benchmark> getCurrentBenchmark() const
 		{
 			return _currentBenchmark;
 		}
 
-		[[nodiscard]] Benchmark* getPreviousBenchmark() const
+		[[nodiscard]] OptionalReference<Benchmark> getPreviousBenchmark() const
 		{
 			return _previousBenchmark;
 		}
 
-		SelectedBenchmarkChangedEvent(Benchmark* currentBenchmark, Benchmark* previousBenchmark)
+		SelectedBenchmarkChangedEvent(OptionalReference<Benchmark> currentBenchmark,
+			OptionalReference<Benchmark> previousBenchmark)
 			: _currentBenchmark(currentBenchmark), _previousBenchmark(previousBenchmark)
 		{
 		}
 		~SelectedBenchmarkChangedEvent() override = default;
 	private:
-		Benchmark* _currentBenchmark;
-		Benchmark* _previousBenchmark;
+		OptionalReference<Benchmark> _currentBenchmark;
+		OptionalReference<Benchmark> _previousBenchmark;
 	};
 }
 

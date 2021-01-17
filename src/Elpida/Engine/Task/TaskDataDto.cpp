@@ -23,26 +23,24 @@
 
 #include "Elpida/Engine/Task/TaskDataDto.hpp"
 
-#include "Elpida/Utilities/RawData.hpp"
-
 namespace Elpida
 {
 
-	TaskDataDto::TaskDataDto(RawData& taskData, std::unordered_map<std::string, double> properties)
-		: _definedProperties(std::move(properties)), _taskData(&taskData)
+	TaskDataDto::TaskDataDto(std::unique_ptr<RawTaskData> taskData,
+		std::initializer_list<Properties::value_type> properties)
+		: _taskData(std::move(taskData))
+	{
+		_definedProperties.insert(properties);
+	}
+
+	TaskDataDto::TaskDataDto(std::unique_ptr<RawTaskData> taskData, TaskDataDto::Properties properties)
+		: _definedProperties(std::move(properties)), _taskData(std::move(taskData))
 	{
 
 	}
 
-	TaskDataDto::TaskDataDto()
-		: _taskData(nullptr)
-	{
-
-	}
-
-	TaskDataDto::TaskDataDto(RawData& taskData)
-		: _taskData(&taskData)
+	TaskDataDto::TaskDataDto(std::unique_ptr<RawTaskData> taskData)
+		: _taskData(std::move(taskData))
 	{
 	}
-
 }

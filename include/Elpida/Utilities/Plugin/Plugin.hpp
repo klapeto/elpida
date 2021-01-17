@@ -24,9 +24,6 @@
 #ifndef INCLUDE_ELPIDA_UTILITIES_PLUGIN_HPP
 #define INCLUDE_ELPIDA_UTILITIES_PLUGIN_HPP
 
-
-#include <algorithm>
-
 namespace Elpida
 {
 	template<typename T>
@@ -38,6 +35,5 @@ namespace Elpida
 		virtual ~Plugin() = default;
 	};
 }
-
 
 #endif //INCLUDE_ELPIDA_UTILITIES_PLUGIN_HPP

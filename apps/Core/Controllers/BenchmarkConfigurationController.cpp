@@ -40,10 +40,10 @@ namespace Elpida
 	void BenchmarkConfigurationController::handle(SelectedBenchmarkChangedEvent& command)
 	{
 		auto currentBenchmark = command.getCurrentBenchmark();
-		BenchmarkConfiguration* conf = nullptr;
-		if (currentBenchmark != nullptr)
+		OptionalReference<BenchmarkConfiguration> conf;
+		if (currentBenchmark.has_value())
 		{
-			conf = &_benchmarkConfigurationsCollectionModel.get(currentBenchmark->getId());
+			conf = _benchmarkConfigurationsCollectionModel.get(currentBenchmark->get().getId());
 		}
 
 		_configurationModel

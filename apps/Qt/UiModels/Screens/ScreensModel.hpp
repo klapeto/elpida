@@ -26,6 +26,7 @@
 
 #include "Models/Abstractions/ListModel/ListModel.hpp"
 #include "ScreenItem.hpp"
+#include <Elpida/Utilities/OptionalReference.hpp>
 
 namespace Elpida
 {
@@ -38,12 +39,12 @@ namespace Elpida
 
 		Event<ScreenItem&> selectionChanged;
 
-		ScreenItem* getSelectedScreen() const
+		OptionalReference<ScreenItem> getSelectedScreen() const
 		{
 			return _currentScreen;
 		}
 
-		void setSelectedScreen(ScreenItem* currentIndex)
+		void setSelectedScreen(OptionalReference<ScreenItem> currentIndex)
 		{
 			_currentScreen = currentIndex;
 			onDataChanged();
@@ -51,13 +52,13 @@ namespace Elpida
 		}
 
 		ScreensModel()
-			: _currentScreen(nullptr)
+			: _currentScreen(std::nullopt)
 		{
 		}
 
 		~ScreensModel() override = default;
 	private:
-		ScreenItem* _currentScreen;
+		OptionalReference<ScreenItem> _currentScreen;
 	};
 }
 

@@ -28,8 +28,8 @@
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
-#include "Elpida/Engine/Data/DataPropertiesTransformer.hpp"
-#include "Elpida/Utilities/RawData.hpp"
+#include "Elpida/Engine/Data/DataTransformer.hpp"
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 
 #include <unordered_set>
 
@@ -43,6 +43,7 @@ namespace Elpida
 		  _affinity(affinity),
 		  _configuration(configuration),
 		  _taskBuilder(taskBuilder),
+		  _originalDataSize(0),
 		  _threadsShouldWake(false)
 	{
 
@@ -70,81 +71,122 @@ namespace Elpida
 		const auto& processors = _affinity.getProcessorNodes();
 		const size_t processorCount = processors.size();
 
-		auto input = getInput();
+		auto& input = *_taskData;
 
-		_allocatedChunks =
-			DataAdapter::breakIntoChunks(*input.getTaskData(), _affinity, _specification.getInputDataSpecification());
+		_originalDataSize = input.getTaskData()->getSize();
+
+		auto dataPropertiesTransformer = _specification.getDataTransformer();
+
+		size_t divisibleBy = 1;
+
+		if (_specification.getInputDataSpecification().divisibleByProperty())
+		{
+			divisibleBy = input.getDefinedProperties()
+				.at(_specification.getInputDataSpecification().getSizeDivisibleByPropertyName());
+		}
+		else if (_specification.getInputDataSpecification().getSizeShouldBeDivisibleBy() > 0)
+		{
+			divisibleBy = _specification.getInputDataSpecification().getSizeShouldBeDivisibleBy();
+		}
+
+		auto _allocatedChunks = DataAdapter::breakIntoChunks(
+			{ input.getTaskData().get() },
+			_affinity,
+			divisibleBy);
+
+		// Since we will replace the memory, release the input
+		// to reduce the memory consumption
+		if (_specification.producesOutput())
+		{
+			input.getTaskDataAndRelease().reset();
+		}
 
 		_createdThreads.reserve(processorCount);
-
-		auto dataPropertiesTransformer = _specification.getDataPropertiesTransformer();
 
 		size_t i = 0;
 		for (auto processor : processors)
 		{
-			auto task = _specification.createNewTask(_configuration, *processor, 1);
-
+			TaskDataDto curTaskInput;
 			if (_specification.acceptsInput())
 			{
-				if (_allocatedChunks.size() <= i)	// TODO: Move it up to avoid task creation
+				if (_allocatedChunks.size() <= i)
 				{
-					delete task;
 					break;    // Not enough chunks. We need to handle that
 				}
-				auto& data = _allocatedChunks[i];
-				if (dataPropertiesTransformer == nullptr)
+
+				curTaskInput.setTaskData(std::move(_allocatedChunks[i]));
+
+				if (!dataPropertiesTransformer)
 				{
-					task->setInput(TaskDataDto(*data, input.getDefinedProperties()));
+					curTaskInput.setProperties(input.getDefinedProperties());
 				}
 				else
 				{
-					task->setInput(TaskDataDto(*data,
-						dataPropertiesTransformer->transform(input.getTaskData()->getSize(),
+					curTaskInput.setProperties(
+						dataPropertiesTransformer->transformDataProperties(
+							_originalDataSize,
 							input.getDefinedProperties(),
-							data->getSize())));
+							curTaskInput.getTaskData()->getSize(),
+							curTaskInput.getTaskData()->getSize() / (float)_originalDataSize));
 				}
 			}
 
-			task->prepare();
-			_createdThreads.emplace_back(*task,
+			auto& thread = _createdThreads.emplace_back(
+				_specification.createNewTask(_configuration, *processor, 1),
+				std::move(curTaskInput),
 				_wakeNotifier,
 				_mutex,
 				_threadsShouldWake,
 				processor->getOsIndex());
-			_createdThreads.back().start();
+
+			thread.prepare();
+			thread.start();
 			i++;
 		}
 	}
 
-	TaskDataDto MultiThreadTask::finalizeAndGetOutputData()
+	std::optional<TaskDataDto> MultiThreadTask::finalizeAndGetOutputData()
 	{
-		std::unordered_set<const RawData*> outputsSet;
-		std::vector<const RawData*> accumulatedOutputs;
-		for (auto& thread: _createdThreads)
+		if (getSpecification().producesOutput())
 		{
-			thread.getTaskToRun().finalize();
-			accumulatedOutputs.push_back(thread.getTaskToRun().getOutput().getTaskData());
-			outputsSet.emplace(thread.getTaskToRun().getOutput().getTaskData());
+			std::vector<std::unique_ptr<RawTaskData>> accumulatedOutputs;
+			std::vector<const RawTaskData*> accumulatedOutputsPointers;
+			accumulatedOutputsPointers.reserve(_createdThreads.size());
+			accumulatedOutputs.reserve(_createdThreads.size());
+
+			for (auto& thread: _createdThreads)
+			{
+				thread.finalize();
+
+				accumulatedOutputs.push_back(thread.getTaskData().getTaskDataAndRelease());
+				accumulatedOutputsPointers.push_back(accumulatedOutputs.back().get());
+			}
+
+			auto returnData =
+				DataAdapter::mergeIntoSingleChunk(accumulatedOutputsPointers, *_affinity.getProcessorNodes().front());
+
+			std::unordered_map<std::string, double> properties;
+			auto dataPropertiesTransformer = _specification.getDataTransformer();
+			if (dataPropertiesTransformer)
+			{
+				properties = dataPropertiesTransformer->transformDataProperties(_originalDataSize,
+					_taskData->getDefinedProperties(),
+					returnData->getSize(),
+					1.0);
+			}
+			else
+			{
+				properties = _taskData->getDefinedProperties();
+			}
+
+			_createdThreads.clear();
+			return TaskDataDto(std::move(returnData), properties);
 		}
-
-		auto returnData = DataAdapter::mergeIntoSingleChunk(accumulatedOutputs, *_affinity.getProcessorNodes().front());
-
-		// This becomes the delete 'list'
-		for (auto data: _allocatedChunks)
+		else
 		{
-			// We need to add the original chunks to delete list too if tasks created their own chunks
-			outputsSet.emplace(data);
+			_createdThreads.clear();
+			return std::nullopt;
 		}
-
-		for (auto data: outputsSet)
-		{
-			delete data;    // delete any original chunks and chunks created by the tasks
-		}
-
-		_createdThreads.clear();
-		_allocatedChunks.clear();
-
-		return TaskDataDto(*returnData, getInput().getDefinedProperties());
 	}
 
 	double MultiThreadTask::calculateTaskResultValue(const Duration& taskElapsedTime) const
@@ -152,7 +194,7 @@ namespace Elpida
 		double accumulator = 0;
 		for (auto& thread: _createdThreads)
 		{
-			accumulator += thread.getTaskToRun().calculateTaskResultValue(taskElapsedTime);
+			accumulator += thread.calculateTaskResultValue(taskElapsedTime);
 		}
 		return _specification.getResultSpecification().getAggregationType() == ResultSpecification::Accumulative
 			   ? accumulator : accumulator / _createdThreads.size();

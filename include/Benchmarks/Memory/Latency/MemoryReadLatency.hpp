@@ -49,10 +49,9 @@ namespace Elpida
 		~MemoryReadLatency() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
 		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		RawData* _taskData;
+		const RawTaskData* _taskData;
 		unsigned long _iterations;
 		static constexpr inline double _iterationConstant =
 			1000000000; // rough estimate, to be passed on construction later once we find the latency

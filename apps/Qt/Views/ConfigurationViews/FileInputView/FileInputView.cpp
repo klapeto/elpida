@@ -42,15 +42,15 @@ namespace Elpida
 		delete _ui;
 	}
 
-	void FileInputView::setConfiguration(ConfigurationValueBase* configurationValue)
+	void FileInputView::setConfiguration(const std::shared_ptr<ConfigurationValueBase>& configurationValue)
 	{
-		if (configurationValue != nullptr)
+		if (configurationValue)
 		{
 			auto& spec = configurationValue->getConfigurationSpecification();
 			if (spec.getType() == ConfigurationType::Type::FilePath)
 			{
-				auto& value = configurationValue->as<ConfigurationValue<std::string>>();
-				_configurationValue = &value;
+				_configurationValue = configurationValue;
+				auto& value = _configurationValue->as<ConfigurationValue<std::string>>();
 				_ui->lblPropertyName->setText(QString::fromStdString(spec.getName()));
 				_ui->leFilePath->setText(QString::fromStdString(value.getValue()));
 			}
@@ -61,20 +61,15 @@ namespace Elpida
 		}
 		else
 		{
-			_configurationValue = nullptr;
+			_configurationValue.reset();
 		}
-	}
-
-	ConfigurationValueBase* FileInputView::getConfiguration()
-	{
-		return _configurationValue;
 	}
 
 	void FileInputView::saveSetting()
 	{
 		if (_configurationValue != nullptr)
 		{
-			_configurationValue->setValue(_ui->leFilePath->text().toStdString());
+			_configurationValue->as<ConfigurationValue<std::string>>().setValue(_ui->leFilePath->text().toStdString());
 		}
 	}
 

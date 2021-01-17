@@ -28,13 +28,13 @@
 #define ELPIDA_TOPOLOGY_SYSTEMTOPOLOGY_HPP_
 
 #include <vector>
+#include <memory>
 #include "CpuKind.hpp"
+#include "ProcessorNode.hpp"
+
 
 namespace Elpida
 {
-
-	class ProcessorNode;
-
 	class SystemTopology final
 	{
 	public:
@@ -53,9 +53,9 @@ namespace Elpida
 			return _depth;
 		}
 
-		[[nodiscard]] const ProcessorNode* getRoot() const
+		[[nodiscard]] const ProcessorNode& getRoot() const
 		{
-			return _root;
+			return *_root;
 		}
 
 		[[nodiscard]] std::size_t getTotalLogicalCores() const
@@ -71,11 +71,11 @@ namespace Elpida
 		static void setProcessPriority(ProcessPriority priority);
 
 		SystemTopology();
-		~SystemTopology();
+		~SystemTopology() = default;
 	private:
 		std::vector<const ProcessorNode*> _allProcessors;
 		std::vector<CpuKind> _cpuKinds;
-		ProcessorNode* _root;
+		std::unique_ptr<ProcessorNode> _root;
 
 		std::size_t _depth;
 		std::size_t _totalLogicalCores;

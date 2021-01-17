@@ -28,11 +28,11 @@
 namespace Elpida
 {
 
-	Task* PngDecodingSpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> PngDecodingSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
-		return new PngDecoding(*this, processorToRun, iterationsToRun);
+		return std::make_unique<PngDecoding>(*this, processorToRun, iterationsToRun);
 	}
 
 	PngDecodingSpecification::PngDecodingSpecification()
@@ -43,8 +43,8 @@ namespace Elpida
 		withInputData(DataSpecification("Input file data", "B", "The raw png file data"));
 		withOutputData(DataSpecification("Output image data",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"The image data in RGBA pixel array"));
 	}
 }

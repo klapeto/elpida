@@ -27,11 +27,11 @@
 
 namespace Elpida
 {
-	Task* PngEncodingSpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> PngEncodingSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
-		return new PngEncoding(*this, processorToRun, iterationsToRun);
+		return std::make_unique<PngEncoding>(*this, processorToRun, iterationsToRun);
 	}
 
 	PngEncodingSpecification::PngEncodingSpecification()
@@ -46,8 +46,8 @@ namespace Elpida
 		withDescription("Encodes the image data to PNG Format");
 		withInputData(DataSpecification("Input image data",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride"  },
 			"The input image data in UInt8 to encode into PNG"));
 		withOutputData(DataSpecification("PNG data", "B", "The image encoded to PNG format"));
 	}

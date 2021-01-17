@@ -17,13 +17,16 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-//
-// Created by klapeto on 30/5/20.
-//
+/*
+ * Image.cpp
+ *
+ *  Created on: 8 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Elpida/Engine/Data/DataPropertiesTransformer.hpp"
+#include "Benchmarks/Image/Image.hpp"
 
 namespace Elpida
 {
 
-}
+} /* namespace Elpida */

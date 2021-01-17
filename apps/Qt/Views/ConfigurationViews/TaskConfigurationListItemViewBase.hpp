@@ -26,6 +26,9 @@
 
 #include <QListWidgetItem>
 
+#include <Elpida/Utilities/OptionalReference.hpp>
+#include <Elpida/Engine/Configuration/Concrete/TaskConfiguration.hpp>
+
 namespace Elpida
 {
 	class TaskConfiguration;
@@ -34,7 +37,7 @@ namespace Elpida
 	{
 	public:
 
-		virtual void setTaskConfiguration(TaskConfiguration* configuration) = 0;
+		virtual void setTaskConfiguration(OptionalReference<TaskConfiguration> configuration) = 0;
 		virtual void saveSetting() = 0;
 
 		TaskConfigurationListItemViewBase()

@@ -26,10 +26,12 @@
 
 #include <unordered_map>
 #include <vector>
-#include <Elpida/Engine/Calculators/TaskResultCalculator.hpp>
+#include"Elpida/Engine/Calculators/TaskResultCalculator.hpp"
+#include "Elpida/Utilities/Uuid.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 #include "Elpida/Engine/Configuration/ConfigurationInstance.hpp"
+#include "Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 
 namespace Elpida
@@ -39,10 +41,9 @@ namespace Elpida
 	class Task;
 	class TaskConfiguration;
 	class TaskAffinity;
-	class ConfigurationSpecificationBase;
 	class ConfigurationValueBase;
 
-	class TaskBuilder
+	class TaskBuilder final
 	{
 	public:
 
@@ -63,9 +64,9 @@ namespace Elpida
 			}
 		}
 
-		TaskBuilder& withTaskResultCalculator(TaskResultCalculator* taskResultCalculator)
+		TaskBuilder& withTaskResultCalculator(std::shared_ptr<TaskResultCalculator> taskResultCalculator)
 		{
-			_taskResultCalculator = taskResultCalculator;
+			_taskResultCalculator = std::move(taskResultCalculator);
 			return *this;
 		}
 
@@ -90,7 +91,7 @@ namespace Elpida
 
 		[[nodiscard]] const TaskResultCalculator* getTaskResultCalculator() const
 		{
-			return _taskResultCalculator;
+			return _taskResultCalculator.get();
 		}
 
 		[[nodiscard]] const TaskSpecification& getTaskSpecification() const
@@ -98,19 +99,20 @@ namespace Elpida
 			return *_taskSpecification;
 		}
 
-		[[nodiscard]] Task* build(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const;
+		[[nodiscard]] std::unique_ptr<Task> build(const TaskConfiguration& configuration,
+			const ProcessorNode& processorToRun) const;
 
-		bool isShouldBeCountedOnResults() const
+		bool shouldBeCountedOnResults() const
 		{
 			return _shouldBeCountedOnResults;
 		}
 
-		bool isCanBeMultiThreaded() const
+		bool canBeMultiThreaded() const
 		{
 			return _canBeMultiThreaded;
 		}
 
-		bool isCanBeDisabled() const
+		bool canBeDisabled() const
 		{
 			return _canBeDisabled;
 		}
@@ -120,24 +122,33 @@ namespace Elpida
 			return _iterationsToRun;
 		}
 
-		explicit TaskBuilder(TaskSpecification& specification)
+		[[nodiscard]]const std::string& getId() const
+		{
+			return _id;
+		}
+
+		template<typename TSpec>
+		explicit TaskBuilder(std::shared_ptr<TSpec> specification)
 			:
-			_taskSpecification(&specification),
-			_taskResultCalculator(nullptr),
+			_taskSpecification(std::move(specification)),
 			_iterationsToRun(1),
 			_shouldBeCountedOnResults(false),
 			_canBeMultiThreaded(false),
 			_canBeDisabled(false)
 		{
+			_id = Uuid::create();
 			fillConfigurationMap();
 		}
 
-		virtual ~TaskBuilder();
+		TaskBuilder(TaskBuilder&& other) = default;
+		TaskBuilder& operator=(TaskBuilder&& other) = default;
+		~TaskBuilder() = default;
 	private:
-		std::unordered_map<std::string, ConfigurationSpecificationBase*> _configurationMap;
+		std::unordered_map<std::string, std::shared_ptr<ConfigurationSpecificationBase>> _configurationMap;
 		std::unordered_map<std::string, ConfigurationInstance> _predefinedConfigurationsValues;
-		TaskSpecification* _taskSpecification;
-		TaskResultCalculator* _taskResultCalculator;
+		std::shared_ptr<TaskSpecification> _taskSpecification;
+		std::shared_ptr<TaskResultCalculator> _taskResultCalculator;
+		std::string _id;
 		size_t _iterationsToRun;
 		bool _shouldBeCountedOnResults;
 		bool _canBeMultiThreaded;
@@ -160,7 +171,7 @@ namespace Elpida
 					_predefinedConfigurationsValues.erase(existing);
 				}
 				_predefinedConfigurationsValues.emplace(name,
-					ConfigurationInstance(*itr->second, new ConfigurationValue<T>(*itr->second, value, fixed), fixed));
+					ConfigurationInstance(itr->second, std::make_unique<ConfigurationValue<T>>(*itr->second, value, fixed), fixed));
 			}
 			else
 			{

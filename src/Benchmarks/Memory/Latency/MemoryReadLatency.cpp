@@ -30,7 +30,7 @@
 
 #include <Elpida/ElpidaException.hpp>
 #include <Elpida/Utilities/Duration.hpp>
-#include <Elpida/Utilities/RawData.hpp>
+#include <Elpida/Engine/Data/RawTaskData.hpp>
 
 #ifdef __x86_64__
 #include <emmintrin.h>
@@ -56,7 +56,7 @@ namespace Elpida
 
 	void MemoryReadLatency::prepareImpl()
 	{
-		_taskData = getInput().getTaskData();
+		_taskData = getInput().getTaskData().get();
 		if (_taskData->getSize() % (32 * sizeof(RegisterSize)) != 0)
 			throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
 
@@ -73,11 +73,6 @@ namespace Elpida
 		{
 			ptr[i] = distribution(generator);
 		}
-	}
-
-	TaskDataDto MemoryReadLatency::finalizeAndGetOutputData()
-	{
-		return TaskDataDto(*_taskData);
 	}
 
 	void MemoryReadLatency::execute()

@@ -43,7 +43,6 @@ namespace Elpida
 		{
 		}
 	private:
-
 		const CollectionItem<T>& _item;
 	};
 }

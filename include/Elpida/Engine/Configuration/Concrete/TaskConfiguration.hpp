@@ -26,10 +26,11 @@
 
 #include <string>
 #include <unordered_map>
+#include <memory>
+#include "ConfigurationValueBase.hpp"
 
 namespace Elpida
 {
-	class ConfigurationValueBase;
 	class TaskSpecification;
 	class TaskBuilder;
 
@@ -39,10 +40,10 @@ namespace Elpida
 	class TaskConfiguration final
 	{
 	public:
-		ConfigurationValueBase* getConfiguration(const std::string& name) const;
-		void setConfiguration(const std::string& name, ConfigurationValueBase& configuration);
+		std::optional<std::shared_ptr<ConfigurationValueBase>> getConfiguration(const std::string& name) const;
+		void setConfiguration(const std::string& name, std::shared_ptr<ConfigurationValueBase> configuration);
 
-		const std::unordered_map<std::string, ConfigurationValueBase*>& getAllConfigurations() const
+		const std::unordered_map<std::string, std::shared_ptr<ConfigurationValueBase>>& getAllConfigurations() const
 		{
 			return _configuration;
 		}
@@ -75,10 +76,10 @@ namespace Elpida
 
 		TaskConfiguration(const TaskConfiguration& other);
 		TaskConfiguration& operator=(const TaskConfiguration& other);
-		TaskConfiguration(TaskConfiguration&&) noexcept ;
-		~TaskConfiguration();
+		TaskConfiguration(TaskConfiguration&&) noexcept;
+		~TaskConfiguration() = default;
 	private:
-		std::unordered_map<std::string, ConfigurationValueBase*> _configuration;
+		std::unordered_map<std::string, std::shared_ptr<ConfigurationValueBase>> _configuration;
 		const TaskSpecification* _taskSpecification;
 		const TaskBuilder* _taskBuilder;
 		bool _enabled;

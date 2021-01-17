@@ -29,11 +29,12 @@
 
 #include "Benchmarks/Image/Config.hpp"
 #include "Benchmarks/Image/ImageTaskBase.hpp"
+#include "Benchmarks/Image/Image.hpp"
+
+#include <Elpida/Engine/Data/RawTaskData.hpp>
 
 namespace Elpida
 {
-	template<typename T>
-	class Image;
 
 	class ConvertToUInt8 final : public ImageTaskBase
 	{
@@ -43,16 +44,15 @@ namespace Elpida
 		ConvertToUInt8(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
 			size_t iterationsToRun);
-		~ConvertToUInt8() override;
+		~ConvertToUInt8() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
-		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
-
+		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		RawData* _outputData;
-		Image<PixelInt>* _outputImage;
-		Image<PixelFloat>* _inputImage;
+		std::unique_ptr<RawTaskData> _outputData;
+		std::unique_ptr<Image<PixelInt>> _outputImage;
+		std::unique_ptr<Image<PixelFloat>> _inputImage;
 
 	};
 

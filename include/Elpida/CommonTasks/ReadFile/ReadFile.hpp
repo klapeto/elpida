@@ -30,10 +30,10 @@
 #include <string>
 
 #include "Elpida/Engine/Task/Task.hpp"
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 
 namespace Elpida
 {
-	class ActiveTaskData;
 
 	class ReadFile : public Task
 	{
@@ -47,11 +47,12 @@ namespace Elpida
 		~ReadFile() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
-		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::string _filePath;
-		ActiveTaskData* _data;
+		std::unique_ptr<RawTaskData> _data;
+		size_t _size;
 	};
 
 } /* namespace Elpida */

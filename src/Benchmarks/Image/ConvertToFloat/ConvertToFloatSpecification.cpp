@@ -28,11 +28,11 @@
 namespace Elpida
 {
 
-	Task* ConvertToFloatSpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> ConvertToFloatSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
-		return new ConvertToFloat(*this, processorToRun, iterationsToRun);
+		return std::make_unique<ConvertToFloat>(*this, processorToRun, iterationsToRun);
 	}
 
 	ConvertToFloatSpecification::ConvertToFloatSpecification()
@@ -47,16 +47,16 @@ namespace Elpida
 
 		withInputData(DataSpecification("Input image",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"Input image in RGBA and integer values (0-255)"));
 
 		withOutputData(DataSpecification("Output image",
 			"Pixels",
-			4,
-			{ "width", "height" },
+			"stride",
+			{ "width", "height", "stride" },
 			"Output image in RGBA and float values (0.0-1.0)"));
 
-		withDataPropertiesTransformer(new ImageDataPropertiesTransformer());
+		withDataPropertiesTransformer(std::make_shared<ImageDataPropertiesTransformer>());
 	}
 }

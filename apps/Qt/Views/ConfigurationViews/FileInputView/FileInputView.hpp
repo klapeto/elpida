@@ -37,15 +37,18 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		void setConfiguration(ConfigurationValueBase* configurationValue) override;
-		ConfigurationValueBase* getConfiguration() override;
+		void setConfiguration(const std::shared_ptr<ConfigurationValueBase>& configurationValue) override;
+		std::shared_ptr<ConfigurationValueBase> getConfiguration() override
+		{
+			return  _configurationValue;
+		}
 		void saveSetting() override;
 
 		explicit FileInputView();
 		~FileInputView() override;
 	private:
 		Ui::FileInputView* _ui;
-		ConfigurationValue<ConfigurationType::FilePath>* _configurationValue;
+		std::shared_ptr<ConfigurationValueBase> _configurationValue;
 
 	public slots:
 		void onEditingFinished();

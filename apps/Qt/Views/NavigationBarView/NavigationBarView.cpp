@@ -87,7 +87,7 @@ namespace Elpida
 
 	void NavigationBarView::onButton_Toggled(QAbstractButton* button, bool checked)
 	{
-		_model.setSelectedScreen(_screenMap.at(_buttonGroup->id(button)));
+		_model.setSelectedScreen(*_screenMap.at(_buttonGroup->id(button)));
 	}
 
 } // namespace Elpida

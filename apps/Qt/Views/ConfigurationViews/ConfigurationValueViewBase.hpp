@@ -25,16 +25,16 @@
 #define APPS_QT_VIEWS_CONFIGURATIONVIEWS_CONFIGURATIONVALUEVIEWBASE_HPP
 
 #include <QWidget>
+#include "Elpida/Engine/Configuration/Concrete/ConfigurationValueBase.hpp"
 
 namespace Elpida
 {
-	class ConfigurationValueBase;
 
 	class ConfigurationValueViewBase : public QWidget
 	{
 	public:
-		virtual void setConfiguration(ConfigurationValueBase* configurationValue) = 0;
-		virtual ConfigurationValueBase* getConfiguration() = 0;
+		virtual void setConfiguration(const std::shared_ptr<ConfigurationValueBase>& configurationValue) = 0;
+		virtual std::shared_ptr<ConfigurationValueBase> getConfiguration() = 0;
 		virtual void saveSetting() = 0;
 
 		ConfigurationValueViewBase()

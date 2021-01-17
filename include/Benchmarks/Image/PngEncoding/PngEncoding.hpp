@@ -27,8 +27,11 @@
 #ifndef TASKSBATCHES_IMAGE_PNGENCODING_HPP_
 #define TASKSBATCHES_IMAGE_PNGENCODING_HPP_
 
-#include <Benchmarks/Image/Config.hpp>
+#include "Benchmarks/Image/Config.hpp"
 #include "Benchmarks/Image/ImageTaskBase.hpp"
+#include "Benchmarks/Image/Image.hpp"
+
+#include <Elpida/Engine/Data/RawTaskData.hpp>
 
 namespace Elpida
 {
@@ -43,14 +46,14 @@ namespace Elpida
 		PngEncoding(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
 			size_t iterationsToRun);
-		~PngEncoding() override;
+		~PngEncoding() override = default;
 	protected:
 		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
-		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		RawData* _outputData;
-		Image<PixelInt>* _inputImage;
+		std::unique_ptr<RawTaskData> _outputData;
+		std::unique_ptr<Image<PixelInt>> _inputImage;
 	};
 
 } /* namespace Elpida */
