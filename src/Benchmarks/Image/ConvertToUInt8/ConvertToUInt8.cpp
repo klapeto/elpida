@@ -26,8 +26,8 @@
 
 #include "Benchmarks/Image/ConvertToUInt8/ConvertToUInt8.hpp"
 
-#include <Elpida/Utilities/Imaging/Image.hpp>
-#include <Elpida/Engine/Data/ActiveTaskData.hpp>
+#include "Benchmarks/Image/Image.hpp"
+#include <Elpida/Engine/Data/RawTaskData.hpp>
 
 namespace Elpida
 {
@@ -53,39 +53,35 @@ namespace Elpida
 			converted[i].B = source[i].B * 255;
 			converted[i].A = source[i].A * 255;
 		}
-
 	}
 	void ConvertToUInt8::prepareImpl()
 	{
 		const auto& input = getInput();
 		const auto& properties = getImageProperties(input);
 
-		_inputImage = new Image<PixelFloat>(*input.getTaskData(), properties.width, properties.height);
-		_outputData = new ActiveTaskData(properties.width * properties.height * 4 * sizeof(PixelInt), _processorToRun);
-		_outputImage = new Image<PixelInt>(*_outputData, properties.width, properties.height);
-
+		_inputImage = std::make_unique< Image<PixelFloat>>(*input.getTaskData(), properties.width, properties.height);
+		_outputData = std::make_unique<RawTaskData>(properties.width * properties.height * 4 * sizeof(PixelInt), _processorToRun);
+		_outputImage = std::make_unique< Image<PixelInt>>(*_outputData, properties.width, properties.height);
 	}
 
-	TaskDataDto ConvertToUInt8::finalizeAndGetOutputData()
+	std::optional<TaskDataDto> ConvertToUInt8::finalizeAndGetOutputData()
 	{
-		delete _inputImage;
-		_inputImage = nullptr;
+		_inputImage.reset();
+		_outputImage.reset();
 
-		delete _outputImage;
-		_outputImage = nullptr;
+		auto properties = getImageProperties(getInput());
 
-		return TaskDataDto(*_outputData, getInput().getDefinedProperties());
+		return TaskDataDto(std::move(_outputData),
+			{
+				{"width", properties.width },
+				{"height", properties.height},
+				{"stride", properties.width * 4 * sizeof(PixelInt) }
+			});
 	}
 
 	double ConvertToUInt8::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
 		return _inputImage->getTotalSize();
-	}
-
-	ConvertToUInt8::~ConvertToUInt8()
-	{
-		delete _inputImage;
-		delete _outputImage;
 	}
 
 } /* namespace Elpida */

@@ -26,7 +26,7 @@
 
 #include "Benchmarks/Image/GrayscaleAverage/GrayscaleAverage.hpp"
 
-#include <Elpida/Utilities/Imaging/Image.hpp>
+#include "Benchmarks/Image/Image.hpp"
 
 namespace Elpida
 {
@@ -34,7 +34,7 @@ namespace Elpida
 	GrayscaleAverage::GrayscaleAverage(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun), _inputImage(nullptr)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun)
 	{
 
 	}
@@ -58,15 +58,14 @@ namespace Elpida
 		const auto& input = getInput();
 		auto properties = getImageProperties(input);
 
-		_inputImage = new Image<PixelFloat>(*input.getTaskData(), properties.width, properties.height);
+		_inputImage = std::make_unique<Image<PixelFloat>>(*input.getTaskData(), properties.width, properties.height);
 	}
 
-	TaskDataDto GrayscaleAverage::finalizeAndGetOutputData()
+	std::optional<TaskDataDto> GrayscaleAverage::finalizeAndGetOutputData()
 	{
-		delete _inputImage;
-		_inputImage = nullptr;
+		_inputImage.reset();
 
-		return getInput();
+		return propagateInput();
 	}
 
 	double GrayscaleAverage::calculateTaskResultValue(const Duration& taskElapsedTime) const
@@ -74,8 +73,4 @@ namespace Elpida
 		return _inputImage->getTotalSize();
 	}
 
-	GrayscaleAverage::~GrayscaleAverage()
-	{
-		delete _inputImage;
-	}
 } /* namespace Elpida */

@@ -28,11 +28,12 @@
 #define ELPIDA_UTILITIES_IMAGING_IMAGE_HPP_
 
 #include <cstddef>
-#include "Elpida/Config.hpp"
 
-#include "Elpida/ElpidaException.hpp"
 #include "Pixel.hpp"
-#include "Elpida/Utilities/RawData.hpp"
+
+#include <Elpida/Config.hpp>
+#include <Elpida/ElpidaException.hpp>
+#include <Elpida/Engine/Data/RawTaskData.hpp>
 
 namespace Elpida
 {
@@ -79,12 +80,12 @@ namespace Elpida
 			return _data[(y * _width) + x];
 		}
 
-		[[nodiscard]] const RawData& getRawData() const
+		[[nodiscard]] const RawTaskData& getRawData() const
 		{
 			return _rawData;
 		}
 
-		Image(const RawData& rawData, std::size_t width, std::size_t height)
+		Image(const RawTaskData& rawData, std::size_t width, std::size_t height)
 			: _rawData(rawData), _width(width), _height(height)
 		{
 			if (width > 0 && height > 0)
@@ -104,7 +105,7 @@ namespace Elpida
 		}
 		~Image() = default;
 	private:
-		const RawData& _rawData;
+		const RawTaskData& _rawData;
 		Pixel<T>* _data;
 		std::size_t _width;
 		std::size_t _height;

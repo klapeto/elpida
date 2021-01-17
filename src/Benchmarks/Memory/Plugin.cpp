@@ -31,72 +31,86 @@
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
 #include <Elpida/Engine/Calculators/Benchmark/AverageScoreCalculator.hpp>
 #include <Elpida/Engine/Calculators/Task/AverageTaskResultCalculator.hpp>
+#include <memory>
 #include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
 #include "Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp"
 
 #include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
-Elpida::Benchmark* createMemoryReadBandwidth();
-Elpida::Benchmark* createMemoryReadLatency();
+using namespace Elpida;
 
-extern "C" ELPIDA_EXPORT Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
+std::unique_ptr<Benchmark> createMemoryReadBandwidth(const std::shared_ptr<AllocateMemorySpecification>& allocateSpec);
+std::unique_ptr<Benchmark> createMemoryReadLatency(const std::shared_ptr<AllocateMemorySpecification>& allocateSpec);
+
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL int32_t elpidaPluginAbiVersion()
 {
-	using namespace Elpida;
-	using Plugin = BenchmarksContainerPlugin<Elpida::Benchmark>;
+	return ELPIDA_PLUGIN_ABI_VERSION;
+}
+
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void elpidaDestroyPlugin(Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* plugin)
+{
+	delete plugin;
+}
+
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* elpidaCreatePlugin()
+{
+	using Plugin = BenchmarksContainerPlugin<Benchmark>;
 
 	auto plugin = new Plugin("Memory Benchmarks");
 
-	plugin->add(createMemoryReadBandwidth());
-	plugin->add(createMemoryReadLatency());
+	auto allocate = std::make_shared<AllocateMemorySpecification>();
+
+	plugin->add(createMemoryReadBandwidth(allocate));
+	plugin->add(createMemoryReadLatency(allocate));
 
 	return plugin;
 }
 
-Elpida::Benchmark* createMemoryReadLatency()
+std::unique_ptr<Benchmark> createMemoryReadLatency(const std::shared_ptr<AllocateMemorySpecification>& allocateSpec)
 {
-	std::vector<Elpida::TaskBuilder*> tasksBuilders;
+	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency", std::make_shared<AverageScoreCalculator>("s"));
 
-	for (auto size : Elpida::WorkingSetSizes::Values)
+	auto calculator = std::make_shared<AverageTaskResultCalculator>();
+	auto readLatency = std::make_shared<MemoryReadLatencySpecification>();
+
+	for (auto size : WorkingSetSizes::Values)
 	{
-		auto& allocateMemory = (new Elpida::TaskBuilder(*new Elpida::AllocateMemorySpecification))
-			->shouldBeCountedOnResults(false)
+		benchmark->AddTask(allocateSpec)
+			.shouldBeCountedOnResults(false)
 			.canBeMultiThreaded(false)
 			.canBeDisabled(false)
-			.withFixedConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize,
-				Elpida::ConfigurationType::UnsignedInt(size));
+			.withFixedConfiguration(AllocateMemorySpecification::Settings::MemorySize,
+				ConfigurationType::UnsignedInt(size));
 
-		tasksBuilders.push_back(&allocateMemory);
-		tasksBuilders.push_back(&(new Elpida::TaskBuilder(*new Elpida::MemoryReadLatencySpecification))
-			->shouldBeCountedOnResults(true)
+		benchmark->AddTask(readLatency)
+			.shouldBeCountedOnResults(true)
 			.withIterationsToRun(2)
-			.withTaskResultCalculator(new Elpida::AverageTaskResultCalculator())
+			.withTaskResultCalculator(calculator)
 			.canBeMultiThreaded(false)
-			.canBeDisabled(false));
+			.canBeDisabled(false);
 	}
 
-	auto benchmark = new Elpida::Benchmark("Memory Read Latency",
-		std::move(tasksBuilders),
-		new Elpida::AverageScoreCalculator("s"));
 	return benchmark;
 }
 
-Elpida::Benchmark* createMemoryReadBandwidth()
+std::unique_ptr<Benchmark> createMemoryReadBandwidth(const std::shared_ptr<AllocateMemorySpecification>& allocateSpec)
 {
-	auto& allocateMemory = (new Elpida::TaskBuilder(*new Elpida::AllocateMemorySpecification))
-		->shouldBeCountedOnResults(false)
+	auto benchmark = std::make_unique<Benchmark>("Memory Read Bandwidth",
+		std::make_shared<AccumulativeScoreCalculator>("B", ResultType::Throughput));
+
+	benchmark->AddTask(allocateSpec)
+		.shouldBeCountedOnResults(false)
 		.canBeMultiThreaded(false)
 		.canBeDisabled(false)
-		.withDefaultConfiguration(Elpida::AllocateMemorySpecification::Settings::MemorySize,
-			Elpida::ConfigurationType::UnsignedInt(4096));
+		.withDefaultConfiguration(AllocateMemorySpecification::Settings::MemorySize,
+			ConfigurationType::UnsignedInt(4096));
 
-	auto benchmark = new Elpida::Benchmark("Memory Read Bandwidth", {
-		&allocateMemory,
-		&(new Elpida::TaskBuilder(*new Elpida::MemoryReadSpecification))
-			->shouldBeCountedOnResults(true)
-			.withIterationsToRun(2)
-			.canBeMultiThreaded(true)
-			.canBeDisabled(false)
-	}, new Elpida::AccumulativeScoreCalculator("B", Elpida::ResultType::Throughput));
+	benchmark->AddTask<MemoryReadSpecification>()
+		.shouldBeCountedOnResults(true)
+		.withIterationsToRun(2)
+		.canBeMultiThreaded(true)
+		.canBeDisabled(false);
+
 	return benchmark;
 }
 

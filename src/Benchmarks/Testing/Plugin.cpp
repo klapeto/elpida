@@ -28,33 +28,40 @@
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
 
-extern "C" ELPIDA_EXPORT Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* createPlugin()
+using namespace Elpida;
+
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL int32_t elpidaPluginAbiVersion()
 {
-	using namespace Elpida;
-	using Plugin = BenchmarksContainerPlugin<Elpida::Benchmark>;
+ 	return ELPIDA_PLUGIN_ABI_VERSION;
+}
 
-	auto plugin = new Plugin("Testing Benchmarks");
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void elpidaDestroyPlugin(BenchmarksContainerPlugin<Benchmark>* plugin)
+{
+	delete plugin;
+}
 
-	auto& readFile = (new TaskBuilder(*new ReadFileSpecification))
-		->shouldBeCountedOnResults()
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Benchmark>* elpidaCreatePlugin()
+{
+	auto plugin = new BenchmarksContainerPlugin<Benchmark>("Testing Benchmarks");
+
+	auto benchmark = std::make_unique<Benchmark>("Test Benchmark", std::make_shared<AccumulativeScoreCalculator>());
+
+	benchmark->AddTask<ReadFileSpecification>()
+		.shouldBeCountedOnResults()
 		.canBeMultiThreaded(false)
 		.canBeDisabled(false)
 		.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
 			ConfigurationType::FilePath("/media/klapeto/Αρχεία/Isos/neon-user-20200326-1117.iso"));
 
-	auto& writeFile = (new TaskBuilder(*new WriteFileSpecification))
-		->shouldBeCountedOnResults()
+	benchmark->AddTask<WriteFileSpecification>()
+		.shouldBeCountedOnResults()
 		.canBeMultiThreaded(false)
 		.canBeDisabled(false)
 		.withDefaultConfiguration(WriteFileSpecification::Settings::OutputFilePath,
 			ConfigurationType::FilePath("/media/klapeto/Αρχεία/Isos/TEST.iso"));;
 
-	auto benchmark = new Benchmark("Test Benchmark", {
-		&readFile,
-		&writeFile,
-	}, new AccumulativeScoreCalculator());
 
-	plugin->add(benchmark);
+	plugin->add(std::move(benchmark));
 
 	return plugin;
 }

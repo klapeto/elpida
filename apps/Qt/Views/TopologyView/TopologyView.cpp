@@ -276,9 +276,9 @@ namespace Elpida
 			}
 		}
 
-		if (node.getCpuKind() != nullptr)
+		if (node.getCpuKind().has_value())
 		{
-			rootLayout->addWidget(new QLabel(QString("Eff: ") + QString::fromStdString(std::to_string(node.getCpuKind()->getEfficiency()))));
+			rootLayout->addWidget(new QLabel(QString("Eff: ") + QString::fromStdString(std::to_string(node.getCpuKind()->get().getEfficiency()))));
 			// Disable for now
 //			for (const auto& pair: node.getCpuKind()->getInfos())
 //			{
@@ -325,7 +325,7 @@ namespace Elpida
 		auto button = new QPushButton("Clear");
 		QPushButton::connect(button, &QPushButton::pressed, this, &TopologyView::onClearPressed);
 
-		_rootFrame = appendChildren(*top.getRoot());
+		_rootFrame = appendChildren(top.getRoot());
 		layout->addWidget(button);
 		layout->addWidget(_rootFrame);
 		setLayout(layout);

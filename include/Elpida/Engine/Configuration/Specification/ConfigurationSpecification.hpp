@@ -41,9 +41,9 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] ConfigurationValueBase* createDefault() const override
+		[[nodiscard]] std::unique_ptr<ConfigurationValueBase> createDefault() const override
 		{
-			return new ConfigurationValue<T>(*this, _defaultValue);
+			return std::make_unique<ConfigurationValue<T>>(*this, _defaultValue);
 		}
 
 		explicit ConfigurationSpecification(bool defaultValue,

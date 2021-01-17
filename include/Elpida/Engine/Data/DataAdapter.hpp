@@ -25,30 +25,31 @@
 #define INCLUDE_ELPIDA_ENGINE_TASK_DATA_DATAADAPTER_HPP
 
 #include <vector>
+#include <memory>
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 
 namespace Elpida
 {
-	class Task;
 	class TaskAffinity;
-	class DataSpecification;
-	class RawData;
 	class ProcessorNode;
 
-	class DataAdapter
+	class DataAdapter final
 	{
 	public:
-		static void adaptAndForwardTaskData(Task* previous, Task* next);
-
-		[[nodiscard]] static std::vector<RawData*> breakIntoChunks(const RawData& input,
+		[[nodiscard]] static std::vector<std::unique_ptr<RawTaskData>> breakIntoChunks(
+			const std::vector<const RawTaskData*>& inputData,
 			const TaskAffinity& affinity,
-			const DataSpecification& targetDataSpecification);
+			size_t divisibleBy);
 
-		[[nodiscard]] static RawData* mergeIntoSingleChunk(const std::vector<const RawData*>& inputData, const ProcessorNode& processor);
+		[[nodiscard]] static std::unique_ptr<RawTaskData> mergeIntoSingleChunk(
+			const std::vector<const RawTaskData*>& inputData,
+			const ProcessorNode& processor);
 
-		virtual ~DataAdapter() = default;
 	protected:
-		static size_t getAccumulatedSizeOfChunks(const std::vector<const RawData*>& outputChunks);
-		static std::vector<RawData*> breakIntoChunksImpl(const std::vector<const RawData*>& input,
+		static size_t getAccumulatedSizeOfChunks(const std::vector<const RawTaskData*>& outputChunks);
+
+		static std::vector<std::unique_ptr<RawTaskData>> breakIntoChunksImpl(
+			const std::vector<const RawTaskData*>& input,
 			const std::vector<const ProcessorNode*>& processors,
 			size_t chunksDivisibleBy);
 	};

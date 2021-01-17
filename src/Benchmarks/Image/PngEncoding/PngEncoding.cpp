@@ -26,9 +26,9 @@
 
 #include "Benchmarks/Image/PngEncoding/PngEncoding.hpp"
 
-#include <Elpida/Utilities/Imaging/Image.hpp>
+#include "Benchmarks/Image/Image.hpp"
 #include <Elpida/Utilities/ValueUtilities.hpp>
-#include <Elpida/Engine/Data/ActiveTaskData.hpp>
+#include <Elpida/Engine/Data/RawTaskData.hpp>
 
 #include "png.h"
 
@@ -40,11 +40,6 @@ namespace Elpida
 		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _inputImage(nullptr)
 	{
 
-	}
-
-	PngEncoding::~PngEncoding()
-	{
-		delete _inputImage;
 	}
 
 	void PngEncoding::execute()
@@ -60,7 +55,7 @@ namespace Elpida
 
 		if (png_image_write_to_memory(&img, nullptr, &outputSize, 0, _inputImage->getRawData().getData(), 0, nullptr))
 		{
-			_outputData = new ActiveTaskData(outputSize, _processorToRun);
+			_outputData = std::make_unique<RawTaskData>(outputSize, _processorToRun);
 			if (!png_image_write_to_memory(&img,
 				_outputData->getData(),
 				&outputSize,
@@ -87,16 +82,16 @@ namespace Elpida
 
 		auto properties = getImageProperties(input);
 
-		_inputImage = new Image<PixelInt>(*input.getTaskData(), properties.width, properties.height);
+		_inputImage = std::make_unique<Image<PixelInt>>(*input.getTaskData(), properties.width, properties.height);
 	}
 
-	TaskDataDto PngEncoding::finalizeAndGetOutputData()
+	std::optional<TaskDataDto> PngEncoding::finalizeAndGetOutputData()
 	{
-		delete _inputImage;
-		_inputImage = nullptr;
+		_inputImage.reset();
 
-		return TaskDataDto(*_outputData);
+		return TaskDataDto(std::move(_outputData));
 	}
+
 	double PngEncoding::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
 		return _inputImage->getTotalSize();

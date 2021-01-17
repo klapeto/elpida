@@ -27,7 +27,7 @@
 #include "Benchmarks/Memory/Read/MemoryRead.hpp"
 
 #include <Elpida/ElpidaException.hpp>
-#include <Elpida/Utilities/RawData.hpp>
+#include <Elpida/Engine/Data/RawTaskData.hpp>
 #include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
 #include <algorithm>
@@ -45,16 +45,11 @@ namespace Elpida
 
 	void MemoryRead::prepareImpl()
 	{
-		_taskData = getInput().getTaskData();
+		_taskData = getInput().getTaskData().get();
 		if (_taskData->getSize() % (32 * sizeof(RegisterSize)) != 0)
 			throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
 
 		_iterations = (unsigned long)std::max((_iterationConstant / (double)_taskData->getSize()), 1.0);
-	}
-
-	TaskDataDto MemoryRead::finalizeAndGetOutputData()
-	{
-		return TaskDataDto(*_taskData);
 	}
 
 	double MemoryRead::calculateTaskResultValue(const Duration& taskElapsedTime) const

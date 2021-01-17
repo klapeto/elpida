@@ -18,7 +18,7 @@ namespace Elpida
 			static inline const char* OutputFilePath = "Output File Name";
 		};
 
-		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
+		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
 			size_t iterationsToRun) const override;
 

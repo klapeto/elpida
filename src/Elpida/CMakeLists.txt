@@ -16,13 +16,9 @@ set(ELPIDA_SOURCES
         SystemInfo/CpuCache.cpp
         SystemInfo/MemoryInfo.cpp
 
-        Utilities/FileSystem.cpp
-        Utilities/Imaging/Image.cpp
         Utilities/Logging/Logger.cpp
         Utilities/Logging/LogAppender.cpp
-        Utilities/MemoryFile.cpp
         Utilities/NonCopyable.cpp
-        Utilities/Imaging/Pixel.cpp
         Utilities/ValueUtilities.cpp
         Utilities/Plugin/Plugin.cpp
         Utilities/Plugin/BenchmarksContainerPlugin.cpp
@@ -30,7 +26,6 @@ set(ELPIDA_SOURCES
         Utilities/Memory.cpp
         Utilities/NumaMemory.cpp
         Utilities/OsUtilities.cpp
-        Utilities/RawData.cpp
 
         CommonTasks/AllocateMemory/AllocateMemory.cpp
         CommonTasks/AllocateMemory/AllocateMemorySpecification.cpp
@@ -61,15 +56,14 @@ set(ELPIDA_SOURCES
         Engine/Runner/BenchmarkRunRequest.cpp
         Engine/Configuration/Specification/ConfigurationSpecificationBase.cpp
         Engine/Task/TaskDataDto.cpp
-        Engine/Data/PassiveTaskData.cpp
-        Engine/Data/ActiveTaskData.cpp
+        Engine/Data/RawTaskData.cpp
         Engine/Data/DataSpecification.cpp
         Engine/Result/ResultSpecification.cpp
         Engine/Task/TaskBuilder.cpp
         Engine/Data/DataAdapter.cpp
         Engine/Benchmark/BenchmarkTaskInstance.cpp
         Engine/Configuration/ConfigurationInstance.cpp
-        Engine/Data/DataPropertiesTransformer.cpp
+        Engine/Data/DataTransformer.cpp
         Engine/Calculators/Benchmark/AverageScoreCalculator.cpp
         Engine/Calculators/TaskResultCalculator.cpp
         Engine/Calculators/Task/AverageTaskResultCalculator.cpp)

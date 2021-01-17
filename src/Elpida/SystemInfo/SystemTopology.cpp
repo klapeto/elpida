@@ -45,14 +45,8 @@ namespace Elpida
 		reload();
 	}
 
-	SystemTopology::~SystemTopology()
-	{
-		delete _root;
-	}
-
 	void SystemTopology::reload()
 	{
-		delete _root;
 		hwloc_topology_t topo;
 		hwloc_topology_init(&topo);
 		hwloc_topology_set_all_types_filter(topo, HWLOC_TYPE_FILTER_KEEP_ALL);
@@ -80,7 +74,7 @@ namespace Elpida
 
 		//hwloc_cpukinds_get_info(&topo,)
 
-		_root = new ProcessorNode(nullptr, _cpuKinds, topo, hwloc_get_root_obj(topo));
+		_root = std::unique_ptr<ProcessorNode>(new ProcessorNode(nullptr, _cpuKinds, topo, hwloc_get_root_obj(topo)));
 		_root->loadSiblings();    // Now its safe to attempt to recursively load all siblings
 
 		hwloc_topology_destroy(topo);

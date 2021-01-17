@@ -40,7 +40,7 @@ namespace Elpida
 {
 
 	ProcessorNode::ProcessorNode(ProcessorNode* parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
-		: _value(0), _parent(parent), _cpuKind(nullptr), _type(Type::Unknown), _osIndex(0)
+		: _value(0), _type(Type::Unknown), _osIndex(0)
 	{
 		switch (((hwloc_obj_t)node)->type)
 		{
@@ -77,12 +77,17 @@ namespace Elpida
 
 			if (kindIndex != -1)
 			{
-				_cpuKind = &cpuKinds.at(kindIndex);
+				_cpuKind = cpuKinds.at(kindIndex);
 			}
 		}
 			break;
 		default:
 			break;
+		}
+
+		if (parent)
+		{
+			_parent = *parent;
 		}
 
 		loadChildren(cpuKinds, rootObj, node);

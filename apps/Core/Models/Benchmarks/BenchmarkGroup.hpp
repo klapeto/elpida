@@ -27,15 +27,16 @@
 #include <string>
 #include <vector>
 
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
+
 namespace Elpida
 {
-	class Benchmark;
 
 	class BenchmarkGroup final
 	{
 	public:
 
-		[[nodiscard]] const std::vector<Benchmark*>& getBenchmarks() const
+		[[nodiscard]] const std::vector<std::unique_ptr<Benchmark>>& getBenchmarks() const
 		{
 			return _benchmarks;
 		}
@@ -45,11 +46,11 @@ namespace Elpida
 			return _name;
 		}
 
-		BenchmarkGroup(const std::string& name, const std::vector<Benchmark*>& benchmarks);
+		BenchmarkGroup(std::string name, const std::vector<std::unique_ptr<Benchmark>>& benchmarks);
 		~BenchmarkGroup() = default;
 	private:
 		std::string _name;
-		std::vector<Benchmark*> _benchmarks;
+		const std::vector<std::unique_ptr<Benchmark>>& _benchmarks;
 	};
 }
 

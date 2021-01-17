@@ -21,13 +21,15 @@
 // Created by klapeto on 29/6/20.
 //
 
+#include <memory>
+#include <utility>
 #include "Models/Benchmarks/BenchmarkGroup.hpp"
 
 namespace Elpida
 {
 
-	BenchmarkGroup::BenchmarkGroup(const std::string& name, const std::vector<Benchmark*>& benchmarks)
-		: _name(name), _benchmarks(benchmarks)
+	BenchmarkGroup::BenchmarkGroup(std::string name, const std::vector<std::unique_ptr<Benchmark>>& benchmarks)
+		: _name(std::move(name)), _benchmarks(benchmarks)
 	{
 	}
 }

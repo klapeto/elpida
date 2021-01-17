@@ -30,14 +30,14 @@
 namespace Elpida
 {
 
-	Task* ReadFileSpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> ReadFileSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
 		auto& filePath = getSettingAndValidate<ConfigurationType::FilePath>(configuration,
 			Settings::InputFilePath,
 			ConfigurationType::Type::FilePath);
-		return new ReadFile(*this, processorToRun, filePath.getValue(), iterationsToRun);
+		return std::make_unique<ReadFile>(*this, processorToRun, filePath.getValue(), iterationsToRun);
 	}
 
 	ReadFileSpecification::ReadFileSpecification()
@@ -47,7 +47,7 @@ namespace Elpida
 		withDescription("Reads a file from disk to memory");
 		withOutputData(DataSpecification("File contents", "B", "File contents in bytes"));
 
-		withConfiguration(new ConfigurationSpecification<ConfigurationType::FilePath>(ConfigurationType::Type::FilePath,
+		withConfiguration(std::make_shared<ConfigurationSpecification<ConfigurationType::FilePath>>(ConfigurationType::Type::FilePath,
 			"",
 			Settings::InputFilePath,
 			"The absolute file path",

@@ -24,6 +24,7 @@
 #include "Models/Abstractions/CollectionModelObserver.hpp"
 #include "Models/Benchmarks/BenchmarkGroup.hpp"
 #include "Core/Abstractions/CommandHandler.hpp"
+#include <Elpida/Utilities/OptionalReference.hpp>
 
 #include <unordered_map>
 
@@ -55,7 +56,7 @@ namespace Elpida
 		Ui::BenchmarkListView* _ui;
 		std::unordered_map<const BenchmarkGroup*, QTreeWidgetItem*> _createdItems;
 		Mediator& _mediator;
-		Benchmark* getSelectedBenchmark();
+		OptionalReference<Benchmark> getSelectedBenchmark();
 	protected:
 
 		void onItemAdded(const BenchmarkGroup& item) override;

@@ -24,6 +24,8 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_BENCHMARK_BENCHMARKTASKINSTANCE_HPP
 #define INCLUDE_ELPIDA_ENGINE_BENCHMARK_BENCHMARKTASKINSTANCE_HPP
 
+#include <memory>
+
 namespace Elpida
 {
 	class Task;
@@ -43,15 +45,15 @@ namespace Elpida
 			return *_taskBuilder;
 		}
 
-		BenchmarkTaskInstance(Task& task, TaskBuilder& taskBuilder);
+		BenchmarkTaskInstance(std::unique_ptr<Task> task, const TaskBuilder& taskBuilder);
 		BenchmarkTaskInstance(BenchmarkTaskInstance&& other) noexcept;
 		BenchmarkTaskInstance& operator=(BenchmarkTaskInstance&& other) noexcept;
 		BenchmarkTaskInstance(const BenchmarkTaskInstance&) = delete;
 		BenchmarkTaskInstance& operator=(const BenchmarkTaskInstance&) = delete;
-		~BenchmarkTaskInstance();
+		~BenchmarkTaskInstance() = default;
 	private:
-		Task* _task;
-		TaskBuilder* _taskBuilder;
+		std::unique_ptr<Task> _task;
+		const TaskBuilder* _taskBuilder;
 	};
 }
 

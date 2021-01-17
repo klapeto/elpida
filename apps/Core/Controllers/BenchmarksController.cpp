@@ -23,14 +23,14 @@
 
 #include "BenchmarksController.hpp"
 
+#include <filesystem>
+
 #include <Elpida/Config.hpp>
 #include <Elpida/ElpidaException.hpp>
-#include <Elpida/Utilities/FileSystem.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Engine/Task/TaskBuilder.hpp>
 #include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 
 #include "Models/GlobalConfigurationModel.hpp"
@@ -42,7 +42,8 @@ namespace Elpida
 		AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
 		const GlobalConfigurationModel& globalConfigurationModel,
 		Logger& logger)
-		: _logger(logger), _model(model), _configurationsModel(configurationsModel), _globalConfigurationModel(globalConfigurationModel)
+		: _logger(logger), _model(model), _configurationsModel(configurationsModel),
+		  _globalConfigurationModel(globalConfigurationModel)
 	{
 
 	}
@@ -83,9 +84,14 @@ namespace Elpida
 	void BenchmarksController::destroyAll()
 	{
 		_configurationsModel.clear();
-		for (auto plugin: _createdPlugins)
+		for (auto& [library, plugin] : _createdPlugins)
 		{
-			delete plugin;
+			auto destroyFunc =
+				library.get().getFunctionPointer<void(*)(BenchmarksContainerPlugin<Elpida::Benchmark>*)>("elpidaDestroyPlugin");
+			if (destroyFunc)
+			{
+				destroyFunc(plugin);
+			}
 		}
 		_createdPlugins.clear();
 		_model.clear();
@@ -98,9 +104,12 @@ namespace Elpida
 		try
 		{
 			_libraryLoader.unloadAll();
-			FileSystem::iterateDirectory(benchmarksPath, [this](const std::string& path)
-			{
 
+			for (auto& dir: std::filesystem::recursive_directory_iterator(benchmarksPath))
+			{
+				if (dir.is_directory()) continue;
+
+				auto path = dir.path().string();
 				if (hasLibraryExtension(path))
 				{
 					try
@@ -112,7 +121,7 @@ namespace Elpida
 						_logger.log(LogType::Error, "Failed to load Library:'" + path + "'", ex);
 					}
 				}
-			});
+			}
 		}
 		catch (const std::exception& ex)
 		{
@@ -127,8 +136,19 @@ namespace Elpida
 		const auto& loaded = _libraryLoader.getLoadedLibraries();
 		for (const auto& lib: loaded)
 		{
+			auto versionFp = lib.second.getFunctionPointer<int32_t(*)()>("elpidaPluginAbiVersion");
+			int32_t abiVersion = 0;
+			if (versionFp)
+			{
+				abiVersion = versionFp();
+			}
+			else
+			{
+				continue;
+			}
+
 			auto factoryFp = lib.second
-				.getFunctionPointer<BenchmarksContainerPlugin<Elpida::Benchmark>::Factory>("createPlugin");
+				.getFunctionPointer<BenchmarksContainerPlugin<Elpida::Benchmark>::Factory>("elpidaCreatePlugin");
 			if (factoryFp != nullptr)
 			{
 				BenchmarksContainerPlugin<Elpida::Benchmark>* pPlugin = nullptr;
@@ -152,18 +172,17 @@ namespace Elpida
 					continue;
 				}
 				const auto& benchmarks = pPlugin->getUnderlyingData();
-				_createdPlugins.push_back(pPlugin);
-				//std::vector<Benchmark*>
-				for (auto benchmark : benchmarks)
+				_createdPlugins.emplace_back(lib.second, pPlugin);
+
+				for (const auto& benchmark : benchmarks)
 				{
 					BenchmarkConfiguration configuration(*benchmark);
 					for (const auto& builder : benchmark->getTaskBuilders())
 					{
 						configuration
-							.addConfiguration(builder->getTaskSpecification(), builder->getDefaultConfiguration());
+							.addConfiguration(builder, builder.getDefaultConfiguration());
 					}
 					_configurationsModel.add(benchmark->getId(), std::move(configuration));
-					//_model.add(benchmark);
 				}
 				_model.add(BenchmarkGroup(pPlugin->getGroupName(), benchmarks));
 			}

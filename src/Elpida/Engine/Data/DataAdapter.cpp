@@ -24,14 +24,10 @@
 #include "Elpida/Engine/Data/DataAdapter.hpp"
 
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
-#include "Elpida/Engine/Data/ActiveTaskData.hpp"
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 #include "Elpida/SystemInfo/SystemTopology.hpp"
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
-#include "Elpida/Engine/Data/DataSpecification.hpp"
-#include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Config.hpp"
-#include "Elpida/Engine/Task/Task.hpp"
-#include "Elpida/Engine/Data/DataPropertiesTransformer.hpp"
 
 #include <cstring>
 #include <vector>
@@ -40,7 +36,8 @@
 namespace Elpida
 {
 
-	std::vector<RawData*> DataAdapter::breakIntoChunksImpl(const std::vector<const RawData*>& input,
+	std::vector<std::unique_ptr<RawTaskData>> DataAdapter::breakIntoChunksImpl(
+		const std::vector<const RawTaskData*>& input,
 		const std::vector<const ProcessorNode*>& processors,
 		size_t chunksDivisibleBy)
 	{
@@ -56,13 +53,15 @@ namespace Elpida
 			targetChunkSize++;
 		}
 
-		std::vector<RawData*> targetChunksVec;
+		std::vector<std::unique_ptr<RawTaskData>> targetChunksVec;
 		targetChunksVec.reserve(targetChunksCount);
 
 		size_t currentChunkIndex = 0;
-		ActiveTaskData* currentChunk = nullptr;
+		const RawTaskData* currentChunk = nullptr;
 		size_t currentChunkOffset = 0;
-		for (auto outChunk: outputChunks)
+		size_t currentChunkSize = 0;
+		size_t totalDataCopied = 0;
+		for (const auto& outChunk : outputChunks)
 		{
 			size_t oChunkSize = outChunk->getSize();
 			size_t oChunkBytesCopied = 0;
@@ -72,17 +71,18 @@ namespace Elpida
 			{
 				if (currentChunk == nullptr)
 				{
+					currentChunkSize = std::min(targetChunkSize, outputTotalSize - totalDataCopied);
 					// create new chunk with the defined target size
-					currentChunk = new ActiveTaskData(targetChunkSize, *processors[currentChunkIndex]);
-					targetChunksVec.push_back(currentChunk);
+					targetChunksVec.push_back(std::make_unique<RawTaskData>(currentChunkSize, *processors[currentChunkIndex]));
+					currentChunk = targetChunksVec.back().get();
 				}
 
 				size_t actualReadSize;
-				if (oChunkSize - oChunkBytesCopied > targetChunkSize - currentChunkOffset)
+				if (oChunkSize - oChunkBytesCopied > currentChunkSize - currentChunkOffset)
 				{
 					// Does not fit to current target chunk. This means we need to read UP TO the rest of the target
 					// chunk capacity
-					actualReadSize = targetChunkSize - currentChunkOffset;
+					actualReadSize = currentChunkSize - currentChunkOffset;
 				}
 				else
 				{
@@ -100,7 +100,9 @@ namespace Elpida
 				oChunkBytesCopied += actualReadSize;
 				currentChunkOffset += actualReadSize;
 
-				if (currentChunkOffset >= targetChunkSize)
+				totalDataCopied += actualReadSize;
+
+				if (currentChunkOffset >= currentChunkSize)
 				{
 					// trigger a chunk creation on next iteration
 					currentChunk = nullptr;
@@ -112,21 +114,19 @@ namespace Elpida
 		return targetChunksVec;
 	}
 
-	std::vector<RawData*> DataAdapter::breakIntoChunks(const RawData& input,
+	std::vector<std::unique_ptr<RawTaskData>> DataAdapter::breakIntoChunks(const std::vector<const RawTaskData*>& inputData,
 		const TaskAffinity& affinity,
-		const DataSpecification& inputDataSpecification)
+		size_t divisibleBy)
 	{
-		return breakIntoChunksImpl({ &input },
-			affinity.getProcessorNodes(),
-			inputDataSpecification.getSizeShouldBeDivisibleBy());
+		return breakIntoChunksImpl(inputData, affinity.getProcessorNodes(), divisibleBy);
 	}
 
-	RawData* DataAdapter::mergeIntoSingleChunk(const std::vector<const RawData*>& inputData, const ProcessorNode& processor)
+	std::unique_ptr<RawTaskData> DataAdapter::mergeIntoSingleChunk(const std::vector<const RawTaskData*>& inputData, const ProcessorNode& processor)
 	{
-		return breakIntoChunksImpl(inputData, { &processor }, 1).front();
+		return std::move(breakIntoChunksImpl(inputData, { &processor }, 1).front());
 	}
 
-	size_t DataAdapter::getAccumulatedSizeOfChunks(const std::vector<const RawData*>& outputChunks)
+	size_t DataAdapter::getAccumulatedSizeOfChunks(const std::vector<const RawTaskData*>& outputChunks)
 	{
 		size_t outputTotalSize = 0;
 		for (auto& data : outputChunks)
@@ -134,35 +134,5 @@ namespace Elpida
 			outputTotalSize += data->getSize();
 		}
 		return outputTotalSize;
-	}
-
-	void DataAdapter::adaptAndForwardTaskData(Task* previous, Task* next)
-	{
-		if (previous != nullptr)
-		{
-			if (next != nullptr && next->getSpecification().acceptsInput())
-			{
-				auto& nextSpec = next->getSpecification();
-				auto& prevOutput = previous->getOutput();
-
-				auto chunks = breakIntoChunksImpl({ prevOutput.getTaskData() },
-					{ &previous->getProcessorToRun() },
-					nextSpec.getInputDataSpecification().getSizeShouldBeDivisibleBy());
-
-				auto propertiesTransformer = nextSpec.getDataPropertiesTransformer();
-				if (propertiesTransformer != nullptr)
-				{
-					auto& chunk = *chunks.front();
-					next->setInput(TaskDataDto(chunk,
-						propertiesTransformer->transform(prevOutput.getTaskData()->getSize(),
-							prevOutput.getDefinedProperties(),
-							chunk.getSize())));
-				}
-				else
-				{
-					next->setInput(TaskDataDto(*chunks.front(), prevOutput.getDefinedProperties()));
-				}
-			}
-		}
 	}
 }

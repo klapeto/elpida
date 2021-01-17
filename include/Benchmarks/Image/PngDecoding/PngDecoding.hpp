@@ -42,11 +42,10 @@ namespace Elpida
 			size_t iterationsToRun);
 		~PngDecoding() override = default;
 	protected:
-		void prepareImpl() override;
-		TaskDataDto finalizeAndGetOutputData() override;
-		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
-		RawData* _outputData;
+		std::unique_ptr<RawTaskData> _outputData;
 		size_t _width;
 		size_t _height;
 	};

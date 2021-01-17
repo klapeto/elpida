@@ -25,11 +25,12 @@
 #define APPS_QT_CORE_ELPIDAMEDIATOR_HPP
 
 #include "Core/Abstractions/Mediator.hpp"
+#include "Core/Abstractions/CommandHandler.hpp"
 #include <vector>
+#include <functional>
 
 namespace Elpida
 {
-	class CommandHandler;
 
 	class ElpidaMediator final : public Mediator
 	{
@@ -42,7 +43,7 @@ namespace Elpida
 		ElpidaMediator() = default;
 		~ElpidaMediator() override = default;
 	private:
-		std::vector<CommandHandler*> _handlers;
+		std::vector<std::reference_wrapper<CommandHandler>> _handlers;
 	};
 }
 

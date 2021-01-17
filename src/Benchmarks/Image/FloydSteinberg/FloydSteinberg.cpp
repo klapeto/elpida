@@ -27,7 +27,7 @@
 #include "Benchmarks/Image/FloydSteinberg/FloydSteinberg.hpp"
 
 #include "Benchmarks/Image/Config.hpp"
-#include <Elpida/Utilities/Imaging/Image.hpp>
+#include "Benchmarks/Image/Image.hpp"
 
 namespace Elpida
 {
@@ -36,14 +36,9 @@ namespace Elpida
 		const ProcessorNode& processorToRun,
 		double threshold,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun), _inputImage(nullptr), _threshold(threshold)
+		: ImageTaskBase(specification, processorToRun, iterationsToRun), _threshold(threshold)
 	{
 
-	}
-
-	FloydSteinberg::~FloydSteinberg()
-	{
-		delete _inputImage;
 	}
 
 	void FloydSteinberg::execute()
@@ -109,15 +104,14 @@ namespace Elpida
 	{
 		const auto& input = getInput();
 		auto properties = getImageProperties(input);
-		_inputImage = new Image<PixelFloat>(*input.getTaskData(), properties.width, properties.height);
+		_inputImage = std::make_unique<Image<PixelFloat>>(*input.getTaskData(), properties.width, properties.height);
 	}
 
-	TaskDataDto FloydSteinberg::finalizeAndGetOutputData()
+	std::optional<TaskDataDto> FloydSteinberg::finalizeAndGetOutputData()
 	{
-		delete _inputImage;
-		_inputImage = nullptr;
+		_inputImage.reset();
 
-		return getInput();
+		return propagateInput();
 	}
 
 	double FloydSteinberg::calculateTaskResultValue(const Duration& taskElapsedTime) const

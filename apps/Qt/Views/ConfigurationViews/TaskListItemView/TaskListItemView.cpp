@@ -28,20 +28,21 @@ namespace Elpida
 {
 
 	TaskListItemView::TaskListItemView()
-		: TaskConfigurationListItemViewBase(), _taskConfiguration(nullptr)
+		: TaskConfigurationListItemViewBase(),
+		_taskConfiguration(std::nullopt)
 	{
 		setCheckState(Qt::Checked);
 	}
 
-	void TaskListItemView::setTaskConfiguration(TaskConfiguration* taskConfiguration)
+	void TaskListItemView::setTaskConfiguration(OptionalReference<TaskConfiguration> configuration)
 	{
-		_taskConfiguration = taskConfiguration;
-		if (taskConfiguration != nullptr)
+		_taskConfiguration = configuration;
+		if (_taskConfiguration.has_value())
 		{
-			if (taskConfiguration->getTaskBuilder().isCanBeDisabled())
+			if (_taskConfiguration->get().getTaskBuilder().canBeDisabled())
 			{
 				setFlags(Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-				setCheckState(taskConfiguration->isEnabled() ? Qt::Checked : Qt::Unchecked);
+				setCheckState(_taskConfiguration->get().isEnabled() ? Qt::Checked : Qt::Unchecked);
 			}
 			else
 			{
@@ -49,7 +50,7 @@ namespace Elpida
 				setFlags(Qt::NoItemFlags);
 			}
 
-			setText(QString::fromStdString(taskConfiguration->getTaskSpecification().getName()));
+			setText(QString::fromStdString(_taskConfiguration->get().getTaskSpecification().getName()));
 		}
 		else
 		{
@@ -60,11 +61,11 @@ namespace Elpida
 
 	void TaskListItemView::saveSetting()
 	{
-		if (_taskConfiguration != nullptr)
+		if (_taskConfiguration.has_value())
 		{
-			if (_taskConfiguration->getTaskBuilder().isCanBeDisabled())
+			if (_taskConfiguration->get().getTaskBuilder().canBeDisabled())
 			{
-				_taskConfiguration->setEnabled(checkState() == Qt::Checked);
+				_taskConfiguration->get().setEnabled(checkState() == Qt::Checked);
 			}
 		}
 	}

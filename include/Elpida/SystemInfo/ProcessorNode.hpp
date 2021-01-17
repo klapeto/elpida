@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "CpuKind.hpp"
+#include "Elpida/Utilities/OptionalReference.hpp"
 
 namespace Elpida
 {
@@ -96,7 +97,7 @@ namespace Elpida
 			return _value;
 		}
 
-		[[nodiscard]] const CpuKind* getCpuKind() const
+		[[nodiscard]] OptionalReference<const CpuKind> getCpuKind() const
 		{
 			return _cpuKind;
 		}
@@ -114,8 +115,8 @@ namespace Elpida
 
 		std::string _name;
 		std::size_t _value;
-		ProcessorNode* _parent;
-		const CpuKind* _cpuKind;
+		OptionalReference<ProcessorNode> _parent;
+		OptionalReference<const CpuKind> _cpuKind;
 		Type _type;
 		unsigned int _osIndex;
 

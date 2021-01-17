@@ -27,10 +27,13 @@
 #include "Elpida/CommonTasks/WriteFile/WriteFile.hpp"
 
 #include <utility>
+#include <fstream>
+#include <filesystem>
 
-#include "Elpida/Utilities/MemoryFile.hpp"
-#include "Elpida/Engine/Task/TaskDataDto.hpp"
-#include "Elpida/Utilities/RawData.hpp"
+#include "Elpida/Config.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
+#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 
 namespace Elpida
 {
@@ -47,23 +50,30 @@ namespace Elpida
 
 	void WriteFile::execute()
 	{
-		const auto& input = getInput();
-		MemoryFile(input.getTaskData()->getData(), input.getTaskData()->getSize()).writeToFile(_outputPath);
-	}
+		auto& input = getInput();
 
-	void WriteFile::prepareImpl()
-	{
-
-	}
-
-	TaskDataDto WriteFile::finalizeAndGetOutputData()
-	{
-		return TaskDataDto();
+		auto file = std::fstream(std::filesystem::u8path(_outputPath), std::ios::out | std::ios::binary);
+		try
+		{
+			file.exceptions(std::ios::failbit);
+			file.write((char*)input.getTaskData()->getData(), input.getTaskData()->getSize());
+			file.flush();
+			file.close();
+		}
+		catch (const std::fstream::failure& e)
+		{
+			if (file.is_open())
+			{
+				file.close();
+			}
+			throw ElpidaException(FUNCTION_NAME,
+				Vu::Cs("Failed to read file: '", _outputPath, "'. Error: ", e.what()));
+		}
 	}
 
 	double WriteFile::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return getInput().getTaskData() ? getInput().getTaskData()->getSize() : 0.0;
+		return getInput().getTaskData()->getSize();
 	}
 } /* namespace Elpida */
 

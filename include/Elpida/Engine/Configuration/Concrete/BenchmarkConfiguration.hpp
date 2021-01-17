@@ -28,7 +28,7 @@
 #include <vector>
 #include "TaskConfiguration.hpp"
 #include "Elpida/Config.hpp"
-#include "Elpida/Engine/Task/TaskSpecification.hpp"
+#include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
@@ -38,20 +38,20 @@ namespace Elpida
 	class BenchmarkConfiguration final
 	{
 	public:
-		[[nodiscard]] const TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification) const;
-		[[nodiscard]] TaskConfiguration* getConfigurationForTask(const TaskSpecification& taskSpecification);
+		[[nodiscard]] std::optional<std::reference_wrapper<const TaskConfiguration>> getConfigurationForTask(const TaskBuilder& taskBuilder) const;
+		[[nodiscard]] std::optional<std::reference_wrapper<TaskConfiguration>> getConfigurationForTask(const TaskBuilder& taskBuilder);
 
 		const std::vector<TaskConfiguration>& getAllTaskConfigurations() const
 		{
 			return _orderedConfigurations;
 		}
 
-		void addConfiguration(const TaskSpecification& taskSpecification, TaskConfiguration&& configuration)
+		void addConfiguration(const TaskBuilder& taskSpecification, TaskConfiguration&& configuration)
 		{
 			addConfigurationIml(taskSpecification, std::move(configuration));
 		}
 
-		void addConfiguration(const TaskSpecification& taskSpecification, const TaskConfiguration& configuration)
+		void addConfiguration(const TaskBuilder& taskSpecification, const TaskConfiguration& configuration)
 		{
 			addConfigurationIml(taskSpecification, configuration);
 		}
@@ -65,19 +65,19 @@ namespace Elpida
 	private:
 		std::vector<TaskConfiguration> _orderedConfigurations;
 		std::unordered_map<std::string, TaskConfiguration*> _taskConfigurations;
-		const TaskConfiguration* getConfigurationImpl(const TaskSpecification& taskSpecification) const;
+		TaskConfiguration* getConfigurationImpl(const TaskBuilder& taskBuilder) const;
 
 		template<typename T>
-		void addConfigurationIml(const TaskSpecification& taskSpecification, T&& configuration)
+		void addConfigurationIml(const TaskBuilder& taskBuilder, T&& configuration)
 		{
-			auto itr = _taskConfigurations.find(taskSpecification.getId());
+			auto itr = _taskConfigurations.find(taskBuilder.getId());
 			if (itr == _taskConfigurations.end())
 			{
 				if (_orderedConfigurations.capacity() >= _orderedConfigurations.size() + 1)
 				{
 					_orderedConfigurations.push_back(std::forward<T>(configuration));
 					auto& cfg = _orderedConfigurations.back();
-					_taskConfigurations.emplace(taskSpecification.getId(), &cfg);
+					_taskConfigurations.emplace(taskBuilder.getId(), &cfg);
 				}
 				else
 				{

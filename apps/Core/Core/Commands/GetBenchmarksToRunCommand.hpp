@@ -34,10 +34,10 @@ namespace Elpida
 	public:
 		void addBenchmark(const Benchmark& benchmark)
 		{
-			_benchmarks.push_back(&benchmark);
+			_benchmarks.emplace_back(benchmark);
 		}
 
-		[[nodiscard]] const std::vector<const Benchmark*>& getBenchmarks() const
+		[[nodiscard]] const std::vector<std::reference_wrapper<const Benchmark>>& getBenchmarks() const
 		{
 			return _benchmarks;
 		}
@@ -45,7 +45,7 @@ namespace Elpida
 		GetBenchmarksToRunCommand() = default;
 		~GetBenchmarksToRunCommand() override = default;
 	private:
-		std::vector<const Benchmark*> _benchmarks;
+		std::vector<std::reference_wrapper<const Benchmark>> _benchmarks;
 	};
 
 }

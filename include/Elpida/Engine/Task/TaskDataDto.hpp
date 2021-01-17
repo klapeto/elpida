@@ -26,38 +26,65 @@
 
 #include <unordered_map>
 #include <string>
+#include <memory>
+
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 
 namespace Elpida
 {
-	class RawData;
-
 	class TaskDataDto final
 	{
 	public:
+		using Properties = std::unordered_map<std::string, double>;
 
-		[[nodiscard]] RawData* getTaskData() const
+		[[nodiscard]] const std::unique_ptr<RawTaskData>& getTaskData() const
 		{
 			return _taskData;
 		}
 
-		const std::unordered_map<std::string, double>& getDefinedProperties() const
+		[[nodiscard]] std::unique_ptr<RawTaskData> getTaskDataAndRelease()
+		{
+			return std::move(_taskData);
+		}
+
+		[[nodiscard]] bool hasData() const
+		{
+			return _taskData.get();
+		}
+
+		void setTaskData(std::unique_ptr<RawTaskData> data)
+		{
+			_taskData = std::move(data);
+		}
+
+		void addProperties(std::initializer_list<Properties::value_type> pairs)
+		{
+			_definedProperties.insert(pairs);
+		}
+
+		void setProperties(Properties properties)
+		{
+			_definedProperties = std::move(properties);
+		}
+
+		const Properties& getDefinedProperties() const
 		{
 			return _definedProperties;
 		}
 
-		TaskDataDto();
-		explicit TaskDataDto(RawData& taskData);
-		explicit TaskDataDto(RawData& taskData, std::unordered_map<std::string, double> properties);
-		TaskDataDto(const TaskDataDto&) = default;
-		TaskDataDto& operator=(const TaskDataDto&) = default;
+		TaskDataDto() = default;
+		explicit TaskDataDto(std::unique_ptr<RawTaskData> taskData);
+		explicit TaskDataDto(std::unique_ptr<RawTaskData> taskData, std::initializer_list<Properties::value_type> properties);
+		explicit TaskDataDto(std::unique_ptr<RawTaskData> taskData, Properties properties);
+		TaskDataDto(const TaskDataDto&) = delete;
+		TaskDataDto& operator=(const TaskDataDto&) = delete;
 		TaskDataDto(TaskDataDto&& other) noexcept = default;
 		TaskDataDto& operator=(TaskDataDto&& other) noexcept = default;
 		~TaskDataDto() = default;
 	private:
-		std::unordered_map<std::string, double> _definedProperties;
-		RawData* _taskData;
+		Properties _definedProperties;
+		std::unique_ptr<RawTaskData> _taskData;
 	};
 }
-
 
 #endif //INCLUDE_ELPIDA_ENGINE_TASK_TASKDATADTO_HPP

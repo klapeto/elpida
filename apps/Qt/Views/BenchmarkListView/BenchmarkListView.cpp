@@ -54,16 +54,20 @@ namespace Elpida
 		delete _ui;
 	}
 
-	Benchmark* BenchmarkListView::getSelectedBenchmark()
+	OptionalReference<Benchmark> BenchmarkListView::getSelectedBenchmark()
 	{
 		auto selectedIndexes = _ui->lvBenchmarkGroups->selectedItems();
 		if (!selectedIndexes.empty())
 		{
 			auto str = selectedIndexes.first()->text(0).toStdString();
 			auto variant = selectedIndexes.first()->data(0, Qt::UserRole);
-			return (Benchmark*)variant.value<void*>();
+			auto ptr = ((Benchmark*)variant.value<void*>());
+			if (ptr)
+			{
+				return *ptr;
+			}
 		}
-		return nullptr;
+		return std::nullopt;
 	}
 
 	void BenchmarkListView::onItemAdded(const BenchmarkGroup& item)
@@ -80,7 +84,7 @@ namespace Elpida
 		{
 			auto treeItem = new QTreeWidgetItem();
 			treeItem->setText(0, QString::fromStdString(benchmark->getName()));
-			treeItem->setData(0, Qt::UserRole, QVariant::fromValue((void*)benchmark));
+			treeItem->setData(0, Qt::UserRole, QVariant::fromValue((void*)benchmark.get()));
 			wItem->addChild(treeItem);
 		}
 
@@ -107,7 +111,7 @@ namespace Elpida
 	void BenchmarkListView::handle(GetBenchmarksToRunCommand& command)
 	{
 		auto selected = getSelectedBenchmark();
-		if (selected != nullptr)
+		if (selected.has_value())
 		{
 			command.addBenchmark(*selected);
 		}
@@ -115,7 +119,7 @@ namespace Elpida
 
 	void BenchmarkListView::onSelectionChanged()
 	{
-		SelectedBenchmarkChangedEvent event(getSelectedBenchmark(), nullptr);
+		SelectedBenchmarkChangedEvent event(getSelectedBenchmark(), std::nullopt);
 		_mediator.execute(event);
 	}
 

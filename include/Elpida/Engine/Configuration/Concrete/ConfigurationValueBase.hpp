@@ -26,6 +26,8 @@
 
 #include <type_traits>
 #include <string>
+#include <memory>
+#include <utility>
 
 namespace Elpida
 {
@@ -48,14 +50,14 @@ namespace Elpida
 			return _readOnly;
 		}
 
-		[[nodiscard]] virtual ConfigurationValueBase* clone() const = 0;
+		[[nodiscard]] virtual std::unique_ptr<ConfigurationValueBase> clone() const = 0;
 
 		template<typename T>
 		T& as()
 		{
 			static_assert(std::is_base_of_v<ConfigurationValueBase, T>,
 				"Only derived from ConfigurationValueBase can be the template parameter");
-			return static_cast<T&>(*this);
+			return *static_cast<T*>(this);
 		}
 
 		ConfigurationValueBase(const ConfigurationValueBase&) = delete;
@@ -63,7 +65,8 @@ namespace Elpida
 
 		virtual ~ConfigurationValueBase() = default;
 	protected:
-		explicit ConfigurationValueBase(const ConfigurationSpecificationBase& configurationSpecification, bool readOnly)
+		explicit ConfigurationValueBase(const ConfigurationSpecificationBase& configurationSpecification,
+			bool readOnly)
 			: _configurationSpecification(configurationSpecification), _readOnly(readOnly)
 		{
 		}

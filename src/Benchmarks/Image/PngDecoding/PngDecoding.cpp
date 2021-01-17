@@ -26,7 +26,7 @@
 
 #include "Benchmarks/Image/PngDecoding/PngDecoding.hpp"
 
-#include <Elpida/Engine/Data/ActiveTaskData.hpp>
+#include <Elpida/Engine/Data/RawTaskData.hpp>
 #include <Elpida/Config.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/ElpidaException.hpp>
@@ -46,7 +46,7 @@ namespace Elpida
 
 	void PngDecoding::execute()
 	{
-		auto input = getInput().getTaskData();
+		auto input = getInput().getTaskData().get();
 
 		png_image img;
 		img.opaque = nullptr;
@@ -57,7 +57,7 @@ namespace Elpida
 			img.format = PNG_FORMAT_RGBA;
 
 			auto newSize = PNG_IMAGE_SIZE(img);
-			_outputData = new ActiveTaskData(newSize, _processorToRun);
+			_outputData = std::make_unique<RawTaskData>(newSize, _processorToRun);
 
 			png_image_finish_read(&img, nullptr, _outputData->getData(), 0, nullptr);
 
@@ -73,22 +73,18 @@ namespace Elpida
 		}
 	}
 
-	TaskDataDto PngDecoding::finalizeAndGetOutputData()
+	std::optional<TaskDataDto> PngDecoding::finalizeAndGetOutputData()
 	{
-		return TaskDataDto(*_outputData, {
+		return TaskDataDto(std::move(_outputData), {
 			{ "width", _width },
-			{ "height", _height }
+			{ "height", _height },
+			{ "stride", _width * 4 }
 		});
 	}
 
 	double PngDecoding::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
 		return _outputData->getSize();
-	}
-
-	void PngDecoding::prepareImpl()
-	{
-
 	}
 
 } /* namespace Elpida */

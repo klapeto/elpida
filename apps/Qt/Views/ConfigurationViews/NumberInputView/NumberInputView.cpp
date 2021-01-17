@@ -61,9 +61,9 @@ namespace Elpida
 		delete _ui;
 	}
 
-	void NumberInputView::setConfiguration(ConfigurationValueBase* configurationValue)
+	void NumberInputView::setConfiguration(const std::shared_ptr<ConfigurationValueBase>& configurationValue)
 	{
-		if (configurationValue != nullptr)
+		if (configurationValue)
 		{
 			auto& spec = configurationValue->getConfigurationSpecification();
 			switch (spec.getType())
@@ -73,8 +73,7 @@ namespace Elpida
 				break;
 			case ConfigurationType::Type::UnsignedInt:
 				_ui->dsbNumber->setMinimum(0);
-				setValue(configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>()
-					.getValue());
+				setValue(configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>().getValue());
 				break;
 			case ConfigurationType::Type::Float:
 				setValue(configurationValue->as<ConfigurationValue<ConfigurationType::Float>>().getValue());
@@ -126,11 +125,6 @@ namespace Elpida
 		_updating = false;
 	}
 
-	ConfigurationValueBase* NumberInputView::getConfiguration()
-	{
-		return _configurationValue;
-	}
-
 	void NumberInputView::saveSetting()
 	{
 		if (_configurationValue != nullptr)
@@ -144,12 +138,10 @@ namespace Elpida
 				_configurationValue->as<ConfigurationValue<ConfigurationType::Int>>().setValue(currentValue);
 				break;
 			case ConfigurationType::Type::UnsignedInt:
-				_configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>()
-					.setValue(currentValue);
+				_configurationValue->as<ConfigurationValue<ConfigurationType::UnsignedInt>>().setValue(currentValue);
 				break;
 			case ConfigurationType::Type::Float:
-				_configurationValue->as<ConfigurationValue<ConfigurationType::Float>>()
-					.setValue(currentValue);
+				_configurationValue->as<ConfigurationValue<ConfigurationType::Float>>().setValue(currentValue);
 				break;
 			default:
 				throw ElpidaException(FUNCTION_NAME, "Invalid Configuration! Expected number configuration");

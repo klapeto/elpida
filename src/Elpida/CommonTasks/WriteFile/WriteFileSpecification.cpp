@@ -28,14 +28,14 @@
 namespace Elpida
 {
 
-	Task* WriteFileSpecification::createNewTask(const TaskConfiguration& configuration,
+	std::unique_ptr<Task> WriteFileSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
 		size_t iterationsToRun) const
 	{
 		auto& filepath = getSettingAndValidate<ConfigurationType::FilePath>(configuration,
 			Settings::OutputFilePath,
 			ConfigurationType::Type::FilePath);
-		return new WriteFile(*this, processorToRun, filepath.getValue(), iterationsToRun);
+		return std::make_unique<WriteFile>(*this, processorToRun, filepath.getValue(), iterationsToRun);
 	}
 
 	WriteFileSpecification::WriteFileSpecification()
@@ -45,7 +45,7 @@ namespace Elpida
 		withDescription("Writes data received from other tasks to file on disk");
 		withInputData(DataSpecification("Data to write", "B", "The bytes to write to file"));
 
-		withConfiguration(new ConfigurationSpecification<ConfigurationType::FilePath>(ConfigurationType::Type::FilePath,
+		withConfiguration(std::make_shared<ConfigurationSpecification<ConfigurationType::FilePath>>(ConfigurationType::Type::FilePath,
 			"",
 			Settings::OutputFilePath,
 			"The absolute file path",

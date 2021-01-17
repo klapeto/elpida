@@ -25,23 +25,24 @@
 #define APPS_QT_MODELS_BENCHMARKRUNNERMODEL_HPP
 
 #include "Models/Abstractions/Model.hpp"
+#include <Elpida/Utilities/OptionalReference.hpp>
+#include <Elpida/Engine/Task/TaskSpecification.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
 namespace Elpida
 {
-	class TaskSpecification;
-	class Benchmark;
 
 	class BenchmarkRunnerModel : public Model
 	{
 	public:
 
-		void setCurrentRunningTaskSpecification(const TaskSpecification* currentRunningTask)
+		void setCurrentRunningTaskSpecification(OptionalReference<const TaskSpecification> currentRunningTask)
 		{
 			_currentRunningTaskSpecification = currentRunningTask;
 			onDataChanged();
 		}
 
-		void setCurrentRunningTaskBatch(const Benchmark* currentRunningTaskBatch)
+		void setCurrentRunningTaskBatch(OptionalReference<const Benchmark> currentRunningTaskBatch)
 		{
 			_currentRunningBenchmark = currentRunningTaskBatch;
 			onDataChanged();
@@ -77,12 +78,12 @@ namespace Elpida
 			onDataChanged();
 		}
 
-		const TaskSpecification* getCurrentRunningTaskSpecification() const
+		OptionalReference<const TaskSpecification> getCurrentRunningTaskSpecification() const
 		{
 			return _currentRunningTaskSpecification;
 		}
 
-		const Benchmark* getCurrentRunningBenchmark() const
+		OptionalReference<const Benchmark> getCurrentRunningBenchmark() const
 		{
 			return _currentRunningBenchmark;
 		}
@@ -113,17 +114,20 @@ namespace Elpida
 		}
 
 		BenchmarkRunnerModel()
-			: _currentRunningTaskSpecification(nullptr), _currentRunningBenchmark(nullptr),
+			: _currentRunningTaskSpecification(std::nullopt),
+			  _currentRunningBenchmark(std::nullopt),
 			  _sessionTotalBenchmarksCount(0),
-			  _sessionCompletedBenchmarksCount(0), _benchmarkCompletedTasksCount(0), _benchmarkTotalTasksCount(),
+			  _sessionCompletedBenchmarksCount(0),
+			  _benchmarkCompletedTasksCount(0),
+			  _benchmarkTotalTasksCount(),
 			  _running(false)
 		{
 		}
 
 		~BenchmarkRunnerModel() override = default;
 	private:
-		const TaskSpecification* _currentRunningTaskSpecification;
-		const Benchmark* _currentRunningBenchmark;
+		OptionalReference<const TaskSpecification> _currentRunningTaskSpecification;
+		OptionalReference<const Benchmark> _currentRunningBenchmark;
 		size_t _sessionTotalBenchmarksCount;
 		size_t _sessionCompletedBenchmarksCount;
 		size_t _benchmarkCompletedTasksCount;

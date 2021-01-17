@@ -21,6 +21,7 @@
 // Created by klapeto on 19/4/20.
 //
 
+#include <cstring>
 #include "Elpida/Engine/Runner/BenchmarkRunner.hpp"
 
 #include "Elpida/Timer.hpp"
@@ -28,10 +29,8 @@
 #include "Elpida/Engine/Calculators/BenchmarkScoreCalculator.hpp"
 #include "Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp"
 #include "Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp"
-#include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
 #include "Elpida/Engine/Benchmark/Benchmark.hpp"
-#include "Elpida/Utilities/RawData.hpp"
 
 namespace Elpida
 {
@@ -41,32 +40,16 @@ namespace Elpida
 
 	}
 
-	static void cleanTask(Task* task)
+	static TaskDataDto getTaskDataCopy(const TaskDataDto& original)
 	{
-		if (task)
-		{
-			auto input = task->getInput().getTaskData();
-			auto output = task->getOutput().getTaskData();
-			delete input;
+		if (!original.hasData()) return TaskDataDto(std::unique_ptr<RawTaskData>(), original.getDefinedProperties());
 
-			if (input != output)	// if the task hasn't propagated the input
-			{
-				delete output;
-			}
-			task->resetInputOutput();
-		}
-	}
+		auto ptr = std::make_unique<RawTaskData>(original.getTaskData()->getSize(),
+			original.getTaskData()->getProcessorNode());
 
-	static void assignInput(Task* previousTask, Task* nextTask, bool moreIterationsPending)
-	{
-		cleanTask(nextTask);	// Destroy input/output of next task
+		memcpy(ptr->getData(), original.getTaskData()->getData(), ptr->getSize());
 
-		DataAdapter::adaptAndForwardTaskData(previousTask, nextTask);
-
-		if (!moreIterationsPending)
-		{
-			cleanTask(previousTask); // On last iteration we destroy the previous task data
-		}
+		return TaskDataDto(std::move(ptr), original.getDefinedProperties());
 	}
 
 	std::vector<BenchmarkResult> BenchmarkRunner::runBenchmarks(const std::vector<BenchmarkRunRequest>& benchmarkRequests,
@@ -74,7 +57,6 @@ namespace Elpida
 	{
 		_mustStop = false;
 		std::vector<BenchmarkResult> benchmarkResults;
-		Task* lastExecutedTask = nullptr;
 		for (const auto& benchmarkRequest : benchmarkRequests)
 		{
 			if (_mustStop) break;
@@ -86,6 +68,8 @@ namespace Elpida
 			try
 			{
 				std::vector<TaskResult> finalTaskResults;
+
+				TaskDataDto taskData;
 
 				for (auto& taskInstance : benchmarkTaskInstances)
 				{
@@ -99,24 +83,25 @@ namespace Elpida
 
 					std::vector<TaskResult> currentTaskResults;
 
+					TaskDataDto iterationTaskData;
 					for (auto i = 0u; i < iterations; ++i)
 					{
 						if (_mustStop) break;
 
-						bool morePendingIterations = i < (iterations - 1);
+						iterationTaskData = getTaskDataCopy(taskData);
 
-						assignInput(lastExecutedTask, &currentTask, morePendingIterations);
+						currentTask.setTaskData(iterationTaskData);
 
 						auto result = runTask(currentTask);
 
-						if (taskInstance.getTaskBuilder().isShouldBeCountedOnResults())
+						if (taskInstance.getTaskBuilder().shouldBeCountedOnResults())
 						{
-							currentTaskResults.push_back(std::move(result));
+							currentTaskResults.push_back(result);
 						}
 					}
+					taskData = std::move(iterationTaskData);
 
-
-					if (taskInstance.getTaskBuilder().isShouldBeCountedOnResults())
+					if (taskInstance.getTaskBuilder().shouldBeCountedOnResults())
 					{
 						auto calculator = taskInstance.getTaskBuilder().getTaskResultCalculator();
 						if (calculator)
@@ -129,13 +114,8 @@ namespace Elpida
 						}
 					}
 
-					cleanTask(lastExecutedTask);  // lastExecutedTask = previous executed task
-
-					lastExecutedTask = &currentTask;	// set as lastExecutedTask the one we just completed
 					raiseTasksEnded(currentTask);
 				}
-
-				cleanTask(lastExecutedTask);    // lastExecutedTask = last (final) executed Task
 
 				raiseBenchmarkEnded(benchmark);
 
@@ -144,7 +124,6 @@ namespace Elpida
 			}
 			catch (...)
 			{
-				cleanTask(lastExecutedTask);    // lastExecutedTask = last executed Task (Not failing one)
 				throw;
 			}
 		}
@@ -177,7 +156,6 @@ namespace Elpida
 		catch (...)
 		{
 			task.finalize();    // Finalize the task to clean it's internal resources
-			cleanTask(&task);   // Destroy Input/output
 			throw;
 		}
 	}

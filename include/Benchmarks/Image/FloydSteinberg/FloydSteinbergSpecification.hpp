@@ -25,6 +25,7 @@
 #define INCLUDE_BENCHMARKS_IMAGE_FLOYDSTEINBERG_FLOYDSTEINBERGSPECIFICATION_HPP
 
 #include <Elpida/Engine/Task/TaskSpecification.hpp>
+
 namespace Elpida
 {
 	class FloydSteinbergSpecification : public TaskSpecification
@@ -36,7 +37,7 @@ namespace Elpida
 			static inline const char* Threshold = "Threshold";
 		};
 
-		[[nodiscard]] Task* createNewTask(const TaskConfiguration& configuration,
+		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
 			size_t iterationsToRun) const override;
 

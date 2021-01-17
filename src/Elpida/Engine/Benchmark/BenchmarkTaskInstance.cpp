@@ -28,19 +28,15 @@
 namespace Elpida
 {
 
-	BenchmarkTaskInstance::BenchmarkTaskInstance(Task& task, TaskBuilder& taskBuilder)
-		: _task(&task), _taskBuilder(&taskBuilder)
+	BenchmarkTaskInstance::BenchmarkTaskInstance(std::unique_ptr<Task> task, const TaskBuilder& taskBuilder)
+		: _task(std::move(task)), _taskBuilder(&taskBuilder)
 	{
 	}
 
-	BenchmarkTaskInstance::~BenchmarkTaskInstance()
-	{
-		delete _task;
-	}
 
 	BenchmarkTaskInstance& BenchmarkTaskInstance::operator=(BenchmarkTaskInstance&& other) noexcept
 	{
-		_task = other._task;
+		_task = std::move(other._task);
 		other._task = nullptr;
 		_taskBuilder = other._taskBuilder;
 		other._taskBuilder = nullptr;
@@ -49,7 +45,7 @@ namespace Elpida
 
 	BenchmarkTaskInstance::BenchmarkTaskInstance(BenchmarkTaskInstance&& other) noexcept
 	{
-		_task = other._task;
+		_task = std::move(other._task);
 		other._task = nullptr;
 		_taskBuilder = other._taskBuilder;
 		other._taskBuilder = nullptr;

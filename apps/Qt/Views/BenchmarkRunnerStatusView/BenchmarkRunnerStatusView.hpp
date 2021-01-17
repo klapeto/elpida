@@ -21,13 +21,14 @@
 #define ELPIDA_TASKBATCHRUNNERSTATUS_HPP
 
 #include <QWidget>
+#include <Elpida/Utilities/OptionalReference.hpp>
+#include <Elpida/Engine/Task/TaskSpecification.hpp>
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
 namespace Elpida
 {
 
 	class EventSubscriptionBase;
-	class TaskSpecification;
-	class Benchmark;
 	class BenchmarkRunnerModel;
 
 	namespace Ui
@@ -46,8 +47,8 @@ namespace Elpida
 		Ui::BenchmarkRunnerStatusView* _ui;
 		const BenchmarkRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
-		const TaskSpecification* _currentRunningTaskSpecification;
-		const Benchmark* _currentRunningBenchmark;
+		OptionalReference<const TaskSpecification> _currentRunningTaskSpecification;
+		OptionalReference<const Benchmark> _currentRunningBenchmark;
 
 		QString _runningString;
 		QString _readyString;

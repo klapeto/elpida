@@ -17,16 +17,13 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * Image.cpp
- *
- *  Created on: 8 Μαρ 2018
- *      Author: klapeto
- */
+//
+// Created by klapeto on 26/4/20.
+//
 
-#include "Elpida/Utilities/Imaging/Image.hpp"
+#include "Elpida/Engine/Data/RawTaskData.hpp"
 
 namespace Elpida
 {
 
-} /* namespace Elpida */
+}
