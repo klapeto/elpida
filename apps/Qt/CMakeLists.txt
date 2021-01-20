@@ -1,5 +1,6 @@
-project(elpida-qt VERSION 0.0.1
-		DESCRIPTION "Elpida Qt Interface"
+project("Elpida Qt" VERSION ${ELPIDA_VERSION}
+		DESCRIPTION "Elpida Qt Front End"
+		HOMEPAGE_URL ${ELPIDA_WEBSITE}
 		LANGUAGES CXX C)
 
 set(ELPIDA_QT_SOURCES
@@ -115,9 +116,29 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif ()
 
+
+if (MSYS OR MINGW)
+	generate_product_version(
+			ELPIDA_QT_SOURCES
+			NAME ${PROJECT_NAME}
+			ICON ${ELPIDA_ROOT_DIRECTORY}/images/Elpida-icon.ico
+			VERSION_MAJOR ${ELPIDA_VERSION_MAJOR}
+			VERSION_MINOR ${ELPIDA_VERSION_MINOR}
+			VERSION_PATCH ${ELPIDA_VERSION_REVISION}
+			VERSION_REVISION ${ELPIDA_VERSION_BUILD}
+			COMPANY_NAME ${ELPIDA_COMPANY_NAME}
+			FILE_DESCRIPTION ${PROJECT_DESCRIPTION}
+	)
+endif()
+
 add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
+
+if (MSYS OR MINGW)
+	target_link_options(elpida-qt PRIVATE -Wl,-subsystem,windows)
+endif()
 
 target_include_directories(elpida-qt PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 target_link_libraries(elpida-qt elpida elpidaCore Qt5::Widgets)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION ${ELPIDA_APP_INSTALL_DIR})
+install(FILES qt.conf DESTINATION ${ELPIDA_APP_INSTALL_DIR})

@@ -1,16 +1,32 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(TestBenchmark VERSION 0.0.1
+project("Testing Benchmarks" VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Test Benchmark for Elpida"
+        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(TESTING_BENCHMARK_SOURCES
         Plugin.cpp
         )
 
-add_library(testTasks MODULE ${TESTING_BENCHMARK_SOURCES})
+if (MSYS OR MINGW)
+    generate_product_version(
+            TESTING_BENCHMARK_SOURCES
+            NAME ${PROJECT_NAME}
+            ICON ${ELPIDA_ROOT_DIRECTORY}/images/Elpida-icon.ico
+            VERSION_MAJOR ${ELPIDA_VERSION_MAJOR}
+            VERSION_MINOR ${ELPIDA_VERSION_MINOR}
+            VERSION_PATCH ${ELPIDA_VERSION_REVISION}
+            VERSION_REVISION ${ELPIDA_VERSION_BUILD}
+            COMPANY_NAME ${ELPIDA_COMPANY_NAME}
+            FILE_DESCRIPTION ${PROJECT_DESCRIPTION}
+    )
+endif()
 
-target_include_directories(testTasks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(testTasks elpida)
+add_library(testBenchmarks MODULE ${TESTING_BENCHMARK_SOURCES})
 
-install(TARGETS testTasks DESTINATION ${ELPIDA_TASK_BATCH_INSTALL_DIR})
+target_include_directories(testBenchmarks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
+target_link_libraries(testBenchmarks elpida)
+
+
+install(TARGETS testBenchmarks DESTINATION ${ELPIDA_TASK_BATCH_INSTALL_DIR})

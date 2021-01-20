@@ -1,5 +1,6 @@
-project(elpidaCore VERSION 0.0.1
+project(elpidaCore VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Application Core"
+        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(ELPIDA_CORE_SOURCES
@@ -33,20 +34,35 @@ set(ELPIDA_CORE_SOURCES
         Utilities/OsUtilities.cpp
         Utilities/xdg-open.c)
 
+
+if (MSYS OR MINGW)
+    generate_product_version(
+            ELPIDA_CORE_SOURCES
+            NAME ${PROJECT_NAME}
+            ICON ${ELPIDA_ROOT_DIRECTORY}/images/Elpida-icon.ico
+            VERSION_MAJOR ${ELPIDA_VERSION_MAJOR}
+            VERSION_MINOR ${ELPIDA_VERSION_MINOR}
+            VERSION_PATCH ${ELPIDA_VERSION_REVISION}
+            VERSION_REVISION ${ELPIDA_VERSION_BUILD}
+            COMPANY_NAME ${ELPIDA_COMPANY_NAME}
+            FILE_DESCRIPTION ${PROJECT_DESCRIPTION}
+    )
+endif()
+
 add_library(elpidaCore ${ELPIDA_CORE_SOURCES})
 
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
 
 include(FindOpenSSL)
 
-target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL)
-
 if (ELPIDA_WEB_API_KEY)
     add_definitions(-DELPIDA_WEB_API_KEY="${ELPIDA_WEB_API_KEY}")
 endif()
 
-if(MSYS)
-    target_link_libraries(elpidaCore PRIVATE elpida OpenSSL::SSL ws2_32 crypt32)
+if(MSYS OR MINGW)
+    target_link_libraries(elpidaCore elpida OpenSSL::SSL ws2_32 crypt32)
+else()
+    target_link_libraries(elpidaCore elpida OpenSSL::SSL)
 endif()
 
 target_include_directories(elpidaCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

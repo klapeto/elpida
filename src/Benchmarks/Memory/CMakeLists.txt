@@ -1,5 +1,6 @@
-project(MemoryBenchmarks VERSION 0.0.1
+project("Memory Benchmarks" VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Memory Benchmarks for Elpida"
+        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(MEMORY_BENCHMARKS_SOURCES
@@ -10,6 +11,19 @@ set(MEMORY_BENCHMARKS_SOURCES
         Read/MemoryRead.cpp
         Read/MemoryReadSpecification.cpp)
 
+if (MSYS OR MINGW)
+    generate_product_version(
+            MEMORY_BENCHMARKS_SOURCES
+            NAME ${PROJECT_NAME}
+            ICON ${ELPIDA_ROOT_DIRECTORY}/images/Elpida-icon.ico
+            VERSION_MAJOR ${ELPIDA_VERSION_MAJOR}
+            VERSION_MINOR ${ELPIDA_VERSION_MINOR}
+            VERSION_PATCH ${ELPIDA_VERSION_REVISION}
+            VERSION_REVISION ${ELPIDA_VERSION_BUILD}
+            COMPANY_NAME ${ELPIDA_COMPANY_NAME}
+            FILE_DESCRIPTION ${PROJECT_DESCRIPTION}
+    )
+endif()
 
 add_library(memoryBenchmarks MODULE ${MEMORY_BENCHMARKS_SOURCES})
 
