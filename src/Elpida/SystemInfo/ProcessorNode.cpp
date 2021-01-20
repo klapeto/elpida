@@ -183,7 +183,9 @@ namespace Elpida
 	void ProcessorNode::loadChildren(const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
 	{
 		auto memChild = ((hwloc_obj_t)node)->memory_first_child;
-		for (auto i = 0u; i < ((hwloc_obj_t)node)->memory_arity; ++i)
+		auto memoryArity = ((hwloc_obj_t)node)->memory_arity;
+		_memoryChildren.reserve(memoryArity);
+		for (auto i = 0u; i < memoryArity; ++i)
 		{
 			if (memChild != nullptr)
 			{
@@ -192,7 +194,9 @@ namespace Elpida
 			memChild = memChild->next_sibling;
 		}
 
-		for (auto i = 0u; i < ((hwloc_obj_t)node)->arity; ++i)
+		auto childrenArity = ((hwloc_obj_t)node)->arity;
+        _children.reserve(memoryArity);
+		for (auto i = 0u; i < childrenArity; ++i)
 		{
 			_children.push_back(ProcessorNode(this, cpuKinds, rootObj, ((hwloc_obj_t)node)->children[i]));
 		}

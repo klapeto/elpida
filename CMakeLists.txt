@@ -1,15 +1,19 @@
 cmake_minimum_required(VERSION 3.10)
 
 include(cmake-modules/GetElpidaVersion.cmake)
+include(cmake-modules/generate_product_version.cmake)
 
-project(Elpida VERSION ${ELPIDA_VERSION_MAJOR}.${ELPIDA_VERSION_MINOR}.${ELPIDA_VERSION_REVISION}.${ELPIDA_VERSION_BUILD}
-        DESCRIPTION "Simple Benchmarking Framework"
-        HOMEPAGE_URL "https://beta.elpida.dev"
+set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
+
+project(Elpida VERSION ${ELPIDA_VERSION}
+        DESCRIPTION "Elpida Simple Benchmarking Framework"
+        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(ELPIDA_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake-modules")
 
 #====================
@@ -42,7 +46,7 @@ if (UNIX)
     set(ELPIDA_LINUX ON)
     add_compile_options(-Wextra)
     set(CMAKE_MODULE_LINKER_FLAGS -Wl,--no-undefined)
-elseif(MSYS OR MSVC)
+elseif(MSYS OR MSVC OR MINGW)
     set(ELPIDA_WINDOWS ON)
 endif()
 
@@ -62,11 +66,12 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "Local" FORCE)
 endif()
 
-if (MSYS)
+if (MSYS OR MINGW)
     set(ELPIDA_TASK_BATCH_INSTALL_DIR bin/Benchmarks)
     set(ELPIDA_HEADER_INSTALL_DIR include)
     set(ELPIDA_LIB_INSTALL_DIR bin)
     set(ELPIDA_APP_INSTALL_DIR bin)
+    add_definitions(-DWIN32=1)
 else()
     set(ELPIDA_TASK_BATCH_INSTALL_DIR bin/Benchmarks)
     set(ELPIDA_HEADER_INSTALL_DIR include)
