@@ -1,11 +1,14 @@
 /.cproject
 /.project
 /.settings
-/builddir/**
 /install/**
 /.vscode
-/Libraries/**/!meson.build
-/Libraries/**/!*.h.build
 *.[oa]
 /.idea/**
+/.vs/**
 /build/**
+/out/**
+/cmake-build-debug/**
+/AppDir/**
+/appimage-builder-cache/**
+*.AppImage

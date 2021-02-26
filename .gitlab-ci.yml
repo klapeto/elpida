@@ -1,0 +1,23 @@
+stages:
+  - build-containers
+  - build
+  - package
+  - deploy
+
+variables:
+  BUILD_DIR: './build'
+  INSTALL_DIR: './AppDir'
+  ELPIDA_VERSION_BUILD: $CI_PIPELINE_IID
+  ELPIDA_VERSION_STRING: $ELPIDA_VERSION_MAJOR.$ELPIDA_VERSION_MINOR.$ELPIDA_VERSION_REVISION.$CI_PIPELINE_IID
+  PACKAGE_PREFIX: Elpida
+  PACKAGE_SUFFIX: x86_64
+  PACKAGE_SEPARATOR: '-'
+  PACKAGE_FILENAME: Elpida-$ELPIDA_VERSION_MAJOR.$ELPIDA_VERSION_MINOR.$ELPIDA_VERSION_REVISION.$CI_PIPELINE_IID-x86_64
+  PACKAGE_FILENAME_DEPLOY: Elpida-latest-x86_64
+  PACKAGE_FILENAME_DEPLOY_BETA: Elpida-latest-beta-x86_64
+
+include:
+  - local: 'ci/docker-image-linux.yml'
+  - local: 'ci/linux.yml'
+  - local: 'ci/windows.yml'
+  # - local: 'ci/docker-image-windows.yml' # Do not run this because it takes a lot of time. Run and upload manually

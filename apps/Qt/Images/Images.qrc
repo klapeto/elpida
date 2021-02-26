@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Elpida_Cut.svg</file>
+        <file>Elpida_Icon.svg</file>
+        <file>Elpida_Splash_Screen.svg</file>
+        <file>Qs1.svg</file>
+        <file>Qs2.svg</file>
+        <file>Qs3.svg</file>
+        <file>Qs4.svg</file>
+        <file>Qs5.svg</file>
+        <file>Qs6.svg</file>
+        <file>Qs7.svg</file>
+    </qresource>
+</RCC>
