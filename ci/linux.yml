@@ -41,7 +41,7 @@ package:linux:
       - $PACKAGE_FILENAME.AppImage
       - SHA256SUMS
 
-deploy:master:linux:
+deploy:linux:
   stage: deploy
   only:
     - master
@@ -56,21 +56,4 @@ deploy:master:linux:
       - $PACKAGE_FILENAME_DEPLOY.AppImage
       - $PACKAGE_FILENAME.AppImage
       - $PACKAGE_FILENAME_DEPLOY.AppImage.SHA256SUMS
-      - $PACKAGE_FILENAME.AppImage.SHA256SUMS
-
-deploy:beta:linux:
-  stage: deploy
-  only:
-    - develop
-  dependencies:
-    - package:linux
-  script:
-    - cp "$PACKAGE_FILENAME.AppImage" "$PACKAGE_FILENAME_DEPLOY_BETA.AppImage"
-    - sha256sum "$PACKAGE_FILENAME.AppImage" > $PACKAGE_FILENAME.AppImage.SHA256SUMS
-    - sha256sum "$PACKAGE_FILENAME_DEPLOY_BETA.AppImage" > $PACKAGE_FILENAME_DEPLOY_BETA.AppImage.SHA256SUMS
-  artifacts:
-    paths:
-      - $PACKAGE_FILENAME_DEPLOY_BETA.AppImage
-      - $PACKAGE_FILENAME.AppImage
-      - $PACKAGE_FILENAME_DEPLOY_BETA.AppImage.SHA256SUMS
       - $PACKAGE_FILENAME.AppImage.SHA256SUMS

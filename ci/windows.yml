@@ -54,7 +54,7 @@ package:windows:
       - SHA256SUMS
 
 
-deploy:master:windows:
+deploy:windows:
   stage: deploy
   only:
     - master
@@ -69,21 +69,4 @@ deploy:master:windows:
       - $PACKAGE_FILENAME_DEPLOY.zip
       - $PACKAGE_FILENAME.zip
       - $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
-      - $PACKAGE_FILENAME.zip.SHA256SUMS
-
-deploy:beta:windows:
-  stage: deploy
-  only:
-    - develop
-  dependencies:
-    - package:windows
-  script:
-    - cp "$PACKAGE_FILENAME.zip" "$PACKAGE_FILENAME_DEPLOY_BETA.zip"
-    - sha256sum "$PACKAGE_FILENAME.zip" > $PACKAGE_FILENAME.zip.SHA256SUMS
-    - sha256sum "$PACKAGE_FILENAME_DEPLOY_BETA.zip" > $PACKAGE_FILENAME_DEPLOY_BETA.zip.SHA256SUMS
-  artifacts:
-    paths:
-      - $PACKAGE_FILENAME_DEPLOY_BETA.zip
-      - $PACKAGE_FILENAME.zip
-      - $PACKAGE_FILENAME_DEPLOY_BETA.zip.SHA256SUMS
       - $PACKAGE_FILENAME.zip.SHA256SUMS
