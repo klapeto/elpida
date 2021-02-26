@@ -41,9 +41,13 @@ namespace Elpida
 	BenchmarksController::BenchmarksController(ListModel<BenchmarkGroup>& model,
 		AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
 		const GlobalConfigurationModel& globalConfigurationModel,
+		const ServiceProvider& serviceProvider,
 		Logger& logger)
-		: _logger(logger), _model(model), _configurationsModel(configurationsModel),
-		  _globalConfigurationModel(globalConfigurationModel)
+		: _logger(logger),
+		  _model(model),
+		  _configurationsModel(configurationsModel),
+		  _globalConfigurationModel(globalConfigurationModel),
+		  _serviceProvider(serviceProvider)
 	{
 
 	}
@@ -84,10 +88,11 @@ namespace Elpida
 	void BenchmarksController::destroyAll()
 	{
 		_configurationsModel.clear();
-		for (auto& [library, plugin] : _createdPlugins)
+		for (auto&[library, plugin] : _createdPlugins)
 		{
 			auto destroyFunc =
-				library.get().getFunctionPointer<void(*)(BenchmarksContainerPlugin<Elpida::Benchmark>*)>("elpidaDestroyPlugin");
+			library.get().getFunctionPointer < void(*)
+			(BenchmarksContainerPlugin<Elpida::Benchmark>*) > ("elpidaDestroyPlugin");
 			if (destroyFunc)
 			{
 				destroyFunc(plugin);
@@ -154,7 +159,7 @@ namespace Elpida
 				BenchmarksContainerPlugin<Elpida::Benchmark>* pPlugin = nullptr;
 				try
 				{
-					pPlugin = factoryFp();
+					pPlugin = factoryFp(&_serviceProvider);
 				}
 				catch (const std::exception& ex)
 				{

@@ -39,16 +39,18 @@ namespace Elpida
 	class ConvertToFloat final : public ImageTaskBase
 	{
 	public:
-		void execute() override;
-
 		ConvertToFloat(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun);
 		~ConvertToFloat() override = default;
 	protected:
 		void prepareImpl() override;
+		void run() override;
 		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+
+		[[nodiscard]]
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::unique_ptr<RawTaskData> _outputData;
 		std::unique_ptr<Image<PixelInt>> _inputImage;

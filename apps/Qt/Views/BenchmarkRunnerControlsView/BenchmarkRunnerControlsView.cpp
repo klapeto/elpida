@@ -81,13 +81,13 @@ namespace Elpida
 
 	void BenchmarkRunnerControlsView::updateUi()
 	{
-		if (_model.isRunning() && !_running)
+		if (_model.getCurrentRunningBenchmark().has_value() && !_running)
 		{
 			_ui->pbRun->setEnabled(false);
 			_ui->pbStop->setEnabled(true);
 			_running = true;
 		}
-		else if (!_model.isRunning() && _running)
+		else if (!_model.getCurrentRunningBenchmark().has_value() && _running)
 		{
 			_ui->pbRun->setEnabled(true);
 			_ui->pbStop->setEnabled(false);

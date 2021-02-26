@@ -28,6 +28,9 @@ namespace Elpida
 	class CpuInfo;
 	class SystemTopology;
 	class Mediator;
+	class OsInfo;
+	class TimingInfo;
+	class MemoryInfo;
 
 	namespace Ui
 	{
@@ -39,7 +42,11 @@ namespace Elpida
 	Q_OBJECT
 
 	public:
-		explicit SystemInfoView(const CpuInfo& cpuInfo, const SystemTopology& topology);
+		explicit SystemInfoView(const CpuInfo& cpuInfo,
+			const SystemTopology& topology,
+			const OsInfo& osInfo,
+			const TimingInfo& timingInfo,
+			const MemoryInfo& memoryInfo);
 		~SystemInfoView() override;
 
 	private:
@@ -49,6 +56,9 @@ namespace Elpida
 		void loadBasicInfo(const CpuInfo& cpuInfo, const SystemTopology& topology);
 		void loadFeatures(const CpuInfo& cpuInfo);
 		void loadCaches(const CpuInfo& cpuInfo);
+		void loadOsInfo(const OsInfo& osInfo);
+		void loadTimingInfo(const TimingInfo& timingInfo);
+		void loadMemoryInfo(const MemoryInfo& memoryInfo);
 	};
 
 } // namespace Elpida

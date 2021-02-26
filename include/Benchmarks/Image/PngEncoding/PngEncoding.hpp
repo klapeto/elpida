@@ -41,16 +41,18 @@ namespace Elpida
 	class PngEncoding : public ImageTaskBase
 	{
 	public:
-
-		void execute() override;
 		PngEncoding(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun);
 		~PngEncoding() override = default;
 	protected:
+		void run() override;
 		void prepareImpl() override;
 		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+
+		[[nodiscard]]
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::unique_ptr<RawTaskData> _outputData;
 		std::unique_ptr<Image<PixelInt>> _inputImage;

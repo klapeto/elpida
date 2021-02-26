@@ -30,9 +30,10 @@ namespace Elpida
 
 	std::unique_ptr<Task> ConvertToFloatSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun) const
 	{
-		return std::make_unique<ConvertToFloat>(*this, processorToRun, iterationsToRun);
+		return std::make_unique<ConvertToFloat>(*this, processorToRun, serviceProvider, iterationsToRun);
 	}
 
 	ConvertToFloatSpecification::ConvertToFloatSpecification()

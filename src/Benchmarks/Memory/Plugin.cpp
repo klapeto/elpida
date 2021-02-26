@@ -30,17 +30,34 @@
 #include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
 #include <Elpida/Engine/Calculators/Benchmark/AverageScoreCalculator.hpp>
-#include <Elpida/Engine/Calculators/Task/AverageTaskResultCalculator.hpp>
-#include <memory>
-#include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
-#include "Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp"
+#include <Elpida/Engine/Calculators/Task/ExclusiveHarmonicMeanTaskResultCalculator.hpp>
+#include <Elpida/SystemInfo/ProcessorNode.hpp>
+#include <Elpida/SystemInfo/CpuInfo.hpp>
+#include <Elpida/ServiceProvider.hpp>
+#include <Elpida/Engine/Calculators/TaskResultCalculator.hpp>
+#include <Elpida/Utilities/Statistics.hpp>
+
+#include "Benchmarks/Memory/Bandwidth/MemoryReadBandwidthSpecification.hpp"
+#include "Benchmarks/Memory/Latency/MemoryLatencySpecification.hpp"
 
 #include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
+#include <memory>
+
 using namespace Elpida;
 
-std::unique_ptr<Benchmark> createMemoryReadBandwidth(const std::shared_ptr<AllocateMemorySpecification>& allocateSpec);
-std::unique_ptr<Benchmark> createMemoryReadLatency(const std::shared_ptr<AllocateMemorySpecification>& allocateSpec);
+
+std::unique_ptr<Benchmark> createMemoryReadBandwidth(
+	const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator);
+std::unique_ptr<Benchmark> createMemoryReadLatency(
+	const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator);
+
+std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
+	const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator);
+
 
 extern "C" ELPIDA_EXPORT ELPIDA_STDCALL int32_t elpidaPluginAbiVersion()
 {
@@ -52,65 +69,222 @@ extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void elpidaDestroyPlugin(Elpida::Benchma
 	delete plugin;
 }
 
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* elpidaCreatePlugin()
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* elpidaCreatePlugin(const ServiceProvider* serviceProvider)
 {
 	using Plugin = BenchmarksContainerPlugin<Benchmark>;
 
 	auto plugin = new Plugin("Memory Benchmarks");
 
-	auto allocate = std::make_shared<AllocateMemorySpecification>();
+	auto averageTimeScoreCalculator = std::make_shared<AverageScoreCalculator>("s");
+	auto averageTaskCalculator = std::make_shared<ExclusiveHarmonicMeanTaskResultCalculator>(1);
+	auto averageBandwidthScoreCalculator = std::make_shared<AccumulativeScoreCalculator>("B", ResultType::Throughput);
 
-	plugin->add(createMemoryReadBandwidth(allocate));
-	plugin->add(createMemoryReadLatency(allocate));
+	plugin->add(createMemoryReadBandwidth(averageBandwidthScoreCalculator, averageTaskCalculator));
+	plugin->add(createMemoryReadLatency(averageTimeScoreCalculator, averageTaskCalculator));
+	plugin->add(createMemoryReadLatencyFast(averageTimeScoreCalculator, averageTaskCalculator));
 
 	return plugin;
 }
 
-std::unique_ptr<Benchmark> createMemoryReadLatency(const std::shared_ptr<AllocateMemorySpecification>& allocateSpec)
+std::unique_ptr<Benchmark> createMemoryReadLatency(
+	const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
 {
-	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency", std::make_shared<AverageScoreCalculator>("s"));
+	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency (Slow)", benchmarkScoreCalculator);
 
-	auto calculator = std::make_shared<AverageTaskResultCalculator>();
-	auto readLatency = std::make_shared<MemoryReadLatencySpecification>();
+	auto readLatencySpec = std::make_shared<MemoryLatencySpecification>("Memory");
 
 	for (auto size : WorkingSetSizes::Values)
 	{
-		benchmark->AddTask(allocateSpec)
-			.shouldBeCountedOnResults(false)
+		benchmark->AddTask(readLatencySpec)
+			.shouldBeCountedOnResults(true)
+			.withIterationsToRun(50)
+			.withTaskResultCalculator(taskResultCalculator)
 			.canBeMultiThreaded(false)
 			.canBeDisabled(false)
-			.withFixedConfiguration(AllocateMemorySpecification::Settings::MemorySize,
-				ConfigurationType::UnsignedInt(size));
-
-		benchmark->AddTask(readLatency)
-			.shouldBeCountedOnResults(true)
-			.withIterationsToRun(2)
-			.withTaskResultCalculator(calculator)
-			.canBeMultiThreaded(false)
-			.canBeDisabled(false);
+			.withFixedConfiguration(MemoryLatencySpecification::Settings::MemorySizeCalculator,
+				MemoryLatencySpecification::Settings::MemorySizeCalculatorT([size](const auto&)
+				{
+					return size;
+				}));
 	}
 
 	return benchmark;
 }
 
-std::unique_ptr<Benchmark> createMemoryReadBandwidth(const std::shared_ptr<AllocateMemorySpecification>& allocateSpec)
+static bool IsLocalMemory(const ProcessorNode& processorToRun)
 {
-	auto benchmark = std::make_unique<Benchmark>("Memory Read Bandwidth",
-		std::make_shared<AccumulativeScoreCalculator>("B", ResultType::Throughput));
+	switch (processorToRun.getType())
+	{
+	case ProcessorNodeType::ExecutionUnit:
+	case ProcessorNodeType::Core:
+	case ProcessorNodeType::L1DCache:
+	case ProcessorNodeType::L1ICache:
+	case ProcessorNodeType::L2DCache:
+	case ProcessorNodeType::L2ICache:
+	case ProcessorNodeType::L3DCache:
+	case ProcessorNodeType::L3ICache:
+	case ProcessorNodeType::L4Cache:
+	case ProcessorNodeType::L5Cache:
+		return true;
+	default:
+		return false;
+	}
+}
 
-	benchmark->AddTask(allocateSpec)
-		.shouldBeCountedOnResults(false)
+static bool hasAncestor(const ProcessorNode& processorNode, ProcessorNodeType type)
+{
+	auto currentProcessor = processorNode.getParent();
+
+	while (currentProcessor.has_value())
+	{
+		if (currentProcessor->get().getType() == type)
+		{
+			return true;
+		}
+		currentProcessor = currentProcessor->get().getParent();
+	}
+	return false;
+}
+
+static size_t calculateSizeForMemory(const ProcessorNode& processorNode)
+{
+	auto currentProcessor = processorNode.getParent();
+
+	do
+	{
+		auto parent = currentProcessor->get().getParent();
+		if (parent.has_value() && !IsLocalMemory(parent->get()))
+		{
+			break;
+		}
+		currentProcessor = parent;
+	} while (currentProcessor.has_value());
+
+	return currentProcessor.has_value() ? currentProcessor->get().getValue() : processorNode.getValue();
+}
+
+template<typename TCallable>
+static size_t calculateSizeForTargetProcessorType(const ProcessorNode& processorNode, TCallable nodeValidator)
+{
+	auto currentProcessor = processorNode.getParent();
+
+	while (currentProcessor.has_value())
+	{
+		if (nodeValidator(currentProcessor->get()))
+		{
+			break;
+		}
+		currentProcessor = currentProcessor->get().getParent();
+	}
+
+	return currentProcessor.has_value() ? currentProcessor->get().getValue() : processorNode.getValue();
+}
+
+std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
+	const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
+{
+	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency (Fast)", benchmarkScoreCalculator);
+
+
+	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L1D"))
+		.shouldBeCountedOnResults(true)
+		.withIterationsToRun(50)
+		.withTaskResultCalculator(taskResultCalculator)
 		.canBeMultiThreaded(false)
 		.canBeDisabled(false)
-		.withDefaultConfiguration(AllocateMemorySpecification::Settings::MemorySize,
-			ConfigurationType::UnsignedInt(4096));
+		.withConditionalExecution([](const auto&, const ProcessorNode& processor, const auto&)
+		{
+			return hasAncestor(processor, ProcessorNodeType::L1DCache);
+		})
+		.withFixedConfiguration(MemoryLatencySpecification::Settings::MemorySizeCalculator,
+			MemoryLatencySpecification::Settings::MemorySizeCalculatorT(
+				[](const auto& x)
+				{
+					return calculateSizeForTargetProcessorType(x,
+						[](const ProcessorNode& p)
+						{
+							return p.getType() == ProcessorNodeType::L1DCache;
+						}) / 2;
+				}));
 
-	benchmark->AddTask<MemoryReadSpecification>()
+	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L2D"))
 		.shouldBeCountedOnResults(true)
-		.withIterationsToRun(2)
-		.canBeMultiThreaded(true)
-		.canBeDisabled(false);
+		.withIterationsToRun(50)
+		.withTaskResultCalculator(taskResultCalculator)
+		.canBeMultiThreaded(false)
+		.canBeDisabled(false)
+		.withConditionalExecution([](const auto&, const ProcessorNode& processor, const auto&)
+		{
+			return hasAncestor(processor, ProcessorNodeType::L2DCache);
+		})
+		.withFixedConfiguration(MemoryLatencySpecification::Settings::MemorySizeCalculator,
+			MemoryLatencySpecification::Settings::MemorySizeCalculatorT(
+				[](const auto& x)
+				{
+					return calculateSizeForTargetProcessorType(x,
+						[](const ProcessorNode& p)
+						{
+							return p.getType() == ProcessorNodeType::L2DCache;
+						}) / 2;
+				}));
+
+
+	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L3D"))
+		.shouldBeCountedOnResults(true)
+		.withIterationsToRun(50)
+		.withTaskResultCalculator(taskResultCalculator)
+		.canBeMultiThreaded(false)
+		.canBeDisabled(false)
+		.withConditionalExecution([](const auto&, const ProcessorNode& processor, const auto&)
+		{
+			return hasAncestor(processor, ProcessorNodeType::L3DCache);
+		})
+		.withFixedConfiguration(MemoryLatencySpecification::Settings::MemorySizeCalculator,
+			MemoryLatencySpecification::Settings::MemorySizeCalculatorT(
+				[](const auto& x)
+				{
+					return calculateSizeForTargetProcessorType(x, [](const ProcessorNode& p)
+					{
+						return p.getType() == ProcessorNodeType::L3DCache;
+					}) / 2;
+				}));
+
+
+	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("DRAM"))
+		.shouldBeCountedOnResults(true)
+		.withIterationsToRun(50)
+		.withTaskResultCalculator(taskResultCalculator)
+		.canBeMultiThreaded(false)
+		.canBeDisabled(false)
+		.withFixedConfiguration(MemoryLatencySpecification::Settings::MemorySizeCalculator,
+			MemoryLatencySpecification::Settings::MemorySizeCalculatorT(
+				[](const auto& x)
+				{
+					return calculateSizeForMemory(x) * 2;
+				}));
+
 
 	return benchmark;
 }
 
+std::unique_ptr<Benchmark> createMemoryReadBandwidth(const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
+{
+	auto benchmark = std::make_unique<Benchmark>("Memory Read Bandwidth", benchmarkScoreCalculator);
+
+	benchmark->AddTask<MemoryReadBandwidthSpecification>()
+		.shouldBeCountedOnResults(true)
+		.withTaskResultCalculator(taskResultCalculator)
+		.canBeMultiThreaded(true)
+		.canBeDisabled(false)
+		.withFixedConfiguration(MemoryReadBandwidthSpecification::Settings::MemorySizeCalculator,
+			MemoryReadBandwidthSpecification::Settings::MemorySizeCalculatorT(
+				[](const auto& x)
+				{
+					return calculateSizeForMemory(x) * 2;
+				}));
+
+	return benchmark;
+}

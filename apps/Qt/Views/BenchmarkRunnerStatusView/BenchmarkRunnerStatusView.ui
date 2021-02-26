@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>258</width>
+    <width>263</width>
     <height>193</height>
    </rect>
   </property>
@@ -35,7 +35,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLabel" name="lblCurrentTaskBatchName">
+       <widget class="QLabel" name="lblCurrentBenchmarkName">
         <property name="text">
          <string>N/A</string>
         </property>
@@ -49,7 +49,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="lblCurrentTaskBatch">
+       <widget class="QLabel" name="lblCurrentBenchmark">
         <property name="text">
          <string>Current Benchmark:</string>
         </property>
@@ -63,20 +63,20 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QProgressBar" name="pbTotalProgress"/>
+       <widget class="QProgressBar" name="pbBenchmarkProgress"/>
       </item>
       <item row="3" column="1">
-       <widget class="QProgressBar" name="pbBatchProgress"/>
+       <widget class="QProgressBar" name="pbTaskProgress"/>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="lblBatchProgress">
+       <widget class="QLabel" name="lblTaskProgress">
         <property name="text">
-         <string>Benchmark Progress:</string>
+         <string>Task Progress:</string>
         </property>
        </widget>
       </item>
       <item row="4" column="0">
-       <widget class="QLabel" name="lblTotalProgress">
+       <widget class="QLabel" name="lblBenchmarkProgress">
         <property name="text">
          <string>Total Progress:</string>
         </property>

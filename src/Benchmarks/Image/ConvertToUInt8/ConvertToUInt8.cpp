@@ -34,14 +34,17 @@ namespace Elpida
 
 	ConvertToUInt8::ConvertToUInt8(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _outputImage(nullptr),
+		: ImageTaskBase(specification, processorToRun, serviceProvider, iterationsToRun),
+		  _outputData(nullptr),
+		  _outputImage(nullptr),
 		  _inputImage(nullptr)
 	{
 
 	}
 
-	void ConvertToUInt8::execute()
+	void ConvertToUInt8::run()
 	{
 		std::size_t size = _outputImage->getTotalSize();
 		Pixel<PixelInt>* converted = _outputImage->getData();
@@ -59,9 +62,10 @@ namespace Elpida
 		const auto& input = getInput();
 		const auto& properties = getImageProperties(input);
 
-		_inputImage = std::make_unique< Image<PixelFloat>>(*input.getTaskData(), properties.width, properties.height);
-		_outputData = std::make_unique<RawTaskData>(properties.width * properties.height * 4 * sizeof(PixelInt), _processorToRun);
-		_outputImage = std::make_unique< Image<PixelInt>>(*_outputData, properties.width, properties.height);
+		_inputImage = std::make_unique<Image<PixelFloat>>(*input.getTaskData(), properties.width, properties.height);
+		_outputData =
+			std::make_unique<RawTaskData>(properties.width * properties.height * 4 * sizeof(PixelInt), _processorToRun);
+		_outputImage = std::make_unique<Image<PixelInt>>(*_outputData, properties.width, properties.height);
 	}
 
 	std::optional<TaskDataDto> ConvertToUInt8::finalizeAndGetOutputData()
@@ -73,9 +77,9 @@ namespace Elpida
 
 		return TaskDataDto(std::move(_outputData),
 			{
-				{"width", properties.width },
-				{"height", properties.height},
-				{"stride", properties.width * 4 * sizeof(PixelInt) }
+				{ "width", properties.width },
+				{ "height", properties.height },
+				{ "stride", properties.width * 4 * sizeof(PixelInt) }
 			});
 	}
 

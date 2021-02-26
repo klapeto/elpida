@@ -42,16 +42,18 @@ namespace Elpida
 		delete _ui;
 	}
 
-	static std::string getResultString(const TaskResult& result)
+	static std::string getResultString(const ProcessedTaskResult& result)
 	{
-		auto& metrics = result.getMetrics();
+		auto& metrics = result.getFinalMetrics();
 		auto& resultSpec = result.getTaskSpecification().getResultSpecification();
 		if (resultSpec.getType() == ResultType::Throughput)
 		{
-			return Vu::Cs(Vu::getValueScaleStringSI(
-				metrics.getResultValue() / metrics.getDurationSubdivision<Second>()),
-				resultSpec.getUnit(),
-				"/s");
+			auto seconds = DurationCast<Seconds>(metrics.getDuration()).count();
+			auto value = metrics.getResultValue();
+
+			auto str = Vu::getValueScaleStringSI(value / seconds);
+
+			return Vu::Cs(str, resultSpec.getUnit(), "/s");
 		}
 		else
 		{
@@ -59,25 +61,27 @@ namespace Elpida
 		}
 	}
 
-	static Duration getTotalDuration(const std::vector<TaskResult>& results)
+	static Duration getTotalDuration(const std::vector<ProcessedTaskResult>& results)
 	{
 		auto accumulator = 0.0;
 		for (auto& result: results)
 		{
-			accumulator += result.getMetrics().getDuration().count();
+			accumulator += result.getFinalMetrics().getDuration().count();
 		}
 		return Duration(accumulator);
 	}
 
-	static std::string getScoreString(const std::vector<TaskResult>& results,
+	static std::string getScoreString(const std::vector<ProcessedTaskResult>& results,
 		const BenchmarkScoreCalculator& calculator)
 	{
 		if (calculator.getResultType() == ResultType::Throughput)
 		{
-			return Vu::Cs(Vu::getValueScaleStringSI(
-				calculator.calculate(results) / (getTotalDuration(results).count() * Second::den) / Second::num),
-				calculator.getSuffix(),
-				"/s");
+			auto seconds = DurationCast<Seconds>(getTotalDuration(results)).count();
+			auto value = calculator.calculate(results);
+
+			auto str = Vu::getValueScaleStringSI(value / seconds);
+
+			return Vu::Cs(str, calculator.getSuffix(), "/s");
 		}
 		else
 		{
@@ -93,27 +97,23 @@ namespace Elpida
 		for (const auto& result: results)
 		{
 			auto child = new QTreeWidgetItem();
-
-			auto name = result.getTaskSpecification().getName();
-
-			if (result.getTaskSpecification().acceptsInput())
-			{
-				name = Vu::Cs(name,
-					" [",
-					Vu::getValueScaleStringSI(result.getMetrics().getInputDataSize()),
-					result.getTaskSpecification().getInputDataSpecification().getUnit(),
-					"]");
-			}
+			auto& spec = result.getTaskSpecification();
+			auto& name = spec.getName();
+			auto& metrics = result.getFinalMetrics();
 
 			child->setText(0, QString::fromStdString(name));
-			child->setText(1,
+			child->setText(1, QString::fromStdString(
+				Vu::Cs(Vu::getValueScaleStringSI(metrics.getInputDataSize()),
+					spec.acceptsInput() ? spec.getInputDataSpecification().getUnit() : "B")));
+			child->setText(2,
 				QString::fromStdString(getResultString(result)));
 			parent->addChild(child);
 		}
 		auto& scoreCalculator = item.getBenchmark().getScoreCalculator();
-		parent->setText(1, QString::fromStdString(getScoreString(results, scoreCalculator)));
+		parent->setText(2, QString::fromStdString(getScoreString(results, scoreCalculator)));
 		_createdItems.emplace(item.getId(), parent);
 		_ui->twResultList->addTopLevelItem(parent);
+		_ui->twResultList->setCurrentItem(parent);
 	}
 
 	void BenchmarkResultsView::onItemRemoved(const BenchmarkResult& item)

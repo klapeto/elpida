@@ -31,8 +31,10 @@ namespace Elpida
 	class ConvertToFloatSpecification final : public TaskSpecification
 	{
 	public:
-		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
+		[[nodiscard]]
+		std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun) const override;
 		ConvertToFloatSpecification();
 		~ConvertToFloatSpecification() override = default;

@@ -25,6 +25,7 @@
 #define INCLUDE_ELPIDA_ENGINE_CONFIGURATION_CONFIGURATIONTYPE_HPP
 
 #include <string>
+#include <functional>
 
 namespace Elpida
 {
@@ -41,6 +42,9 @@ namespace Elpida
 		using FolderPath = std::string;
 		using Custom = void*;
 
+		template<typename T>
+		using Function = std::function<T>;
+
 		enum class Type
 		{
 			String,
@@ -50,6 +54,7 @@ namespace Elpida
 			Float,
 			FilePath,
 			FolderPath,
+			Function,
 			Custom,
 		};
 

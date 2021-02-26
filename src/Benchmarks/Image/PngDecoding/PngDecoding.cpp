@@ -38,13 +38,17 @@ namespace Elpida
 
 	PngDecoding::PngDecoding(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _width(0), _height(0)
+		: ImageTaskBase(specification, processorToRun, serviceProvider, iterationsToRun),
+		_outputData(nullptr),
+		_width(0),
+		_height(0)
 	{
 
 	}
 
-	void PngDecoding::execute()
+	void PngDecoding::run()
 	{
 		auto input = getInput().getTaskData().get();
 

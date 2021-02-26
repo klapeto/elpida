@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,41 +18,44 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 14/11/20.
+// Created by klapeto on 7/2/21.
 //
 
-#include "Elpida/Engine/Calculators/Task/AverageTaskResultCalculator.hpp"
+#include "Elpida/Engine/Calculators/Task/MinimumTaskResultCalculator.hpp"
 
 #include "Elpida/Config.hpp"
 #include "Elpida/ElpidaException.hpp"
+#include "Elpida/Utilities/Statistics.hpp"
 
 namespace Elpida
 {
 
-	TaskResult AverageTaskResultCalculator::calculateAggregateResult(const std::vector<TaskResult>& taskResults) const
+	ProcessedTaskResult MinimumTaskResultCalculator::calculateAggregateResult(const std::vector<TaskResult>& taskResults) const
 	{
 		if (!taskResults.empty())
 		{
 			const auto& sampleResult = taskResults.front();
 
-			Duration totalDuration;
-			double totalValue = 0.0;
+			double duration = std::numeric_limits<double>::max();
+			double value = std::numeric_limits<double>::max();
+
 
 			for (auto& result: taskResults)
 			{
-				totalDuration += result.getMetrics().getDuration();
-				totalValue += result.getMetrics().getResultValue();
+				duration = std::min(duration, result.getMetrics().getDuration().count());
+				value = std::min(value, result.getMetrics().getResultValue());
 			}
 
-			return TaskResult(sampleResult.getTaskSpecification(),
-				Elpida::TaskMetrics(totalDuration / taskResults.size(),
-					totalValue / taskResults.size(),
-					sampleResult.getMetrics().getInputDataSize()));
+			return ProcessedTaskResult(TaskMetrics(Duration(duration),
+				value,
+				sampleResult.getMetrics().getInputDataSize()),
+				Statistics::calculateBasicStatistics(taskResults, [](const TaskResult& x){return x.getMetrics().getDuration().count();}),
+				std::vector<TaskMetrics>(),
+				sampleResult.getTaskSpecification());
 		}
 		else
 		{
 			throw ElpidaException(FUNCTION_NAME, "Attempted to calculate Task Results with empty result collection");
 		}
-
 	}
 }

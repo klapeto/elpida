@@ -36,13 +36,16 @@ namespace Elpida
 {
 	PngEncoding::PngEncoding(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun), _outputData(nullptr), _inputImage(nullptr)
+		: ImageTaskBase(specification, processorToRun, serviceProvider, iterationsToRun),
+		_outputData(nullptr),
+		_inputImage(nullptr)
 	{
 
 	}
 
-	void PngEncoding::execute()
+	void PngEncoding::run()
 	{
 		png_image img;
 		img.opaque = nullptr;

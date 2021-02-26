@@ -46,7 +46,7 @@ namespace Elpida
 			return std::make_unique<ConfigurationValue<T>>(*this, _defaultValue);
 		}
 
-		explicit ConfigurationSpecification(bool defaultValue,
+		explicit ConfigurationSpecification(ConfigurationType::Bool defaultValue,
 			const std::string& name,
 			const std::string& description,
 			bool isRequired)

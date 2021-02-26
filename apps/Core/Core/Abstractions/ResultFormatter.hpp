@@ -24,17 +24,25 @@
 #ifndef APPS_QT_CORE_RESULTFORMATTER_HPP
 #define APPS_QT_CORE_RESULTFORMATTER_HPP
 
+#include <Elpida/Engine/Result/BenchmarkResult.hpp>
+
 #include <string>
+#include <vector>
 
-namespace Elpida {
-
-	class BenchmarkResult;
+namespace Elpida
+{
 
 	class ResultFormatter
 	{
 	public:
+		[[nodiscard]]
+		virtual const std::string& getFileExtension() const = 0;
 
-		[[nodiscard]] virtual std::string serialize(const BenchmarkResult& result) const = 0;
+		[[nodiscard]]
+		virtual std::string serialize(const BenchmarkResult& result) const = 0;
+
+		[[nodiscard]]
+		virtual std::string serialize(std::vector<BenchmarkResult>& results) const = 0;
 
 		ResultFormatter() = default;
 		virtual ~ResultFormatter() = default;

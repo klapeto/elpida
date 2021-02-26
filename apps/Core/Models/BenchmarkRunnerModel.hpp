@@ -36,51 +36,43 @@ namespace Elpida
 	{
 	public:
 
-		void setCurrentRunningTaskSpecification(OptionalReference<const TaskSpecification> currentRunningTask)
+		void setCurrentRunningTask(OptionalReference<const TaskBuilder> currentRunningTask)
 		{
-			_currentRunningTaskSpecification = currentRunningTask;
+			_currentRunningTask = currentRunningTask;
 			onDataChanged();
 		}
 
-		void setCurrentRunningTaskBatch(OptionalReference<const Benchmark> currentRunningTaskBatch)
+		void setCurrentRunningBenchmark(OptionalReference<const Benchmark> currentRunningTaskBatch)
 		{
 			_currentRunningBenchmark = currentRunningTaskBatch;
 			onDataChanged();
 		}
 
-		void setSessionTotalBenchmarksCount(size_t sessionTotalBenchmarksCount)
+		size_t getBenchmarkCompletedTasks() const
 		{
-			_sessionTotalBenchmarksCount = sessionTotalBenchmarksCount;
+			return _benchmarkCompletedTasks;
+		}
+
+		void setBenchmarkCompletedTasks(size_t benchmarkCompletedTasks)
+		{
+			_benchmarkCompletedTasks = benchmarkCompletedTasks;
 			onDataChanged();
 		}
 
-		void setSessionCompletedBenchmarksCount(size_t sessionCompletedBenchmarksCount)
+		size_t getTaskCompletedIterations() const
 		{
-			_sessionCompletedBenchmarksCount = sessionCompletedBenchmarksCount;
+			return _taskCompletedIterations;
+		}
+
+		void setTaskCompletedIterations(size_t taskCompletedIterations)
+		{
+			_taskCompletedIterations = taskCompletedIterations;
 			onDataChanged();
 		}
 
-		void setBenchmarkCompletedTasksCount(size_t benchmarkCompletedTasksCount)
+		OptionalReference<const TaskBuilder> getCurrentRunningTask() const
 		{
-			_benchmarkCompletedTasksCount = benchmarkCompletedTasksCount;
-			onDataChanged();
-		}
-
-		void setBenchmarkTotalTasksCount(size_t benchmarkTotalTasksCount)
-		{
-			_benchmarkTotalTasksCount = benchmarkTotalTasksCount;
-			onDataChanged();
-		}
-
-		void setRunning(bool running)
-		{
-			_running = running;
-			onDataChanged();
-		}
-
-		OptionalReference<const TaskSpecification> getCurrentRunningTaskSpecification() const
-		{
-			return _currentRunningTaskSpecification;
+			return _currentRunningTask;
 		}
 
 		OptionalReference<const Benchmark> getCurrentRunningBenchmark() const
@@ -88,54 +80,22 @@ namespace Elpida
 			return _currentRunningBenchmark;
 		}
 
-		size_t getSessionTotalBenchmarksCount() const
-		{
-			return _sessionTotalBenchmarksCount;
-		}
-
-		size_t getSessionCompletedBenchmarksCount() const
-		{
-			return _sessionCompletedBenchmarksCount;
-		}
-
-		size_t getBatchExecutedTasksCount() const
-		{
-			return _benchmarkCompletedTasksCount;
-		}
-
-		size_t getBatchTotalTasksCount() const
-		{
-			return _benchmarkTotalTasksCount;
-		}
-
-		bool isRunning() const
-		{
-			return _running;
-		}
-
 		BenchmarkRunnerModel()
-			: _currentRunningTaskSpecification(std::nullopt),
+			: _currentRunningTask(std::nullopt),
 			  _currentRunningBenchmark(std::nullopt),
-			  _sessionTotalBenchmarksCount(0),
-			  _sessionCompletedBenchmarksCount(0),
-			  _benchmarkCompletedTasksCount(0),
-			  _benchmarkTotalTasksCount(),
-			  _running(false)
+			  _benchmarkCompletedTasks(0),
+			  _taskCompletedIterations(0)
 		{
 		}
 
 		~BenchmarkRunnerModel() override = default;
 	private:
-		OptionalReference<const TaskSpecification> _currentRunningTaskSpecification;
+		OptionalReference<const TaskBuilder> _currentRunningTask;
 		OptionalReference<const Benchmark> _currentRunningBenchmark;
-		size_t _sessionTotalBenchmarksCount;
-		size_t _sessionCompletedBenchmarksCount;
-		size_t _benchmarkCompletedTasksCount;
-		size_t _benchmarkTotalTasksCount;
+		size_t _benchmarkCompletedTasks;
+		size_t _taskCompletedIterations;
 
-		bool _running;
 	};
 }
-
 
 #endif //APPS_QT_MODELS_BENCHMARKRUNNERMODEL_HPP

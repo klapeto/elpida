@@ -49,6 +49,7 @@ namespace Elpida
 		explicit BenchmarksController(ListModel<BenchmarkGroup>& model,
 			AssociativeModel<std::string, BenchmarkConfiguration>& configurationsModel,
 			const GlobalConfigurationModel& globalConfigurationModel,
+			const ServiceProvider& serviceProvider,
 			Logger& logger);
 		virtual ~BenchmarksController();
 	private:
@@ -58,6 +59,7 @@ namespace Elpida
 		ListModel<BenchmarkGroup>& _model;
 		AssociativeModel<std::string, BenchmarkConfiguration>& _configurationsModel;
 		const GlobalConfigurationModel& _globalConfigurationModel;
+		const ServiceProvider& _serviceProvider;
 
 		void reloadLibraries();
 	};

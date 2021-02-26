@@ -23,11 +23,16 @@
       <item>
        <widget class="QTreeWidget" name="twResultList">
         <property name="columnCount">
-         <number>2</number>
+         <number>3</number>
         </property>
         <column>
          <property name="text">
           <string>Name</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Input</string>
          </property>
         </column>
         <column>

@@ -48,9 +48,11 @@ namespace Elpida
 		return *this;
 	}
 
-	std::unique_ptr<Task> TaskBuilder::build(const TaskConfiguration& configuration, const ProcessorNode& processorToRun) const
+	std::unique_ptr<Task> TaskBuilder::build(const TaskConfiguration& configuration,
+		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider) const
 	{
-		return _taskSpecification->createNewTask(configuration, processorToRun, _iterationsToRun);
+		return _taskSpecification->createNewTask(configuration, processorToRun, serviceProvider, _iterationsToRun);
 	}
 
 	void TaskBuilder::fillConfigurationMap()

@@ -26,7 +26,9 @@
 
 #include <unordered_map>
 #include <vector>
-#include"Elpida/Engine/Calculators/TaskResultCalculator.hpp"
+#include <functional>
+
+#include "Elpida/Engine/Calculators/TaskResultCalculator.hpp"
 #include "Elpida/Utilities/Uuid.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
@@ -42,10 +44,15 @@ namespace Elpida
 	class TaskConfiguration;
 	class TaskAffinity;
 	class ConfigurationValueBase;
+	class ServiceProvider;
 
 	class TaskBuilder final
 	{
 	public:
+
+		using ConditionalExecution = std::function<bool(const TaskConfiguration&,
+			const ProcessorNode&,
+			const ServiceProvider&)>;
 
 		TaskBuilder& canBeDisabled(bool canBeDisabled = true);
 		TaskBuilder& canBeMultiThreaded(bool canBeMultiThreaded = true);
@@ -84,23 +91,33 @@ namespace Elpida
 			return *this;
 		}
 
+		TaskBuilder& withConditionalExecution(const ConditionalExecution& conditionalExecution)
+		{
+			_conditionalExecution = conditionalExecution;
+			return *this;
+		}
+
 		TaskConfiguration getDefaultConfiguration() const
 		{
 			return generateDefaultConfiguration();
 		}
 
-		[[nodiscard]] const TaskResultCalculator* getTaskResultCalculator() const
+		[[nodiscard]]
+		const TaskResultCalculator* getTaskResultCalculator() const
 		{
 			return _taskResultCalculator.get();
 		}
 
-		[[nodiscard]] const TaskSpecification& getTaskSpecification() const
+		[[nodiscard]]
+		const TaskSpecification& getTaskSpecification() const
 		{
 			return *_taskSpecification;
 		}
 
-		[[nodiscard]] std::unique_ptr<Task> build(const TaskConfiguration& configuration,
-			const ProcessorNode& processorToRun) const;
+		[[nodiscard]]
+		std::unique_ptr<Task> build(const TaskConfiguration& configuration,
+			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider) const;
 
 		bool shouldBeCountedOnResults() const
 		{
@@ -122,7 +139,15 @@ namespace Elpida
 			return _iterationsToRun;
 		}
 
-		[[nodiscard]]const std::string& getId() const
+		bool shouldBeExecuted(const TaskConfiguration& configuration,
+			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider) const
+		{
+			return !_conditionalExecution || _conditionalExecution(configuration, processorToRun, serviceProvider);
+		}
+
+		[[nodiscard]]
+		const std::string& getId() const
 		{
 			return _id;
 		}
@@ -148,6 +173,7 @@ namespace Elpida
 		std::unordered_map<std::string, ConfigurationInstance> _predefinedConfigurationsValues;
 		std::shared_ptr<TaskSpecification> _taskSpecification;
 		std::shared_ptr<TaskResultCalculator> _taskResultCalculator;
+		ConditionalExecution _conditionalExecution;
 		std::string _id;
 		size_t _iterationsToRun;
 		bool _shouldBeCountedOnResults;
@@ -171,7 +197,9 @@ namespace Elpida
 					_predefinedConfigurationsValues.erase(existing);
 				}
 				_predefinedConfigurationsValues.emplace(name,
-					ConfigurationInstance(itr->second, std::make_unique<ConfigurationValue<T>>(*itr->second, value, fixed), fixed));
+					ConfigurationInstance(itr->second,
+						std::make_unique<ConfigurationValue<T>>(*itr->second, value, fixed),
+						fixed));
 			}
 			else
 			{

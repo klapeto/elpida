@@ -53,12 +53,16 @@
 #include <Elpida/SystemInfo/CpuInfo.hpp>
 #include <Elpida/SystemInfo/SystemTopology.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
-#include <Elpida/Utilities/OsUtilities.hpp>
 #include <Elpida/SystemInfo/MemoryInfo.hpp>
+#include <Elpida/SystemInfo/OsInfo.hpp>
+#include <Elpida/SystemInfo/TimingInfo.hpp>
+#include <Elpida/ServiceProvider.hpp>
 
 
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QVBoxLayout>
+#include <QSplashScreen>
+#include <QScreen>
 #include "QCustomApplication.hpp"
 
 #include <getopt.h>
@@ -131,38 +135,71 @@ int main(int argc, char* argv[])
 
 	QCustomApplication application(argc, argv, mediator, logger);
 
-	ScreensModel screensModel;
-	AffinityModel affinityModel;
+	auto screenSize = QGuiApplication::primaryScreen()->size();
+	auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(QSize(screenSize.width() / 2, screenSize.height() / 2));
+	QSplashScreen splash(pixmap);
 
-	MainWindow mainWindow(mediator, screensModel, affinityModel);
+	splash.show();
+	Elpida::QCustomApplication::processEvents();
 
-	ConfigurationViewsPool configurationViewsPool;
-
+	// System Information
+	splash.showMessage("Getting CPU info...");
 	const CpuInfo& cpuInfo = CpuInfo::get();
+
+	splash.showMessage("Getting System topology...");
 	SystemTopology topology;
 
+	splash.showMessage("Getting Memory info...");
+	MemoryInfo memoryInfo;
+
+	splash.showMessage("Getting OS info...");
+	OsInfo osInfo;
+
+	splash.showMessage("Calculating overheads...");
+	TimingInfo timingInfo;
+	timingInfo.reCalculate(topology);
+
+	ServiceProvider serviceProvider(cpuInfo, memoryInfo, topology, osInfo, timingInfo, logger);
+
+	// UI
+	splash.showMessage("Initializing Ui...");
+
+	BenchmarkResultsModel taskRunResultsModel;
+	JsonResultFormatter formatter(topology, cpuInfo, osInfo, memoryInfo, timingInfo);
+
+	ScreensModel screensModel;
+	AffinityModel affinityModel;
+	MainWindow mainWindow(mediator, screensModel, affinityModel, taskRunResultsModel, formatter);
+	ConfigurationViewsPool configurationViewsPool;
 	QuickStartView quickStartView;
 
 	screensModel.add(ScreenItem("Quick Start", quickStartView));
 
-	SystemInfoView systemInfoView(cpuInfo, topology);
-	screensModel.add(ScreenItem("CPU Info", systemInfoView));
+	SystemInfoView systemInfoView(cpuInfo, topology, osInfo, timingInfo, memoryInfo);
+	screensModel.add(ScreenItem("System Info", systemInfoView));
 
-
-	TopologyView topologyView(topology,affinityModel);
+	TopologyView topologyView(topology, affinityModel);
 
 	initializeTopologyTab(screensModel, topologyView);
 
 	BenchmarksModel taskBatchesModel;
 	BenchmarkRunnerModel taskRunnerModel;
-	BenchmarkResultsModel taskRunResultsModel;
 	BenchmarkConfigurationModel benchmarkConfigurationModel;
 	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
 	BenchmarksController
-		benchmarksController(taskBatchesModel, benchmarkConfigurationsModel, globalConfigurationModel, logger);
+		benchmarksController
+		(taskBatchesModel, benchmarkConfigurationsModel, globalConfigurationModel, serviceProvider, logger);
 	benchmarksController.reload();
 	BenchmarkRunnerController
-		runnerController(mediator, taskRunResultsModel, taskRunnerModel, benchmarkConfigurationsModel, affinityModel, logger);
+		runnerController
+		(mediator,
+			taskRunResultsModel,
+			taskRunnerModel,
+			benchmarkConfigurationsModel,
+			affinityModel,
+			serviceProvider,
+			timingInfo,
+			logger);
 	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
@@ -186,17 +223,15 @@ int main(int argc, char* argv[])
 	LogsView logsView(logger);
 	screensModel.add(ScreenItem("Logs", logsView));
 
-	OsInfo opInfo = OsUtilities::getOsInfo();
-	MemoryInfo memoryInfo;
-
 	UploadController uploadController(mediator, taskRunResultsModel, globalConfigurationModel, logger);
 	mediator.registerCommandHandler(uploadController);
 
-	JsonResultFormatter formatter(topology, cpuInfo, opInfo, memoryInfo);
 	DataUploader uploader(mediator, formatter, logger);
 	mediator.registerCommandHandler(uploader);
 
 	mainWindow.show();
+
+	splash.finish(&mainWindow);
 
 	return QApplication::exec();
 }

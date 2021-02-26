@@ -25,6 +25,7 @@
 #define TASKRESULTCALCULATOR_HPP
 
 #include "Elpida/Engine/Result/TaskResult.hpp"
+#include "Elpida/Engine/Result/ProcessedTaskResult.hpp"
 #include <vector>
 
 namespace Elpida
@@ -32,7 +33,8 @@ namespace Elpida
 	class TaskResultCalculator
 	{
 	public:
-		virtual TaskResult calculateAggregateResult(const std::vector<TaskResult>& taskResults) const= 0;
+		[[nodiscard]]
+		virtual ProcessedTaskResult calculateAggregateResult(const std::vector<TaskResult>& taskResults) const = 0;
 
 		TaskResultCalculator() = default;
 		virtual ~TaskResultCalculator() = default;

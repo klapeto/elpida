@@ -24,47 +24,55 @@
  *      Author: klapeto
  */
 
-#include "Benchmarks/Memory/Read/MemoryRead.hpp"
+#include "Benchmarks/Memory/Bandwidth/MemoryReadBandwidth.hpp"
 
-#include <Elpida/ElpidaException.hpp>
-#include <Elpida/Engine/Data/RawTaskData.hpp>
+#include <Elpida/Utilities/Duration.hpp>
+#include <Elpida/SystemInfo/MemoryInfo.hpp>
+#include <Elpida/SystemInfo/CpuInfo.hpp>
+#include <Elpida/ServiceProvider.hpp>
+#include <Elpida/SystemInfo/TimingInfo.hpp>
+
 #include "Benchmarks/Memory/WorkingSetSizes.hpp"
-
-#include <algorithm>
+#include "Benchmarks/Memory/Bandwidth/MemoryReadBandwidthSpecification.hpp"
 
 namespace Elpida
 {
 
-	MemoryRead::MemoryRead(const TaskSpecification& specification,
+	MemoryReadBandwidth::MemoryReadBandwidth(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
+		size_t memorySize,
 		size_t iterationsToRun)
-		: Task(specification, processorToRun, iterationsToRun), _taskData(nullptr), _iterations(1)
+		: MicroTask(specification, processorToRun, serviceProvider, iterationsToRun),
+		  _memory(memorySize, processorToRun),
+		  _serviceProvider(serviceProvider)
 	{
 
 	}
 
-	void MemoryRead::prepareImpl()
+	void MemoryReadBandwidth::prepareImpl()
 	{
-		_taskData = getInput().getTaskData().get();
-		if (_taskData->getSize() % (32 * sizeof(RegisterSize)) != 0)
-			throw ElpidaException("Memory size must be divisible by the size of each read * 32!");
-
-		_iterations = (unsigned long)std::max((_iterationConstant / (double)_taskData->getSize()), 1.0);
+		_memory.allocate();
 	}
 
-	double MemoryRead::calculateTaskResultValue(const Duration& taskElapsedTime) const
+	double MemoryReadBandwidth::getInputDataSize() const
 	{
-		return (double)_taskData->getSize() * (double)_iterations;
+		return _memory.getSize();
 	}
 
-	void MemoryRead::execute()
+	double MemoryReadBandwidth::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		volatile auto* ptr = (RegisterSize*)_taskData->getData();
-		const auto iterations = _iterations;
-		const auto size = _taskData->getSize() / sizeof(RegisterSize);
-		for (auto i = 0ul; i < iterations; ++i)
+		return (double)_memory.getSize();
+	}
+
+	void MemoryReadBandwidth::run(size_t iterations)
+	{
+		volatile auto* ptr = (int*)_memory.getPointer();
+		const auto size = _memory.getSize();
+
+		while (iterations-- > 0)
 		{
-			for (auto j = 0ul; j < size; j += 32)
+			for (auto j = 0ul; j < size / sizeof(int); j += 32)
 			{
 				ptr[j];
 				ptr[j + 1];
@@ -100,6 +108,11 @@ namespace Elpida
 				ptr[j + 31];
 			}
 		}
+	}
+
+	Duration MemoryReadBandwidth::getMinimumExecutionTime() const
+	{
+		return Seconds(2);
 	}
 
 } /* namespace Elpida */

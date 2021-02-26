@@ -33,12 +33,14 @@
 namespace Elpida
 {
 
+	class ServiceProvider;
+
 	template<typename T>
 	class BenchmarksContainerPlugin : public Plugin<std::vector<std::unique_ptr<T>>>
 	{
 	public:
 
-		using Factory = BenchmarksContainerPlugin<T>* (*)();
+		using Factory = BenchmarksContainerPlugin<T>* (*)(const ServiceProvider* serviceProvider);
 
 		const std::vector<std::unique_ptr<T>>& getUnderlyingData() const override
 		{

@@ -29,23 +29,23 @@
 
 #include <string>
 
-#include "Elpida/Engine/Task/Task.hpp"
+#include "Elpida/Engine/Task/WorkloadTask.hpp"
 #include "Elpida/Engine/Data/RawTaskData.hpp"
 
 namespace Elpida
 {
 
-	class ReadFile : public Task
+	class ReadFile : public WorkloadTask
 	{
 	public:
-		void execute() override;
-
 		ReadFile(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			std::string filePath,
 			size_t iterationsToRun);
 		~ReadFile() override = default;
 	protected:
+		void run() override;
 		void prepareImpl() override;
 		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
 		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;

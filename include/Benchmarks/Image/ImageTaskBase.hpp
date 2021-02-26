@@ -25,15 +25,16 @@
 #define INCLUDE_BENCHMARKS_IMAGE_IMAGETASKBASE_HPP
 
 
-#include <Elpida/Engine/Task/Task.hpp>
+#include <Elpida/Engine/Task/WorkloadTask.hpp>
 
 namespace Elpida
 {
-	class ImageTaskBase : public Task
+	class ImageTaskBase : public WorkloadTask
 	{
 	public:
 		ImageTaskBase(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun);
 		~ImageTaskBase() override = default;
 	protected:

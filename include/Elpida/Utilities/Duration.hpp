@@ -28,11 +28,24 @@
 
 namespace Elpida
 {
-	using NanoSecond = std::nano;
-	using MicroSecond = std::micro;
-	using MilliSecond = std::milli;
-	using Second = std::ratio<1, 1>;
-	using Duration = std::chrono::duration<double>;
+	using NanoSeconds = std::chrono::duration<double, std::nano>;
+	using MicroSeconds = std::chrono::duration<double, std::micro>;
+	using MilliSeconds = std::chrono::duration<double, std::milli>;
+	using Seconds = std::chrono::duration<double, std::ratio<1, 1>>;
+	using Duration = NanoSeconds;
+
+
+	template<typename T>
+	constexpr Duration ToDuration(const T& duration)
+	{
+		return std::chrono::duration_cast<Duration>(duration);
+	}
+
+	template<typename TR, typename T>
+	constexpr TR DurationCast(const T& duration)
+	{
+		return std::chrono::duration_cast<T>(duration);
+	}
 }
 
 #endif //INCLUDE_ELPIDA_UTILITIES_DURATION_HPP

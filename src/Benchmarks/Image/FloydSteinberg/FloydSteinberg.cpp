@@ -34,14 +34,16 @@ namespace Elpida
 
 	FloydSteinberg::FloydSteinberg(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		double threshold,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun), _threshold(threshold)
+		: ImageTaskBase(specification, processorToRun, serviceProvider, iterationsToRun),
+		_threshold(threshold)
 	{
 
 	}
 
-	void FloydSteinberg::execute()
+	void FloydSteinberg::run()
 	{
 		std::size_t width = _inputImage->getWidth();
 		std::size_t height = _inputImage->getHeight();

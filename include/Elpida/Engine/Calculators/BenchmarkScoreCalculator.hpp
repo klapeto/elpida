@@ -33,17 +33,20 @@ namespace Elpida
 	class BenchmarkScoreCalculator
 	{
 	public:
-		[[nodiscard]] ResultType getResultType() const
+		[[nodiscard]]
+		ResultType getResultType() const
 		{
 			return _resultType;
 		}
 
-		[[nodiscard]] const std::string& getSuffix() const
+		[[nodiscard]]
+		const std::string& getSuffix() const
 		{
 			return _suffix;
 		}
 
-		[[nodiscard]] virtual BenchmarkResult::Score calculate(const std::vector<TaskResult>& taskResults) const = 0;
+		[[nodiscard]]
+		virtual BenchmarkResult::Score calculate(const std::vector<ProcessedTaskResult>& taskResults) const = 0;
 
 		BenchmarkScoreCalculator();
 		explicit BenchmarkScoreCalculator(std::string suffix, ResultType resultType = ResultType::Raw);

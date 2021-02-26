@@ -6,8 +6,10 @@ set(ELPIDA_SOURCES
         SharedLibraryLoader.cpp
         Timer.cpp
         EventsSubscriber.cpp
+        ServiceProvider.cpp
 
         ElpidaException.cpp
+        OperationCanceledException.cpp
 
         SystemInfo/ProcessorNode.cpp
         SystemInfo/SystemTopology.cpp
@@ -15,6 +17,8 @@ set(ELPIDA_SOURCES
         SystemInfo/CpuInfo.cpp
         SystemInfo/CpuCache.cpp
         SystemInfo/MemoryInfo.cpp
+        SystemInfo/OsInfo.cpp
+        SystemInfo/TimingInfo.cpp
 
         Utilities/Logging/Logger.cpp
         Utilities/Logging/LogAppender.cpp
@@ -26,6 +30,7 @@ set(ELPIDA_SOURCES
         Utilities/Memory.cpp
         Utilities/NumaMemory.cpp
         Utilities/OsUtilities.cpp
+        Utilities/Statistics.cpp
 
         CommonTasks/AllocateMemory/AllocateMemory.cpp
         CommonTasks/AllocateMemory/AllocateMemorySpecification.cpp
@@ -66,7 +71,14 @@ set(ELPIDA_SOURCES
         Engine/Data/DataTransformer.cpp
         Engine/Calculators/Benchmark/AverageScoreCalculator.cpp
         Engine/Calculators/TaskResultCalculator.cpp
-        Engine/Calculators/Task/AverageTaskResultCalculator.cpp)
+        Engine/Calculators/Task/ExclusiveHarmonicMeanTaskResultCalculator.cpp
+        Engine/Runner/MicroTaskRunner.cpp
+        Engine/Calculators/Task/MinimumTaskResultCalculator.cpp
+        Engine/Runner/DefaultTaskRunner.cpp
+        Engine/Result/ProcessedTaskResult.cpp
+        Engine/Task/WorkloadTask.cpp
+        Engine/Task/MicroTask.cpp
+        Engine/Task/ExecutionParameters.cpp)
 
 
 

@@ -26,13 +26,13 @@
 namespace Elpida
 {
 
-	BenchmarkResult::Score AccumulativeScoreCalculator::calculate(const std::vector<TaskResult>& taskResults) const
+	BenchmarkResult::Score AccumulativeScoreCalculator::calculate(const std::vector<ProcessedTaskResult>& taskResults) const
 	{
 		auto accumulator = 0.0;
 
 		for (auto& res: taskResults)
 		{
-			accumulator += (double)res.getMetrics().getResultValue();
+			accumulator += (double)res.getFinalMetrics().getResultValue();
 		}
 
 		return accumulator;

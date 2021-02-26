@@ -78,7 +78,10 @@ namespace Elpida
 				_rentedItems.emplace(itm.get(), std::move(itm));
 				for (auto& confValuePair: taskConfPair.getAllConfigurations())
 				{
-					if (!confValuePair.second->isReadOnly())
+					auto& type = confValuePair.second->getConfigurationSpecification();
+					if (!confValuePair.second->isReadOnly()
+						&& type.getType() != ConfigurationType::Type::Custom
+						&& type.getType() != ConfigurationType::Type::Function)
 					{
 						auto view = _configurationViewsPool.rentViewForConfiguration(confValuePair.second);
 						view->show();

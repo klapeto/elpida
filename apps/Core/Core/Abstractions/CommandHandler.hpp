@@ -56,7 +56,6 @@ namespace Elpida
 		{
 		}
 
-
 		virtual ~CommandHandler() = default;
 	};
 

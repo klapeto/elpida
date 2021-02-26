@@ -40,6 +40,7 @@ namespace Elpida
 
 	class Task;
 	class ProcessorNode;
+	class ServiceProvider;
 
 	/**
 	 * Standard information regarding a Task
@@ -47,53 +48,64 @@ namespace Elpida
 	class TaskSpecification
 	{
 	public:
-		[[nodiscard]] const std::string& getName() const
+		[[nodiscard]]
+		const std::string& getName() const
 		{
 			return _name;
 		}
 
-		[[nodiscard]] const std::string& getDescription() const
+		[[nodiscard]]
+		const std::string& getDescription() const
 		{
 			return _description;
 		}
 
-		[[nodiscard]] const std::vector<std::shared_ptr<ConfigurationSpecificationBase>>& getConfigurationSpecifications() const
+		[[nodiscard]]
+		const std::vector<std::shared_ptr<ConfigurationSpecificationBase>>& getConfigurationSpecifications() const
 		{
 			return _configurationSpecifications;
 		}
 
-		[[nodiscard]] bool acceptsInput() const
+		[[nodiscard]]
+		bool acceptsInput() const
 		{
 			return _acceptsInput;
 		}
 
-		[[nodiscard]] bool producesOutput() const
+		[[nodiscard]]
+		bool producesOutput() const
 		{
 			return _producesOutput;
 		}
 
-		[[nodiscard]] const DataSpecification& getInputDataSpecification() const
+		[[nodiscard]]
+		const DataSpecification& getInputDataSpecification() const
 		{
 			return _inputDataSpecification;
 		}
 
-		[[nodiscard]] const DataSpecification& getOutputDataSpecification() const
+		[[nodiscard]]
+		const DataSpecification& getOutputDataSpecification() const
 		{
 			return _outputDataSpecification;
 		}
 
-		[[nodiscard]] const ResultSpecification& getResultSpecification() const
+		[[nodiscard]]
+		const ResultSpecification& getResultSpecification() const
 		{
 			return _resultSpecification;
 		}
 
-		[[nodiscard]] std::shared_ptr<DataTransformer> getDataTransformer() const
+		[[nodiscard]]
+		std::shared_ptr<DataTransformer> getDataTransformer() const
 		{
 			return _dataTransformer;
 		}
 
-		[[nodiscard]] virtual std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
+		[[nodiscard]]
+		virtual std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun) const = 0;
 
 		virtual ~TaskSpecification() = default;

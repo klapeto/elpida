@@ -28,22 +28,24 @@
 #include "Elpida/Utilities/OsUtilities.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/ElpidaException.hpp"
+#include "Elpida/Engine/Runner/DefaultTaskRunner.hpp"
+#include "Elpida/ServiceProvider.hpp"
+#include "Elpida/SystemInfo/TimingInfo.hpp"
 
 namespace Elpida
 {
 
-	Task::Task(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun)
+	Task::Task(const TaskSpecification& specification,
+		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
+		size_t iterationsToRun)
 		: _processorToRun(processorToRun),
 		  _specification(specification),
+		  _serviceProvider(serviceProvider),
 		  _taskData(nullptr),
 		  _iterationsToRun(iterationsToRun)
 	{
 
-	}
-
-	void Task::applyAffinity()
-	{
-		OsUtilities::setCurrentThreadAffinity((int)_processorToRun.getOsIndex());
 	}
 
 	static void validateDataProperties(const DataSpecification& specification, const TaskDataDto& taskDataDto)
@@ -62,6 +64,7 @@ namespace Elpida
 
 	void Task::prepare()
 	{
+		OsUtilities::setCurrentThreadAffinity((int)_processorToRun.getOsIndex());
 		if (_specification.acceptsInput())
 		{
 			if (!_taskData || (_taskData && !_taskData->hasData()))
@@ -89,16 +92,32 @@ namespace Elpida
 		}
 	}
 
-	static size_t getInputDataSize(const TaskDataDto* input)
+	double Task::getInputDataSize() const
 	{
-		return input && input->hasData() ? input->getTaskData()->getSize() : 0;
+		return _taskData && _taskData->hasData() ? _taskData->getTaskData()->getSize() : 0.0;
 	}
 
-	TaskResult Task::calculateTaskResult(const Duration& taskElapsedTime) const
+	void Task::prepareImpl()
 	{
-		return TaskResult(_specification,
-			TaskMetrics(taskElapsedTime,
-				calculateTaskResultValue(taskElapsedTime),
-				getInputDataSize(_taskData)));
+	}
+
+	std::optional<TaskDataDto> Task::finalizeAndGetOutputData()
+	{
+		return std::nullopt;
+	}
+
+	TaskDataDto Task::propagateInput()
+	{
+		return TaskDataDto(std::move(*_taskData));
+	}
+
+	TaskDataDto& Task::getInput() const
+	{
+		return *_taskData;
+	}
+
+	void Task::preProcessExecutionParameters(ExecutionParameters& parameters)
+	{
+
 	}
 }

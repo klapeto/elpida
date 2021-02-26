@@ -37,6 +37,7 @@
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
+#include <Elpida/SystemInfo/TimingInfo.hpp>
 
 namespace Elpida
 {
@@ -45,24 +46,38 @@ namespace Elpida
 		BenchmarkRunnerModel& runnerModel,
 		BenchmarkConfigurationsCollectionModel& configurationsModel,
 		const AffinityModel& affinityModel,
+		const ServiceProvider& serviceProvider,
+		const TimingInfo& timingInfo,
 		Logger& logger)
-		: _benchmarkResultsModel(benchmarkResultsModel), _runnerModel(runnerModel),
-		  _configurationsModel(configurationsModel), _mediator(mediator), _affinityModel(affinityModel), _logger(logger)
+		:
+		_runner(serviceProvider),
+		_benchmarkResultsModel(benchmarkResultsModel),
+		_runnerModel(runnerModel),
+		_configurationsModel(configurationsModel),
+		_mediator(mediator),
+		_affinityModel(affinityModel),
+		_timingInfo(timingInfo),
+		_logger(logger)
 	{
 
 		_runner.benchmarkStarted.subscribe([this](const auto& ev)
 		{
-			onTaskBatchStarted(ev);
+			onBenchmarkStarted(ev);
 		});
 
 		_runner.benchmarkEnded.subscribe([this](const auto& ev)
 		{
-			onTaskBatchEnded(ev);
+			onBenchmarkEnded(ev);
 		});
 
 		_runner.taskStarted.subscribe([this](const auto& ev)
 		{
 			onTaskStarted(ev);
+		});
+
+		_runner.taskIterationEnded.subscribe([this](const auto& ev)
+		{
+			onTaskIterationEnded(ev);
 		});
 
 		_runner.taskEnded.subscribe([this](const auto& ev)
@@ -94,15 +109,8 @@ namespace Elpida
 					{
 						try
 						{
-							_runnerModel.transactional<BenchmarkRunnerModel>([&benches](BenchmarkRunnerModel& model)
-							{
-								model.setRunning(true);
-								model.setSessionTotalBenchmarksCount(benches.size());
-								model.setBenchmarkCompletedTasksCount(0);
-								model.setSessionCompletedBenchmarksCount(0);
-							});
 							auto results = _runner.runBenchmarks(benches, aff);
-							_runnerModel.setRunning(false);
+							_runnerModel.setCurrentRunningBenchmark(std::nullopt);
 							_benchmarkResultsModel
 								.transactional<BenchmarkResultsModel>([&results, this](BenchmarkResultsModel& model)
 								{
@@ -111,17 +119,10 @@ namespace Elpida
 										model.add(result);
 									}
 								});
-							_runnerModel.transactional<BenchmarkRunnerModel>([&benches](BenchmarkRunnerModel& model)
-							{
-								model.setRunning(false);
-								model.setSessionTotalBenchmarksCount(0);
-								model.setBenchmarkCompletedTasksCount(0);
-								model.setSessionCompletedBenchmarksCount(0);
-							});
 						}
 						catch (const std::exception& ex)
 						{
-							_runnerModel.setRunning(false);
+							_runnerModel.setCurrentRunningBenchmark(std::nullopt);
 							_taskRunnerThread.detach();
 							_logger.log(LogType::Error, "Error occurred while executing benchmarks", ex);
 							_mediator.execute(ShowMessageCommand(Vu::concatenateToString(
@@ -152,36 +153,48 @@ namespace Elpida
 		_runner.stopBenchmarking();
 	}
 
-	void BenchmarkRunnerController::onTaskBatchStarted(const BenchmarkEventArgs& ev)
+	void BenchmarkRunnerController::onBenchmarkStarted(const BenchmarkEventArgs& ev)
 	{
 		_runnerModel.transactional<BenchmarkRunnerModel>([&ev](BenchmarkRunnerModel& model)
 		{
-			model.setCurrentRunningTaskBatch(ev.getBenchmark());
-			model.setBenchmarkCompletedTasksCount(0);
-			model.setBenchmarkTotalTasksCount(ev.getBenchmark().getTotalTasksCount());
+			model.setCurrentRunningBenchmark(ev.getBenchmark());
+			model.setBenchmarkCompletedTasks(0);
 		});
 	}
 
 	void BenchmarkRunnerController::onTaskStarted(const TaskEventArgs& ev)
 	{
-		_runnerModel.setCurrentRunningTaskSpecification(ev.getSpecification());
+		_runnerModel.transactional<BenchmarkRunnerModel>([&ev](BenchmarkRunnerModel& model)
+		{
+			model.setCurrentRunningTask(ev.getTaskBuilder());
+			model.setTaskCompletedIterations(0);
+		});
 	}
 
 	void BenchmarkRunnerController::onTaskEnded(const TaskEventArgs& ev)
 	{
 		_runnerModel.transactional<BenchmarkRunnerModel>([&ev](BenchmarkRunnerModel& model)
 		{
-			model.setCurrentRunningTaskSpecification(std::nullopt);
-			model.setBenchmarkCompletedTasksCount(model.getBatchExecutedTasksCount() + 1);
+			model.setCurrentRunningTask(std::nullopt);
+			model.setTaskCompletedIterations(0);
+			model.setBenchmarkCompletedTasks(model.getBenchmarkCompletedTasks() + 1);
 		});
 	}
 
-	void BenchmarkRunnerController::onTaskBatchEnded(const BenchmarkEventArgs& ev)
+	void BenchmarkRunnerController::onBenchmarkEnded(const BenchmarkEventArgs& ev)
 	{
 		_runnerModel.transactional<BenchmarkRunnerModel>([](BenchmarkRunnerModel& model)
 		{
-			model.setCurrentRunningTaskBatch(std::nullopt);
-			model.setSessionCompletedBenchmarksCount(model.getSessionCompletedBenchmarksCount() + 1);
+			model.setCurrentRunningBenchmark(std::nullopt);
+			model.setBenchmarkCompletedTasks(0);
+		});
+	}
+
+	void BenchmarkRunnerController::onTaskIterationEnded(const TaskEventArgs& ev)
+	{
+		_runnerModel.transactional<BenchmarkRunnerModel>([&](BenchmarkRunnerModel& model)
+		{
+			model.setTaskCompletedIterations(ev.getIteration());
 		});
 	}
 }

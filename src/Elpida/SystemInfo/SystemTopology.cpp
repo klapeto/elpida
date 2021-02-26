@@ -76,6 +76,7 @@ namespace Elpida
 
 		_root = std::unique_ptr<ProcessorNode>(new ProcessorNode(nullptr, _cpuKinds, topo, hwloc_get_root_obj(topo)));
 		_root->loadSiblings();    // Now its safe to attempt to recursively load all siblings
+		_root->loadParents(nullptr);
 
 		hwloc_topology_destroy(topo);
 		accumulateCores(*_root);
@@ -87,11 +88,11 @@ namespace Elpida
 		{
 			switch (child.getType())
 			{
-			case ProcessorNode::Type::ExecutionUnit:
+			case ProcessorNodeType::ExecutionUnit:
 				_totalLogicalCores++;
 				_allProcessors.push_back(&child);
 				break;
-			case ProcessorNode::Type::Core:
+			case ProcessorNodeType::Core:
 				_totalPhysicalCores++;
 				break;
 			default:

@@ -18,32 +18,38 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 30/4/20.
+// Created by klapeto on 28/4/20.
 //
 
-#include "Benchmarks/Memory/Latency/MemoryReadLatencySpecification.hpp"
+#ifndef SRC_BENCHMARKS_MEMORY_READ_MEMORYREADSPECIFICATION_HPP
+#define SRC_BENCHMARKS_MEMORY_READ_MEMORYREADSPECIFICATION_HPP
 
-#include "Benchmarks/Memory/Latency/MemoryReadLatency.hpp"
+#include <Elpida/Engine/Task/TaskSpecification.hpp>
 #include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
 namespace Elpida
 {
-
-	MemoryReadLatencySpecification::MemoryReadLatencySpecification()
-		: TaskSpecification("Memory Read Latency",
-		ResultSpecification("Access time", "s", ResultType::Raw, ResultSpecification::Average))
+	class MemoryReadBandwidthSpecification : public TaskSpecification
 	{
-		withDescription("Reads continuously a memory region to determine memory read latency");
-		withInputData(DataSpecification("Input Memory",
-			"B",
-			32 * sizeof(RegisterSize),
-			"The allocated memory region to read"));
-	}
+	public:
 
-	std::unique_ptr<Task> MemoryReadLatencySpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun,
-		size_t iterationsToRun) const
-	{
-		return std::make_unique<MemoryReadLatency>(*this, processorToRun, iterationsToRun);
-	}
+		class Settings
+		{
+		public:
+			static inline const char* MemorySizeCalculator = "Memory size Calculator";
+			using MemorySizeCalculatorT = ConfigurationType::Function<size_t(const ProcessorNode&)>;
+		};
+
+		[[nodiscard]]
+		std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
+			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
+			size_t iterationsToRun) const override;
+
+		MemoryReadBandwidthSpecification();
+		~MemoryReadBandwidthSpecification() override = default;
+	};
 }
+
+
+#endif //SRC_BENCHMARKS_MEMORY_READ_MEMORYREADSPECIFICATION_HPP

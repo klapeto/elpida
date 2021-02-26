@@ -39,16 +39,19 @@ namespace Elpida
 	class ConvertToUInt8 final : public ImageTaskBase
 	{
 	public:
-		void execute() override;
 
 		ConvertToUInt8(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun);
 		~ConvertToUInt8() override = default;
 	protected:
+		void run() override;
 		void prepareImpl() override;
 		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+
+		[[nodiscard]]
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::unique_ptr<RawTaskData> _outputData;
 		std::unique_ptr<Image<PixelInt>> _outputImage;

@@ -24,7 +24,6 @@
 #ifndef APPS_QT_CONTROLLERS_BENCHMARKRUNNERCONTROLLER_HPP
 #define APPS_QT_CONTROLLERS_BENCHMARKRUNNERCONTROLLER_HPP
 
-
 #include <Elpida/Engine/Runner/BenchmarkRunner.hpp>
 #include <Elpida/OffThreadExecutor.hpp>
 #include "Core/Abstractions/CommandHandler.hpp"
@@ -37,6 +36,7 @@ namespace Elpida
 	class BenchmarkConfigurationsCollectionModel;
 	class AffinityModel;
 	class Mediator;
+	class TimingInfo;
 	class Logger;
 
 	class BenchmarkRunnerController : public CommandHandler
@@ -50,7 +50,11 @@ namespace Elpida
 			BenchmarkRunnerModel& runnerModel,
 			BenchmarkConfigurationsCollectionModel& configurationsModel,
 			const AffinityModel& affinityModel,
+			const ServiceProvider& serviceProvider,
+			const TimingInfo& timingInfo,
 			Logger& logger);
+
+		~BenchmarkRunnerController() override = default;
 	private:
 		OffThreadExecutor _taskRunnerThread;
 		BenchmarkRunner _runner;
@@ -59,12 +63,14 @@ namespace Elpida
 		BenchmarkConfigurationsCollectionModel& _configurationsModel;
 		Mediator& _mediator;
 		const AffinityModel& _affinityModel;
+		const TimingInfo& _timingInfo;
 		Logger& _logger;
 
-		void onTaskBatchStarted(const BenchmarkEventArgs& ev);
+		void onBenchmarkStarted(const BenchmarkEventArgs& ev);
 		void onTaskStarted(const TaskEventArgs& ev);
+		void onTaskIterationEnded(const TaskEventArgs& ev);
 		void onTaskEnded(const TaskEventArgs& ev);
-		void onTaskBatchEnded(const BenchmarkEventArgs& ev);
+		void onBenchmarkEnded(const BenchmarkEventArgs& ev);
 	};
 }
 

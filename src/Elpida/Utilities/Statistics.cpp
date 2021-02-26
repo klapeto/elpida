@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,24 +18,12 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 14/11/20.
+// Created by klapeto on 7/2/21.
 //
 
-#ifndef AVERAGETASKRESULTCALCULATOR_HPP
-#define AVERAGETASKRESULTCALCULATOR_HPP
-
-#include "Elpida/Engine/Calculators/TaskResultCalculator.hpp"
+#include "Elpida/Utilities/Statistics.hpp"
 
 namespace Elpida
 {
-	class AverageTaskResultCalculator : public TaskResultCalculator
-	{
-	public:
-		[[nodiscard]] TaskResult calculateAggregateResult(const std::vector<TaskResult>& taskResults) const override;
 
-		AverageTaskResultCalculator() = default;
-		~AverageTaskResultCalculator() override = default;
-	};
 }
-
-#endif //AVERAGETASKRESULTCALCULATOR_HPP

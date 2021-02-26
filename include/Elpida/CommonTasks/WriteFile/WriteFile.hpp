@@ -29,23 +29,24 @@
 
 #include <string>
 
-#include "Elpida/Engine/Task/Task.hpp"
+#include "Elpida/Engine/Task/WorkloadTask.hpp"
 
 namespace Elpida
 {
 	class TaskMetrics;
 
-	class WriteFile : public Task
+	class WriteFile : public WorkloadTask
 	{
 	public:
-		void execute() override;
 
 		WriteFile(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			std::string filePath,
 			size_t iterationsToRun);
 		~WriteFile() override = default;
 	protected:
+		void run() override;
 		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::string _outputPath;

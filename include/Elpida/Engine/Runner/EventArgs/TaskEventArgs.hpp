@@ -24,29 +24,36 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_TASKEVENTARGS_HPP
 #define INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_TASKEVENTARGS_HPP
 
+#include <unistd.h>
+#include <string>
+
 namespace Elpida
 {
 	class TaskSpecification;
+	class TaskBuilder;
 
 	class TaskEventArgs
 	{
 	public:
-		[[nodiscard]] const TaskSpecification& getSpecification() const
+
+		[[nodiscard]]
+		const TaskBuilder& getTaskBuilder() const
 		{
-			return _specification;
+			return _taskBuilder;
 		}
 
-		explicit TaskEventArgs(const TaskSpecification& specification)
-			: _specification(specification)
+		[[nodiscard]]
+		size_t getIteration() const
 		{
-
+			return _iteration;
 		}
+
+		explicit TaskEventArgs(const TaskBuilder& taskBuilder, size_t iteration = 1);
 		virtual ~TaskEventArgs() = default;
 	private:
-		const TaskSpecification& _specification;
+		const TaskBuilder& _taskBuilder;
+		size_t _iteration;
 	};
-
 }
-
 
 #endif //INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_TASKEVENTARGS_HPP

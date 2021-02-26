@@ -32,14 +32,14 @@
 namespace Elpida
 {
 
-	BenchmarkResult::Score AverageScoreCalculator::calculate(const std::vector<TaskResult>& taskResults) const
+	BenchmarkResult::Score AverageScoreCalculator::calculate(const std::vector<ProcessedTaskResult>& taskResults) const
 	{
 		if (!taskResults.empty())
 		{
 			BenchmarkResult::Score score = 0.0;
 			for (const auto& result: taskResults)
 			{
-				score += result.getMetrics().getResultValue();
+				score += result.getFinalMetrics().getResultValue();
 			}
 			return score / (double)taskResults.size();
 		}

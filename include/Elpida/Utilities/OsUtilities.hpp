@@ -35,19 +35,9 @@
 
 namespace Elpida
 {
-	struct OsInfo
-	{
-		std::string category;
-		std::string name;
-		std::string version;
-	};
-
 	class OsUtilities
 	{
 	public:
-
-		static OsInfo getOsInfo();
-
 		static void setCurrentThreadAffinity(unsigned int cpuId);
 
 		static std::string GetLastErrorString();

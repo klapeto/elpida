@@ -18,32 +18,31 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 28/4/20.
+// Created by klapeto on 14/11/20.
 //
 
-#include "Benchmarks/Memory/Read/MemoryReadSpecification.hpp"
+#ifndef AVERAGETASKRESULTCALCULATOR_HPP
+#define AVERAGETASKRESULTCALCULATOR_HPP
 
-#include "Benchmarks/Memory/Read/MemoryRead.hpp"
-#include "Benchmarks/Memory/WorkingSetSizes.hpp"
+#include "Elpida/Engine/Calculators/TaskResultCalculator.hpp"
 
 namespace Elpida
 {
-
-	MemoryReadSpecification::MemoryReadSpecification()
-		: TaskSpecification("Memory Read Bandwidth",
-		ResultSpecification("Read Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative))
+	class ExclusiveHarmonicMeanTaskResultCalculator : public TaskResultCalculator
 	{
-		withDescription("Reads continuously a memory region to determine Memory Read Bandwidth");
-		withInputData(DataSpecification("Input Memory",
-			"B",
-			32 * sizeof(RegisterSize),
-			"The allocated memory region to read"));
-	}
+	public:
+		[[nodiscard]]
+		ProcessedTaskResult calculateAggregateResult(const std::vector<TaskResult>& taskResults) const override;
 
-	std::unique_ptr<Task> MemoryReadSpecification::createNewTask(const TaskConfiguration& configuration,
-		const ProcessorNode& processorToRun,
-		size_t iterationsToRun) const
-	{
-		return std::make_unique<MemoryRead>(*this, processorToRun, iterationsToRun);
-	}
+		explicit ExclusiveHarmonicMeanTaskResultCalculator(size_t ignoreFirstResults = 0)
+			: _ignoreFirstResults(ignoreFirstResults)
+		{
+
+		};
+		~ExclusiveHarmonicMeanTaskResultCalculator() override = default;
+	private:
+		size_t _ignoreFirstResults;
+	};
 }
+
+#endif //AVERAGETASKRESULTCALCULATOR_HPP

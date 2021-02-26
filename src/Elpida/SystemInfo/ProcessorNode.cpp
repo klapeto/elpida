@@ -40,7 +40,7 @@ namespace Elpida
 {
 
 	ProcessorNode::ProcessorNode(ProcessorNode* parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
-		: _value(0), _type(Type::Unknown), _osIndex(0)
+		: _value(0), _type(ProcessorNodeType::Unknown), _osIndex(0)
 	{
 		switch (((hwloc_obj_t)node)->type)
 		{
@@ -85,31 +85,26 @@ namespace Elpida
 			break;
 		}
 
-		if (parent)
-		{
-			_parent = *parent;
-		}
-
 		loadChildren(cpuKinds, rootObj, node);
 	}
 
 	void ProcessorNode::loadMachine(void* node)
 	{
-		_type = Type::Machine;
+		_type = ProcessorNodeType::Machine;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
 		_name = "Machine";
 	}
 
 	void ProcessorNode::loadPackage(void* node)
 	{
-		_type = Type::Package;
+		_type = ProcessorNodeType::Package;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
 		_name = "Package";
 	}
 
 	void ProcessorNode::loadNumaNode(void* node)
 	{
-		_type = Type::NumaNode;
+		_type = ProcessorNodeType::NumaNode;
 		_value = ((hwloc_obj_t)node)->attr->numanode.local_memory;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
 		_name = "Numa Node";
@@ -117,13 +112,13 @@ namespace Elpida
 
 	void ProcessorNode::loadGroup(void* node)
 	{
-		_type = Type::Group;
+		_type = ProcessorNodeType::Group;
 		_name = "Group";
 	}
 
 	void ProcessorNode::loadCore(void* node)
 	{
-		_type = Type::Core;
+		_type = ProcessorNodeType::Core;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
 		_name = "Core";
 	}
@@ -133,39 +128,39 @@ namespace Elpida
 		switch (((hwloc_obj_t)node)->type)
 		{
 		case HWLOC_OBJ_L1CACHE:
-			_type = Type::L1DCache;
+			_type = ProcessorNodeType::L1DCache;
 			_name = "L1D";
 			break;
 		case HWLOC_OBJ_L1ICACHE:
-			_type = Type::L1ICache;
+			_type = ProcessorNodeType::L1ICache;
 			_name = "L1I";
 			break;
 		case HWLOC_OBJ_L2CACHE:
-			_type = Type::L2DCache;
+			_type = ProcessorNodeType::L2DCache;
 			_name = "L2D";
 			break;
 		case HWLOC_OBJ_L2ICACHE:
-			_type = Type::L2ICache;
+			_type = ProcessorNodeType::L2ICache;
 			_name = "L2I";
 			break;
 		case HWLOC_OBJ_L3CACHE:
-			_type = Type::L3DCache;
+			_type = ProcessorNodeType::L3DCache;
 			_name = "L3D";
 			break;
 		case HWLOC_OBJ_L3ICACHE:
-			_type = Type::L3ICache;
+			_type = ProcessorNodeType::L3ICache;
 			_name = "L3I";
 			break;
 		case HWLOC_OBJ_L4CACHE:
-			_type = Type::L4Cache;
+			_type = ProcessorNodeType::L4Cache;
 			_name = "L4";
 			break;
 		case HWLOC_OBJ_L5CACHE:
-			_type = Type::L5Cache;
+			_type = ProcessorNodeType::L5Cache;
 			_name = "L5";
 			break;
 		default:
-			_type = Type::Unknown;
+			_type = ProcessorNodeType::Unknown;
 			_name = "Unknown Cache";
 			break;
 		}
@@ -175,7 +170,7 @@ namespace Elpida
 
 	void ProcessorNode::loadExecutionUnit(void* node)
 	{
-		_type = Type::ExecutionUnit;
+		_type = ProcessorNodeType::ExecutionUnit;
 		_osIndex = ((hwloc_obj_t)node)->os_index;
 		_name = "EU";
 	}
@@ -224,7 +219,7 @@ namespace Elpida
 
 	int ProcessorNode::getNumaNodeId() const
 	{
-		if (_type == Type::ExecutionUnit)
+		if (_type == ProcessorNodeType::ExecutionUnit)
 		{
 #ifdef ELPIDA_LINUX
 			return numa_node_of_cpu((int)_osIndex);
@@ -238,6 +233,18 @@ namespace Elpida
 		else
 		{
 			throw ElpidaException(FUNCTION_NAME, "Cannot get Numa Node id from a non EU type processor node!");
+		}
+	}
+
+	void ProcessorNode::loadParents(ProcessorNode* parent)
+	{
+		if (parent)
+		{
+			_parent = *parent;
+		}
+		for (auto& child: _children)
+		{
+			child.loadParents(this);
 		}
 	}
 

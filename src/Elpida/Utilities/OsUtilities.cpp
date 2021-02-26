@@ -30,13 +30,11 @@
 #include <windows.h>
 #include <strsafe.h>
 #else
-#include <sys/utsname.h>
 #include <numa.h>
 #include <cstring>
 #include <cerrno>
 #endif
 
-#include <fstream>
 
 namespace Elpida
 {
@@ -133,116 +131,6 @@ namespace Elpida
 #else
 #error "Unsupported Platform"
 #endif
-	}
-
-#if defined(ELPIDA_LINUX)
-
-	static std::string getVariable(const std::string& line, const std::string& name)
-	{
-		size_t pos = line.find(name);
-		if (pos != std::string::npos)
-		{
-			pos += name.size();
-			if (line[pos] == '\"')
-			{
-				pos++;
-			}
-			size_t lastPos = line.find_last_of('\"');
-			if (lastPos == std::string::npos)
-			{
-				lastPos = line.size() - 1;
-			}
-			return line.substr(pos, lastPos - pos);
-		}
-		return std::string();
-	}
-
-	static OsInfo getOsInfoImpl()
-	{
-		std::string name;
-		std::string category;
-		std::string version;
-		std::fstream osRelease("/etc/os-release", std::ios::in);
-		if (osRelease.good())
-		{
-			bool nameFound = false;
-			bool osVersionFound = false;
-			std::string line;
-			while ((!nameFound || !osVersionFound) && getline(osRelease, line))
-			{
-				if (!nameFound)
-				{
-					name = getVariable(line, "NAME=");
-					if (!name.empty())
-					{
-						nameFound = true;
-						continue;
-					}
-				}
-				if (!osVersionFound)
-				{
-					auto osVersion = getVariable(line, "VERSION=");
-					if (!osVersion.empty())
-					{
-						name += " " + osVersion;
-						osVersionFound = true;
-						continue;
-					}
-				}
-			}
-			osRelease.close();
-		}
-
-		utsname unameInfo;
-		uname(&unameInfo);
-
-		return { unameInfo.sysname, name, unameInfo.release };
-	}
-#elif defined(ELPIDA_WINDOWS)
-	static OsInfo getOsInfoImpl()
-	{
-		std::string name;
-		std::string version;
-
-		try
-		{
-			name = OsUtilities::ReadRegistryKeyFromHKLM("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "ProductName");
-		}
-		catch (const std::exception&)
-		{
-			// does not exist?
-			name = "Unknown Windows";
-		}
-
-		try
-		{
-			version = OsUtilities::ReadRegistryKeyFromHKLM("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "ReleaseId");
-		}
-		catch (const std::exception&)
-		{
-			// does not exist?
-		}
-
-		try
-		{
-			version  += "." + OsUtilities::ReadRegistryKeyFromHKLM("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "CurrentBuild");
-		}
-		catch (const std::exception&)
-		{
-			// does not exist?
-		}
-
-		return { "Windows", name, version};
-	}
-#else
-#error "Unsupported Platform"
-#endif
-
-	OsInfo OsUtilities::getOsInfo()
-	{
-		// static, it is pointless to calculate/acquire this info every time
-		static OsInfo osInfo = getOsInfoImpl();
-		return osInfo;
 	}
 
 	void OsUtilities::setCurrentThreadAffinity(unsigned int cpuId)

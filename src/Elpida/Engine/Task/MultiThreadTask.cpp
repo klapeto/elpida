@@ -24,12 +24,15 @@
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
 
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
+#include "Elpida/ServiceProvider.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
 #include "Elpida/Engine/Data/DataTransformer.hpp"
 #include "Elpida/Engine/Data/RawTaskData.hpp"
+#include "Elpida/Engine/Runner/DefaultTaskRunner.hpp"
+#include "Elpida/SystemInfo/TimingInfo.hpp"
 
 #include <unordered_set>
 
@@ -38,32 +41,38 @@ namespace Elpida
 
 	MultiThreadTask::MultiThreadTask(const TaskBuilder& taskBuilder,
 		const TaskConfiguration& configuration,
-		const TaskAffinity& affinity, size_t iterationsToRun)
-		: Task(taskBuilder.getTaskSpecification(), *affinity.getProcessorNodes().front(), iterationsToRun),
+		const TaskAffinity& affinity,
+		const ServiceProvider& serviceProvider,
+		size_t iterationsToRun)
+		: WorkloadTask(taskBuilder.getTaskSpecification(),
+		*affinity.getProcessorNodes().front(),
+		serviceProvider,
+		iterationsToRun),
 		  _affinity(affinity),
 		  _configuration(configuration),
-		  _taskBuilder(taskBuilder),
+		  _serviceProvider(serviceProvider),
+		  _originalExecutionParameters(nullptr),
 		  _originalDataSize(0),
 		  _threadsShouldWake(false)
 	{
 
 	}
 
-	void MultiThreadTask::execute()
+	TaskResult MultiThreadTask::execute(const ExecutionParameters& parameters)
 	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		_threadsShouldWake = true;
-		lock.unlock();
-		_wakeNotifier.notify_all();
-		for (auto& thread : _createdThreads)
-		{
-			thread.join();
-		}
-	}
+		_originalExecutionParameters = &parameters;
+		prepare();
+		run();
 
-	void MultiThreadTask::applyAffinity()
-	{
+		auto metrics = calculateAverageTaskMetrics();
 
+		// divide duration by the task number we had
+		Duration finalDuration = metrics.getDuration() / _createdThreads.size();
+
+		finalize();
+
+		return TaskResult(_specification,
+			TaskMetrics(finalDuration, metrics.getResultValue(), metrics.getInputDataSize()));
 	}
 
 	void MultiThreadTask::prepareImpl()
@@ -71,44 +80,46 @@ namespace Elpida
 		const auto& processors = _affinity.getProcessorNodes();
 		const size_t processorCount = processors.size();
 
-		auto& input = *_taskData;
-
-		_originalDataSize = input.getTaskData()->getSize();
-
-		auto dataPropertiesTransformer = _specification.getDataTransformer();
-
-		size_t divisibleBy = 1;
-
-		if (_specification.getInputDataSpecification().divisibleByProperty())
-		{
-			divisibleBy = input.getDefinedProperties()
-				.at(_specification.getInputDataSpecification().getSizeDivisibleByPropertyName());
-		}
-		else if (_specification.getInputDataSpecification().getSizeShouldBeDivisibleBy() > 0)
-		{
-			divisibleBy = _specification.getInputDataSpecification().getSizeShouldBeDivisibleBy();
-		}
-
-		auto _allocatedChunks = DataAdapter::breakIntoChunks(
-			{ input.getTaskData().get() },
-			_affinity,
-			divisibleBy);
-
-		// Since we will replace the memory, release the input
-		// to reduce the memory consumption
-		if (_specification.producesOutput())
-		{
-			input.getTaskDataAndRelease().reset();
-		}
-
 		_createdThreads.reserve(processorCount);
 
-		size_t i = 0;
-		for (auto processor : processors)
+		if (_specification.acceptsInput() || _specification.producesOutput())
 		{
-			TaskDataDto curTaskInput;
-			if (_specification.acceptsInput())
+			// Complex tasks
+			auto& input = *_taskData;
+
+			_originalDataSize = input.getTaskData()->getSize();
+
+			auto dataPropertiesTransformer = _specification.getDataTransformer();
+
+			size_t divisibleBy = 1;
+
+			if (_specification.getInputDataSpecification().divisibleByProperty())
 			{
+				divisibleBy = input.getDefinedProperties()
+					.at(_specification.getInputDataSpecification().getSizeDivisibleByPropertyName());
+			}
+			else if (_specification.getInputDataSpecification().getSizeShouldBeDivisibleBy() > 0)
+			{
+				divisibleBy = _specification.getInputDataSpecification().getSizeShouldBeDivisibleBy();
+			}
+
+			auto _allocatedChunks = DataAdapter::breakIntoChunks(
+				{ input.getTaskData().get() },
+				_affinity,
+				divisibleBy);
+
+			// Since we will replace the memory, release the input
+			// to reduce the memory consumption
+			if (_specification.producesOutput())
+			{
+				input.getTaskDataAndRelease().reset();
+			}
+
+			size_t i = 0;
+			for (auto processor : processors)
+			{
+				TaskDataDto curTaskInput;
+
 				if (_allocatedChunks.size() <= i)
 				{
 					break;    // Not enough chunks. We need to handle that
@@ -129,20 +140,53 @@ namespace Elpida
 							curTaskInput.getTaskData()->getSize(),
 							curTaskInput.getTaskData()->getSize() / (float)_originalDataSize));
 				}
+
+
+				auto& thread = _createdThreads.emplace_back(
+					_specification.createNewTask(_configuration, *processor, _serviceProvider, 1),
+					std::move(curTaskInput),
+					_wakeNotifier,
+					_mutex,
+					_serviceProvider.getTimingInfo(),
+					*_originalExecutionParameters,
+					_threadsShouldWake,
+					processor->getOsIndex());
+
+				thread.start();
+				i++;
 			}
-
-			auto& thread = _createdThreads.emplace_back(
-				_specification.createNewTask(_configuration, *processor, 1),
-				std::move(curTaskInput),
-				_wakeNotifier,
-				_mutex,
-				_threadsShouldWake,
-				processor->getOsIndex());
-
-			thread.prepare();
-			thread.start();
-			i++;
 		}
+		else
+		{
+			// Microtasks
+
+			bool parametersProcessed = false;
+			// Grab a copy of the parameters
+			_executionParameters = *_originalExecutionParameters;
+			for (auto& processor: processors)
+			{
+				auto task = _specification.createNewTask(_configuration, *processor, _serviceProvider, 1);
+
+				if (!parametersProcessed)
+				{
+					task->preProcessExecutionParameters(_executionParameters);
+					parametersProcessed = true;
+				}
+
+				auto& thread = _createdThreads.emplace_back(
+					std::move(task),
+					TaskDataDto(),
+					_wakeNotifier,
+					_mutex,
+					_serviceProvider.getTimingInfo(),
+					_executionParameters,
+					_threadsShouldWake,
+					processor->getOsIndex());
+
+				thread.start();
+			}
+		}
+
 	}
 
 	std::optional<TaskDataDto> MultiThreadTask::finalizeAndGetOutputData()
@@ -156,8 +200,6 @@ namespace Elpida
 
 			for (auto& thread: _createdThreads)
 			{
-				thread.finalize();
-
 				accumulatedOutputs.push_back(thread.getTaskData().getTaskDataAndRelease());
 				accumulatedOutputsPointers.push_back(accumulatedOutputs.back().get());
 			}
@@ -180,23 +222,53 @@ namespace Elpida
 			}
 
 			_createdThreads.clear();
+			_threadsShouldWake = false;
 			return TaskDataDto(std::move(returnData), properties);
 		}
 		else
 		{
 			_createdThreads.clear();
+			_threadsShouldWake = false;
 			return std::nullopt;
 		}
 	}
 
 	double MultiThreadTask::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		double accumulator = 0;
-		for (auto& thread: _createdThreads)
+		return 0.0;
+	}
+
+	void MultiThreadTask::run()
+	{
 		{
-			accumulator += thread.calculateTaskResultValue(taskElapsedTime);
+			std::unique_lock<std::mutex> lock(_mutex);
+			_threadsShouldWake = true;
+			_wakeNotifier.notify_all();
 		}
-		return _specification.getResultSpecification().getAggregationType() == ResultSpecification::Accumulative
-			   ? accumulator : accumulator / _createdThreads.size();
+
+		for (auto& thread : _createdThreads)
+		{
+			thread.join();
+		}
+		_threadsShouldWake = false;
+	}
+
+	TaskMetrics MultiThreadTask::calculateAverageTaskMetrics() const
+	{
+		double totalDuration = 0.0;
+		double totalValue = 0.0;
+
+		for (auto& thread : _createdThreads)
+		{
+			auto metrics = thread.getMetrics();
+
+			totalDuration += metrics.getDuration().count();
+			totalValue += metrics.getResultValue();
+		}
+
+		return TaskMetrics(Duration(
+			totalDuration / static_cast<double>(_createdThreads.size())),
+			totalValue / static_cast<double>(_createdThreads.size()),
+			getInputDataSize());
 	}
 }

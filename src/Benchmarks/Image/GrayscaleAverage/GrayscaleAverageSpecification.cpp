@@ -31,9 +31,10 @@ namespace Elpida
 
 	std::unique_ptr<Task> GrayscaleAverageSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun) const
 	{
-		return std::make_unique<GrayscaleAverage>(*this, processorToRun, iterationsToRun);
+		return std::make_unique<GrayscaleAverage>(*this, processorToRun, serviceProvider, iterationsToRun);
 	}
 
 	GrayscaleAverageSpecification::GrayscaleAverageSpecification()

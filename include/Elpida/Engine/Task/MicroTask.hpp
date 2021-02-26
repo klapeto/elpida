@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,46 +17,41 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * MemoryLatency.hpp
- *
- *  Created on: 19 Μαΐ 2019
- *      Author: klapeto
- */
+//
+// Created by klapeto on 21/2/21.
+//
 
-#ifndef TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCY_HPP_
-#define TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCY_HPP_
+#ifndef INCLUDE_ELPIDA_ENGINE_TASK_MICROTASK_HPP
+#define INCLUDE_ELPIDA_ENGINE_TASK_MICROTASK_HPP
 
-#include <cstdint>
-#include <string>
-#include <random>
-
-#include <Elpida/Engine/Task/Task.hpp>
+#include "Task.hpp"
 
 namespace Elpida
 {
-
-	class MemoryReadLatency : public Task
+	class MicroTask : public Task
 	{
 	public:
-
-		void execute() override;
-
-		explicit MemoryReadLatency(const TaskSpecification& specification,
+		TaskResult execute(const ExecutionParameters& parameters) override;
+		~MicroTask() override = default;
+	protected:
+		MicroTask(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun);
 
-		~MemoryReadLatency() override = default;
-	protected:
-		void prepareImpl() override;
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
-	private:
-		const RawTaskData* _taskData;
-		unsigned long _iterations;
-		static constexpr inline double _iterationConstant =
-			1000000000; // rough estimate, to be passed on construction later once we find the latency
+		[[nodiscard]]
+		virtual Duration getMinimumExecutionTime() const;
+
+		[[nodiscard]]
+		virtual size_t getMinimumIterations() const;
+
+		virtual void run(size_t iterations) = 0;
+
+		void preProcessExecutionParameters(ExecutionParameters& parameters) override;
+
+		static constexpr const char* FixedIterationsName = "fixedIterations";
 	};
 
-} /* namespace Elpida */
+}
 
-#endif /* TASKBATCHES_MEMORY_LATENCY_MEMORYLATENCY_HPP_ */
+#endif //INCLUDE_ELPIDA_ENGINE_TASK_MICROTASK_HPP

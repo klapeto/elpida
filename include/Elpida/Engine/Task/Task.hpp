@@ -26,6 +26,7 @@
 
 #include <string>
 #include <utility>
+
 #include "TaskDataDto.hpp"
 #include "Elpida/Engine/Result/TaskResult.hpp"
 #include "Elpida/Utilities/Duration.hpp"
@@ -35,6 +36,8 @@ namespace Elpida
 {
 	class TaskSpecification;
 	class ProcessorNode;
+	class ServiceProvider;
+	class ExecutionParameters;
 
 	class Task
 	{
@@ -45,54 +48,80 @@ namespace Elpida
 			_taskData = &taskData;
 		}
 
-		[[nodiscard]] size_t getIterationsToRun() const
+		[[nodiscard]]
+		size_t getIterationsToRun() const
 		{
 			return _iterationsToRun;
 		}
 
-		[[nodiscard]] const TaskSpecification& getSpecification() const
+		[[nodiscard]]
+		const TaskSpecification& getSpecification() const
 		{
 			return _specification;
 		}
 
-		[[nodiscard]] const ProcessorNode& getProcessorToRun() const
-		{
-			return _processorToRun;
-		}
-
-		void prepare();
-		virtual void execute() = 0;
-		void finalize();
-
-		[[nodiscard]] TaskResult calculateTaskResult(const Duration& taskElapsedTime) const;
-
-		virtual void applyAffinity();
+		[[nodiscard]]
+		virtual TaskResult execute(const ExecutionParameters& parameters) = 0;
 
 		virtual ~Task() = default;
 	protected:
-		Task(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun);
+		Task(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
+			size_t iterationsToRun);
 
 		const ProcessorNode& _processorToRun;
 		const TaskSpecification& _specification;
+		const ServiceProvider& _serviceProvider;
 
-		virtual void prepareImpl()
-		{
-		}
-		virtual std::optional<TaskDataDto> finalizeAndGetOutputData()
-		{
-			return std::nullopt;
-		}
-		[[nodiscard]] virtual double calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
+		virtual void prepareImpl();
+		virtual std::optional<TaskDataDto> finalizeAndGetOutputData();
 
-		[[nodiscard]] TaskDataDto& getInput() const
+		[[nodiscard]]
+		virtual double getInputDataSize() const;
+
+		[[nodiscard]]
+		virtual double calculateTaskResultValue(const Duration& taskElapsedTime) const = 0;
+
+		[[nodiscard]]
+		TaskDataDto& getInput() const;
+
+		[[nodiscard]]
+		TaskDataDto propagateInput();
+
+		virtual void preProcessExecutionParameters(ExecutionParameters& parameters);
+
+		template<typename TCallable>
+		void executeSafe(TCallable callable)
 		{
-			return *_taskData;
+			executeSafe<bool>([&callable]
+			{
+				callable();
+				return true;
+			});
 		}
 
-		TaskDataDto propagateInput()
+		template<typename T, typename TCallable>
+		T executeSafe(TCallable callable)
 		{
-			return TaskDataDto(std::move(*_taskData));
+			T returnValue;
+			prepare();
+			try
+			{
+				returnValue = std::move(callable());
+			}
+			catch (...)
+			{
+				finalize();
+				throw;
+			}
+			finalize();
+
+			return returnValue;
 		}
+
+		void prepare();
+		void finalize();
 	private:
 		TaskDataDto* _taskData;
 		size_t _iterationsToRun;

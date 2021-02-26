@@ -49,6 +49,7 @@ namespace Elpida
 		void getIntelFeatures();
 
 		void addFeature(const std::string& name, unsigned reg, unsigned bit);
+		void sanitizeBrand();
 	};
 
 }

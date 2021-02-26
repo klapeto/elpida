@@ -15,7 +15,7 @@ if (NOT ELPIDA_VERSION_BUILD)
 endif()
 
 if (NOT ELPIDA_COMPANY_NAME)
-    set(ELPIDA_COMPANY_NAME "Ioannis Panagiotopoulos AKA Klapeto")
+    set(ELPIDA_COMPANY_NAME "Ioannis Panagiotopoulos")
 endif()
 
 if (ELPIDA_BETA EQUAL 1)
@@ -23,4 +23,4 @@ if (ELPIDA_BETA EQUAL 1)
 endif()
 
 set(ELPIDA_VERSION ${ELPIDA_VERSION_MAJOR}.${ELPIDA_VERSION_MINOR}.${ELPIDA_VERSION_REVISION}.${ELPIDA_VERSION_BUILD})
-set(ELPIDA_WEBSITE "https://beta.elpida.dev")
+set(ELPIDA_WEBSITE "https://www.elpida.dev")

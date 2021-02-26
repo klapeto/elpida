@@ -31,9 +31,10 @@ namespace Elpida
 
 	std::unique_ptr<Task> ConvertToUInt8Specification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun) const
 	{
-		return std::make_unique<ConvertToUInt8>(*this, processorToRun, iterationsToRun);
+		return std::make_unique<ConvertToUInt8>(*this, processorToRun, serviceProvider, iterationsToRun);
 	}
 
 	ConvertToUInt8Specification::ConvertToUInt8Specification()

@@ -34,8 +34,9 @@ namespace Elpida
 
 	ConvertToFloat::ConvertToFloat(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun)
+		: ImageTaskBase(specification, processorToRun, serviceProvider, iterationsToRun)
 	{
 
 	}
@@ -71,7 +72,7 @@ namespace Elpida
 		return _outputImage->getTotalSize();
 	}
 
-	void ConvertToFloat::execute()
+	void ConvertToFloat::run()
 	{
 		auto size = _inputImage->getTotalSize();
 		auto inputData = _inputImage->getData();

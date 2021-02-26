@@ -38,7 +38,7 @@ namespace Elpida
 	{
 	public:
 
-		T getValue() const
+		const T& getValue() const
 		{
 			return _value;
 		}

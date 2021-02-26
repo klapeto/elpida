@@ -32,7 +32,7 @@ namespace Elpida
 		: QWidget(),
 		  _ui(new Ui::BenchmarkRunnerStatusView),
 		  _model(model),
-		  _currentRunningTaskSpecification(std::nullopt),
+		  _currentRunningTask(std::nullopt),
 		  _currentRunningBenchmark(std::nullopt), _running(false)
 	{
 		_ui->setupUi(this);
@@ -56,50 +56,47 @@ namespace Elpida
 
 	void BenchmarkRunnerStatusView::updateUi()
 	{
-		if (_model.isRunning())
+		const auto& currentBenchmark = _model.getCurrentRunningBenchmark();
+		if (currentBenchmark.has_value())
 		{
 			if (!_running)
 			{
 				_ui->lblSatusValue->setText(_runningString);
-				_ui->pbTotalProgress->setMaximum(_model.getSessionTotalBenchmarksCount());
+				_ui->pbBenchmarkProgress->setMaximum(currentBenchmark->get().getTotalTasksCount());
+				_ui->lblCurrentBenchmarkName->setText(QString::fromStdString(currentBenchmark->get().getName()));
 				_running = true;
 			}
 
-			auto taskSpec = _model.getCurrentRunningTaskSpecification();
-			if (taskSpec.has_value() && (!_currentRunningTaskSpecification.has_value() || &taskSpec->get() != &_currentRunningTaskSpecification->get()))
+			auto currentRunningTask = _model.getCurrentRunningTask();
+			if (currentRunningTask.has_value()
+				&& (!_currentRunningTask.has_value()
+					|| currentRunningTask->get().getId() != _currentRunningTask->get().getId()))
 			{
-				_ui->lblCurrentTaskName->setText(QString::fromStdString(taskSpec->get().getName()));
-				_currentRunningTaskSpecification = taskSpec;
-				_ui->pbBatchProgress->reset();
-				_ui->pbBatchProgress->setMaximum(_model.getBatchTotalTasksCount());
+				_ui->lblCurrentTaskName->setText(QString::fromStdString(currentRunningTask->get().getTaskSpecification().getName()));
+				_currentRunningTask = currentRunningTask;
+				_ui->pbTaskProgress->reset();
+				_ui->pbTaskProgress->setMaximum(currentRunningTask->get().getIterationsToRun());
 			}
 
-			if (static_cast<size_t>(_ui->pbBatchProgress->value()) != _model.getBatchExecutedTasksCount())
+			if (static_cast<size_t>(_ui->pbTaskProgress->value()) != _model.getTaskCompletedIterations())
 			{
-				_ui->pbBatchProgress->setValue(_model.getBatchExecutedTasksCount());
+				_ui->pbTaskProgress->setValue(_model.getTaskCompletedIterations());
 			}
 
-			if (static_cast<size_t>(_ui->pbTotalProgress->value()) != _model.getSessionCompletedBenchmarksCount())
+			if (static_cast<size_t>(_ui->pbBenchmarkProgress->value()) != _model.getBenchmarkCompletedTasks())
 			{
-				_ui->pbTotalProgress->setValue(_model.getSessionCompletedBenchmarksCount());
-			}
-
-			auto benchmark = _model.getCurrentRunningBenchmark();
-			if (benchmark.has_value() && (!_currentRunningBenchmark.has_value() || &benchmark->get() != &_currentRunningBenchmark->get()))
-			{
-				_ui->lblCurrentTaskBatchName->setText(QString::fromStdString(benchmark->get().getName()));
-				_currentRunningBenchmark = benchmark;
+				_ui->pbBenchmarkProgress->setValue(_model.getBenchmarkCompletedTasks());
 			}
 		}
 		else
 		{
 			_ui->lblSatusValue->setText(_readyString);
-			_ui->lblCurrentTaskBatchName->setText(_naString);
+			_ui->lblCurrentBenchmarkName->setText(_naString);
 			_ui->lblCurrentTaskName->setText(_naString);
 			_currentRunningBenchmark = std::nullopt;
-			_currentRunningTaskSpecification = std::nullopt;
-			_ui->pbBatchProgress->reset();
-			_ui->pbTotalProgress->reset();
+			_currentRunningTask = std::nullopt;
+			_ui->pbBenchmarkProgress->reset();
+			_ui->pbTaskProgress->reset();
 			_running = false;
 		}
 	}

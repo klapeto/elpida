@@ -42,8 +42,9 @@ namespace Elpida
 
 	ReadFile::ReadFile(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		std::string filePath, size_t iterationsToRun)
-		: Task(specification, processorToRun, iterationsToRun),
+		: WorkloadTask(specification, processorToRun, serviceProvider, iterationsToRun),
 		  _filePath(std::move(filePath)),
 		  _size(0)
 	{
@@ -89,7 +90,7 @@ namespace Elpida
 		}
 	}
 
-	void ReadFile::execute()
+	void ReadFile::run()
 	{
 		auto file = std::fstream(std::filesystem::u8path(_filePath), std::ios::in | std::ios::binary);
 		try
