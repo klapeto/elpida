@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,28 +18,15 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 28/4/20.
+// Created by klapeto on 31/1/21.
 //
 
-#ifndef SRC_BENCHMARKS_MEMORY_READ_MEMORYREADSPECIFICATION_HPP
-#define SRC_BENCHMARKS_MEMORY_READ_MEMORYREADSPECIFICATION_HPP
+#ifndef INCLUDE_ELPIDA_MACROS_HPP
+#define INCLUDE_ELPIDA_MACROS_HPP
 
-#include <Elpida/Engine/Task/TaskSpecification.hpp>
+#define REPEAT_5(x) x;x;x;x
+#define REPEAT_10(x) REPEAT_5(x);REPEAT_5(x)
+#define REPEAT_50(x) REPEAT_10(x);REPEAT_10(x);REPEAT_10(x);REPEAT_10(x);REPEAT_10(x)
+#define REPEAT_100(x) REPEAT_50(x);REPEAT_50(x)
 
-namespace Elpida
-{
-	class MemoryReadSpecification : public TaskSpecification
-	{
-	public:
-
-		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
-			const ProcessorNode& processorToRun,
-			size_t iterationsToRun) const override;
-
-		MemoryReadSpecification();
-		~MemoryReadSpecification() override = default;
-	};
-}
-
-
-#endif //SRC_BENCHMARKS_MEMORY_READ_MEMORYREADSPECIFICATION_HPP
+#endif //INCLUDE_ELPIDA_MACROS_HPP

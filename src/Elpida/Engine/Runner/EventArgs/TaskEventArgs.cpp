@@ -26,4 +26,9 @@
 namespace Elpida
 {
 
+	TaskEventArgs::TaskEventArgs(const TaskBuilder& taskBuilder, size_t iteration)
+		:  _taskBuilder(taskBuilder), _iteration(iteration)
+	{
+
+	}
 }

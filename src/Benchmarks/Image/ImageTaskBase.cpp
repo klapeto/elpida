@@ -47,8 +47,9 @@ namespace Elpida
 
 	ImageTaskBase::ImageTaskBase(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun)
-		: Task(specification, processorToRun, iterationsToRun)
+		: WorkloadTask(specification, processorToRun, serviceProvider, iterationsToRun)
 	{
 
 	}

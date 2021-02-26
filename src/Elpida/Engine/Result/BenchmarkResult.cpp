@@ -29,7 +29,7 @@ namespace Elpida
 {
 
 	BenchmarkResult::BenchmarkResult(const Benchmark& benchmark,
-		std::vector<TaskResult>&& taskResults,
+		std::vector<ProcessedTaskResult>&& taskResults,
 		const TaskAffinity& affinity,
 		BenchmarkResult::Score score)
 		: _benchmark(&benchmark), _taskResults(std::move(taskResults)), _score(score), _affinity(affinity)

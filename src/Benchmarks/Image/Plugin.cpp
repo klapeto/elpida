@@ -131,7 +131,7 @@ static std::unique_ptr<Benchmark> createFloydSteinberg()
 	return benchmark;
 }
 
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL BenchmarksContainerPlugin<Benchmark>* elpidaCreatePlugin()
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL BenchmarksContainerPlugin<Benchmark>* elpidaCreatePlugin(const ServiceProvider* serviceProvider)
 {
 	auto plugin = new BenchmarksContainerPlugin<Benchmark>("Image Benchmarks");
 

@@ -29,9 +29,10 @@ namespace Elpida
 {
 	std::unique_ptr<Task> PngEncodingSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun) const
 	{
-		return std::make_unique<PngEncoding>(*this, processorToRun, iterationsToRun);
+		return std::make_unique<PngEncoding>(*this, processorToRun, serviceProvider, iterationsToRun);
 	}
 
 	PngEncodingSpecification::PngEncodingSpecification()

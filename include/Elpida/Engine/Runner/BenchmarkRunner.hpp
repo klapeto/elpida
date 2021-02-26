@@ -26,6 +26,7 @@
 
 #include "Elpida/Event.hpp"
 #include "Elpida/Engine/Result/BenchmarkResult.hpp"
+#include "Elpida/Engine/Result/TaskResult.hpp"
 #include "Elpida/Engine/Runner/BenchmarkRunRequest.hpp"
 #include <vector>
 
@@ -36,6 +37,8 @@ namespace Elpida
 	class BenchmarkEventArgs;
 	class TaskEventArgs;
 	class TaskAffinity;
+	class TaskBuilder;
+	class ServiceProvider;
 
 	class BenchmarkRunner
 	{
@@ -43,21 +46,26 @@ namespace Elpida
 		Event<const BenchmarkEventArgs&> benchmarkStarted;
 		Event<const BenchmarkEventArgs&> benchmarkEnded;
 		Event<const TaskEventArgs&> taskStarted;
+		Event<const TaskEventArgs&> taskIterationStarted;
+		Event<const TaskEventArgs&> taskIterationEnded;
 		Event<const TaskEventArgs&> taskEnded;
 
 		virtual std::vector<BenchmarkResult> runBenchmarks(const std::vector<BenchmarkRunRequest>& benchmarkRequests,
 			const TaskAffinity& taskAffinity);
 		void stopBenchmarking();
 
-		BenchmarkRunner();
+		explicit BenchmarkRunner(const ServiceProvider& serviceProvider);
 		virtual ~BenchmarkRunner() = default;
 	private:
+		const ServiceProvider& _serviceProvider;
 		bool _mustStop;
 		static TaskResult runTask(Task& task);
 		void raiseBenchmarkStarted(const Benchmark& benchmark);
 		void raiseBenchmarkEnded(const Benchmark& benchmark);
-		void raiseTaskStarted(const Task& benchmark);
-		void raiseTasksEnded(const Task& benchmark);
+		void raiseTaskStarted(const TaskBuilder& taskBuilder);
+		void raiseTaskIterationStarted(const TaskBuilder& taskBuilder, size_t iteration);
+		void raiseTaskIterationEnded(const TaskBuilder& taskBuilder, size_t iteration);
+		void raiseTasksEnded(const TaskBuilder& taskBuilder);
 	};
 }
 

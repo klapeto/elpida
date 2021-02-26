@@ -36,7 +36,7 @@ namespace Elpida
 {
 
 #ifdef ELPIDA_WINDOWS
-	static inline LARGE_INTEGER getPreformanceFrequency()
+	static inline LARGE_INTEGER getPerformanceFrequency()
 	{
 		LARGE_INTEGER frequency;
 		QueryPerformanceFrequency(&frequency);
@@ -44,17 +44,17 @@ namespace Elpida
 	}
 #endif
 
-	Timer::Clock::time_point Timer::now()
+	Timer::time_point Timer::now()
 	{
 #ifdef ELPIDA_LINUX
 		return Timer::Clock::now();
 #else
-		static LARGE_INTEGER frequency = getPreformanceFrequency();
+		static LARGE_INTEGER frequency = getPerformanceFrequency();
 		LARGE_INTEGER time;
 		QueryPerformanceCounter(&time);
-		time.QuadPart *= 1000000000;
+		time.QuadPart *= period::den;
 		time.QuadPart /= frequency.QuadPart;
-		return Clock::time_point(std::chrono::nanoseconds(time.QuadPart));
+		return time_point(duration(time.QuadPart));
 #endif
 	}
 

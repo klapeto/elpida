@@ -38,27 +38,32 @@ namespace Elpida
 			Average
 		};
 
-		[[nodiscard]] const std::string& getName() const
+		[[nodiscard]]
+		const std::string& getName() const
 		{
 			return _name;
 		}
 
-		[[nodiscard]] const std::string& getUnit() const
+		[[nodiscard]]
+		const std::string& getUnit() const
 		{
 			return _unit;
 		}
 
-		[[nodiscard]] AggregationType getAggregationType() const
+		[[nodiscard]]
+		AggregationType getAggregationType() const
 		{
 			return _aggregationType;
 		}
 
-		[[nodiscard]] const std::string& getDescription() const
+		[[nodiscard]]
+		const std::string& getDescription() const
 		{
 			return _description;
 		}
 
-		[[nodiscard]] ResultType getType() const
+		[[nodiscard]]
+		ResultType getType() const
 		{
 			return _type;
 		}

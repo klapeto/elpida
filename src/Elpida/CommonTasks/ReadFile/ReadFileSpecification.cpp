@@ -32,12 +32,13 @@ namespace Elpida
 
 	std::unique_ptr<Task> ReadFileSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun) const
 	{
 		auto& filePath = getSettingAndValidate<ConfigurationType::FilePath>(configuration,
 			Settings::InputFilePath,
 			ConfigurationType::Type::FilePath);
-		return std::make_unique<ReadFile>(*this, processorToRun, filePath.getValue(), iterationsToRun);
+		return std::make_unique<ReadFile>(*this, processorToRun, serviceProvider, filePath.getValue(), iterationsToRun);
 	}
 
 	ReadFileSpecification::ReadFileSpecification()

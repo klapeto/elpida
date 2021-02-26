@@ -24,7 +24,7 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_RESULT_BENCHMARKRESULT_HPP
 #define INCLUDE_ELPIDA_ENGINE_RESULT_BENCHMARKRESULT_HPP
 
-#include "TaskResult.hpp"
+#include "ProcessedTaskResult.hpp"
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
 
 #include <vector>
@@ -39,33 +39,38 @@ namespace Elpida
 	public:
 		using Score = double;
 
-		[[nodiscard]] const Benchmark& getBenchmark() const
+		[[nodiscard]]
+		const Benchmark& getBenchmark() const
 		{
 			return *_benchmark;
 		}
 
-		[[nodiscard]] const std::vector<TaskResult>& getTaskResults() const
+		[[nodiscard]]
+		const std::vector<ProcessedTaskResult>& getTaskResults() const
 		{
 			return _taskResults;
 		}
 
-		[[nodiscard]] const std::string& getId() const
+		[[nodiscard]]
+		const std::string& getId() const
 		{
 			return _id;
 		}
 
-		[[nodiscard]] Score getScore() const
+		[[nodiscard]]
+		Score getScore() const
 		{
 			return _score;
 		}
 
-		[[nodiscard]] const TaskAffinity& getAffinity() const
+		[[nodiscard]]
+		const TaskAffinity& getAffinity() const
 		{
 			return _affinity;
 		}
 
 		BenchmarkResult(const Benchmark& benchmark,
-			std::vector<TaskResult>&& taskResults,
+			std::vector<ProcessedTaskResult>&& taskResults,
 			const TaskAffinity& affinity,
 			BenchmarkResult::Score score);
 		BenchmarkResult(BenchmarkResult&&) = default;
@@ -76,7 +81,7 @@ namespace Elpida
 	private:
 		TaskAffinity _affinity;
 		const Benchmark* _benchmark;
-		std::vector<TaskResult> _taskResults;
+		std::vector<ProcessedTaskResult> _taskResults;
 		std::string _id;
 		Score _score;
 	};

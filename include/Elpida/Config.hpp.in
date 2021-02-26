@@ -50,10 +50,13 @@
 #cmakedefine ELPIDA_BETA
 
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW64__)
+#define ELPIDA_GCC
 #define FUNCTION_NAME __PRETTY_FUNCTION__
 #define ELPIDA_EXPORT
 #define ELPIDA_STDCALL
+
 #else	//MSVC?
+#define ELPIDA_MSVC
 #define FUNCTION_NAME __FUNCSIG__
 #define ELPIDA_EXPORT __declspec(dllexport)
 #define ELPIDA_STDCALL __stdcall

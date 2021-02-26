@@ -47,7 +47,7 @@ namespace Elpida
 		Ui::BenchmarkRunnerStatusView* _ui;
 		const BenchmarkRunnerModel& _model;
 		EventSubscriptionBase* _dataChangedEventSubscription;
-		OptionalReference<const TaskSpecification> _currentRunningTaskSpecification;
+		OptionalReference<const TaskBuilder> _currentRunningTask;
 		OptionalReference<const Benchmark> _currentRunningBenchmark;
 
 		QString _runningString;

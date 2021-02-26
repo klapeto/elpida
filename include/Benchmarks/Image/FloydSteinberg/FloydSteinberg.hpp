@@ -36,17 +36,20 @@ namespace Elpida
 	class FloydSteinberg final : public ImageTaskBase
 	{
 	public:
-		void execute() override;
 
 		FloydSteinberg(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			double threshold,
 			size_t iterationsToRun);
 		~FloydSteinberg() override = default;
 	protected:
+		void run() override;
 		void prepareImpl() override;
 		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+
+		[[nodiscard]]
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::unique_ptr<Image<PixelFloat>> _inputImage;
 		double _threshold;

@@ -23,7 +23,9 @@
 
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
+#include "Core/JsonResultFormatter.hpp"
 #include "UiModels/Screens/ScreensModel.hpp"
+#include "Models/BenchmarkResultsModel.hpp"
 #include "Models/AffinityModel.hpp"
 #include "Utilities/OsUtilities.hpp"
 
@@ -31,23 +33,36 @@
 #include <Elpida/SystemInfo/ProcessorNode.hpp>
 
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QLabel>
+
+#include <fstream>
 #include <sstream>
 
 namespace Elpida
 {
-	constexpr const char* aboutText= "<h2>Elpida " ELPIDA_VERSION "</h2>"
-		"<p>Elpida is an Open Source (GPLv3) Benchmarking framework for measuring "
-  		"performance of computer hardware or algorithms.</p>"
-  		"<p>It's goal is to be as transparent and open as possible "
-	  	"as well as extensible by the community. It comes with a library (libelpida), a Qt application and a "
-   		"set of predefined benchmarks for measuring computer hardware capabilities.</p>"
-	 	"More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
+	constexpr const char* aboutText = "<h2>Elpida " ELPIDA_VERSION "</h2>"
+									  "<p>Elpida is an Open Source (GPLv3) Benchmarking framework for measuring "
+									  "performance of computer hardware or algorithms.</p>"
+									  "<p>It's goal is to be as transparent and open as possible "
+									  "as well as extensible by the community. It comes with a library (libelpida), a Qt application and a "
+									  "set of predefined benchmarks for measuring computer hardware capabilities.</p>"
+									  "<p>Copyright (C) 2021  Ioannis Panagiotopoulos</p>"
+									  "More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
 
-
-	MainWindow::MainWindow(Mediator& mediator, ScreensModel& screensModel, const AffinityModel& affinityModel)
-		: QMainWindow(), _navigationBarView(screensModel), _mediator(mediator), _ui(new Ui::MainWindow),
-		  _screensModel(screensModel), _affinityModel(affinityModel)
+	MainWindow::MainWindow(Mediator& mediator,
+		ScreensModel& screensModel,
+		const AffinityModel& affinityModel,
+		BenchmarkResultsModel& benchmarkResultsModel,
+		const ResultFormatter& resultFormatter)
+		: QMainWindow(),
+		  _navigationBarView(screensModel),
+		  _mediator(mediator),
+		  _ui(new Ui::MainWindow),
+		  _screensModel(screensModel),
+		  _affinityModel(affinityModel),
+		  _benchmarkResultsModel(benchmarkResultsModel),
+		  _resultFormatter(resultFormatter)
 	{
 		_ui->setupUi(this);
 
@@ -87,7 +102,7 @@ namespace Elpida
 
 		_processorsLabel = new QLabel();
 		_processorsLabel->setWordWrap(true);
-		_ui->statusBar->addWidget(_processorsLabel,1);
+		_ui->statusBar->addWidget(_processorsLabel, 1);
 
 		onAffinityChanged();
 	}
@@ -104,7 +119,7 @@ namespace Elpida
 
 	void MainWindow::on_actionAbout_triggered()
 	{
-		QMessageBox::about(QApplication::activeWindow(),"About: Elpida", aboutText);
+		QMessageBox::about(QApplication::activeWindow(), "About: Elpida", aboutText);
 	}
 
 	void MainWindow::on_actionVisit_Website_triggered()
@@ -164,8 +179,47 @@ namespace Elpida
 		else
 		{
 			_processorsLabel
-				->setText("<strong><span style=\"color: #d73e3e\">No processors selected.</span> Please select from 'System Topology' tab before running benchmarks.</strong>");
+				->setText(
+					"<strong><span style=\"color: #d73e3e\">No processors selected.</span> Please select from 'System Topology' tab before running benchmarks.</strong>");
 		}
+	}
+
+	void MainWindow::on_actionSave_Results_As_triggered()
+	{
+		QFileDialog dialog(this);
+		dialog.setFileMode(QFileDialog::AnyFile);
+		dialog.setAcceptMode(QFileDialog::AcceptSave);
+
+		auto filter = QString::fromStdString("Elpida results file (*." + _resultFormatter.getFileExtension() + ")");
+		dialog.setNameFilter(filter);
+		dialog.selectNameFilter(filter);
+
+		if (dialog.exec())
+		{
+			QStringList fileNames = dialog.selectedFiles();
+			const auto& filepath = fileNames.at(0);
+
+			std::fstream fp(filepath.toStdString(), std::fstream::trunc | std::fstream::out);
+
+			fp.exceptions();
+
+			std::vector<BenchmarkResult> results;
+			for (auto& result: _benchmarkResultsModel.getItems())
+			{
+				results.push_back(result.getValue());
+			}
+
+			fp << _resultFormatter.serialize(results);
+
+			fp.close();
+
+			QMessageBox::information(this, "Save successful", "Save was successful. Results were saved in: " + filepath);
+		}
+	}
+
+	void MainWindow::on_actionClear_results_triggered()
+	{
+		_benchmarkResultsModel.clear();
 	}
 
 }  // namespace Elpida

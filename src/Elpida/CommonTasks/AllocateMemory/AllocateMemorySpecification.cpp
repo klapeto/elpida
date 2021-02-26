@@ -34,13 +34,14 @@ namespace Elpida
 
 	std::unique_ptr<Task> AllocateMemorySpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun) const
 	{
 		auto& size = getSettingAndValidate<ConfigurationType::UnsignedInt>(configuration,
 			std::string(Settings::MemorySize),
 			ConfigurationType::Type::UnsignedInt);
 
-		return std::make_unique<AllocateMemory>(*this, processorToRun, size.getValue(), iterationsToRun);
+		return std::make_unique<AllocateMemory>(*this, processorToRun, serviceProvider, size.getValue(), iterationsToRun);
 	}
 
 	AllocateMemorySpecification::AllocateMemorySpecification()

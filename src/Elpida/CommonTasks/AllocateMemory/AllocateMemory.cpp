@@ -35,21 +35,15 @@ namespace Elpida
 
 	AllocateMemory::AllocateMemory(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		std::size_t size,
 		size_t iterationsToRun)
-		: Task(specification, processorToRun, iterationsToRun),
+		: WorkloadTask(specification, processorToRun, serviceProvider, iterationsToRun),
 		  _memory(nullptr),
 		  _size(size)
 	{
 
 	}
-
-	void AllocateMemory::execute()
-	{
-		_memory = std::make_unique<RawTaskData>(_size, _processorToRun);
-		memset(_memory->getData(), 0, _memory->getSize());
-	}
-
 	std::optional<TaskDataDto> AllocateMemory::finalizeAndGetOutputData()
 	{
 		return TaskDataDto(std::move(_memory));
@@ -58,6 +52,12 @@ namespace Elpida
 	double AllocateMemory::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
 		return _size;
+	}
+
+	void AllocateMemory::run()
+	{
+		_memory = std::make_unique<RawTaskData>(_size, _processorToRun);
+		memset(_memory->getData(), 0, _memory->getSize());
 	}
 
 } /* namespace Elpida */

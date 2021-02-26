@@ -33,25 +33,22 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] const Duration& getDuration() const
+		[[nodiscard]]
+		const Duration& getDuration() const
 		{
 			return _duration;
 		}
 
-		[[nodiscard]] double getResultValue() const
+		[[nodiscard]]
+		double getResultValue() const
 		{
 			return _resultValue;
 		}
 
-		[[nodiscard]] size_t getInputDataSize() const
+		[[nodiscard]]
+		size_t getInputDataSize() const
 		{
 			return _inputDataSize;
-		}
-
-		template<typename Division>
-		[[nodiscard]] double getDurationSubdivision() const
-		{
-			return ((double)Division::den * _duration.count()) / (double)Division::num;
 		}
 
 		explicit TaskMetrics(const Elpida::Duration& duration, double resultValue, size_t inputDataSize);

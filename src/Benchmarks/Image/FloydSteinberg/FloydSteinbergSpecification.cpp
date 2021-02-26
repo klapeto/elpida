@@ -30,12 +30,13 @@ namespace Elpida
 
 	std::unique_ptr<Task> FloydSteinbergSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun) const
 	{
 		auto threshold = getSettingAndValidate<ConfigurationType::Float>(configuration,
 			Settings::Threshold,
 			ConfigurationType::Type::Float).getValue();
-		return std::make_unique<FloydSteinberg>(*this, processorToRun, threshold, iterationsToRun);
+		return std::make_unique<FloydSteinberg>(*this, processorToRun, serviceProvider, threshold, iterationsToRun);
 	}
 
 	FloydSteinbergSpecification::FloydSteinbergSpecification()

@@ -76,11 +76,11 @@
      inkscape:window-height="2043"
      inkscape:window-width="3840"
      showgrid="false"
-     inkscape:current-layer="layer15"
+     inkscape:current-layer="layer8"
      inkscape:document-units="px"
-     inkscape:cy="442.70484"
-     inkscape:cx="399.92741"
-     inkscape:zoom="2.8284271"
+     inkscape:cy="611.30261"
+     inkscape:cx="454.55742"
+     inkscape:zoom="1.4836015"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -133,12 +133,12 @@
     </rdf:RDF>
   </metadata>
   <g
-     sodipodi:insensitive="true"
      transform="translate(237.93452,25.382807)"
      style="display:inline"
      inkscape:label="Καπέλο #1"
      id="layer21"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     sodipodi:insensitive="true">
     <path
        id="path2031"
        style="fill:#5ca385;fill-opacity:1;stroke:none;stroke-width:0.972672;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -150,12 +150,12 @@
        sodipodi:nodetypes="ccc" />
   </g>
   <g
-     sodipodi:insensitive="true"
      transform="translate(237.93452,25.382807)"
      style="display:inline"
      inkscape:label="Μαλλιά #2"
      id="layer6"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     sodipodi:insensitive="true">
     <path
        sodipodi:nodetypes="cccccccccccccccccccccccscc"
        id="path2289-2"
@@ -195,11 +195,11 @@
      style="display:inline;opacity:1"
      transform="translate(120.48191,-4.0810857)">
     <g
-       sodipodi:insensitive="true"
        inkscape:groupmode="layer"
        id="layer7"
        inkscape:label="Μπότες #3"
-       style="display:inline">
+       style="display:inline"
+       sodipodi:insensitive="true">
       <path
          style="display:inline;opacity:1;fill:#898ee2;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          d="m 182.57381,1198.1873 c -4.64723,-10.2217 106.58792,-58.0004 118.98414,-37.8847 12.39622,20.1157 -114.33691,48.1064 -118.98414,37.8847 z"
@@ -236,7 +236,6 @@
          sodipodi:nodetypes="cc" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline"
        inkscape:groupmode="layer"
        id="layer9"
@@ -253,12 +252,12 @@
          sodipodi:nodetypes="cssccc" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline;opacity:1"
        transform="translate(117.45261,29.463893)"
        inkscape:label="Χέρι Δεξί"
        id="layer10"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          sodipodi:nodetypes="csccsssccccccsccccsc"
          inkscape:connector-curvature="0"
@@ -522,11 +521,11 @@
          id="g1088-4" />
     </g>
     <g
-       sodipodi:insensitive="true"
        inkscape:groupmode="layer"
        id="layer5"
        inkscape:label="Κορμός #2"
-       style="display:inline">
+       style="display:inline"
+       sodipodi:insensitive="true">
       <path
          style="display:inline;opacity:1;fill:#e9d8d0;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m 191.32294,433.22442 c 0,0 -28.91801,72.98354 -33.73767,99.836 -4.81967,26.85242 20.65572,50.95074 20.65572,50.95074 0,0 -20.35406,101.45907 -26.27802,113.10024 -66.076307,129.84643 -36.27068,266.7197 6.67956,393.9374 -2.69664,33.8692 9.72495,69.8695 19.47202,82.8741 19.39412,51.4885 99.41693,212.377 122.91443,359.5894 2.62765,16.4623 -19.64263,26.2828 -31.40748,35.4816 -16.53918,12.9318 -33.02995,30.6189 -45.42225,33.8993 -34.021,9.0059 -45.07817,18.2023 -43.027,26.0531 3.66387,14.0234 35.53478,12.2634 74.76434,10.2494 26.71823,-1.3716 60.23081,-9.0764 115.93029,-14.0132 38.67447,-3.4277 2.0167,-69.2468 -4.05407,-98.3788 -22.35113,-107.2572 -4.47099,-274.4783 -97.55726,-406.8311 18.11801,-126.80363 1.62143,-222.6014 -22.32619,-296.32019"
@@ -552,11 +551,11 @@
          style="display:inline;opacity:1;fill:none;fill-opacity:1;stroke:#967566;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline;opacity:1"
        inkscape:label="Μπότες #2"
        id="layer22"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          style="display:inline;opacity:1;fill:#c7cdf9;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m 143.91522,1052.1699 c 4.78412,14.9863 8.12693,24.4237 13.27302,39.1323 -2.79448,33.8684 9.64023,70.7674 19.74096,83.7717 21.08365,56.7983 104.16954,227.0192 122.68184,360.8479 1.65594,11.9711 -19.17143,24.2679 -31.73357,33.0065 -16.54707,11.5107 -28.15313,26.8195 -40.66115,31.0455 -31.12113,10.5145 -49.28971,19.6189 -47.59349,27.5733 3.21926,15.0968 31.49252,15.5464 72.14547,13.5325 27.68767,-1.3716 60.88975,-8.6634 117.76387,-13.775 41.73445,-3.7509 8.8953,-58.566 -0.63324,-98.7717 -20.05123,-84.6062 -3.00646,-278.3488 -97.31655,-408.9121 3.53555,-21.4013 5.59051,-44.3154 6.97751,-66.748 l -1.32971,0.1317 c -2.06539,23.3686 -125.60891,15.6619 -131.39737,-1.3205 z"
@@ -625,11 +624,11 @@
          style="display:inline;opacity:1;fill:none;fill-opacity:1;stroke:#605baa;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline"
        inkscape:label="Μπότες #1 (Πίσω)"
        id="layer1"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          style="display:inline;opacity:1;fill:#898ee2;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          d="m 129.95973,1186.365 c -6.40239,14.2498 12.67432,32.1619 36.54391,37.0021 23.73442,4.8128 87.08034,-5.7196 90.63619,-40.7746 3.55585,-35.055 -120.77771,-10.4773 -127.1801,3.7725 z"
@@ -667,11 +666,11 @@
          sodipodi:nodetypes="cc" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline;opacity:1"
        inkscape:label="Κορμός #1"
        id="layer13"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          inkscape:export-ydpi="96"
          inkscape:export-xdpi="96"
@@ -727,12 +726,12 @@
          sodipodi:nodetypes="ccccccccccccccccccccc" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline;opacity:1"
        transform="translate(117.45261,29.463893)"
        inkscape:label="Μπότες #1"
        id="layer19"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          sodipodi:nodetypes="cccc"
          id="path1442"
@@ -749,9 +748,9 @@
          id="path1309"
          sodipodi:nodetypes="cscc" />
       <path
-         sodipodi:nodetypes="csssssssssscsccssccc"
+         sodipodi:nodetypes="csssssssssscsccsssccc"
          id="path3220"
-         d="m 157.22011,1058.9777 c -5.44038,10.68 -12.02289,21.7786 -17.60752,34.9737 -1.37121,3.2398 0.10827,12.803 0.0112,16.7679 -2.51041,102.6201 -68.615775,301.5597 -68.156857,363.1757 0.04791,6.4325 -0.561141,23.4063 2.050952,32.7205 9.778229,34.8671 -4.089789,52.0799 -8.544659,59.3548 -10.67602,17.4341 -46.61508,95.5858 -51.9226,97.0301 -51.20916,13.9351 -97.71578,0.5809 -102.35123,-1.4622 -25.047016,-11.0396 20.473836,-42.7438 34.083896,-52.3986 12.40621,-8.8008 17.114464,-46.0284 24.726698,-58.3627 16.945071,-27.4565 26.6060839,-35.6127 30.52370888,-86.5466 9.43960672,-122.7265 -9.93664258,-202.8131 16.02000512,-307.3722 -9.9935743,-36.4701 -3.782469,-72.6251 -2.662589,-81.4529 3.00589,-23.6948 8.92129,-45.9123 13.80174,-59.5916 l 1.26001,0.3532 c -2.03753,7.1361 -1.032425,14.906 3.530336,21.6221 3.84601,5.661 10.399831,10.4601 17.980642,14.6377 14.572474,8.0305 96.169417,21.0377 110.990327,-2.6473 l 1.52449,-0.011 z"
+         d="m 157.22011,1058.9777 c -5.44038,10.68 -12.02289,21.7786 -17.60752,34.9737 -1.37121,3.2398 0.10827,12.803 0.0112,16.7679 -2.51041,102.6201 -68.615775,301.5597 -68.156857,363.1757 0.04791,6.4325 -0.561141,23.4063 2.050952,32.7205 9.778229,34.8671 -4.089789,52.0799 -8.544659,59.3548 -10.67602,17.4341 -46.61508,95.5858 -51.9226,97.0301 -51.20916,13.9351 -97.71578,0.5809 -102.35123,-1.4622 -25.047016,-11.0396 20.473836,-42.7438 34.083896,-52.3986 12.40621,-8.8008 17.114464,-46.0284 24.726698,-58.3627 16.945071,-27.4565 26.6060839,-35.6127 30.52370888,-86.5466 9.43960672,-122.7265 -9.93664258,-202.8131 16.02000512,-307.3722 -9.9935743,-36.4701 -3.782469,-72.6251 -2.662589,-81.4529 3.00589,-23.6948 8.92129,-45.9123 13.80174,-59.5916 l 1.26001,0.3532 c -2.03753,7.1361 -1.032425,14.906 3.530336,21.6221 3.84601,5.661 10.399823,10.4601 17.980642,14.6377 3.001883,1.6543 8.86448,3.9279 16.385082,5.6403 28.987742,6.6003 82.837395,10.5184 94.605245,-8.2876 l 1.52449,-0.011 z"
          style="display:inline;opacity:1;fill:#c7cdf9;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
       <path
          style="fill:#8a99e5;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -808,12 +807,12 @@
          sodipodi:nodetypes="csc" />
     </g>
     <g
-       sodipodi:insensitive="true"
        transform="translate(117.45261,29.463893)"
        style="display:inline;opacity:1"
        inkscape:label="Πουκάμισο"
        id="layer16"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          style="display:inline;opacity:1;fill:#c7cdf9;fill-opacity:1;stroke:#6a7098;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m 107.1992,361.53224 c 0,0 -39.203136,22.12535 -45.452313,34.96558 -3.531722,7.25665 -28.080155,92.39984 -37.673165,97.96493 19.222922,17.68787 79.423568,14.34733 79.423568,14.34733 z"
@@ -945,7 +944,7 @@
          sodipodi:nodetypes="ccccc"
          id="path3756"
          d="m 156.75768,685.51999 c 8.84351,0.6093 14.98358,0.46605 14.98358,0.46605 l -1.37584,-6.16274 -13.27523,0.70758 z"
-         style="fill:#6d74c0;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         style="fill:#6269bb;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       <path
          style="fill:#8a99e5;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          d="m 173.07889,644.72322 c 6.53319,2.71183 6.66059,19.01794 3.30554,27.26405 -2.65234,6.51898 -34.00188,9.93759 -88.386163,5.3612 l 6.349072,0.98282 8.162251,0.71952 8.30026,0.68156 10.84542,0.75166 13.84225,0.31653 12.81026,-0.0878 12.17794,-0.36282 20.6589,-1.48856 11.58099,-1.22967 10.23622,-1.31802 9.29847,-1.43174 1.88801,-0.93653 1.77964,-2.47867 1.19714,-3.68968 0.7131,-6.07715 -0.10716,-6.28877 -0.51599,-4.7828 -0.86996,-4.50846 -1.12441,-3.55763 -1.55773,-2.41285 -0.74792,-0.25563 -6.9481,1.01332 -7.78231,1.05615 -9.00445,1.10598 -8.55859,0.92888 z"
@@ -998,12 +997,12 @@
          id="path1953-6-5-6" />
     </g>
     <g
-       sodipodi:insensitive="true"
        transform="translate(117.45261,29.463893)"
        style="display:inline"
        inkscape:label="Γιακάς"
        id="layer17"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          sodipodi:nodetypes="cccccccccccccccccccc"
          id="path1030"
@@ -1025,11 +1024,11 @@
          style="fill:none;stroke:#6a7098;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline;opacity:1"
        inkscape:label="Μαλλια #3"
        id="layer23"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          inkscape:transform-center-y="67.644497"
          inkscape:transform-center-x="-28.382534"
@@ -1060,12 +1059,12 @@
          style="display:inline;fill:none;fill-opacity:1;stroke:#423c38;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
     <g
-       sodipodi:insensitive="true"
        transform="translate(117.45261,29.463893)"
        style="display:inline"
        inkscape:label="Ρολόι"
        id="layer11"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          id="path1974"
          style="fill:#6c6c6c;fill-opacity:1;stroke:none;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -1128,11 +1127,11 @@
          style="fill:none;stroke:#3c3c3c;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline"
        inkscape:label="Μανίκι Αριστερό #2"
        id="layer24"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          sodipodi:nodetypes="cccccccccccccccccccccccccccccc"
          style="display:inline;fill:#7b86d1;fill-opacity:1;stroke:none;stroke-width:0.343437px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -1150,11 +1149,11 @@
          style="fill:none;stroke:#6a7098;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline;opacity:1"
        inkscape:label="Χέρι Αριστερό"
        id="layer12"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
          transform="translate(-120.63186,74.363511)"
@@ -1231,11 +1230,11 @@
          inkscape:export-ydpi="96" />
     </g>
     <g
-       sodipodi:insensitive="true"
        style="display:inline;opacity:1"
        inkscape:label="Μανίκι Αριστερό #1"
        id="layer15"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <path
          inkscape:export-ydpi="96"
          inkscape:export-xdpi="96"
@@ -1267,12 +1266,12 @@
     </g>
   </g>
   <g
-     sodipodi:insensitive="true"
      transform="translate(-224.28125,289.39637)"
      inkscape:label="Κεφάλι"
      id="layer2"
      inkscape:groupmode="layer"
-     style="display:inline;opacity:1">
+     style="display:inline;opacity:1"
+     sodipodi:insensitive="true">
     <path
        style="display:inline;opacity:1;fill:#e9d8d0;fill-opacity:1;stroke:none;stroke-width:1.03031;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 691.8479,-2.7107049 C 783.1893,-107.65607 712.41842,-228.55137 591.77459,-208.46326 c -79.75661,13.2801 -103.77569,104.02105 -78.74978,164.103296 0.36568,0.877889 1.67385,5.22746 2.72187,9.758727 2.54241,10.992375 4.035,25.2718383 6.12077,36.848767 0.75187,4.1730942 2.79005,10.578602 6.84971,15.577851 2.81601,3.467751 6.07469,6.490087 9.27877,9.00902 2.71121,2.131459 5.50151,4.282832 8.56173,6.315969 5.07571,3.37218 12.76055,8.239999 20.3204,12.358379 9.74998,5.311501 14.54772,7.543935 21.40336,6.359502 12.63898,-2.183612 50.45966,-21.357124 60.61363,-27.271289 2.0022,-1.166181 15.26654,-12.554115 16.00636,-17.0187376"
@@ -1426,12 +1425,12 @@
        style="fill:#000000;fill-opacity:0.3;stroke:none;stroke-width:1.03031;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
   <g
-     sodipodi:insensitive="true"
      style="display:inline;opacity:1"
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Μαλλιά #1"
-     transform="translate(120.48191,-4.0810857)">
+     transform="translate(120.48191,-4.0810857)"
+     sodipodi:insensitive="true">
     <path
        sodipodi:nodetypes="ccccccccccccccc"
        style="display:inline;opacity:1;fill:#6e685a;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -1588,12 +1587,12 @@
        sodipodi:nodetypes="ccccccscscscccccccccccccccc" />
   </g>
   <g
-     sodipodi:insensitive="true"
      transform="translate(237.93452,25.382807)"
      style="display:inline;opacity:1"
      inkscape:label="Καπελο #2"
      id="layer25"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     sodipodi:insensitive="true">
     <path
        style="display:inline;fill:#406555;fill-opacity:0.996078;stroke:none;stroke-width:0.324224px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 4.5482716,41.934059 c 0,0 15.1713704,-14.948649 22.6033064,-15.661492 C 108.02846,18.515173 254.04252,4.4080242 254.04252,4.4080242 L 358.543,244.69266 320.54182,248.2144 262.15152,111.35599 135.883,38.004664 Z"

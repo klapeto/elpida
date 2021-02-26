@@ -31,7 +31,8 @@ namespace Elpida
 	class AverageScoreCalculator : public BenchmarkScoreCalculator
 	{
 	public:
-		[[nodiscard]] BenchmarkResult::Score calculate(const std::vector<TaskResult>& taskResults) const override;
+		[[nodiscard]]
+		BenchmarkResult::Score calculate(const std::vector<ProcessedTaskResult>& taskResults) const override;
 
 		AverageScoreCalculator() = default;
 		explicit AverageScoreCalculator(const std::string& suffix);

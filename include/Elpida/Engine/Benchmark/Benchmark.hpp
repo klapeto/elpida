@@ -40,7 +40,8 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]] std::vector<BenchmarkTaskInstance> createNewTasks(const TaskAffinity& affinity,
-			const BenchmarkConfiguration& configuration) const;
+			const BenchmarkConfiguration& configuration,
+			const ServiceProvider& serviceProvider) const;
 
 		[[nodiscard]] size_t getTotalTasksCount() const
 		{

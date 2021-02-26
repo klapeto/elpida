@@ -6,10 +6,10 @@ project("Memory Benchmarks" VERSION ${ELPIDA_VERSION}
 set(MEMORY_BENCHMARKS_SOURCES
         Plugin.cpp
         WorkingSetSizes.cpp
-        Latency/MemoryReadLatency.cpp
-        Latency/MemoryReadLatencySpecification.cpp
-        Read/MemoryRead.cpp
-        Read/MemoryReadSpecification.cpp)
+        Latency/MemoryLatency.cpp
+        Latency/MemoryLatencySpecification.cpp
+        Bandwidth/MemoryReadBandwidth.cpp
+        Bandwidth/MemoryReadBandwidthSpecification.cpp)
 
 if (MSYS OR MINGW)
     generate_product_version(
@@ -30,6 +30,8 @@ add_library(memoryBenchmarks MODULE ${MEMORY_BENCHMARKS_SOURCES})
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(memoryBenchmarks PRIVATE -O3)
 endif()
+
+#target_compile_options(memoryBenchmarks PRIVATE -O3)
 
 target_include_directories(memoryBenchmarks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 target_link_libraries(memoryBenchmarks elpida)

@@ -26,17 +26,11 @@
 
 #include "Elpida/Engine/Task/TaskThread.hpp"
 
-#include <iostream>
-
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/Task.hpp"
 #include "Elpida/Utilities/OsUtilities.hpp"
-
-#ifdef ELPIDA_LINUX
-#include <sched.h>
-#else
-#include <windows.h>
-#endif
+#include "Elpida/SystemInfo/TimingInfo.hpp"
+#include "Elpida/Engine/Task/TaskSpecification.hpp"
 
 namespace Elpida
 {
@@ -45,15 +39,20 @@ namespace Elpida
 		TaskDataDto input,
 		std::condition_variable& waitNotifier,
 		std::mutex& mutex,
+		const TimingInfo& timingInfo,
+		const ExecutionParameters& executionParameters,
 		const bool& shouldWake,
 		unsigned int affinity)
 		: _taskToRun(std::move(taskToRun)),
 		  _waitNotifier(waitNotifier),
 		  _mutex(mutex),
 		  _taskData(std::move(input)),
+		  _timingInfo(timingInfo),
+		  _executionParameters(executionParameters),
 		  _shouldWake(shouldWake),
 		  _affinity(affinity)
 	{
+
 	}
 
 	TaskThread::TaskThread(TaskThread&& other) noexcept
@@ -61,6 +60,9 @@ namespace Elpida
 		  _waitNotifier(other._waitNotifier),
 		  _mutex(other._mutex),
 		  _taskData(std::move(other._taskData)),
+		  _taskMetrics(std::move(other._taskMetrics)),
+		  _timingInfo(other._timingInfo),
+		  _executionParameters(other._executionParameters),
 		  _shouldWake(other._shouldWake),
 		  _affinity(other._affinity)
 	{
@@ -89,30 +91,14 @@ namespace Elpida
 
 	void TaskThread::runTask()
 	{
-		OsUtilities::setCurrentThreadAffinity(_affinity);
+		_taskToRun->setTaskData(_taskData);
 		std::unique_lock<std::mutex> lock(_mutex);
 		while (!_shouldWake)
 		{
 			_waitNotifier.wait(lock);
 		}
 		lock.unlock();
-		_taskToRun->execute();
-	}
 
-	void TaskThread::prepare()
-	{
-		_taskToRun->setTaskData(_taskData);
-		_taskToRun->prepare();
+		_taskMetrics = _taskToRun->execute(_executionParameters).getMetrics();
 	}
-
-	void TaskThread::finalize()
-	{
-		_taskToRun->finalize();
-	}
-
-	double TaskThread::calculateTaskResultValue(const Duration& taskElapsedTime) const
-	{
-		return _taskToRun->calculateTaskResultValue(taskElapsedTime);
-	}
-
 } /* namespace Elpida */

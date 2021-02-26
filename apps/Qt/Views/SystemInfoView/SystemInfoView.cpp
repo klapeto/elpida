@@ -22,6 +22,9 @@
 
 #include <Elpida/SystemInfo/CpuInfo.hpp>
 #include <Elpida/SystemInfo/SystemTopology.hpp>
+#include <Elpida/SystemInfo/OsInfo.hpp>
+#include <Elpida/SystemInfo/TimingInfo.hpp>
+#include <Elpida/SystemInfo/MemoryInfo.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
 
 #include <cmath>
@@ -31,12 +34,19 @@
 namespace Elpida
 {
 
-	SystemInfoView::SystemInfoView(const CpuInfo& cpuInfo, const SystemTopology& topology)
+	SystemInfoView::SystemInfoView(const CpuInfo& cpuInfo,
+		const SystemTopology& topology,
+		const OsInfo& osInfo,
+		const TimingInfo& timingInfo,
+		const MemoryInfo& memoryInfo)
 		: QWidget(), _ui(new Ui::SystemInfoView)
 	{
 		_ui->setupUi(this);
 
 		loadCpuInfo(cpuInfo, topology);
+		loadOsInfo(osInfo);
+		loadTimingInfo(timingInfo);
+		loadMemoryInfo(memoryInfo);
 	}
 
 	SystemInfoView::~SystemInfoView()
@@ -67,17 +77,17 @@ namespace Elpida
 
 			auto* groupLayout = new QGridLayout();
 
-			groupLayout->addWidget(new QLabel(QString::fromStdString("Size")), 0, 0);
+			groupLayout->addWidget(new QLabel(QString::fromStdString("Size: ")), 0, 0);
 			groupLayout
 				->addWidget(new QLabel(QString::fromStdString(Vu::getValueScaleStringSI(cache.getSize()) + "B")), 0, 1);
 
-			groupLayout->addWidget(new QLabel(QString::fromStdString("Associativity")), 1, 0);
+			groupLayout->addWidget(new QLabel(QString::fromStdString("Associativity: ")), 1, 0);
 			groupLayout->addWidget(new QLabel(QString::fromStdString(cache.getAssociativity())), 1, 1);
 
-			groupLayout->addWidget(new QLabel(QString::fromStdString("Lines Per Tag")), 2, 0);
+			groupLayout->addWidget(new QLabel(QString::fromStdString("Lines Per Tag: ")), 2, 0);
 			groupLayout->addWidget(new QLabel(QString::fromStdString(std::to_string(cache.getLinesPerTag()))), 2, 1);
 
-			groupLayout->addWidget(new QLabel(QString::fromStdString("Lines size")), 3, 0);
+			groupLayout->addWidget(new QLabel(QString::fromStdString("Lines size: ")), 3, 0);
 			groupLayout->addWidget(new QLabel(QString::fromStdString(std::to_string(cache.getLineSize()))), 3, 1);
 
 			group->setLayout(groupLayout);
@@ -135,8 +145,6 @@ namespace Elpida
 	{
 		auto& additionalInfoMap = cpuInfo.getAdditionalInformation();
 
-		auto infoLayout = new QGridLayout();
-
 		std::vector<std::pair<std::string, std::string>> info;
 
 		info.emplace_back("Vendor", cpuInfo.getVendorString());
@@ -157,8 +165,8 @@ namespace Elpida
 
 		for (const auto& infoPair: info)
 		{
-			infoLayout->addWidget(new QLabel(QString::fromStdString(infoPair.first)), row, column);
-			infoLayout->addWidget(new QLabel(QString::fromStdString(infoPair.second)), row, ++column);
+			_ui->glInfo->addWidget(new QLabel(QString::fromStdString(infoPair.first) + ": "), row, column);
+			_ui->glInfo->addWidget(new QLabel(QString::fromStdString(infoPair.second)), row, ++column);
 
 			if (++column >= sideSize)
 			{
@@ -166,8 +174,130 @@ namespace Elpida
 				column = 0;
 			}
 		}
+	}
 
-		_ui->gbCpuInfo->setLayout(infoLayout);
+	void SystemInfoView::loadOsInfo(const OsInfo& osInfo)
+	{
+		auto osInfoLayout = new QGridLayout();
+
+		osInfoLayout->addWidget(new QLabel(QString::fromStdString("Name: ")), 0, 0);
+		osInfoLayout->addWidget(new QLabel(QString::fromStdString(osInfo.getName())), 0, 1);
+
+		osInfoLayout->addWidget(new QLabel(QString::fromStdString("Version: ")), 1, 0);
+		osInfoLayout->addWidget(new QLabel(QString::fromStdString(osInfo.getVersion())), 1, 1);
+
+		_ui->gbOsInfo->setLayout(osInfoLayout);
+	}
+
+	static QWidget* getValueWidget(const std::string& value)
+	{
+		auto line = new QLabel(QString::fromStdString(value));
+
+		line->setObjectName("valueLabel");
+		return line;
+	}
+
+	static QWidget* getTargetTimeStringLabel(const TimingInfo& timingInfo)
+	{
+		using namespace std::chrono;
+		auto seconds = duration_cast<duration<double, seconds::period>>(timingInfo.getTargetTime());
+
+		return getValueWidget(Vu::getValueScaleStringSI(seconds.count()) + "s");
+	}
+
+	static QWidget* createVerticalLine()
+	{
+		auto line = new QFrame();
+		line->setFixedWidth(1);
+		line->setLineWidth(1);
+		line->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+		line->setStyleSheet(QString("background-color: rgb(179, 179, 179);"));
+		return line;
+	}
+
+	void SystemInfoView::loadTimingInfo(const TimingInfo& timingInfo)
+	{
+		auto timingInfoLayout = new QGridLayout();
+
+		auto column = 0;
+
+		timingInfoLayout->addWidget(new QLabel(QString::fromStdString("now() overhead: ")), 0, column);
+		timingInfoLayout->addWidget(getValueWidget(
+			Vu::getValueScaleStringSI((double)timingInfo.getNowOverhead().count() / Duration::period::den)
+				+ "s"
+		), 0, column + 1);
+
+		timingInfoLayout->addWidget(new QLabel(QString::fromStdString("sleep() overhead: ")), 1, column);
+		timingInfoLayout->addWidget(getValueWidget(
+			Vu::getValueScaleStringSI((double)timingInfo.getSleepOverhead().count() / Duration::period::den)
+				+ "s"
+		), 1, column + 1);
+
+		column += 2;
+		timingInfoLayout->addWidget(createVerticalLine(), 0, column++, 2, 1);
+
+		timingInfoLayout->addWidget(new QLabel(QString::fromStdString("lock() overhead: ")), 0, column);
+		timingInfoLayout->addWidget(getValueWidget(
+			Vu::getValueScaleStringSI((double)timingInfo.getLockOverhead().count() / Duration::period::den)
+				+ "s"
+		), 0, column + 1);
+
+		timingInfoLayout->addWidget(new QLabel(QString::fromStdString("wakeup() overhead: ")), 1, column);
+		timingInfoLayout->addWidget(getValueWidget(
+			Vu::getValueScaleStringSI((double)timingInfo.getWakeupOverhead().count() / Duration::period::den)
+				+ "s"
+		), 1, column + 1);
+
+		column += 2;
+		timingInfoLayout->addWidget(createVerticalLine(), 0, column++, 2, 1);
+
+		timingInfoLayout->addWidget(new QLabel(QString::fromStdString("notify() overhead: ")), 0, column);
+		timingInfoLayout->addWidget(getValueWidget(
+			Vu::getValueScaleStringSI((double)timingInfo.getNotifyOverhead().count() / Duration::period::den)
+				+ "s"
+		), 0, column + 1);
+
+
+		timingInfoLayout->addWidget(new QLabel(QString::fromStdString("join() overhead: ")), 1, column);
+		timingInfoLayout->addWidget(getValueWidget(
+			Vu::getValueScaleStringSI((double)timingInfo.getJoinOverhead().count() / Duration::period::den)
+				+ "s"
+		), 1, column + 1);
+
+
+		column += 2;
+		timingInfoLayout->addWidget(createVerticalLine(), 0, column++, 2, 1);
+
+
+		timingInfoLayout->addWidget(new QLabel(QString::fromStdString("Loop overhead: ")), 0, column);
+		timingInfoLayout->addWidget(getValueWidget(
+			Vu::getValueScaleStringSI((double)timingInfo.getLoopOverhead().count() / Duration::period::den)
+				+ "s"
+		), 0, column + 1);
+
+		timingInfoLayout->addWidget(new QLabel(QString::fromStdString("Target time: ")), 1, column);
+		timingInfoLayout->addWidget(getTargetTimeStringLabel(timingInfo), 1, column + 1);
+
+		_ui->gbTimingInfo->setLayout(timingInfoLayout);
+	}
+
+	void SystemInfoView::loadMemoryInfo(const MemoryInfo& memoryInfo)
+	{
+		auto memoryInfoLayout = new QGridLayout();
+
+		memoryInfoLayout->addWidget(new QLabel(QString::fromStdString("Total Size: ")), 0, 0);
+		memoryInfoLayout->addWidget(new QLabel(
+			QString::fromStdString(
+				Vu::getValueScaleStringIEC(memoryInfo.getMemorySize()) + "B"
+			)), 0, 1);
+
+		memoryInfoLayout->addWidget(new QLabel(QString::fromStdString("Page Size: ")), 1, 0);
+		memoryInfoLayout->addWidget(new QLabel(
+			QString::fromStdString(
+				Vu::getValueScaleStringIEC(memoryInfo.getPageSize()) + "B"
+			)), 1, 1);
+
+		_ui->gbMemoryInfo->setLayout(memoryInfoLayout);
 	}
 
 } // namespace Elpida

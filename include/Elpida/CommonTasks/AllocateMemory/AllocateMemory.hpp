@@ -27,28 +27,29 @@
 #ifndef ELPIDA_COMMONTASKS_ALLOCATEMEMORY_HPP_
 #define ELPIDA_COMMONTASKS_ALLOCATEMEMORY_HPP_
 
-#include "Elpida/Engine/Task/Task.hpp"
+#include "Elpida/Engine/Task/WorkloadTask.hpp"
 #include "Elpida/Utilities/NumaMemory.hpp"
 #include "Elpida/Engine/Data/RawTaskData.hpp"
 
 namespace Elpida
 {
 
-	class AllocateMemory final : public Task
+	class AllocateMemory : public WorkloadTask
 	{
 	public:
-		void execute() override;
-
 		AllocateMemory(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			std::size_t size,
 			size_t iterationsToRun);
 
 		~AllocateMemory() override = default;
 	protected:
-		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
+		std::optional<TaskDataDto> finalizeAndGetOutputData() final;
 
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		void run() override;
+
+		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const final;
 	private:
 		std::unique_ptr<RawTaskData> _memory;
 		std::size_t _size;

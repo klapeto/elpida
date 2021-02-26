@@ -110,11 +110,12 @@ namespace Elpida
 		{
 			getTscFrequency();
 		}
+
+		sanitizeBrand();
 	}
 
 	void X86Info::getTscFrequency()
 	{
-		auto nowOverhead = Timer::getNowOverhead<>();
 		OsUtilities::setCurrentThreadAffinity(0);
 
 		unsigned long startCycles;
@@ -130,10 +131,9 @@ namespace Elpida
 
 		auto end = Timer::now();
 
-		auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start - (nowOverhead * 2));
+		auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
 
 		_frequency = (((float)(endCycles - startCycles)) * 1000000000.f) / (float)nanoseconds.count();
-		//_tscTimeRatio = (float)nanoseconds / ((float)(endCycles - startCycles));
 	}
 
 	void X86Info::getAMDFeatures()
@@ -218,8 +218,6 @@ namespace Elpida
 			_processorBrand.append((char*)(&ecx), 4);
 			_processorBrand.append((char*)(&edx), 4);
 		}
-
-
 
 		//===================================
 		// 0x80000001
@@ -347,6 +345,22 @@ namespace Elpida
 
 			addFeature("FP256", eax, 2);
 		}
+	}
+
+	void X86Info::sanitizeBrand()
+	{
+		size_t index = _processorBrand.size();
+		for (auto itr = _processorBrand.rbegin(); itr != _processorBrand.rend(); ++itr)
+		{
+			if (iscntrl(*itr) || isspace(*itr))
+			{
+				index--;
+				continue;
+			}
+			break;
+		}
+
+		_processorBrand = _processorBrand.substr(0, index);
 	}
 
 	void X86Info::addFeature(const std::string& name, unsigned int reg, unsigned int bit)

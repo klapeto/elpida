@@ -30,17 +30,18 @@
 namespace Elpida
 {
 	class TaskSpecification;
-	class ResultSpecification;
 
 	class TaskResult final
 	{
 	public:
-		[[nodiscard]] const TaskSpecification& getTaskSpecification() const
+		[[nodiscard]]
+		const TaskSpecification& getTaskSpecification() const
 		{
 			return *_taskSpecification;
 		}
 
-		[[nodiscard]] const TaskMetrics& getMetrics() const
+		[[nodiscard]]
+		const TaskMetrics& getMetrics() const
 		{
 			return _metrics;
 		}

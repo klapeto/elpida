@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,28 +18,12 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 30/4/20.
+// Created by klapeto on 6/2/21.
 //
 
-#ifndef SRC_BENCHMARKS_MEMORY_LATENCY_MEMORYLATENCYSPECIFICATION_HPP
-#define SRC_BENCHMARKS_MEMORY_LATENCY_MEMORYLATENCYSPECIFICATION_HPP
-
-#include <Elpida/Engine/Task/TaskSpecification.hpp>
+#include "Elpida/Engine/Runner/MicroTaskRunner.hpp"
 
 namespace Elpida
 {
 
-	class MemoryReadLatencySpecification : public TaskSpecification
-	{
-	public:
-
-		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
-			const ProcessorNode& processorToRun,
-			size_t iterationsToRun) const override;
-
-		MemoryReadLatencySpecification();
-		~MemoryReadLatencySpecification() override = default;
-	};
 }
-
-#endif //SRC_BENCHMARKS_MEMORY_LATENCY_MEMORYLATENCYSPECIFICATION_HPP

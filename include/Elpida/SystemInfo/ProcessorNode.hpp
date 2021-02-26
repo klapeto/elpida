@@ -32,6 +32,7 @@
 
 #include "CpuKind.hpp"
 #include "Elpida/Utilities/OptionalReference.hpp"
+#include "ProcessorNodeType.hpp"
 
 namespace Elpida
 {
@@ -39,70 +40,65 @@ namespace Elpida
 	class ProcessorNode final
 	{
 	public:
-		enum class Type
-		{
-			Machine,
-			Package,
-			NumaNode,
-			Group,
-			Core,
-			L1ICache,
-			L1DCache,
-			L2ICache,
-			L2DCache,
-			L3ICache,
-			L3DCache,
-			L4Cache,
-			L5Cache,
-			ExecutionUnit,
-			Unknown
-		};
-
-		static inline std::string UnknownOsIndexStr = "[No Index]";
-
-		[[nodiscard]] unsigned int getOsIndex() const
+		[[nodiscard]]
+		unsigned int getOsIndex() const
 		{
 			return _osIndex;
 		}
 
-		[[nodiscard]] const std::vector<ProcessorNode>& getChildren() const
+		[[nodiscard]]
+		const std::vector<ProcessorNode>& getChildren() const
 		{
 			return _children;
 		}
 
-		[[nodiscard]] const std::vector<ProcessorNode*>& getSiblings() const
+		[[nodiscard]]
+		const std::vector<ProcessorNode*>& getSiblings() const
 		{
 			return _siblings;
 		}
 
-		[[nodiscard]] bool isOsIndexValid() const;
+		[[nodiscard]]
+		bool isOsIndexValid() const;
 
-		[[nodiscard]] const std::vector<ProcessorNode>& getMemoryChildren() const
+		[[nodiscard]]
+		const std::vector<ProcessorNode>& getMemoryChildren() const
 		{
 			return _memoryChildren;
 		}
 
-		[[nodiscard]] const std::string& getName() const
+		[[nodiscard]]
+		const std::string& getName() const
 		{
 			return _name;
 		}
 
-		[[nodiscard]] Type getType() const
+		[[nodiscard]]
+		ProcessorNodeType getType() const
 		{
 			return _type;
 		}
 
-		[[nodiscard]] std::size_t getValue() const
+		[[nodiscard]]
+		std::size_t getValue() const
 		{
 			return _value;
 		}
 
-		[[nodiscard]] OptionalReference<const CpuKind> getCpuKind() const
+		[[nodiscard]]
+		OptionalReference<const CpuKind> getCpuKind() const
 		{
 			return _cpuKind;
 		}
 
-		[[nodiscard]] int getNumaNodeId() const;
+		[[nodiscard]]
+		OptionalReference<ProcessorNode> getParent() const
+		{
+			return _parent;
+		}
+
+		[[nodiscard]]
+		int getNumaNodeId() const;
 
 		~ProcessorNode() = default;
 	private:
@@ -117,7 +113,7 @@ namespace Elpida
 		std::size_t _value;
 		OptionalReference<ProcessorNode> _parent;
 		OptionalReference<const CpuKind> _cpuKind;
-		Type _type;
+		ProcessorNodeType _type;
 		unsigned int _osIndex;
 
 		std::vector<ProcessorNode> _children;
@@ -133,6 +129,7 @@ namespace Elpida
 
 		void loadChildren(const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 		void loadSiblings();
+		void loadParents(ProcessorNode* parent);
 		friend class SystemTopology;
 	};
 

@@ -30,12 +30,15 @@
 #include <thread>
 #include <condition_variable>
 #include <vector>
-#include <Elpida/Utilities/Duration.hpp>
+#include "Elpida/Utilities/Duration.hpp"
+#include "Elpida/Engine/Result/TaskMetrics.hpp"
 #include "TaskDataDto.hpp"
 
 namespace Elpida
 {
 	class Task;
+	class TimingInfo;
+	class ExecutionParameters;
 
 	class TaskThread final
 	{
@@ -43,9 +46,10 @@ namespace Elpida
 		void start();
 		void join();
 
-		void prepare();
-		void finalize();
-		double calculateTaskResultValue(const Duration& taskElapsedTime) const;
+		const TaskMetrics& getMetrics() const
+		{
+			return _taskMetrics;
+		}
 
 		TaskDataDto& getTaskData()
 		{
@@ -56,6 +60,8 @@ namespace Elpida
 			TaskDataDto input,
 			std::condition_variable& waitNotifier,
 			std::mutex& mutex,
+			const TimingInfo& timingInfo,
+			const ExecutionParameters& executionParameters,
 			const bool& shouldWake,
 			unsigned int affinity);
 		~TaskThread();
@@ -67,6 +73,9 @@ namespace Elpida
 		std::condition_variable& _waitNotifier;
 		std::mutex& _mutex;
 		TaskDataDto _taskData;
+		TaskMetrics _taskMetrics = TaskMetrics(Duration::max(), 0.0, 0);
+		const TimingInfo& _timingInfo;
+		const ExecutionParameters& _executionParameters;
 
 		const bool& _shouldWake;
 		unsigned int _affinity;

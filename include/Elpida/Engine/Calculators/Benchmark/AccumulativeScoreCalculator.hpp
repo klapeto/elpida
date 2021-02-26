@@ -32,7 +32,8 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] BenchmarkResult::Score calculate(const std::vector<TaskResult>& taskResults) const override;
+		[[nodiscard]]
+		BenchmarkResult::Score calculate(const std::vector<ProcessedTaskResult>& taskResults) const override;
 
 		AccumulativeScoreCalculator() = default;
 		explicit AccumulativeScoreCalculator(const std::string& suffix, ResultType resultType);

@@ -24,27 +24,30 @@
 #ifndef INCLUDE_ELPIDA_ENGINE_TASK_MULTITHREADTASK_HPP
 #define INCLUDE_ELPIDA_ENGINE_TASK_MULTITHREADTASK_HPP
 
-#include "Task.hpp"
+#include "WorkloadTask.hpp"
 #include "TaskThread.hpp"
 #include "TaskAffinity.hpp"
+#include "Elpida/Engine/Task/ExecutionParameters.hpp"
 
 namespace Elpida
 {
 	class TaskConfiguration;
 	class TaskBuilder;
+	class ServiceProvider;
 
-	class MultiThreadTask : public Task
+	class MultiThreadTask : public WorkloadTask
 	{
 	public:
-		void execute() override;
-		void applyAffinity() override;
+		TaskResult execute(const ExecutionParameters& parameters) override;
 
 		MultiThreadTask(const TaskBuilder& taskBuilder,
 			const TaskConfiguration& configuration,
 			const TaskAffinity& affinity,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun);
 		~MultiThreadTask() override = default;
 	protected:
+		void run() override;
 		void prepareImpl() override;
 		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
 		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
@@ -53,10 +56,14 @@ namespace Elpida
 		std::condition_variable _wakeNotifier;
 		std::vector<TaskThread> _createdThreads;
 		TaskAffinity _affinity;
+		ExecutionParameters _executionParameters;
 		const TaskConfiguration& _configuration;
-		const TaskBuilder& _taskBuilder;
+		const ServiceProvider& _serviceProvider;
+		const ExecutionParameters* _originalExecutionParameters;
 		size_t _originalDataSize;
 		bool _threadsShouldWake;
+
+		[[nodiscard]] TaskMetrics calculateAverageTaskMetrics() const;
 	};
 }
 

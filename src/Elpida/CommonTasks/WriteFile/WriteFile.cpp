@@ -40,15 +40,16 @@ namespace Elpida
 
 	WriteFile::WriteFile(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		std::string filePath,
 		size_t iterationsToRun)
-		: Task(specification, processorToRun, iterationsToRun),
+		: WorkloadTask(specification, processorToRun, serviceProvider, iterationsToRun),
 		  _outputPath(std::move(filePath))
 	{
 
 	}
 
-	void WriteFile::execute()
+	void WriteFile::run()
 	{
 		auto& input = getInput();
 

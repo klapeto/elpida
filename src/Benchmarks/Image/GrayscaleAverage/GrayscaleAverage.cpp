@@ -33,13 +33,14 @@ namespace Elpida
 
 	GrayscaleAverage::GrayscaleAverage(const TaskSpecification& specification,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun)
-		: ImageTaskBase(specification, processorToRun, iterationsToRun)
+		: ImageTaskBase(specification, processorToRun, serviceProvider, iterationsToRun)
 	{
 
 	}
 
-	void GrayscaleAverage::execute()
+	void GrayscaleAverage::run()
 	{
 		std::size_t size = _inputImage->getTotalSize();
 		Pixel<PixelFloat>* sourceData = _inputImage->getData();

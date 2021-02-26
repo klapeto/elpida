@@ -125,35 +125,35 @@ namespace Elpida
 	{
 		switch (node.getType())
 		{
-		case ProcessorNode::Type::L1DCache:
+		case ProcessorNodeType::L1DCache:
 			return
 				{ QString("background-color: #fa9e9e;"), QString("background-color: #eba8a8;"),
 				  QString("background-color: #ffe4e4;") };
-		case ProcessorNode::Type::L1ICache:
+		case ProcessorNodeType::L1ICache:
 			return
 				{ QString("background-color: #f5bfbf;"), QString("background-color: #f9d8d8;"),
 				  QString("background-color: #ffc1c1;") };
-		case ProcessorNode::Type::L2DCache:
+		case ProcessorNodeType::L2DCache:
 			return
 				{ QString("background-color: #e48b8b;"), QString("background-color: #e19898;"),
 				  QString("background-color: #ffc1c1;") };
-		case ProcessorNode::Type::L2ICache:
+		case ProcessorNodeType::L2ICache:
 			return
 				{ QString("background-color: #e6abab;"), QString("background-color: #f6c2c2;"),
 				  QString("background-color: #fbe9e9;") };
-		case ProcessorNode::Type::L3DCache:
+		case ProcessorNodeType::L3DCache:
 			return
 				{ QString("background-color: #c67171;"), QString("background-color: #cb8282;"),
 				  QString("background-color: #dca0a0;") };
-		case ProcessorNode::Type::L3ICache:
+		case ProcessorNodeType::L3ICache:
 			return
 				{ QString("background-color: #c68989;"), QString("background-color: #d09f9f;"),
 				  QString("background-color: #e2bfbf;") };
-		case ProcessorNode::Type::L4Cache:
+		case ProcessorNodeType::L4Cache:
 			return
 				{ QString("background-color: #ae5151;"), QString("background-color: #bf7171;"),
 				  QString("background-color: #d79d9d;") };
-		case ProcessorNode::Type::L5Cache:
+		case ProcessorNodeType::L5Cache:
 			return
 				{ QString("background-color: #8f4242;"), QString("background-color: #a76363;"),
 				  QString("background-color: #bf8e8e;") };
@@ -222,24 +222,24 @@ namespace Elpida
 	{
 		switch (node.getType())
 		{
-		case ProcessorNode::Type::Machine:
+		case ProcessorNodeType::Machine:
 			return getMachineWidget(node);
-		case ProcessorNode::Type::Package:
+		case ProcessorNodeType::Package:
 			return getPackageWidget(node);
-		case ProcessorNode::Type::Group:
+		case ProcessorNodeType::Group:
 			return getGroupWidget(node);
-		case ProcessorNode::Type::L1DCache:
-		case ProcessorNode::Type::L1ICache:
-		case ProcessorNode::Type::L2DCache:
-		case ProcessorNode::Type::L2ICache:
-		case ProcessorNode::Type::L3DCache:
-		case ProcessorNode::Type::L3ICache:
-		case ProcessorNode::Type::L4Cache:
-		case ProcessorNode::Type::L5Cache:
+		case ProcessorNodeType::L1DCache:
+		case ProcessorNodeType::L1ICache:
+		case ProcessorNodeType::L2DCache:
+		case ProcessorNodeType::L2ICache:
+		case ProcessorNodeType::L3DCache:
+		case ProcessorNodeType::L3ICache:
+		case ProcessorNodeType::L4Cache:
+		case ProcessorNodeType::L5Cache:
 			return getCacheWidget(node);
-		case ProcessorNode::Type::Core:
+		case ProcessorNodeType::Core:
 			return getCoreWidget(node);
-		case ProcessorNode::Type::ExecutionUnit:
+		case ProcessorNodeType::ExecutionUnit:
 			return getEUWidget(node);
 		default:
 			throw ElpidaException("Invalid Enumeration");
@@ -333,7 +333,7 @@ namespace Elpida
 
 	void TopologyView::clearChildrenState(TopologyNodeFrame* frame)
 	{
-		if (frame->getProcessorNode().getType() == ProcessorNode::Type::ExecutionUnit)
+		if (frame->getProcessorNode().getType() == ProcessorNodeType::ExecutionUnit)
 		{
 			auto checkBox = frame->getCheckBox();
 			if (checkBox != nullptr)
@@ -353,7 +353,7 @@ namespace Elpida
 
 	void TopologyView::appendAffinity(TopologyNodeFrame* frame)
 	{
-		if (frame->getProcessorNode().getType() != ProcessorNode::Type::ExecutionUnit)
+		if (frame->getProcessorNode().getType() != ProcessorNodeType::ExecutionUnit)
 		{
 			const auto& children = frame->getChildren();
 			for (auto child : children)
@@ -379,7 +379,7 @@ namespace Elpida
 
 	void TopologyView::onElementClick(const TopologyNodeFrame* node)
 	{
-		if (node->getProcessorNode().getType() != ProcessorNode::Type::ExecutionUnit)
+		if (node->getProcessorNode().getType() != ProcessorNodeType::ExecutionUnit)
 		{
 			const auto& children = node->getChildren();
 			for (auto child : children)

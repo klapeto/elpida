@@ -36,16 +36,19 @@ namespace Elpida
 	class GrayscaleAverage : public ImageTaskBase
 	{
 	public:
-		void execute() override;
 
 		GrayscaleAverage(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun);
 		~GrayscaleAverage() override = default;
 	protected:
+		void run() override;
 		void prepareImpl() override;
 		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+
+		[[nodiscard]]
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::unique_ptr<Image<PixelFloat>> _inputImage;
 	};

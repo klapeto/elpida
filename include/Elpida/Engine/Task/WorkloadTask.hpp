@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,38 +17,30 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * MemoryReadCached.hpp
- *
- *  Created on: 18 Οκτ 2018
- *      Author: klapeto
- */
+//
+// Created by klapeto on 21/2/21.
+//
 
-#ifndef TASKBATCHES_MEMORY_READ_MEMORYREAD_HPP_
-#define TASKBATCHES_MEMORY_READ_MEMORYREAD_HPP_
+#ifndef INCLUDE_ELPIDA_ENGINE_TASK_WORKLOADTASK_HPP
+#define INCLUDE_ELPIDA_ENGINE_TASK_WORKLOADTASK_HPP
 
-#include <Elpida/Engine/Task/Task.hpp>
+#include "Task.hpp"
 
 namespace Elpida
 {
-	class TaskMetrics;
-
-	class MemoryRead final : public Task
+	class WorkloadTask : public Task
 	{
 	public:
-		void execute() override;
+		TaskResult execute(const ExecutionParameters& parameters) override;
 
-		MemoryRead(const TaskSpecification& specification, const ProcessorNode& processorToRun, size_t iterationsToRun);
-		~MemoryRead() override = default;
+		~WorkloadTask() override = default;
 	protected:
-		const RawTaskData* _taskData;
-		unsigned long _iterations;
-		static constexpr inline double _iterationConstant = 100000000000; // rough estimate
-
-		void prepareImpl() override;
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+		WorkloadTask(const TaskSpecification& specification,
+			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
+			size_t iterationsToRun);
+		virtual void run() = 0;
 	};
+}
 
-} /* namespace Elpida */
-
-#endif /* TASKBATCHES_MEMORY_READ_MEMORYREAD_HPP_ */
+#endif //INCLUDE_ELPIDA_ENGINE_TASK_WORKLOADTASK_HPP

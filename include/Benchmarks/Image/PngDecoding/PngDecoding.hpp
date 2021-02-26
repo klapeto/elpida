@@ -35,15 +35,17 @@ namespace Elpida
 	class PngDecoding : public ImageTaskBase
 	{
 	public:
-		void execute() override;
-
 		PngDecoding(const TaskSpecification& specification,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun);
 		~PngDecoding() override = default;
 	protected:
+		void run() override;
 		std::optional<TaskDataDto> finalizeAndGetOutputData() override;
-		[[nodiscard]] double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
+
+		[[nodiscard]]
+		double calculateTaskResultValue(const Duration& taskElapsedTime) const override;
 	private:
 		std::unique_ptr<RawTaskData> _outputData;
 		size_t _width;

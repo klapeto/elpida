@@ -23,6 +23,10 @@ QTabWidget,QFrame,QLabel,QCheckBox,QGroupBox,QScrollArea{
 background-color: rgba(229,232,253,0);
 }
 
+QLabel#valueLabel{
+	border: 1px solid rgb(179, 179, 179);
+}
+
 #scrollAreaWidgetContents{
 background-color: rgba(229,232,253,0);
 } 
@@ -187,9 +191,13 @@ QLineEdit {
     <property name="title">
      <string>E&amp;lpida</string>
     </property>
+    <addaction name="actionSave_Results_As"/>
+    <addaction name="actionClear_results"/>
+    <addaction name="separator"/>
     <addaction name="actionVisit_Website"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -217,6 +225,22 @@ QLineEdit {
    </property>
    <property name="toolTip">
     <string>Visit the Elpida Website</string>
+   </property>
+  </action>
+  <action name="actionSave_Results_As">
+   <property name="text">
+    <string>&amp;Save results as..</string>
+   </property>
+   <property name="toolTip">
+    <string>Save results as..</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionClear_results">
+   <property name="text">
+    <string>&amp;Clear results</string>
    </property>
   </action>
  </widget>

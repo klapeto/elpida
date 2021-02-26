@@ -32,8 +32,10 @@ namespace Elpida
 	class ConvertToUInt8Specification : public TaskSpecification
 	{
 	public:
-		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
+		[[nodiscard]]
+		std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun) const override;
 
 		ConvertToUInt8Specification();

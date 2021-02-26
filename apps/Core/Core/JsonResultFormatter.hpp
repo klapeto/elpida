@@ -32,22 +32,38 @@ namespace Elpida
 	class CpuInfo;
 	class OsInfo;
 	class MemoryInfo;
+	class TimingInfo;
 
 	class JsonResultFormatter : public ResultFormatter
 	{
 	public:
-		[[nodiscard]] std::string serialize(const BenchmarkResult& result) const override;
+
+		[[nodiscard]]
+		const std::string& getFileExtension() const override
+		{
+			return _fileExtension;
+		}
+
+		[[nodiscard]]
+		std::string serialize(const BenchmarkResult& result) const override;
+
+		[[nodiscard]]
+		std::string serialize(std::vector<BenchmarkResult>& results) const override;
 
 		JsonResultFormatter(const SystemTopology& systemTopology,
 			const CpuInfo& cpuInfo,
 			const OsInfo& osInfo,
-			const MemoryInfo& memoryInfo);
+			const MemoryInfo& memoryInfo,
+			const TimingInfo& timingInfo);
 		~JsonResultFormatter() override = default;
 	private:
 		const SystemTopology& _systemTopology;
 		const CpuInfo& _cpuInfo;
 		const OsInfo& _osInfo;
 		const MemoryInfo& _memoryInfo;
+		const TimingInfo& _timingInfo;
+
+		std::string _fileExtension = "json";
 	};
 
 }

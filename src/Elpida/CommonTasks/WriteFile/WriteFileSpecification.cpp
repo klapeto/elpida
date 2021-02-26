@@ -30,12 +30,13 @@ namespace Elpida
 
 	std::unique_ptr<Task> WriteFileSpecification::createNewTask(const TaskConfiguration& configuration,
 		const ProcessorNode& processorToRun,
+		const ServiceProvider& serviceProvider,
 		size_t iterationsToRun) const
 	{
 		auto& filepath = getSettingAndValidate<ConfigurationType::FilePath>(configuration,
 			Settings::OutputFilePath,
 			ConfigurationType::Type::FilePath);
-		return std::make_unique<WriteFile>(*this, processorToRun, filepath.getValue(), iterationsToRun);
+		return std::make_unique<WriteFile>(*this, processorToRun, serviceProvider, filepath.getValue(), iterationsToRun);
 	}
 
 	WriteFileSpecification::WriteFileSpecification()

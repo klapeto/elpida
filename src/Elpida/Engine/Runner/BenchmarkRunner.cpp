@@ -21,7 +21,6 @@
 // Created by klapeto on 19/4/20.
 //
 
-#include <cstring>
 #include "Elpida/Engine/Runner/BenchmarkRunner.hpp"
 
 #include "Elpida/Timer.hpp"
@@ -31,11 +30,21 @@
 #include "Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
 #include "Elpida/Engine/Benchmark/Benchmark.hpp"
+#include "Elpida/ServiceProvider.hpp"
+#include "Elpida/SystemInfo/TimingInfo.hpp"
+#include "Elpida/Utilities/Statistics.hpp"
+
+#include "Elpida/Engine/Task/ExecutionParameters.hpp"
+#include "Elpida/Engine/Runner/MicroTaskRunner.hpp"
+#include "Elpida/Engine/Runner/DefaultTaskRunner.hpp"
+
+#include <cstring>
+#include <thread>
 
 namespace Elpida
 {
-	BenchmarkRunner::BenchmarkRunner()
-		: _mustStop(false)
+	BenchmarkRunner::BenchmarkRunner(const ServiceProvider& serviceProvider)
+		: _mustStop(false), _serviceProvider(serviceProvider)
 	{
 
 	}
@@ -64,10 +73,11 @@ namespace Elpida
 			const auto& benchmark = benchmarkRequest.getBenchmark();
 			raiseBenchmarkStarted(benchmark);
 
-			auto benchmarkTaskInstances = benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration());
+			auto benchmarkTaskInstances =
+				benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration(), _serviceProvider);
 			try
 			{
-				std::vector<TaskResult> finalTaskResults;
+				std::vector<ProcessedTaskResult> finalTaskResults;
 
 				TaskDataDto taskData;
 
@@ -76,8 +86,9 @@ namespace Elpida
 					if (_mustStop) break;
 
 					auto& currentTask = taskInstance.getTask();
+					auto& taskBuilder = taskInstance.getTaskBuilder();
 
-					raiseTaskStarted(currentTask);
+					raiseTaskStarted(taskBuilder);
 
 					auto iterations = currentTask.getIterationsToRun();
 
@@ -88,33 +99,46 @@ namespace Elpida
 					{
 						if (_mustStop) break;
 
+						raiseTaskIterationStarted(taskBuilder, i);
+
 						iterationTaskData = getTaskDataCopy(taskData);
 
 						currentTask.setTaskData(iterationTaskData);
 
 						auto result = runTask(currentTask);
 
-						if (taskInstance.getTaskBuilder().shouldBeCountedOnResults())
+						if (taskBuilder.shouldBeCountedOnResults())
 						{
 							currentTaskResults.push_back(result);
 						}
+
+						raiseTaskIterationEnded(taskBuilder, i);
 					}
 					taskData = std::move(iterationTaskData);
 
-					if (taskInstance.getTaskBuilder().shouldBeCountedOnResults())
+					if (taskBuilder.shouldBeCountedOnResults())
 					{
-						auto calculator = taskInstance.getTaskBuilder().getTaskResultCalculator();
+						auto calculator = taskBuilder.getTaskResultCalculator();
 						if (calculator)
 						{
 							finalTaskResults.push_back(calculator->calculateAggregateResult(currentTaskResults));
 						}
 						else
 						{
-							finalTaskResults.push_back(currentTaskResults.back());
+							auto statistics = Statistics::calculateBasicStatistics(currentTaskResults,
+								[](const TaskResult& x)
+								{
+									return x.getMetrics().getDuration().count();
+								});
+							ProcessedTaskResult processedTaskResult(currentTaskResults.back().getMetrics(),
+								statistics,
+								std::vector<TaskMetrics>(),
+								taskBuilder.getTaskSpecification());
+							finalTaskResults.push_back(std::move(processedTaskResult));
 						}
 					}
 
-					raiseTasksEnded(currentTask);
+					raiseTasksEnded(taskBuilder);
 				}
 
 				raiseBenchmarkEnded(benchmark);
@@ -138,26 +162,17 @@ namespace Elpida
 
 	TaskResult BenchmarkRunner::runTask(Task& task)
 	{
-		task.applyAffinity();
-		try
+		TaskResult result(task.getSpecification(), TaskMetrics(Duration::zero(), 0, 0));
+
+		auto thread = std::thread([&task, &result]
 		{
-			task.prepare();
+			ExecutionParameters parameters;
+			result = task.execute(parameters);
+		});
 
-			auto start = Timer::now();
-			task.execute();
-			auto end = Timer::now();
+		thread.join();
 
-			auto result = task.calculateTaskResult(end - start - (Timer::getNowOverhead<>() * 2));
-
-			task.finalize();
-
-			return result;
-		}
-		catch (...)
-		{
-			task.finalize();    // Finalize the task to clean it's internal resources
-			throw;
-		}
+		return result;
 	}
 
 	void BenchmarkRunner::raiseBenchmarkStarted(const Benchmark& benchmark)
@@ -172,16 +187,28 @@ namespace Elpida
 		benchmarkEnded.raise(args);
 	}
 
-	void BenchmarkRunner::raiseTaskStarted(const Task& task)
+	void BenchmarkRunner::raiseTaskStarted(const TaskBuilder& taskBuilder)
 	{
-		TaskEventArgs args(task.getSpecification());
+		TaskEventArgs args(taskBuilder);
 		taskStarted.raise(args);
 	}
 
-	void BenchmarkRunner::raiseTasksEnded(const Task& task)
+	void BenchmarkRunner::raiseTasksEnded(const TaskBuilder& taskBuilder)
 	{
-		TaskEventArgs args(task.getSpecification());
+		TaskEventArgs args(taskBuilder);
 		taskEnded.raise(args);
+	}
+
+	void BenchmarkRunner::raiseTaskIterationStarted(const TaskBuilder& taskBuilder, size_t iteration)
+	{
+		TaskEventArgs args(taskBuilder, iteration);
+		taskIterationStarted.raise(args);
+	}
+
+	void BenchmarkRunner::raiseTaskIterationEnded(const TaskBuilder& taskBuilder, size_t iteration)
+	{
+		TaskEventArgs args(taskBuilder, iteration);
+		taskIterationEnded.raise(args);
 	}
 
 }

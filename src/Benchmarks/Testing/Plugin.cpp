@@ -40,7 +40,7 @@ extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void elpidaDestroyPlugin(BenchmarksConta
 	delete plugin;
 }
 
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Benchmark>* elpidaCreatePlugin()
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Benchmark>* elpidaCreatePlugin(const ServiceProvider* serviceProvider)
 {
 	auto plugin = new BenchmarksContainerPlugin<Benchmark>("Testing Benchmarks");
 

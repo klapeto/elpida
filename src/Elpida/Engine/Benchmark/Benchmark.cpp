@@ -42,7 +42,8 @@ namespace Elpida
 	}
 
 	std::vector<BenchmarkTaskInstance> Benchmark::createNewTasks(const TaskAffinity& affinity,
-		const BenchmarkConfiguration& configuration) const
+		const BenchmarkConfiguration& configuration,
+		const ServiceProvider& serviceProvider) const
 	{
 		if (!affinity.getProcessorNodes().empty())
 		{
@@ -60,13 +61,15 @@ namespace Elpida
 								builder.getTaskSpecification().getName(),
 								"' requires configuration that was not provided!"));
 					}
-					if (!builder.canBeDisabled() || taskConfiguration->get().isEnabled())
+					if (builder.shouldBeExecuted(*taskConfiguration, *affinity.getProcessorNodes().front(), serviceProvider)
+						&& (!builder.canBeDisabled() || taskConfiguration->get().isEnabled()))
 					{
 						if (builder.canBeMultiThreaded())
 						{
 							tasks.emplace_back(std::make_unique<MultiThreadTask>(builder,
 								*taskConfiguration,
 								affinity,
+								serviceProvider,
 								builder.getIterationsToRun()), builder);
 						}
 						else
@@ -74,7 +77,8 @@ namespace Elpida
 							tasks.emplace_back(
 								builder.build(
 									*taskConfiguration,
-									*affinity.getProcessorNodes().front()),
+									*affinity.getProcessorNodes().front(),
+									serviceProvider),
 									builder);
 						}
 					}

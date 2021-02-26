@@ -34,13 +34,13 @@ namespace Elpida
 
 	typedef
 #if __x86_64__ || _M_AMD64
-	int64_t
+	uint64_t
 #elif __i386__ || __i386 || _X86_
-	int32_t
+	uint32_t
 #else
 #error Elipda currently only supports X86-64 and X86 achritectures
 #endif
-		RegisterSize;
+		RegisterType;
 
 	class WorkingSetSizes
 	{
@@ -78,9 +78,9 @@ namespace Elpida
 		};
 
 		static constexpr inline int Values[] = {
-			B_256, B_512,
-			KiB_1, KiB_2, KiB_4, KiB_8, KiB_16, KiB_32, KiB_64, KiB_128, KiB_256, KiB_512,
-			MiB_1, MiB_2, MiB_4, MiB_8, MiB_16, MiB_32, MiB_64, MiB_128, MiB_256, MiB_512,
+			B_512,
+			KiB_2, KiB_4, KiB_8, KiB_16, KiB_32, KiB_64, KiB_128, KiB_256, KiB_512,
+			MiB_2, MiB_4, MiB_8, MiB_16, MiB_32, MiB_64, MiB_128, MiB_256, MiB_512,
 		};
 
 		WorkingSetSizes() = delete;

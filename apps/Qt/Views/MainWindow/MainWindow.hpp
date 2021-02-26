@@ -36,6 +36,8 @@ namespace Elpida
 	class ScreensModel;
 	class ScreenItem;
 	class AffinityModel;
+	class BenchmarkResultsModel;
+	class ResultFormatter;
 
 	namespace Ui
 	{
@@ -49,12 +51,18 @@ namespace Elpida
 
 		void handle(ShowMessageCommand& command) override;
 
-		explicit MainWindow(Mediator& mediator, ScreensModel& screensModel, const AffinityModel& affinityModel);
+		explicit MainWindow(Mediator& mediator,
+			ScreensModel& screensModel,
+			const AffinityModel& affinityModel,
+			BenchmarkResultsModel& benchmarkResultsModel,
+			const ResultFormatter& resultFormatter);
 		~MainWindow() override;
 	private slots:
 		void on_actionExit_triggered();
 		void on_actionAbout_triggered();
 		void on_actionVisit_Website_triggered();
+		void on_actionSave_Results_As_triggered();
+		void on_actionClear_results_triggered();
 		void showMessageRequestedHandler(const QString& message, int type);
 
 		void onScreenAdded(const ScreenItem* screen);
@@ -75,6 +83,8 @@ namespace Elpida
 		QLabel* _processorsLabel;
 		ScreensModel& _screensModel;
 		const AffinityModel& _affinityModel;
+		BenchmarkResultsModel& _benchmarkResultsModel;
+		const ResultFormatter& _resultFormatter;
 	};
 
 }  // namespace Elpida

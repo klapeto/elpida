@@ -32,41 +32,20 @@
 namespace Elpida
 {
 
-	class Timer
+	class Timer final
 	{
+	private:
+		using Clock = std::chrono::high_resolution_clock;
 	public:
 
-		typedef std::chrono::high_resolution_clock Clock;
+		using time_point = Clock::time_point;
+		using duration = Clock::duration;
+		using rep = Clock::rep;
+		using period = Clock::period;
 
-		static Clock::time_point now();
+		static time_point now();
 
-		template<typename T = double>
-		static std::chrono::duration<T> getNowOverhead()
-		{
-			return std::chrono::duration<T>(getNowOverheadNanoseconds());
-		}
-
-	private:
-		static std::chrono::nanoseconds getNowOverheadNanoseconds()
-		{
-			static int64_t returnValue = getNowOverheadImpl();
-			return std::chrono::nanoseconds(returnValue);
-		}
-
-		static int64_t getNowOverheadImpl()
-		{
-			int64_t returnValue = 0xFFFFFFFF;
-			for (int i = 0; i < 20; ++i)
-			{
-				auto start = Clock::now();
-				auto lag = std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now() - start).count();
-				if (lag < returnValue)
-				{
-					returnValue = lag;
-				}
-			}
-			return returnValue;
-		}
+		Timer() = delete;
 	};
 
 } /* namespace Elpida */

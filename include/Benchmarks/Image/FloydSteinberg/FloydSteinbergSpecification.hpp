@@ -37,8 +37,10 @@ namespace Elpida
 			static inline const char* Threshold = "Threshold";
 		};
 
-		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
+		[[nodiscard]]
+		std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
+			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun) const override;
 
 		FloydSteinbergSpecification();
