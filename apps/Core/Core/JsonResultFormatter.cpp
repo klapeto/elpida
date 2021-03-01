@@ -280,7 +280,7 @@ namespace Elpida
 		resultJ["name"] = result.getTaskSpecification().getName();
 		resultJ["description"] = result.getTaskSpecification().getDescription();
 		resultJ["value"] = result.getFinalMetrics().getResultValue();
-		resultJ["time"] = result.getFinalMetrics().getDuration().count();
+		resultJ["time"] = DurationCast<Seconds>(result.getFinalMetrics().getDuration()).count();
 		resultJ["type"] = result.getTaskSpecification().getResultSpecification().getType();
 		resultJ["suffix"] = result.getTaskSpecification().getResultSpecification().getUnit();
 		resultJ["inputSize"] = result.getFinalMetrics().getInputDataSize();
