@@ -228,12 +228,14 @@ namespace Elpida
 	{
 		json timingJ;
 
-		timingJ["notifyOverhead"] = timingInfo.getNotifyOverhead().count();
-		timingJ["wakeupOverhead"] = timingInfo.getWakeupOverhead().count();
-		timingJ["sleepOverhead"] = timingInfo.getSleepOverhead().count();
-		timingJ["nowOverhead"] = timingInfo.getNowOverhead().count();
-		timingJ["lockOverhead"] = timingInfo.getLockOverhead().count();
-		timingJ["targetTime"] = timingInfo.getTargetTime().count();
+		timingJ["notifyOverhead"] = DurationCast<Seconds>(timingInfo.getNotifyOverhead()).count();
+		timingJ["wakeupOverhead"] = DurationCast<Seconds>(timingInfo.getWakeupOverhead()).count();
+		timingJ["sleepOverhead"] = DurationCast<Seconds>(timingInfo.getSleepOverhead()).count();
+		timingJ["nowOverhead"] = DurationCast<Seconds>(timingInfo.getNowOverhead()).count();
+		timingJ["lockOverhead"] = DurationCast<Seconds>(timingInfo.getLockOverhead()).count();
+		timingJ["loopOverhead"] = DurationCast<Seconds>(timingInfo.getLoopOverhead()).count();
+		timingJ["joinOverhead"] = DurationCast<Seconds>(timingInfo.getJoinOverhead()).count();
+		timingJ["targetTime"] = DurationCast<Seconds>(timingInfo.getTargetTime()).count();
 
 		return timingJ;
 	}
@@ -268,7 +270,7 @@ namespace Elpida
 		json resultJ;
 
 		resultJ["value"] = metrics.getResultValue();
-		resultJ["time"] = metrics.getDuration().count();
+		resultJ["time"] = DurationCast<Seconds>(metrics.getDuration()).count();
 
 		return resultJ;
 	}
