@@ -43,7 +43,8 @@ namespace Elpida
 
 	ReadFileSpecification::ReadFileSpecification()
 		: TaskSpecification("Read File to Memory",
-		ResultSpecification("Read Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative))
+		ResultSpecification("Read Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative),
+		"BE159A99-83C7-4699-9F0C-28851CFA5DDA")
 	{
 		withDescription("Reads a file from disk to memory");
 		withOutputData(DataSpecification("File contents", "B", "File contents in bytes"));

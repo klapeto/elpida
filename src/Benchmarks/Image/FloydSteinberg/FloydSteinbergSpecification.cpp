@@ -44,7 +44,8 @@ namespace Elpida
 		ResultSpecification("Conversion Rate",
 			"Pixels",
 			ResultType::Throughput,
-			ResultSpecification::Accumulative))
+			ResultSpecification::Accumulative),
+		"51CEE7BF-1E78-4647-BA01-1DC95EF3DCB1")
 	{
 
 		withDescription("Converts an Gray Scale image to Black-White dithered with Floyd Steinbergs algorithm");

@@ -90,7 +90,9 @@ std::unique_ptr<Benchmark> createMemoryReadLatency(
 	const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
 	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
 {
-	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency (Slow)", benchmarkScoreCalculator);
+	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency (Slow)",
+		benchmarkScoreCalculator,
+		"B635458F-018C-4291-AF82-94ABB40EC6DD");
 
 	auto readLatencySpec = std::make_shared<MemoryLatencySpecification>("Memory");
 
@@ -185,7 +187,9 @@ std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
 	const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
 	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
 {
-	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency (Fast)", benchmarkScoreCalculator);
+	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency (Fast)",
+		benchmarkScoreCalculator,
+		"AB56495E-F6CF-4EB3-A8A9-2550C2C9A735");
 
 
 	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L1D"))
@@ -272,7 +276,9 @@ std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
 std::unique_ptr<Benchmark> createMemoryReadBandwidth(const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
 	const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
 {
-	auto benchmark = std::make_unique<Benchmark>("Memory Read Bandwidth", benchmarkScoreCalculator);
+	auto benchmark = std::make_unique<Benchmark>("Memory Read Bandwidth",
+		benchmarkScoreCalculator,
+		"9B198C61-5907-481F-8E67-A59EA885CA0A");
 
 	benchmark->AddTask<MemoryReadBandwidthSpecification>()
 		.shouldBeCountedOnResults(true)

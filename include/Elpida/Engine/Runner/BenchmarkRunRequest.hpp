@@ -33,11 +33,13 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] const Benchmark& getBenchmark() const
+		[[nodiscard]]
+		const Benchmark& getBenchmark() const
 		{
 			return _benchmark;
 		}
-		[[nodiscard]] const BenchmarkConfiguration& getConfiguration() const
+		[[nodiscard]]
+		const BenchmarkConfiguration& getConfiguration() const
 		{
 			return _configuration;
 		}

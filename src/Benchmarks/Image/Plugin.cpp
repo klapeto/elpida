@@ -54,7 +54,9 @@ extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void elpidaDestroyPlugin(Elpida::Benchma
 static std::unique_ptr<Benchmark> createPngEncodingDecoding()
 {
 	auto benchmark =
-		std::make_unique<Benchmark>("Png Encoding/Decoding", std::make_shared<AccumulativeScoreCalculator>());
+		std::make_unique<Benchmark>("Png Encoding/Decoding",
+			std::make_shared<AccumulativeScoreCalculator>(),
+			"FE6B2282-34FF-4AA1-BBA9-CA0DE7BAF086");
 
 	benchmark->AddTask<ReadFileSpecification>()
 		.shouldBeCountedOnResults(false)
@@ -80,7 +82,9 @@ static std::unique_ptr<Benchmark> createFloydSteinberg()
 {
 
 	auto benchmark =
-		std::make_unique<Benchmark>("Floyd Steinberg Dithering", std::make_unique<AccumulativeScoreCalculator>());
+		std::make_unique<Benchmark>("Floyd Steinberg Dithering",
+			std::make_unique<AccumulativeScoreCalculator>(),
+			"98D86779-62F1-4F75-9262-0A65705DFCA3");
 
 	benchmark->AddTask<ReadFileSpecification>()
 		.shouldBeCountedOnResults(false)

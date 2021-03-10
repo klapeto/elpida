@@ -73,7 +73,7 @@
 using namespace Elpida;
 
 void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWidget);
-void loadGlobalConfiguration(GlobalConfigurationModel& configurationModel);
+void loadDefaultGlobalConfiguration(GlobalConfigurationModel& configurationModel);
 int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configurationModel, int argC, char** argV);
 void initializeTaskTab(ScreensModel& screensModel,
 	BenchmarkListView& taskBatchesListWidget,
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
 
 	GlobalConfigurationModel globalConfigurationModel;
 
-	loadGlobalConfiguration(globalConfigurationModel);
+	loadDefaultGlobalConfiguration(globalConfigurationModel);
 
 	auto exitCode = processArgumentsAndCheckIfWeMustExit(globalConfigurationModel, argc, argv);
 	if (exitCode != NON_EXIT_CODE)
@@ -279,7 +279,7 @@ void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWid
 	screensModel.add(ScreenItem("System Topology", *container));
 }
 
-void loadGlobalConfiguration(GlobalConfigurationModel& configurationModel)
+void loadDefaultGlobalConfiguration(GlobalConfigurationModel& configurationModel)
 {
 	configurationModel.transactional<GlobalConfigurationModel>([](GlobalConfigurationModel& configurationModel)
 	{

@@ -43,7 +43,8 @@ namespace Elpida
 			"Pixels",
 			ResultType::Throughput,
 			ResultSpecification::Accumulative,
-			"The rate the pixels are converted from float to int"))
+			"The rate the pixels are converted from float to int"),
+		"050B949C-D4A7-4AC2-8F86-7E659EA2FAB3")
 	{
 
 		withDescription("Converts the image data from float to integer");

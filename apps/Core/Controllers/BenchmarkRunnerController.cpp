@@ -103,7 +103,7 @@ namespace Elpida
 					for (auto& bench: benchmarks)
 					{
 						benchmarkRunRequests
-							.emplace_back(bench, _configurationsModel.getConst(bench.get().getId()));
+							.emplace_back(bench, _configurationsModel.getConst(bench.get().getUuid()));
 					}
 					_taskRunnerThread.run([this, aff(affinity), benches(benchmarkRunRequests)]()
 					{

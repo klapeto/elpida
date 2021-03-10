@@ -35,10 +35,11 @@ namespace Elpida
 {
 
 	Benchmark::Benchmark(std::string name,
-		std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator)
+		std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator,
+		std::string uuid)
 		: _name(std::move(name)), _scoreCalculator(std::move(scoreCalculator))
 	{
-		_id = Uuid::create();
+		_id = !uuid.empty() ? std::move(uuid) : name + Uuid::create();
 	}
 
 	std::vector<BenchmarkTaskInstance> Benchmark::createNewTasks(const TaskAffinity& affinity,

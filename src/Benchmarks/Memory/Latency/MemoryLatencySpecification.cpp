@@ -30,7 +30,8 @@ namespace Elpida
 
 	MemoryLatencySpecification::MemoryLatencySpecification(const std::string& name)
 		: TaskSpecification(name + " Latency",
-		ResultSpecification("Access time", "s", ResultType::Raw, ResultSpecification::Average))
+		ResultSpecification("Access time", "s", ResultType::Raw, ResultSpecification::Average),
+		"BA3C55AB-3927-4191-A348-3D39E6D4FDD8")
 	{
 		withDescription("Reads continuously a memory region to determine memory read latency");
 

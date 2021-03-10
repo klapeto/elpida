@@ -279,6 +279,7 @@ namespace Elpida
 	{
 		json resultJ;
 
+		resultJ["id"] = result.getTaskSpecification().getUuid();
 		resultJ["name"] = result.getTaskSpecification().getName();
 		resultJ["description"] = result.getTaskSpecification().getDescription();
 		resultJ["value"] = result.getFinalMetrics().getResultValue();
@@ -320,6 +321,7 @@ namespace Elpida
 	{
 		json resultJ;
 
+		resultJ["id"] = result.getBenchmark().getUuid();
 		resultJ["name"] = result.getBenchmark().getName();
 		{
 			auto taskResults = json::array();

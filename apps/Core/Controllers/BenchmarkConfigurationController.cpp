@@ -43,7 +43,7 @@ namespace Elpida
 		OptionalReference<BenchmarkConfiguration> conf;
 		if (currentBenchmark.has_value())
 		{
-			conf = _benchmarkConfigurationsCollectionModel.get(currentBenchmark->get().getId());
+			conf = _benchmarkConfigurationsCollectionModel.get(currentBenchmark->get().getUuid());
 		}
 
 		_configurationModel
