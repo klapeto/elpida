@@ -275,62 +275,110 @@ namespace Elpida
 		return resultJ;
 	}
 
+	static json getDataSpecification(const DataSpecification& dataSpecification)
+	{
+		json returnJson;
+
+		returnJson["name"] = dataSpecification.getName();
+		returnJson["description"] = dataSpecification.getDescription();
+		returnJson["unit"] = dataSpecification.getUnit();
+
+		json propertiesJ = json::array();
+
+		for (auto& property: dataSpecification.getRequiredPropertiesNames())
+		{
+			propertiesJ.push_back(property);
+		}
+
+
+		returnJson["requiredProperties"] = std::move(propertiesJ);
+
+		return returnJson;
+	}
+
+	static json getResultSpecification(const ResultSpecification& resultSpecification)
+	{
+		json returnJson;
+
+		returnJson["name"] = resultSpecification.getName();
+		returnJson["description"] = resultSpecification.getDescription();
+		returnJson["unit"] = resultSpecification.getUnit();
+		returnJson["aggregation"] = resultSpecification.getAggregationType();
+		returnJson["type"] = resultSpecification.getType();
+
+		return returnJson;
+	}
+
+	static json getBasicStatistics(const BasicStatistics& statistics)
+	{
+		json returnJson;
+
+		returnJson["sampleSize"] = statistics.sampleSize;
+		returnJson["max"] = statistics.max;
+		returnJson["min"] = statistics.min;
+		returnJson["mean"] = statistics.mean;
+		returnJson["sd"] = statistics.standardDeviation;
+		returnJson["tau"] = statistics.tau;
+		returnJson["marginOfError"] = statistics.marginOfError;
+
+		return returnJson;
+	}
+
+	template<typename T, typename TCallable>
+	static json getCollection(const T& collection, TCallable callable)
+	{
+		json returnJson = json::array();
+
+		for (const auto& value: collection)
+		{
+
+			returnJson.push_back(callable(value));
+		}
+
+		return returnJson;
+	}
+
 	static json getProcessedTaskResult(const ProcessedTaskResult& result)
 	{
-		json resultJ;
+		json taskJ;
 
-		resultJ["id"] = result.getTaskSpecification().getUuid();
-		resultJ["name"] = result.getTaskSpecification().getName();
-		resultJ["description"] = result.getTaskSpecification().getDescription();
-		resultJ["value"] = result.getFinalMetrics().getResultValue();
-		resultJ["time"] = DurationCast<Seconds>(result.getFinalMetrics().getDuration()).count();
-		resultJ["type"] = result.getTaskSpecification().getResultSpecification().getType();
-		resultJ["suffix"] = result.getTaskSpecification().getResultSpecification().getUnit();
-		resultJ["inputSize"] = result.getFinalMetrics().getInputDataSize();
-		resultJ["inputSuffix"] = result.getTaskSpecification().getInputDataSpecification().getUnit();
+		auto& spec = result.getTaskSpecification();
 
-		{
-			auto taskOutliers = json::array();
-			for (auto& taskResult: result.getOutliers())
+		taskJ["uuid"] = spec.getUuid();
+		taskJ["name"] = spec.getName();
+		taskJ["description"] = spec.getDescription();
+
+		taskJ["result"] = getResultSpecification(spec.getResultSpecification());
+		taskJ["input"] = spec.acceptsInput() ? getDataSpecification(spec.getInputDataSpecification()) : (json)nullptr;
+		taskJ["output"] = spec.producesOutput() ? getDataSpecification(spec.getInputDataSpecification()): (json)nullptr;
+
+		taskJ["value"] = result.getFinalMetrics().getResultValue();
+		taskJ["time"] = DurationCast<Seconds>(result.getFinalMetrics().getDuration()).count();
+		taskJ["inputSize"] = result.getFinalMetrics().getInputDataSize();
+
+		taskJ["outliers"] = getCollection(result.getOutliers(),
+			[](const auto& outlier)
 			{
-				taskOutliers.push_back(getTaskMetrics(taskResult));
-			}
+				return getTaskMetrics(outlier);
+			});
 
-			resultJ["outliers"] = taskOutliers;
-		}
+		taskJ["statistics"] = getBasicStatistics(result.getBasicStatistics());
 
-		{
-			auto stats = result.getBasicStatistics();
-			auto statistics = json::object();
-
-			statistics["sampleSize"] = stats.sampleSize;
-			statistics["max"] = stats.max;
-			statistics["min"] = stats.min;
-			statistics["mean"] = stats.mean;
-			statistics["sd"] = stats.standardDeviation;
-			statistics["tau"] = stats.tau;
-			statistics["marginOfError"] = stats.marginOfError;
-
-			resultJ["statistics"] = statistics;
-		}
-
-		return resultJ;
+		return taskJ;
 	}
 
 	static json getResult(const BenchmarkResult& result)
 	{
 		json resultJ;
 
-		resultJ["id"] = result.getBenchmark().getUuid();
+		resultJ["uuid"] = result.getBenchmark().getUuid();
 		resultJ["name"] = result.getBenchmark().getName();
-		{
-			auto taskResults = json::array();
-			for (auto& taskResult: result.getTaskResults())
+
+		resultJ["taskResults"] = getCollection(result.getTaskResults(),
+			[](const auto& result)
 			{
-				taskResults.push_back(getProcessedTaskResult(taskResult));
-			}
-			resultJ["taskResults"] = taskResults;
-		}
+				return getProcessedTaskResult(result);
+			});
 
 		return resultJ;
 	}

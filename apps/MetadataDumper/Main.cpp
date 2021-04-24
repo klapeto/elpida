@@ -174,6 +174,7 @@ void loadDefaultGlobalConfiguration(GlobalConfigurationModel& configurationModel
 
 int main(int argC, char** argV)
 {
+
 	GlobalConfigurationModel configurationModel;
 
 	loadDefaultGlobalConfiguration(configurationModel);
@@ -208,102 +209,88 @@ int main(int argC, char** argV)
 
 	auto& benchmarkGroups = benchmarksModel.getItems();
 
-	std::unordered_map<std::string, const TaskSpecification*> taskSpecifications;
-
 	json root;
 
+	json benchmarksJ = json::array();
+	for (const auto& benchmarkGroup: benchmarkGroups)
 	{
-		json benchmarksJ = json::array();
-		for (const auto& benchmarkGroup: benchmarkGroups)
+		for (auto& benchmark: benchmarkGroup.getValue().getBenchmarks())
 		{
-			for (auto& benchmark: benchmarkGroup.getValue().getBenchmarks())
+			json benchJ;
+			benchJ["uuid"] = benchmark->getUuid();
+			benchJ["name"] = benchmark->getName();
 			{
-				json benchJ;
-				benchJ["id"] = benchmark->getUuid();
-				benchJ["name"] = benchmark->getName();
+				json tasksJ = json::array();
+				for (auto& task: benchmark->getTaskBuilders())
 				{
-					json tasksJ = json::array();
-					for (auto& task: benchmark->getTaskBuilders())
+					auto& taskSpec = task.getTaskSpecification();
+
+					json taskSpecJ;
+
+					taskSpecJ["uuid"] = taskSpec.getUuid();
+					taskSpecJ["name"] = taskSpec.getName();
+					taskSpecJ["description"] = taskSpec.getDescription();
+
 					{
-						auto& taskSpec = task.getTaskSpecification();
-						if (taskSpecifications.find(taskSpec.getUuid()) == taskSpecifications.end())
+						auto& resultSpec = taskSpec.getResultSpecification();
+						json resultJ;
+
+						resultJ["name"] = resultSpec.getName();
+						resultJ["description"] = resultSpec.getDescription();
+						resultJ["type"] = resultSpec.getType();
+						resultJ["aggregation"] = resultSpec.getAggregationType();
+						resultJ["unit"] = resultSpec.getUnit();
+
+						taskSpecJ["result"] = std::move(resultJ);
+					}
+
+					if (taskSpec.acceptsInput())
+					{
+						auto& inputSpec = taskSpec.getInputDataSpecification();
+						json inputJ;
+
+						inputJ["name"] = inputSpec.getName();
+						inputJ["description"] = inputSpec.getDescription();
+						inputJ["unit"] = inputSpec.getUnit();
+
+						if (!inputSpec.getRequiredPropertiesNames().empty())
 						{
-							taskSpecifications.emplace(taskSpec.getUuid(), &taskSpec);
+							json propsJ = json::array();
+
+							for (auto& property: inputSpec.getRequiredPropertiesNames())
+							{
+								propsJ.push_back(property);
+							}
+
+							inputJ["requiredProperties"] = propsJ;
 						}
 
-						tasksJ.push_back(taskSpec.getUuid());
+						taskSpecJ["input"] = std::move(inputJ);
 					}
-					benchJ["taskSpecifications"] = tasksJ;
-				}
 
-				benchmarksJ.push_back(std::move(benchJ));
-			}
-		}
-
-		root["benchmarks"] = std::move(benchmarksJ);
-	}
-
-	{
-		json tasksJ = json::array();
-		for (auto& pair: taskSpecifications)
-		{
-			json taskJ;
-
-			taskJ["id"] = pair.first;
-			taskJ["name"] = pair.second->getName();
-			taskJ["description"] = pair.second->getDescription();
-
-			{
-				auto& resultSpec = pair.second->getResultSpecification();
-				json resultJ;
-
-				resultJ["name"] = resultSpec.getName();
-				resultJ["description"] = resultSpec.getDescription();
-				resultJ["type"] = resultSpec.getType();
-				resultJ["aggregation"] = resultSpec.getAggregationType();
-				resultJ["unit"] = resultSpec.getUnit();
-
-				taskJ["result"] = std::move(resultJ);
-			}
-
-			{
-				auto& inputSpec = pair.second->getInputDataSpecification();
-				json inputJ;
-
-				inputJ["name"] = inputSpec.getName();
-				inputJ["description"] = inputSpec.getDescription();
-				inputJ["unit"] = inputSpec.getUnit();
-
-				{
-					json propsJ = json::array();
-
-					for (auto& property: inputSpec.getRequiredPropertiesNames())
+					if (taskSpec.producesOutput())
 					{
-						propsJ.push_back(property);
+						auto& outputSpec = taskSpec.getOutputDataSpecification();
+						json outputJ;
+
+						outputJ["name"] = outputSpec.getName();
+						outputJ["description"] = outputSpec.getDescription();
+						outputJ["unit"] = outputSpec.getUnit();
+
+						taskSpecJ["output"] = std::move(outputJ);
 					}
 
-					inputJ["requiredProperties"] = propsJ;
+
+					tasksJ.push_back(std::move(taskSpecJ));
 				}
-
-				taskJ["input"] = std::move(inputJ);
+				benchJ["taskSpecifications"] = tasksJ;
 			}
 
-			{
-				auto& outputSpec = pair.second->getOutputDataSpecification();
-				json outputJ;
-
-				outputJ["name"] = outputSpec.getName();
-				outputJ["description"] = outputSpec.getDescription();
-				outputJ["unit"] = outputSpec.getUnit();
-
-				taskJ["output"] = std::move(outputJ);
-			}
-
-			tasksJ.push_back(std::move(taskJ));
+			benchmarksJ.push_back(std::move(benchJ));
 		}
-
-		root["tasks"] = std::move(tasksJ);
 	}
+
+	root["benchmarks"] = std::move(benchmarksJ);
 
 
 	std::cout << root.dump() << std::endl;

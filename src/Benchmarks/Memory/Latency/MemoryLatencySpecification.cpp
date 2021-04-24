@@ -28,10 +28,10 @@
 namespace Elpida
 {
 
-	MemoryLatencySpecification::MemoryLatencySpecification(const std::string& name)
-		: TaskSpecification(name + " Latency",
+	MemoryLatencySpecification::MemoryLatencySpecification(const std::string& name, const std::string& uuid)
+		: TaskSpecification(name,
 		ResultSpecification("Access time", "s", ResultType::Raw, ResultSpecification::Average),
-		"BA3C55AB-3927-4191-A348-3D39E6D4FDD8")
+		uuid)
 	{
 		withDescription("Reads continuously a memory region to determine memory read latency");
 
