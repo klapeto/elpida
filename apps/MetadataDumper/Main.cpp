@@ -172,6 +172,29 @@ void loadDefaultGlobalConfiguration(GlobalConfigurationModel& configurationModel
 	});
 }
 
+static json getResultSpec(const ResultSpecification& resultSpecification)
+{
+	json resultJ;
+
+	resultJ["name"] = resultSpecification.getName();
+	resultJ["description"] = resultSpecification.getDescription();
+	resultJ["type"] = resultSpecification.getType();
+	resultJ["aggregation"] = resultSpecification.getAggregationType();
+	resultJ["unit"] = resultSpecification.getUnit();
+
+	return resultJ;
+}
+
+static json getBenchmarkScoreSpecification(const BenchmarkScoreSpecification& scoreSpecification)
+{
+	json returnJson;
+
+	returnJson["unit"] = scoreSpecification.getUnit();
+	returnJson["comparison"] = scoreSpecification.getComparison();
+
+	return returnJson;
+}
+
 int main(int argC, char** argV)
 {
 
@@ -219,6 +242,9 @@ int main(int argC, char** argV)
 			json benchJ;
 			benchJ["uuid"] = benchmark->getUuid();
 			benchJ["name"] = benchmark->getName();
+
+			benchJ["scoreSpecification"] = getBenchmarkScoreSpecification(benchmark->getScoreSpecification());
+
 			{
 				json tasksJ = json::array();
 				for (auto& task: benchmark->getTaskBuilders())
@@ -231,18 +257,7 @@ int main(int argC, char** argV)
 					taskSpecJ["name"] = taskSpec.getName();
 					taskSpecJ["description"] = taskSpec.getDescription();
 
-					{
-						auto& resultSpec = taskSpec.getResultSpecification();
-						json resultJ;
-
-						resultJ["name"] = resultSpec.getName();
-						resultJ["description"] = resultSpec.getDescription();
-						resultJ["type"] = resultSpec.getType();
-						resultJ["aggregation"] = resultSpec.getAggregationType();
-						resultJ["unit"] = resultSpec.getUnit();
-
-						taskSpecJ["result"] = std::move(resultJ);
-					}
+					taskSpecJ["result"] = getResultSpec(taskSpec.getResultSpecification());
 
 					if (taskSpec.acceptsInput())
 					{

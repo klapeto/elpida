@@ -47,60 +47,22 @@
 using namespace Elpida;
 
 
-std::unique_ptr<Benchmark> createMemoryReadBandwidth(
-		const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
-		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator);
-
-std::unique_ptr<Benchmark> createMemoryReadLatency(
-		const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
-		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator);
-
-std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
-		const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
-		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator);
-
-
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL int32_t elpidaPluginAbiVersion()
-{
-	return ELPIDA_PLUGIN_ABI_VERSION;
-}
-
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void
-elpidaDestroyPlugin(Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* plugin)
-{
-	delete plugin;
-}
-
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>*
-elpidaCreatePlugin(const ServiceProvider* serviceProvider)
-{
-	using Plugin = BenchmarksContainerPlugin<Benchmark>;
-
-	auto plugin = new Plugin("Memory Benchmarks");
-
-	auto averageTimeScoreCalculator = std::make_shared<AverageScoreCalculator>("s");
-	auto averageTaskCalculator = std::make_shared<ExclusiveHarmonicMeanTaskResultCalculator>(1);
-	auto averageBandwidthScoreCalculator = std::make_shared<AccumulativeScoreCalculator>("B", ResultType::Throughput);
-
-	plugin->add(createMemoryReadBandwidth(averageBandwidthScoreCalculator, averageTaskCalculator));
-	plugin->add(createMemoryReadLatency(averageTimeScoreCalculator, averageTaskCalculator));
-	plugin->add(createMemoryReadLatencyFast(averageTimeScoreCalculator, averageTaskCalculator));
-
-	return plugin;
-}
-
-std::unique_ptr<Benchmark> createMemoryReadLatency(
-		const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+std::unique_ptr<Benchmark> createOverallMemoryLatency(
+		const BenchmarkScoreSpecification& scoreSpecification,
+		const SharedStructuresProvider& structuresProvider,
 		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
 {
-	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency (Slow)",
-			benchmarkScoreCalculator,
-			"B635458F-018C-4291-AF82-94ABB40EC6DD");
+
+	auto benchmark = std::make_unique<Benchmark>("Overall memory latency",
+			scoreSpecification,
+			structuresProvider.getAverageBenchmarkScoreCalculator(),
+			"2b3bb7da-0226-4a96-a473-1dc67ee37422");
 
 	for (const auto&[uuid, value] : WorkingSetSizes::BenchmarkValues)
 	{
 		auto memorySize = value;
-		benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("Memory Latency ["+ Vu::getValueScaleStringIEC(memorySize) + "B]", uuid))
+		benchmark->AddTask(std::make_shared<MemoryLatencySpecification>(
+						"Memory Latency [" + Vu::getValueScaleStringIEC(memorySize) + "B]", uuid))
 				.shouldBeCountedOnResults(true)
 				.withIterationsToRun(50)
 				.withTaskResultCalculator(taskResultCalculator)
@@ -186,16 +148,18 @@ static size_t calculateSizeForTargetProcessorType(const ProcessorNode& processor
 	return currentProcessor.has_value() ? currentProcessor->get().getValue() : processorNode.getValue();
 }
 
-std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
-		const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+std::unique_ptr<Benchmark> createL1DLatency(
+		const BenchmarkScoreSpecification& scoreSpecification,
+		const SharedStructuresProvider& structuresProvider,
 		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
 {
-	auto benchmark = std::make_unique<Benchmark>("Memory Read Latency (Fast)",
-			benchmarkScoreCalculator,
-			"AB56495E-F6CF-4EB3-A8A9-2550C2C9A735");
+	auto benchmark = std::make_unique<Benchmark>("L1D Cache Latency",
+			scoreSpecification,
+			structuresProvider.getAverageBenchmarkScoreCalculator(),
+			"ebe54867-eb7e-4848-8bd0-5286b77fdcdd");
 
-
-	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L1D Cache Latency", "BA3C55AB-3927-4191-A348-3D39E6D4FDD8"))
+	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L1D Cache Latency",
+					"7b401200-1e5a-4e3e-96b4-59ece5c23e3b"))
 			.shouldBeCountedOnResults(true)
 			.withIterationsToRun(50)
 			.withTaskResultCalculator(taskResultCalculator)
@@ -217,7 +181,21 @@ std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
 										}) / 2;
 							}));
 
-	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L2D Cache Latency", "88226846-7DE3-4AC3-8A1A-BA83460D4987"))
+	return benchmark;
+}
+
+std::unique_ptr<Benchmark> createL2DLatency(
+		const BenchmarkScoreSpecification& scoreSpecification,
+		const SharedStructuresProvider& structuresProvider,
+		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
+{
+	auto benchmark = std::make_unique<Benchmark>("L2D Cache Latency",
+			scoreSpecification,
+			structuresProvider.getAverageBenchmarkScoreCalculator(),
+			"3ad2c346-926c-4f2f-b57a-0a046757b7eb");
+
+	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L2D Cache Latency",
+					"bf049f8d-3b84-4e98-badb-bf8cf0ca0249"))
 			.shouldBeCountedOnResults(true)
 			.withIterationsToRun(50)
 			.withTaskResultCalculator(taskResultCalculator)
@@ -239,8 +217,21 @@ std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
 										}) / 2;
 							}));
 
+	return benchmark;
+}
 
-	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L3D Cache Latency", "10655876-F51F-44FB-AEE7-04072566DEC3"))
+std::unique_ptr<Benchmark> createL3DLatency(
+		const BenchmarkScoreSpecification& scoreSpecification,
+		const SharedStructuresProvider& structuresProvider,
+		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
+{
+	auto benchmark = std::make_unique<Benchmark>("L3D Cache Latency",
+			scoreSpecification,
+			structuresProvider.getAverageBenchmarkScoreCalculator(),
+			"4543c724-b17b-4425-8104-79d819825621");
+
+	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("L3D Cache Latency",
+					"4552ef8e-c4f8-44d6-8a49-7d24eb8f5df1"))
 			.shouldBeCountedOnResults(true)
 			.withIterationsToRun(50)
 			.withTaskResultCalculator(taskResultCalculator)
@@ -262,8 +253,22 @@ std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
 										}) / 2;
 							}));
 
+	return benchmark;
+}
 
-	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("DRAM Latency", "AF8A14AC-D930-493E-846B-A6659DADABF5"))
+
+std::unique_ptr<Benchmark> createDramLatency(
+		const BenchmarkScoreSpecification& scoreSpecification,
+		const SharedStructuresProvider& structuresProvider,
+		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
+{
+	auto benchmark = std::make_unique<Benchmark>("DRAM Latency",
+			scoreSpecification,
+			structuresProvider.getAverageBenchmarkScoreCalculator(),
+			"7626cdc2-6f7b-4c34-8cf9-b6e3fcb4c735");
+
+	benchmark->AddTask(std::make_shared<MemoryLatencySpecification>("DRAM Latency",
+					"7b184be3-9915-4529-8e02-c5db88191c7f"))
 			.shouldBeCountedOnResults(true)
 			.withIterationsToRun(50)
 			.withTaskResultCalculator(taskResultCalculator)
@@ -276,17 +281,17 @@ std::unique_ptr<Benchmark> createMemoryReadLatencyFast(
 								return calculateSizeForMemory(x) * 2;
 							}));
 
-
 	return benchmark;
 }
 
 std::unique_ptr<Benchmark>
-createMemoryReadBandwidth(const std::shared_ptr<BenchmarkScoreCalculator>& benchmarkScoreCalculator,
+createMemoryReadBandwidth(const SharedStructuresProvider& structuresProvider,
 		const std::shared_ptr<TaskResultCalculator>& taskResultCalculator)
 {
 	auto benchmark = std::make_unique<Benchmark>("Memory Read Bandwidth",
-			benchmarkScoreCalculator,
-			"9B198C61-5907-481F-8E67-A59EA885CA0A");
+			BenchmarkScoreSpecification("B/s", Elpida::BenchmarkScoreComparison::Greater),
+			structuresProvider.getAverageThroughputScoreCalculator(),
+			"7e9e2eb8-0ea4-489a-b2f3-4cb133c04bc8");
 
 	benchmark->AddTask<MemoryReadBandwidthSpecification>()
 			.shouldBeCountedOnResults(true)
@@ -301,4 +306,39 @@ createMemoryReadBandwidth(const std::shared_ptr<BenchmarkScoreCalculator>& bench
 							}));
 
 	return benchmark;
+}
+
+
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL int32_t elpidaPluginAbiVersion()
+{
+	return ELPIDA_PLUGIN_ABI_VERSION;
+}
+
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void
+elpidaDestroyPlugin(Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* plugin)
+{
+	delete plugin;
+}
+
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>*
+elpidaCreatePlugin(const ServiceProvider* serviceProvider)
+{
+	using Plugin = BenchmarksContainerPlugin<Benchmark>;
+
+	auto plugin = new Plugin("Memory Benchmarks");
+
+	auto averageTaskCalculator = std::make_shared<ExclusiveHarmonicMeanTaskResultCalculator>(1);
+
+	BenchmarkScoreSpecification latencySpecification("s", Elpida::BenchmarkScoreComparison::Lower);
+
+	auto structuresProvider = serviceProvider->getSharedStructuresProvider();
+
+	plugin->add(createMemoryReadBandwidth(structuresProvider, averageTaskCalculator));
+	plugin->add(createOverallMemoryLatency(latencySpecification, structuresProvider, averageTaskCalculator));
+	plugin->add(createL1DLatency(latencySpecification, structuresProvider, averageTaskCalculator));
+	plugin->add(createL2DLatency(latencySpecification, structuresProvider, averageTaskCalculator));
+	plugin->add(createL3DLatency(latencySpecification, structuresProvider, averageTaskCalculator));
+	plugin->add(createDramLatency(latencySpecification, structuresProvider, averageTaskCalculator));
+
+	return plugin;
 }

@@ -143,7 +143,7 @@ namespace Elpida
 
 				raiseBenchmarkEnded(benchmark);
 
-				BenchmarkResult::Score score = benchmark.getScoreCalculator().calculate(finalTaskResults);
+				auto score = benchmark.getScoreCalculator().calculate(benchmark, finalTaskResults);
 				benchmarkResults.emplace_back(benchmark, std::move(finalTaskResults), taskAffinity, score);
 			}
 			catch (...)

@@ -31,12 +31,10 @@ namespace Elpida
 	class AccumulativeScoreCalculator final : public BenchmarkScoreCalculator
 	{
 	public:
-
 		[[nodiscard]]
-		BenchmarkResult::Score calculate(const std::vector<ProcessedTaskResult>& taskResults) const override;
+		BenchmarkScore calculate(const Benchmark& benchmark, const std::vector<ProcessedTaskResult>& taskResults) const override;
 
 		AccumulativeScoreCalculator() = default;
-		explicit AccumulativeScoreCalculator(const std::string& suffix, ResultType resultType);
 		~AccumulativeScoreCalculator() override = default;
 	};
 }

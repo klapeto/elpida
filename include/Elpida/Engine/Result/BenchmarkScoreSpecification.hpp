@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,31 +18,50 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 19/4/20.
+// Created by klapeto on 3/5/21.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_BENCHMARKSCORECALCULATOR_HPP
-#define INCLUDE_ELPIDA_ENGINE_BENCHMARKSCORECALCULATOR_HPP
+#ifndef ELPIDA_BENCHMARKSCORESPECIFICATION_HPP
+#define ELPIDA_BENCHMARKSCORESPECIFICATION_HPP
 
-#include <vector>
-#include "Elpida/Engine/Result/ResultType.hpp"
-#include "Elpida/Engine/Result/BenchmarkScore.hpp"
-#include "Elpida/Engine/Result/ProcessedTaskResult.hpp"
+#include <string>
 
 namespace Elpida
 {
-	class Benchmark;
+	enum class BenchmarkScoreComparison
+	{
+		Lower,
+		Greater
+	};
 
-	class BenchmarkScoreCalculator
+	class BenchmarkScoreSpecification
 	{
 	public:
 		[[nodiscard]]
-		virtual BenchmarkScore calculate(const Benchmark& benchmark, const std::vector<ProcessedTaskResult>& taskResults) const = 0;
+		const std::string& getUnit() const
+		{
+			return _unit;
+		}
 
-		BenchmarkScoreCalculator() = default;
-		virtual ~BenchmarkScoreCalculator() = default;
+		[[nodiscard]]
+		BenchmarkScoreComparison getComparison() const
+		{
+			return _comparison;
+		}
+
+		BenchmarkScoreSpecification(std::string unit, BenchmarkScoreComparison comparison)
+				: _unit(std::move(unit)), _comparison(comparison)
+		{
+
+		}
+
+		~BenchmarkScoreSpecification() = default;
+
+	private:
+		std::string _unit;
+		BenchmarkScoreComparison _comparison;
 	};
 }
 
 
-#endif //INCLUDE_ELPIDA_ENGINE_BENCHMARKSCORECALCULATOR_HPP
+#endif //ELPIDA_BENCHMARKSCORESPECIFICATION_HPP

@@ -27,13 +27,16 @@
 #include <vector>
 #include "BenchmarkTaskInstance.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
+#include "Elpida/Engine/Result/BenchmarkScoreSpecification.hpp"
 #include <string>
 #include <memory>
 
 namespace Elpida
 {
 	class TaskAffinity;
+
 	class BenchmarkConfiguration;
+
 	class BenchmarkScoreCalculator;
 
 	class Benchmark final
@@ -41,8 +44,8 @@ namespace Elpida
 	public:
 		[[nodiscard]]
 		std::vector<BenchmarkTaskInstance> createNewTasks(const TaskAffinity& affinity,
-			const BenchmarkConfiguration& configuration,
-			const ServiceProvider& serviceProvider) const;
+				const BenchmarkConfiguration& configuration,
+				const ServiceProvider& serviceProvider) const;
 
 		[[nodiscard]]
 		size_t getTotalTasksCount() const
@@ -88,14 +91,25 @@ namespace Elpida
 			return _taskBuilders;
 		}
 
+		[[nodiscard]]
+		const BenchmarkScoreSpecification& getScoreSpecification() const
+		{
+			return _scoreSpecification;
+		}
+
 		Benchmark(std::string name,
-			std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator,
-			std::string uuid = std::string());
+				const BenchmarkScoreSpecification& scoreSpecification,
+				std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator,
+				std::string uuid = std::string());
+
 		Benchmark(const Benchmark&) = delete;
+
 		Benchmark& operator=(const Benchmark&) = delete;
+
 		~Benchmark() = default;
 	protected:
 		std::vector<TaskBuilder> _taskBuilders;
+		BenchmarkScoreSpecification _scoreSpecification;
 		std::string _name;
 		std::string _id;
 		std::shared_ptr<BenchmarkScoreCalculator> _scoreCalculator;

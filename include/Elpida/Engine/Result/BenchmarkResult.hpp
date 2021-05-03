@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 
 #include "ProcessedTaskResult.hpp"
 #include "Elpida/Engine/Task/TaskAffinity.hpp"
+#include "BenchmarkScore.hpp"
 
 #include <vector>
 #include <string>
@@ -37,8 +38,6 @@ namespace Elpida
 	class BenchmarkResult
 	{
 	public:
-		using Score = double;
-
 		[[nodiscard]]
 		const Benchmark& getBenchmark() const
 		{
@@ -58,7 +57,7 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		Score getScore() const
+		const BenchmarkScore& getScore() const
 		{
 			return _score;
 		}
@@ -70,20 +69,27 @@ namespace Elpida
 		}
 
 		BenchmarkResult(const Benchmark& benchmark,
-			std::vector<ProcessedTaskResult>&& taskResults,
-			const TaskAffinity& affinity,
-			BenchmarkResult::Score score);
+				std::vector<ProcessedTaskResult>&& taskResults,
+				TaskAffinity affinity,
+				BenchmarkScore score);
+
 		BenchmarkResult(BenchmarkResult&&) = default;
+
 		BenchmarkResult& operator=(BenchmarkResult&&) = default;
+
 		BenchmarkResult(const BenchmarkResult&) = default;
+
 		BenchmarkResult& operator=(const BenchmarkResult&) = default;
+
 		~BenchmarkResult() = default;
+
 	private:
-		TaskAffinity _affinity;
-		const Benchmark* _benchmark;
 		std::vector<ProcessedTaskResult> _taskResults;
+		TaskAffinity _affinity;
+		BenchmarkScore _score;
 		std::string _id;
-		Score _score;
+		const Benchmark* _benchmark;
+
 	};
 }
 

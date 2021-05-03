@@ -32,7 +32,7 @@ namespace Elpida
 	MemoryReadBandwidthSpecification::MemoryReadBandwidthSpecification()
 		: TaskSpecification("Memory Read Bandwidth",
 		ResultSpecification("Read Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative),
-		"A5FAC385-C58B-44EA-AC3C-2A15447698D0")
+		"65d80c67-13e4-44c8-b039-c846ae160fe3")
 	{
 		withDescription("Reads continuously a memory region to determine Memory Read Bandwidth");
 

@@ -88,7 +88,7 @@ namespace Elpida
 
 	double PngDecoding::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return _outputData->getSize();
+		return _width * _height;
 	}
 
 } /* namespace Elpida */

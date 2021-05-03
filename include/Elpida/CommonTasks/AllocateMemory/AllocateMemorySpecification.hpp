@@ -37,7 +37,10 @@ namespace Elpida
 			static inline const char* MemorySize = "Memory size";
 		};
 
-		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
+		static inline constexpr const char* Uuid = "ca4dd3fb-d27a-43de-97b4-cd04cc24e84b";
+
+		[[nodiscard]]
+		std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
 			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun) const override;

@@ -21,6 +21,7 @@
 #define APPS_QT_UI_LOGSWIDGET_LOGSWIDGET_HPP
 
 #include <QWidget>
+#include <QItemSelection>
 #include "QModelLogAppender.hpp"
 
 namespace Elpida
@@ -40,9 +41,11 @@ namespace Elpida
 	public:
 		explicit LogsView(Logger& logger);
 		~LogsView() override;
-	private:
+    private:
 		QModelLogAppender _logAppender;
 		Ui::LogsView* _ui;
+
+		void onSelectionChanged(const QItemSelection& newSelection, const QItemSelection & oldSelection);
 	};
 
 } // namespace Elpida

@@ -32,10 +32,9 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		BenchmarkResult::Score calculate(const std::vector<ProcessedTaskResult>& taskResults) const override;
+		BenchmarkScore calculate(const Benchmark& benchmark, const std::vector<ProcessedTaskResult>& taskResults) const override;
 
 		AverageScoreCalculator() = default;
-		explicit AverageScoreCalculator(const std::string& suffix);
 		~AverageScoreCalculator() override = default;
 	};
 }

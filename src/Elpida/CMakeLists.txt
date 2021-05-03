@@ -7,6 +7,7 @@ set(ELPIDA_SOURCES
         Timer.cpp
         EventsSubscriber.cpp
         ServiceProvider.cpp
+        SharedStructuresProvider.cpp
 
         ElpidaException.cpp
         OperationCanceledException.cpp
@@ -78,7 +79,11 @@ set(ELPIDA_SOURCES
         Engine/Result/ProcessedTaskResult.cpp
         Engine/Task/WorkloadTask.cpp
         Engine/Task/MicroTask.cpp
-        Engine/Task/ExecutionParameters.cpp)
+        Engine/Task/ExecutionParameters.cpp
+        Engine/Result/BenchmarkScore.cpp
+        Engine/Result/BenchmarkScoreSpecification.cpp
+        Engine/Calculators/Benchmark/AverageThroughputScoreCalculator.cpp
+        )
 
 
 

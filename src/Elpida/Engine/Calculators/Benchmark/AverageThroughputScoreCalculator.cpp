@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,31 +18,30 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 19/4/20.
+// Created by klapeto on 3/5/21.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_BENCHMARKSCORECALCULATOR_HPP
-#define INCLUDE_ELPIDA_ENGINE_BENCHMARKSCORECALCULATOR_HPP
-
-#include <vector>
-#include "Elpida/Engine/Result/ResultType.hpp"
-#include "Elpida/Engine/Result/BenchmarkScore.hpp"
-#include "Elpida/Engine/Result/ProcessedTaskResult.hpp"
+#include "Elpida/Engine/Calculators/Benchmark/AverageThroughputScoreCalculator.hpp"
 
 namespace Elpida
 {
-	class Benchmark;
 
-	class BenchmarkScoreCalculator
+	BenchmarkScore AverageThroughputScoreCalculator::calculate(const Benchmark& benchmark,
+			const std::vector<ProcessedTaskResult>& taskResults) const
 	{
-	public:
-		[[nodiscard]]
-		virtual BenchmarkScore calculate(const Benchmark& benchmark, const std::vector<ProcessedTaskResult>& taskResults) const = 0;
+		if (!taskResults.empty())
+		{
+			double value = 0.0;
+			Duration time = Duration::zero();
+			for (const auto& result: taskResults)
+			{
+				value += result.getFinalMetrics().getResultValue();
+				time += result.getFinalMetrics().getDuration();
+			}
+			return BenchmarkScore((value / (double)taskResults.size())
+				/ (DurationCast<Seconds>(time / (double)taskResults.size()).count()));
 
-		BenchmarkScoreCalculator() = default;
-		virtual ~BenchmarkScoreCalculator() = default;
-	};
+		}
+		return BenchmarkScore(0.0);
+	}
 }
-
-
-#endif //INCLUDE_ELPIDA_ENGINE_BENCHMARKSCORECALCULATOR_HPP

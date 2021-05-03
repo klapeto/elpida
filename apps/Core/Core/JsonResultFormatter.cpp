@@ -309,6 +309,16 @@ namespace Elpida
 		return returnJson;
 	}
 
+	static json getBenchmarkScoreSpecification(const BenchmarkScoreSpecification& scoreSpecification)
+	{
+		json returnJson;
+
+		returnJson["unit"] = scoreSpecification.getUnit();
+		returnJson["comparison"] = scoreSpecification.getComparison();
+
+		return returnJson;
+	}
+
 	static json getBasicStatistics(const BasicStatistics& statistics)
 	{
 		json returnJson;
@@ -373,6 +383,9 @@ namespace Elpida
 
 		resultJ["uuid"] = result.getBenchmark().getUuid();
 		resultJ["name"] = result.getBenchmark().getName();
+		resultJ["scoreSpecification"] = getBenchmarkScoreSpecification(result.getBenchmark().getScoreSpecification());
+
+		resultJ["score"] = result.getScore().getValue();
 
 		resultJ["taskResults"] = getCollection(result.getTaskResults(),
 			[](const auto& result)
