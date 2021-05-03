@@ -291,13 +291,13 @@ namespace Elpida
 			eax = ebx = ecx = edx = 0;
 			cpuid(0x80000005, &eax, &ebx, &ecx, &edx);
 
-			_caches.emplace_back(1, "L1 Instruction Cache (Per Core)",
+			_caches.emplace_back(1, "L1 Instruction Cache",
 				std::to_string(getRegisterValue(edx, 16, 0xFF)) + "-way",
 				(getRegisterValue(edx, 24, 0xFF) * 1000),
 				getRegisterValue(edx, 8, 0xFF),
 				getRegisterValue(edx, 0, 0xFF));
 
-			_caches.emplace_back(1, "L1 Data Cache (Per Core)",
+			_caches.emplace_back(1, "L1 Data Cache",
 				std::to_string(getRegisterValue(ecx, 16, 0xFF)) + "-way",
 				(getRegisterValue(ecx, 24, 0xFF) * 1000),
 				getRegisterValue(ecx, 8, 0xFF),
@@ -310,13 +310,13 @@ namespace Elpida
 			eax = ebx = ecx = edx = 0;
 			cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 
-			_caches.emplace_back(2, "L2 Cache (Per Core)",
+			_caches.emplace_back(2, "L2 Cache",
 				cacheAssociativities[getRegisterValue(ecx, 12, 0xF)],
 				(getRegisterValue(ecx, 16, 0xFFFF) * 1000),
 				getRegisterValue(ecx, 8, 0xF),
 				getRegisterValue(ecx, 0, 0xFF));
 
-			_caches.emplace_back(3, "L3 Cache (Shared)",
+			_caches.emplace_back(3, "L3 Cache",
 				cacheAssociativities[getRegisterValue(edx, 12, 0xF)],
 				(getRegisterValue(edx, 18, 0x3FFF) * 512000),
 				getRegisterValue(edx, 8, 0xF),

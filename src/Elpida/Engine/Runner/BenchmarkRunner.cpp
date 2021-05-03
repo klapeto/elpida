@@ -44,7 +44,7 @@
 namespace Elpida
 {
 	BenchmarkRunner::BenchmarkRunner(const ServiceProvider& serviceProvider)
-		: _mustStop(false), _serviceProvider(serviceProvider)
+			: _mustStop(false), _serviceProvider(serviceProvider)
 	{
 
 	}
@@ -54,15 +54,16 @@ namespace Elpida
 		if (!original.hasData()) return TaskDataDto(std::unique_ptr<RawTaskData>(), original.getDefinedProperties());
 
 		auto ptr = std::make_unique<RawTaskData>(original.getTaskData()->getSize(),
-			original.getTaskData()->getProcessorNode());
+				original.getTaskData()->getProcessorNode());
 
 		memcpy(ptr->getData(), original.getTaskData()->getData(), ptr->getSize());
 
 		return TaskDataDto(std::move(ptr), original.getDefinedProperties());
 	}
 
-	std::vector<BenchmarkResult> BenchmarkRunner::runBenchmarks(const std::vector<BenchmarkRunRequest>& benchmarkRequests,
-		const TaskAffinity& taskAffinity)
+	std::vector<BenchmarkResult>
+	BenchmarkRunner::runBenchmarks(const std::vector<BenchmarkRunRequest>& benchmarkRequests,
+			const TaskAffinity& taskAffinity)
 	{
 		_mustStop = false;
 		std::vector<BenchmarkResult> benchmarkResults;
@@ -74,7 +75,7 @@ namespace Elpida
 			raiseBenchmarkStarted(benchmark);
 
 			auto benchmarkTaskInstances =
-				benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration(), _serviceProvider);
+					benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration(), _serviceProvider);
 			try
 			{
 				std::vector<ProcessedTaskResult> finalTaskResults;
@@ -126,14 +127,14 @@ namespace Elpida
 						else
 						{
 							auto statistics = Statistics::calculateBasicStatistics(currentTaskResults,
-								[](const TaskResult& x)
-								{
-									return x.getMetrics().getDuration().count();
-								});
+									[](const TaskResult& x)
+									{
+										return x.getMetrics().getDuration().count();
+									});
 							ProcessedTaskResult processedTaskResult(currentTaskResults.back().getMetrics(),
-								statistics,
-								std::vector<TaskMetrics>(),
-								taskBuilder.getTaskSpecification());
+									statistics,
+									std::vector<TaskMetrics>(),
+									taskBuilder.getTaskSpecification());
 							finalTaskResults.push_back(std::move(processedTaskResult));
 						}
 					}
@@ -164,13 +165,27 @@ namespace Elpida
 	{
 		TaskResult result(task.getSpecification(), TaskMetrics(Duration::zero(), 0, 0));
 
-		auto thread = std::thread([&task, &result]
+		std::string exceptionMessage;
+
+		auto thread = std::thread([&task, &result, &exceptionMessage]
 		{
-			ExecutionParameters parameters;
-			result = task.execute(parameters);
+			try
+			{
+				ExecutionParameters parameters;
+				result = task.execute(parameters);
+			}
+			catch (const std::exception& ex)
+			{
+				exceptionMessage = ex.what();
+			}
 		});
 
 		thread.join();
+
+		if (!exceptionMessage.empty())
+		{
+			throw ElpidaException(exceptionMessage);
+		}
 
 		return result;
 	}

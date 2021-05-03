@@ -43,47 +43,58 @@ namespace Elpida
 
 		static const CpuInfo& get();
 
-		[[nodiscard]] const std::vector<CpuFeature>& getFeatures() const
+		[[nodiscard]]
+		const std::vector<CpuFeature>& getFeatures() const
 		{
 			return _features;
 		}
 
-		[[nodiscard]] const std::string& getProcessorBrand() const
+		[[nodiscard]]
+		const std::string& getProcessorBrand() const
 		{
 			return _processorBrand;
 		}
 
-		[[nodiscard]] const std::string& getVendorString() const
+		[[nodiscard]]
+		const std::string& getVendorString() const
 		{
 			return _vendorString;
 		}
 
-		[[nodiscard]] const std::vector<CpuCache>& getCaches() const
+		[[nodiscard]]
+		const std::vector<CpuCache>& getCaches() const
 		{
 			return _caches;
 		}
 
-		[[nodiscard]] float getFrequency() const
+		[[nodiscard]]
+		float getFrequency() const
 		{
 			return _frequency;
 		}
 
-		[[nodiscard]] bool isSmt() const
+		[[nodiscard]]
+		bool isSmt() const
 		{
 			return _smt;
 		}
 
-		[[nodiscard]] const std::unordered_map<std::string, std::string>& getAdditionalInformation() const
+		[[nodiscard]]
+		const std::unordered_map<std::string, std::string>& getAdditionalInformation() const
 		{
 			return _additionalInformation;
 		}
 
 		CpuInfo(CpuInfo&&) = default;
+
 		CpuInfo(const CpuInfo&) = default;
+
 		CpuInfo& operator=(CpuInfo&&) = default;
+
 		CpuInfo& operator=(const CpuInfo&) = default;
 
 		virtual ~CpuInfo() = default;
+
 	protected:
 		CpuInfo() = default;
 

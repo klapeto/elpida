@@ -36,35 +36,35 @@ namespace Elpida
 {
 
 	TaskThread::TaskThread(std::unique_ptr<Task> taskToRun,
-		TaskDataDto input,
-		std::condition_variable& waitNotifier,
-		std::mutex& mutex,
-		const TimingInfo& timingInfo,
-		const ExecutionParameters& executionParameters,
-		const bool& shouldWake,
-		unsigned int affinity)
-		: _taskToRun(std::move(taskToRun)),
-		  _waitNotifier(waitNotifier),
-		  _mutex(mutex),
-		  _taskData(std::move(input)),
-		  _timingInfo(timingInfo),
-		  _executionParameters(executionParameters),
-		  _shouldWake(shouldWake),
-		  _affinity(affinity)
+			TaskDataDto input,
+			std::condition_variable& waitNotifier,
+			std::mutex& mutex,
+			const TimingInfo& timingInfo,
+			const ExecutionParameters& executionParameters,
+			const bool& shouldWake,
+			unsigned int affinity)
+			: _taskToRun(std::move(taskToRun)),
+			  _waitNotifier(waitNotifier),
+			  _mutex(mutex),
+			  _taskData(std::move(input)),
+			  _timingInfo(timingInfo),
+			  _executionParameters(executionParameters),
+			  _shouldWake(shouldWake),
+			  _affinity(affinity)
 	{
 
 	}
 
 	TaskThread::TaskThread(TaskThread&& other) noexcept
-		: _taskToRun(std::move(other._taskToRun)),
-		  _waitNotifier(other._waitNotifier),
-		  _mutex(other._mutex),
-		  _taskData(std::move(other._taskData)),
-		  _taskMetrics(std::move(other._taskMetrics)),
-		  _timingInfo(other._timingInfo),
-		  _executionParameters(other._executionParameters),
-		  _shouldWake(other._shouldWake),
-		  _affinity(other._affinity)
+			: _taskToRun(std::move(other._taskToRun)),
+			  _waitNotifier(other._waitNotifier),
+			  _mutex(other._mutex),
+			  _taskData(std::move(other._taskData)),
+			  _taskMetrics(std::move(other._taskMetrics)),
+			  _timingInfo(other._timingInfo),
+			  _executionParameters(other._executionParameters),
+			  _shouldWake(other._shouldWake),
+			  _affinity(other._affinity)
 	{
 	}
 
@@ -87,6 +87,11 @@ namespace Elpida
 		{
 			_runnerThread.join();
 		}
+
+		if (!_exceptionMessage.empty())
+		{
+			throw ElpidaException(_exceptionMessage);
+		}
 	}
 
 	void TaskThread::runTask()
@@ -99,6 +104,13 @@ namespace Elpida
 		}
 		lock.unlock();
 
-		_taskMetrics = _taskToRun->execute(_executionParameters).getMetrics();
+		try
+		{
+			_taskMetrics = _taskToRun->execute(_executionParameters).getMetrics();
+		}
+		catch (const std::exception& ex)
+		{
+			_exceptionMessage = ex.what();
+		}
 	}
 } /* namespace Elpida */
