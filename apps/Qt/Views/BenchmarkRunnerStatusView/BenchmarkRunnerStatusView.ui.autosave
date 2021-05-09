@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>Elpida::BenchmarkRunnerStatusView</class>
  <widget class="QWidget" name="Elpida::BenchmarkRunnerStatusView">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>625</width>
-    <height>438</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>

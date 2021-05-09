@@ -115,7 +115,7 @@ namespace Elpida
 
 	void BenchmarkRunnerControlsView::startClicked(bool checked)
 	{
-		_mediator.execute(StartBenchmarkingCommand());
+		_mediator.execute(StartBenchmarkingCommand(_ui->spnTimes->value()));
 	}
 
 	void BenchmarkRunnerControlsView::stopClicked(bool checked)

@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,20 +18,12 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 9/4/20.
+// Created by klapeto on 8/5/21.
 //
 
-#ifndef APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
-#define APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+#include "SelectedBenchmarksModel.hpp"
 
 namespace Elpida
 {
-	class Command;
-	class StartBenchmarkingCommand;
-	class StopBenchmarkingCommand;
-	class ShowMessageCommand;
-	class HttpResponseEvent;
-	class UploadResultCommand;
-}
 
-#endif //APPS_QT_CORE_ABSTRACTIONS_COMMANDFORWARDDECLARATIONS_HPP
+}

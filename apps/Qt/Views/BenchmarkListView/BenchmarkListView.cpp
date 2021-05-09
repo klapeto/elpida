@@ -22,11 +22,14 @@
 
 #include <QList>
 #include <QListWidgetItem>
+#include <unordered_set>
 
 #include <Elpida/SharedLibraryLoader.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
 #include "Models/Abstractions/ListModel/ListModel.hpp"
+#include "Models/Benchmarks/BenchmarksModel.hpp"
+#include "Models/SelectedBenchmarksModel.hpp"
 #include "Core/Commands/GetBenchmarksToRunCommand.hpp"
 #include "Core/Commands/SelectedBenchmarkChangedEvent.hpp"
 #include "Core/Abstractions/Mediator.hpp"
@@ -34,40 +37,29 @@
 namespace Elpida
 {
 
-	BenchmarkListView::BenchmarkListView(const ListModel<BenchmarkGroup>& model, Mediator& mediator)
-		: QWidget(), CollectionModelObserver<BenchmarkGroup>(model), _ui(new Ui::BenchmarkListView), _mediator(mediator)
+	BenchmarkListView::BenchmarkListView(const BenchmarksModel& benchmarksModel,
+			SelectedBenchmarksModel& selectionModel,
+			Mediator& mediator)
+			: QWidget(), CollectionModelObserver<BenchmarkGroup>(benchmarksModel),
+			  _ui(new Ui::BenchmarkListView),
+			  _mediator(mediator),
+			  _selectionModel(selectionModel)
 	{
 		_ui->setupUi(this);
 
-		for (const auto& itm: model.getItems())
+		for (const auto& itm: benchmarksModel.getItems())
 		{
 			addItem(itm.getValue());
 		}
 		QWidget::connect(_ui->lvBenchmarkGroups,
-			&QTreeWidget::itemSelectionChanged,
-			this,
-			&BenchmarkListView::onSelectionChanged);
+				&QTreeWidget::itemSelectionChanged,
+				this,
+				&BenchmarkListView::onSelectionChanged);
 	}
 
 	BenchmarkListView::~BenchmarkListView()
 	{
 		delete _ui;
-	}
-
-	OptionalReference<Benchmark> BenchmarkListView::getSelectedBenchmark()
-	{
-		auto selectedIndexes = _ui->lvBenchmarkGroups->selectedItems();
-		if (!selectedIndexes.empty())
-		{
-			auto str = selectedIndexes.first()->text(0).toStdString();
-			auto variant = selectedIndexes.first()->data(0, Qt::UserRole);
-			auto ptr = ((Benchmark*)variant.value<void*>());
-			if (ptr)
-			{
-				return *ptr;
-			}
-		}
-		return std::nullopt;
 	}
 
 	void BenchmarkListView::onItemAdded(const BenchmarkGroup& item)
@@ -108,19 +100,49 @@ namespace Elpida
 		_ui->lvBenchmarkGroups->clear();
 	}
 
-	void BenchmarkListView::handle(GetBenchmarksToRunCommand& command)
-	{
-		auto selected = getSelectedBenchmark();
-		if (selected.has_value())
-		{
-			command.addBenchmark(*selected);
-		}
-	}
-
 	void BenchmarkListView::onSelectionChanged()
 	{
-		SelectedBenchmarkChangedEvent event(getSelectedBenchmark(), std::nullopt);
-		_mediator.execute(event);
+		auto selectedIndexes = _ui->lvBenchmarkGroups->selectedItems();
+		if (!selectedIndexes.empty())
+		{
+			_selectionModel.transactional<SelectedBenchmarksModel>(
+					[&selectedIndexes](SelectedBenchmarksModel& list)
+					{
+						std::unordered_set<std::string> notUsedKeys;
+						for (auto& [key, value] : list)
+						{
+							notUsedKeys.emplace(key);
+						}
+
+						for (auto& index: selectedIndexes)
+						{
+							auto variant = index->data(0, Qt::UserRole);
+							auto ptr = ((Benchmark*)variant.value<void*>());
+
+							if (ptr != nullptr)
+							{
+								auto key = ptr->getUuid();
+								notUsedKeys.erase(key);
+								if (!list.containsKey(key))
+								{
+									list.add(ptr->getUuid(), *ptr);
+								}
+							}
+						}
+
+						for (auto& key: notUsedKeys)
+						{
+							list.remove(key);
+						}
+					});
+		}
+		else
+		{
+			if (!_selectionModel.empty())
+			{
+				_selectionModel.clear();
+			}
+		}
 	}
 
 } // namespace Elpida

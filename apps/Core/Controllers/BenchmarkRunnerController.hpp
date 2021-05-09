@@ -26,14 +26,16 @@
 
 #include <Elpida/Engine/Runner/BenchmarkRunner.hpp>
 #include <Elpida/OffThreadExecutor.hpp>
+#include <Elpida/Utilities/Reference.hpp>
 #include "Core/Abstractions/CommandHandler.hpp"
 
 namespace Elpida
 {
-
 	class BenchmarkResultsModel;
 	class BenchmarkRunnerModel;
+	class Benchmark;
 	class BenchmarkConfigurationsCollectionModel;
+	class SelectedBenchmarksModel;
 	class AffinityModel;
 	class Mediator;
 	class TimingInfo;
@@ -49,6 +51,7 @@ namespace Elpida
 			BenchmarkResultsModel& benchmarkResultsModel,
 			BenchmarkRunnerModel& runnerModel,
 			BenchmarkConfigurationsCollectionModel& configurationsModel,
+			const SelectedBenchmarksModel& selectedBenchmarksModel,
 			const AffinityModel& affinityModel,
 			const ServiceProvider& serviceProvider,
 			const TimingInfo& timingInfo,
@@ -61,6 +64,7 @@ namespace Elpida
 		BenchmarkResultsModel& _benchmarkResultsModel;
 		BenchmarkRunnerModel& _runnerModel;
 		BenchmarkConfigurationsCollectionModel& _configurationsModel;
+		const SelectedBenchmarksModel& _selectedBenchmarksModel;
 		Mediator& _mediator;
 		const AffinityModel& _affinityModel;
 		const TimingInfo& _timingInfo;

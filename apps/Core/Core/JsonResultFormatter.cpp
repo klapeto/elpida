@@ -207,6 +207,9 @@ namespace Elpida
 
 		topologyJ["totalLogicalCores"] = topology.getTotalLogicalCores();
 		topologyJ["totalPhysicalCores"] = topology.getTotalPhysicalCores();
+		topologyJ["totalNumaNodes"] = topology.getTotalNumaNodes();
+		topologyJ["totalPackages"] = topology.getTotalPackages();
+		topologyJ["totalMachines"] = topology.getTotalMachines();
 		topologyJ["totalDepth"] = topology.getDepth();
 
 		topologyJ["root"] = getNode(topology.getRoot());

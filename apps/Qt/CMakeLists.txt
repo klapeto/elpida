@@ -22,6 +22,7 @@ set(ELPIDA_QT_SOURCES
 		Views/ConfigurationViews/NumberInputView/NumberInputView.cpp
 		Views/NavigationBarView/NavigationBarView.cpp
 		Views/QuickStartView/QuickStartView.cpp
+		Views/BenchmarkConfigurationView/RentedConfigurationView.cpp
 
 		Views/MainWindow/MainWindow.ui
 		Views/BenchmarkListView/BenchmarkListView.ui
@@ -49,7 +50,7 @@ set(ELPIDA_QT_SOURCES
 		QCustomApplication.cpp
 		QModelLogAppender.cpp
 		ConfigurationViewsPool.cpp
-		)
+        )
 
 
 if (MSVC)

@@ -43,12 +43,14 @@ namespace Elpida
 			Normal, High,
 		};
 
-		[[nodiscard]] const std::vector<const ProcessorNode*>& getAllProcessors() const
+		[[nodiscard]]
+		const std::vector<const ProcessorNode*>& getAllProcessors() const
 		{
 			return _allProcessors;
 		}
 
-		[[nodiscard]] std::size_t getDepth() const
+		[[nodiscard]]
+		std::size_t getDepth() const
 		{
 			return _depth;
 		}
@@ -58,14 +60,34 @@ namespace Elpida
 			return *_root;
 		}
 
-		[[nodiscard]] std::size_t getTotalLogicalCores() const
+		[[nodiscard]]
+		std::size_t getTotalLogicalCores() const
 		{
 			return _totalLogicalCores;
 		}
 
-		[[nodiscard]] std::size_t getTotalPhysicalCores() const
+		[[nodiscard]]
+		std::size_t getTotalPhysicalCores() const
 		{
 			return _totalPhysicalCores;
+		}
+
+		[[nodiscard]]
+		std::size_t getTotalNumaNodes() const
+		{
+			return _totalNumaNodes;
+		}
+
+		[[nodiscard]]
+		std::size_t getTotalPackages() const
+		{
+			return _totalPackages;
+		}
+
+		[[nodiscard]]
+		std::size_t getTotalMachines() const
+		{
+			return _totalMachines;
 		}
 
 		static void setProcessPriority(ProcessPriority priority);
@@ -80,9 +102,14 @@ namespace Elpida
 		std::size_t _depth;
 		std::size_t _totalLogicalCores;
 		std::size_t _totalPhysicalCores;
+		std::size_t _totalNumaNodes;
+		std::size_t _totalPackages;
+		std::size_t _totalMachines;
 
 		void reload();
 		void accumulateCores(const ProcessorNode& node);
+
+		void processChildNode(const ProcessorNode& node);
 	};
 
 } /* namespace Elpida */

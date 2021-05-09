@@ -23,14 +23,13 @@
 
 #include "Controllers/BenchmarksController.hpp"
 #include "Controllers/BenchmarkRunnerController.hpp"
-#include "Controllers/BenchmarkConfigurationController.hpp"
 #include "Controllers/UploadController.hpp"
 
 #include "Models/Benchmarks/BenchmarksModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
-#include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
+#include "Models/SelectedBenchmarksModel.hpp"
 #include "Models/GlobalConfigurationModel.hpp"
 #include "Models/AffinityModel.hpp"
 #include "UiModels/Screens/ScreensModel.hpp"
@@ -184,8 +183,8 @@ int main(int argc, char* argv[])
 
 	BenchmarksModel taskBatchesModel;
 	BenchmarkRunnerModel taskRunnerModel;
-	BenchmarkConfigurationModel benchmarkConfigurationModel;
 	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
+	SelectedBenchmarksModel selectedBenchmarksModel;
 	BenchmarksController
 		benchmarksController
 		(taskBatchesModel, benchmarkConfigurationsModel, globalConfigurationModel, serviceProvider, logger);
@@ -196,22 +195,19 @@ int main(int argc, char* argv[])
 			taskRunResultsModel,
 			taskRunnerModel,
 			benchmarkConfigurationsModel,
+			selectedBenchmarksModel,
 			affinityModel,
 			serviceProvider,
 			timingInfo,
 			logger);
-	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
+	BenchmarkListView taskBatchesListView(taskBatchesModel, selectedBenchmarksModel, mediator);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
 	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel, globalConfigurationModel);
-	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationModel, configurationViewsPool);
-	BenchmarkConfigurationController
-		benchmarkConfigurationController(benchmarkConfigurationsModel, benchmarkConfigurationModel);
+	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationsModel, configurationViewsPool, selectedBenchmarksModel);
 
 	mediator.registerCommandHandler(runnerController);
-	mediator.registerCommandHandler(taskBatchesListView);
 	mediator.registerCommandHandler(mainWindow);
-	mediator.registerCommandHandler(benchmarkConfigurationController);
 
 	initializeTaskTab(screensModel,
 		taskBatchesListView,

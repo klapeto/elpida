@@ -21,14 +21,13 @@ set(ELPIDA_CORE_SOURCES
         Models/Abstractions/ListModel/ListModel.cpp
         Models/Abstractions/ListModel/ListModelItem.cpp
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
-        Models/BenchmarkConfigurationModel.cpp
         Models/Benchmarks/BenchmarkGroup.cpp
         Models/GlobalConfigurationModel.cpp
         Models/AffinityModel.cpp
+        Models/SelectedBenchmarksModel.cpp
 
         Controllers/BenchmarksController.cpp
         Controllers/BenchmarkRunnerController.cpp
-        Controllers/BenchmarkConfigurationController.cpp
         Controllers/UploadController.cpp
 
         Utilities/OsUtilities.cpp

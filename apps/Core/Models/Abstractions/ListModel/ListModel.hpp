@@ -59,6 +59,18 @@ namespace Elpida {
 			CollectionModel<T>::onCleared();
 		}
 
+		[[nodiscard]]
+		size_t size() const
+		{
+			return _items.size();
+		}
+
+		[[nodiscard]]
+		bool empty() const
+		{
+			return _items.empty();
+		}
+
 		const std::list<ListModelItem<T>>& getItems() const
 		{
 			return _items;

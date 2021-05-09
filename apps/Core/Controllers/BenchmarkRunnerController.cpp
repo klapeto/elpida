@@ -26,11 +26,14 @@
 
 #include "Core/Commands/GetBenchmarksToRunCommand.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
+#include "Core/Commands/StartBenchmarkingCommand.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
 #include "Models/AffinityModel.hpp"
+#include "Models/Abstractions/ListModel/ListModel.hpp"
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
+#include "Models/SelectedBenchmarksModel.hpp"
 
 #include <Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp>
 #include <Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp>
@@ -42,22 +45,24 @@
 namespace Elpida
 {
 	BenchmarkRunnerController::BenchmarkRunnerController(Mediator& mediator,
-		BenchmarkResultsModel& benchmarkResultsModel,
-		BenchmarkRunnerModel& runnerModel,
-		BenchmarkConfigurationsCollectionModel& configurationsModel,
-		const AffinityModel& affinityModel,
-		const ServiceProvider& serviceProvider,
-		const TimingInfo& timingInfo,
-		Logger& logger)
-		:
-		_runner(serviceProvider),
-		_benchmarkResultsModel(benchmarkResultsModel),
-		_runnerModel(runnerModel),
-		_configurationsModel(configurationsModel),
-		_mediator(mediator),
-		_affinityModel(affinityModel),
-		_timingInfo(timingInfo),
-		_logger(logger)
+			BenchmarkResultsModel& benchmarkResultsModel,
+			BenchmarkRunnerModel& runnerModel,
+			BenchmarkConfigurationsCollectionModel& configurationsModel,
+			const SelectedBenchmarksModel& selectedBenchmarksModel,
+			const AffinityModel& affinityModel,
+			const ServiceProvider& serviceProvider,
+			const TimingInfo& timingInfo,
+			Logger& logger)
+			:
+			_runner(serviceProvider),
+			_benchmarkResultsModel(benchmarkResultsModel),
+			_runnerModel(runnerModel),
+			_configurationsModel(configurationsModel),
+			_selectedBenchmarksModel(selectedBenchmarksModel),
+			_mediator(mediator),
+			_affinityModel(affinityModel),
+			_timingInfo(timingInfo),
+			_logger(logger)
 	{
 
 		_runner.benchmarkStarted.subscribe([this](const auto& ev)
@@ -90,45 +95,56 @@ namespace Elpida
 	{
 		if (!_taskRunnerThread.isRunning())
 		{
-			GetBenchmarksToRunCommand getSelectedCmd;
-			_mediator.execute(getSelectedCmd);
-			auto& benchmarks = getSelectedCmd.getBenchmarks();
-			if (!benchmarks.empty())
+			if (!_selectedBenchmarksModel.empty())
 			{
 				auto& affinity = _affinityModel.getCurrentAffinity();
 				if (!affinity.getProcessorNodes().empty())
 				{
 					std::vector<BenchmarkRunRequest> benchmarkRunRequests;
-					benchmarkRunRequests.reserve(benchmarks.size());
-					for (auto& bench: benchmarks)
+					const auto times = command.getTimes();
+					benchmarkRunRequests.reserve(_selectedBenchmarksModel.size() * times);
+					for (size_t i = 0; i < times; i++)
 					{
-						benchmarkRunRequests
-							.emplace_back(bench, _configurationsModel.getConst(bench.get().getUuid()));
+						for (auto& pair : _selectedBenchmarksModel)
+						{
+							benchmarkRunRequests
+								.emplace_back(pair.second.get(), _configurationsModel.getConst(pair.second.get().getUuid()));
+						}
 					}
 					_taskRunnerThread.run([this, aff(affinity), benches(benchmarkRunRequests)]()
 					{
 						try
 						{
+							_runnerModel.transactional<BenchmarkRunnerModel>([&benches](BenchmarkRunnerModel& model)
+							{
+								model.setRunning(true);
+								model.setTotalBenchmarks(benches.size());
+							});
 							auto results = _runner.runBenchmarks(benches, aff);
-							_runnerModel.setCurrentRunningBenchmark(std::nullopt);
 							_benchmarkResultsModel
-								.transactional<BenchmarkResultsModel>([&results, this](BenchmarkResultsModel& model)
-								{
-									for (auto& result: results)
+									.transactional<BenchmarkResultsModel>([&results, this](BenchmarkResultsModel& model)
 									{
-										model.add(result);
-									}
-								});
+										for (auto& result: results)
+										{
+											model.add(result);
+										}
+									});
 						}
 						catch (const std::exception& ex)
 						{
-							_runnerModel.setCurrentRunningBenchmark(std::nullopt);
-							_taskRunnerThread.detach();
 							_logger.log(LogType::Error, "Error occurred while executing benchmarks", ex);
 							_mediator.execute(ShowMessageCommand(Vu::concatenateToString(
-								"Error occurred while running task batches: ",
-								ex.what()), ShowMessageCommand::Type::Error));
+									"Error occurred while running task batches: ",
+									ex.what()), ShowMessageCommand::Type::Error));
 						}
+
+						_runnerModel.transactional<BenchmarkRunnerModel>([](BenchmarkRunnerModel& model)
+						{
+							model.setTotalBenchmarks(0);
+							model.setCompletedBenchmarks(0);
+							model.setRunning(false);
+						});
+
 						_taskRunnerThread.detach();
 					});
 				}
@@ -187,6 +203,7 @@ namespace Elpida
 		{
 			model.setCurrentRunningBenchmark(std::nullopt);
 			model.setBenchmarkCompletedTasks(0);
+			model.setCompletedBenchmarks(model.getCompletedBenchmarks() + 1);
 		});
 	}
 

@@ -20,107 +20,40 @@
 #include "BenchmarkConfigurationView.hpp"
 #include "ui_BenchmarkConfigurationView.h"
 
-#include "Models/BenchmarkConfigurationModel.hpp"
-#include "ConfigurationViewsPool.hpp"
+#include "Models/BenchmarkConfigurationsCollectionModel.hpp"
 #include "Views/ConfigurationViews/ConfigurationValueViewBase.hpp"
 #include "Views/ConfigurationViews/TaskConfigurationListItemViewBase.hpp"
+#include "ConfigurationViewsPool.hpp"
 
-#include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 #include <Elpida/Engine/Configuration/Concrete/TaskConfiguration.hpp>
-#include <Elpida/Engine/Task/TaskSpecification.hpp>
 
 namespace Elpida
 {
 
-	BenchmarkConfigurationView::BenchmarkConfigurationView(BenchmarkConfigurationModel& benchmarkConfigurationModel,
-		ConfigurationViewsPool& configurationViewsPool)
-		: QWidget(nullptr), _benchmarkConfigurationModel(benchmarkConfigurationModel),
-		  _configurationViewsPool(configurationViewsPool),
-		  _ui(new Ui::BenchmarkConfigurationView)
+	BenchmarkConfigurationView::BenchmarkConfigurationView(
+			BenchmarkConfigurationsCollectionModel& benchmarkConfigurationsCollectionModel,
+			ConfigurationViewsPool& configurationViewsPool,
+			const SelectedBenchmarksModel& selectionModel)
+			: QWidget(nullptr),
+			  CollectionModelObserver<SelectedBenchmarksModel::Pair>(selectionModel),
+			  _benchmarkConfigurationsCollectionModel(benchmarkConfigurationsCollectionModel),
+			  _configurationViewsPool(configurationViewsPool),
+			  _ui(new Ui::BenchmarkConfigurationView)
 	{
 		_ui->setupUi(this);
 
 		_containerLayout = new QVBoxLayout;
 		_ui->scrollAreaWidgetContents->setLayout(_containerLayout);
-		_dataChangedSubscription = &_benchmarkConfigurationModel.dataChanged.subscribe([this]()
-		{
-			emit dataChanged();
-		});
-		QWidget::connect(this,
-			&BenchmarkConfigurationView::dataChanged,
-			this,
-			&BenchmarkConfigurationView::dataChangedHandler);
+
 		QWidget::connect(_ui->lwTasks,
-			&QListWidget::itemClicked,
-			this,
-			&BenchmarkConfigurationView::taskListItemClicked);
+				&QListWidget::itemClicked,
+				this,
+				&BenchmarkConfigurationView::taskListItemClicked);
 	}
 
 	BenchmarkConfigurationView::~BenchmarkConfigurationView()
 	{
-		_dataChangedSubscription->unsubscribe();
-		returnAllTaskListItems();
-		returnAllViewsToPool();
 		delete _ui;
-	}
-
-	void BenchmarkConfigurationView::dataChangedHandler()
-	{
-		returnAllViewsToPool();
-		returnAllTaskListItems();
-		auto configuration = _benchmarkConfigurationModel.getBenchmarkConfiguration();
-		if (configuration.has_value())
-		{
-			for (auto& taskConfPair: configuration->get().getAllTaskConfigurations())
-			{
-				auto itm = _configurationViewsPool.rentViewForTaskList(const_cast<TaskConfiguration&>(taskConfPair));
-				_ui->lwTasks->addItem(itm.get());
-				_rentedItems.emplace(itm.get(), std::move(itm));
-				for (auto& confValuePair: taskConfPair.getAllConfigurations())
-				{
-					auto& type = confValuePair.second->getConfigurationSpecification();
-					if (!confValuePair.second->isReadOnly()
-						&& type.getType() != ConfigurationType::Type::Custom
-						&& type.getType() != ConfigurationType::Type::Function)
-					{
-						auto view = _configurationViewsPool.rentViewForConfiguration(confValuePair.second);
-						view->show();
-						view->setConfiguration(confValuePair.second);
-						_containerLayout->addWidget(view.get());
-						_rentedViews.push_back(std::move(view));
-					}
-				}
-			}
-		}
-	}
-
-	void BenchmarkConfigurationView::returnAllTaskListItems()
-	{
-		auto size = _ui->lwTasks->count();
-		for (auto i = size - 1; i >= 0; --i)
-		{
-			auto itm = (TaskConfigurationListItemViewBase*)_ui->lwTasks->takeItem(i);
-			if (itm != nullptr)
-			{
-				itm->saveSetting();
-				_configurationViewsPool.returnViewForTaskList(std::move(_rentedItems.at(itm)));
-				_rentedItems.erase(itm);
-			}
-		}
-	}
-
-	void BenchmarkConfigurationView::returnAllViewsToPool()
-	{
-		for (auto& view : _rentedViews)
-		{
-			view->saveSetting();
-			view->hide();
-			_containerLayout->removeWidget(view.get());
-			view->setParent(nullptr);
-			_configurationViewsPool.returnView(std::move(view));
-
-		}
-		_rentedViews.clear();
 	}
 
 	void BenchmarkConfigurationView::taskListItemClicked(QListWidgetItem* item)
@@ -128,4 +61,27 @@ namespace Elpida
 		((TaskConfigurationListItemViewBase*)item)->saveSetting();
 	}
 
+	void BenchmarkConfigurationView::onCollectionCleared()
+	{
+		_rentedViews.clear();
+	}
+
+	void BenchmarkConfigurationView::onItemAdded(const SelectedBenchmarksModel::Pair &item)
+	{
+		auto itr = _rentedViews.find(item.second.get().getUuid());
+		if (itr == _rentedViews.end())
+		{
+			auto itm = RentedConfigurationView(
+					_benchmarkConfigurationsCollectionModel.get(item.second.get().getUuid()),
+					*_ui->lwTasks,
+					*_containerLayout,
+					_configurationViewsPool);
+			_rentedViews.emplace(item.second.get().getUuid(), std::move(itm));
+		}
+	}
+
+	void BenchmarkConfigurationView::onItemRemoved(const SelectedBenchmarksModel::Pair& item)
+	{
+		_rentedViews.erase(item.second.get().getUuid());
+	}
 } // namespace Elpida
