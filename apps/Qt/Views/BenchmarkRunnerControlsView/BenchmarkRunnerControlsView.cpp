@@ -32,8 +32,11 @@ namespace Elpida
 	BenchmarkRunnerControlsView::BenchmarkRunnerControlsView(Mediator& mediator,
 		const BenchmarkRunnerModel& model,
 		GlobalConfigurationModel& globalConfigurationModel)
-		: QWidget(), _ui(new Ui::BenchmarkRunnerControlsView), _model(model),
-		  _globalConfigurationModel(globalConfigurationModel), _mediator(mediator), _running(false)
+		: QWidget(),
+		_ui(new Ui::BenchmarkRunnerControlsView),
+		_model(model),
+		  _globalConfigurationModel(globalConfigurationModel),
+		  _mediator(mediator)
 	{
 		_ui->setupUi(this);
 
@@ -48,7 +51,7 @@ namespace Elpida
 			this,
 			&BenchmarkRunnerControlsView::updateUi);
 
-		_dataChangedEventSubscription = &_model.dataChanged.subscribe([this]
+		_dataChangedEventSubscription = &_model.runningChanged.subscribe([this](auto running)
 		{
 			emit onDataChanged();
 		});
@@ -81,17 +84,15 @@ namespace Elpida
 
 	void BenchmarkRunnerControlsView::updateUi()
 	{
-		if (_model.getCurrentRunningBenchmark().has_value() && !_running)
+		if (_model.isRunning())
 		{
 			_ui->pbRun->setEnabled(false);
 			_ui->pbStop->setEnabled(true);
-			_running = true;
 		}
-		else if (!_model.getCurrentRunningBenchmark().has_value() && _running)
+		else
 		{
 			_ui->pbRun->setEnabled(true);
 			_ui->pbStop->setEnabled(false);
-			_running = false;
 		}
 
 		updateCheckboxes();

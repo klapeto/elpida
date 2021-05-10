@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
 
 	ScreensModel screensModel;
 	AffinityModel affinityModel;
-	MainWindow mainWindow(mediator, screensModel, affinityModel, taskRunResultsModel, formatter);
+	MainWindow mainWindow(mediator, screensModel, affinityModel, taskRunResultsModel, formatter, cpuInfo);
 	ConfigurationViewsPool configurationViewsPool;
 	QuickStartView quickStartView;
 
