@@ -200,11 +200,11 @@ int main(int argc, char* argv[])
 			serviceProvider,
 			timingInfo,
 			logger);
-	BenchmarkListView taskBatchesListView(taskBatchesModel, selectedBenchmarksModel, mediator);
+	BenchmarkListView taskBatchesListView(taskBatchesModel, selectedBenchmarksModel, mediator, taskRunnerModel);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
 	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel, globalConfigurationModel);
-	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationsModel, configurationViewsPool, selectedBenchmarksModel);
+	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationsModel, configurationViewsPool, selectedBenchmarksModel, taskRunnerModel);
 
 	mediator.registerCommandHandler(runnerController);
 	mediator.registerCommandHandler(mainWindow);

@@ -21,6 +21,7 @@
 #include "ui_BenchmarkConfigurationView.h"
 
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
+#include "Models/BenchmarkRunnerModel.hpp"
 #include "Views/ConfigurationViews/ConfigurationValueViewBase.hpp"
 #include "Views/ConfigurationViews/TaskConfigurationListItemViewBase.hpp"
 #include "ConfigurationViewsPool.hpp"
@@ -33,12 +34,14 @@ namespace Elpida
 	BenchmarkConfigurationView::BenchmarkConfigurationView(
 			BenchmarkConfigurationsCollectionModel& benchmarkConfigurationsCollectionModel,
 			ConfigurationViewsPool& configurationViewsPool,
-			const SelectedBenchmarksModel& selectionModel)
+			const SelectedBenchmarksModel& selectionModel,
+			const BenchmarkRunnerModel& runnerModel)
 			: QWidget(nullptr),
 			  CollectionModelObserver<SelectedBenchmarksModel::Pair>(selectionModel),
 			  _benchmarkConfigurationsCollectionModel(benchmarkConfigurationsCollectionModel),
 			  _configurationViewsPool(configurationViewsPool),
-			  _ui(new Ui::BenchmarkConfigurationView)
+			  _ui(new Ui::BenchmarkConfigurationView),
+			  _runnerModel(runnerModel)
 	{
 		_ui->setupUi(this);
 
@@ -49,10 +52,17 @@ namespace Elpida
 				&QListWidget::itemClicked,
 				this,
 				&BenchmarkConfigurationView::taskListItemClicked);
+
+		QWidget::connect(this, &BenchmarkConfigurationView::onRunningChanged, this,
+				&BenchmarkConfigurationView::updateRunningChanged);
+
+		_runnerSubscription = &_runnerModel.runningChanged.subscribe([this](auto r)
+		{ emit onRunningChanged(); });
 	}
 
 	BenchmarkConfigurationView::~BenchmarkConfigurationView()
 	{
+		_runnerSubscription->unsubscribe();
 		delete _ui;
 	}
 
@@ -66,7 +76,7 @@ namespace Elpida
 		_rentedViews.clear();
 	}
 
-	void BenchmarkConfigurationView::onItemAdded(const SelectedBenchmarksModel::Pair &item)
+	void BenchmarkConfigurationView::onItemAdded(const SelectedBenchmarksModel::Pair& item)
 	{
 		auto itr = _rentedViews.find(item.second.get().getUuid());
 		if (itr == _rentedViews.end())
@@ -83,5 +93,10 @@ namespace Elpida
 	void BenchmarkConfigurationView::onItemRemoved(const SelectedBenchmarksModel::Pair& item)
 	{
 		_rentedViews.erase(item.second.get().getUuid());
+	}
+
+	void BenchmarkConfigurationView::updateRunningChanged()
+	{
+		setEnabled(!_runnerModel.isRunning());
 	}
 } // namespace Elpida

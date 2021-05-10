@@ -24,14 +24,12 @@
 #include <QListWidgetItem>
 #include <unordered_set>
 
-#include <Elpida/SharedLibraryLoader.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 
-#include "Models/Abstractions/ListModel/ListModel.hpp"
+#include "Models/BenchmarkRunnerModel.hpp"
 #include "Models/Benchmarks/BenchmarksModel.hpp"
 #include "Models/SelectedBenchmarksModel.hpp"
 #include "Core/Commands/GetBenchmarksToRunCommand.hpp"
-#include "Core/Commands/SelectedBenchmarkChangedEvent.hpp"
 #include "Core/Abstractions/Mediator.hpp"
 
 namespace Elpida
@@ -39,11 +37,13 @@ namespace Elpida
 
 	BenchmarkListView::BenchmarkListView(const BenchmarksModel& benchmarksModel,
 			SelectedBenchmarksModel& selectionModel,
-			Mediator& mediator)
+			Mediator& mediator,
+			const BenchmarkRunnerModel& runnerModel)
 			: QWidget(), CollectionModelObserver<BenchmarkGroup>(benchmarksModel),
 			  _ui(new Ui::BenchmarkListView),
 			  _mediator(mediator),
-			  _selectionModel(selectionModel)
+			  _selectionModel(selectionModel),
+			  _runnerModel(runnerModel)
 	{
 		_ui->setupUi(this);
 
@@ -55,6 +55,12 @@ namespace Elpida
 				&QTreeWidget::itemSelectionChanged,
 				this,
 				&BenchmarkListView::onSelectionChanged);
+
+		QWidget::connect(this, &BenchmarkListView::onRunningChanged, this,
+				&BenchmarkListView::updateRunningChanged);
+
+		_runnerSubscription = &_runnerModel.runningChanged.subscribe([this](auto r)
+		{ emit onRunningChanged(); });
 	}
 
 	BenchmarkListView::~BenchmarkListView()
@@ -143,6 +149,11 @@ namespace Elpida
 				_selectionModel.clear();
 			}
 		}
+	}
+
+	void BenchmarkListView::onRunningChanged()
+	{
+		setEnabled(!_runnerModel.isRunning());
 	}
 
 } // namespace Elpida

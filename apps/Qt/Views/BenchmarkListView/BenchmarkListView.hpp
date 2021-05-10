@@ -35,7 +35,10 @@ namespace Elpida
 	class Mediator;
 
 	class SelectedBenchmarksModel;
+
 	class BenchmarksModel;
+
+	class BenchmarkRunnerModel;
 
 	namespace Ui
 	{
@@ -52,22 +55,37 @@ namespace Elpida
 
 		explicit BenchmarkListView(const BenchmarksModel& benchmarksModel,
 				SelectedBenchmarksModel& selectionModel,
-				Mediator& mediator);
+				Mediator& mediator,
+				const BenchmarkRunnerModel& runnerModel);
+
 		~BenchmarkListView() override;
+
 	private:
 		Ui::BenchmarkListView* _ui;
 		std::unordered_map<const BenchmarkGroup*, QTreeWidgetItem*> _createdItems;
 		Mediator& _mediator;
 		SelectedBenchmarksModel& _selectionModel;
+		const BenchmarkRunnerModel& _runnerModel;
+		EventSubscriptionBase* _runnerSubscription;
 	protected:
 
 		void onItemAdded(const BenchmarkGroup& item) override;
+
 		void onItemRemoved(const BenchmarkGroup& item) override;
+
 		void onCollectionCleared() override;
+
 		void addItem(const BenchmarkGroup& item);
 
+	signals:
+
+		void updateRunningChanged();
+
 	private slots:
+
 		void onSelectionChanged();
+
+		void onRunningChanged();
 	};
 
 } // namespace Elpida

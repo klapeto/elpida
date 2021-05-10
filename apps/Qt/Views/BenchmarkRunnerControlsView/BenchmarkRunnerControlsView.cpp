@@ -88,11 +88,13 @@ namespace Elpida
 		{
 			_ui->pbRun->setEnabled(false);
 			_ui->pbStop->setEnabled(true);
+			_ui->spnTimes->setEnabled(false);
 		}
 		else
 		{
 			_ui->pbRun->setEnabled(true);
 			_ui->pbStop->setEnabled(false);
+			_ui->spnTimes->setEnabled(true);
 		}
 
 		updateCheckboxes();

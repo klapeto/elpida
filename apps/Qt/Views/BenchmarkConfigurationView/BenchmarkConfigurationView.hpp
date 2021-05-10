@@ -38,6 +38,7 @@ namespace Elpida
 	class BenchmarkConfigurationsCollectionModel;
 	class Benchmark;
 	class BenchmarkConfiguration;
+	class BenchmarkRunnerModel;
 
 	namespace Ui
 	{
@@ -52,7 +53,8 @@ namespace Elpida
 		explicit BenchmarkConfigurationView(
 				BenchmarkConfigurationsCollectionModel& benchmarkConfigurationsCollectionModel,
 				ConfigurationViewsPool& configurationViewsPool,
-				const SelectedBenchmarksModel& selectionModel
+				const SelectedBenchmarksModel& selectionModel,
+				const BenchmarkRunnerModel& runnerModel
 		);
 
 		~BenchmarkConfigurationView() override;
@@ -63,10 +65,16 @@ namespace Elpida
 		ConfigurationViewsPool& _configurationViewsPool;
 		Ui::BenchmarkConfigurationView* _ui;
 		QVBoxLayout* _containerLayout;
+		const BenchmarkRunnerModel& _runnerModel;
+		EventSubscriptionBase* _runnerSubscription;
+
+	signals:
+		void onRunningChanged();
 
 	private slots:
 
 		static void taskListItemClicked(QListWidgetItem* item);
+		void updateRunningChanged();
 
 	protected:
 		void onCollectionCleared() override;
