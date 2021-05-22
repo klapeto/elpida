@@ -25,6 +25,7 @@
 #include <iostream>
 #include <iomanip>
 #include <getopt.h>
+#include <fstream>
 
 #include <Controllers/BenchmarksController.hpp>
 #include <Models/Benchmarks/BenchmarksModel.hpp>
@@ -41,7 +42,6 @@
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <Elpida/ServiceProvider.hpp>
 #include <Elpida/Utilities/Logging/LogAppender.hpp>
-
 
 #define NON_EXIT_CODE -1
 
@@ -98,6 +98,8 @@ private:
 		return ss.str();
 	}
 };
+
+json getTaskSpecificationJson(const TaskSpecification& taskSpec);
 
 void printVersion()
 {
@@ -195,6 +197,62 @@ static json getBenchmarkScoreSpecification(const BenchmarkScoreSpecification& sc
 	return returnJson;
 }
 
+json getTaskSpecificationJson(const TaskSpecification& taskSpec)
+{
+	json taskSpecJ;
+
+	taskSpecJ["uuid"] = taskSpec.getUuid();
+	taskSpecJ["name"] = taskSpec.getName();
+	taskSpecJ["description"] = taskSpec.getDescription();
+
+	taskSpecJ["result"] = getResultSpec(taskSpec.getResultSpecification());
+
+	if (taskSpec.acceptsInput())
+	{
+		auto& inputSpec = taskSpec.getInputDataSpecification();
+		json inputJ;
+
+		inputJ["name"] = inputSpec.getName();
+		inputJ["description"] = inputSpec.getDescription();
+		inputJ["unit"] = inputSpec.getUnit();
+
+		if (!inputSpec.getRequiredPropertiesNames().empty())
+		{
+			json propsJ = json::array();
+
+			for (auto& property: inputSpec.getRequiredPropertiesNames())
+			{
+				propsJ.push_back(property);
+			}
+
+			inputJ["requiredProperties"] = propsJ;
+		}
+
+		taskSpecJ["input"] = std::move(inputJ);
+	}
+
+	if (taskSpec.producesOutput())
+	{
+		auto& outputSpec = taskSpec.getOutputDataSpecification();
+		json outputJ;
+
+		outputJ["name"] = outputSpec.getName();
+		outputJ["description"] = outputSpec.getDescription();
+		outputJ["unit"] = outputSpec.getUnit();
+
+		taskSpecJ["output"] = std::move(outputJ);
+	}
+	return taskSpecJ;
+}
+
+static void DumpJsonToFile(const std::string& filename, const json& json)
+{
+	std::fstream file;
+	file.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+	file.open(filename, std::ios::out | std::ios::trunc);
+	file << json.dump();
+}
+
 int main(int argC, char** argV)
 {
 
@@ -232,83 +290,57 @@ int main(int argC, char** argV)
 
 	auto& benchmarkGroups = benchmarksModel.getItems();
 
-	json root;
+	std::unordered_map<std::string, Reference<const TaskSpecification>> taskSpecifications;
 
 	json benchmarksJ = json::array();
-	for (const auto& benchmarkGroup: benchmarkGroups)
+	for (const auto& benchmarkGroup : benchmarkGroups)
 	{
 		for (auto& benchmark: benchmarkGroup.getValue().getBenchmarks())
 		{
-			json benchJ;
-			benchJ["uuid"] = benchmark->getUuid();
-			benchJ["name"] = benchmark->getName();
+			json benchmarkJ;
+			benchmarkJ["uuid"] = benchmark->getUuid();
+			benchmarkJ["name"] = benchmark->getName();
 
-			benchJ["scoreSpecification"] = getBenchmarkScoreSpecification(benchmark->getScoreSpecification());
+			benchmarkJ["scoreSpecification"] = getBenchmarkScoreSpecification(benchmark->getScoreSpecification());
 
 			{
-				json tasksJ = json::array();
+				json benchmarkTasksJ = json::array();
 				for (auto& task: benchmark->getTaskBuilders())
 				{
 					auto& taskSpec = task.getTaskSpecification();
 
-					json taskSpecJ;
+					taskSpecifications.try_emplace(taskSpec.getUuid(), taskSpec);
 
-					taskSpecJ["uuid"] = taskSpec.getUuid();
-					taskSpecJ["name"] = taskSpec.getName();
-					taskSpecJ["description"] = taskSpec.getDescription();
+					json taskBuilderJ;
+					taskBuilderJ["uuid"] = taskSpec.getUuid();
+					taskBuilderJ["canBeMultiThreaded"] = task.canBeMultiThreaded();
+					taskBuilderJ["canBeDisabled"] = task.canBeDisabled();
+					taskBuilderJ["iterationsToRun"] = task.getIterationsToRun();
+					taskBuilderJ["isCountedOnResults"] = task.shouldBeCountedOnResults();
 
-					taskSpecJ["result"] = getResultSpec(taskSpec.getResultSpecification());
-
-					if (taskSpec.acceptsInput())
-					{
-						auto& inputSpec = taskSpec.getInputDataSpecification();
-						json inputJ;
-
-						inputJ["name"] = inputSpec.getName();
-						inputJ["description"] = inputSpec.getDescription();
-						inputJ["unit"] = inputSpec.getUnit();
-
-						if (!inputSpec.getRequiredPropertiesNames().empty())
-						{
-							json propsJ = json::array();
-
-							for (auto& property: inputSpec.getRequiredPropertiesNames())
-							{
-								propsJ.push_back(property);
-							}
-
-							inputJ["requiredProperties"] = propsJ;
-						}
-
-						taskSpecJ["input"] = std::move(inputJ);
-					}
-
-					if (taskSpec.producesOutput())
-					{
-						auto& outputSpec = taskSpec.getOutputDataSpecification();
-						json outputJ;
-
-						outputJ["name"] = outputSpec.getName();
-						outputJ["description"] = outputSpec.getDescription();
-						outputJ["unit"] = outputSpec.getUnit();
-
-						taskSpecJ["output"] = std::move(outputJ);
-					}
-
-
-					tasksJ.push_back(std::move(taskSpecJ));
+					benchmarkTasksJ.push_back(std::move(taskBuilderJ));
 				}
-				benchJ["taskSpecifications"] = tasksJ;
+				benchmarkJ["tasks"] = benchmarkTasksJ;
 			}
 
-			benchmarksJ.push_back(std::move(benchJ));
+			benchmarksJ.push_back(std::move(benchmarkJ));
 		}
 	}
 
-	root["benchmarks"] = std::move(benchmarksJ);
+	DumpJsonToFile("benchmarks.json", benchmarksJ);
 
+	json tasksJ = json::array();
 
-	std::cout << root.dump() << std::endl;
+	for (auto& taskSpec: taskSpecifications)
+	{
+		tasksJ.push_back(getTaskSpecificationJson(taskSpec.second.get()));
+	}
+
+	DumpJsonToFile("tasks.json", tasksJ);
+
+	//std::cout << root.dump() << std::endl;
 
 	return EXIT_SUCCESS;
 }
+
+
