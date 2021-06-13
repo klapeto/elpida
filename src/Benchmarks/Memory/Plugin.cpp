@@ -173,12 +173,21 @@ std::unique_ptr<Benchmark> createL1DLatency(
 					MemoryLatencySpecification::Settings::MemorySizeCalculatorT(
 							[](const auto& x)
 							{
-								return calculateSizeForTargetProcessorType(x,
+
+								auto size = calculateSizeForTargetProcessorType(x,
 										[](const ProcessorNode& p)
 										{
 											return p.getType() ==
 												   ProcessorNodeType::L1DCache;
 										}) / 2;
+								if (size > 0)
+								{
+									return size;
+								}
+								else
+								{
+									throw ElpidaException("This processor does not have L1D cache");
+								}
 							}));
 
 	return benchmark;
@@ -209,12 +218,20 @@ std::unique_ptr<Benchmark> createL2DLatency(
 					MemoryLatencySpecification::Settings::MemorySizeCalculatorT(
 							[](const auto& x)
 							{
-								return calculateSizeForTargetProcessorType(x,
+								auto size = calculateSizeForTargetProcessorType(x,
 										[](const ProcessorNode& p)
 										{
 											return p.getType() ==
 												   ProcessorNodeType::L2DCache;
 										}) / 2;
+								if (size > 0)
+								{
+									return size;
+								}
+								else
+								{
+									throw ElpidaException("This processor does not have L2D cache");
+								}
 							}));
 
 	return benchmark;
@@ -245,12 +262,20 @@ std::unique_ptr<Benchmark> createL3DLatency(
 					MemoryLatencySpecification::Settings::MemorySizeCalculatorT(
 							[](const auto& x)
 							{
-								return calculateSizeForTargetProcessorType(x,
+								auto size = calculateSizeForTargetProcessorType(x,
 										[](const ProcessorNode& p)
 										{
 											return p.getType() ==
 												   ProcessorNodeType::L3DCache;
 										}) / 2;
+								if (size > 0)
+								{
+									return size;
+								}
+								else
+								{
+									throw ElpidaException("This processor does not have L3D cache");
+								}
 							}));
 
 	return benchmark;
@@ -278,7 +303,15 @@ std::unique_ptr<Benchmark> createDramLatency(
 					MemoryLatencySpecification::Settings::MemorySizeCalculatorT(
 							[](const auto& x)
 							{
-								return calculateSizeForMemory(x) * 2;
+								auto size = calculateSizeForMemory(x) * 2;
+								if (size > 0)
+								{
+									return size;
+								}
+								else
+								{
+									return static_cast<size_t>(WorkingSetSizes::MiB_64);
+								}
 							}));
 
 	return benchmark;

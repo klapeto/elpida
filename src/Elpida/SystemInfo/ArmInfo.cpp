@@ -22,7 +22,7 @@
 // Created by klapeto on 13/6/21.
 //
 
-#if defined(__aarch64__) || defined(_M_ARM) || defined(__TARGET_ARCH_ARM)
+#if defined(__aarch64__) || defined(_M_ARM) || defined(__arm__)
 
 #include "Elpida/SystemInfo/CpuInfo.hpp"
 #include "Elpida/Config.hpp"
@@ -56,7 +56,10 @@ namespace Elpida
 									std::string token;
 									while (getline(inStream, token, ' '))
 									{
-										_features.emplace_back(token, "", true);
+										if (token.size() > 0)
+										{
+											_features.emplace_back(token, "", true);
+										}
 									}
 								}
 						},
