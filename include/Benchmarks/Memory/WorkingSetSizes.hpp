@@ -34,17 +34,6 @@
 
 namespace Elpida
 {
-
-	typedef
-#if __x86_64__ || _M_AMD64
-	uint64_t
-#elif __i386__ || __i386 || _X86_
-	uint32_t
-#else
-#error Elipda currently only supports X86-64 and X86 achritectures
-#endif
-		RegisterType;
-
 	class WorkingSetSizes
 	{
 	public:

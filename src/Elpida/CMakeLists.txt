@@ -21,6 +21,9 @@ set(ELPIDA_SOURCES
         SystemInfo/OsInfo.cpp
         SystemInfo/TimingInfo.cpp
 
+        SystemInfo/X86Info.cpp
+        SystemInfo/ArmInfo.cpp
+
         Utilities/Logging/Logger.cpp
         Utilities/Logging/LogAppender.cpp
         Utilities/NonCopyable.cpp
@@ -83,13 +86,7 @@ set(ELPIDA_SOURCES
         Engine/Result/BenchmarkScore.cpp
         Engine/Result/BenchmarkScoreSpecification.cpp
         Engine/Calculators/Benchmark/AverageThroughputScoreCalculator.cpp
-        )
-
-
-
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "^x86_64*" OR CMAKE_SYSTEM_PROCESSOR MATCHES "^AMD64")
-    set(ELPIDA_SOURCES ${ELPIDA_SOURCES} SystemInfo/X86Info.cpp)
-endif()
+)
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
@@ -113,10 +110,10 @@ add_library(elpida SHARED ${ELPIDA_SOURCES})
 
 if (UNIX)
     include(FindThreads)
-    find_library(numa REQUIRED)
-    find_library(dl REQUIRED)
+    include(${CMAKE_SOURCE_DIR}/cmake-modules/FindNUMA.cmake)
+#    find_library(numa REQUIRED)
     find_package(Threads)
-    target_link_libraries(elpida numa dl ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(elpida numa ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 include(FindHWLOC)

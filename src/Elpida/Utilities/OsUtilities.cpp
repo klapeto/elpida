@@ -156,7 +156,15 @@ namespace Elpida
 	void OsUtilities::deallocateOnNumaNode(void* data, size_t size)
 	{
 #if defined(ELPIDA_LINUX)
-		numa_free(data, size);
+
+		if (numa_available() < 0)
+		{
+			 free(data);
+		}
+		else
+		{
+			numa_free(data, size);
+		}
 #elif defined(ELPIDA_WINDOWS)
 		VirtualFree(data, 0, MEM_RELEASE);
 #else
@@ -170,7 +178,9 @@ namespace Elpida
 #if defined(ELPIDA_LINUX)
 		if (numa_available() < 0)
 		{
-			throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
+			//throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
+
+			return malloc(size);
 		}
 		numa_set_strict(1);
 		ptr = (void*)numa_alloc_onnode(size, numaNode);

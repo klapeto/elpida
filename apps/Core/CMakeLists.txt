@@ -59,10 +59,12 @@ if (ELPIDA_WEB_API_KEY)
 endif()
 
 if(MSYS OR MINGW)
-    target_link_libraries(elpidaCore elpida OpenSSL::SSL ws2_32 crypt32)
+    target_link_libraries(elpidaCore ws2_32 crypt32)
 else()
-    target_link_libraries(elpidaCore elpida OpenSSL::SSL)
+    target_link_libraries(elpidaCore)
 endif()
+
+target_link_libraries(elpidaCore elpida OpenSSL::SSL stdc++fs)
 
 target_include_directories(elpidaCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

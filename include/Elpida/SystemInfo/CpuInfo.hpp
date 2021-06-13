@@ -96,7 +96,7 @@ namespace Elpida
 		virtual ~CpuInfo() = default;
 
 	protected:
-		CpuInfo() = default;
+		CpuInfo();
 
 		std::vector<CpuFeature> _features;
 		std::unordered_map<std::string, std::string> _additionalInformation;
