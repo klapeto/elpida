@@ -62,6 +62,12 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
+		const std::string& getArchitecture() const
+		{
+			return _architecture;
+		}
+
+		[[nodiscard]]
 		const std::vector<CpuCache>& getCaches() const
 		{
 			return _caches;
@@ -101,6 +107,7 @@ namespace Elpida
 		std::vector<CpuFeature> _features;
 		std::unordered_map<std::string, std::string> _additionalInformation;
 		std::vector<CpuCache> _caches;
+		std::string _architecture;
 		std::string _vendorString;
 		std::string _processorBrand;
 

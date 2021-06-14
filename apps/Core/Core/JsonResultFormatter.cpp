@@ -127,6 +127,7 @@ namespace Elpida
 	{
 		json cpu;
 
+		cpu["architecture"] = cpuInfo.getArchitecture();
 		cpu["vendor"] = cpuInfo.getVendorString();
 		cpu["brand"] = cpuInfo.getProcessorBrand();
 		cpu["additionalInfo"] = getAdditionalCpuInfo(cpuInfo);

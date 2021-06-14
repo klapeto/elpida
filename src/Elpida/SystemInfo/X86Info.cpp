@@ -550,6 +550,8 @@ namespace Elpida
 
 	CpuInfo::CpuInfo()
 	{
+		_architecture = "x86-64";
+
 		unsigned eax = 0, ebx = 0, ecx = 0, edx = 0;
 
 		cpuid(0x0, &eax, &ebx, &ecx, &edx);

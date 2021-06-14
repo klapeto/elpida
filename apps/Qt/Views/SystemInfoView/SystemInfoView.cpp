@@ -163,6 +163,7 @@ namespace Elpida
 
 		std::vector<std::pair<std::string, std::string>> info;
 
+		info.emplace_back("Architecture", cpuInfo.getArchitecture());
 		info.emplace_back("Vendor", cpuInfo.getVendorString());
 		info.emplace_back("Brand", cpuInfo.getProcessorBrand());
 		info.emplace_back("Physical Cores", std::to_string(topology.getTotalPhysicalCores()));
@@ -182,7 +183,7 @@ namespace Elpida
 		auto row = 0;
 		auto column = 0;
 
-		for (const auto& infoPair: info)
+		for (const auto& infoPair : info)
 		{
 			_ui->glInfo->addWidget(new QLabel(QString::fromStdString(infoPair.first) + ": "), row, column);
 			_ui->glInfo->addWidget(new QLabel(QString::fromStdString(infoPair.second)), row, ++column);

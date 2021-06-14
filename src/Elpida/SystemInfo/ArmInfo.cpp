@@ -43,12 +43,6 @@ namespace Elpida
 
 		std::unordered_map<std::string, std::function<void(const std::string&)>> fields
 				{
-						{ "model name",
-								[this](const std::string& value)
-								{
-									_processorBrand = value;
-								}
-						},
 						{ "Features",
 								[this](const std::string& value)
 								{
@@ -63,45 +57,16 @@ namespace Elpida
 									}
 								}
 						},
-						{ "Cpu architecture",
-								[this](const std::string& value)
-								{
-									_additionalInformation.emplace("Architecture", value);
-								}
-						},
-						{ "Cpu variant",
-								[this](const std::string& value)
-								{
-									_additionalInformation.emplace("Variant", value);
-								}
-						},
-						{ "Cpu part",
-								[this](const std::string& value)
-								{
-									_additionalInformation.emplace("Part", value);
-								}
-						},
-						{ "Cpu revision",
-								[this](const std::string& value)
-								{
-									_additionalInformation.emplace("Revision", value);
-								}
-						},
 						{ "Hardware",
 								[this](const std::string& value)
 								{
-									_additionalInformation.emplace("Hardware name", value);
-								}
-						},
-						{ "Revision",
-								[this](const std::string& value)
-								{
+									_vendorString = value;
 								}
 						},
 						{ "Model",
 								[this](const std::string& value)
 								{
-									_vendorString = value;
+									_processorBrand = value;
 								}
 						}
 				};
@@ -121,6 +86,22 @@ namespace Elpida
 				}
 			}
 			cpuInfo.close();
+		}
+
+#if defined(__aarch64__)
+		_architecture = "AArch64";
+#else
+		_architecture = "ARM";
+#endif
+
+		if (_vendorString.empty())
+		{
+			_vendorString = "ARM Cortex";
+		}
+
+		if (_processorBrand.empty())
+		{
+			_processorBrand = "Generic Arm processor";
 		}
 
 #else
