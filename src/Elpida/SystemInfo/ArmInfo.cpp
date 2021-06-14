@@ -60,7 +60,7 @@ namespace Elpida
 						{ "Hardware",
 								[this](const std::string& value)
 								{
-									_vendorString = value.sub;
+									_vendorString = value;
 								}
 						},
 						{ "Model",
