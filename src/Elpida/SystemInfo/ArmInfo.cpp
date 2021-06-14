@@ -80,10 +80,19 @@ namespace Elpida
 				auto itr = fields.find(fieldName);
 				if (itr != fields.end())
 				{
-					auto value = line.substr(line.find(':'));
-					value = value.substr(value.find('\t'));
-					value = value.substr(value.find(' '));
-					itr->second(value);
+					size_t i = line.find(':');
+
+					while (i < line.size()
+						&& (iswspace(line[i]) || line[i] == ':'))
+					{
+						i++;
+					}
+
+					if (i < line.size())
+					{
+						itr->second(line.substr(i));
+					}
+
 					fields.erase(itr);
 				}
 			}
