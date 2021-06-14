@@ -60,7 +60,7 @@ namespace Elpida
 						{ "Hardware",
 								[this](const std::string& value)
 								{
-									_vendorString = value;
+									_vendorString = value.sub;
 								}
 						},
 						{ "Model",
@@ -80,7 +80,9 @@ namespace Elpida
 				auto itr = fields.find(fieldName);
 				if (itr != fields.end())
 				{
-					auto value = line.substr(line.find(':') + 1);
+					auto value = line.substr(line.find(':'));
+					value = value.substr(value.find('\t'));
+					value = value.substr(value.find(' '));
 					itr->second(value);
 					fields.erase(itr);
 				}
