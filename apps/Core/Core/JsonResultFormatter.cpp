@@ -91,7 +91,6 @@ namespace Elpida
 			c["size"] = cache.getSize();
 			c["associativity"] = cache.getAssociativity();
 			c["lineSize"] = cache.getLineSize();
-			c["linesPerTag"] = cache.getLinesPerTag();
 			cachesJ.push_back(c);
 		}
 
@@ -128,8 +127,8 @@ namespace Elpida
 		json cpu;
 
 		cpu["architecture"] = cpuInfo.getArchitecture();
-		cpu["vendor"] = cpuInfo.getVendorString();
-		cpu["brand"] = cpuInfo.getProcessorBrand();
+		cpu["vendor"] = cpuInfo.getVendorName();
+		cpu["modelName"] = cpuInfo.getModelName();
 		cpu["additionalInfo"] = getAdditionalCpuInfo(cpuInfo);
 		cpu["frequency"] = (unsigned long)cpuInfo.getFrequency();
 		cpu["smt"] = cpuInfo.isSmt();

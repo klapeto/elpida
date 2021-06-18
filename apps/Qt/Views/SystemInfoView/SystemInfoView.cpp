@@ -88,10 +88,6 @@ namespace Elpida
 				groupLayout->addWidget(new QLabel(QString::fromStdString("Associativity: ")), 1, 0);
 				groupLayout->addWidget(new QLabel(QString::fromStdString(cache.getAssociativity())), 1, 1);
 
-				groupLayout->addWidget(new QLabel(QString::fromStdString("Lines Per Tag: ")), 2, 0);
-				groupLayout->addWidget(new QLabel(QString::fromStdString(std::to_string(cache.getLinesPerTag()))), 2,
-						1);
-
 				groupLayout->addWidget(new QLabel(QString::fromStdString("Lines size: ")), 3, 0);
 				groupLayout->addWidget(new QLabel(QString::fromStdString(std::to_string(cache.getLineSize()))), 3, 1);
 
@@ -164,8 +160,8 @@ namespace Elpida
 		std::vector<std::pair<std::string, std::string>> info;
 
 		info.emplace_back("Architecture", cpuInfo.getArchitecture());
-		info.emplace_back("Vendor", cpuInfo.getVendorString());
-		info.emplace_back("Brand", cpuInfo.getProcessorBrand());
+		info.emplace_back("Vendor", cpuInfo.getVendorName());
+		info.emplace_back("Model name", cpuInfo.getModelName());
 		info.emplace_back("Physical Cores", std::to_string(topology.getTotalPhysicalCores()));
 		info.emplace_back("Logical Cores", std::to_string(topology.getTotalLogicalCores()));
 

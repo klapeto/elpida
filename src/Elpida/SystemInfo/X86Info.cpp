@@ -30,11 +30,17 @@
 
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
+#include <fstream>
+#include <functional>
+#include <filesystem>
 
 #ifdef _MSC_VER
 #include <intrin.h>
 #else
+
 #include <cpuid.h>
+
 #endif
 
 static constexpr bool featureCheck(unsigned reg, unsigned bit)
@@ -103,59 +109,60 @@ namespace Elpida
 		return (((float)(endCycles - startCycles)) * 1000000000.f) / (float)nanoseconds.count();
 	}
 
-	void static addFeature(std::vector<CpuFeature>& _features, const std::string& name, unsigned int reg, unsigned int bit)
+	void static
+	addFeature(std::vector<CpuFeature>& _features, const std::string& name, unsigned int reg, unsigned int bit)
 	{
 		static std::unordered_map<std::string, std::string> FeaturesNames =
 				{
-						{ "CMOV", "Conditional move instructions" },
-						{ "MMX", "MMX instructions support" },
-						{ "MmxExt", "AMD extensions to MMX instructions" },
-						{ "SSE", "SSE instructions support" },
-						{ "SSE2", "SSE2 instructions support" },
-						{ "SSE3", "SSE3 instructions support" },
-						{ "SSSE3", "Supplemental SSE3 instructions support" },
-						{ "SSE41", "SSE4.1 instructions support" },
-						{ "SSE42", "SSE4.2 instructions support" },
-						{ "SSE4A", "SSE4A instructions support" },
-						{ "FMA", "FMA instructions support" },
-						{ "FMA4", "Four-operand FMA instructions support" },
-						{ "AES", "AES instructions support" },
-						{ "AVX", "AVX instructions support" },
-						{ "AVX2", "AVX2 instructions support" },
-						{ "AVX512-F", "AVX512 Foundation" },
-						{ "AVX512-BW", "AVX-512 Byte and Word instructions support" },
-						{ "AVX512-DQ", "AVX-512 DWORD and QWORD instructions support" },
-						{ "AVX512-IFMA", "AVX-512 Integer FMA instructions support" },
-						{ "AVX512-PF", "AVX-512 Prefetch instructions support" },
-						{ "AVX512-ER", "AVX-512 Exp. and Recp. instructions support" },
-						{ "AVX512-CD", "AVX-512 Conflict Detection instructions support" },
-						{ "AVX512-VBMI", "AVX-512 Vector BMI instructions support" },
-						{ "AVX512-VBMI2", "AVX-512 Vector BMI2 instructions support" },
-						{ "AVX512-VNNI", "AVX-512 Vector Neural Network instructions support" },
-						{ "AVX512-4VNNIW", "AVX-512 4-register Neural Network instructions support" },
-						{ "AVX512-BITALG", "AVX-512 BITALG instructions support" },
-						{ "AVX512-VL", "AVX-512 Vector Length Extensions instructions support" },
-						{ "AVX512-VPOPCNTDQ", "AVX-512 Vector Population Count D/Q instructions support" },
+						{ "CMOV",              "Conditional move instructions" },
+						{ "MMX",               "MMX instructions support" },
+						{ "MmxExt",            "AMD extensions to MMX instructions" },
+						{ "SSE",               "SSE instructions support" },
+						{ "SSE2",              "SSE2 instructions support" },
+						{ "SSE3",              "SSE3 instructions support" },
+						{ "SSSE3",             "Supplemental SSE3 instructions support" },
+						{ "SSE41",             "SSE4.1 instructions support" },
+						{ "SSE42",             "SSE4.2 instructions support" },
+						{ "SSE4A",             "SSE4A instructions support" },
+						{ "FMA",               "FMA instructions support" },
+						{ "FMA4",              "Four-operand FMA instructions support" },
+						{ "AES",               "AES instructions support" },
+						{ "AVX",               "AVX instructions support" },
+						{ "AVX2",              "AVX2 instructions support" },
+						{ "AVX512-F",          "AVX512 Foundation" },
+						{ "AVX512-BW",         "AVX-512 Byte and Word instructions support" },
+						{ "AVX512-DQ",         "AVX-512 DWORD and QWORD instructions support" },
+						{ "AVX512-IFMA",       "AVX-512 Integer FMA instructions support" },
+						{ "AVX512-PF",         "AVX-512 Prefetch instructions support" },
+						{ "AVX512-ER",         "AVX-512 Exp. and Recp. instructions support" },
+						{ "AVX512-CD",         "AVX-512 Conflict Detection instructions support" },
+						{ "AVX512-VBMI",       "AVX-512 Vector BMI instructions support" },
+						{ "AVX512-VBMI2",      "AVX-512 Vector BMI2 instructions support" },
+						{ "AVX512-VNNI",       "AVX-512 Vector Neural Network instructions support" },
+						{ "AVX512-4VNNIW",     "AVX-512 4-register Neural Network instructions support" },
+						{ "AVX512-BITALG",     "AVX-512 BITALG instructions support" },
+						{ "AVX512-VL",         "AVX-512 Vector Length Extensions instructions support" },
+						{ "AVX512-VPOPCNTDQ",  "AVX-512 Vector Population Count D/Q instructions support" },
 						{ "AVX512-VPCLMULQDQ", "AVX-512 CLMUL instruction set (VEX-256/EVEX) instructions support" },
-						{ "AVX512-4FMAPS", "AVX-512 4-register Multiply Accumulation Single precision instructions support" },
-						{ "AVX512-GFNI", "AVX-512 Galois Field instructions support" },
-						{ "AVX512-VAES", "AVX-512 AES instruction set (VEX-256/EVEX) instructions support" },
-						{ "SHA", "Intel SHA extensions support" },
-						{ "XOP", "Extended operation support" },
-						{ "3DNow", "3DNow! instruction support" },
-						{ "3DNowExt", "AMD extensions to 3DNow! instructions" },
-						{ "3DNowPrefetch", "PREFETCH and PREFETCHW instruction support" },
-						{ "BMI1", "Bit manipulation group 1 instruction support" },
-						{ "BMI2", "Bit manipulation group 2 instruction support" },
-						{ "ABM", "Advanced bit manipulation" },
-						{ "F16C", "Half-precision convert instruction support" },
-						{ "RDRAND", "RDRAND (HW RNG) instruction support" },
-						{ "SGX", "Intel Software Guard Extensions BMI1 instructions support" },
-						{ "SVM", "Secure Virtual Machine" },
-						{ "VAES", "VAES 256-bit instructions" },
-						{ "FP256", "Full Width AVX256 execution" },
-						{ "Turbo Boost", "Cpu Turbo Boost" },
-						{ "Turbo Boost 3", "Cpu Turbo Boost 3" },
+						{ "AVX512-4FMAPS",     "AVX-512 4-register Multiply Accumulation Single precision instructions support" },
+						{ "AVX512-GFNI",       "AVX-512 Galois Field instructions support" },
+						{ "AVX512-VAES",       "AVX-512 AES instruction set (VEX-256/EVEX) instructions support" },
+						{ "SHA",               "Intel SHA extensions support" },
+						{ "XOP",               "Extended operation support" },
+						{ "3DNow",             "3DNow! instruction support" },
+						{ "3DNowExt",          "AMD extensions to 3DNow! instructions" },
+						{ "3DNowPrefetch",     "PREFETCH and PREFETCHW instruction support" },
+						{ "BMI1",              "Bit manipulation group 1 instruction support" },
+						{ "BMI2",              "Bit manipulation group 2 instruction support" },
+						{ "ABM",               "Advanced bit manipulation" },
+						{ "F16C",              "Half-precision convert instruction support" },
+						{ "RDRAND",            "RDRAND (HW RNG) instruction support" },
+						{ "SGX",               "Intel Software Guard Extensions BMI1 instructions support" },
+						{ "SVM",               "Secure Virtual Machine" },
+						{ "VAES",              "VAES 256-bit instructions" },
+						{ "FP256",             "Full Width AVX256 execution" },
+						{ "Turbo Boost",       "Cpu Turbo Boost" },
+						{ "Turbo Boost 3",     "Cpu Turbo Boost 3" },
 				};
 
 		_features.emplace_back(name, FeaturesNames[name], featureCheck(reg, bit));
@@ -342,13 +349,11 @@ namespace Elpida
 			_caches.emplace_back(1, "L1 Instruction Cache",
 					std::to_string(getRegisterValue(edx, 16, 0xFF)) + "-way",
 					(getRegisterValue(edx, 24, 0xFF) * 1000),
-					getRegisterValue(edx, 8, 0xFF),
 					getRegisterValue(edx, 0, 0xFF));
 
 			_caches.emplace_back(1, "L1 Data Cache",
 					std::to_string(getRegisterValue(ecx, 16, 0xFF)) + "-way",
 					(getRegisterValue(ecx, 24, 0xFF) * 1000),
-					getRegisterValue(ecx, 8, 0xFF),
 					getRegisterValue(ecx, 0, 0xFF));
 
 
@@ -361,13 +366,11 @@ namespace Elpida
 			_caches.emplace_back(2, "L2 Cache",
 					cacheAssociativities[getRegisterValue(ecx, 12, 0xF)],
 					(getRegisterValue(ecx, 16, 0xFFFF) * 1000),
-					getRegisterValue(ecx, 8, 0xF),
 					getRegisterValue(ecx, 0, 0xFF));
 
 			_caches.emplace_back(3, "L3 Cache",
 					cacheAssociativities[getRegisterValue(edx, 12, 0xF)],
 					(getRegisterValue(edx, 18, 0x3FFF) * 512000),
-					getRegisterValue(edx, 8, 0xF),
 					getRegisterValue(edx, 0, 0xFF));
 		}
 
@@ -379,8 +382,8 @@ namespace Elpida
 			eax = ebx = ecx = edx = 0;
 			cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
 
-			addFeature(_features,"Turbo Boost", edx, 9);
-			addFeature(_features,"Turbo Boost 3", 0, 9); // Not Supported
+			addFeature(_features, "Turbo Boost", edx, 9);
+			addFeature(_features, "Turbo Boost 3", 0, 9); // Not Supported
 		}
 
 		if (_maximumExtendedFunction >= 0x8000001A)
@@ -391,7 +394,7 @@ namespace Elpida
 			eax = ebx = ecx = edx = 0;
 			cpuid(0x8000001A, &eax, &ebx, &ecx, &edx);
 
-			addFeature(_features,"FP256", eax, 2);
+			addFeature(_features, "FP256", eax, 2);
 		}
 	}
 
@@ -536,17 +539,15 @@ namespace Elpida
 								* (getRegisterValue(ebx, 0, 0xFFF) + 1) * (getRegisterValue(ecx, 0, 0x7FFFFFFF) + 1);
 
 					auto associativity = std::to_string((getRegisterValue(ebx, 22, 0x3FF) + 1)) + "-way";
-					auto linesPerTag = (getRegisterValue(ebx, 12, 0x3FF) + 1);
 					auto lineSize = (getRegisterValue(ebx, 0, 0xFFF) + 1);
 
-					_caches.emplace_back(level, name, associativity, size, linesPerTag, lineSize);
+					_caches.emplace_back(level, name, associativity, size, lineSize);
 
 					i++;
 				}
 			}
 		}
 	}
-
 
 	CpuInfo::CpuInfo()
 	{
@@ -562,9 +563,9 @@ namespace Elpida
 		if (ebx != 0)
 		{
 			_maximumStandardFunction = eax;
-			_vendorString.append((char*)&ebx, 4);
-			_vendorString.append((char*)&edx, 4);
-			_vendorString.append((char*)&ecx, 4);
+			_vendorName.append((char*)&ebx, 4);
+			_vendorName.append((char*)&edx, 4);
+			_vendorName.append((char*)&ecx, 4);
 			cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
 			_maximumExtendedFunction = eax;
 		}
@@ -572,26 +573,26 @@ namespace Elpida
 		{
 			cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
 			_maximumExtendedFunction = eax;
-			_vendorString.append((char*)&ebx, 4);
-			_vendorString.append((char*)&edx, 4);
-			_vendorString.append((char*)&ecx, 4);
+			_vendorName.append((char*)&ebx, 4);
+			_vendorName.append((char*)&edx, 4);
+			_vendorName.append((char*)&ecx, 4);
 		}
 
-		if (_vendorString == "AuthenticAMD")
+		if (_vendorName == "AuthenticAMD")
 		{
 			getAMDFeatures(_maximumStandardFunction,
 					_maximumExtendedFunction,
-					_processorBrand,
+					_modelName,
 					_caches,
 					_additionalInformation,
 					_features,
 					_smt);
 		}
-		else if (_vendorString == "GenuineIntel")
+		else if (_vendorName == "GenuineIntel")
 		{
 			getIntelFeatures(_maximumStandardFunction,
 					_maximumExtendedFunction,
-					_processorBrand,
+					_modelName,
 					_caches,
 					_additionalInformation,
 					_features,
@@ -600,7 +601,7 @@ namespace Elpida
 
 		_frequency = getTscFrequency();
 
-		sanitizeBrand(_processorBrand);
+		sanitizeBrand(_modelName);
 	}
 }
 

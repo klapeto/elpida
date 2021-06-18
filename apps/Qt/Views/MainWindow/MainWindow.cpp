@@ -198,7 +198,7 @@ namespace Elpida
 		dialog.setNameFilter(filter);
 		dialog.selectNameFilter(filter);
 
-		auto targetFilename = _cpuInfo.getProcessorBrand() + "-" + std::to_string(time(nullptr)) + ".json";
+		auto targetFilename = _cpuInfo.getModelName() + "-" + std::to_string(time(nullptr)) + ".json";
 		dialog.selectFile(QString::fromStdString(targetFilename));
 
 		if (dialog.exec())

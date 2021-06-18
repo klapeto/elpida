@@ -33,30 +33,32 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] const std::string& getName() const
+		[[nodiscard]]
+		const std::string& getName() const
 		{
 			return _name;
 		}
-		[[nodiscard]] const std::string& getAssociativity() const
+
+		[[nodiscard]]
+		const std::string& getAssociativity() const
 		{
 			return _associativity;
 		}
-		[[nodiscard]] unsigned getSize() const
+
+		[[nodiscard]]
+		size_t getSize() const
 		{
 			return _size;
 		}
 
-		[[nodiscard]] unsigned getLinesPerTag() const
-		{
-			return _linesPerTag;
-		}
-
-		[[nodiscard]] unsigned getLineSize() const
+		[[nodiscard]]
+		size_t getLineSize() const
 		{
 			return _lineSize;
 		}
 
-		[[nodiscard]] unsigned int getLevel() const
+		[[nodiscard]]
+		size_t getLevel() const
 		{
 			return _level;
 		}
@@ -64,11 +66,9 @@ namespace Elpida
 		CpuCache(unsigned level,
 			std::string name,
 			std::string associativity,
-			unsigned size,
-			unsigned linesPerTag,
-			unsigned lineSize)
+			size_t size,
+			size_t lineSize)
 			: _name(std::move(name)), _associativity(std::move(associativity)), _level(level), _size(size),
-			  _linesPerTag(linesPerTag),
 			  _lineSize(lineSize)
 		{
 		}
@@ -76,10 +76,9 @@ namespace Elpida
 	private:
 		std::string _name;
 		std::string _associativity;
-		unsigned _level;
-		unsigned _size;
-		unsigned _linesPerTag;
-		unsigned _lineSize;
+		size_t _level;
+		size_t _size;
+		size_t _lineSize;
 	};
 }
 

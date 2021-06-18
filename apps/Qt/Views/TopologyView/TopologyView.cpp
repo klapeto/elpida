@@ -69,9 +69,9 @@ namespace Elpida
 		label->setText(QString::fromStdString(node.getName()) + ": "
 			+ (node.isOsIndexValid() ? QString::fromStdString(std::to_string(node.getOsIndex()) + ": ") : QString())
 			+ QString::fromStdString(std::to_string(node.getOsIndex())));
-		widget->setDefaultStyle(QString("background-color: #b1b1b1;border-radius: 0.5em;"));
-		widget->setMouseOverStyle(QString("background-color: #d8d8d8;border-radius: 0.5em;"));
-		widget->setClickedStyle(QString("background-color: #fdfdfd;border-radius: 0.5em;"));
+		widget->setDefaultStyle(QString("background-color: #aebfef;border-radius: 0.5em;"));
+		widget->setMouseOverStyle(QString("background-color: #c9d3ee;border-radius: 0.5em;"));
+		widget->setClickedStyle(QString("background-color: #d8dff3;border-radius: 0.5em;"));
 
 		return widget;
 	}
@@ -107,6 +107,21 @@ namespace Elpida
 		return widget;
 	}
 
+	TopologyNodeFrame* TopologyView::getDieWidget(const Elpida::ProcessorNode& node)
+	{
+		auto widget = new TopologyNodeFrame(node);
+		auto label = new QLabel();
+		Elpida::TopologyNodeFrame::connect(widget, &TopologyNodeFrame::clicked, this, &TopologyView::onElementClick);
+		widget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+		widget->setLayout(new QVBoxLayout);
+		widget->layout()->addWidget(label);
+		label->setText(QString::fromStdString(node.getName()) + ": " + QString::fromStdString(std::to_string(node.getOsIndex())));
+		widget->setDefaultStyle(QString("background-color: #a9a9a9;border-radius: 0.5em;"));
+		widget->setMouseOverStyle(QString("background-color: #c0c0c0;border-radius: 0.5em;"));
+		widget->setClickedStyle(QString("background-color: #dbdbdb;border-radius: 0.5em;"));
+		return widget;
+	}
+
 	QWidget* TopologyView::getNumaWidget(const Elpida::ProcessorNode& node)
 	{
 		auto widget = new QWidget();
@@ -117,7 +132,7 @@ namespace Elpida
 		label->setText(QString::fromStdString(
 			node.getName() + ": " + (node.isOsIndexValid() ? std::to_string(node.getOsIndex()) : "") + "\n"
 				+ ValueUtilities::getValueScaleStringIEC(node.getValue()) + "B"));
-		widget->setStyleSheet(QString("background-color: #acb4ec;"));
+		widget->setStyleSheet(QString("background-color: #d4d4a1;"));
 		return widget;
 	}
 
@@ -228,6 +243,8 @@ namespace Elpida
 			return getPackageWidget(node);
 		case ProcessorNodeType::Group:
 			return getGroupWidget(node);
+		case ProcessorNodeType::Die:
+			return getDieWidget(node);
 		case ProcessorNodeType::L1DCache:
 		case ProcessorNodeType::L1ICache:
 		case ProcessorNodeType::L2DCache:

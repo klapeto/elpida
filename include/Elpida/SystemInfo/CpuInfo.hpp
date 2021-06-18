@@ -50,21 +50,27 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const std::string& getProcessorBrand() const
+		const std::string& getModelName() const
 		{
-			return _processorBrand;
+			return _modelName;
 		}
 
 		[[nodiscard]]
-		const std::string& getVendorString() const
+		const std::string& getVendorName() const
 		{
-			return _vendorString;
+			return _vendorName;
 		}
 
 		[[nodiscard]]
 		const std::string& getArchitecture() const
 		{
 			return _architecture;
+		}
+
+		[[nodiscard]]
+		size_t getModelId() const
+		{
+			return _modelId;
 		}
 
 		[[nodiscard]]
@@ -108,8 +114,9 @@ namespace Elpida
 		std::unordered_map<std::string, std::string> _additionalInformation;
 		std::vector<CpuCache> _caches;
 		std::string _architecture;
-		std::string _vendorString;
-		std::string _processorBrand;
+		std::string _vendorName;
+		std::string _modelName;
+		size_t _modelId;
 
 		float _frequency = 0.0;
 
