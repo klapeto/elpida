@@ -84,12 +84,6 @@ namespace Elpida
 			return _totalPackages;
 		}
 
-		[[nodiscard]]
-		std::size_t getTotalMachines() const
-		{
-			return _totalMachines;
-		}
-
 		static void setProcessPriority(ProcessPriority priority);
 
 		SystemTopology();
@@ -104,7 +98,6 @@ namespace Elpida
 		std::size_t _totalPhysicalCores;
 		std::size_t _totalNumaNodes;
 		std::size_t _totalPackages;
-		std::size_t _totalMachines;
 
 		void reload();
 		void accumulateCores(const ProcessorNode& node);

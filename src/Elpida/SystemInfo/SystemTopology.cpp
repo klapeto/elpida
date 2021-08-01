@@ -47,8 +47,7 @@ namespace Elpida
 			_totalLogicalCores(0),
 			_totalPhysicalCores(0),
 			_totalNumaNodes(0),
-			_totalPackages(0),
-			_totalMachines(0)
+			_totalPackages(0)
 	{
 		reload();
 	}
@@ -144,9 +143,6 @@ namespace Elpida
 			break;
 		case ProcessorNodeType::Package:
 			_totalPackages++;
-			break;
-		case ProcessorNodeType::Machine:
-			_totalMachines++;
 			break;
 		default:
 			break;
