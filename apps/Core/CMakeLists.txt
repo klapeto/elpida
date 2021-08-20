@@ -64,7 +64,14 @@ else()
     target_link_libraries(elpidaCore)
 endif()
 
-target_link_libraries(elpidaCore elpida OpenSSL::SSL stdc++fs)
+target_link_libraries(elpidaCore elpida OpenSSL::SSL)
+
+if (UNIX OR MSYS OR MINGW)
+    if (${CMAKE_CXX_COMPILER_VERSION} STRLESS 9.3)
+        target_link_libraries(elpidaCore stdc++fs)
+    endif()
+endif()
+
 
 target_include_directories(elpidaCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
