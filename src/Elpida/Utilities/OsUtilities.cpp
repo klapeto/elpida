@@ -210,6 +210,7 @@ namespace Elpida
 		return ptr;
 	}
 
+#if defined(ELPIDA_LINUX)
 	template<typename T>
 	static T readSysfs(const std::string& path)
 	{
@@ -232,4 +233,5 @@ namespace Elpida
 	{
 		return readSysfs<std::string>(path);
 	}
+#endif
 }
