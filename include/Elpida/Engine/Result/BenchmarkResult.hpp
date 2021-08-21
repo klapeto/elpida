@@ -29,7 +29,9 @@
 #include "BenchmarkScore.hpp"
 
 #include <vector>
+#include <chrono>
 #include <string>
+#include <Elpida/Timer.hpp>
 
 namespace Elpida
 {
@@ -38,6 +40,12 @@ namespace Elpida
 	class BenchmarkResult
 	{
 	public:
+		[[nodiscard]]
+		const TimeStamp& getTimeStamp() const
+		{
+			return _timeStamp;
+		}
+
 		[[nodiscard]]
 		const Benchmark& getBenchmark() const
 		{
@@ -88,6 +96,7 @@ namespace Elpida
 		TaskAffinity _affinity;
 		BenchmarkScore _score;
 		std::string _id;
+		TimeStamp _timeStamp;
 		const Benchmark* _benchmark;
 
 	};

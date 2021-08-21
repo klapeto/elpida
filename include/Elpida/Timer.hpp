@@ -28,9 +28,11 @@
 #define ELPIDA_TIMER_HPP_
 
 #include <chrono>
+#include <string>
 
 namespace Elpida
 {
+	using TimeStamp = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
 	class Timer final
 	{
@@ -44,6 +46,8 @@ namespace Elpida
 		using period = Clock::period;
 
 		static time_point now();
+
+		static std::string timestampToString(const TimeStamp& time, const std::string& format = "%Y-%m-%dT%H:%M:%SZ");
 
 		Timer() = delete;
 	};

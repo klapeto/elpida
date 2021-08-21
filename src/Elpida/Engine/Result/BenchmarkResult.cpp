@@ -37,5 +37,6 @@ namespace Elpida
 		:_taskResults(std::move(taskResults)), _affinity(std::move(affinity)),_score(score), _benchmark(&benchmark)
 	{
 		_id = Uuid::create();
+		_timeStamp = Timer::now();
 	}
 }

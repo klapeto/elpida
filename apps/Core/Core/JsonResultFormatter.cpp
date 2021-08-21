@@ -41,15 +41,15 @@ namespace Elpida
 	using namespace nlohmann;
 
 	JsonResultFormatter::JsonResultFormatter(const SystemTopology& systemTopology,
-		const CpuInfo& cpuInfo,
-		const OsInfo& osInfo,
-		const MemoryInfo& memoryInfo,
-		const TimingInfo& timingInfo)
-		: _systemTopology(systemTopology),
-		  _cpuInfo(cpuInfo),
-		  _osInfo(osInfo),
-		  _memoryInfo(memoryInfo),
-		  _timingInfo(timingInfo)
+			const CpuInfo& cpuInfo,
+			const OsInfo& osInfo,
+			const MemoryInfo& memoryInfo,
+			const TimingInfo& timingInfo)
+			: _systemTopology(systemTopology),
+			  _cpuInfo(cpuInfo),
+			  _osInfo(osInfo),
+			  _memoryInfo(memoryInfo),
+			  _timingInfo(timingInfo)
 	{
 	}
 
@@ -243,10 +243,10 @@ namespace Elpida
 	}
 
 	static json getSystem(const OsInfo& osInfo,
-		const CpuInfo& cpuInfo,
-		const SystemTopology& topology,
-		const MemoryInfo& memoryInfo,
-		const TimingInfo& timingInfo)
+			const CpuInfo& cpuInfo,
+			const SystemTopology& topology,
+			const MemoryInfo& memoryInfo,
+			const TimingInfo& timingInfo)
 	{
 		json system;
 		{
@@ -265,60 +265,6 @@ namespace Elpida
 		system["timing"] = getTimingInfo(timingInfo);
 
 		return system;
-	}
-
-	static json getTaskMetrics(const TaskMetrics& metrics)
-	{
-		json resultJ;
-
-		resultJ["value"] = metrics.getResultValue();
-		resultJ["time"] = DurationCast<Seconds>(metrics.getDuration()).count();
-
-		return resultJ;
-	}
-
-	static json getDataSpecification(const DataSpecification& dataSpecification)
-	{
-		json returnJson;
-
-		returnJson["name"] = dataSpecification.getName();
-		returnJson["description"] = dataSpecification.getDescription();
-		returnJson["unit"] = dataSpecification.getUnit();
-
-		json propertiesJ = json::array();
-
-		for (auto& property: dataSpecification.getRequiredPropertiesNames())
-		{
-			propertiesJ.push_back(property);
-		}
-
-
-		returnJson["requiredProperties"] = std::move(propertiesJ);
-
-		return returnJson;
-	}
-
-	static json getResultSpecification(const ResultSpecification& resultSpecification)
-	{
-		json returnJson;
-
-		returnJson["name"] = resultSpecification.getName();
-		returnJson["description"] = resultSpecification.getDescription();
-		returnJson["unit"] = resultSpecification.getUnit();
-		returnJson["aggregation"] = resultSpecification.getAggregationType();
-		returnJson["type"] = resultSpecification.getType();
-
-		return returnJson;
-	}
-
-	static json getBenchmarkScoreSpecification(const BenchmarkScoreSpecification& scoreSpecification)
-	{
-		json returnJson;
-
-		returnJson["unit"] = scoreSpecification.getUnit();
-		returnJson["comparison"] = scoreSpecification.getComparison();
-
-		return returnJson;
 	}
 
 	static json getBasicStatistics(const BasicStatistics& statistics)
@@ -356,23 +302,9 @@ namespace Elpida
 		auto& spec = result.getTaskSpecification();
 
 		taskJ["uuid"] = spec.getUuid();
-		taskJ["name"] = spec.getName();
-		taskJ["description"] = spec.getDescription();
-
-		taskJ["result"] = getResultSpecification(spec.getResultSpecification());
-		taskJ["input"] = spec.acceptsInput() ? getDataSpecification(spec.getInputDataSpecification()) : (json)nullptr;
-		taskJ["output"] = spec.producesOutput() ? getDataSpecification(spec.getInputDataSpecification()): (json)nullptr;
-
 		taskJ["value"] = result.getFinalMetrics().getResultValue();
 		taskJ["time"] = DurationCast<Seconds>(result.getFinalMetrics().getDuration()).count();
 		taskJ["inputSize"] = result.getFinalMetrics().getInputDataSize();
-
-		taskJ["outliers"] = getCollection(result.getOutliers(),
-			[](const auto& outlier)
-			{
-				return getTaskMetrics(outlier);
-			});
-
 		taskJ["statistics"] = getBasicStatistics(result.getBasicStatistics());
 
 		return taskJ;
@@ -380,21 +312,11 @@ namespace Elpida
 
 	static json getResult(const BenchmarkResult& result)
 	{
-		json resultJ;
-
-		resultJ["uuid"] = result.getBenchmark().getUuid();
-		resultJ["name"] = result.getBenchmark().getName();
-		resultJ["scoreSpecification"] = getBenchmarkScoreSpecification(result.getBenchmark().getScoreSpecification());
-
-		resultJ["score"] = result.getScore().getValue();
-
-		resultJ["taskResults"] = getCollection(result.getTaskResults(),
-			[](const auto& result)
-			{
-				return getProcessedTaskResult(result);
-			});
-
-		return resultJ;
+		return getCollection(result.getTaskResults(),
+				[](const auto& result)
+				{
+					return getProcessedTaskResult(result);
+				});
 	}
 
 	static json getAffinity(const TaskAffinity& affinity)
@@ -409,39 +331,37 @@ namespace Elpida
 		return affinityJ;
 	}
 
-	static json getBenchmarkResult(const BenchmarkResult& result,
-		const OsInfo& osInfo,
-		const CpuInfo& cpuInfo,
-		const SystemTopology& topology,
-		const MemoryInfo& memoryInfo,
-		const TimingInfo& timingInfo)
+	static json getBenchmarkResult(const BenchmarkResult& result)
 	{
 
 		json root;
 
-		root["elpida"] = getElpida();
-		root["system"] = getSystem(osInfo, cpuInfo, topology, memoryInfo, timingInfo);
+		root["uuid"] = result.getBenchmark().getUuid();
+		root["timeStamp"] = Timer::timestampToString(result.getTimeStamp());
 		root["affinity"] = getAffinity(result.getAffinity());
-		root["result"] = getResult(result);
+		root["score"] = result.getScore().getValue();
+		root["taskResults"] = getResult(result);
 
 		return root;
 	}
 
-	std::string JsonResultFormatter::serialize(const BenchmarkResult& result) const
-	{
-		return getBenchmarkResult(result, _osInfo, _cpuInfo, _systemTopology, _memoryInfo, _timingInfo).dump();
-	}
-
 	std::string JsonResultFormatter::serialize(std::vector<BenchmarkResult>& results) const
 	{
+		json root;
+
+		root["elpida"] = getElpida();
+		root["system"] = getSystem(_osInfo, _cpuInfo, _systemTopology, _memoryInfo, _timingInfo);
+
 		auto rootArray = json::array();
 		for (const auto& result: results)
 		{
 			rootArray
-				.push_back(getBenchmarkResult(result, _osInfo, _cpuInfo, _systemTopology, _memoryInfo, _timingInfo));
+					.push_back(getBenchmarkResult(result));
 		}
 
-		return rootArray.dump();
+		root["benchmarkResults"] = rootArray;
+
+		return root.dump();
 	}
 
 }

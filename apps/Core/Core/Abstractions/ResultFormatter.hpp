@@ -39,9 +39,6 @@ namespace Elpida
 		virtual const std::string& getFileExtension() const = 0;
 
 		[[nodiscard]]
-		virtual std::string serialize(const BenchmarkResult& result) const = 0;
-
-		[[nodiscard]]
 		virtual std::string serialize(std::vector<BenchmarkResult>& results) const = 0;
 
 		ResultFormatter() = default;
