@@ -209,7 +209,6 @@ namespace Elpida
 		topologyJ["totalPhysicalCores"] = topology.getTotalPhysicalCores();
 		topologyJ["totalNumaNodes"] = topology.getTotalNumaNodes();
 		topologyJ["totalPackages"] = topology.getTotalPackages();
-		topologyJ["totalDepth"] = topology.getDepth();
 
 		topologyJ["root"] = getNode(topology.getRoot());
 
@@ -275,7 +274,7 @@ namespace Elpida
 		returnJson["max"] = statistics.max;
 		returnJson["min"] = statistics.min;
 		returnJson["mean"] = statistics.mean;
-		returnJson["sd"] = statistics.standardDeviation;
+		returnJson["standardDeviation"] = statistics.standardDeviation;
 		returnJson["tau"] = statistics.tau;
 		returnJson["marginOfError"] = statistics.marginOfError;
 
