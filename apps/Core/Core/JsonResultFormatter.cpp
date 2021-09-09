@@ -348,7 +348,7 @@ namespace Elpida
 	{
 		json root;
 
-		root["elpida"] = getElpida();
+		root["elpidaVersion"] = getElpida();
 		root["system"] = getSystem(_osInfo, _cpuInfo, _systemTopology, _memoryInfo, _timingInfo);
 
 		auto rootArray = json::array();
