@@ -48,6 +48,9 @@ namespace Elpida
 #ifdef ELPIDA_WINDOWS
 		static std::string GetErrorString(HRESULT errorId);
 		static std::string ReadRegistryKeyFromHKLM(const std::string& regSubKey, const std::string& regValue);
+#else
+		static std::string readSysfsString(const std::string& path);
+		static double readSysfsValue(const std::string& path);
 #endif
 		OsUtilities() = delete;
 	};

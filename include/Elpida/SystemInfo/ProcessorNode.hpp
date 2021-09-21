@@ -121,6 +121,7 @@ namespace Elpida
 		std::vector<ProcessorNode*> _siblings;
 		void loadMachine(void* node);
 		void loadPackage(void* node);
+		void loadDie(void* node);
 		void loadNumaNode(void* node);
 		void loadGroup(void* node);
 		void loadCore(void* node);

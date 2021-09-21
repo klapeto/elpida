@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,32 +23,26 @@
 
 #include "Elpida/Engine/Calculators/Benchmark/AverageScoreCalculator.hpp"
 
-#include "Elpida/Engine/Result/TaskResult.hpp"
-#include "Elpida/Engine/Result/ResultSpecification.hpp"
-#include "Elpida/Engine/Task/TaskSpecification.hpp"
-#include "Elpida/ElpidaException.hpp"
 #include "Elpida/Config.hpp"
 
 namespace Elpida
 {
 
-	BenchmarkResult::Score AverageScoreCalculator::calculate(const std::vector<ProcessedTaskResult>& taskResults) const
+	BenchmarkScore AverageScoreCalculator::calculate(const Benchmark& benchmark,
+			const std::vector<ProcessedTaskResult>& taskResults) const
 	{
 		if (!taskResults.empty())
 		{
-			BenchmarkResult::Score score = 0.0;
+			double value = 0.0;
+			Duration time = Duration::zero();
 			for (const auto& result: taskResults)
 			{
-				score += result.getFinalMetrics().getResultValue();
+				value += result.getFinalMetrics().getResultValue();
+				time += result.getFinalMetrics().getDuration();
 			}
-			return score / (double)taskResults.size();
+			return BenchmarkScore((value / (double)taskResults.size()));
+
 		}
-		return 0;
-	}
-
-	AverageScoreCalculator::AverageScoreCalculator(const std::string& suffix)
-		: BenchmarkScoreCalculator(suffix, ResultType::Raw)
-	{
-
+		return BenchmarkScore(0.0);
 	}
 }

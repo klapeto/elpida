@@ -18,7 +18,10 @@ namespace Elpida
 			static inline const char* OutputFilePath = "Output File Name";
 		};
 
-		[[nodiscard]] std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
+		static inline constexpr const char* Uuid = "a7b5315b-686b-40be-addc-4102843f6024";
+
+		[[nodiscard]]
+		std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
 			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun) const override;

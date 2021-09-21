@@ -49,7 +49,6 @@ namespace Elpida
 		EventSubscriptionBase* _configurationChangedEventSubscription;
 		GlobalConfigurationModel& _globalConfigurationModel;
 		Mediator& _mediator;
-		bool _running;
 	signals:
 		void onDataChanged();
 		void onConfigurationChanged();

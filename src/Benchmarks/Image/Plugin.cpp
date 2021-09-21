@@ -27,8 +27,8 @@
 #include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/Calculators/Benchmark/AccumulativeScoreCalculator.hpp>
-#include <Elpida/Engine/Calculators/Benchmark/AverageScoreCalculator.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
+#include <Elpida/ServiceProvider.hpp>
 
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
 #include "Benchmarks/Image/PngDecoding/PngDecodingSpecification.hpp"
@@ -46,96 +46,131 @@ extern "C" ELPIDA_EXPORT ELPIDA_STDCALL int32_t elpidaPluginAbiVersion()
 	return ELPIDA_PLUGIN_ABI_VERSION;
 }
 
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void elpidaDestroyPlugin(Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* plugin)
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void
+elpidaDestroyPlugin(Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* plugin)
 {
 	delete plugin;
 }
 
-static std::unique_ptr<Benchmark> createPngEncodingDecoding()
+static std::unique_ptr<Benchmark> createPngEncoding(
+		SharedStructuresProvider& structuresProvider)
 {
 	auto benchmark =
-		std::make_unique<Benchmark>("Png Encoding/Decoding", std::make_shared<AccumulativeScoreCalculator>());
+			std::make_unique<Benchmark>("Png Encoding",
+					BenchmarkScoreSpecification("Pixels/s", Elpida::BenchmarkScoreComparison::Greater),
+					structuresProvider.getAverageThroughputScoreCalculator(),
+					"bfec734b-8db7-44a1-b011-b48eac29005c");
 
-	benchmark->AddTask<ReadFileSpecification>()
-		.shouldBeCountedOnResults(false)
-		.canBeMultiThreaded(false)
-		.canBeDisabled(false)
-		.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
-			ConfigurationType::FilePath("./Benchmark Material/shinobu.png"));
+	benchmark->AddTask(structuresProvider.getSharedTaskSpecification<ReadFileSpecification>())
+			.shouldBeCountedOnResults(false)
+			.canBeMultiThreaded(false)
+			.canBeDisabled(false)
+			.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
+					ConfigurationType::FilePath("./Benchmark Material/shinobu.png"));
 
 	benchmark->AddTask<PngDecodingSpecification>()
-		.shouldBeCountedOnResults(true)
-		.canBeDisabled(false)
-		.canBeMultiThreaded(false);
+			.shouldBeCountedOnResults(false)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(false);
 
 	benchmark->AddTask<PngEncodingSpecification>()
-		.shouldBeCountedOnResults(true)
-		.canBeDisabled(false)
-		.canBeMultiThreaded(false);
+			.shouldBeCountedOnResults(true)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(false);
 
 	return benchmark;
 }
 
-static std::unique_ptr<Benchmark> createFloydSteinberg()
+static std::unique_ptr<Benchmark> createPngDecoding(
+		SharedStructuresProvider& structuresProvider)
 {
-
 	auto benchmark =
-		std::make_unique<Benchmark>("Floyd Steinberg Dithering", std::make_unique<AccumulativeScoreCalculator>());
+			std::make_unique<Benchmark>("Png Decoding",
+					BenchmarkScoreSpecification("Pixels/s", Elpida::BenchmarkScoreComparison::Greater),
+					structuresProvider.getAverageThroughputScoreCalculator(),
+					"a4507ca2-99bf-4d19-8bdb-236420f15246");
 
-	benchmark->AddTask<ReadFileSpecification>()
-		.shouldBeCountedOnResults(false)
-		.canBeMultiThreaded(false)
-		.canBeDisabled(false)
-		.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
-			ConfigurationType::FilePath("/media/klapeto/Αρχεία/shinobu.png"));
+	benchmark->AddTask(structuresProvider.getSharedTaskSpecification<ReadFileSpecification>())
+			.shouldBeCountedOnResults(false)
+			.canBeMultiThreaded(false)
+			.canBeDisabled(false)
+			.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
+					ConfigurationType::FilePath("./Benchmark Material/shinobu.png"));
 
 	benchmark->AddTask<PngDecodingSpecification>()
-		.shouldBeCountedOnResults(false)
-		.canBeDisabled(false)
-		.canBeMultiThreaded(false);
+			.shouldBeCountedOnResults(true)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(false);
+
+	return benchmark;
+}
+
+static std::unique_ptr<Benchmark> createFloydSteinberg(SharedStructuresProvider& structuresProvider)
+{
+	auto benchmark =
+			std::make_unique<Benchmark>("Floyd Steinberg Dithering",
+					BenchmarkScoreSpecification("Pixels/s", Elpida::BenchmarkScoreComparison::Greater),
+					structuresProvider.getAverageThroughputScoreCalculator(),
+					"ec02cf8f-8820-41cc-9f3b-69473d44a261");
+
+	benchmark->AddTask(structuresProvider.getSharedTaskSpecification<ReadFileSpecification>())
+			.shouldBeCountedOnResults(false)
+			.canBeMultiThreaded(false)
+			.canBeDisabled(false)
+			.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
+					ConfigurationType::FilePath("/media/klapeto/Αρχεία/shinobu.png"));
+
+	benchmark->AddTask<PngDecodingSpecification>()
+			.shouldBeCountedOnResults(false)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(false);
 
 
 	benchmark->AddTask<ConvertToFloatSpecification>()
-		.shouldBeCountedOnResults(false)
-		.canBeDisabled(false)
-		.canBeMultiThreaded(true);
+			.shouldBeCountedOnResults(false)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(true);
 
 	benchmark->AddTask<GrayscaleAverageSpecification>()
-		.shouldBeCountedOnResults(false)
-		.canBeDisabled(false)
-		.canBeMultiThreaded(true);
+			.shouldBeCountedOnResults(false)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(true);
 
 	benchmark->AddTask<FloydSteinbergSpecification>()
-		.shouldBeCountedOnResults(true)
-		.withIterationsToRun(2)
-		.canBeDisabled(false)
-		.canBeMultiThreaded(false);
+			.shouldBeCountedOnResults(true)
+			.withIterationsToRun(2)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(false);
 
 	benchmark->AddTask<ConvertToUInt8Specification>()
-		.shouldBeCountedOnResults(false)
-		.canBeDisabled(false)
-		.canBeMultiThreaded(true);
+			.shouldBeCountedOnResults(false)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(true);
 
 	benchmark->AddTask<PngEncodingSpecification>()
-		.shouldBeCountedOnResults(false)
-		.canBeDisabled(false)
-		.canBeMultiThreaded(false);
+			.shouldBeCountedOnResults(false)
+			.canBeDisabled(false)
+			.canBeMultiThreaded(false);
 
-	benchmark->AddTask<WriteFileSpecification>()
-		.shouldBeCountedOnResults(false)
-		.canBeDisabled(true)
-		.canBeMultiThreaded(false)
-		.withDefaultConfiguration(WriteFileSpecification::Settings::OutputFilePath,
-			ConfigurationType::FilePath("/media/klapeto/Αρχεία/shinobu_Floyd_Steinberg.png"));
+	benchmark->AddTask(structuresProvider.getSharedTaskSpecification<WriteFileSpecification>())
+			.shouldBeCountedOnResults(false)
+			.canBeDisabled(true)
+			.canBeMultiThreaded(false)
+			.withDefaultConfiguration(WriteFileSpecification::Settings::OutputFilePath,
+					ConfigurationType::FilePath("/media/klapeto/Αρχεία/shinobu_Floyd_Steinberg.png"));
 
 	return benchmark;
 }
 
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL BenchmarksContainerPlugin<Benchmark>* elpidaCreatePlugin(const ServiceProvider* serviceProvider)
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL BenchmarksContainerPlugin<Benchmark>*
+elpidaCreatePlugin(const ServiceProvider* serviceProvider)
 {
 	auto plugin = new BenchmarksContainerPlugin<Benchmark>("Image Benchmarks");
 
-	plugin->add(createFloydSteinberg());
-	plugin->add(createPngEncodingDecoding());
+	auto structuresProvider = serviceProvider->getSharedStructuresProvider();
+
+	plugin->add(createFloydSteinberg(structuresProvider));
+	plugin->add(createPngEncoding(structuresProvider));
+	plugin->add(createPngDecoding(structuresProvider));
 	return plugin;
 }

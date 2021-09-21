@@ -32,11 +32,25 @@ namespace Elpida
 		logger.addAppender(_logAppender);
 		_ui->twLogs->setModel(&_logAppender.getModel());
 		_ui->twLogs->resizeColumnToContents(1);
+
+		connect(_ui->twLogs->selectionModel(), &QItemSelectionModel::selectionChanged,
+				this, &LogsView::onSelectionChanged);
+
 	}
 
 	LogsView::~LogsView()
 	{
 		delete _ui;
+	}
+
+	void LogsView::onSelectionChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection)
+	{
+		auto indexes = newSelection.front().indexes();
+		if (indexes.size() < 3) return;
+		_ui->txtTimestamp->setText(indexes[0].data(Qt::DisplayRole).toString());
+		_ui->txtLevel->setText(indexes[1].data(Qt::DisplayRole).toString());
+		_ui->txtMessage->setText(indexes[2].data(Qt::DisplayRole).toString());
+		_ui->txtException->setPlainText(indexes[3].data(Qt::DisplayRole).toString());
 	}
 
 } // namespace Elpida

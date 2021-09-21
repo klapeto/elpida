@@ -23,6 +23,8 @@
 
 #include "Elpida/Engine/Result/BenchmarkResult.hpp"
 
+#include <utility>
+
 #include "Elpida/Utilities/Uuid.hpp"
 
 namespace Elpida
@@ -30,10 +32,11 @@ namespace Elpida
 
 	BenchmarkResult::BenchmarkResult(const Benchmark& benchmark,
 		std::vector<ProcessedTaskResult>&& taskResults,
-		const TaskAffinity& affinity,
-		BenchmarkResult::Score score)
-		: _benchmark(&benchmark), _taskResults(std::move(taskResults)), _score(score), _affinity(affinity)
+		TaskAffinity affinity,
+		BenchmarkScore score)
+		:_taskResults(std::move(taskResults)), _affinity(std::move(affinity)),_score(score), _benchmark(&benchmark)
 	{
 		_id = Uuid::create();
+		_timeStamp = Timer::now();
 	}
 }

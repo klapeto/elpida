@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,40 +18,50 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 27/10/20.
+// Created by klapeto on 3/5/21.
 //
 
-#ifndef INCLUDE_ELPIDA_TOPOLOGY_X86INFO_HPP
-#define INCLUDE_ELPIDA_TOPOLOGY_X86INFO_HPP
+#ifndef ELPIDA_BENCHMARKSCORESPECIFICATION_HPP
+#define ELPIDA_BENCHMARKSCORESPECIFICATION_HPP
 
-#include "CpuInfo.hpp"
+#include <string>
 
 namespace Elpida
 {
-	class X86Info : public CpuInfo
+	enum class BenchmarkScoreComparison
 	{
-	public:
-		static inline const std::string stepping = "Stepping";
-		static inline const std::string model = "Model";
-		static inline const std::string family = "Family";
-		static inline const std::string turboBoost = "Turbo Boost";
-		static inline const std::string turboBoost3 = "Turbo Boost 3";
-
-		X86Info();
-		~X86Info() override = default;
-	private:
-		unsigned _maximumStandardFunction = 0;
-		unsigned _maximumExtendedFunction = 0;
-		bool _rdtscp = false;
-
-		void getTscFrequency();
-		void getAMDFeatures();
-		void getIntelFeatures();
-
-		void addFeature(const std::string& name, unsigned reg, unsigned bit);
-		void sanitizeBrand();
+		Lower,
+		Greater
 	};
 
+	class BenchmarkScoreSpecification
+	{
+	public:
+		[[nodiscard]]
+		const std::string& getUnit() const
+		{
+			return _unit;
+		}
+
+		[[nodiscard]]
+		BenchmarkScoreComparison getComparison() const
+		{
+			return _comparison;
+		}
+
+		BenchmarkScoreSpecification(std::string unit, BenchmarkScoreComparison comparison)
+				: _unit(std::move(unit)), _comparison(comparison)
+		{
+
+		}
+
+		~BenchmarkScoreSpecification() = default;
+
+	private:
+		std::string _unit;
+		BenchmarkScoreComparison _comparison;
+	};
 }
 
-#endif //INCLUDE_ELPIDA_TOPOLOGY_X86INFO_HPP
+
+#endif //ELPIDA_BENCHMARKSCORESPECIFICATION_HPP

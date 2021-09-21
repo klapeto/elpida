@@ -46,21 +46,30 @@ namespace Elpida
 	private:
 		Ui::BenchmarkRunnerStatusView* _ui;
 		const BenchmarkRunnerModel& _model;
-		EventSubscriptionBase* _dataChangedEventSubscription;
-		OptionalReference<const TaskBuilder> _currentRunningTask;
-		OptionalReference<const Benchmark> _currentRunningBenchmark;
+		std::vector<Reference<EventSubscriptionBase>> _subscriptions;
 
 		QString _runningString;
 		QString _readyString;
 		QString _naString;
-
-		bool _running;
+		QString _zeroString;
 
 		signals:
-		void onDataUpdated();
+		void onCurrentRunningTaskChanged();
+		void onCurrentRunningBenchmarkChanged();
+		void onCompletedBenchmarkTasksChanged();
+		void onCompletedTaskIterationsChanged();
+		void onCompletedBenchmarksChanged();
+		void onTotalBenchmarksChanged();
+		void onRunningChanged();
 
 	private slots:
-		void updateUi();
+		void updateCurrentRunningTaskChanged();
+		void updateCurrentRunningBenchmarkChanged();
+		void updateCompletedBenchmarkTasksChanged();
+		void updateCompletedTaskIterationsChanged();
+		void updateCompletedBenchmarksChanged();
+		void updateTotalBenchmarksChanged();
+		void updateRunningChanged();
 	};
 
 } // namespace Elpida

@@ -24,13 +24,20 @@
 #ifndef SRC_ELPIDA_SERVICEPROVIDER_HPP
 #define SRC_ELPIDA_SERVICEPROVIDER_HPP
 
+#include "SharedStructuresProvider.hpp"
+
 namespace Elpida
 {
 	class CpuInfo;
+
 	class MemoryInfo;
+
 	class SystemTopology;
+
 	class OsInfo;
+
 	class TimingInfo;
+
 	class Logger;
 
 	class ServiceProvider final
@@ -73,14 +80,23 @@ namespace Elpida
 			return _logger;
 		}
 
+		[[nodiscard]]
+		const SharedStructuresProvider& getSharedStructuresProvider() const
+		{
+			return _structuresProvider;
+		}
+
 		ServiceProvider(const CpuInfo& cpuInfo,
-			const MemoryInfo& memoryInfo,
-			const SystemTopology& systemTopology,
-			const OsInfo& osInfo,
-			const TimingInfo& timingInfo,
-			Logger& logger);
+				const MemoryInfo& memoryInfo,
+				const SystemTopology& systemTopology,
+				const OsInfo& osInfo,
+				const TimingInfo& timingInfo,
+				Logger& logger);
+
 		~ServiceProvider() = default;
+
 	private:
+		SharedStructuresProvider _structuresProvider;
 		const CpuInfo& _cpuInfo;
 		const MemoryInfo& _memoryInfo;
 		const SystemTopology& _systemTopology;

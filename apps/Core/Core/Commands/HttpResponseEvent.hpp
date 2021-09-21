@@ -35,12 +35,14 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] int getResponseCode() const
+		[[nodiscard]]
+		int getResponseCode() const
 		{
 			return _responseCode;
 		}
 
-		[[nodiscard]] const std::string& getResponse() const
+		[[nodiscard]]
+		const std::string& getResponse() const
 		{
 			return _response;
 		}

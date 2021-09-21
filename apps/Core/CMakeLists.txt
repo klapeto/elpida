@@ -21,14 +21,13 @@ set(ELPIDA_CORE_SOURCES
         Models/Abstractions/ListModel/ListModel.cpp
         Models/Abstractions/ListModel/ListModelItem.cpp
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
-        Models/BenchmarkConfigurationModel.cpp
         Models/Benchmarks/BenchmarkGroup.cpp
         Models/GlobalConfigurationModel.cpp
         Models/AffinityModel.cpp
+        Models/SelectedBenchmarksModel.cpp
 
         Controllers/BenchmarksController.cpp
         Controllers/BenchmarkRunnerController.cpp
-        Controllers/BenchmarkConfigurationController.cpp
         Controllers/UploadController.cpp
 
         Utilities/OsUtilities.cpp
@@ -60,10 +59,19 @@ if (ELPIDA_WEB_API_KEY)
 endif()
 
 if(MSYS OR MINGW)
-    target_link_libraries(elpidaCore elpida OpenSSL::SSL ws2_32 crypt32)
+    target_link_libraries(elpidaCore ws2_32 crypt32)
 else()
-    target_link_libraries(elpidaCore elpida OpenSSL::SSL)
+    target_link_libraries(elpidaCore)
 endif()
+
+target_link_libraries(elpidaCore elpida OpenSSL::SSL)
+
+if (UNIX OR MSYS OR MINGW)
+    if (${CMAKE_CXX_COMPILER_VERSION} STRLESS 9.3)
+        target_link_libraries(elpidaCore stdc++fs)
+    endif()
+endif()
+
 
 target_include_directories(elpidaCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

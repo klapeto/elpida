@@ -31,6 +31,7 @@
 
 #include <Elpida/Config.hpp>
 #include <Elpida/SystemInfo/ProcessorNode.hpp>
+#include <Elpida/SystemInfo/CpuInfo.hpp>
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -51,18 +52,20 @@ namespace Elpida
 									  "More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
 
 	MainWindow::MainWindow(Mediator& mediator,
-		ScreensModel& screensModel,
-		const AffinityModel& affinityModel,
-		BenchmarkResultsModel& benchmarkResultsModel,
-		const ResultFormatter& resultFormatter)
-		: QMainWindow(),
-		  _navigationBarView(screensModel),
-		  _mediator(mediator),
-		  _ui(new Ui::MainWindow),
-		  _screensModel(screensModel),
-		  _affinityModel(affinityModel),
-		  _benchmarkResultsModel(benchmarkResultsModel),
-		  _resultFormatter(resultFormatter)
+			ScreensModel& screensModel,
+			const AffinityModel& affinityModel,
+			BenchmarkResultsModel& benchmarkResultsModel,
+			const ResultFormatter& resultFormatter,
+			const CpuInfo& cpuInfo)
+			: QMainWindow(),
+			  _navigationBarView(screensModel),
+			  _mediator(mediator),
+			  _ui(new Ui::MainWindow),
+			  _screensModel(screensModel),
+			  _affinityModel(affinityModel),
+			  _benchmarkResultsModel(benchmarkResultsModel),
+			  _resultFormatter(resultFormatter),
+			  _cpuInfo(cpuInfo)
 	{
 		_ui->setupUi(this);
 
@@ -89,14 +92,15 @@ namespace Elpida
 		QWidget::connect(this, &MainWindow::showMessageRequested, this, &MainWindow::showMessageRequestedHandler);
 		QWidget::connect(this, &MainWindow::screensModelItemAdded, this, &MainWindow::onScreenAdded);
 		QWidget::connect(this,
-			&MainWindow::screensModelSelectedItemChanged, this, &MainWindow::onSelectedScreenChanged);
+				&MainWindow::screensModelSelectedItemChanged, this, &MainWindow::onSelectedScreenChanged);
 
 		QWidget::connect(this, &MainWindow::affinityChanged, this, &MainWindow::onAffinityChanged);
 
 		_ui->wNavBar->layout()->addWidget(&_navigationBarView);
 
 		_ui->statusBar
-			->addPermanentWidget(new QLabel(QString("Elpida Version: " ELPIDA_VERSION " " ELPIDA_COMPILER_NAME " " ELPIDA_COMPILER_VERSION)));
+				->addPermanentWidget(new QLabel(
+						QString("Elpida Version: " ELPIDA_VERSION " " ELPIDA_COMPILER_NAME " " ELPIDA_COMPILER_VERSION)));
 
 		_ui->statusBar->addWidget(new QLabel("Selected processors:"));
 
@@ -179,8 +183,8 @@ namespace Elpida
 		else
 		{
 			_processorsLabel
-				->setText(
-					"<strong><span style=\"color: #d73e3e\">No processors selected.</span> Please select from 'System Topology' tab before running benchmarks.</strong>");
+					->setText(
+							"<strong><span style=\"color: #d73e3e\">No processors selected.</span> Please select from 'System Topology' tab before running benchmarks.</strong>");
 		}
 	}
 
@@ -193,6 +197,9 @@ namespace Elpida
 		auto filter = QString::fromStdString("Elpida results file (*." + _resultFormatter.getFileExtension() + ")");
 		dialog.setNameFilter(filter);
 		dialog.selectNameFilter(filter);
+
+		auto targetFilename = _cpuInfo.getModelName() + "-" + std::to_string(time(nullptr)) + ".json";
+		dialog.selectFile(QString::fromStdString(targetFilename));
 
 		if (dialog.exec())
 		{
@@ -213,7 +220,8 @@ namespace Elpida
 
 			fp.close();
 
-			QMessageBox::information(this, "Save successful", "Save was successful. Results were saved in: " + filepath);
+			QMessageBox::information(this, "Save successful",
+					"Save was successful. Results were saved in: " + filepath);
 		}
 	}
 

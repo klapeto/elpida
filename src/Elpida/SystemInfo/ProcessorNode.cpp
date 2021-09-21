@@ -69,6 +69,9 @@ namespace Elpida
 		case HWLOC_OBJ_PACKAGE:
 			loadPackage(node);
 			break;
+		case HWLOC_OBJ_DIE:
+			loadDie(node);
+			break;
 		case HWLOC_OBJ_PU:
 		{
 			loadExecutionUnit(node);
@@ -246,6 +249,13 @@ namespace Elpida
 		{
 			child.loadParents(this);
 		}
+	}
+
+	void ProcessorNode::loadDie(void* node)
+	{
+		_type = ProcessorNodeType::Die;
+		_osIndex = ((hwloc_obj_t)node)->os_index;
+		_name = "Die";
 	}
 
 } /* namespace Elpida */

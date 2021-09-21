@@ -36,15 +36,60 @@ namespace Elpida
 	{
 	public:
 
+		Event<const OptionalReference<const TaskBuilder>&> currentRunningTaskChanged;
+		Event<const OptionalReference<const Benchmark>&> currentRunningBenchmarkChanged;
+		Event<size_t> completedBenchmarkTasksChanged;
+		Event<size_t> completedTaskIterationsChanged;
+		Event<size_t> completedBenchmarksChanged;
+		Event<size_t> totalBenchmarksChanged;
+		Event<bool> runningChanged;
+
 		void setCurrentRunningTask(OptionalReference<const TaskBuilder> currentRunningTask)
 		{
 			_currentRunningTask = currentRunningTask;
+			currentRunningTaskChanged.raise(_currentRunningTask);
 			onDataChanged();
 		}
 
-		void setCurrentRunningBenchmark(OptionalReference<const Benchmark> currentRunningTaskBatch)
+		void setCurrentRunningBenchmark(OptionalReference<const Benchmark> currentRunningBenchmark)
 		{
-			_currentRunningBenchmark = currentRunningTaskBatch;
+			_currentRunningBenchmark = currentRunningBenchmark;
+			currentRunningBenchmarkChanged.raise(_currentRunningBenchmark);
+			onDataChanged();
+		}
+
+		void setBenchmarkCompletedTasks(size_t benchmarkCompletedTasks)
+		{
+			_benchmarkCompletedTasks = benchmarkCompletedTasks;
+			completedBenchmarkTasksChanged.raise(_benchmarkCompletedTasks);
+			onDataChanged();
+		}
+
+		void setTaskCompletedIterations(size_t taskCompletedIterations)
+		{
+			_taskCompletedIterations = taskCompletedIterations;
+			completedTaskIterationsChanged.raise(_taskCompletedIterations);
+			onDataChanged();
+		}
+
+		void setCompletedBenchmarks(size_t completedBenchmarks)
+		{
+			_completedBenchmarks = completedBenchmarks;
+			completedBenchmarksChanged.raise(_completedBenchmarks);
+			onDataChanged();
+		}
+
+		void setTotalBenchmarks(size_t totalBenchmarks)
+		{
+			_totalBenchmarks = totalBenchmarks;
+			totalBenchmarksChanged.raise(_totalBenchmarks);
+			onDataChanged();
+		}
+
+		void setRunning(bool running)
+		{
+			_running = running;
+			runningChanged.raise(_running);
 			onDataChanged();
 		}
 
@@ -53,21 +98,19 @@ namespace Elpida
 			return _benchmarkCompletedTasks;
 		}
 
-		void setBenchmarkCompletedTasks(size_t benchmarkCompletedTasks)
-		{
-			_benchmarkCompletedTasks = benchmarkCompletedTasks;
-			onDataChanged();
-		}
-
 		size_t getTaskCompletedIterations() const
 		{
 			return _taskCompletedIterations;
 		}
 
-		void setTaskCompletedIterations(size_t taskCompletedIterations)
+		size_t getCompletedBenchmarks() const
 		{
-			_taskCompletedIterations = taskCompletedIterations;
-			onDataChanged();
+			return _completedBenchmarks;
+		}
+
+		size_t getTotalBenchmarks() const
+		{
+			return _totalBenchmarks;
 		}
 
 		OptionalReference<const TaskBuilder> getCurrentRunningTask() const
@@ -80,21 +123,32 @@ namespace Elpida
 			return _currentRunningBenchmark;
 		}
 
+		bool isRunning() const
+		{
+			return _running;
+		}
+
 		BenchmarkRunnerModel()
-			: _currentRunningTask(std::nullopt),
-			  _currentRunningBenchmark(std::nullopt),
-			  _benchmarkCompletedTasks(0),
-			  _taskCompletedIterations(0)
+				: _currentRunningTask(std::nullopt),
+				  _currentRunningBenchmark(std::nullopt),
+				  _benchmarkCompletedTasks(0),
+				  _taskCompletedIterations(0),
+				  _totalBenchmarks(0),
+				  _completedBenchmarks(0),
+				  _running(false)
 		{
 		}
 
 		~BenchmarkRunnerModel() override = default;
+
 	private:
 		OptionalReference<const TaskBuilder> _currentRunningTask;
 		OptionalReference<const Benchmark> _currentRunningBenchmark;
 		size_t _benchmarkCompletedTasks;
 		size_t _taskCompletedIterations;
-
+		size_t _totalBenchmarks;
+		size_t _completedBenchmarks;
+		bool _running;
 	};
 }
 
