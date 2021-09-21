@@ -1,4 +1,4 @@
-FROM gcc:latest
+FROM gcc:9.4
 LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
