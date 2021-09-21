@@ -25,20 +25,13 @@
  */
 
 #include "Elpida/SystemInfo/CpuInfo.hpp"
-#include "Elpida/SystemInfo/X86Info.hpp"
 
 namespace Elpida
 {
 
 	const CpuInfo& CpuInfo::get()
 	{
-		static
-#if __x86_64__ || _M_X64
-		X86Info
-#else
-#error "Unsupported Platform"
-#endif
-		cpuInfo;
+		static CpuInfo cpuInfo;
 
 		return cpuInfo;
 	}

@@ -34,12 +34,14 @@ namespace Elpida
 	class SelectedBenchmarkChangedEvent final : public TypedCommand<SelectedBenchmarkChangedEvent>
 	{
 	public:
-		[[nodiscard]] OptionalReference<Benchmark> getCurrentBenchmark() const
+		[[nodiscard]]
+		OptionalReference<Benchmark> getCurrentBenchmark() const
 		{
 			return _currentBenchmark;
 		}
 
-		[[nodiscard]] OptionalReference<Benchmark> getPreviousBenchmark() const
+		[[nodiscard]]
+		OptionalReference<Benchmark> getPreviousBenchmark() const
 		{
 			return _previousBenchmark;
 		}

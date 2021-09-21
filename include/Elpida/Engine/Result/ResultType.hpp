@@ -31,7 +31,6 @@ namespace Elpida
 		Throughput,
 		Raw
 	};
-
 }
 
 #endif //INCLUDE_ELPIDA_ENGINE_RESULT_RESULTTYPE_HPP

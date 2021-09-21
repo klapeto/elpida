@@ -35,18 +35,19 @@ namespace Elpida
 	class AssociativeModel : public CollectionModel<std::pair<const TKey&, const TValue&>>
 	{
 	public:
-		using Pair =std::pair<const TKey&, const TValue&>;
+		using Pair = std::pair<const TKey&, const TValue&>;
 
 		template<typename T>
 		void add(const TKey& key, T&& value)
 		{
 			auto itr = _values.insert_or_assign(key, std::forward<T>(value));
 			const auto& newValue = _values.at(key);
-			auto colItem = AssociativeItem<TKey,TValue>(*this, std::pair<const TKey&, const TValue&>(key, newValue));
+			auto colItem = AssociativeItem<TKey, TValue>(*this, std::pair<const TKey&, const TValue&>(key, newValue));
 			CollectionModel<Pair>::onItemAdded(colItem);
 			CollectionModel<Pair>::onDataChanged();
 		}
 
+		[[nodiscard]]
 		const TValue& getConst(const TKey& key) const
 		{
 			auto itr = _values.find(key);
@@ -60,6 +61,7 @@ namespace Elpida
 			}
 		}
 
+		[[nodiscard]]
 		TValue& get(const TKey& key) const
 		{
 			auto itr = _values.find(key);
@@ -73,6 +75,12 @@ namespace Elpida
 			}
 		}
 
+		[[nodiscard]]
+		bool containsKey(const TKey& key) const
+		{
+			return _values.find(key) != _values.end();
+		}
+
 		void remove(const TKey& key)
 		{
 			auto itr = _values.find(key);
@@ -80,9 +88,9 @@ namespace Elpida
 			{
 				auto value = itr->second;
 				_values.erase(key);
-				CollectionModel<std::pair<TKey, TValue>>
-				::onItemRemoved(CollectionItem<std::pair<TKey, TValue>>(std::make_pair<TKey, TValue>(key, value)));
-				CollectionModel<std::pair<TKey, TValue>>::dataChanged();
+				auto colItem = AssociativeItem<TKey, TValue>(*this, std::pair<const TKey&, const TValue&>(key, value));
+				CollectionModel<Pair>::onItemRemoved(colItem);
+				CollectionModel<Pair>::onDataChanged();
 			}
 		}
 
@@ -92,8 +100,51 @@ namespace Elpida
 			CollectionModel<Pair>::onCleared();
 		}
 
+		[[nodiscard]]
+		bool empty() const noexcept
+		{
+			return _values.empty();
+		}
+
+		[[nodiscard]]
+		size_t size() const noexcept
+		{
+			return _values.size();
+		}
+
+		auto begin() noexcept
+		{
+			return _values.begin();
+		}
+
+		auto begin() const noexcept
+		{
+			return _values.begin();
+		}
+
+		auto cbegin() const noexcept
+		{
+			return _values.begin(); }
+
+		auto end() noexcept
+		{
+			return _values.end();
+		}
+
+		auto end() const noexcept
+		{
+			return _values.end();
+		}
+
+		auto cend() const noexcept
+		{
+			return _values.end();
+		}
+
 		AssociativeModel() = default;
+
 		~AssociativeModel() override = default;
+
 	private:
 		std::unordered_map<TKey, TValue> _values;
 	};

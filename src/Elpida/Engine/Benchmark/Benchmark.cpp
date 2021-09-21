@@ -33,17 +33,21 @@
 
 namespace Elpida
 {
-
 	Benchmark::Benchmark(std::string name,
-		std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator)
-		: _name(std::move(name)), _scoreCalculator(std::move(scoreCalculator))
+			const BenchmarkScoreSpecification& scoreSpecification,
+			std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator,
+			std::string uuid)
+			:
+			_scoreSpecification(scoreSpecification),
+			_name(std::move(name)),
+			_scoreCalculator(std::move(scoreCalculator))
 	{
-		_id = Uuid::create();
+		_id = !uuid.empty() ? std::move(uuid) : name + Uuid::create();
 	}
 
 	std::vector<BenchmarkTaskInstance> Benchmark::createNewTasks(const TaskAffinity& affinity,
-		const BenchmarkConfiguration& configuration,
-		const ServiceProvider& serviceProvider) const
+			const BenchmarkConfiguration& configuration,
+			const ServiceProvider& serviceProvider) const
 	{
 		if (!affinity.getProcessorNodes().empty())
 		{
@@ -57,28 +61,29 @@ namespace Elpida
 						&& !builder.getDefaultConfiguration().getAllConfigurations().empty())
 					{
 						throw ElpidaException(FUNCTION_NAME,
-							Vu::Cs("Task: '",
-								builder.getTaskSpecification().getName(),
-								"' requires configuration that was not provided!"));
+								Vu::Cs("Task: '",
+										builder.getTaskSpecification().getName(),
+										"' requires configuration that was not provided!"));
 					}
-					if (builder.shouldBeExecuted(*taskConfiguration, *affinity.getProcessorNodes().front(), serviceProvider)
+					if (builder.shouldBeExecuted(*taskConfiguration, *affinity.getProcessorNodes().front(),
+							serviceProvider)
 						&& (!builder.canBeDisabled() || taskConfiguration->get().isEnabled()))
 					{
 						if (builder.canBeMultiThreaded())
 						{
 							tasks.emplace_back(std::make_unique<MultiThreadTask>(builder,
-								*taskConfiguration,
-								affinity,
-								serviceProvider,
-								builder.getIterationsToRun()), builder);
+									*taskConfiguration,
+									affinity,
+									serviceProvider,
+									builder.getIterationsToRun()), builder);
 						}
 						else
 						{
 							tasks.emplace_back(
-								builder.build(
-									*taskConfiguration,
-									*affinity.getProcessorNodes().front(),
-									serviceProvider),
+									builder.build(
+											*taskConfiguration,
+											*affinity.getProcessorNodes().front(),
+											serviceProvider),
 									builder);
 						}
 					}

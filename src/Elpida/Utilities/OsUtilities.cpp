@@ -30,11 +30,13 @@
 #include <windows.h>
 #include <strsafe.h>
 #else
+
 #include <numa.h>
 #include <cstring>
 #include <cerrno>
-#endif
+#include <fstream>
 
+#endif
 
 namespace Elpida
 {
@@ -150,13 +152,23 @@ namespace Elpida
 
 		if (fail)
 		{
-			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to set thread affinity to: " ,cpuId, ". Error: ", GetLastErrorString()));
+			throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("Failed to set thread affinity to: ", cpuId, ". Error: ", GetLastErrorString()));
 		}
 	}
+
 	void OsUtilities::deallocateOnNumaNode(void* data, size_t size)
 	{
 #if defined(ELPIDA_LINUX)
-		numa_free(data, size);
+
+		if (numa_available() < 0)
+		{
+			free(data);
+		}
+		else
+		{
+			numa_free(data, size);
+		}
 #elif defined(ELPIDA_WINDOWS)
 		VirtualFree(data, 0, MEM_RELEASE);
 #else
@@ -170,7 +182,9 @@ namespace Elpida
 #if defined(ELPIDA_LINUX)
 		if (numa_available() < 0)
 		{
-			throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
+			//throw ElpidaException(FUNCTION_NAME, "Numa API is not available!");
+
+			return malloc(size);
 		}
 		numa_set_strict(1);
 		ptr = (void*)numa_alloc_onnode(size, numaNode);
@@ -186,12 +200,38 @@ namespace Elpida
 #else
 #error "Unsupported Platform"
 #endif
-		if  (ptr == nullptr)
+		if (ptr == nullptr)
 		{
-			throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to allocate to numa node " , numaNode, ". Memory of size: ", Vu::getValueScaleStringIEC(size), "B. Error: ", GetLastErrorString()));
+			throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("Failed to allocate to numa node ", numaNode, ". Memory of size: ",
+							Vu::getValueScaleStringIEC(size), "B. Error: ", GetLastErrorString()));
 		}
 
 		return ptr;
 	}
 
+#if defined(ELPIDA_LINUX)
+	template<typename T>
+	static T readSysfs(const std::string& path)
+	{
+		std::fstream file(path, std::fstream::in);
+		file.exceptions(std::ios_base::failbit);
+		T value{};
+		if (file.good())
+		{
+			file >> value;
+		}
+		return value;
+	}
+
+	double OsUtilities::readSysfsValue(const std::string& path)
+	{
+		return readSysfs<double>(path);
+	}
+
+	std::string OsUtilities::readSysfsString(const std::string& path)
+	{
+		return readSysfs<std::string>(path);
+	}
+#endif
 }

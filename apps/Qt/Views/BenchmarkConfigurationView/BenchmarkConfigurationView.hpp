@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,46 +23,65 @@
 #include <QWidget>
 #include "Views/ConfigurationViews/TaskConfigurationListItemViewBase.hpp"
 #include "Views/ConfigurationViews/ConfigurationValueViewBase.hpp"
+#include "Models/Abstractions/CollectionModelObserver.hpp"
+#include "Models/SelectedBenchmarksModel.hpp"
+#include "RentedConfigurationView.hpp"
 
 class QVBoxLayout;
+
 class QListWidgetItem;
 
 namespace Elpida
 {
-	class BenchmarkConfigurationModel;
 	class EventSubscriptionBase;
 	class ConfigurationViewsPool;
+	class BenchmarkConfigurationsCollectionModel;
+	class Benchmark;
+	class BenchmarkConfiguration;
+	class BenchmarkRunnerModel;
 
 	namespace Ui
 	{
 		class BenchmarkConfigurationView;
 	}
 
-	class BenchmarkConfigurationView : public QWidget
+	class BenchmarkConfigurationView : public QWidget, public CollectionModelObserver<SelectedBenchmarksModel::Pair>
 	{
 	Q_OBJECT
 
 	public:
-		explicit BenchmarkConfigurationView(BenchmarkConfigurationModel& benchmarkConfigurationModel,
-			ConfigurationViewsPool& configurationViewsPool);
+		explicit BenchmarkConfigurationView(
+				BenchmarkConfigurationsCollectionModel& benchmarkConfigurationsCollectionModel,
+				ConfigurationViewsPool& configurationViewsPool,
+				const SelectedBenchmarksModel& selectionModel,
+				const BenchmarkRunnerModel& runnerModel
+		);
+
 		~BenchmarkConfigurationView() override;
+
 	private:
-		std::vector<std::unique_ptr<ConfigurationValueViewBase>> _rentedViews;
-		std::unordered_map<void*, std::unique_ptr<TaskConfigurationListItemViewBase>> _rentedItems;
-		BenchmarkConfigurationModel& _benchmarkConfigurationModel;
+		std::unordered_map<std::string, RentedConfigurationView> _rentedViews;
+		BenchmarkConfigurationsCollectionModel& _benchmarkConfigurationsCollectionModel;
 		ConfigurationViewsPool& _configurationViewsPool;
-		EventSubscriptionBase* _dataChangedSubscription;
 		Ui::BenchmarkConfigurationView* _ui;
 		QVBoxLayout* _containerLayout;
+		const BenchmarkRunnerModel& _runnerModel;
+		EventSubscriptionBase* _runnerSubscription;
 
 	signals:
-		void dataChanged();
+		void onRunningChanged();
 
 	private slots:
-		void dataChangedHandler();
-		void returnAllViewsToPool();
-		void returnAllTaskListItems();
+
 		static void taskListItemClicked(QListWidgetItem* item);
+		void updateRunningChanged();
+
+	protected:
+		void onCollectionCleared() override;
+
+		void onItemAdded(const SelectedBenchmarksModel::Pair& item) override;
+
+		void onItemRemoved(const SelectedBenchmarksModel::Pair& item) override;
 	};
 
 } // namespace Elpida

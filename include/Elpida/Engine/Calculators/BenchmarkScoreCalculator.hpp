@@ -25,35 +25,22 @@
 #define INCLUDE_ELPIDA_ENGINE_BENCHMARKSCORECALCULATOR_HPP
 
 #include <vector>
-#include "Elpida/Engine/Result/BenchmarkResult.hpp"
 #include "Elpida/Engine/Result/ResultType.hpp"
+#include "Elpida/Engine/Result/BenchmarkScore.hpp"
+#include "Elpida/Engine/Result/ProcessedTaskResult.hpp"
 
 namespace Elpida
 {
+	class Benchmark;
+
 	class BenchmarkScoreCalculator
 	{
 	public:
 		[[nodiscard]]
-		ResultType getResultType() const
-		{
-			return _resultType;
-		}
+		virtual BenchmarkScore calculate(const Benchmark& benchmark, const std::vector<ProcessedTaskResult>& taskResults) const = 0;
 
-		[[nodiscard]]
-		const std::string& getSuffix() const
-		{
-			return _suffix;
-		}
-
-		[[nodiscard]]
-		virtual BenchmarkResult::Score calculate(const std::vector<ProcessedTaskResult>& taskResults) const = 0;
-
-		BenchmarkScoreCalculator();
-		explicit BenchmarkScoreCalculator(std::string suffix, ResultType resultType = ResultType::Raw);
+		BenchmarkScoreCalculator() = default;
 		virtual ~BenchmarkScoreCalculator() = default;
-	private:
-		std::string _suffix;
-		ResultType _resultType;
 	};
 }
 

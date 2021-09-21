@@ -45,7 +45,7 @@ namespace Elpida
 			const ServiceProvider& serviceProvider,
 			size_t iterationsToRun) const override;
 
-		explicit MemoryLatencySpecification(const std::string& name);
+		explicit MemoryLatencySpecification(const std::string& name, const std::string& uuid);
 		~MemoryLatencySpecification() override = default;
 	};
 }

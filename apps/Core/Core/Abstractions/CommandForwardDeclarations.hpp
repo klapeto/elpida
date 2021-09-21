@@ -29,9 +29,7 @@ namespace Elpida
 	class Command;
 	class StartBenchmarkingCommand;
 	class StopBenchmarkingCommand;
-	class GetBenchmarksToRunCommand;
 	class ShowMessageCommand;
-	class SelectedBenchmarkChangedEvent;
 	class HttpResponseEvent;
 	class UploadResultCommand;
 }

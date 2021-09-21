@@ -34,38 +34,58 @@ namespace Elpida
 {
 	class Mediator;
 
-	template<typename T>
-	class ListModel;
+	class SelectedBenchmarksModel;
+
+	class BenchmarksModel;
+
+	class BenchmarkRunnerModel;
 
 	namespace Ui
 	{
 		class BenchmarkListView;
 	}
 
-	class BenchmarkListView : public QWidget, public CollectionModelObserver<BenchmarkGroup>, public CommandHandler
+	class BenchmarkListView :
+			public QWidget,
+			public CollectionModelObserver<BenchmarkGroup>
 	{
 	Q_OBJECT
 
 	public:
 
-		void handle(GetBenchmarksToRunCommand &command) override;
+		explicit BenchmarkListView(const BenchmarksModel& benchmarksModel,
+				SelectedBenchmarksModel& selectionModel,
+				Mediator& mediator,
+				const BenchmarkRunnerModel& runnerModel);
 
-		explicit BenchmarkListView(const ListModel<BenchmarkGroup>& model, Mediator& mediator);
 		~BenchmarkListView() override;
+
 	private:
 		Ui::BenchmarkListView* _ui;
 		std::unordered_map<const BenchmarkGroup*, QTreeWidgetItem*> _createdItems;
 		Mediator& _mediator;
-		OptionalReference<Benchmark> getSelectedBenchmark();
+		SelectedBenchmarksModel& _selectionModel;
+		const BenchmarkRunnerModel& _runnerModel;
+		EventSubscriptionBase* _runnerSubscription;
 	protected:
 
 		void onItemAdded(const BenchmarkGroup& item) override;
+
 		void onItemRemoved(const BenchmarkGroup& item) override;
+
 		void onCollectionCleared() override;
+
 		void addItem(const BenchmarkGroup& item);
 
+	signals:
+
+		void updateRunningChanged();
+
 	private slots:
+
 		void onSelectionChanged();
+
+		void onRunningChanged();
 	};
 
 } // namespace Elpida

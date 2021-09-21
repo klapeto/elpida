@@ -1,12 +1,16 @@
 build:linux:
   image: $CI_REGISTRY_IMAGE/build-environment/linux
   stage: build
+  environment:
+    name: $DEPLOY_ENVIRONMENT
   script:
     - git submodule update --init
     - cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+      -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
+      -DELPIDA_WEB_API_URL="$ELPIDA_WEB_API_URL"
       -DELPIDA_WEB_API_KEY="$ELPIDA_WEB_API_KEY"
       -DELPIDA_VERSION_MAJOR=$ELPIDA_VERSION_MAJOR
       -DELPIDA_VERSION_MINOR=$ELPIDA_VERSION_MINOR
@@ -45,6 +49,9 @@ deploy:linux:
   stage: deploy
   only:
     - master
+    - staging
+  environment:
+    name: $DEPLOY_ENVIRONMENT
   dependencies:
     - package:linux
   script:

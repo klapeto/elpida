@@ -23,14 +23,13 @@
 
 #include "Controllers/BenchmarksController.hpp"
 #include "Controllers/BenchmarkRunnerController.hpp"
-#include "Controllers/BenchmarkConfigurationController.hpp"
 #include "Controllers/UploadController.hpp"
 
 #include "Models/Benchmarks/BenchmarksModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
 #include "Models/BenchmarkConfigurationsCollectionModel.hpp"
-#include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkRunnerModel.hpp"
+#include "Models/SelectedBenchmarksModel.hpp"
 #include "Models/GlobalConfigurationModel.hpp"
 #include "Models/AffinityModel.hpp"
 #include "UiModels/Screens/ScreensModel.hpp"
@@ -73,7 +72,7 @@
 using namespace Elpida;
 
 void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWidget);
-void loadGlobalConfiguration(GlobalConfigurationModel& configurationModel);
+void loadDefaultGlobalConfiguration(GlobalConfigurationModel& configurationModel);
 int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configurationModel, int argC, char** argV);
 void initializeTaskTab(ScreensModel& screensModel,
 	BenchmarkListView& taskBatchesListWidget,
@@ -114,7 +113,7 @@ int main(int argc, char* argv[])
 
 	GlobalConfigurationModel globalConfigurationModel;
 
-	loadGlobalConfiguration(globalConfigurationModel);
+	loadDefaultGlobalConfiguration(globalConfigurationModel);
 
 	auto exitCode = processArgumentsAndCheckIfWeMustExit(globalConfigurationModel, argc, argv);
 	if (exitCode != NON_EXIT_CODE)
@@ -169,7 +168,7 @@ int main(int argc, char* argv[])
 
 	ScreensModel screensModel;
 	AffinityModel affinityModel;
-	MainWindow mainWindow(mediator, screensModel, affinityModel, taskRunResultsModel, formatter);
+	MainWindow mainWindow(mediator, screensModel, affinityModel, taskRunResultsModel, formatter, cpuInfo);
 	ConfigurationViewsPool configurationViewsPool;
 	QuickStartView quickStartView;
 
@@ -184,8 +183,8 @@ int main(int argc, char* argv[])
 
 	BenchmarksModel taskBatchesModel;
 	BenchmarkRunnerModel taskRunnerModel;
-	BenchmarkConfigurationModel benchmarkConfigurationModel;
 	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
+	SelectedBenchmarksModel selectedBenchmarksModel;
 	BenchmarksController
 		benchmarksController
 		(taskBatchesModel, benchmarkConfigurationsModel, globalConfigurationModel, serviceProvider, logger);
@@ -196,22 +195,19 @@ int main(int argc, char* argv[])
 			taskRunResultsModel,
 			taskRunnerModel,
 			benchmarkConfigurationsModel,
+			selectedBenchmarksModel,
 			affinityModel,
 			serviceProvider,
 			timingInfo,
 			logger);
-	BenchmarkListView taskBatchesListView(taskBatchesModel, mediator);
+	BenchmarkListView taskBatchesListView(taskBatchesModel, selectedBenchmarksModel, mediator, taskRunnerModel);
 	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
 	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
 	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel, globalConfigurationModel);
-	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationModel, configurationViewsPool);
-	BenchmarkConfigurationController
-		benchmarkConfigurationController(benchmarkConfigurationsModel, benchmarkConfigurationModel);
+	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationsModel, configurationViewsPool, selectedBenchmarksModel, taskRunnerModel);
 
 	mediator.registerCommandHandler(runnerController);
-	mediator.registerCommandHandler(taskBatchesListView);
 	mediator.registerCommandHandler(mainWindow);
-	mediator.registerCommandHandler(benchmarkConfigurationController);
 
 	initializeTaskTab(screensModel,
 		taskBatchesListView,
@@ -279,7 +275,7 @@ void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWid
 	screensModel.add(ScreenItem("System Topology", *container));
 }
 
-void loadGlobalConfiguration(GlobalConfigurationModel& configurationModel)
+void loadDefaultGlobalConfiguration(GlobalConfigurationModel& configurationModel)
 {
 	configurationModel.transactional<GlobalConfigurationModel>([](GlobalConfigurationModel& configurationModel)
 	{

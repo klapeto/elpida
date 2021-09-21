@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2021  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,12 +25,12 @@
 #define INCLUDE_ELPIDA_OPTIONALREFERENCE_HPP
 
 #include <optional>
-#include <functional>
+#include "Reference.hpp"
 
 namespace Elpida {
 
 	template<typename T>
-	using OptionalReference = std::optional<std::reference_wrapper<T>>;
+	using OptionalReference = std::optional<Reference<T>>;
 }
 
 #endif //INCLUDE_ELPIDA_OPTIONALREFERENCE_HPP

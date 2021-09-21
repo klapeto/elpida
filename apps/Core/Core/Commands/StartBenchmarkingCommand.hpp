@@ -31,8 +31,21 @@ namespace Elpida
 	class StartBenchmarkingCommand final : public TypedCommand<StartBenchmarkingCommand>
 	{
 	public:
-		constexpr StartBenchmarkingCommand() = default;
+		[[nodiscard]]
+		size_t getTimes() const
+		{
+			return _times;
+		}
+
+		explicit StartBenchmarkingCommand(size_t times)
+				: _times(times)
+		{
+
+		}
+
 		~StartBenchmarkingCommand() override = default;
+	private:
+		size_t _times;
 	};
 }
 

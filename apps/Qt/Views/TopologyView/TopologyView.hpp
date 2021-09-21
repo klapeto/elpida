@@ -62,6 +62,7 @@ namespace Elpida
 		TopologyNodeFrame* getMachineWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getPackageWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getGroupWidget(const Elpida::ProcessorNode& node);
+		TopologyNodeFrame* getDieWidget(const Elpida::ProcessorNode& node);
 		static QWidget* getNumaWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getCacheWidget(const Elpida::ProcessorNode& node);
 		TopologyNodeFrame* getCoreWidget(const Elpida::ProcessorNode& node);

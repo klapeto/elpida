@@ -36,12 +36,14 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] const std::vector<std::unique_ptr<Benchmark>>& getBenchmarks() const
+		[[nodiscard]]
+		const std::vector<std::unique_ptr<Benchmark>>& getBenchmarks() const
 		{
 			return _benchmarks;
 		}
 
-		[[nodiscard]] const std::string& getName() const
+		[[nodiscard]]
+		const std::string& getName() const
 		{
 			return _name;
 		}

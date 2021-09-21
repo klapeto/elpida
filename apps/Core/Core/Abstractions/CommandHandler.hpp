@@ -40,13 +40,7 @@ namespace Elpida
 		virtual void handle(StopBenchmarkingCommand& command)
 		{
 		}
-		virtual void handle(GetBenchmarksToRunCommand& command)
-		{
-		}
 		virtual void handle(ShowMessageCommand& command)
-		{
-		}
-		virtual void handle(SelectedBenchmarkChangedEvent& command)
 		{
 		}
 		virtual void handle(HttpResponseEvent& command)

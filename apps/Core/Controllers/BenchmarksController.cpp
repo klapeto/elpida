@@ -187,7 +187,7 @@ namespace Elpida
 						configuration
 							.addConfiguration(builder, builder.getDefaultConfiguration());
 					}
-					_configurationsModel.add(benchmark->getId(), std::move(configuration));
+					_configurationsModel.add(benchmark->getUuid(), std::move(configuration));
 				}
 				_model.add(BenchmarkGroup(pPlugin->getGroupName(), benchmarks));
 			}

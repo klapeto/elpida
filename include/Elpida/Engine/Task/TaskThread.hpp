@@ -77,6 +77,8 @@ namespace Elpida
 		const TimingInfo& _timingInfo;
 		const ExecutionParameters& _executionParameters;
 
+		std::string _exceptionMessage;
+
 		const bool& _shouldWake;
 		unsigned int _affinity;
 

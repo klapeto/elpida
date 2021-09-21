@@ -103,6 +103,12 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
+		const std::string& getUuid() const
+		{
+			return _uuid;
+		}
+
+		[[nodiscard]]
 		virtual std::unique_ptr<Task> createNewTask(const TaskConfiguration& configuration,
 			const ProcessorNode& processorToRun,
 			const ServiceProvider& serviceProvider,
@@ -110,6 +116,7 @@ namespace Elpida
 
 		virtual ~TaskSpecification() = default;
 	private:
+		std::string _uuid;
 		std::string _name;
 		std::string _description;
 		DataSpecification _inputDataSpecification;
@@ -120,8 +127,9 @@ namespace Elpida
 		bool _acceptsInput;
 		bool _producesOutput;
 	protected:
-		TaskSpecification(std::string name, ResultSpecification resultSpecification)
-			: _name(std::move(name)),
+		TaskSpecification(std::string name, ResultSpecification resultSpecification, std::string uuid = std::string())
+			: _uuid(std::move(uuid)),
+			  _name(std::move(name)),
 			  _resultSpecification(std::move(resultSpecification)),
 			  _dataTransformer(nullptr),
 			  _acceptsInput(false),
