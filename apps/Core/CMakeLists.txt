@@ -58,6 +58,10 @@ if (ELPIDA_WEB_API_KEY)
     add_definitions(-DELPIDA_WEB_API_KEY="${ELPIDA_WEB_API_KEY}")
 endif()
 
+if (ELPIDA_WEB_API_URL)
+    add_definitions(-DELPIDA_WEB_API_URL="${ELPIDA_WEB_API_URL}")
+endif()
+
 if(MSYS OR MINGW)
     target_link_libraries(elpidaCore ws2_32 crypt32)
 else()
