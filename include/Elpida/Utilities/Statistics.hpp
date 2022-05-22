@@ -45,7 +45,7 @@ namespace Elpida
 	public:
 
 		template<typename T, typename TCallable>
-		static BasicStatistics calculateBasicStatistics(T population, TCallable xGetter = [](auto x){ return x; })
+		static BasicStatistics calculateBasicStatistics(const T& population, TCallable xGetter = [](auto x){ return x; })
 		{
 			double mean = 0.0;
 			double max = std::numeric_limits<double>::min();
