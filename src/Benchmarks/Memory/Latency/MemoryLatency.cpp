@@ -228,7 +228,7 @@ namespace Elpida
 
 	double MemoryLatency::calculateTaskResultValue(const Duration& taskElapsedTime) const
 	{
-		return taskElapsedTime.count() / Duration::period::den / 100.0;
+		return taskElapsedTime.count() / 100.0;
 	}
 
 	size_t MemoryLatency::getMinimumIterations() const
