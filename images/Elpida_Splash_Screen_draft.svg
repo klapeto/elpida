@@ -60,6 +60,14 @@
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
+       gradientTransform="matrix(0.27335871,-0.0503645,0.05518791,0.29953827,284.3141,125.10363)" />
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       y2="-90.907104"
+       x2="444.92438"
+       y1="-97.138664"
+       x1="444.86472"
+       id="linearGradient1148-5-5"
        xlink:href="#Dark"
        id="linearGradient2037"
        gradientUnits="userSpaceOnUse"
