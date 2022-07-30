@@ -60,7 +60,7 @@ namespace Elpida
 		const int apiPort = 443;
 		static inline const char* apiUrl = ELPIDA_WEB_API_URL;
 #endif
-		static inline const char* resultPath = "/api/v1/result";
+		static inline const char* resultPath = "/api/v1/benchmarkresult";
 		static inline const char* contentType = "application/json";
 		static inline const char* apiKey = ELPIDA_WEB_API_KEY;
 		static inline const char* apiKeyHeader = "api_key";
