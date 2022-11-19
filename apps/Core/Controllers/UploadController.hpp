@@ -53,7 +53,7 @@ namespace Elpida
 
 		void onResultAdded(const BenchmarkResult& result);
 
-		static inline const char* frontEndResultUrl = ELPIDA_WEBSITE_URL "/#/result/";
+		static inline const char* frontEndResultUrl = ELPIDA_WEBSITE_URL "/Database/Result/";
 	};
 }
 
