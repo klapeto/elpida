@@ -218,7 +218,20 @@ namespace Elpida
 		using namespace std::chrono;
 		auto seconds = duration_cast<duration<double, seconds::period>>(timingInfo.getTargetTime());
 
-		return getValueWidget(Vu::getValueScaleStringSI(seconds.count()) + "s");
+		if (!timingInfo.isTargetTimeFallback())
+		{
+			return getValueWidget(Vu::getValueScaleStringSI(seconds.count()) + "s");
+		}
+		else
+		{
+			auto widget = getValueWidget("<strong style=\"color: #d73e3e\">"
+										 + Vu::getValueScaleStringSI(seconds.count()) + "s (!) </strong>");
+
+			widget->setToolTip(
+					"Fallback constant is used! Some running programs affect measurements. Please close all programs and restart Elpida.");
+
+			return widget;
+		}
 	}
 
 	static QWidget* createVerticalLine()

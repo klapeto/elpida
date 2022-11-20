@@ -34,6 +34,7 @@
 namespace Elpida
 {
 	class SystemTopology;
+
 	class ProcessorNode;
 
 	class TimingInfo final
@@ -93,6 +94,12 @@ namespace Elpida
 			return _joinOverhead;
 		}
 
+
+		[[nodiscard]] bool isTargetTimeFallback() const
+		{
+			return _targetTime >= FallbackTargetTime;
+		}
+
 		void reCalculate(const SystemTopology& systemTopology);
 
 		template<typename TCallable>
@@ -104,9 +111,17 @@ namespace Elpida
 		}
 
 		TimingInfo() = default;
+
 		~TimingInfo() = default;
+
 	private:
-		Duration _targetTime = MilliSeconds(100);
+		const Duration FallbackTargetTime = MilliSeconds(250);
+		static constexpr Duration PossibleTargetTimes[] = {
+				MilliSeconds(100),
+				MilliSeconds(200),
+		};
+
+		Duration _targetTime = FallbackTargetTime;
 		Duration _loopOverhead = Duration::zero();
 		Duration _lockOverhead = Duration::zero();
 		Duration _notifyOverhead = Duration::zero();
@@ -117,11 +132,17 @@ namespace Elpida
 		bool _calculated = false;
 
 		void calculateNowOverhead();
+
 		void calculateSleepOverhead();
+
 		void calculateLockUnlockOverhead();
+
 		void calculateNotifyOverhead();
+
 		void calculateWakeupOverhead();
+
 		void calculateLoopOverhead();
+
 		void calculateJoinOverhead();
 
 		void testTime(std::mutex& mutex, Duration time, bool& cancel);
