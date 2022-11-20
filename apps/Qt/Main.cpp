@@ -62,6 +62,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QSplashScreen>
 #include <QScreen>
+#include <QMessageBox>
 #include "QCustomApplication.hpp"
 
 #include <getopt.h>
@@ -88,7 +89,6 @@ void printVersion();
 #include <csignal>
 #include <cstdlib>
 #include <unistd.h>
-#include <QMessageBox>
 
 void segFaultHandler(int sig)
 {
