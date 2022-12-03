@@ -23,6 +23,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         desktop-file-utils \
         libgdk-pixbuf2.0-dev \
         fakeroot \
+        squashfs-tools \
         strace && \
     pip3 install appimage-builder && \
     wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /opt/appimagetool && \
