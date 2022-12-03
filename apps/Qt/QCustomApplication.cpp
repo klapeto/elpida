@@ -50,6 +50,7 @@ namespace Elpida
 		// using, but does not apply to Qt's own threads.
 		try
 		{
+			_mediator.waitToContinue();
 			return QApplication::notify(obj, event);
 		}
 		catch (const ElpidaException& ex)

@@ -28,6 +28,9 @@
 #include "Core/Abstractions/CommandHandler.hpp"
 #include <vector>
 #include <functional>
+#include <condition_variable>
+#include <mutex>
+#include <thread>
 
 namespace Elpida
 {
@@ -36,14 +39,46 @@ namespace Elpida
 	{
 	public:
 		void execute(Command& command) override;
+
 		void execute(Command&& command) override;
 
 		void registerCommandHandler(CommandHandler& handler);
 
+		void setToWait() override
+		{
+			_shouldWait = true;
+		}
+
+		void waitToContinue() override
+		{
+			if (!_shouldWait || std::this_thread::get_id() != _mainThreadId) return;
+			std::unique_lock<std::mutex> lock(_mutex);
+			_shouldWait = false;
+			_doWake = false;
+			while (!_doWake)
+			{
+				_conditionVariable.wait(lock);
+			}
+		}
+
+		void signalToContinue() override
+		{
+			std::unique_lock<std::mutex> lock(_mutex);
+			_doWake = true;
+			_conditionVariable.notify_all();
+		}
+
 		ElpidaMediator() = default;
+
 		~ElpidaMediator() override = default;
+
 	private:
 		std::vector<std::reference_wrapper<CommandHandler>> _handlers;
+		std::condition_variable _conditionVariable;
+		std::mutex _mutex;
+		std::thread::id _mainThreadId = std::this_thread::get_id();
+		bool _doWake = false;
+		bool _shouldWait = false;
 	};
 }
 

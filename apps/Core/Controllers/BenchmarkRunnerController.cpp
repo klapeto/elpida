@@ -120,7 +120,9 @@ namespace Elpida
 								model.setRunning(true);
 								model.setTotalBenchmarks(benches.size());
 							});
+							_mediator.setToWait();
 							auto results = _runner.runBenchmarks(benches, aff);
+							_mediator.signalToContinue();
 							_benchmarkResultsModel
 									.transactional<BenchmarkResultsModel>([&results, this](BenchmarkResultsModel& model)
 									{
@@ -132,6 +134,7 @@ namespace Elpida
 						}
 						catch (const std::exception& ex)
 						{
+							_mediator.signalToContinue();
 							_logger.log(LogType::Error, "Error occurred while executing benchmarks", ex);
 							_mediator.execute(ShowMessageCommand(Vu::concatenateToString(
 									"Error occurred while running task batches: ",

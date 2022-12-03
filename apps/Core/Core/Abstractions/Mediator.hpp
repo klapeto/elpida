@@ -34,6 +34,10 @@ namespace Elpida
 		virtual void execute(Command& command) = 0;
 		virtual void execute(Command&& command) = 0;
 
+		virtual void waitToContinue() = 0;
+		virtual void signalToContinue() = 0;
+		virtual void setToWait() = 0;
+
 		virtual ~Mediator() = default;
 	};
 }
