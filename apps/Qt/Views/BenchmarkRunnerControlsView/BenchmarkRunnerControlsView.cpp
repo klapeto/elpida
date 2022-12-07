@@ -30,26 +30,26 @@ namespace Elpida
 {
 
 	BenchmarkRunnerControlsView::BenchmarkRunnerControlsView(Mediator& mediator,
-		const BenchmarkRunnerModel& model,
-		GlobalConfigurationModel& globalConfigurationModel)
-		: QWidget(),
-		_ui(new Ui::BenchmarkRunnerControlsView),
-		_model(model),
-		  _globalConfigurationModel(globalConfigurationModel),
-		  _mediator(mediator)
+			const BenchmarkRunnerModel& model,
+			GlobalConfigurationModel& globalConfigurationModel)
+			: QWidget(),
+			  _ui(new Ui::BenchmarkRunnerControlsView),
+			  _model(model),
+			  _globalConfigurationModel(globalConfigurationModel),
+			  _mediator(mediator)
 	{
 		_ui->setupUi(this);
 
 
 		QWidget::connect(this,
-			&BenchmarkRunnerControlsView::onDataChanged,
-			this,
-			&BenchmarkRunnerControlsView::updateUi);
+				&BenchmarkRunnerControlsView::onDataChanged,
+				this,
+				&BenchmarkRunnerControlsView::updateUi);
 
 		QWidget::connect(this,
-			&BenchmarkRunnerControlsView::onConfigurationChanged,
-			this,
-			&BenchmarkRunnerControlsView::updateUi);
+				&BenchmarkRunnerControlsView::onConfigurationChanged,
+				this,
+				&BenchmarkRunnerControlsView::updateUi);
 
 		_dataChangedEventSubscription = &_model.runningChanged.subscribe([this](auto running)
 		{
@@ -64,13 +64,18 @@ namespace Elpida
 		QWidget::connect(_ui->pbRun, &QPushButton::clicked, this, &BenchmarkRunnerControlsView::startClicked);
 		QWidget::connect(_ui->pbStop, &QPushButton::clicked, this, &BenchmarkRunnerControlsView::stopClicked);
 		QWidget::connect(_ui->chkUploadResults,
-			&QCheckBox::stateChanged,
-			this,
-			&BenchmarkRunnerControlsView::onUploadStateChanged);
+				&QCheckBox::stateChanged,
+				this,
+				&BenchmarkRunnerControlsView::onUploadStateChanged);
 		QWidget::connect(_ui->chkOpenWebPage,
-			&QCheckBox::stateChanged,
-			this,
-			&BenchmarkRunnerControlsView::onOpenWebPageStateChanged);
+				&QCheckBox::stateChanged,
+				this,
+				&BenchmarkRunnerControlsView::onOpenWebPageStateChanged);
+
+		QWidget::connect(_ui->chkBlockUI,
+				&QCheckBox::stateChanged,
+				this,
+				&BenchmarkRunnerControlsView::onBlockUIStateChanged);
 
 		updateCheckboxes();
 	}
@@ -89,12 +94,14 @@ namespace Elpida
 			_ui->pbRun->setEnabled(false);
 			_ui->pbStop->setEnabled(true);
 			_ui->spnTimes->setEnabled(false);
+			_ui->chkBlockUI->setEnabled(false);
 		}
 		else
 		{
 			_ui->pbRun->setEnabled(true);
 			_ui->pbStop->setEnabled(false);
 			_ui->spnTimes->setEnabled(true);
+			_ui->chkBlockUI->setEnabled(true);
 		}
 
 		updateCheckboxes();
@@ -107,12 +114,17 @@ namespace Elpida
 			_ui->chkUploadResults->setCheckState(Qt::Checked);
 			_ui->chkOpenWebPage->setEnabled(true);
 			_ui->chkOpenWebPage
-				->setCheckState(_globalConfigurationModel.isOpenResultsWebPage() ? Qt::Checked : Qt::Unchecked);
+					->setCheckState(_globalConfigurationModel.isOpenResultsWebPage() ? Qt::Checked : Qt::Unchecked);
 		}
 		else
 		{
 			_ui->chkUploadResults->setCheckState(Qt::Unchecked);
 			_ui->chkOpenWebPage->setEnabled(false);
+		}
+
+		if (_globalConfigurationModel.isBlockUI())
+		{
+			_ui->chkBlockUI->setCheckState(Qt::Checked);
 		}
 	}
 
@@ -135,6 +147,11 @@ namespace Elpida
 	void BenchmarkRunnerControlsView::onOpenWebPageStateChanged(int state)
 	{
 		_globalConfigurationModel.setOpenResultsWebPage(state == 2);
+	}
+
+	void BenchmarkRunnerControlsView::onBlockUIStateChanged(int state)
+	{
+		_globalConfigurationModel.setBlockUI(state == 2);
 	}
 
 } // namespace Elpida

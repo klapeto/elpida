@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 	ElpidaMediator mediator;
 	Logger logger;
 
-	QCustomApplication application(argc, argv, mediator, logger);
+	QCustomApplication application(argc, argv, globalConfigurationModel, mediator, logger);
 
 	auto screenSize = QGuiApplication::primaryScreen()->size();
 	auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(QSize(screenSize.width() / 2, screenSize.height() / 2));

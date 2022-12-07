@@ -44,7 +44,7 @@
 namespace Elpida
 {
 	BenchmarkRunner::BenchmarkRunner(const ServiceProvider& serviceProvider)
-			: _mustStop(false), _serviceProvider(serviceProvider)
+			: _serviceProvider(serviceProvider), _mustStop(false)
 	{
 
 	}
@@ -67,7 +67,7 @@ namespace Elpida
 	{
 		_mustStop = false;
 		std::vector<BenchmarkResult> benchmarkResults;
-		for (const auto& benchmarkRequest : benchmarkRequests)
+		for (const auto& benchmarkRequest: benchmarkRequests)
 		{
 			if (_mustStop) break;
 
@@ -82,7 +82,7 @@ namespace Elpida
 
 				TaskDataDto taskData;
 
-				for (auto& taskInstance : benchmarkTaskInstances)
+				for (auto& taskInstance: benchmarkTaskInstances)
 				{
 					if (_mustStop) break;
 

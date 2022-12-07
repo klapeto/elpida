@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Elpida::BenchmarkRunnerControlsView</class>
  <widget class="QWidget" name="Elpida::BenchmarkRunnerControlsView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>358</width>
+    <height>136</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -21,6 +29,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="chkBlockUI">
+     <property name="text">
+      <string>Block UI (Makes UI unresponsive during running but increases consistency)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QLabel" name="lblRun">
@@ -33,6 +48,9 @@
       <widget class="QSpinBox" name="spnTimes">
        <property name="minimum">
         <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
        </property>
       </widget>
      </item>

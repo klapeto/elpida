@@ -29,11 +29,12 @@
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/ShowMessageCommand.hpp"
+#include "Models/GlobalConfigurationModel.hpp"
 
 namespace Elpida
 {
-	QCustomApplication::QCustomApplication(int& argc, char** argv, Mediator& mediator, Logger& logger)
-		: QApplication(argc, argv), _mediator(mediator), _logger(logger)
+	QCustomApplication::QCustomApplication(int& argc, char** argv, const GlobalConfigurationModel& configuration, Mediator& mediator, Logger& logger)
+		: QApplication(argc, argv), _configuration(configuration), _mediator(mediator), _logger(logger)
 	{
 
 	}
@@ -50,7 +51,10 @@ namespace Elpida
 		// using, but does not apply to Qt's own threads.
 		try
 		{
-			_mediator.waitToContinue();
+			if (_configuration.isBlockUI())
+			{
+				_mediator.waitToContinue();
+			}
 			return QApplication::notify(obj, event);
 		}
 		catch (const ElpidaException& ex)

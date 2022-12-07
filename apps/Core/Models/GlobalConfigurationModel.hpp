@@ -77,13 +77,26 @@ namespace Elpida
 			onDataChanged();
 		}
 
+		void setBlockUI(bool blockUI)
+		{
+			_blockUi = blockUI;
+		}
+
+		bool isBlockUI() const
+		{
+			return _blockUi;
+		}
+
 		GlobalConfigurationModel() = default;
+
 		~GlobalConfigurationModel() override = default;
+
 	private:
 		std::string _benchmarksPath;
 		std::string _dataPath;
 		bool _uploadResults = true;
 		bool _openResultsWebPage = false;
+		bool _blockUi = false;
 	};
 }
 
