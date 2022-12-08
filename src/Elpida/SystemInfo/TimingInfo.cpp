@@ -28,6 +28,8 @@
 #include "Elpida/SystemInfo/SystemTopology.hpp"
 #include "Elpida/Timer.hpp"
 #include "Elpida/Engine/Runner/DefaultTaskRunner.hpp"
+#include "Elpida/OperationCanceledException.hpp"
+#include "Elpida/SystemInfo/TargetTimeCalculator.hpp"
 
 #include <thread>
 #include <condition_variable>
@@ -36,6 +38,27 @@
 
 namespace Elpida
 {
+
+	template<typename TCallable>
+	static inline Duration calculateLowest(size_t iterations, const Duration& nowOverhead, TCallable callable)
+	{
+		Duration curDuration = Duration::max();
+		for (size_t i = 0; i < iterations; ++i)
+		{
+			auto start = Timer::now();
+			callable();
+			auto end = Timer::now();
+
+			auto thisDuration = ToDuration(end - start);
+			if (curDuration > thisDuration)
+			{
+				curDuration = thisDuration;
+			}
+		}
+
+		curDuration -= nowOverhead;
+		return curDuration > Duration::zero() ? curDuration : Duration::zero();
+	}
 
 	template<typename TCallable>
 	static inline Duration calculateAverage(size_t iterations, const Duration& nowOverhead, TCallable callable)
@@ -111,6 +134,18 @@ namespace Elpida
 		std::mutex mutex;
 		std::condition_variable conditionVariable;
 
+		std::mutex targetTimeMutex;
+		bool cancel = false;
+
+		for (auto& time: PossibleTargetTimes)
+		{
+			calculators.emplace_back(
+					[this, &targetTimeMutex, &cancel, time]
+					{
+						testTime(targetTimeMutex, time, cancel);
+					});
+		}
+
 		for (auto& func: calculators)
 		{
 			std::unique_lock<std::mutex> lock(mutex);
@@ -156,6 +191,26 @@ namespace Elpida
 		};
 
 		_sleepOverhead = calculateAverage(100, _nowOverhead, func) - millisecond;
+	}
+
+	void TimingInfo::testTime(std::mutex& mutex, Duration time, bool& cancel)
+	{
+		try
+		{
+			if (TargetTimeCalculator::test(time, cancel))
+			{
+				std::unique_lock<std::mutex> lock(mutex);
+				if (_targetTime > time)
+				{
+					cancel = true;
+					_targetTime = time;
+				}
+			}
+		}
+		catch (const OperationCanceledException& ex)
+		{
+			// someone else found the time first
+		}
 	}
 
 	void TimingInfo::calculateLockUnlockOverhead()

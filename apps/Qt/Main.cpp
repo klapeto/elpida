@@ -62,6 +62,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QSplashScreen>
 #include <QScreen>
+#include <QMessageBox>
 #include "QCustomApplication.hpp"
 
 #include <getopt.h>
@@ -228,6 +229,20 @@ int main(int argc, char* argv[])
 	mainWindow.show();
 
 	splash.finish(&mainWindow);
+
+	if (timingInfo.isTargetTimeFallback())
+	{
+		QMessageBox::warning(&mainWindow,
+				"Unstable system timing",
+				"<strong style=\"color: #d73e3e\">WARNING!</strong> Elpida detected unstable system timing. This usually comes from active running programs on the system."
+				"<p><u>This will affect the benchmark results accuracy.</u> It is strongly recommended to close all programs and restart Elpida.</p>"
+#ifdef ELPIDA_WINDOWS
+				"<p><strong style=\"color: #d73e3e\">WINDOWS USERS BEWARE!</strong> If the problem persists after closing all programs, then Windows may be thrashing the CPU by updating. "
+				"It is advised to disconnect the system from any networks/internet and restart Elpida.</p>"
+#endif
+		);
+	}
+
 
 	return QApplication::exec();
 }

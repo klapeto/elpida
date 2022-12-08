@@ -91,6 +91,7 @@ namespace Elpida
 			c["size"] = cache.getSize();
 			c["associativity"] = cache.getAssociativity();
 			c["lineSize"] = cache.getLineSize();
+			c["level"] = cache.getLevel();
 			cachesJ.push_back(c);
 		}
 
@@ -131,6 +132,7 @@ namespace Elpida
 		cpu["modelName"] = cpuInfo.getModelName();
 		cpu["additionalInfo"] = getAdditionalCpuInfo(cpuInfo);
 		cpu["frequency"] = (unsigned long)cpuInfo.getFrequency();
+		cpu["modelId"] = cpuInfo.getModelId();
 		cpu["smt"] = cpuInfo.isSmt();
 
 		cpu["caches"] = getCaches(cpuInfo.getCaches());
@@ -237,6 +239,7 @@ namespace Elpida
 		timingJ["loopOverhead"] = DurationCast<Seconds>(timingInfo.getLoopOverhead()).count();
 		timingJ["joinOverhead"] = DurationCast<Seconds>(timingInfo.getJoinOverhead()).count();
 		timingJ["targetTime"] = DurationCast<Seconds>(timingInfo.getTargetTime()).count();
+		timingJ["unstableTiming"] = timingInfo.isTargetTimeFallback();
 
 		return timingJ;
 	}

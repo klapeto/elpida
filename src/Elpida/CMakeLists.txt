@@ -20,6 +20,7 @@ set(ELPIDA_SOURCES
         SystemInfo/MemoryInfo.cpp
         SystemInfo/OsInfo.cpp
         SystemInfo/TimingInfo.cpp
+        SystemInfo/TargetTimeCalculator.cpp
 
         SystemInfo/X86Info.cpp
         SystemInfo/ArmInfo.cpp
