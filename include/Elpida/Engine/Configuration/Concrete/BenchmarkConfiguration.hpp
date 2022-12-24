@@ -38,8 +38,13 @@ namespace Elpida
 	class BenchmarkConfiguration final
 	{
 	public:
-		[[nodiscard]] std::optional<std::reference_wrapper<const TaskConfiguration>> getConfigurationForTask(const TaskBuilder& taskBuilder) const;
-		[[nodiscard]] std::optional<std::reference_wrapper<TaskConfiguration>> getConfigurationForTask(const TaskBuilder& taskBuilder);
+		[[nodiscard]]
+		std::optional<std::reference_wrapper<const TaskConfiguration>>
+		getConfigurationForTask(const TaskBuilder& taskBuilder) const;
+
+		[[nodiscard]]
+		std::optional<std::reference_wrapper<TaskConfiguration>>
+		getConfigurationForTask(const TaskBuilder& taskBuilder);
 
 		const std::vector<TaskConfiguration>& getAllTaskConfigurations() const
 		{
@@ -57,14 +62,21 @@ namespace Elpida
 		}
 
 		explicit BenchmarkConfiguration(const Benchmark& benchmark);
+
 		BenchmarkConfiguration(BenchmarkConfiguration&&) = default;
+
 		BenchmarkConfiguration& operator=(BenchmarkConfiguration&&) = default;
+
 		BenchmarkConfiguration(const BenchmarkConfiguration&) = delete;
+
 		BenchmarkConfiguration& operator=(const BenchmarkConfiguration&) = delete;
+
 		~BenchmarkConfiguration() = default;
+
 	private:
 		std::vector<TaskConfiguration> _orderedConfigurations;
 		std::unordered_map<std::string, TaskConfiguration*> _taskConfigurations;
+
 		TaskConfiguration* getConfigurationImpl(const TaskBuilder& taskBuilder) const;
 
 		template<typename T>
@@ -82,13 +94,13 @@ namespace Elpida
 				else
 				{
 					throw ElpidaException(FUNCTION_NAME,
-						"Attempted to add more Task Configurations than the benchmark has");
+							"Attempted to add more Task Configurations than the benchmark has");
 				}
 			}
 			else
 			{
 				throw ElpidaException(FUNCTION_NAME,
-					"Attempted to add a configuration that already exists");
+						"Attempted to add a configuration that already exists");
 			}
 		}
 	};

@@ -40,17 +40,20 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] const ConfigurationSpecificationBase& getConfigurationSpecification() const
+		[[nodiscard]]
+		const ConfigurationSpecificationBase& getConfigurationSpecification() const
 		{
 			return _configurationSpecification;
 		}
 
-		[[nodiscard]] bool isReadOnly() const
+		[[nodiscard]]
+		bool isReadOnly() const
 		{
 			return _readOnly;
 		}
 
-		[[nodiscard]] virtual std::unique_ptr<ConfigurationValueBase> clone() const = 0;
+		[[nodiscard]]
+		virtual std::unique_ptr<ConfigurationValueBase> clone() const = 0;
 
 		template<typename T>
 		T& as()

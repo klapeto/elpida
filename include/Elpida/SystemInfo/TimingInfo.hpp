@@ -95,9 +95,15 @@ namespace Elpida
 		}
 
 
-		[[nodiscard]] bool isTargetTimeFallback() const
+		[[nodiscard]]
+		bool isTargetTimeFallback() const
 		{
 			return _targetTime >= FallbackTargetTime;
+		}
+
+		void setTargetTime(Duration duration)
+		{
+			_targetTime = duration;
 		}
 
 		void reCalculate(const SystemTopology& systemTopology);
@@ -109,6 +115,7 @@ namespace Elpida
 
 			return targetDuration / duration;
 		}
+
 
 		TimingInfo() = default;
 

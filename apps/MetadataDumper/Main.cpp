@@ -43,7 +43,7 @@
 #include <Elpida/ServiceProvider.hpp>
 #include <Elpida/Utilities/Logging/LogAppender.hpp>
 
-#define NON_EXIT_CODE -1
+#define NON_EXIT_CODE (-1)
 
 using namespace Elpida;
 using namespace nlohmann;
@@ -153,7 +153,7 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 			}
 			else
 			{
-				std::cerr << "--directory requires a path eg: --director=./Benchmarks";
+				std::cerr << "--directory requires a path eg: --directory=./Benchmarks";
 				return EXIT_FAILURE;
 			}
 			break;
@@ -255,7 +255,6 @@ static void DumpJsonToFile(const std::string& filename, const json& json)
 
 int main(int argC, char** argV)
 {
-
 	GlobalConfigurationModel configurationModel;
 
 	loadDefaultGlobalConfiguration(configurationModel);
@@ -295,6 +294,9 @@ int main(int argC, char** argV)
 	json benchmarksJ = json::array();
 	for (const auto& benchmarkGroup : benchmarkGroups)
 	{
+		json benchmarkGroupJ;
+		benchmarkGroupJ["name"] = benchmarkGroup.getValue().getName();
+		benchmarkGroupJ["library"] = benchmarkGroup.getValue().getLibraryPath();
 		for (auto& benchmark: benchmarkGroup.getValue().getBenchmarks())
 		{
 			json benchmarkJ;

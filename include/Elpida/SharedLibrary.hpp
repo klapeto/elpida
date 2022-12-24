@@ -42,6 +42,11 @@ namespace Elpida
 			return (T)getFunctionPointerImpl(functionName);
 		}
 
+		[[nodiscard]]
+		const std::string& getPath() const {
+			return _path;
+		}
+
 		explicit SharedLibrary(const std::string& libraryPath);
 		SharedLibrary(SharedLibrary&& other) noexcept;
 		SharedLibrary& operator=(SharedLibrary&& other) noexcept;
@@ -50,6 +55,7 @@ namespace Elpida
 		SharedLibrary(const SharedLibrary&) = delete;
 		SharedLibrary& operator=(const SharedLibrary&) = delete;
 	private:
+		std::string _path;
 		void* _handle;
 		void* getFunctionPointerImpl(const std::string& functionName) const;
 	};

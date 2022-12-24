@@ -26,14 +26,12 @@
 
 #include "Elpida/SharedLibraryLoader.hpp"
 
-#include "Elpida/ElpidaException.hpp"
-
 namespace Elpida
 {
 
-	void SharedLibraryLoader::load(const std::string& path)
+	const SharedLibrary& SharedLibraryLoader::load(const std::string& path)
 	{
-		_loadedLibraries.emplace(path, SharedLibrary(path));
+		return _loadedLibraries.emplace(path, SharedLibrary(path)).first->second;
 	}
 
 	void SharedLibraryLoader::unload(const std::string& path)

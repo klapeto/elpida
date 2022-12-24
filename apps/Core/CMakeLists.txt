@@ -31,6 +31,7 @@ set(ELPIDA_CORE_SOURCES
         Controllers/UploadController.cpp
 
         Utilities/OsUtilities.cpp
+        Utilities/BenchmarkLoader.cpp
         Utilities/xdg-open.c)
 
 

@@ -30,8 +30,10 @@
 #include "Elpida/ElpidaException.hpp"
 
 #ifdef ELPIDA_LINUX
+
 #include <dirent.h>
 #include <dlfcn.h>
+
 #else
 #include <windows.h>
 #include <strsafe.h>
@@ -56,10 +58,11 @@ namespace Elpida
 	}
 
 	SharedLibrary::SharedLibrary(const std::string& libraryPath)
+			: _path(libraryPath)
 	{
 		_handle =
 #ifdef ELPIDA_LINUX
-			dlopen(libraryPath.c_str(), RTLD_LAZY);
+				dlopen(libraryPath.c_str(), RTLD_LAZY);
 #else
 		LoadLibrary(libraryPath.c_str());
 #endif
@@ -69,8 +72,9 @@ namespace Elpida
 			auto errorMessage = dlerror();
 #endif
 			throw ElpidaException("Plugin", "Error loading plugin: '" + libraryPath + "' -> " +
-#ifdef ELPIDA_LINUX
-				(errorMessage != nullptr ? std::string(errorMessage) : std::string("(Unknown error)")));
+											#ifdef ELPIDA_LINUX
+											(errorMessage != nullptr ? std::string(errorMessage) : std::string(
+													"(Unknown error)")));
 #else
 			OsUtilities::GetLastErrorString());
 #endif

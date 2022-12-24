@@ -43,6 +43,7 @@ namespace Elpida
 	{
 	public:
 
+
 		void reload();
 		void destroyAll();
 
@@ -53,7 +54,8 @@ namespace Elpida
 			Logger& logger);
 		virtual ~BenchmarksController();
 	private:
-		std::vector<std::tuple<std::reference_wrapper<const SharedLibrary>, BenchmarksContainerPlugin<Benchmark>*>> _createdPlugins;
+		using LoadedPluginsCollection = std::vector<std::tuple<std::reference_wrapper<const SharedLibrary>, BenchmarksContainerPlugin<Benchmark>*>>;
+		LoadedPluginsCollection _createdPlugins;
 		SharedLibraryLoader _libraryLoader;
 		Logger& _logger;
 		ListModel<BenchmarkGroup>& _model;

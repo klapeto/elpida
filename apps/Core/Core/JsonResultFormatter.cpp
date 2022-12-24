@@ -357,8 +357,7 @@ namespace Elpida
 		auto rootArray = json::array();
 		for (const auto& result: results)
 		{
-			rootArray
-					.push_back(getBenchmarkResult(result));
+			rootArray.push_back(getBenchmarkResult(result));
 		}
 
 		root["benchmarkResults"] = rootArray;

@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2022  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,49 +18,47 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 29/6/20.
+// Created by klapeto on 11/12/2022.
 //
 
-#ifndef APPS_QT_MODELS_BENCHMARKGROUP_HPP
-#define APPS_QT_MODELS_BENCHMARKGROUP_HPP
+#ifndef ELPIDA_BENCHMARKLOADER_HPP
+#define ELPIDA_BENCHMARKLOADER_HPP
 
 #include <string>
 #include <vector>
+#include <memory>
 
+#include <Elpida/SharedLibrary.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
+#include <Elpida/SharedLibraryLoader.hpp>
 
 namespace Elpida
 {
+	template<typename T>
+	class BenchmarksContainerPlugin;
 
-	class BenchmarkGroup final
+	class Logger;
+
+	class BenchmarkLoader
 	{
 	public:
+		const std::vector<std::unique_ptr<Benchmark>>& load(const std::string& path);
 
-		[[nodiscard]]
-		const std::vector<std::unique_ptr<Benchmark>>& getBenchmarks() const
+		explicit BenchmarkLoader(const ServiceProvider& serviceProvider)
+				: _serviceProvider(serviceProvider)
 		{
-			return _benchmarks;
+
 		}
 
-		[[nodiscard]]
-		const std::string& getName() const
-		{
-			return _name;
-		}
-
-		[[nodiscard]]
-		const std::string& getLibraryPath() const
-		{
-			return _libraryPath;
-		}
-
-		BenchmarkGroup(std::string name, std::string libraryPath, const std::vector<std::unique_ptr<Benchmark>>& benchmarks);
-		~BenchmarkGroup() = default;
+		~BenchmarkLoader();
 	private:
-		std::string _name;
-		std::string _libraryPath;
-		const std::vector<std::unique_ptr<Benchmark>>& _benchmarks;
-	};
-}
+		std::vector<std::tuple<std::reference_wrapper<const SharedLibrary>, BenchmarksContainerPlugin<Benchmark>*>> _createdPlugins;
+		SharedLibraryLoader _libraryLoader;
+		const ServiceProvider& _serviceProvider;
 
-#endif //APPS_QT_MODELS_BENCHMARKGROUP_HPP
+		const std::vector<std::unique_ptr<Benchmark>>& load(const SharedLibrary& library);
+	};
+
+} // Elpida
+
+#endif //ELPIDA_BENCHMARKLOADER_HPP

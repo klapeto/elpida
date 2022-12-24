@@ -52,7 +52,8 @@ namespace Elpida
 			_data.push_back(std::move(data));
 		}
 
-		[[nodiscard]] const std::string& getGroupName() const
+		[[nodiscard]]
+		const std::string& getGroupName() const
 		{
 			return _groupName;
 		}

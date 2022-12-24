@@ -45,7 +45,8 @@ namespace Elpida
 		{
 			return _loadedLibraries;
 		}
-		void load(const std::string& path);
+
+		const SharedLibrary& load(const std::string& path);
 		void unload(const std::string& path);
 
 		void unloadAll();

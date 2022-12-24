@@ -35,27 +35,32 @@ namespace Elpida
 	{
 
 	public:
-		[[nodiscard]] const std::string& getName() const
+		[[nodiscard]]
+		const std::string& getName() const
 		{
 			return _name;
 		}
 
-		[[nodiscard]] const std::string& getDescription() const
+		[[nodiscard]]
+		const std::string& getDescription() const
 		{
 			return _description;
 		}
 
-		[[nodiscard]] ConfigurationType::Type getType() const
+		[[nodiscard]]
+		ConfigurationType::Type getType() const
 		{
 			return _type;
 		}
 
-		[[nodiscard]] bool isRequired() const
+		[[nodiscard]]
+		bool isRequired() const
 		{
 			return _required;
 		}
 
-		[[nodiscard]] virtual std::unique_ptr<ConfigurationValueBase> createDefault() const = 0;
+		[[nodiscard]]
+		virtual std::unique_ptr<ConfigurationValueBase> createDefault() const = 0;
 
 		virtual ~ConfigurationSpecificationBase() = default;
 	protected:

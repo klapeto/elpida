@@ -28,8 +28,8 @@
 namespace Elpida
 {
 
-	BenchmarkGroup::BenchmarkGroup(std::string name, const std::vector<std::unique_ptr<Benchmark>>& benchmarks)
-		: _name(std::move(name)), _benchmarks(benchmarks)
+	BenchmarkGroup::BenchmarkGroup(std::string name, std::string libraryPath, const std::vector<std::unique_ptr<Benchmark>>& benchmarks)
+		: _name(std::move(name)), _libraryPath(std::move(libraryPath)), _benchmarks(benchmarks)
 	{
 	}
 }

@@ -189,7 +189,7 @@ namespace Elpida
 					}
 					_configurationsModel.add(benchmark->getUuid(), std::move(configuration));
 				}
-				_model.add(BenchmarkGroup(pPlugin->getGroupName(), benchmarks));
+				_model.add(BenchmarkGroup(pPlugin->getGroupName(), lib.first, benchmarks));
 			}
 		}
 	}

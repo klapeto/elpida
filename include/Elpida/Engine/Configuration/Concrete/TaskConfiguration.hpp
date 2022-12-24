@@ -73,7 +73,7 @@ namespace Elpida
 			: _taskSpecification(&taskSpecification), _taskBuilder(&taskBuilder), _enabled(true)
 		{
 
-		};
+		}
 
 		TaskConfiguration(const TaskConfiguration& other);
 		TaskConfiguration& operator=(const TaskConfiguration& other);
