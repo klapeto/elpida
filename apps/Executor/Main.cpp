@@ -454,7 +454,7 @@ int main(int argC, char** argV)
 	std::vector<BenchmarkRunRequest> requests;
 
 
-	parseConfig(benchmarkConfig);
+	//parseConfig(benchmarkConfig);
 
 
 	return EXIT_SUCCESS;

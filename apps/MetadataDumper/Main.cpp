@@ -103,13 +103,13 @@ json getTaskSpecificationJson(const TaskSpecification& taskSpec);
 
 void printVersion()
 {
-	std::cout << "Elpida Benchmark Medatada Dumper: " << ELPIDA_VERSION << std::endl;
+	std::cout << "Elpida Benchmark Metadata Dumper: " << ELPIDA_VERSION << std::endl;
 	std::cout << "Compiler: " << ELPIDA_COMPILER_NAME << " Version: " << ELPIDA_COMPILER_VERSION << std::endl;
 }
 
 void printHelp()
 {
-	std::cout << "Elpida Benchmark Medatada Dumper: " << ELPIDA_VERSION << std::endl;
+	std::cout << "Elpida Benchmark Metadata Dumper: " << ELPIDA_VERSION << std::endl;
 	std::cout << "Usage: " << std::endl;
 	std::cout << "       -v, --version" << std::endl;
 	std::cout << "           Prints the version and exits" << std::endl;
@@ -153,7 +153,7 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 			}
 			else
 			{
-				std::cerr << "--directory requires a path eg: --directory=./Benchmarks";
+				std::cerr << "--directory requires a path eg: --directory=./Benchmarks" << std::endl;
 				return EXIT_FAILURE;
 			}
 			break;
@@ -163,6 +163,12 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 			break;
 		}
 	}
+
+    if (configurationModel.getBenchmarksPath().empty())
+    {
+        std::cerr << "--directory requires a path eg: --directory=./Benchmarks" << std::endl;
+        return EXIT_FAILURE;
+    }
 	return NON_EXIT_CODE;
 }
 
@@ -289,14 +295,16 @@ int main(int argC, char** argV)
 
 	auto& benchmarkGroups = benchmarksModel.getItems();
 
-	std::unordered_map<std::string, Reference<const TaskSpecification>> taskSpecifications;
+    std::unordered_map<std::string, Reference<const TaskSpecification>> taskSpecifications;
 
-	json benchmarksJ = json::array();
+    json root = json::object();
+	json benchmarksGroupsJ = json::array();
 	for (const auto& benchmarkGroup : benchmarkGroups)
 	{
 		json benchmarkGroupJ;
 		benchmarkGroupJ["name"] = benchmarkGroup.getValue().getName();
 		benchmarkGroupJ["library"] = benchmarkGroup.getValue().getLibraryPath();
+        json benchmarksArrayJ = json::array();
 		for (auto& benchmark: benchmarkGroup.getValue().getBenchmarks())
 		{
 			json benchmarkJ;
@@ -311,7 +319,7 @@ int main(int argC, char** argV)
 				{
 					auto& taskSpec = task.getTaskSpecification();
 
-					taskSpecifications.try_emplace(taskSpec.getUuid(), taskSpec);
+                    taskSpecifications.try_emplace(taskSpec.getUuid(),taskSpec);
 
 					json taskBuilderJ;
 					taskBuilderJ["uuid"] = taskSpec.getUuid();
@@ -325,20 +333,23 @@ int main(int argC, char** argV)
 				benchmarkJ["tasks"] = benchmarkTasksJ;
 			}
 
-			benchmarksJ.push_back(std::move(benchmarkJ));
+            benchmarksArrayJ.push_back(std::move(benchmarkJ));
 		}
+        benchmarkGroupJ["benchmarks"] = std::move(benchmarksArrayJ);
+        benchmarksGroupsJ.push_back(std::move(benchmarkGroupJ));
 	}
 
-	DumpJsonToFile("benchmarks.json", benchmarksJ);
+    root["benchmarkGroups"] = std::move(benchmarksGroupsJ);
 
-	json tasksJ = json::array();
+    json tasksJ = json::array();
 
-	for (auto& taskSpec: taskSpecifications)
-	{
-		tasksJ.push_back(getTaskSpecificationJson(taskSpec.second.get()));
-	}
+    for (auto& taskSpec: taskSpecifications)
+    {
+        tasksJ.push_back(getTaskSpecificationJson(taskSpec.second.get()));
+    }
+    root["tasks"] = std::move(tasksJ);
 
-	DumpJsonToFile("tasks.json", tasksJ);
+	DumpJsonToFile("benchmarks.json", root);
 
 	//std::cout << root.dump() << std::endl;
 

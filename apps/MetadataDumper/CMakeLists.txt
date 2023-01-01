@@ -16,3 +16,5 @@ add_executable(elpida-dumper ${ELPIDA_DUMPER_SOURCES})
 target_include_directories(elpida-dumper PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
 
 target_link_libraries(elpida-dumper elpida elpidaCore)
+
+install(TARGETS elpida-dumper RUNTIME DESTINATION ${ELPIDA_APP_INSTALL_DIR})
