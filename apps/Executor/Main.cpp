@@ -119,9 +119,20 @@ processArgumentsAndCheckIfWeMustExit(int argC, char* argV[], std::string& benchm
 	return NON_EXIT_CODE;
 }
 
+static const nlohmann::json& getRequiredProperty(const nlohmann::json& root, const std::string& name)
+{
+	auto itr = root.find(name);
+	if (itr == root.end())
+	{
+		throw std::runtime_error(Vu::Cs("'", name, "' property should be exist"));
+	}
+
+	return *itr;
+}
+
 static TaskAffinity getAffinity(const nlohmann::json& root, const SystemTopology& topology)
 {
-	auto& affinity = root["affinity"];
+	auto& affinity = getRequiredProperty(root,"affinity");
 	if (!affinity.is_array())
 	{
 		throw std::runtime_error("affinity must be an array of numbers");
@@ -162,7 +173,7 @@ static TaskAffinity getAffinity(const nlohmann::json& root, const SystemTopology
 
 static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& root, const Benchmark& benchmark)
 {
-	auto& tasksConfigsJ = root["tasksConfig"];
+	auto& tasksConfigsJ = getRequiredProperty(root,"tasksConfig");
 	if (!tasksConfigsJ.is_array())
 	{
 		throw std::runtime_error("configuration requires an member 'tasksConfig' with the task config array");
@@ -190,10 +201,10 @@ static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& ro
 		TaskConfiguration config = taskBuilder.getDefaultConfiguration();
 		if (taskBuilder.canBeDisabled())
 		{
-			config.setEnabled(taskConfigJ["enabled"].get<bool>());
+			config.setEnabled(getRequiredProperty(taskConfigJ, "enabled").get<bool>());
 		}
 
-		auto& optionsJ = taskConfigJ["options"];
+		auto& optionsJ = getRequiredProperty(taskConfigJ,"options");
 		if (!optionsJ.is_object())
 		{
 			throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options' should be 'object'"));
@@ -214,17 +225,18 @@ static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& ro
 			{
 			case ConfigurationType::Type::Bool:
 			{
-				auto& optionJ = optionsJ[configName];
+				auto& optionJ = getRequiredProperty(optionsJ,configName);
 				if (!optionJ.is_boolean())
 				{
-					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configName, "\"]" "' should be 'boolean'"));
+					throw std::runtime_error(
+							Vu::Cs("'tasksConfig[", i, "].options[\"", configName, "\"]" "' should be 'boolean'"));
 				}
 				option->as<ConfigurationValue<ConfigurationType::Bool>>().setValue(optionJ.get<bool>());
 			}
 				break;
 			case ConfigurationType::Type::Int:
 			{
-				auto& optionJ = optionsJ[configName];
+				auto& optionJ = getRequiredProperty(optionsJ,configName);
 				if (!optionJ.is_number_integer())
 				{
 					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configName,
@@ -235,7 +247,7 @@ static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& ro
 				break;
 			case ConfigurationType::Type::UnsignedInt:
 			{
-				auto& optionJ = optionsJ[configName];
+				auto& optionJ = getRequiredProperty(optionsJ,configName);
 				if (!optionJ.is_number_unsigned())
 				{
 					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configName,
@@ -247,7 +259,7 @@ static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& ro
 				break;
 			case ConfigurationType::Type::Float:
 			{
-				auto& optionJ = optionsJ[configName];
+				auto& optionJ = getRequiredProperty(optionsJ,configName);
 				if (!optionJ.is_number_float())
 				{
 					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configName,
@@ -259,7 +271,7 @@ static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& ro
 				break;
 			case ConfigurationType::Type::String:
 			{
-				auto& optionJ = optionsJ[configName];
+				auto& optionJ = getRequiredProperty(optionsJ,configName);
 				if (!optionJ.is_string())
 				{
 					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configName,
@@ -271,7 +283,7 @@ static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& ro
 				break;
 			case ConfigurationType::Type::FilePath:
 			{
-				auto& optionJ = optionsJ[configName];
+				auto& optionJ = getRequiredProperty(optionsJ,configName);
 				if (!optionJ.is_string())
 				{
 					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configName,
@@ -283,7 +295,7 @@ static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& ro
 				break;
 			case ConfigurationType::Type::FolderPath:
 			{
-				auto& optionJ = optionsJ[configName];
+				auto& optionJ = getRequiredProperty(optionsJ,configName);
 				if (!optionJ.is_string())
 				{
 					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configName,
@@ -309,13 +321,7 @@ static BenchmarkConfiguration getBenchmarkConfiguration(const nlohmann::json& ro
 
 static long getTargetTime(const nlohmann::json& root)
 {
-	auto itr = root.find("targetTimeMs");
-	if (itr == root.end())
-	{
-		throw std::runtime_error("'targetTimeMs' should be exist");
-	}
-
-	auto& targetTimeJ = *itr;
+	auto& targetTimeJ = getRequiredProperty(root,"targetTimeMs");
 	if (!targetTimeJ.is_number_unsigned())
 	{
 		throw std::runtime_error("'targetTimeMs' should be 'unsigned integer'");
@@ -333,7 +339,7 @@ static long getTargetTime(const nlohmann::json& root)
 
 static std::string getLibraryPath(const nlohmann::json& root)
 {
-	auto& libraryPathJ = root["libraryPath"];
+	auto& libraryPathJ = getRequiredProperty(root, "libraryPath");
 	if (!libraryPathJ.is_string())
 	{
 		throw std::runtime_error("'libraryPath' should be 'string'");
@@ -349,7 +355,7 @@ static std::string getLibraryPath(const nlohmann::json& root)
 
 static std::string getBenchmarkUuid(const nlohmann::json& root)
 {
-	auto& benchmarkUuidJ = root["benchmarkUUID"];
+	auto& benchmarkUuidJ = getRequiredProperty(root, "benchmarkUUID");
 	if (!benchmarkUuidJ.is_string())
 	{
 		throw std::runtime_error("'benchmarkUUID' should be 'string'");
@@ -365,7 +371,7 @@ static std::string getBenchmarkUuid(const nlohmann::json& root)
 
 static long getIterations(const nlohmann::json& root)
 {
-	auto& iterationsJ = root["iterations"];
+	auto& iterationsJ = getRequiredProperty(root, "iterations");
 	if (!iterationsJ.is_number_unsigned())
 	{
 		throw std::runtime_error("'iterations' should be 'unsigned integer'");
