@@ -47,6 +47,10 @@ namespace Elpida
 		[[nodiscard]]
 		std::string serialize(std::vector<BenchmarkResult>& results) const override;
 
+		[[nodiscard]]
+		std::string serializeNoMetadata(std::vector<BenchmarkResult>& results) const;
+
+
 		JsonResultFormatter(const SystemTopology& systemTopology,
 			const CpuInfo& cpuInfo,
 			const OsInfo& osInfo,

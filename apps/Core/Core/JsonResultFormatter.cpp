@@ -347,6 +347,18 @@ namespace Elpida
 		return root;
 	}
 
+	static json getBenchmarkResults(std::vector<BenchmarkResult>& results)
+	{
+		auto rootArray = json::array();
+		for (const auto& result: results)
+		{
+			rootArray.push_back(getBenchmarkResult(result));
+		}
+
+		return rootArray;
+	}
+
+
 	std::string JsonResultFormatter::serialize(std::vector<BenchmarkResult>& results) const
 	{
 		json root;
@@ -354,15 +366,13 @@ namespace Elpida
 		root["elpidaVersion"] = getElpida();
 		root["system"] = getSystem(_osInfo, _cpuInfo, _systemTopology, _memoryInfo, _timingInfo);
 
-		auto rootArray = json::array();
-		for (const auto& result: results)
-		{
-			rootArray.push_back(getBenchmarkResult(result));
-		}
-
-		root["benchmarkResults"] = rootArray;
+		root["benchmarkResults"] = getBenchmarkResults(results);
 
 		return root.dump();
 	}
 
+	std::string JsonResultFormatter::serializeNoMetadata(std::vector<BenchmarkResult>& results) const
+	{
+		return getBenchmarkResults(results).dump();
+	}
 }

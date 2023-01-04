@@ -1,0 +1,17 @@
+{
+  "benchmarkUUID": "7626cdc2-6f7b-4c34-8cf9-b6e3fcb4c735",
+  "libraryPath": "/media/klapeto/Αρχεία1/Code/elpida/AppDir/bin/Benchmarks/libmemoryBenchmarks.so",
+  "iterations": 1,
+  "targetTimeMs": 100,
+  "affinity": [
+    16
+  ],
+  "tasksConfig": [
+    {
+      "enabled": true,
+      "options": {
+        "A": 54
+      }
+    }
+  ]
+}
