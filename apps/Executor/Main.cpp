@@ -39,10 +39,17 @@
 #include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 #include <Utilities/BenchmarkLoader.hpp>
 #include <json.hpp>
+#include "Core/JsonResultFormatter.hpp"
 
 #define NON_EXIT_CODE (-1)
 
 using namespace Elpida;
+
+struct RunConfiguration
+{
+	BenchmarkConfiguration benchmarkConfiguration;
+	TaskAffinity affinity;
+};
 
 static void printVersion()
 {
@@ -218,107 +225,7 @@ processArgumentsAndCheckIfWeMustExit(int argC, char* argV[], std::string& librar
 	return NON_EXIT_CODE;
 }
 
-static TaskConfiguration getTaskConfiguration(
-		const TaskBuilder& taskBuilder,
-		const nlohmann::json& taskConfigJ)
-{
-	auto& taskSpecification = taskBuilder.getTaskSpecification();
-	TaskConfiguration taskConfiguration(taskSpecification, taskBuilder);
-	auto& configurationSpecifications = taskSpecification.getConfigurationSpecifications();
-	auto& configValuesJ = taskConfigJ["values"];
-	for (auto& configSpec: configurationSpecifications)
-	{
-		auto config = configSpec->createDefault();
-		switch (configSpec->getType())
-		{
-		case ConfigurationType::Type::String:
-			if (!taskConfigJ[configSpec->getName()].is_string())
-			{
-				throw std::runtime_error(
-						Vu::Cs("Config of '", taskSpecification.getName(), "' of task '", configSpec->getName(),
-								"' requires the configuration of type 'string'"));
-			}
-			config->as<ConfigurationValue<ConfigurationType::String>>().setValue(
-					taskConfigJ.get<ConfigurationType::String>());
-			break;
-		case ConfigurationType::Type::Bool:
-			if (!taskConfigJ[configSpec->getName()].is_boolean())
-			{
-				throw std::runtime_error(
-						Vu::Cs("Config of '", taskSpecification.getName(), "' of task '", configSpec->getName(),
-								"' requires the configuration of type 'bool'"));
-			}
-			config->as<ConfigurationValue<ConfigurationType::Bool>>().setValue(
-					taskConfigJ.get<ConfigurationType::Bool>());
-			break;
-		case ConfigurationType::Type::Int:
-			if (!taskConfigJ[configSpec->getName()].is_number_integer())
-			{
-				throw std::runtime_error(
-						Vu::Cs("Config of '", taskSpecification.getName(), "' of task '", configSpec->getName(),
-								"' requires the configuration of type 'int'"));
-			}
-			config->as<ConfigurationValue<ConfigurationType::Int>>().setValue(
-					taskConfigJ.get<ConfigurationType::Int>());
-			break;
-		case ConfigurationType::Type::UnsignedInt:
-			if (!taskConfigJ[configSpec->getName()].is_number_unsigned())
-			{
-				throw std::runtime_error(
-						Vu::Cs("Config of '", taskSpecification.getName(), "' of task '", configSpec->getName(),
-								"' requires the configuration of type 'unsigned int'"));
-			}
-			config->as<ConfigurationValue<ConfigurationType::UnsignedInt>>().setValue(
-					taskConfigJ.get<ConfigurationType::UnsignedInt>());
-			break;
-		case ConfigurationType::Type::Float:
-			if (!taskConfigJ[configSpec->getName()].is_number_float())
-			{
-				throw std::runtime_error(
-						Vu::Cs("Config of '", taskSpecification.getName(), "' of task '", configSpec->getName(),
-								"' requires the configuration of type 'float'"));
-			}
-			config->as<ConfigurationValue<ConfigurationType::Float>>().setValue(
-					taskConfigJ.get<ConfigurationType::Float>());
-			break;
-		case ConfigurationType::Type::FilePath:
-			if (!taskConfigJ[configSpec->getName()].is_string())
-			{
-				throw std::runtime_error(
-						Vu::Cs("Config of '", taskSpecification.getName(), "' of task '", configSpec->getName(),
-								"' requires the configuration of type 'string'"));
-			}
-			config->as<ConfigurationValue<ConfigurationType::FilePath>>().setValue(
-					taskConfigJ.get<ConfigurationType::FilePath>());
-			break;
-		case ConfigurationType::Type::FolderPath:
-			if (!taskConfigJ[configSpec->getName()].is_string())
-			{
-				throw std::runtime_error(
-						Vu::Cs("Config of '", taskSpecification.getName(), "' of task '", configSpec->getName(),
-								"' requires the configuration of type 'string'"));
-			}
-			config->as<ConfigurationValue<ConfigurationType::FolderPath>>().setValue(
-					taskConfigJ.get<ConfigurationType::FolderPath>());
-			break;
-		case ConfigurationType::Type::Function:
-			throw std::runtime_error("Configuration of type 'function' is not supported'");
-		case ConfigurationType::Type::Custom:
-			throw std::runtime_error("Configuration of type 'custom' is not supported'");
-		}
-		taskConfiguration.setConfiguration(configSpec->getName(), std::move(config));
-	}
-
-	if (taskBuilder.canBeDisabled())
-	{
-		auto& enabled = taskConfigJ["enabled"];
-		taskConfiguration.setEnabled(enabled.get<bool>());
-	}
-
-	return taskConfiguration;
-}
-
-static std::vector<long> getAffinity(const nlohmann::json& root)
+static TaskAffinity getAffinity(const nlohmann::json& root, const SystemTopology& topology)
 {
 	auto& affinity = root["affinity"];
 	if (!affinity.is_array())
@@ -331,8 +238,13 @@ static std::vector<long> getAffinity(const nlohmann::json& root)
 		throw std::runtime_error("affinity must not be empty");
 	}
 
-	std::vector<long> returnVales;
+	std::unordered_map<long, const ProcessorNode*> availableProcessors;
+	for (auto processor: topology.getAllProcessors())
+	{
+		availableProcessors.emplace(processor->getOsIndex(), processor);
+	}
 
+	std::vector<const ProcessorNode*> processors;
 	for (const auto& value: affinity)
 	{
 		if (!value.is_number_integer())
@@ -340,47 +252,151 @@ static std::vector<long> getAffinity(const nlohmann::json& root)
 			throw std::runtime_error("affinity must contain only integers");
 		}
 
-		returnVales.push_back(value.get<long>());
+
+		auto osIndex = value.get<long>();
+		auto itr = availableProcessors.find(osIndex);
+		if (itr == availableProcessors.end())
+		{
+			throw std::runtime_error(Vu::Cs("No available processor with os index: ", osIndex));
+		}
+		processors.push_back(itr->second);
 	}
 
-	return returnVales;
+	return TaskAffinity(processors);
 }
 
-static std::vector<TaskConfiguration> getTaskConfigurations(const Benchmark& benchmark, const nlohmann::json& root)
-{
-	auto& configArrayJ = root["taskConfigurations"];
 
-	if (!configArrayJ.is_array())
+static BenchmarkConfiguration getTaskConfigurations(const nlohmann::json& root, const Benchmark& benchmark)
+{
+	auto& tasksConfigsJ = root["tasksConfig"];
+	if (!tasksConfigsJ.is_array())
 	{
-		throw std::runtime_error("'taskConfigurations' must be an array");
+		throw std::runtime_error("configuration requires an member 'tasksConfig' with the task config array");
 	}
 
-	auto& builders = benchmark.getTaskBuilders();
+	auto& taskBuilders = benchmark.getTaskBuilders();
 
-	if (configArrayJ.size() != builders.size())
+	if (tasksConfigsJ.size() != taskBuilders.size())
 	{
 		throw std::runtime_error(
-				"'taskConfigurations' array must have the same size of the tasks amount of the benchmark");
+				Vu::Cs("configuration requires an member 'tasksConfig' must have a size the same of the benchmarks tasks (",
+						taskBuilders.size(), ") but has (", tasksConfigsJ.size(), ")"));
 	}
 
-	std::vector<TaskConfiguration> taskConfigurations;
-	taskConfigurations.reserve(builders.size());
-	for (std::size_t i = 0; i < builders.size(); ++i)
+	BenchmarkConfiguration benchmarkConfiguration(benchmark);
+	std::size_t i = 0;
+	for (auto& taskBuilder: taskBuilders)
 	{
-		auto& taskBuilder = builders[i];
-		auto& configJ = configArrayJ[i];
-		taskConfigurations.push_back(getTaskConfiguration(taskBuilder, configJ));
+		auto& taskConfigJ = tasksConfigsJ[i];
+		if (!tasksConfigsJ.is_object())
+		{
+			throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "]' should be 'object'"));
+		}
+
+		TaskConfiguration config(taskBuilder.getTaskSpecification(), taskBuilder);
+		if (taskBuilder.canBeDisabled())
+		{
+			config.setEnabled(taskConfigJ["enabled"].get<bool>());
+		}
+
+		auto& optionsJ = tasksConfigsJ["options"];
+		if (!optionsJ.is_object())
+		{
+			throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options' should be 'object'"));
+		}
+
+		for (auto& configSpec: taskBuilder
+				.getTaskSpecification()
+				.getConfigurationSpecifications())
+		{
+			auto& optionJ = optionsJ[configSpec->getName()];
+
+			auto option = configSpec->createDefault();
+			switch (configSpec->getType())
+			{
+			case ConfigurationType::Type::Bool:
+				if (!optionJ.is_boolean())
+				{
+					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configSpec->getName(),
+							"\"]" "' should be 'boolean'"));
+				}
+				option->as<ConfigurationValue<ConfigurationType::Bool>>().setValue(optionJ.get<bool>());
+				break;
+			case ConfigurationType::Type::Int:
+				if (!optionJ.is_number_integer())
+				{
+					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configSpec->getName(),
+							"\"]" "' should be 'integer'"));
+				}
+				option->as<ConfigurationValue<ConfigurationType::Int>>().setValue(optionJ.get<int>());
+				break;
+			case ConfigurationType::Type::UnsignedInt:
+				if (!optionJ.is_number_unsigned())
+				{
+					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configSpec->getName(),
+							"\"]" "' should be 'unsigned integer'"));
+				}
+				option->as<ConfigurationValue<ConfigurationType::UnsignedInt>>().setValue(
+						optionJ.get<ConfigurationType::UnsignedInt>());
+				break;
+			case ConfigurationType::Type::Float:
+				if (!optionJ.is_number_float())
+				{
+					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configSpec->getName(),
+							"\"]" "' should be 'float'"));
+				}
+				option->as<ConfigurationValue<ConfigurationType::Float>>().setValue(
+						optionJ.get<ConfigurationType::Float>());
+				break;
+			case ConfigurationType::Type::String:
+				if (!optionJ.is_string())
+				{
+					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configSpec->getName(),
+							"\"]" "' should be 'string'"));
+				}
+				option->as<ConfigurationValue<ConfigurationType::FolderPath>>().setValue(
+						optionJ.get<ConfigurationType::FolderPath>());
+				break;
+			case ConfigurationType::Type::FilePath:
+				if (!optionJ.is_string())
+				{
+					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configSpec->getName(),
+							"\"]" "' should be 'string'"));
+				}
+				option->as<ConfigurationValue<ConfigurationType::FolderPath>>().setValue(
+						optionJ.get<ConfigurationType::FolderPath>());
+				break;
+			case ConfigurationType::Type::FolderPath:
+				if (!optionJ.is_string())
+				{
+					throw std::runtime_error(Vu::Cs("'tasksConfig[", i, "].options[\"", configSpec->getName(),
+							"\"]" "' should be 'string'"));
+				}
+				option->as<ConfigurationValue<ConfigurationType::FolderPath>>().setValue(
+						optionJ.get<ConfigurationType::FolderPath>());
+				break;
+			case ConfigurationType::Type::Function:
+			case ConfigurationType::Type::Custom:
+				break;
+			}
+			config.setConfiguration(configSpec->getName(), std::move(option));
+		}
+
+		benchmarkConfiguration.addConfiguration(taskBuilder, std::move(config));
+		i++;
 	}
-	return taskConfigurations;
+
+	return benchmarkConfiguration;
 }
 
-static void parseConfig(const std::string& data, const Benchmark& benchmark)
+static RunConfiguration parseConfig(const std::string& data, const Benchmark& benchmark, const SystemTopology& topology)
 {
 	auto root = nlohmann::json::parse(data);
 
-	auto affinity = getAffinity(root);
-
-
+	return {
+			getTaskConfigurations(root, benchmark),
+			getAffinity(root, topology)
+	};
 }
 
 int main(int argC, char** argV)
@@ -446,16 +462,24 @@ int main(int argC, char** argV)
 		return EXIT_FAILURE;
 	}
 
-	auto& benchmark = *benchmarkIterator;
+	auto& benchmark = **benchmarkIterator;
 
 	OffThreadExecutor taskRunnerThread;
 	BenchmarkRunner runner(serviceProvider);
 
 	std::vector<BenchmarkRunRequest> requests;
 
+	auto config = parseConfig(benchmarkConfig, benchmark, topology);
 
-	//parseConfig(benchmarkConfig);
+	for (long i = 0; i < iterations; ++i)
+	{
+		requests.emplace_back(benchmark, config.benchmarkConfiguration);
+	}
+	auto result = runner.runBenchmarks(requests, config.affinity);
 
+	JsonResultFormatter resultFormatter(topology, cpuInfo, osInfo, memoryInfo, timingInfo);
+
+	std::cout << resultFormatter.serialize(result) << std::endl;
 
 	return EXIT_SUCCESS;
 }

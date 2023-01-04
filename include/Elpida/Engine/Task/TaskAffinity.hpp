@@ -39,12 +39,14 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] const std::vector<const ProcessorNode*>& getProcessorNodes() const
+		[[nodiscard]]
+		const std::vector<const ProcessorNode*>& getProcessorNodes() const
 		{
 			return _nodes;
 		}
 
-		[[nodiscard]] std::vector<const ProcessorNode*> getProcessors(size_t processorsToUse) const
+		[[nodiscard]]
+		std::vector<const ProcessorNode*> getProcessors(size_t processorsToUse) const
 		{
 			std::vector<const ProcessorNode*> returnProcessors;
 			auto processors = processorsToUse <= _nodes.size() ? processorsToUse : _nodes.size();
