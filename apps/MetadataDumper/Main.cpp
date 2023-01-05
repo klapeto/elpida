@@ -27,6 +27,7 @@
 #include <getopt.h>
 #include <fstream>
 
+#include <Core/JsonSerializer.hpp>
 #include <Controllers/BenchmarksController.hpp>
 #include <Models/Benchmarks/BenchmarksModel.hpp>
 #include <Models/GlobalConfigurationModel.hpp>
@@ -43,6 +44,7 @@
 #include <Elpida/ServiceProvider.hpp>
 #include <Elpida/Utilities/Logging/LogAppender.hpp>
 
+
 #define NON_EXIT_CODE (-1)
 
 using namespace Elpida;
@@ -53,9 +55,9 @@ class ConsoleAppender : public LogAppender
 public:
 
 	void append(LogType logType,
-		const Logger::TimeStamp& timeStamp,
-		const std::string& message,
-		const std::exception* exception) override
+			const Logger::TimeStamp& timeStamp,
+			const std::string& message,
+			const std::exception* exception) override
 	{
 		std::cout << getTypeStr(logType)
 				  << "["
@@ -71,7 +73,9 @@ public:
 
 		std::cout << std::endl;
 	}
+
 	ConsoleAppender() = default;
+
 	~ConsoleAppender() override = default;
 
 private:
@@ -128,10 +132,10 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 		Arg_Directory,
 	};
 	struct option options[] = {
-		{ "version", no_argument, nullptr, 'v' },
-		{ "help", no_argument, nullptr, 'h' },
-		{ "directory", required_argument, nullptr, 'd' },
-		{ nullptr, 0, nullptr, 0 }
+			{ "version",   no_argument,       nullptr, 'v' },
+			{ "help",      no_argument,       nullptr, 'h' },
+			{ "directory", required_argument, nullptr, 'd' },
+			{ nullptr, 0,                     nullptr, 0 }
 	};
 
 	int option_index = 0;
@@ -164,11 +168,11 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 		}
 	}
 
-    if (configurationModel.getBenchmarksPath().empty())
-    {
-        std::cerr << "--directory requires a path eg: --directory=./Benchmarks" << std::endl;
-        return EXIT_FAILURE;
-    }
+	if (configurationModel.getBenchmarksPath().empty())
+	{
+		std::cerr << "--directory requires a path eg: --directory=./Benchmarks" << std::endl;
+		return EXIT_FAILURE;
+	}
 	return NON_EXIT_CODE;
 }
 
@@ -254,57 +258,21 @@ json getTaskSpecificationJson(const TaskSpecification& taskSpec)
 static void DumpJsonToFile(const std::string& filename, const json& json)
 {
 	std::fstream file;
-	file.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	file.open(filename, std::ios::out | std::ios::trunc);
 	file << json.dump();
 }
 
-int main(int argC, char** argV)
+static json getBenchmarkGroupsJson(const std::list<ListModelItem<BenchmarkGroup>>& benchmarkGroups,
+		std::unordered_map<std::string, Reference<const TaskSpecification>>& taskSpecifications)
 {
-	GlobalConfigurationModel configurationModel;
-
-	loadDefaultGlobalConfiguration(configurationModel);
-
-	auto exitCode = processArgumentsAndCheckIfWeMustExit(configurationModel, argC, argV);
-
-	if (exitCode != NON_EXIT_CODE)
-	{
-		return exitCode;
-	}
-
-	const CpuInfo& cpuInfo = CpuInfo::get();
-
-	SystemTopology topology;
-	MemoryInfo memoryInfo;
-	OsInfo osInfo;
-	TimingInfo timingInfo;
-	Logger logger;
-	ConsoleAppender consoleAppender;
-
-	logger.addAppender(consoleAppender);
-
-	ServiceProvider serviceProvider(cpuInfo, memoryInfo, topology, osInfo, timingInfo, logger);
-
-	BenchmarksModel benchmarksModel;
-	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
-
-	BenchmarksController
-		controller(benchmarksModel, benchmarkConfigurationsModel, configurationModel, serviceProvider, logger);
-
-	controller.reload();
-
-	auto& benchmarkGroups = benchmarksModel.getItems();
-
-    std::unordered_map<std::string, Reference<const TaskSpecification>> taskSpecifications;
-
-    json root = json::object();
 	json benchmarksGroupsJ = json::array();
-	for (const auto& benchmarkGroup : benchmarkGroups)
+	for (const auto& benchmarkGroup: benchmarkGroups)
 	{
 		json benchmarkGroupJ;
 		benchmarkGroupJ["name"] = benchmarkGroup.getValue().getName();
-		benchmarkGroupJ["library"] = benchmarkGroup.getValue().getLibraryPath();
-        json benchmarksArrayJ = json::array();
+		benchmarkGroupJ["libraryPath"] = benchmarkGroup.getValue().getLibraryPath();
+		json benchmarksArrayJ = json::array();
 		for (auto& benchmark: benchmarkGroup.getValue().getBenchmarks())
 		{
 			json benchmarkJ;
@@ -319,7 +287,7 @@ int main(int argC, char** argV)
 				{
 					auto& taskSpec = task.getTaskSpecification();
 
-                    taskSpecifications.try_emplace(taskSpec.getUuid(),taskSpec);
+					taskSpecifications.try_emplace(taskSpec.getUuid(), taskSpec);
 
 					json taskBuilderJ;
 					taskBuilderJ["uuid"] = taskSpec.getUuid();
@@ -333,25 +301,98 @@ int main(int argC, char** argV)
 				benchmarkJ["tasks"] = benchmarkTasksJ;
 			}
 
-            benchmarksArrayJ.push_back(std::move(benchmarkJ));
+			benchmarksArrayJ.push_back(std::move(benchmarkJ));
 		}
-        benchmarkGroupJ["benchmarks"] = std::move(benchmarksArrayJ);
-        benchmarksGroupsJ.push_back(std::move(benchmarkGroupJ));
+		benchmarkGroupJ["benchmarks"] = std::move(benchmarksArrayJ);
+		benchmarksGroupsJ.push_back(std::move(benchmarkGroupJ));
+	}
+	return benchmarksGroupsJ;
+}
+
+static json getTasksJson(std::unordered_map<std::string, Reference<const TaskSpecification>>& taskSpecifications)
+{
+	json tasksJ = json::array();
+	for (auto& taskSpec: taskSpecifications)
+	{
+		tasksJ.push_back(getTaskSpecificationJson(taskSpec.second.get()));
+	}
+	return tasksJ;
+}
+
+static json getSystemJson(const SystemTopology& topology,
+		const MemoryInfo& memoryInfo,
+		const OsInfo& osInfo,
+		const TimingInfo& timingInfo,
+		const CpuInfo& cpuInfo)
+{
+	json systemJ = json::object();
+
+	systemJ["os"] = JsonSerializer::serialize(osInfo);
+	systemJ["cpu"] = JsonSerializer::serialize(cpuInfo);
+	systemJ["topology"] = JsonSerializer::serialize(topology);
+	systemJ["memory"] = JsonSerializer::serialize(memoryInfo);
+	systemJ["timing"] = JsonSerializer::serialize(timingInfo);
+
+	return systemJ;
+}
+
+int main(int argC, char** argV)
+{
+	try
+	{
+		GlobalConfigurationModel configurationModel;
+
+		loadDefaultGlobalConfiguration(configurationModel);
+
+		auto exitCode = processArgumentsAndCheckIfWeMustExit(configurationModel, argC, argV);
+
+		if (exitCode != NON_EXIT_CODE)
+		{
+			return exitCode;
+		}
+
+		const CpuInfo& cpuInfo = CpuInfo::get();
+
+		SystemTopology topology;
+		MemoryInfo memoryInfo;
+		OsInfo osInfo;
+		TimingInfo timingInfo;
+		Logger logger;
+		ConsoleAppender consoleAppender;
+
+		logger.addAppender(consoleAppender);
+
+		timingInfo.reCalculate(topology);
+
+		ServiceProvider serviceProvider(cpuInfo, memoryInfo, topology, osInfo, timingInfo, logger);
+
+		BenchmarksModel benchmarksModel;
+		BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
+
+		BenchmarksController
+				controller(benchmarksModel, benchmarkConfigurationsModel, configurationModel, serviceProvider, logger);
+
+		controller.reload();
+
+		auto& benchmarkGroups = benchmarksModel.getItems();
+
+		json root = json::object();
+
+		std::unordered_map<std::string, Reference<const TaskSpecification>> taskSpecifications;
+		root["benchmarkGroups"] = getBenchmarkGroupsJson(benchmarkGroups, taskSpecifications);
+		root["tasks"] = getTasksJson(taskSpecifications);
+		root["system"] = getSystemJson(topology, memoryInfo, osInfo, timingInfo, cpuInfo);
+		root["elpidaVersion"] = JsonSerializer::serializeElpidaVersion();
+
+		std::cout << root.dump() << std::endl;
+	}
+	catch (const std::exception& ex)
+	{
+		std::cerr << "Fail: " << ex.what() << std::endl;
+		return EXIT_FAILURE;
 	}
 
-    root["benchmarkGroups"] = std::move(benchmarksGroupsJ);
-
-    json tasksJ = json::array();
-
-    for (auto& taskSpec: taskSpecifications)
-    {
-        tasksJ.push_back(getTaskSpecificationJson(taskSpec.second.get()));
-    }
-    root["tasks"] = std::move(tasksJ);
-
-	DumpJsonToFile("benchmarks.json", root);
-
-	//std::cout << root.dump() << std::endl;
+	//DumpJsonToFile("metadata.json", root);
 
 	return EXIT_SUCCESS;
 }

@@ -32,7 +32,7 @@ set(ELPIDA_CORE_SOURCES
 
         Utilities/OsUtilities.cpp
         Utilities/BenchmarkLoader.cpp
-        Utilities/xdg-open.c)
+        Utilities/xdg-open.c Core/JsonSerializer.cpp Core/JsonSerializer.hpp)
 
 
 if (MSYS OR MINGW)
