@@ -5,7 +5,7 @@
 // https://stackoverflow.com/questions/53536076/towards-understanding-availability-of-xdg-open
 #include <Elpida/Config.hpp>
 
-#ifdef ELPIDA_LINUX
+#ifdef ELPIDA_UNIX
 #define  _POSIX_C_SOURCE  200809L
 #define  _GNU_SOURCE
 //

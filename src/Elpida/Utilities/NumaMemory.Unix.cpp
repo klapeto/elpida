@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2022  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,41 +17,54 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * NumaMemory.cpp
- *
- *  Created on: 9 Ιουν 2019
- *      Author: klapeto
- */
+//
+// Created by klapeto on 25/2/2023.
+//
+
+#include "Elpida/Config.hpp"
+
+#if defined(ELPIDA_UNIX)
 
 #include "Elpida/Utilities/NumaMemory.hpp"
 
-#include <cstring>
-#include "Elpida/Config.hpp"
-#include "Elpida/SystemInfo/ProcessorNode.hpp"
+#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Utilities/OsUtilities.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
+#include <numa.h>
 
 namespace Elpida
 {
-	NumaMemory::NumaMemory(std::size_t size, const ProcessorNode& processor)
-		: Memory(size), _processor(processor)
+	void* NumaMemory::allocateOnNumaNode(std::size_t size, int numaNode)
 	{
+		if (numa_available() < 0)
+		{
+			return malloc(size);
+		}
+
+		numa_set_strict(1);
+		auto ptr = (void*)numa_alloc_onnode(size, numaNode);
+		if (ptr == nullptr)
+		{
+			throw ElpidaException(FUNCTION_NAME,
+					Vu::Cs("Failed to allocate to numa node ", numaNode, ". Memory of size: ",
+							Vu::getValueScaleStringIEC(size), "B. Error: ", OsUtilities::GetLastErrorString()));
+		}
+
+		return ptr;
 	}
 
-	NumaMemory::~NumaMemory()
+	void* NumaMemory::deallocateOnNumaNode(void* ptr, std::size_t size)
 	{
-		deallocate(); // TODO: this is not needed, but be safe
+		if (numa_available() < 0)
+		{
+			free(ptr);
+		}
+		else
+		{
+			numa_free(ptr, size);
+		}
 	}
 
-	void NumaMemory::allocateImpl()
-	{
-		_pointer = (pData)allocateOnNumaNode(_size, _processor.getNumaNodeId());
-		std::memset(_pointer, 0, _size);
-	}
+}
 
-	void NumaMemory::deallocateImpl()
-	{
-		deallocateOnNumaNode(_pointer, _size);
-	}
-
-} /* namespace Elpida */
-
+#endif

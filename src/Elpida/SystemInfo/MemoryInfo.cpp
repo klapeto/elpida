@@ -26,14 +26,6 @@
 
 #include "Elpida/SystemInfo/MemoryInfo.hpp"
 
-#include "Elpida/Config.hpp"
-
-#ifdef ELPIDA_WINDOWS
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-
 namespace Elpida
 {
 	MemoryInfo::MemoryInfo()
@@ -41,36 +33,6 @@ namespace Elpida
 	{
 		getValues();
 	}
-
-	std::size_t MemoryInfo::getAvailableFreeMemory() const
-	{
-#ifdef ELPIDA_LINUX
-		return sysconf(_SC_AVPHYS_PAGES) * _pageSize;
-#else
-		MEMORYSTATUSEX memStatus;
-		memStatus.dwLength = sizeof(memStatus);
-		GlobalMemoryStatusEx(&memStatus);
-		return memStatus.ullAvailPhys;
-#endif
-	}
-
-	void MemoryInfo::getValues()
-	{
-#ifdef ELPIDA_LINUX
-		_pageSize = sysconf(_SC_PAGESIZE);
-		_memorySize = sysconf(_SC_PHYS_PAGES) * _pageSize;
-#else
-		MEMORYSTATUSEX memStatus;
-		memStatus.dwLength = sizeof(memStatus);
-		GlobalMemoryStatusEx(&memStatus);
-		_memorySize = memStatus.ullTotalPhys;
-
-		SYSTEM_INFO sysInfo;
-		GetNativeSystemInfo(&sysInfo);
-		_pageSize = sysInfo.dwPageSize;
-#endif
-	}
-
 
 } /* namespace Elpida */
 

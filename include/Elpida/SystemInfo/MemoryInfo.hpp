@@ -37,17 +37,20 @@ namespace Elpida
 	class MemoryInfo final : public NonCopyable
 	{
 	public:
-		[[nodiscard]] std::size_t getMemorySize() const
+		[[nodiscard]]
+		std::size_t getMemorySize() const
 		{
 			return _memorySize;
 		}
 
-		[[nodiscard]] std::size_t getPageSize() const
+		[[nodiscard]]
+		std::size_t getPageSize() const
 		{
 			return _pageSize;
 		}
 
-		[[nodiscard]] std::size_t getAvailableFreeMemory() const;
+		[[nodiscard]]
+		std::size_t getAvailableFreeMemory() const;
 
 		MemoryInfo();
 		~MemoryInfo() override = default;

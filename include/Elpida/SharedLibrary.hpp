@@ -39,7 +39,7 @@ namespace Elpida
 		template<typename T>
 		inline T getFunctionPointer(const std::string& functionName) const
 		{
-			return (T)getFunctionPointerImpl(functionName);
+			return (T)getFunctionPointerImpl(_handle, functionName);
 		}
 
 		[[nodiscard]]
@@ -57,7 +57,11 @@ namespace Elpida
 	private:
 		std::string _path;
 		void* _handle;
-		void* getFunctionPointerImpl(const std::string& functionName) const;
+		
+		static void* getFunctionPointerImpl(void* libraryHandle, const std::string& functionName);
+		static void* loadLibrary(const std::string& libraryPath) ;
+		static std::string getLoadError();
+		static void unloadLibrary(void* libraryHandle);
 	};
 } /* namespace Elpida */
 

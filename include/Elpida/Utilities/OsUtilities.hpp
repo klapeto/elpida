@@ -32,6 +32,7 @@
 #include <windows.h>
 #endif
 #include <string>
+#include <vector>
 
 namespace Elpida
 {
@@ -42,8 +43,8 @@ namespace Elpida
 
 		static std::string GetLastErrorString();
 
-		static void* allocateOnNumaNode(size_t size, int numaNode);
-		static void deallocateOnNumaNode(void* data, size_t size);
+		static void openUrl(const std::string& url);
+		static std::string executeProcess(const std::string& path, const std::vector<std::string>& args);
 
 #ifdef ELPIDA_WINDOWS
 		static std::string GetErrorString(HRESULT errorId);

@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2023  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,39 +17,27 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * NumaMemory.hpp
- *
- *  Created on: 9 Ιουν 2019
- *      Author: klapeto
- */
+//
+// Created by klapeto on 25/2/2023.
+//
 
-#ifndef ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_
-#define ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_
+#include "Elpida/Config.hpp"
 
-#include <cstddef>
+#if defined(ELPIDA_WINDOWS)
 
-#include "Memory.hpp"
+#include "Elpida/SystemInfo/ProcessorNode.hpp"
+
+#include <windows.h>
 
 namespace Elpida
 {
-	class ProcessorNode;
-
-	class NumaMemory final : public Memory
+	int ProcessorNode::getNumaNodeIdImpl(int processorId)
 	{
-	public:
-		NumaMemory(std::size_t size, const ProcessorNode& processor);
-		~NumaMemory() override;
-	private:
-		const ProcessorNode& _processor;
-	protected:
-		void allocateImpl() override;
-		void deallocateImpl() override;
+		UCHAR NodeNumber;
 
-		static void* allocateOnNumaNode(std::size_t size, int numaNode);
-		static void* deallocateOnNumaNode(void* ptr, std::size_t size);
-	};
+		GetNumaProcessorNode(processorId, &NodeNumber);
+		return NodeNumber;
+	}
+}
 
-} /* namespace Elpida */
-
-#endif /* ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_ */
+#endif

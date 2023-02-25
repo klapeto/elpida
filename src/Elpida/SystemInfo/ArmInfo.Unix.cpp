@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2021 Ioannis Panagiotopoulos
+ *   Copyright (C) 2023 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-
 //
-// Created by klapeto on 13/6/21.
+// Created by klapeto on 25/2/2023.
 //
 
-#if defined(__aarch64__) || defined(_M_ARM) || defined(__arm__)
+#include "Elpida/Config.hpp"
+
+#if defined(ELPIDA_UNIX) && (defined(__aarch64__) || defined(_M_ARM) || defined(__arm__))
 
 #include "Elpida/SystemInfo/CpuInfo.hpp"
-#include "Elpida/Config.hpp"
 #include "Elpida/SystemInfo/CpuFeature.hpp"
 #include "Elpida/Utilities/OsUtilities.hpp"
 
@@ -74,8 +74,6 @@ namespace Elpida
 
 	CpuInfo::CpuInfo()
 	{
-#if defined(ELPIDA_LINUX)
-
 		try
 		{
 			_frequency = OsUtilities::readSysfsValue("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq") * 1000;
@@ -401,9 +399,6 @@ namespace Elpida
 				_modelName = "Generic Arm processor";
 			}
 		}
-#else
-#error "Unsupported operating system"
-#endif
 	}
 }
 

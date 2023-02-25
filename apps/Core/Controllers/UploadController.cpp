@@ -28,9 +28,9 @@
 #include "Core/Abstractions/Mediator.hpp"
 #include "Core/Commands/UploadResultCommand.hpp"
 #include "Core/Commands/HttpResponseEvent.hpp"
-#include "Utilities/OsUtilities.hpp"
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
+#include <Elpida/Utilities/OsUtilities.hpp>
 
 namespace Elpida
 {

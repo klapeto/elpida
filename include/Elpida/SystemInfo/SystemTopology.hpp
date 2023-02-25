@@ -29,20 +29,15 @@
 
 #include <vector>
 #include <memory>
+
 #include "CpuKind.hpp"
 #include "ProcessorNode.hpp"
-
 
 namespace Elpida
 {
 	class SystemTopology final
 	{
 	public:
-		enum class ProcessPriority
-		{
-			Normal, High,
-		};
-
 		[[nodiscard]]
 		const std::vector<const ProcessorNode*>& getAllProcessors() const
 		{
@@ -83,8 +78,6 @@ namespace Elpida
 		{
 			return _totalPackages;
 		}
-
-		static void setProcessPriority(ProcessPriority priority);
 
 		SystemTopology();
 		~SystemTopology() = default;

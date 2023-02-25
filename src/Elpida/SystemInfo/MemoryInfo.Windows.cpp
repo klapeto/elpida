@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2023  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,23 +18,40 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 13/9/20.
+// Created by klapeto on 25/2/2023.
 //
 
-#ifndef APPS_CORE_UTILITIES_OSUTILITIES_HPP
-#define APPS_CORE_UTILITIES_OSUTILITIES_HPP
+#include "Elpida/Config.hpp"
 
-#include <string>
-#include <vector>
+#if defined(ELPIDA_WINDOWS)
+
+#include "Elpida/SystemInfo/MemoryInfo.hpp"
+
+#include <windows.h>
 
 namespace Elpida
 {
-	class OsUtilities
+
+	std::size_t MemoryInfo::getAvailableFreeMemory() const
 	{
-	public:
-		static void openUrl(const std::string& url);
-		static std::string executeProcess(const std::string& path, const std::vector<std::string>& args);
-	};
+		MEMORYSTATUSEX memStatus;
+		memStatus.dwLength = sizeof(memStatus);
+		GlobalMemoryStatusEx(&memStatus);
+		return memStatus.ullAvailPhys;
+	}
+
+	void MemoryInfo::getValues()
+	{
+		MEMORYSTATUSEX memStatus;
+		memStatus.dwLength = sizeof(memStatus);
+		GlobalMemoryStatusEx(&memStatus);
+		_memorySize = memStatus.ullTotalPhys;
+
+		SYSTEM_INFO sysInfo;
+		GetNativeSystemInfo(&sysInfo);
+		_pageSize = (std::size_t)sysInfo.dwPageSize;
+	}
+
 }
 
-#endif //APPS_CORE_UTILITIES_OSUTILITIES_HPP
+#endif

@@ -28,18 +28,7 @@
 
 #include "Elpida/Config.hpp"
 #include "Elpida/ElpidaException.hpp"
-
-#ifdef ELPIDA_LINUX
-
-#include <dirent.h>
-#include <dlfcn.h>
-
-#else
-#include <windows.h>
-#include <strsafe.h>
-#include <string>
-#include "Elpida/Utilities/OsUtilities.hpp"
-#endif
+#include "Elpida/Utilities/ValueUtilities.hpp"
 
 namespace Elpida
 {
@@ -60,24 +49,11 @@ namespace Elpida
 	SharedLibrary::SharedLibrary(const std::string& libraryPath)
 			: _path(libraryPath)
 	{
-		_handle =
-#ifdef ELPIDA_LINUX
-				dlopen(libraryPath.c_str(), RTLD_LAZY);
-#else
-		LoadLibrary(libraryPath.c_str());
-#endif
+		_handle = loadLibrary(libraryPath);
+
 		if (_handle == nullptr)
 		{
-#ifdef ELPIDA_LINUX
-			auto errorMessage = dlerror();
-#endif
-			throw ElpidaException("Plugin", "Error loading plugin: '" + libraryPath + "' -> " +
-											#ifdef ELPIDA_LINUX
-											(errorMessage != nullptr ? std::string(errorMessage) : std::string(
-													"(Unknown error)")));
-#else
-			OsUtilities::GetLastErrorString());
-#endif
+			throw ElpidaException("Plugin", Vu::Cs("Error loading plugin: '",libraryPath, "' -> ", getLoadError()));
 		}
 	}
 
@@ -85,25 +61,8 @@ namespace Elpida
 	{
 		if (_handle != nullptr)
 		{
-#ifdef ELPIDA_LINUX
-			dlclose(_handle);
-#else
-			FreeLibrary((HMODULE) _handle);
-#endif
+			unloadLibrary(_handle);
 		}
 	}
-
-	void* SharedLibrary::getFunctionPointerImpl(const std::string& functionName) const
-	{
-		return _handle != nullptr ?
-			   #ifdef ELPIDA_LINUX
-			   dlsym(_handle, functionName.c_str())
-			   #else
-			   (void*) GetProcAddress((HMODULE)_handle, functionName.c_str())
-			   #endif
-								  :
-			   nullptr;
-	}
-
 }
 /* namespace Elpida */

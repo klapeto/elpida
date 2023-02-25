@@ -27,11 +27,11 @@
 #include "UiModels/Screens/ScreensModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
 #include "Models/AffinityModel.hpp"
-#include "Utilities/OsUtilities.hpp"
 
 #include <Elpida/Config.hpp>
 #include <Elpida/SystemInfo/ProcessorNode.hpp>
 #include <Elpida/SystemInfo/CpuInfo.hpp>
+#include <Elpida/Utilities/OsUtilities.hpp>
 
 #include <QMessageBox>
 #include <QFileDialog>

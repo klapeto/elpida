@@ -30,12 +30,6 @@
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/Config.hpp"
 
-#ifdef ELPIDA_LINUX
-#include <numa.h>
-#else
-#include <windows.h>
-#endif
-
 namespace Elpida
 {
 
@@ -224,14 +218,7 @@ namespace Elpida
 	{
 		if (_type == ProcessorNodeType::ExecutionUnit)
 		{
-#ifdef ELPIDA_LINUX
-			return numa_node_of_cpu((int)_osIndex);
-#else
-			UCHAR NodeNumber;
-
-			GetNumaProcessorNode(_osIndex, &NodeNumber);
-			return NodeNumber;
-#endif
+			return getNumaNodeIdImpl(static_cast<int>(_osIndex));
 		}
 		else
 		{

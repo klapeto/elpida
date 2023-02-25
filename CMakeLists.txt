@@ -43,7 +43,7 @@ endif("${isSystemDir}" STREQUAL "-1")
 include(GNUInstallDirs)
 
 if (UNIX)
-    set(ELPIDA_LINUX ON)
+    set(ELPIDA_UNIX ON)
     add_compile_options(-Wextra)
     set(CMAKE_MODULE_LINKER_FLAGS -Wl,--no-undefined)
 elseif(MSYS OR MSVC OR MINGW)

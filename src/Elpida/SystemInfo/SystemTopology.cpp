@@ -30,15 +30,6 @@
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
 #include <hwloc.h>
 
-#ifdef ELPIDA_LINUX
-
-#include <sys/resource.h>
-
-#else
-#include <windows.h>
-#include <iostream>
-#endif
-
 namespace Elpida
 {
 	SystemTopology::SystemTopology()
@@ -105,26 +96,6 @@ namespace Elpida
 			processChildNode(child);
 			accumulateCores(child);
 		}
-	}
-
-	void SystemTopology::setProcessPriority(SystemTopology::ProcessPriority priority)
-	{
-#ifdef ELPIDA_LINUX
-		switch (priority)
-		{
-		case ProcessPriority::High:
-			setpriority(PRIO_PROCESS, 0, PRIO_MIN);
-			break;
-		default:
-			setpriority(PRIO_PROCESS, 0, 0);
-			break;
-		}
-#else
-		if(!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
-		{
-			std::cout << "Warning! Failed to set process priority: " << GetLastError() << std::endl;
-		}
-#endif
 	}
 
 	void SystemTopology::processChildNode(const ProcessorNode& node)

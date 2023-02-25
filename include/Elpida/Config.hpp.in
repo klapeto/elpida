@@ -43,7 +43,7 @@
 
 #define ELPIDA_PLUGIN_ABI_VERSION 1
 
-#cmakedefine ELPIDA_LINUX
+#cmakedefine ELPIDA_UNIX
 #cmakedefine ELPIDA_WINDOWS
 #cmakedefine ELPIDA_DEBUG
 

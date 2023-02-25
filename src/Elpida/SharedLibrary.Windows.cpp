@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2023  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,39 +17,42 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * NumaMemory.hpp
- *
- *  Created on: 9 Ιουν 2019
- *      Author: klapeto
- */
+//
+// Created by klapeto on 25/2/2023.
+//
 
-#ifndef ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_
-#define ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_
+#include "Elpida/SharedLibrary.hpp"
 
-#include <cstddef>
+#include "Elpida/Config.hpp"
 
-#include "Memory.hpp"
+#if defined(ELPIDA_WINDOWS)
+#include <windows.h>
+#include <strsafe.h>
+#include <string>
+#include "Elpida/Utilities/OsUtilities.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {
-	class ProcessorNode;
-
-	class NumaMemory final : public Memory
+	void* SharedLibrary::loadLibrary(const std::string& libraryPath)
 	{
-	public:
-		NumaMemory(std::size_t size, const ProcessorNode& processor);
-		~NumaMemory() override;
-	private:
-		const ProcessorNode& _processor;
-	protected:
-		void allocateImpl() override;
-		void deallocateImpl() override;
+		return LoadLibrary(libraryPath.c_str());
+	}
 
-		static void* allocateOnNumaNode(std::size_t size, int numaNode);
-		static void* deallocateOnNumaNode(void* ptr, std::size_t size);
-	};
+	std::string SharedLibrary::getLoadError()
+	{
+		return OsUtilities::GetLastErrorString();
+	}
 
-} /* namespace Elpida */
+	void SharedLibrary::unloadLibrary(void* libraryHandle)
+	{
+		FreeLibrary((HMODULE)libraryHandle);
+	}
 
-#endif /* ELPIDA_COMMONTASKS_NUMAMEMORY_HPP_ */
+	void* SharedLibrary::getFunctionPointerImpl(void* libraryHandle, const std::string& functionName)
+	{
+		return (void*)GetProcAddress((HMODULE)libraryHandle, functionName.c_str());
+	}
+}
+
+#endif

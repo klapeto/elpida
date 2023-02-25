@@ -3,8 +3,12 @@ set(ELPIDA_SOURCES
         EventSubscription.cpp
         OffThreadExecutor.cpp
         SharedLibrary.cpp
+        SharedLibrary.Windows.cpp
+        SharedLibrary.Unix.cpp
         SharedLibraryLoader.cpp
         Timer.cpp
+        Timer.Unix.cpp
+        Timer.Windows.cpp
         EventsSubscriber.cpp
         ServiceProvider.cpp
         SharedStructuresProvider.cpp
@@ -13,17 +17,24 @@ set(ELPIDA_SOURCES
         OperationCanceledException.cpp
 
         SystemInfo/ProcessorNode.cpp
+        SystemInfo/ProcessorNode.Unix.cpp
+        SystemInfo/ProcessorNode.Windows.cpp
         SystemInfo/SystemTopology.cpp
         SystemInfo/CpuFeature.cpp
         SystemInfo/CpuInfo.cpp
         SystemInfo/CpuCache.cpp
         SystemInfo/MemoryInfo.cpp
+        SystemInfo/MemoryInfo.Unix.cpp
+        SystemInfo/MemoryInfo.Windows.cpp
         SystemInfo/OsInfo.cpp
+        SystemInfo/OsInfo.Unix.cpp
+        SystemInfo/OsInfo.Windows.cpp
         SystemInfo/TimingInfo.cpp
         SystemInfo/TargetTimeCalculator.cpp
 
         SystemInfo/X86Info.cpp
-        SystemInfo/ArmInfo.cpp
+        SystemInfo/ArmInfo.Unix.cpp
+        SystemInfo/ArmInfo.Windows.cpp
 
         Utilities/Logging/Logger.cpp
         Utilities/Logging/LogAppender.cpp
@@ -32,9 +43,15 @@ set(ELPIDA_SOURCES
         Utilities/Plugin/Plugin.cpp
         Utilities/Plugin/BenchmarksContainerPlugin.cpp
         Utilities/Uuid.cpp
+        Utilities/Uuid.Unix.cpp
+        Utilities/Uuid.Windows.cpp
         Utilities/Memory.cpp
         Utilities/NumaMemory.cpp
+        Utilities/NumaMemory.Unix.cpp
+        Utilities/NumaMemory.Windows.cpp
         Utilities/OsUtilities.cpp
+        Utilities/OsUtilities.Unix.cpp
+        Utilities/OsUtilities.Windows.cpp
         Utilities/Statistics.cpp
 
         CommonTasks/AllocateMemory/AllocateMemory.cpp
@@ -87,7 +104,7 @@ set(ELPIDA_SOURCES
         Engine/Result/BenchmarkScore.cpp
         Engine/Result/BenchmarkScoreSpecification.cpp
         Engine/Calculators/Benchmark/AverageThroughputScoreCalculator.cpp
-)
+        )
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 

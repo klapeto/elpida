@@ -29,36 +29,8 @@
 
 #include "Elpida/Config.hpp"
 
-#ifdef ELPIDA_WINDOWS
-#include <windows.h>
-#endif
-
 namespace Elpida
 {
-
-#ifdef ELPIDA_WINDOWS
-	static inline LARGE_INTEGER getPerformanceFrequency()
-	{
-		LARGE_INTEGER frequency;
-		QueryPerformanceFrequency(&frequency);
-		return frequency;
-	}
-#endif
-
-	Timer::time_point Timer::now()
-	{
-#ifdef ELPIDA_LINUX
-		return Timer::Clock::now();
-#else
-		static LARGE_INTEGER frequency = getPerformanceFrequency();
-		LARGE_INTEGER time;
-		QueryPerformanceCounter(&time);
-		time.QuadPart *= period::den;
-		time.QuadPart /= frequency.QuadPart;
-		return time_point(duration(time.QuadPart));
-#endif
-	}
-
 	std::string Timer::timestampToString(const Timer::time_point& time, const std::string& format)
 	{
 		std::time_t tt = Clock::to_time_t(time);

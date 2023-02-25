@@ -131,6 +131,8 @@ namespace Elpida
 		void loadChildren(const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 		void loadSiblings();
 		void loadParents(ProcessorNode* parent);
+
+		static int getNumaNodeIdImpl(int processorId);
 		friend class SystemTopology;
 	};
 
