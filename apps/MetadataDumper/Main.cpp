@@ -140,7 +140,7 @@ int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configuration
 
 	int option_index = 0;
 	int c = 0;
-	while ((c = getopt_long(argC, argV, "v:h:d:", options, &option_index)) != -1)
+	while ((c = getopt_long(argC, argV, "vhd:", options, &option_index)) != -1)
 	{
 		switch (c)
 		{

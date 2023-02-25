@@ -42,7 +42,7 @@ namespace Elpida
 			_name(std::move(name)),
 			_scoreCalculator(std::move(scoreCalculator))
 	{
-		_id = !uuid.empty() ? std::move(uuid) : _name + Uuid::create();
+		_id = !uuid.empty() ? std::move(uuid) : Uuid::create();
 	}
 
 	std::vector<BenchmarkTaskInstance> Benchmark::createNewTasks(const TaskAffinity& affinity,

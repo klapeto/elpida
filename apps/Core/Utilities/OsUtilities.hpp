@@ -25,6 +25,7 @@
 #define APPS_CORE_UTILITIES_OSUTILITIES_HPP
 
 #include <string>
+#include <vector>
 
 namespace Elpida
 {
@@ -32,6 +33,7 @@ namespace Elpida
 	{
 	public:
 		static void openUrl(const std::string& url);
+		static std::string executeProcess(const std::string& path, const std::vector<std::string>& args);
 	};
 }
 

@@ -37,12 +37,14 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]] const std::string& getComponent() const
+		[[nodiscard]]
+		const std::string& getComponent() const
 		{
 			return _component;
 		}
 
-		[[nodiscard]] const char* what() const noexcept override
+		[[nodiscard]]
+		const char* what() const noexcept override
 		{
 			return _message.c_str();
 		}
