@@ -27,9 +27,9 @@
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
 #include "Elpida/Utilities/OsUtilities.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 #include "Elpida/Engine/Runner/DefaultTaskRunner.hpp"
-#include "Elpida/ServiceProvider.hpp"
+#include "Elpida/Engine/ServiceProvider.hpp"
 #include "Elpida/SystemInfo/TimingInfo.hpp"
 
 namespace Elpida

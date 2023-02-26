@@ -23,20 +23,16 @@
 
 #include "Elpida/Engine/Runner/BenchmarkRunner.hpp"
 
-#include "Elpida/Timer.hpp"
 #include "Elpida/Engine/Task/Task.hpp"
 #include "Elpida/Engine/Calculators/BenchmarkScoreCalculator.hpp"
-#include "Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp"
-#include "Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp"
 #include "Elpida/Engine/Data/DataAdapter.hpp"
 #include "Elpida/Engine/Benchmark/Benchmark.hpp"
-#include "Elpida/ServiceProvider.hpp"
+#include "Elpida/Engine/ServiceProvider.hpp"
 #include "Elpida/SystemInfo/TimingInfo.hpp"
 #include "Elpida/Utilities/Statistics.hpp"
 
 #include "Elpida/Engine/Task/ExecutionParameters.hpp"
 #include "Elpida/Engine/Runner/MicroTaskRunner.hpp"
-#include "Elpida/Engine/Runner/DefaultTaskRunner.hpp"
 
 #include <cstring>
 #include <thread>
@@ -72,8 +68,6 @@ namespace Elpida
 			if (_mustStop) break;
 
 			const auto& benchmark = benchmarkRequest.getBenchmark();
-			raiseBenchmarkStarted(benchmark);
-
 			auto benchmarkTaskInstances =
 					benchmark.createNewTasks(taskAffinity, benchmarkRequest.getConfiguration(), _serviceProvider);
 			try
@@ -89,8 +83,6 @@ namespace Elpida
 					auto& currentTask = taskInstance.getTask();
 					auto& taskBuilder = taskInstance.getTaskBuilder();
 
-					raiseTaskStarted(taskBuilder);
-
 					auto iterations = currentTask.getIterationsToRun();
 
 					std::vector<TaskResult> currentTaskResults;
@@ -99,8 +91,6 @@ namespace Elpida
 					for (auto i = 0u; i < iterations; ++i)
 					{
 						if (_mustStop) break;
-
-						raiseTaskIterationStarted(taskBuilder, i);
 
 						iterationTaskData = getTaskDataCopy(taskData);
 
@@ -112,8 +102,6 @@ namespace Elpida
 						{
 							currentTaskResults.push_back(result);
 						}
-
-						raiseTaskIterationEnded(taskBuilder, i);
 					}
 					taskData = std::move(iterationTaskData);
 
@@ -138,11 +126,7 @@ namespace Elpida
 							finalTaskResults.push_back(std::move(processedTaskResult));
 						}
 					}
-
-					raiseTasksEnded(taskBuilder);
 				}
-
-				raiseBenchmarkEnded(benchmark);
 
 				auto score = benchmark.getScoreCalculator().calculate(benchmark, finalTaskResults);
 				benchmarkResults.emplace_back(benchmark, std::move(finalTaskResults), taskAffinity, score);
@@ -189,41 +173,4 @@ namespace Elpida
 
 		return result;
 	}
-
-	void BenchmarkRunner::raiseBenchmarkStarted(const Benchmark& benchmark)
-	{
-		BenchmarkEventArgs args(benchmark);
-		benchmarkStarted.raise(args);
-	}
-
-	void BenchmarkRunner::raiseBenchmarkEnded(const Benchmark& benchmark)
-	{
-		BenchmarkEventArgs args(benchmark);
-		benchmarkEnded.raise(args);
-	}
-
-	void BenchmarkRunner::raiseTaskStarted(const TaskBuilder& taskBuilder)
-	{
-		TaskEventArgs args(taskBuilder);
-		taskStarted.raise(args);
-	}
-
-	void BenchmarkRunner::raiseTasksEnded(const TaskBuilder& taskBuilder)
-	{
-		TaskEventArgs args(taskBuilder);
-		taskEnded.raise(args);
-	}
-
-	void BenchmarkRunner::raiseTaskIterationStarted(const TaskBuilder& taskBuilder, size_t iteration)
-	{
-		TaskEventArgs args(taskBuilder, iteration);
-		taskIterationStarted.raise(args);
-	}
-
-	void BenchmarkRunner::raiseTaskIterationEnded(const TaskBuilder& taskBuilder, size_t iteration)
-	{
-		TaskEventArgs args(taskBuilder, iteration);
-		taskIterationEnded.raise(args);
-	}
-
 }

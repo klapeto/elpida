@@ -17,31 +17,22 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-/*
- * SharedLibraryLoader.cpp
- *
- *  Created on: 2 Ιουλ 2018
- *      Author: klapeto
- */
+//
+// Created by klapeto on 8/6/20.
+//
 
-#include "Elpida/SharedLibraryLoader.hpp"
+#include "Elpida/Utilities/EventsSubscriber.hpp"
+
+#include "Elpida/Utilities/EventSubscriptionBase.hpp"
 
 namespace Elpida
 {
 
-	const SharedLibrary& SharedLibraryLoader::load(const std::string& path)
+	EventsSubscriber::~EventsSubscriber()
 	{
-		return _loadedLibraries.emplace(path, SharedLibrary(path)).first->second;
+		for (auto& subscription: _subscriptions)
+		{
+			subscription->unsubscribe();
+		}
 	}
-
-	void SharedLibraryLoader::unload(const std::string& path)
-	{
-		_loadedLibraries.erase(path);
-	}
-
-	void SharedLibraryLoader::unloadAll()
-	{
-		_loadedLibraries.clear();
-	}
-
-} /* namespace Elpida */
+}

@@ -52,6 +52,6 @@ endif()
 
 
 target_include_directories(imageBenchmarks PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(imageBenchmarks elpida png)
+target_link_libraries(imageBenchmarks elpida-engine elpida-commonTasks png)
 
 install(TARGETS imageBenchmarks DESTINATION ${ELPIDA_TASK_BATCH_INSTALL_DIR})

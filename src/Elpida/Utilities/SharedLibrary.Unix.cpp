@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2023  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,42 +18,38 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 19/4/20.
+// Created by klapeto on 25/2/2023.
 //
 
-#ifndef INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_TASKEVENTARGS_HPP
-#define INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_TASKEVENTARGS_HPP
+#include "Elpida/Utilities/SharedLibrary.hpp"
 
-#include <unistd.h>
-#include <string>
+#include "Elpida/Config.hpp"
+
+#if defined(ELPIDA_UNIX)
+#include <dlfcn.h>
 
 namespace Elpida
 {
-	class TaskSpecification;
-	class TaskBuilder;
-
-	class TaskEventArgs
+	void* SharedLibrary::loadLibrary(const std::string& libraryPath)
 	{
-	public:
+		return dlopen(libraryPath.c_str(), RTLD_LAZY);
+	}
 
-		[[nodiscard]]
-		const TaskBuilder& getTaskBuilder() const
-		{
-			return _taskBuilder;
-		}
+	std::string SharedLibrary::getLoadError()
+	{
+		auto error = dlerror();
+		return {error ? error : "(Unknown error)"};
+	}
 
-		[[nodiscard]]
-		size_t getIteration() const
-		{
-			return _iteration;
-		}
+	void SharedLibrary::unloadLibrary(void* libraryHandle)
+	{
+		dlclose(libraryHandle);
+	}
 
-		explicit TaskEventArgs(const TaskBuilder& taskBuilder, size_t iteration = 1);
-		virtual ~TaskEventArgs() = default;
-	private:
-		const TaskBuilder& _taskBuilder;
-		size_t _iteration;
-	};
+	void* SharedLibrary::getFunctionPointerImpl(void* libraryHandle, const std::string& functionName)
+	{
+		return dlsym(libraryHandle, functionName.c_str());
+	}
 }
 
-#endif //INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_TASKEVENTARGS_HPP
+#endif

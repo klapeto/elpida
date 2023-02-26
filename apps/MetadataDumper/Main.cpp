@@ -41,7 +41,7 @@
 #include <Elpida/SystemInfo/MemoryInfo.hpp>
 #include <Elpida/SystemInfo/SystemTopology.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
-#include <Elpida/ServiceProvider.hpp>
+#include "Elpida/Engine/ServiceProvider.hpp"
 #include <Elpida/Utilities/Logging/LogAppender.hpp>
 
 

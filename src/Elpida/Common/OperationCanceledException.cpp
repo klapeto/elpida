@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,21 +18,12 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 8/6/20.
+// Created by klapeto on 13/2/21.
 //
 
-#include "Elpida/EventsSubscriber.hpp"
-
-#include "Elpida/EventSubscriptionBase.hpp"
+#include "Elpida/Common/OperationCanceledException.hpp"
 
 namespace Elpida
 {
 
-	EventsSubscriber::~EventsSubscriber()
-	{
-		for (auto& subscription: _subscriptions)
-		{
-			subscription->unsubscribe();
-		}
-	}
 }

@@ -25,18 +25,17 @@
 #define INCLUDE_ELPIDA_ENGINE_BENCHMARK_HPP
 
 #include <vector>
+#include <string>
+#include <memory>
+
 #include "BenchmarkTaskInstance.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
 #include "Elpida/Engine/Result/BenchmarkScoreSpecification.hpp"
-#include <string>
-#include <memory>
 
 namespace Elpida
 {
 	class TaskAffinity;
-
 	class BenchmarkConfiguration;
-
 	class BenchmarkScoreCalculator;
 
 	class Benchmark final

@@ -29,7 +29,7 @@
 #include "TaskConfiguration.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 
 namespace Elpida
 {

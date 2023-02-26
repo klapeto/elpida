@@ -28,12 +28,12 @@
 
 #include "Benchmarks/Memory/WorkingSetSizes.hpp"
 
-#include <Elpida/ElpidaException.hpp>
+#include "Elpida/Common/ElpidaException.hpp"
 #include <Elpida/Utilities/Duration.hpp>
 #include <Elpida/SystemInfo/MemoryInfo.hpp>
 #include <Elpida/SystemInfo/CpuInfo.hpp>
-#include <Elpida/ServiceProvider.hpp>
-#include <Elpida/Macros.hpp>
+#include "Elpida/Engine/ServiceProvider.hpp"
+#include "Elpida/Utilities/Macros.hpp"
 
 namespace Elpida
 {

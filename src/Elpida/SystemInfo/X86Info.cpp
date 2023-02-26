@@ -25,12 +25,11 @@
 
 #include "Elpida/SystemInfo/CpuInfo.hpp"
 
-#include "Elpida/Timer.hpp"
+#include "Elpida/Utilities/Timer.hpp"
 #include "Elpida/Utilities/OsUtilities.hpp"
 
 #include <thread>
 #include <unordered_map>
-#include <unordered_set>
 #include <functional>
 
 #ifdef _MSC_VER

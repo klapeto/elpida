@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2021  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,36 +17,31 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-//
-// Created by klapeto on 13/2/21.
-//
+/*
+ * SharedLibraryLoader.cpp
+ *
+ *  Created on: 2 Ιουλ 2018
+ *      Author: klapeto
+ */
 
-#ifndef SRC_ELPIDA_OPERATIONCANCELEDEXCEPTION_HPP
-#define SRC_ELPIDA_OPERATIONCANCELEDEXCEPTION_HPP
-
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Utilities/SharedLibraryLoader.hpp"
 
 namespace Elpida
 {
-	class OperationCanceledException : public ElpidaException
+
+	const SharedLibrary& SharedLibraryLoader::load(const std::string& path)
 	{
+		return _loadedLibraries.emplace(path, SharedLibrary(path)).first->second;
+	}
 
-	public:
-		OperationCanceledException() = default;
+	void SharedLibraryLoader::unload(const std::string& path)
+	{
+		_loadedLibraries.erase(path);
+	}
 
-		explicit OperationCanceledException(std::string message)
-			: ElpidaException(std::move(message))
-		{
+	void SharedLibraryLoader::unloadAll()
+	{
+		_loadedLibraries.clear();
+	}
 
-		}
-
-		OperationCanceledException(std::string component, std::string message)
-			: ElpidaException(std::move(component), std::move(message))
-		{
-
-		}
-		~OperationCanceledException() override = default;
-	};
-}
-
-#endif //SRC_ELPIDA_OPERATIONCANCELEDEXCEPTION_HPP
+} /* namespace Elpida */

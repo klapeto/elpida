@@ -22,8 +22,14 @@
 //
 
 #include "Elpida/Engine/Data/RawTaskData.hpp"
+#include "Elpida/SystemInfo/ProcessorNode.hpp"
 
 namespace Elpida
 {
 
+    RawTaskData::RawTaskData(size_t size, const ProcessorNode &processor)
+            : _memory(size, processor.getNumaNodeId()), _processorNode(processor)
+    {
+        _memory.allocate();
+    }
 }

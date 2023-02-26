@@ -25,7 +25,7 @@
 #define APPS_QT_CONTROLLERS_BENCHMARKRUNNERCONTROLLER_HPP
 
 #include <Elpida/Engine/Runner/BenchmarkRunner.hpp>
-#include <Elpida/OffThreadExecutor.hpp>
+#include "Elpida/Utilities/OffThreadExecutor.hpp"
 #include <Elpida/Utilities/Reference.hpp>
 #include "Core/Abstractions/CommandHandler.hpp"
 

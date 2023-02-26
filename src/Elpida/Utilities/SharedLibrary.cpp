@@ -17,18 +17,52 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-//
-// Created by klapeto on 19/4/20.
-//
+/*
+ * SharedLibrary.cpp
+ *
+ *  Created on: 26 Σεπ 2018
+ *      Author: klapeto
+ */
 
-#include "Elpida/Engine/Runner/EventArgs/TaskEventArgs.hpp"
+#include "Elpida/Utilities/SharedLibrary.hpp"
+
+#include "Elpida/Config.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
+#include "Elpida/Utilities/ValueUtilities.hpp"
 
 namespace Elpida
 {
 
-	TaskEventArgs::TaskEventArgs(const TaskBuilder& taskBuilder, size_t iteration)
-		:  _taskBuilder(taskBuilder), _iteration(iteration)
+	SharedLibrary::SharedLibrary(SharedLibrary&& other) noexcept
 	{
+		this->_handle = other._handle;
+		other._handle = nullptr;
+	}
 
+	SharedLibrary& SharedLibrary::operator=(SharedLibrary&& other) noexcept
+	{
+		this->_handle = other._handle;
+		other._handle = nullptr;
+		return *this;
+	}
+
+	SharedLibrary::SharedLibrary(const std::string& libraryPath)
+			: _path(libraryPath)
+	{
+		_handle = loadLibrary(libraryPath);
+
+		if (_handle == nullptr)
+		{
+			throw ElpidaException("Plugin", Vu::Cs("Error loading plugin: '",libraryPath, "' -> ", getLoadError()));
+		}
+	}
+
+	SharedLibrary::~SharedLibrary()
+	{
+		if (_handle != nullptr)
+		{
+			unloadLibrary(_handle);
+		}
 	}
 }
+/* namespace Elpida */

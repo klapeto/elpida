@@ -29,7 +29,7 @@
 
 #include <cstddef>
 
-#include "Memory.hpp"
+#include "Elpida/Utilities/Memory.hpp"
 
 namespace Elpida
 {
@@ -38,10 +38,10 @@ namespace Elpida
 	class NumaMemory final : public Memory
 	{
 	public:
-		NumaMemory(std::size_t size, const ProcessorNode& processor);
+		NumaMemory(std::size_t size, int numaNode);
 		~NumaMemory() override;
 	private:
-		const ProcessorNode& _processor;
+		int _numaNode;
 	protected:
 		void allocateImpl() override;
 		void deallocateImpl() override;

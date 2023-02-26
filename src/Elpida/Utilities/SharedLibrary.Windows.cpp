@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2021  Ioannis Panagiotopoulos
+ *   Copyright (C) 2023  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,12 +18,41 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 13/2/21.
+// Created by klapeto on 25/2/2023.
 //
 
-#include "Elpida/OperationCanceledException.hpp"
+#include "Elpida/Utilities/SharedLibrary.hpp"
+
+#include "Elpida/Config.hpp"
+
+#if defined(ELPIDA_WINDOWS)
+#include <windows.h>
+#include <strsafe.h>
+#include <string>
+#include "Elpida/Utilities/OsUtilities.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {
+	void* SharedLibrary::loadLibrary(const std::string& libraryPath)
+	{
+		return LoadLibrary(libraryPath.c_str());
+	}
 
+	std::string SharedLibrary::getLoadError()
+	{
+		return OsUtilities::GetLastErrorString();
+	}
+
+	void SharedLibrary::unloadLibrary(void* libraryHandle)
+	{
+		FreeLibrary((HMODULE)libraryHandle);
+	}
+
+	void* SharedLibrary::getFunctionPointerImpl(void* libraryHandle, const std::string& functionName)
+	{
+		return (void*)GetProcAddress((HMODULE)libraryHandle, functionName.c_str());
+	}
 }
+
+#endif

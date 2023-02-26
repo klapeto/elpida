@@ -25,32 +25,29 @@
 #define ELPIDA_SHAREDSTRUCTURESPROVIDER_HPP
 
 #include <memory>
-#include "Engine/Task/TaskSpecification.hpp"
-#include "Engine/Calculators/BenchmarkScoreCalculator.hpp"
 #include <unordered_map>
+
+#include "Task/TaskSpecification.hpp"
+#include "Calculators/BenchmarkScoreCalculator.hpp"
 
 namespace Elpida
 {
 	class SharedStructuresProvider final
 	{
 	public:
-		template<typename T>
-		std::shared_ptr<TaskSpecification> getSharedTaskSpecification() const
-		{
-			auto id = std::string(T::Uuid);
-			return _defaultTasks.at(id);
-		}
-
-		std::shared_ptr<BenchmarkScoreCalculator> getAverageBenchmarkScoreCalculator() const
+		[[nodiscard]]
+        std::shared_ptr<BenchmarkScoreCalculator> getAverageBenchmarkScoreCalculator() const
 		{
 			return _averageScoreCalculator;
 		}
 
+        [[nodiscard]]
 		std::shared_ptr<BenchmarkScoreCalculator> getAccumulativeBenchmarkScoreCalculator() const
 		{
 			return _accumulativeScoreCalculator;
 		}
 
+        [[nodiscard]]
 		std::shared_ptr<BenchmarkScoreCalculator> getAverageThroughputScoreCalculator() const
 		{
 			return _averageThroughputScoreCalculator;
@@ -60,7 +57,6 @@ namespace Elpida
 
 		~SharedStructuresProvider() = default;
 	private:
-		std::unordered_map<std::string, std::shared_ptr<TaskSpecification>> _defaultTasks;
 		std::shared_ptr<BenchmarkScoreCalculator> _averageScoreCalculator;
 		std::shared_ptr<BenchmarkScoreCalculator> _accumulativeScoreCalculator;
 		std::shared_ptr<BenchmarkScoreCalculator> _averageThroughputScoreCalculator;

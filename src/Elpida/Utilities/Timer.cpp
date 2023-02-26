@@ -18,15 +18,26 @@
  *************************************************************************/
 
 /*
- * ElpidaException.cpp
+ * Timer.cpp
  *
- *  Created on: 13 Μαρ 2018
+ *  Created on: 21 Μαρ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/ElpidaException.hpp"
+#include <iomanip>
+#include "Elpida/Utilities/Timer.hpp"
+
+#include "Elpida/Config.hpp"
 
 namespace Elpida
 {
+	std::string Timer::timestampToString(const Timer::time_point& time, const std::string& format)
+	{
+		std::time_t tt = Clock::to_time_t(time);
+		std::tm tm = *std::gmtime(&tt);
+		std::stringstream ss;
+		ss << std::put_time(&tm, format.c_str());
+		return ss.str();
+	}
 
 } /* namespace Elpida */

@@ -81,4 +81,4 @@ endif()
 
 add_subdirectory(extern)
 add_subdirectory(src)
-add_subdirectory(apps)
+#add_subdirectory(apps)

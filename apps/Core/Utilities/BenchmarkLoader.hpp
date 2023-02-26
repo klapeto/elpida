@@ -28,9 +28,9 @@
 #include <vector>
 #include <memory>
 
-#include <Elpida/SharedLibrary.hpp>
+#include "Elpida/Utilities/SharedLibrary.hpp"
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/SharedLibraryLoader.hpp>
+#include "Elpida/Utilities/SharedLibraryLoader.hpp"
 
 namespace Elpida
 {

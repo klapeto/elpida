@@ -22,7 +22,7 @@
 
 #include <QWidget>
 #include <unordered_map>
-#include <Elpida/EventsSubscriber.hpp>
+#include "Elpida/Utilities/EventsSubscriber.hpp"
 
 class QHBoxLayout;
 class QButtonGroup;

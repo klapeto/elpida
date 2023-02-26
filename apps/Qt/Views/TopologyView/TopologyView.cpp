@@ -29,7 +29,7 @@
 #include <Elpida/SystemInfo/SystemTopology.hpp>
 #include <Elpida/SystemInfo/ProcessorNode.hpp>
 #include <Elpida/Utilities/ValueUtilities.hpp>
-#include <Elpida/ElpidaException.hpp>
+#include "Elpida/Common/ElpidaException.hpp"
 #include "Views/TopologyNodeFrame/TopologyNodeFrame.hpp"
 #include "Models/AffinityModel.hpp"
 

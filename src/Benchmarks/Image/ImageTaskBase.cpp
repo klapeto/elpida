@@ -24,7 +24,7 @@
 #include "Benchmarks/Image/ImageTaskBase.hpp"
 
 #include <Elpida/Config.hpp>
-#include <Elpida/ElpidaException.hpp>
+#include "Elpida/Common/ElpidaException.hpp"
 #include <stdexcept>
 
 namespace Elpida

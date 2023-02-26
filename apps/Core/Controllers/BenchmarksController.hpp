@@ -28,7 +28,7 @@
 #include "Models/Abstractions/ListModel/ListModel.hpp"
 #include "Models/Benchmarks/BenchmarkGroup.hpp"
 #include "Models/Abstractions/AssociativeModel/AssociativeModel.hpp"
-#include <Elpida/SharedLibraryLoader.hpp>
+#include "Elpida/Utilities/SharedLibraryLoader.hpp"
 
 namespace Elpida
 {

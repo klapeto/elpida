@@ -27,12 +27,12 @@
 #ifndef TESTS_EVENT_TEST_CPP_
 #define TESTS_EVENT_TEST_CPP_
 
-#include "Elpida/Event.hpp"
+#include "Elpida/Utilities/Event.hpp"
 
 #include <gtest/gtest.h>
 #include <string>
 
-#include "Elpida/EventSubscription.hpp"
+#include "Elpida/Utilities/EventSubscription.hpp"
 
 using namespace Elpida;
 

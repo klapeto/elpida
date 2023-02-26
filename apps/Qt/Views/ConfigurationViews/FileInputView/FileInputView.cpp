@@ -21,7 +21,7 @@
 #include "ui_FileInputView.h"
 
 #include <Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp>
-#include <Elpida/ElpidaException.hpp>
+#include "Elpida/Common/ElpidaException.hpp"
 #include <Elpida/Config.hpp>
 
 #include <QFileDialog>

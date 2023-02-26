@@ -24,7 +24,7 @@
  *      Author: klapeto
  */
 
-#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
+#include "Elpida/Engine/BenchmarksContainerPlugin.hpp"
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/Calculators/Benchmark/AccumulativeScoreCalculator.hpp>
 #include <Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp>
@@ -33,7 +33,7 @@
 #include <Elpida/Engine/Calculators/Task/ExclusiveHarmonicMeanTaskResultCalculator.hpp>
 #include <Elpida/SystemInfo/ProcessorNode.hpp>
 #include <Elpida/SystemInfo/CpuInfo.hpp>
-#include <Elpida/ServiceProvider.hpp>
+#include "Elpida/Engine/ServiceProvider.hpp"
 #include <Elpida/Engine/Calculators/TaskResultCalculator.hpp>
 #include <Elpida/Utilities/Statistics.hpp>
 

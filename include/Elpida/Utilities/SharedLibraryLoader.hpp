@@ -18,15 +18,45 @@
  *************************************************************************/
 
 /*
- * EventSubscription.cpp
+ * SharedLibraryLoader.hpp
  *
- *  Created on: 13 Οκτ 2018
+ *  Created on: 2 Ιουλ 2018
  *      Author: klapeto
  */
 
-#include "Elpida/EventSubscription.hpp"
+#ifndef ELPIDA_SHAREDLIBRARYLOADER_HPP_
+#define ELPIDA_SHAREDLIBRARYLOADER_HPP_
+
+#include <string>
+#include <unordered_map>
+
+#include "SharedLibrary.hpp"
+#include "Elpida/Config.hpp"
 
 namespace Elpida
 {
 
+	class SharedLibraryLoader final
+	{
+	public:
+		static inline constexpr const char* LibrariesExtension{ELPIDA_SHARED_LIBRARY_EXTENSION};
+
+		const std::unordered_map<std::string, SharedLibrary>& getLoadedLibraries() const
+		{
+			return _loadedLibraries;
+		}
+
+		const SharedLibrary& load(const std::string& path);
+		void unload(const std::string& path);
+
+		void unloadAll();
+
+		SharedLibraryLoader() = default;
+		~SharedLibraryLoader() = default;
+	protected:
+		std::unordered_map<std::string, SharedLibrary> _loadedLibraries;
+	};
+
 } /* namespace Elpida */
+
+#endif /* ELPIDA_SHAREDLIBRARYLOADER_HPP_ */

@@ -17,37 +17,16 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-//
-// Created by klapeto on 19/4/20.
-//
+/*
+ * ObjectEvent.cpp
+ *
+ *  Created on: 13 Οκτ 2018
+ *      Author: klapeto
+ */
 
-#ifndef INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_BENCHMARKEVENTARGS_HPP
-#define INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_BENCHMARKEVENTARGS_HPP
-
+#include "Elpida/Utilities/Event.hpp"
 
 namespace Elpida
 {
-	class Benchmark;
 
-	class BenchmarkEventArgs
-	{
-	public:
-
-		[[nodiscard]] const Benchmark& getBenchmark() const
-		{
-			return _benchmark;
-		}
-
-		explicit BenchmarkEventArgs(const Benchmark& benchmark)
-			: _benchmark(benchmark)
-		{
-
-		}
-		virtual ~BenchmarkEventArgs() = default;
-	private:
-		const Benchmark& _benchmark;
-	};
-}
-
-
-#endif //INCLUDE_ELPIDA_ENGINE_RUNNER_EVENTARGS_BENCHMARKEVENTARGS_HPP
+} /* namespace Elpida */

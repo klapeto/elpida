@@ -27,7 +27,7 @@
 #ifndef ELPIDA_EVENT_HPP_
 #define ELPIDA_EVENT_HPP_
 
-#include "Elpida/EventSubscription.hpp"
+#include "EventSubscription.hpp"
 #include <mutex>
 #include <list>
 

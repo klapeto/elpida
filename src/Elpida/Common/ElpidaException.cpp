@@ -17,13 +17,16 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-//
-// Created by klapeto on 12/4/20.
-//
+/*
+ * ElpidaException.cpp
+ *
+ *  Created on: 13 Μαρ 2018
+ *      Author: klapeto
+ */
 
-#include "Elpida/Utilities/Plugin/Plugin.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 
 namespace Elpida
 {
 
-}
+} /* namespace Elpida */

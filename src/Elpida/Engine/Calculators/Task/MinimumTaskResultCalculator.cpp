@@ -24,7 +24,7 @@
 #include "Elpida/Engine/Calculators/Task/MinimumTaskResultCalculator.hpp"
 
 #include "Elpida/Config.hpp"
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 #include "Elpida/Utilities/Statistics.hpp"
 
 namespace Elpida

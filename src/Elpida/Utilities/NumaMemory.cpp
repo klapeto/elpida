@@ -32,8 +32,8 @@
 
 namespace Elpida
 {
-	NumaMemory::NumaMemory(std::size_t size, const ProcessorNode& processor)
-		: Memory(size), _processor(processor)
+	NumaMemory::NumaMemory(std::size_t size, int numaNode)
+		: Memory(size), _numaNode(numaNode)
 	{
 	}
 
@@ -44,7 +44,7 @@ namespace Elpida
 
 	void NumaMemory::allocateImpl()
 	{
-		_pointer = (pData)allocateOnNumaNode(_size, _processor.getNumaNodeId());
+		_pointer = (pData)allocateOnNumaNode(_size, _numaNode);
 		std::memset(_pointer, 0, _size);
 	}
 

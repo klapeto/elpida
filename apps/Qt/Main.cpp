@@ -55,7 +55,7 @@
 #include <Elpida/SystemInfo/MemoryInfo.hpp>
 #include <Elpida/SystemInfo/OsInfo.hpp>
 #include <Elpida/SystemInfo/TimingInfo.hpp>
-#include <Elpida/ServiceProvider.hpp>
+#include "Elpida/Engine/ServiceProvider.hpp"
 #include <Elpida/Utilities/OsUtilities.hpp>
 
 #include <QtWidgets/QScrollArea>

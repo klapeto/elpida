@@ -21,34 +21,18 @@
 // Created by klapeto on 25/2/2023.
 //
 
-#include "Elpida/SharedLibrary.hpp"
-
 #include "Elpida/Config.hpp"
 
 #if defined(ELPIDA_UNIX)
-#include <dlfcn.h>
+
+#include "Elpida/Utilities/Timer.hpp"
 
 namespace Elpida
 {
-	void* SharedLibrary::loadLibrary(const std::string& libraryPath)
-	{
-		return dlopen(libraryPath.c_str(), RTLD_LAZY);
-	}
 
-	std::string SharedLibrary::getLoadError()
+	Timer::time_point Timer::now()
 	{
-		auto error = dlerror();
-		return {error ? error : "(Unknown error)"};
-	}
-
-	void SharedLibrary::unloadLibrary(void* libraryHandle)
-	{
-		dlclose(libraryHandle);
-	}
-
-	void* SharedLibrary::getFunctionPointerImpl(void* libraryHandle, const std::string& functionName)
-	{
-		return dlsym(libraryHandle, functionName.c_str());
+		return Timer::Clock::now();
 	}
 }
 

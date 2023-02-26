@@ -24,7 +24,7 @@
 #include "QCustomApplication.hpp"
 
 #include <QMessageBox>
-#include <Elpida/ElpidaException.hpp>
+#include "Elpida/Common/ElpidaException.hpp"
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include "Core/Abstractions/Mediator.hpp"

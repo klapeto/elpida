@@ -25,7 +25,7 @@
 #define INCLUDE_ELPIDA_ENGINE_RUNNER_DEFAULTTASKRUNNER_HPP
 
 #include "Elpida/Utilities/Duration.hpp"
-#include "Elpida/Timer.hpp"
+#include "Elpida/Utilities/Timer.hpp"
 
 namespace Elpida
 {

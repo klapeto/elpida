@@ -24,20 +24,23 @@
  *      Author: klapeto
  */
 
-#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
+#include <Elpida/Engine/BenchmarksContainerPlugin.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/Calculators/Benchmark/AccumulativeScoreCalculator.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
-#include <Elpida/ServiceProvider.hpp>
+#include <Elpida/Engine/ServiceProvider.hpp>
 
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
+#include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
+#include <utility>
+
 #include "Benchmarks/Image/PngDecoding/PngDecodingSpecification.hpp"
 #include "Benchmarks/Image/ConvertToFloat/ConvertToFloatSpecification.hpp"
 #include "Benchmarks/Image/GrayscaleAverage/GrayscaleAverageSpecification.hpp"
 #include "Benchmarks/Image/FloydSteinberg/FloydSteinbergSpecification.hpp"
 #include "Benchmarks/Image/ConvertToUInt8/ConvertToUInt8Specification.hpp"
 #include "Benchmarks/Image/PngEncoding/PngEncodingSpecification.hpp"
-#include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
+
 
 using namespace Elpida;
 
@@ -53,7 +56,7 @@ elpidaDestroyPlugin(Elpida::BenchmarksContainerPlugin<Elpida::Benchmark>* plugin
 }
 
 static std::unique_ptr<Benchmark> createPngEncoding(
-		SharedStructuresProvider& structuresProvider)
+		SharedStructuresProvider& structuresProvider, std::shared_ptr<ReadFileSpecification> readFileSpec)
 {
 	auto benchmark =
 			std::make_unique<Benchmark>("Png Encoding",
@@ -61,7 +64,7 @@ static std::unique_ptr<Benchmark> createPngEncoding(
 					structuresProvider.getAverageThroughputScoreCalculator(),
 					"bfec734b-8db7-44a1-b011-b48eac29005c");
 
-	benchmark->AddTask(structuresProvider.getSharedTaskSpecification<ReadFileSpecification>())
+	benchmark->AddTask(std::move(readFileSpec))
 			.shouldBeCountedOnResults(false)
 			.canBeMultiThreaded(false)
 			.canBeDisabled(false)
@@ -82,7 +85,7 @@ static std::unique_ptr<Benchmark> createPngEncoding(
 }
 
 static std::unique_ptr<Benchmark> createPngDecoding(
-		SharedStructuresProvider& structuresProvider)
+		SharedStructuresProvider& structuresProvider, std::shared_ptr<ReadFileSpecification> readFileSpec)
 {
 	auto benchmark =
 			std::make_unique<Benchmark>("Png Decoding",
@@ -90,7 +93,7 @@ static std::unique_ptr<Benchmark> createPngDecoding(
 					structuresProvider.getAverageThroughputScoreCalculator(),
 					"a4507ca2-99bf-4d19-8bdb-236420f15246");
 
-	benchmark->AddTask(structuresProvider.getSharedTaskSpecification<ReadFileSpecification>())
+	benchmark->AddTask(std::move(readFileSpec))
 			.shouldBeCountedOnResults(false)
 			.canBeMultiThreaded(false)
 			.canBeDisabled(false)
@@ -105,7 +108,7 @@ static std::unique_ptr<Benchmark> createPngDecoding(
 	return benchmark;
 }
 
-static std::unique_ptr<Benchmark> createFloydSteinberg(SharedStructuresProvider& structuresProvider)
+static std::unique_ptr<Benchmark> createFloydSteinberg(SharedStructuresProvider& structuresProvider, std::shared_ptr<ReadFileSpecification> readFileSpec, std::shared_ptr<WriteFileSpecification> writeFileSpec)
 {
 	auto benchmark =
 			std::make_unique<Benchmark>("Floyd Steinberg Dithering",
@@ -113,7 +116,7 @@ static std::unique_ptr<Benchmark> createFloydSteinberg(SharedStructuresProvider&
 					structuresProvider.getAverageThroughputScoreCalculator(),
 					"ec02cf8f-8820-41cc-9f3b-69473d44a261");
 
-	benchmark->AddTask(structuresProvider.getSharedTaskSpecification<ReadFileSpecification>())
+	benchmark->AddTask(std::move(readFileSpec))
 			.shouldBeCountedOnResults(false)
 			.canBeMultiThreaded(false)
 			.canBeDisabled(false)
@@ -152,7 +155,7 @@ static std::unique_ptr<Benchmark> createFloydSteinberg(SharedStructuresProvider&
 			.canBeDisabled(false)
 			.canBeMultiThreaded(false);
 
-	benchmark->AddTask(structuresProvider.getSharedTaskSpecification<WriteFileSpecification>())
+	benchmark->AddTask(std::move(writeFileSpec))
 			.shouldBeCountedOnResults(false)
 			.canBeDisabled(true)
 			.canBeMultiThreaded(false)
@@ -169,8 +172,11 @@ elpidaCreatePlugin(const ServiceProvider* serviceProvider)
 
 	auto structuresProvider = serviceProvider->getSharedStructuresProvider();
 
-	plugin->add(createFloydSteinberg(structuresProvider));
-	plugin->add(createPngEncoding(structuresProvider));
-	plugin->add(createPngDecoding(structuresProvider));
+    auto readFileSpec = std::make_shared<ReadFileSpecification>();
+    auto writeFileSpec = std::make_shared<WriteFileSpecification>();
+
+	plugin->add(createFloydSteinberg(structuresProvider, readFileSpec, writeFileSpec));
+	plugin->add(createPngEncoding(structuresProvider, readFileSpec));
+	plugin->add(createPngDecoding(structuresProvider, readFileSpec));
 	return plugin;
 }

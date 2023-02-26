@@ -27,7 +27,7 @@
 
 #include "Elpida/Utilities/NumaMemory.hpp"
 
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 #include "Elpida/Utilities/OsUtilities.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
 #include <numa.h>

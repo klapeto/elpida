@@ -23,9 +23,9 @@
 
 #include "Elpida/SystemInfo/TargetTimeCalculator.hpp"
 
-#include "Elpida/Timer.hpp"
-#include "Elpida/Macros.hpp"
-#include "Elpida/OperationCanceledException.hpp"
+#include "Elpida/Utilities/Timer.hpp"
+#include "Elpida/Utilities/Macros.hpp"
+#include "Elpida/Common/OperationCanceledException.hpp"
 
 #include <chrono>
 

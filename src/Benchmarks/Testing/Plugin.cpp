@@ -21,13 +21,13 @@
 // Created by klapeto on 21/4/20.
 //
 
-#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
+#include "Elpida/Engine/BenchmarksContainerPlugin.hpp"
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/Calculators/Benchmark/AccumulativeScoreCalculator.hpp>
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
-#include <Elpida/ServiceProvider.hpp>
+#include "Elpida/Engine/ServiceProvider.hpp"
 
 using namespace Elpida;
 

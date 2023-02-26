@@ -28,7 +28,6 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "Elpida/Utilities/Plugin/Plugin.hpp"
 
 namespace Elpida
 {
@@ -36,13 +35,13 @@ namespace Elpida
 	class ServiceProvider;
 
 	template<typename T>
-	class BenchmarksContainerPlugin : public Plugin<std::vector<std::unique_ptr<T>>>
+	class BenchmarksContainerPlugin
 	{
 	public:
 
 		using Factory = BenchmarksContainerPlugin<T>* (*)(const ServiceProvider* serviceProvider);
 
-		const std::vector<std::unique_ptr<T>>& getUnderlyingData() const override
+		const std::vector<std::unique_ptr<T>>& getUnderlyingData() const
 		{
 			return _data;
 		}

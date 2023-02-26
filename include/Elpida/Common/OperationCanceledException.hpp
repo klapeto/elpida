@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,12 +18,35 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 12/4/20.
+// Created by klapeto on 13/2/21.
 //
 
-#include "Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp"
+#ifndef SRC_ELPIDA_OPERATIONCANCELEDEXCEPTION_HPP
+#define SRC_ELPIDA_OPERATIONCANCELEDEXCEPTION_HPP
+
+#include "ElpidaException.hpp"
 
 namespace Elpida
 {
+	class OperationCanceledException : public ElpidaException
+	{
 
+	public:
+		OperationCanceledException() = default;
+
+		explicit OperationCanceledException(std::string message)
+			: ElpidaException(std::move(message))
+		{
+
+		}
+
+		OperationCanceledException(std::string component, std::string message)
+			: ElpidaException(std::move(component), std::move(message))
+		{
+
+		}
+		~OperationCanceledException() override = default;
+	};
 }
+
+#endif //SRC_ELPIDA_OPERATIONCANCELEDEXCEPTION_HPP

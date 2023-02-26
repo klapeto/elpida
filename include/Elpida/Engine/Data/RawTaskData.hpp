@@ -28,33 +28,33 @@
 
 namespace Elpida
 {
+    class ProcessorNode;
+
 	class RawTaskData final
 	{
 	public:
 		using Data = unsigned char;
 		using pData = Data*;
 
-		[[nodiscard]] pData getData() const
+		[[nodiscard]]
+        pData getData() const
 		{
 			return _memory.getPointer();
 		}
 
-		[[nodiscard]] size_t getSize() const
+		[[nodiscard]]
+        size_t getSize() const
 		{
 			return _memory.getSize();
 		}
 
-		[[nodiscard]] const ProcessorNode& getProcessorNode() const
+		[[nodiscard]]
+        const ProcessorNode& getProcessorNode() const
 		{
 			return _processorNode;
 		}
 
-		RawTaskData(size_t size, const ProcessorNode& processor)
-			: _memory(size, processor), _processorNode(processor)
-		{
-			_memory.allocate();
-		}
-
+		RawTaskData(size_t size, const ProcessorNode& processor);
 		RawTaskData(const RawTaskData&) = delete;
 		RawTaskData& operator=(const RawTaskData&) = delete;
 		~RawTaskData() = default;

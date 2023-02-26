@@ -17,13 +17,16 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-//
-// Created by klapeto on 19/4/20.
-//
+/*
+ * EventSubscription.cpp
+ *
+ *  Created on: 13 Οκτ 2018
+ *      Author: klapeto
+ */
 
-#include "Elpida/Engine/Runner/EventArgs/BenchmarkEventArgs.hpp"
+#include "Elpida/Utilities/EventSubscription.hpp"
 
 namespace Elpida
 {
 
-}
+} /* namespace Elpida */

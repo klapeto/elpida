@@ -24,7 +24,7 @@
 #include "Elpida/Engine/Task/MultiThreadTask.hpp"
 
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
-#include "Elpida/ServiceProvider.hpp"
+#include "Elpida/Engine/ServiceProvider.hpp"
 #include "Elpida/Config.hpp"
 #include "Elpida/Engine/Task/TaskSpecification.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"

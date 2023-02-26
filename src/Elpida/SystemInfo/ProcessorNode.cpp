@@ -26,9 +26,9 @@
 
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
 
-#include "hwloc.h"
-#include "Elpida/ElpidaException.hpp"
+#include <hwloc.h>
 #include "Elpida/Config.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 
 namespace Elpida
 {

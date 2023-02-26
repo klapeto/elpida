@@ -22,13 +22,13 @@
 //
 
 #include "Elpida/SystemInfo/TimingInfo.hpp"
+
 #include "Elpida/Utilities/OsUtilities.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
+#include "Elpida/Utilities/Timer.hpp"
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
 #include "Elpida/SystemInfo/SystemTopology.hpp"
-#include "Elpida/Timer.hpp"
-#include "Elpida/Engine/Runner/DefaultTaskRunner.hpp"
-#include "Elpida/OperationCanceledException.hpp"
+#include "Elpida/Common/OperationCanceledException.hpp"
 #include "Elpida/SystemInfo/TargetTimeCalculator.hpp"
 
 #include <thread>
@@ -350,17 +350,16 @@ namespace Elpida
 			threads.emplace_back(threadFunc);
 		}
 
-		const auto calcFunc = [&threads]()
-		{
-			for (size_t i = 0; i < threadN; ++i)
-			{
-				threads[i].join();
-			}
-		};
-
 		std::this_thread::yield();
 
-		_joinOverhead = DefaultTaskRunner::measure(_nowOverhead, calcFunc) / (double)threadN;
+        auto start = Timer::now();
+        for (size_t i = 0; i < threadN; ++i)
+        {
+            threads[i].join();
+        }
+        auto end = Timer::now();
+
+        _joinOverhead = (ToDuration(end - start) - (_nowOverhead)) / (double)threadN;
 	}
 
 #ifdef ELPIDA_GCC

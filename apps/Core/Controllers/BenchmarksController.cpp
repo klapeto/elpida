@@ -26,9 +26,9 @@
 #include <filesystem>
 
 #include <Elpida/Config.hpp>
-#include <Elpida/ElpidaException.hpp>
+#include "Elpida/Common/ElpidaException.hpp"
 #include <Elpida/Utilities/Logging/Logger.hpp>
-#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
+#include "Elpida/Engine/BenchmarksContainerPlugin.hpp"
 #include <Elpida/Utilities/ValueUtilities.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
 #include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>

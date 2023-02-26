@@ -29,7 +29,7 @@
 #include <Elpida/Utilities/Duration.hpp>
 #include <Elpida/SystemInfo/MemoryInfo.hpp>
 #include <Elpida/SystemInfo/CpuInfo.hpp>
-#include <Elpida/ServiceProvider.hpp>
+#include "Elpida/Engine/ServiceProvider.hpp"
 #include <Elpida/SystemInfo/TimingInfo.hpp>
 
 #include "Benchmarks/Memory/WorkingSetSizes.hpp"

@@ -21,7 +21,7 @@
 #define APPS_QT_UI_MAINWINDOW_MAINWINDOW_HPP
 
 #include <QMainWindow>
-#include <Elpida/EventsSubscriber.hpp>
+#include "Elpida/Utilities/EventsSubscriber.hpp"
 #include "Views/NavigationBarView/NavigationBarView.hpp"
 
 #include "Core/Abstractions/CommandHandler.hpp"

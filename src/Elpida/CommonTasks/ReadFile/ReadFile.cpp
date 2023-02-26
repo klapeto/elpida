@@ -35,7 +35,7 @@
 #include "Elpida/SystemInfo/ProcessorNode.hpp"
 #include "Elpida/Engine/Data/RawTaskData.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 
 namespace Elpida
 {

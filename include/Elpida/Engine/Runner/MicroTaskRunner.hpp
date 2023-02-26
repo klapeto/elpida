@@ -27,7 +27,7 @@
 #include <algorithm>
 
 #include "Elpida/Utilities/Duration.hpp"
-#include "Elpida/Timer.hpp"
+#include "Elpida/Utilities/Timer.hpp"
 
 namespace Elpida
 {

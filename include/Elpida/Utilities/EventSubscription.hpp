@@ -29,7 +29,7 @@
 
 #include <list>
 #include "Elpida/Utilities/NonCopyable.hpp"
-#include "Elpida/EventSubscriptionBase.hpp"
+#include "EventSubscriptionBase.hpp"
 #include <functional>
 
 namespace Elpida

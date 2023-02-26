@@ -5,11 +5,11 @@
 #include "BenchmarkLoader.hpp"
 
 #include <Elpida/Config.hpp>
-#include <Elpida/ElpidaException.hpp>
-#include <Elpida/SharedLibraryLoader.hpp>
+#include "Elpida/Common/ElpidaException.hpp"
+#include "Elpida/Utilities/SharedLibraryLoader.hpp"
 #include <Elpida/Utilities/Logging/Logger.hpp>
 #include <Elpida/Engine/Benchmark/Benchmark.hpp>
-#include <Elpida/Utilities/Plugin/BenchmarksContainerPlugin.hpp>
+#include "Elpida/Engine/BenchmarksContainerPlugin.hpp"
 #include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 
 namespace Elpida

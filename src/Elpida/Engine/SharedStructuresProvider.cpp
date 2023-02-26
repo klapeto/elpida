@@ -21,21 +21,15 @@
 // Created by klapeto on 2/5/21.
 //
 
-#include "Elpida/SharedStructuresProvider.hpp"
+#include "Elpida/Engine/SharedStructuresProvider.hpp"
 #include "Elpida/Engine/Calculators/Benchmark/AccumulativeScoreCalculator.hpp"
 #include "Elpida/Engine/Calculators/Benchmark/AverageScoreCalculator.hpp"
 #include "Elpida/Engine/Calculators/Benchmark/AverageThroughputScoreCalculator.hpp"
-#include "Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp"
-#include "Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp"
-#include "Elpida/CommonTasks/AllocateMemory/AllocateMemorySpecification.hpp"
 
 namespace Elpida
 {
 	SharedStructuresProvider::SharedStructuresProvider()
 	{
-		_defaultTasks.emplace(AllocateMemorySpecification::Uuid, std::make_shared<AllocateMemorySpecification>());
-		_defaultTasks.emplace(WriteFileSpecification::Uuid, std::make_shared<WriteFileSpecification>());
-		_defaultTasks.emplace(ReadFileSpecification::Uuid, std::make_shared<ReadFileSpecification>());
 		_accumulativeScoreCalculator = std::make_shared<AccumulativeScoreCalculator>();
 		_averageScoreCalculator = std::make_shared<AverageScoreCalculator>();
 		_averageThroughputScoreCalculator = std::make_shared<AverageThroughputScoreCalculator>();

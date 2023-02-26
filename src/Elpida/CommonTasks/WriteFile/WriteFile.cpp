@@ -32,7 +32,7 @@
 
 #include "Elpida/Config.hpp"
 #include "Elpida/Utilities/ValueUtilities.hpp"
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 #include "Elpida/Engine/Data/RawTaskData.hpp"
 
 namespace Elpida

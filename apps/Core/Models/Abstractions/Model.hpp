@@ -24,8 +24,8 @@
 #ifndef APPS_QT_CORE_ABSTRACTIONS_MODEL_HPP
 #define APPS_QT_CORE_ABSTRACTIONS_MODEL_HPP
 
-#include <Elpida/Event.hpp>
-#include <Elpida/ElpidaException.hpp>
+#include "Elpida/Utilities/Event.hpp"
+#include "Elpida/Common/ElpidaException.hpp"
 
 namespace Elpida
 {

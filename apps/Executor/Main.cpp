@@ -32,9 +32,9 @@
 #include <Elpida/SystemInfo/MemoryInfo.hpp>
 #include <Elpida/SystemInfo/SystemTopology.hpp>
 #include <Elpida/Utilities/Logging/Logger.hpp>
-#include <Elpida/ServiceProvider.hpp>
+#include "Elpida/Engine/ServiceProvider.hpp"
 #include <Elpida/Utilities/Logging/LogAppender.hpp>
-#include <Elpida/OffThreadExecutor.hpp>
+#include "Elpida/Utilities/OffThreadExecutor.hpp"
 #include <Elpida/Engine/Runner/BenchmarkRunner.hpp>
 #include <Elpida/Engine/Configuration/Concrete/BenchmarkConfiguration.hpp>
 #include <Utilities/BenchmarkLoader.hpp>

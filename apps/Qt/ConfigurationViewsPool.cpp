@@ -24,7 +24,7 @@
 #include "ConfigurationViewsPool.hpp"
 #include <Elpida/Engine/Configuration/Specification/ConfigurationSpecificationBase.hpp>
 #include <Elpida/Engine/Configuration/Concrete/ConfigurationValue.hpp>
-#include <Elpida/ElpidaException.hpp>
+#include "Elpida/Common/ElpidaException.hpp"
 #include <Elpida/Config.hpp>
 
 #include "Views/ConfigurationViews/FileInputView/FileInputView.hpp"

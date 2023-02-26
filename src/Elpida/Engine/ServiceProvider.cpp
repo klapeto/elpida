@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,22 +18,26 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 12/4/20.
+// Created by klapeto on 30/1/21.
 //
 
-#ifndef INCLUDE_ELPIDA_UTILITIES_PLUGIN_HPP
-#define INCLUDE_ELPIDA_UTILITIES_PLUGIN_HPP
+#include "Elpida/Engine/ServiceProvider.hpp"
 
 namespace Elpida
 {
-	template<typename T>
-	class Plugin
+
+	ServiceProvider::ServiceProvider(const CpuInfo& cpuInfo,
+		const MemoryInfo& memoryInfo,
+		const SystemTopology& systemTopology,
+		const OsInfo& osInfo,
+		const TimingInfo& timingInfo,
+		Logger& logger)
+		: _cpuInfo(cpuInfo),
+		  _memoryInfo(memoryInfo),
+		  _systemTopology(systemTopology),
+		  _osInfo(osInfo),
+		  _timingInfo(timingInfo),
+		  _logger(logger)
 	{
-	public:
-
-		virtual const T& getUnderlyingData() const = 0;
-		virtual ~Plugin() = default;
-	};
+	}
 }
-
-#endif //INCLUDE_ELPIDA_UTILITIES_PLUGIN_HPP

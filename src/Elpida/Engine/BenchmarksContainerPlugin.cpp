@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2023  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020  Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,22 +18,12 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 25/2/2023.
+// Created by klapeto on 12/4/20.
 //
 
-#include "Elpida/Config.hpp"
-
-#if defined(ELPIDA_UNIX)
-
-#include "Elpida/Timer.hpp"
+#include "Elpida/Engine/BenchmarksContainerPlugin.hpp"
 
 namespace Elpida
 {
 
-	Timer::time_point Timer::now()
-	{
-		return Timer::Clock::now();
-	}
 }
-
-#endif
