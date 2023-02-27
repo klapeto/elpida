@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.10)
 include(cmake-modules/GetElpidaVersion.cmake)
 include(cmake-modules/generate_product_version.cmake)
 
-set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
-
 project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
+
+set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
