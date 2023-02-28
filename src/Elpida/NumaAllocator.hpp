@@ -13,8 +13,9 @@ namespace Elpida
 	class NumaAllocator
 	{
 	 public:
-		static void* Allocate(long numaNodeId, std::size_t size);
+		static void* Allocate(int numaNodeId, std::size_t size);
 		static void Deallocate(void* ptr, std::size_t size);
+		static int GetProcessorNumaNode(int processorId);
 		NumaAllocator() = delete;
 	};
 
@@ -63,7 +64,7 @@ namespace Elpida
 
 		}
 
-		explicit NumaUniquePtr(long numaNodeId, std::size_t size)
+		explicit NumaUniquePtr(int numaNodeId, std::size_t size)
 			: std::unique_ptr<char, NumaDeleter<char>>((char*)NumaAllocator::Allocate(numaNodeId, size), NumaDeleter<char>(size))
 		{
 

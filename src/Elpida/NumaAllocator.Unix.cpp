@@ -12,7 +12,7 @@
 namespace Elpida
 {
 
-	void* NumaAllocator::Allocate(long numaNodeId, std::size_t size)
+	void* NumaAllocator::Allocate(int numaNodeId, std::size_t size)
 	{
 		if (numa_available() < 0)
 		{
@@ -40,6 +40,11 @@ namespace Elpida
 		{
 			numa_free(ptr, size);
 		}
+	}
+
+	int NumaAllocator::GetProcessorNumaNode(int processorId)
+	{
+		return numa_node_of_cpu(processorId);
 	}
 }
 

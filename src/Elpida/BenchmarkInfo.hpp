@@ -42,23 +42,16 @@ namespace Elpida
 			return _scoreDescription;
 		}
 
-		ScoreType GetScoreType() const
-		{
-			return _scoreType;
-		}
-
 		BenchmarkInfo(std::string name,
 			std::string description,
 			std::string scoreUnit,
 			std::string scoreDescription,
-			ScoreType scoreType,
 			const std::vector<TaskInfo>& taskInfos)
 			: _taskInfos(taskInfos),
 			  _name(std::move(name)),
 			  _description(std::move(description)),
 			  _scoreUnit(std::move(scoreUnit)),
-			  _scoreDescription(std::move(scoreDescription)),
-			  _scoreType(scoreType)
+			  _scoreDescription(std::move(scoreDescription))
 		{
 		}
 		~BenchmarkInfo() = default;
@@ -68,7 +61,6 @@ namespace Elpida
 		std::string _description;
 		std::string _scoreUnit;
 		std::string _scoreDescription;
-		ScoreType _scoreType;
 	};
 
 } // Elpida

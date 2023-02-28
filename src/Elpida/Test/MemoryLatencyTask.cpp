@@ -116,20 +116,20 @@ namespace Elpida
 		}
 	}
 
-	void MemoryLatencyTask::Prepare(TaskData& data)
+	void MemoryLatencyTask::Prepare(TaskData&& data)
 	{
 		// modified/modernized version of lmbech thrashing/latency algorithm
 		// Check the paper here:
 		// https://www.usenix.org/legacy/publications/library/proceedings/sd96/full_papers/mcvoy.pdf
 
-		data.Allocate(_size);
-		_data = data.GetDataRaw();
+		_data = std::move(data);
+		_data.Allocate(_size);
 
 		const std::size_t linesPerPage = std::max((double)_pageSize / (double)_cacheLineSize, 1.0);
 		const std::size_t pagesCount = std::max((double)_size / (double)_pageSize, 1.0);
 
 		auto pages = calculatePages(pagesCount, _pageSize);
-		_data = (char*)data.GetDataRaw();
+		_ptr = (char*)_data.GetDataRaw();
 
 		if (pagesCount > 1)
 		{
@@ -145,7 +145,7 @@ namespace Elpida
 				// pageIndexB will also be a random page
 				auto pageIndexB = pages[i + 1];
 
-				assignPointers(_data, lines, pageIndexA, pageIndexB, i, i + 1);
+				assignPointers(_ptr, lines, pageIndexA, pageIndexB, i, i + 1);
 			}
 
 			// For the last random page we should 'reference' it
@@ -155,7 +155,7 @@ namespace Elpida
 			auto lastPage = pages[lastPageIndex];
 			auto firstPage = pages[0];
 
-			assignPointers(_data, lines, lastPage, firstPage, lastPageIndex, 1);
+			assignPointers(_ptr, lines, lastPage, firstPage, lastPageIndex, 1);
 		}
 		else
 		{
@@ -164,18 +164,19 @@ namespace Elpida
 			auto pageIndexA = pages[0];
 			auto pageIndexB = pages[0];
 
-			assignPointers(_data, lines, pageIndexA, pageIndexB, 0, 1);
+			assignPointers(_ptr, lines, pageIndexA, pageIndexB, 0, 1);
 		}
+
 	}
 
 	MemoryLatencyTask::MemoryLatencyTask(std::size_t size, std::size_t cacheLineSize, std::size_t pageSize)
-		: MicroTask(), _data(nullptr), _size(size), _cacheLineSize(cacheLineSize), _pageSize(pageSize)
+		: MicroTask(), _ptr(nullptr), _size(size), _cacheLineSize(cacheLineSize), _pageSize(pageSize)
 	{
 
 	}
-	void MemoryLatencyTask::Finalize(TaskData& data)
+	TaskData MemoryLatencyTask::Finalize()
 	{
-
+		return std::move(_data);
 	}
 
 	TaskInfo MemoryLatencyTask::GetInfo() const
@@ -193,16 +194,41 @@ namespace Elpida
 
 	void MemoryLatencyTask::DoRun(std::size_t iterations)
 	{
-		volatile auto* ptr = (char**)_data;
+		volatile auto* ptr = (char**)_ptr;
 
 		while (iterations-- > 0)
 		{
 			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_100(ptr = (char**)*ptr);
 		}
 	}
-	size_t MemoryLatencyTask::GetOperationsPerformedPerRun()
+
+	std::size_t MemoryLatencyTask::GetOperationsPerformedPerRun()
 	{
-		return 100;
+		return 1000;
+	}
+
+	Duration MemoryLatencyTask::GetExecutionMinimumDuration()
+	{
+		return Seconds(10);
+	}
+
+	bool MemoryLatencyTask::CanBeMultiThreaded() const
+	{
+		return false;
+	}
+
+	std::unique_ptr<Task> MemoryLatencyTask::DoDuplicate() const
+	{
+		return std::unique_ptr<Task>(new MemoryLatencyTask(_size, _cacheLineSize, _pageSize));
 	}
 
 } // Elpida

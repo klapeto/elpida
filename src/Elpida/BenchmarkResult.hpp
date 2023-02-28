@@ -15,7 +15,6 @@
 
 namespace Elpida
 {
-
 	class BenchmarkResult
 	{
 	 public:

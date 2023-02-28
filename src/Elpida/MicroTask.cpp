@@ -11,9 +11,9 @@ namespace Elpida
 {
 	Duration MicroTask::Run()
 	{
-		constexpr Duration minimumDuration = MilliSeconds(100);
-		constexpr Duration nowOverhead = NanoSeconds(0);
-		constexpr Duration loopOverhead = NanoSeconds(0);
+		Duration minimumDuration = GetExecutionMinimumDuration();
+		Duration nowOverhead = _overheadsInfo.GetNowOverhead();
+		Duration loopOverhead = _overheadsInfo.GetLoopOverhead();
 
 		std::size_t iterations = 1;
 		auto currentDuration = Duration::zero();

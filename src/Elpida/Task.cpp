@@ -17,4 +17,11 @@ namespace Elpida
 
 		return b - a;
 	}
+
+	std::unique_ptr<Task> Task::Duplicate() const
+	{
+		auto task = DoDuplicate();
+		task->SetOverheads(_overheadsInfo);
+		return std::move(task);
+	}
 } // Elpida

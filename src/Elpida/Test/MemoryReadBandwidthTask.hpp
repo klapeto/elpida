@@ -1,26 +1,24 @@
 //
-// Created by klapeto on 27/2/2023.
+// Created by klapeto on 28/2/2023.
 //
 
-#ifndef _MEMORYLATENCYTASK_HPP_
-#define _MEMORYLATENCYTASK_HPP_
-
-#include <cstdlib>
+#ifndef _MEMORYREADBANDWIDTHTASK_HPP_
+#define _MEMORYREADBANDWIDTHTASK_HPP_
 
 #include "Elpida/MicroTask.hpp"
+#include <cstdlib>
 
 namespace Elpida
 {
-
-	class MemoryLatencyTask : public MicroTask
+	class MemoryReadBandwidthTask: public MicroTask
 	{
 	 public:
 		void Prepare(TaskData&& inputData) override;
-		bool CanBeMultiThreaded() const override;
 		TaskData Finalize() override;
+		bool CanBeMultiThreaded() const override;
 		TaskInfo GetInfo() const override;
-		MemoryLatencyTask(std::size_t size, std::size_t cacheLineSize, std::size_t pageSize);
-		~MemoryLatencyTask() override = default;
+		explicit MemoryReadBandwidthTask(std::size_t size);
+		~MemoryReadBandwidthTask() override = default;
 	 protected:
 		void DoRun(std::size_t iterations) override;
 		size_t GetOperationsPerformedPerRun() override;
@@ -30,10 +28,8 @@ namespace Elpida
 		TaskData _data;
 		char* _ptr;
 		std::size_t _size;
-		std::size_t _cacheLineSize;
-		std::size_t _pageSize;
 	};
 
 } // Elpida
 
-#endif //_MEMORYLATENCYTASK_HPP_
+#endif //_MEMORYREADBANDWIDTHTASK_HPP_

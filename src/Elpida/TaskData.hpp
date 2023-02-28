@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <vector>
 
 #include "Elpida/NumaAllocator.hpp"
 
@@ -35,19 +36,39 @@ namespace Elpida
 			return _data.get();
 		}
 
-		void Allocate(std::size_t size);
+		int GetProcessorId() const
+		{
+			return _processorId;
+		}
 
-		TaskData(long numaNodeId);
+		bool IsAllocated() const
+		{
+			return _data.get() != nullptr;
+		}
+
+		void Allocate(std::size_t size);
+		void Deallocate();
+		void Migrate(int processorId);
+		std::vector<TaskData> Split(const std::vector<int>& processorIds, std::size_t chunkDivisibleBy = 1);
+		void Merge(const std::vector<TaskData>& chunks);
+
+		TaskData();
+		explicit TaskData(int processorId);
 		TaskData(const TaskData&) = delete;
-		TaskData(TaskData&& other) noexcept = delete;
+		TaskData(TaskData&& other) noexcept;
 		TaskData& operator=(const TaskData&) = delete;
-		TaskData& operator=(TaskData&& other) noexcept = delete;
+		TaskData& operator=(TaskData&& other) noexcept;
 		~TaskData() = default;
 	 private:
 		Metadata _metadata;
 		NumaUniquePtr _data;
-		long _numaNodeId;
+		int _processorId;
 		std::size_t _size;
+
+		int GetNumaNodeId() const;
+
+		static std::vector<TaskData>
+		SplitChunksToChunks(const std::vector<const TaskData*>& input, const std::vector<int>& processorIds, std::size_t chunkDivisibleBy);
 	};
 
 } // Elpida
