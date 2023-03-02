@@ -5,12 +5,19 @@ set(ELPIDA_SOURCES
         TaskInfo.cpp
         DataInfo.cpp
         Task.cpp
-        Test/MemoryLatencyBenchmark.cpp
         TaskData.cpp
-        NumaAllocator.cpp
-        NumaAllocator.Unix.cpp
-        Test/MemoryLatencyTask.cpp
-        TaskResult.cpp TaskResult.hpp MicroTask.cpp MicroTask.hpp ValueUtilities.cpp ValueUtilities.hpp OverheadsInfo.cpp OverheadsInfo.hpp OsUtilities.cpp OsUtilities.hpp OsUtilities.Unix.cpp ThreadTask.Unix.cpp Test/MemoryReadBandwidthTask.cpp Test/MemoryReadBandwidthTask.hpp Test/MemoryReadBandwidthBenchmark.cpp Test/MemoryReadBandwidthBenchmark.hpp ThreadTask.cpp ThreadTask.hpp)
+        NumaMemory.cpp
+        NumaMemory.Unix.cpp
+        TaskResult.cpp
+        MicroTask.cpp
+        ValueUtilities.cpp
+        OverheadsInfo.cpp
+        OsUtilities.cpp
+        OsUtilities.Unix.cpp
+        ThreadTask.cpp
+        ThreadTask.Unix.cpp
+        BenchmarkGroup.cpp
+        )
 
 configure_file("${PROJECT_SOURCE_DIR}/src/Elpida/Config.hpp.in" "Elpida/Config.hpp")
 
@@ -28,5 +35,4 @@ if (UNIX)
     target_link_libraries(elpida numa ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-
-target_compile_options(elpida PRIVATE -O3)
+set_property(TARGET elpida PROPERTY POSITION_INDEPENDENT_CODE ON)

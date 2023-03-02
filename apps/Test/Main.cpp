@@ -7,8 +7,9 @@
 #include <iostream>
 #include <string>
 
-#include "Elpida/Test/MemoryLatencyBenchmark.hpp"
-#include "Elpida/Test/MemoryReadBandwidthBenchmark.hpp"
+#include "Benchmarks/Memory/MemoryLatencyBenchmark.hpp"
+#include "Benchmarks/Memory/MemoryReadBandwidthBenchmark.hpp"
+#include "Benchmarks/Image/PngDecodingBenchmark.hpp"
 #include "Elpida/ValueUtilities.hpp"
 #include "Elpida/OverheadsInfo.hpp"
 
@@ -34,7 +35,7 @@ std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& 
 
 int main(int argC, char* argV[])
 {
-	MemoryReadBandwidthBenchmark benchmark;
+	PngDecodingBenchmark benchmark;
 
 	OverheadsInfo overheadsInfo{};
 

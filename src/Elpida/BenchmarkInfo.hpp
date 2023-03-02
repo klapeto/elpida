@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "Elpida/ScoreType.hpp"
 #include "Elpida/TaskInfo.hpp"
 
@@ -17,26 +18,31 @@ namespace Elpida
 	{
 	 public:
 
+		[[nodiscard]]
 		const std::vector<TaskInfo>& GetTaskInfos() const
 		{
 			return _taskInfos;
 		}
 
+		[[nodiscard]]
 		const std::string& GetName() const
 		{
 			return _name;
 		}
 
+		[[nodiscard]]
 		const std::string& GetDescription() const
 		{
 			return _description;
 		}
 
+		[[nodiscard]]
 		const std::string& GetScoreUnit() const
 		{
 			return _scoreUnit;
 		}
 
+		[[nodiscard]]
 		const std::string& GetScoreDescription() const
 		{
 			return _scoreDescription;

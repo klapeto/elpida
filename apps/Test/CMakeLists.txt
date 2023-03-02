@@ -6,7 +6,7 @@ project("Elpida test program" VERSION ${ELPIDA_VERSION}
 
 add_executable(elpida-test Main.cpp)
 
-target_link_libraries(elpida-test elpida)
+target_link_libraries(elpida-test elpida-memory-benchmarks elpida-image-benchmarks)
 
 target_compile_options(elpida-test PUBLIC -O0)
 

@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "Elpida/NumaAllocator.hpp"
+#include "Elpida/NumaMemory.hpp"
 
 namespace Elpida
 {

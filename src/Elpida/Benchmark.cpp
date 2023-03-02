@@ -41,7 +41,7 @@ namespace Elpida
 
 	Duration Benchmark::ExecuteSingleThread(TaskData& data, std::unique_ptr<Task> task, int processorId)
 	{
-		data.Migrate(processorId); // TODO: Move to else
+		data.Migrate(processorId); // TODO: Move it?
 		ThreadTask threadTask(std::move(task), processorId);
 
 		threadTask.Prepare(std::move(data));
@@ -58,7 +58,7 @@ namespace Elpida
 	{
 		auto chunks = data.Split(targetProcessorIds);
 
-		data.Deallocate();
+		data.Deallocate(); 	// Reduce memory footprint
 
 		std::vector<std::unique_ptr<ThreadTask>> threadTasks;
 		for (auto& chunk: chunks)
@@ -83,7 +83,7 @@ namespace Elpida
 
 		chunks.clear();
 
-		for (auto& chunkTask : threadTasks)
+		for (auto& chunkTask: threadTasks)
 		{
 			chunks.push_back(std::move(chunkTask->Finalize()));
 		}

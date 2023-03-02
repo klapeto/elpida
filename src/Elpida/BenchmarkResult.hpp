@@ -18,11 +18,14 @@ namespace Elpida
 	class BenchmarkResult
 	{
 	 public:
+
+		[[nodiscard]]
 		double GetScore() const
 		{
 			return _score;
 		}
 
+		[[nodiscard]]
 		const std::vector<TaskResult>& GetTaskResults() const
 		{
 			return _taskResults;

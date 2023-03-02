@@ -9,13 +9,13 @@ namespace Elpida
 
 	Duration Task::Run()
 	{
-		auto a = std::chrono::high_resolution_clock::now();
+		auto a = Timer::now();
 
 		DoRun();
 
-		auto b = std::chrono::high_resolution_clock::now();
+		auto b = Timer::now();
 
-		return b - a;
+		return b - a - _overheadsInfo.GetNowOverhead();
 	}
 
 	std::unique_ptr<Task> Task::Duplicate() const
@@ -23,5 +23,10 @@ namespace Elpida
 		auto task = DoDuplicate();
 		task->SetOverheads(_overheadsInfo);
 		return std::move(task);
+	}
+
+	void Task::SetOverheads(const OverheadsInfo& overheadsInfo)
+	{
+		_overheadsInfo = overheadsInfo;
 	}
 } // Elpida

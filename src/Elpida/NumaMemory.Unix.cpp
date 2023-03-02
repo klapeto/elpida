@@ -6,7 +6,7 @@
 
 #if defined(ELPIDA_UNIX)
 
-#include "Elpida/NumaAllocator.hpp"
+#include "Elpida/NumaMemory.hpp"
 #include <numa.h>
 
 namespace Elpida

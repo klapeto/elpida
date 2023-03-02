@@ -17,25 +17,35 @@ namespace Elpida
 	class Task
 	{
 	 public:
+
 		virtual void Prepare(TaskData&& inputData) = 0;
+
+		[[nodiscard]]
 		virtual Duration Run();
+
+		[[nodiscard]]
 		virtual TaskData Finalize() = 0;
 
+		[[nodiscard]]
 		virtual TaskInfo GetInfo() const = 0;
+
+		[[nodiscard]]
 		virtual bool CanBeMultiThreaded() const = 0;
+
+		[[nodiscard]]
 		std::unique_ptr<Task> Duplicate() const;
 
-		void SetOverheads(const OverheadsInfo& overheadsInfo)
-		{
-			_overheadsInfo = overheadsInfo;
-		}
+		void SetOverheads(const OverheadsInfo& overheadsInfo);
 
 		Task() = default;
 		virtual ~Task() = default;
 	 protected:
+		OverheadsInfo _overheadsInfo{};
+
 		virtual void DoRun() = 0;
-		virtual std::unique_ptr<Task> DoDuplicate() const=0;
-		OverheadsInfo _overheadsInfo;
+
+		[[nodiscard]]
+		virtual std::unique_ptr<Task> DoDuplicate() const = 0;
 	};
 
 } // Elpida

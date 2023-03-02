@@ -14,16 +14,19 @@ namespace Elpida
 	{
 	 public:
 
+		[[nodiscard]]
 		const Duration& GetNowOverhead() const
 		{
 			return _nowOverhead;
 		}
 
+		[[nodiscard]]
 		const Duration& GetLoopOverhead() const
 		{
 			return _loopOverhead;
 		}
 
+		[[nodiscard]]
 		const Duration& GetVirtualCallOverhead() const
 		{
 			return _virtualCallOverhead;

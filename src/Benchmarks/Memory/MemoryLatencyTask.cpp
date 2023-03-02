@@ -2,7 +2,7 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#include "Elpida/Test/MemoryLatencyTask.hpp"
+#include "MemoryLatencyTask.hpp"
 
 #include "Elpida/TaskData.hpp"
 
