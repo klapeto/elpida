@@ -7,10 +7,34 @@
 
 namespace Elpida
 {
-	std::vector<std::unique_ptr<Task>> MemoryLatencyBenchmark::GetTasks() const
+	std::vector<std::unique_ptr<Task>>
+	MemoryLatencyBenchmark::GetTasks(
+		const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
+		const std::vector<TaskConfiguration>& configuration,
+		const EnvironmentInfo& environmentInfo) const
 	{
+		std::size_t cacheSize = 16 * 1024 * 1024;
+		std::size_t cacheLineSize = 16;
+		std::size_t pageSize = 32;
+
+		for (auto& processor: targetProcessors)
+		{
+			auto cache = processor.get().GetLastCache();
+			if (cache.has_value())
+			{
+				cacheSize = std::max(cacheSize, cache->get().GetSize());
+				cacheLineSize = std::max(cacheLineSize, cache->get().GetLineSize());
+			}
+
+			auto numaDomain = processor.get().GetNumaNode();
+			if (numaDomain.has_value())
+			{
+				pageSize = std::max(pageSize, numaDomain->get().GetMemoryPageTypes().front().GetPageSize());
+			}
+		}
+
 		std::vector<std::unique_ptr<Task>> tasks;
-		tasks.push_back(std::make_unique<MemoryLatencyTask>(1024 * 1024 * 128, 64, 4096));
+		tasks.push_back(std::make_unique<MemoryLatencyTask>(cacheSize * 8, cacheLineSize, pageSize));
 		return tasks;
 	}
 
@@ -28,5 +52,10 @@ namespace Elpida
 			"s",
 			"The average access time.",
 			{ task.GetInfo() });
+	}
+
+	std::vector<TaskConfiguration> MemoryLatencyBenchmark::GetRequiredConfiguration() const
+	{
+		return {};
 	}
 } // Elpida

@@ -5,12 +5,14 @@
 #ifndef _MEMORYREADBANDWIDTHTASK_HPP_
 #define _MEMORYREADBANDWIDTHTASK_HPP_
 
-#include "Elpida/MicroTask.hpp"
 #include <cstdlib>
+#include <optional>
+
+#include "Elpida/MicroTask.hpp"
 
 namespace Elpida
 {
-	class MemoryReadBandwidthTask: public MicroTask
+	class MemoryReadBandwidthTask : public MicroTask
 	{
 	 public:
 		void Prepare(TaskData&& inputData) override;
@@ -21,11 +23,11 @@ namespace Elpida
 		~MemoryReadBandwidthTask() override = default;
 	 protected:
 		void DoRun(std::size_t iterations) override;
-		size_t GetOperationsPerformedPerRun() override;
+		std::size_t GetOperationsPerformedPerRun() override;
 		Duration GetExecutionMinimumDuration() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
-		TaskData _data;
+		std::optional<TaskData> _data;
 		char* _ptr;
 		std::size_t _size;
 	};

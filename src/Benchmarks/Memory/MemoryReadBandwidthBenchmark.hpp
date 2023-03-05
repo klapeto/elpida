@@ -10,12 +10,21 @@
 namespace Elpida
 {
 
-	class MemoryReadBandwidthBenchmark: public Benchmark
+	class MemoryReadBandwidthBenchmark : public Benchmark
 	{
 	 public:
+		[[nodiscard]]
 		BenchmarkInfo GetInfo() const override;
+		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
+
+		MemoryReadBandwidthBenchmark() = default;
+		~MemoryReadBandwidthBenchmark() override = default;
 	 protected:
-		std::vector<std::unique_ptr<Task>> GetTasks() const override;
+		[[nodiscard]]
+		std::vector<std::unique_ptr<Task>>
+		GetTasks(const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
+			const std::vector<TaskConfiguration>& configuration,
+			const EnvironmentInfo& environmentInfo) const override;
 		double CalculateScore(const std::vector<TaskResult>& taskResults) const override;
 	};
 

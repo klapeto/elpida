@@ -11,6 +11,7 @@
 
 #include "Task.hpp"
 #include "Duration.hpp"
+#include "Elpida/Topology/TopologyNode.hpp"
 
 namespace Elpida
 {
@@ -26,7 +27,7 @@ namespace Elpida
 
 		void WakeThread();
 
-		ThreadTask(std::unique_ptr<Task> taskToRun, int processorId);
+		ThreadTask(std::unique_ptr<Task> taskToRun, std::reference_wrapper<const TopologyNode> targetProcessor);
 		~ThreadTask() final;
 	 protected:
 		void DoRun() final;
@@ -36,11 +37,11 @@ namespace Elpida
 		std::thread _thread;
 		std::condition_variable _conditionVariable;
 		std::mutex _mutex;
+		std::reference_wrapper<const TopologyNode> _targetProcessor;
 		Duration _taskRunDuration;
-		int _processorId;
 		volatile bool _doStart;
 
-		void PinCurrentThreadToProcessor(int processorId);
+		void PinCurrentThreadToProcessor(const TopologyNode& topologyNode);
 		void ThreadProcedure();
 	};
 

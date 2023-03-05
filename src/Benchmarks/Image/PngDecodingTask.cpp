@@ -3,6 +3,7 @@
 //
 
 #include "PngDecodingTask.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #include <png.h>
 
@@ -12,34 +13,31 @@ namespace Elpida
 	{
 		if (inputData.GetSize() == 0)
 		{
-			// throw;
+			throw ElpidaException("Png decoding must be supplied with data. It got zero size data.");
 		}
 
 		_inputData = std::move(inputData);
 
-		if (png_image_begin_read_from_memory(&_pngImg, _inputData.GetDataRaw(), _inputData.GetSize()))
+		if (png_image_begin_read_from_memory(&_pngImg, _inputData->GetDataRaw(), _inputData->GetSize()) != 0)
 		{
 			_pngImg.format = PNG_FORMAT_RGBA;
 
-			auto newSize = PNG_IMAGE_SIZE(_pngImg);
-
-			_outputData.Migrate(_inputData.GetProcessorId());
-			_outputData.Allocate(newSize);
+			_outputData = std::make_unique<TaskData>(_inputData->GetTargetProcessor());
+			_outputData->Allocate(PNG_IMAGE_SIZE(_pngImg));
 		}
 		else
 		{
-			std::string error(_pngImg.message);
-			//throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to encode image: ", error));
+			throw ElpidaException("Failed to decode image: ", _pngImg.message);
 		}
 	}
 
 	TaskData PngDecodingTask::Finalize()
 	{
-		auto metadata = _outputData.GetMetadata();
+		auto& metadata = _outputData->GetMetadata();
 		metadata["width"] = std::to_string(_pngImg.width);
 		metadata["height"] = std::to_string(_pngImg.height);
 		metadata["stride"] = std::to_string(_pngImg.width * 4);
-		return std::move(_outputData);
+		return std::move(*_outputData);
 	}
 
 	TaskInfo PngDecodingTask::GetInfo() const
@@ -63,10 +61,9 @@ namespace Elpida
 
 	void PngDecodingTask::DoRun()
 	{
-		if (!png_image_finish_read(&_pngImg, nullptr, _inputData.GetDataRaw(), 0, nullptr))
+		if (png_image_finish_read(&_pngImg, nullptr, _outputData->GetDataRaw(), 0, nullptr) == 0)
 		{
-			std::string error(_pngImg.message);
-			//throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to encode image: ", error));
+			throw ElpidaException("Failed to decode image: ", _pngImg.message);
 		}
 	}
 	std::unique_ptr<Task> PngDecodingTask::DoDuplicate() const

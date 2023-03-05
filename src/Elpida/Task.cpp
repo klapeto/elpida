@@ -4,6 +4,8 @@
 
 #include "Task.hpp"
 
+#include "Elpida/EnvironmentInfo.hpp"
+
 namespace Elpida
 {
 
@@ -15,18 +17,18 @@ namespace Elpida
 
 		auto b = Timer::now();
 
-		return b - a - _overheadsInfo.GetNowOverhead();
+		return b - a - _environmentInfo->get().GetOverheadsInfo().GetNowOverhead();
 	}
 
 	std::unique_ptr<Task> Task::Duplicate() const
 	{
 		auto task = DoDuplicate();
-		task->SetOverheads(_overheadsInfo);
+		task->SetEnvironmentInfo(_environmentInfo->get());
 		return std::move(task);
 	}
 
-	void Task::SetOverheads(const OverheadsInfo& overheadsInfo)
+	void Task::SetEnvironmentInfo(const EnvironmentInfo& environmentInfo)
 	{
-		_overheadsInfo = overheadsInfo;
+		_environmentInfo = environmentInfo;
 	}
 } // Elpida

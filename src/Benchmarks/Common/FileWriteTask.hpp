@@ -7,6 +7,7 @@
 
 #include <string>
 #include <fstream>
+#include <optional>
 
 #include "Elpida/Task.hpp"
 
@@ -27,7 +28,7 @@ namespace Elpida
 		void DoRun() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
-		TaskData _inputData;
+		std::optional<TaskData> _inputData;
 		std::fstream _fileStream;
 		std::string _filePath;
 	};

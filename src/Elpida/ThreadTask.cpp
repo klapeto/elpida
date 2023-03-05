@@ -33,8 +33,8 @@ namespace Elpida
 		return false;
 	}
 
-	ThreadTask::ThreadTask(std::unique_ptr<Task> taskToRun, int processorId)
-		: _taskToRun(std::move(taskToRun)), _taskRunDuration(0), _processorId(processorId), _doStart(false)
+	ThreadTask::ThreadTask(std::unique_ptr<Task> taskToRun, std::reference_wrapper<const TopologyNode> targetProcessor)
+		: _taskToRun(std::move(taskToRun)), _taskRunDuration(0), _targetProcessor(targetProcessor), _doStart(false)
 	{
 
 	}
@@ -55,7 +55,7 @@ namespace Elpida
 
 	std::unique_ptr<Task> ThreadTask::DoDuplicate() const
 	{
-		return std::unique_ptr<Task>(new ThreadTask(_taskToRun->Duplicate(), _processorId));
+		return std::unique_ptr<Task>(new ThreadTask(_taskToRun->Duplicate(), _targetProcessor));
 	}
 
 	TaskInfo ThreadTask::GetInfo() const
@@ -65,7 +65,7 @@ namespace Elpida
 
 	void ThreadTask::ThreadProcedure()
 	{
-		PinCurrentThreadToProcessor(_processorId);
+		PinCurrentThreadToProcessor(_targetProcessor);
 
 		std::unique_lock<std::mutex> lock(_mutex);
 		_conditionVariable.wait(lock, [this]()

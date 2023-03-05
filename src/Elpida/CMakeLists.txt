@@ -17,7 +17,8 @@ set(ELPIDA_SOURCES
         ThreadTask.cpp
         ThreadTask.Unix.cpp
         BenchmarkGroup.cpp
-        )
+        TaskConfiguration.cpp
+        ElpidaException.cpp Topology/TopologyInfo.cpp Topology/TopologyInfo.hpp Topology/TopologyNode.cpp Topology/TopologyNode.hpp Topology/CpuKind.cpp Topology/CpuKind.hpp EnvironmentInfo.cpp EnvironmentInfo.hpp Topology/CpuCacheNode.cpp Topology/CpuCacheNode.hpp Topology/ProcessingUnitNode.cpp Topology/ProcessingUnitNode.hpp Topology/NumaNode.cpp Topology/NumaNode.hpp Topology/MemoryPageType.cpp Topology/MemoryPageType.hpp)
 
 configure_file("${PROJECT_SOURCE_DIR}/src/Elpida/Config.hpp.in" "Elpida/Config.hpp")
 
@@ -34,5 +35,7 @@ if (UNIX)
     find_package(Threads)
     target_link_libraries(elpida numa ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 endif()
+
+target_link_libraries(elpida hwloc)
 
 set_property(TARGET elpida PROPERTY POSITION_INDEPENDENT_CODE ON)

@@ -3,6 +3,7 @@
 //
 
 #include "FileReadTask.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -11,13 +12,18 @@ namespace Elpida
 {
 	void FileReadTask::Prepare(TaskData&& inputData)
 	{
-		if (!std::filesystem::exists(_filePath)){
-			//throw;
+		if (!std::filesystem::exists(_filePath))
+		{
+			throw ElpidaException("File: '", _filePath, "' does not exist.");
 		}
 
-		_outputData.Allocate(std::filesystem::file_size(_filePath));
+		_outputData = std::move(inputData);
 
-		_fileStream = std::fstream(std::filesystem::u8path(_filePath), std::ios::in | std::ios::binary);
+		auto path = std::filesystem::u8path(_filePath);
+		auto size =std::filesystem::file_size(_filePath);
+		_outputData->Allocate(size);
+
+		_fileStream = std::fstream(path, std::ios::in | std::ios::binary);
 	}
 
 	TaskData FileReadTask::Finalize()
@@ -27,7 +33,7 @@ namespace Elpida
 			_fileStream.close();
 		}
 
-		return std::move(_outputData);
+		return std::move(*_outputData);
 	}
 
 	TaskInfo FileReadTask::GetInfo() const
@@ -57,11 +63,11 @@ namespace Elpida
 	{
 		try
 		{
-			_fileStream.read((char*)_outputData.GetDataRaw(), _outputData.GetSize());
+			_fileStream.read((char*)_outputData->GetDataRaw(), _outputData->GetSize());
 		}
 		catch (const std::fstream::failure& e)
 		{
-			//throw ElpidaException(FUNCTION_NAME,Vu::Cs("Failed to read file: '", _filePath, "'. Error: ", e.what()));
+			throw ElpidaException("Failed to read file: '", _filePath, "'. Error: ", e.what());
 		}
 	}
 

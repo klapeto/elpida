@@ -6,11 +6,14 @@
 #define _TASK_HPP_
 
 #include <cstdlib>
+#include <functional>
+#include <optional>
 
 #include "Elpida/TaskInfo.hpp"
 #include "Elpida/TaskData.hpp"
 #include "Elpida/Duration.hpp"
-#include "Elpida/OverheadsInfo.hpp"
+#include "Elpida/EnvironmentInfo.hpp"
+#include "Elpida/TaskConfiguration.hpp"
 
 namespace Elpida
 {
@@ -35,12 +38,12 @@ namespace Elpida
 		[[nodiscard]]
 		std::unique_ptr<Task> Duplicate() const;
 
-		void SetOverheads(const OverheadsInfo& overheadsInfo);
+		void SetEnvironmentInfo(const EnvironmentInfo& environmentInfo);
 
 		Task() = default;
 		virtual ~Task() = default;
 	 protected:
-		OverheadsInfo _overheadsInfo{};
+		std::optional<std::reference_wrapper<const EnvironmentInfo>> _environmentInfo;
 
 		virtual void DoRun() = 0;
 

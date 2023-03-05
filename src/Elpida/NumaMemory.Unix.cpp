@@ -7,6 +7,9 @@
 #if defined(ELPIDA_UNIX)
 
 #include "Elpida/NumaMemory.hpp"
+
+#include "Elpida/ElpidaException.hpp"
+
 #include <numa.h>
 
 namespace Elpida
@@ -14,17 +17,22 @@ namespace Elpida
 
 	void* NumaAllocator::Allocate(int numaNodeId, std::size_t size)
 	{
+		bool numaAvailable = false;
+		void* ptr;
 		if (numa_available() < 0)
 		{
-			return malloc(size);
+			ptr = malloc(size);
 		}
-
-		numa_set_strict(1);
-		auto ptr = (void*)numa_alloc_onnode(size, numaNodeId);
+		else
+		{
+			numa_set_strict(1);
+			ptr = (void*)numa_alloc_onnode(size, numaNodeId);
+			numaAvailable = true;
+		}
 
 		if (ptr == nullptr)
 		{
-			//throw;
+			throw ElpidaException("Failed to allocate NUMA memory of size: ", size, " on numa node: ", numaNodeId, " (NUMA available: ", std::to_string(numaAvailable), ")");
 		}
 
 		return ptr;

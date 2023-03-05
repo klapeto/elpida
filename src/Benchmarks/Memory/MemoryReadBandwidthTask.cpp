@@ -9,13 +9,13 @@ namespace Elpida
 	void MemoryReadBandwidthTask::Prepare(TaskData&& inputData)
 	{
 		_data = std::move(inputData);
-		_data.Allocate(_size);
-		_ptr = _data.GetDataRaw();
+		_data->Allocate(_size);
+		_ptr = _data->GetDataRaw();
 	}
 
 	TaskData MemoryReadBandwidthTask::Finalize()
 	{
-		return std::move(_data);
+		return std::move(*_data);
 	}
 
 	TaskInfo MemoryReadBandwidthTask::GetInfo() const

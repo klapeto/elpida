@@ -3,6 +3,7 @@
 //
 
 #include "PngEncodingTask.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #include <png.h>
 
@@ -10,7 +11,8 @@ namespace Elpida
 {
 	void PngEncodingTask::Prepare(TaskData&& inputData)
 	{
-		auto& metadata = inputData.GetMetadata();
+		_inputData = std::move(inputData);
+		auto& metadata = _inputData->GetMetadata();
 
 		auto str = metadata.at("width");
 		char* endPtr;
@@ -19,29 +21,25 @@ namespace Elpida
 		str = metadata.at("height");
 		_height = std::strtol(str.c_str(), &endPtr, 0);
 
-		_inputData = std::move(inputData);
-
 		_pngImg.width = _width;
 		_pngImg.height = _height;
 
 		std::size_t outputSize;
 
-		if (png_image_write_to_memory(&_pngImg, nullptr, &outputSize, 0, _inputData.GetDataRaw(), 0, nullptr))
+		if (png_image_write_to_memory(&_pngImg, nullptr, &outputSize, 0, _inputData->GetDataRaw(), 0, nullptr))
 		{
-			_outputData.Migrate(_inputData.GetProcessorId());
-			_outputData.Allocate(outputSize);
-
+			_outputData = std::make_unique<TaskData>(_inputData->GetTargetProcessor());
+			_outputData->Allocate(outputSize);
 		}
 		else
 		{
-			std::string error(_pngImg.message);
-			//throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to encode image: ", error));
+			throw ElpidaException("Failed to encode image: ", _pngImg.message);
 		}
 	}
 
 	TaskData PngEncodingTask::Finalize()
 	{
-		return std::move(_outputData);
+		return std::move(*_outputData);
 	}
 
 	TaskInfo PngEncodingTask::GetInfo() const
@@ -67,15 +65,14 @@ namespace Elpida
 		std::size_t outputSize;
 
 		if (!png_image_write_to_memory(&_pngImg,
-			_outputData.GetDataRaw(),
+			_outputData->GetDataRaw(),
 			&outputSize,
 			0,
-			_inputData.GetDataRaw(),
+			_inputData->GetDataRaw(),
 			0,
 			nullptr))
 		{
-			std::string error(_pngImg.message);
-			//throw ElpidaException(FUNCTION_NAME, Vu::Cs("Failed to encode image: ", error));
+			throw ElpidaException("Failed to encode image: ", _pngImg.message);
 		}
 	}
 
@@ -83,11 +80,12 @@ namespace Elpida
 	{
 		return std::unique_ptr<Task>(new PngEncodingTask());
 	}
+
 	PngEncodingTask::~PngEncodingTask()
 	{
-
 		png_image_free(&_pngImg);
 	}
+
 	PngEncodingTask::PngEncodingTask()
 		: _pngImg({}), _width(0), _height(0)
 	{

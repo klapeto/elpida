@@ -123,13 +123,13 @@ namespace Elpida
 		// https://www.usenix.org/legacy/publications/library/proceedings/sd96/full_papers/mcvoy.pdf
 
 		_data = std::move(data);
-		_data.Allocate(_size);
+		_data->Allocate(_size);
 
 		const std::size_t linesPerPage = std::max((double)_pageSize / (double)_cacheLineSize, 1.0);
 		const std::size_t pagesCount = std::max((double)_size / (double)_pageSize, 1.0);
 
 		auto pages = calculatePages(pagesCount, _pageSize);
-		_ptr = (char*)_data.GetDataRaw();
+		_ptr = (char*)_data->GetDataRaw();
 
 		if (pagesCount > 1)
 		{
@@ -176,7 +176,7 @@ namespace Elpida
 	}
 	TaskData MemoryLatencyTask::Finalize()
 	{
-		return std::move(_data);
+		return std::move(*_data);
 	}
 
 	TaskInfo MemoryLatencyTask::GetInfo() const

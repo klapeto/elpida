@@ -10,13 +10,8 @@
 namespace Elpida
 {
 
-	TaskData::TaskData(int processorId)
-		: _processorId(processorId), _size(0)
-	{
-	}
-
-	TaskData::TaskData()
-		: _processorId(0), _size(0)
+	TaskData::TaskData(const ProcessingUnitNode& targetProcessor)
+		: _targetProcessor(targetProcessor), _size(0)
 	{
 
 	}
@@ -28,9 +23,9 @@ namespace Elpida
 		std::memset(_data.get(), 0, size);
 	}
 
-	void TaskData::Migrate(int processorId)
+	void TaskData::Migrate(const ProcessingUnitNode& targetProcessor)
 	{
-		_processorId = processorId;
+		_targetProcessor = targetProcessor;
 
 		auto newData = NumaUniquePtr(GetNumaNodeId(), _size);
 
@@ -40,31 +35,32 @@ namespace Elpida
 	}
 
 	TaskData::TaskData(TaskData&& other) noexcept
+		: _targetProcessor(other._targetProcessor)
 	{
 		_data = std::move(other._data);
-		_processorId = other._processorId;
+		_metadata = std::move(other._metadata);
 		_size = other._size;
 		other._size = 0;
 	}
 
 	int TaskData::GetNumaNodeId() const
 	{
-		return NumaAllocator::GetProcessorNumaNode(_processorId);
+		return NumaAllocator::GetProcessorNumaNode(_targetProcessor.get().GetOsIndex().value());
 	}
 
-	std::vector<TaskData> TaskData::Split(const std::vector<int>& processorIds, std::size_t chunkDivisibleBy)
+	std::vector<TaskData> TaskData::Split(const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors, std::size_t chunkDivisibleBy)
 	{
 		if (!_data)
 		{
 			std::vector<TaskData> returnData;
-			returnData.reserve(processorIds.size());
-			for (auto processorId: processorIds)
+			returnData.reserve(targetProcessors.size());
+			for (auto& processor: targetProcessors)
 			{
-				returnData.emplace_back(processorId);
+				returnData.emplace_back(processor.get());
 			}
 			return returnData;
 		}
-		return SplitChunksToChunks({ this }, processorIds, chunkDivisibleBy);
+		return SplitChunksToChunks({ this }, targetProcessors, chunkDivisibleBy);
 	}
 
 	void TaskData::Merge(const std::vector<TaskData>& chunks)
@@ -76,15 +72,16 @@ namespace Elpida
 			chunksPointers.push_back(&chunk);
 		}
 
-		auto outputChunks = SplitChunksToChunks(chunksPointers, { _processorId }, 1);
+		auto outputChunks = SplitChunksToChunks(chunksPointers, { _targetProcessor }, 1);
 
 		*this = std::move(outputChunks.front());
 	}
 
 	TaskData& TaskData::operator=(TaskData&& other) noexcept
 	{
+		_targetProcessor = other._targetProcessor;
 		_data = std::move(other._data);
-		_processorId = other._processorId;
+		_metadata = std::move(other._metadata);
 		_size = other._size;
 		other._size = 0;
 		return *this;
@@ -101,7 +98,7 @@ namespace Elpida
 	}
 
 	std::vector<TaskData>
-	TaskData::SplitChunksToChunks(const std::vector<const TaskData*>& input, const std::vector<int>& processorIds, std::size_t chunkDivisibleBy)
+	TaskData::SplitChunksToChunks(const std::vector<const TaskData*>& input, const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& processorIds, std::size_t chunkDivisibleBy)
 	{
 		auto targetChunksCount = processorIds.size();
 		auto& outputChunks = input;

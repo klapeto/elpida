@@ -6,10 +6,13 @@
 #include <ctime>
 #include <iostream>
 #include <string>
+#include <png.h>
+#include <fstream>
+#include <filesystem>
 
 #include "Benchmarks/Memory/MemoryLatencyBenchmark.hpp"
 #include "Benchmarks/Memory/MemoryReadBandwidthBenchmark.hpp"
-#include "Benchmarks/Image/PngDecodingBenchmark.hpp"
+#include "Benchmarks/Image/PngEncodingDecodingBenchmark.hpp"
 #include "Elpida/ValueUtilities.hpp"
 #include "Elpida/OverheadsInfo.hpp"
 
@@ -35,13 +38,39 @@ std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& 
 
 int main(int argC, char* argV[])
 {
-	PngDecodingBenchmark benchmark;
 
-	OverheadsInfo overheadsInfo{};
+//	png_image img;
+//	img.opaque = nullptr;
+//	img.version = PNG_IMAGE_VERSION;
+//
+//	auto size =std::filesystem::file_size("/home/klapeto/Εικόνες/Elpida-poster-9.png");
+//	auto mem = new char[size];
+//	std::fstream file("/home/klapeto/Εικόνες/Elpida-poster-9.png", std::ios::in| std::ios::binary);
+//
+//	file.read(mem, size);
+//
+//	png_image_begin_read_from_memory(&img, mem, size);
+//
+//	img.format = PNG_FORMAT_RGBA;
+//
+//	auto buffer = new char[PNG_IMAGE_SIZE(img)];
+//
+//	png_image_finish_read(&img, nullptr, buffer, 0, nullptr);
 
+
+	PngEncodingDecodingBenchmark benchmark;
+
+
+
+	EnvironmentInfo environmentInfo((OverheadsInfo()), TopologyInfo());
+
+	std::vector<TaskConfiguration> taskConfiguration = benchmark.GetRequiredConfiguration();
+
+	taskConfiguration[0].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9.png");
+	taskConfiguration[1].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9_out.png");
 	//Load();
 
-	auto result = benchmark.Run({ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 }, overheadsInfo);
+	auto result = benchmark.Run(environmentInfo.GetTopologyInfo().GetAllProcessingUnits(), taskConfiguration, environmentInfo);
 
 	std::cout << "Result: " << TranslateResult(result, benchmark.GetInfo()) << std::endl;
 

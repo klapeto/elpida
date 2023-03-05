@@ -145,20 +145,20 @@ namespace Elpida
 			int decimals);
 
 		template<typename T, typename ... TRest>
-		inline static void ConcatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)
+		inline static void concatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)
 		{
 			str << first;
-			ConcatenateToStringImpl(str, std::forward<TRest>(rest)...);
+			concatenateToStringImpl(str, std::forward<TRest>(rest)...);
 		}
 
 		template<typename T>
-		inline static void ConcatenateToStringImpl(std::ostringstream&)
+		inline static void concatenateToStringImpl(std::ostringstream&)
 		{
 
 		}
 
 		template<typename T>
-		inline static void ConcatenateToStringImpl(std::ostringstream& str, T arg)
+		inline static void concatenateToStringImpl(std::ostringstream& str, T arg)
 		{
 			str << arg;
 		}

@@ -6,7 +6,7 @@ project("Elpida image benchmarks" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         PngEncodingTask.cpp
         PngDecodingTask.cpp
-        PngDecodingBenchmark.cpp
+        PngEncodingDecodingBenchmark.cpp
         )
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})

@@ -18,10 +18,25 @@ namespace Elpida
 			{ task.GetInfo() });
 	}
 
-	std::vector<std::unique_ptr<Task>> MemoryReadBandwidthBenchmark::GetTasks() const
+	std::vector<std::unique_ptr<Task>>
+	MemoryReadBandwidthBenchmark::GetTasks(const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
+		const std::vector<TaskConfiguration>& configuration,
+		const EnvironmentInfo& environmentInfo) const
 	{
+
+		std::size_t cacheSize = 16 * 1024 * 1024;
+
+		for (auto& processor: targetProcessors)
+		{
+			auto cache = processor.get().GetLastCache();
+			if (cache.has_value())
+			{
+				cacheSize = std::max(cacheSize, cache->get().GetSize());
+			}
+		}
+
 		std::vector<std::unique_ptr<Task>> tasks;
-		tasks.push_back(std::make_unique<MemoryReadBandwidthTask>(1024 * 1024 * 128));
+		tasks.push_back(std::make_unique<MemoryReadBandwidthTask>(cacheSize * 8));
 		return tasks;
 	}
 
@@ -37,5 +52,10 @@ namespace Elpida
 		}
 
 		return static_cast<double>(totalSize) / totalDuration.count();
+	}
+
+	std::vector<TaskConfiguration> MemoryReadBandwidthBenchmark::GetRequiredConfiguration() const
+	{
+		return {};
 	}
 } // Elpida

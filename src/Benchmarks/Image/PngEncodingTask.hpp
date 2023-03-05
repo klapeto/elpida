@@ -5,9 +5,10 @@
 #ifndef _PNGENCODINGTASK_HPP_
 #define _PNGENCODINGTASK_HPP_
 
-#include "Elpida/Task.hpp"
-
+#include <optional>
 #include <png.h>
+
+#include "Elpida/Task.hpp"
 
 namespace Elpida
 {
@@ -26,8 +27,8 @@ namespace Elpida
 		void DoRun() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
-		TaskData _inputData;
-		TaskData _outputData;
+		std::unique_ptr<TaskData> _outputData;
+		std::optional<TaskData> _inputData;
 		png_image _pngImg;
 		unsigned int _width;
 		unsigned int _height;

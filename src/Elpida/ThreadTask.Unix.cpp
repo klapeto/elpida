@@ -12,11 +12,11 @@
 
 namespace Elpida
 {
-	void ThreadTask::PinCurrentThreadToProcessor(int processorId)
+	void ThreadTask::PinCurrentThreadToProcessor(const TopologyNode& topologyNode)
 	{
 		cpu_set_t mask;
 		CPU_ZERO(&mask);
-		CPU_SET(processorId, &mask);
+		CPU_SET(topologyNode.GetOsIndex().value(), &mask);
 
 		if (sched_setaffinity(0, sizeof(cpu_set_t), &mask))
 		{

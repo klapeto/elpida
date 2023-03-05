@@ -12,11 +12,12 @@
 #include <vector>
 
 #include "Elpida/NumaMemory.hpp"
+#include "Elpida/Topology/ProcessingUnitNode.hpp"
 
 namespace Elpida
 {
 
-	class TaskData
+	class TaskData final
 	{
 	 public:
 		using Metadata = std::unordered_map<std::string, std::string>;
@@ -36,9 +37,9 @@ namespace Elpida
 			return _data.get();
 		}
 
-		int GetProcessorId() const
+		const ProcessingUnitNode& GetTargetProcessor() const
 		{
-			return _processorId;
+			return _targetProcessor;
 		}
 
 		bool IsAllocated() const
@@ -48,12 +49,12 @@ namespace Elpida
 
 		void Allocate(std::size_t size);
 		void Deallocate();
-		void Migrate(int processorId);
-		std::vector<TaskData> Split(const std::vector<int>& processorIds, std::size_t chunkDivisibleBy = 1);
+		void Migrate(const ProcessingUnitNode& targetProcessor);
+		std::vector<TaskData>
+		Split(const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors, std::size_t chunkDivisibleBy = 1);
 		void Merge(const std::vector<TaskData>& chunks);
 
-		TaskData();
-		explicit TaskData(int processorId);
+		explicit TaskData(const ProcessingUnitNode& targetProcessor);
 		TaskData(const TaskData&) = delete;
 		TaskData(TaskData&& other) noexcept;
 		TaskData& operator=(const TaskData&) = delete;
@@ -62,13 +63,13 @@ namespace Elpida
 	 private:
 		Metadata _metadata;
 		NumaUniquePtr _data;
-		int _processorId;
+		std::reference_wrapper<const ProcessingUnitNode> _targetProcessor;
 		std::size_t _size;
 
 		int GetNumaNodeId() const;
 
 		static std::vector<TaskData>
-		SplitChunksToChunks(const std::vector<const TaskData*>& input, const std::vector<int>& processorIds, std::size_t chunkDivisibleBy);
+		SplitChunksToChunks(const std::vector<const TaskData*>& input, const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors, std::size_t chunkDivisibleBy);
 	};
 
 } // Elpida

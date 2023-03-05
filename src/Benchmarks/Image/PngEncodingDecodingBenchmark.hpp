@@ -1,25 +1,27 @@
 //
-// Created by klapeto on 27/2/2023.
+// Created by klapeto on 2/3/2023.
 //
 
-#ifndef _MEMORYLATENCYBENCHMARK_HPP_
-#define _MEMORYLATENCYBENCHMARK_HPP_
+#ifndef _PNGENCODINGDECODINGBENCHMARK_HPP_
+#define _PNGENCODINGDECODINGBENCHMARK_HPP_
 
 #include "Elpida/Benchmark.hpp"
 
 namespace Elpida
 {
 
-	class MemoryLatencyBenchmark : public Benchmark
+	class PngEncodingDecodingBenchmark : public Benchmark
 	{
 	 public:
 		[[nodiscard]]
 		BenchmarkInfo GetInfo() const override;
 
-		MemoryLatencyBenchmark() = default;
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
-		~MemoryLatencyBenchmark() override = default;
+
+		PngEncodingDecodingBenchmark() = default;
+		~PngEncodingDecodingBenchmark() override = default;
 	 protected:
+
 		[[nodiscard]]
 		std::vector<std::unique_ptr<Task>> GetTasks(
 			const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
@@ -32,4 +34,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_MEMORYLATENCYBENCHMARK_HPP_
+#endif //_PNGENCODINGDECODINGBENCHMARK_HPP_

@@ -17,7 +17,7 @@ namespace Elpida
 
 	TaskData FileWriteTask::Finalize()
 	{
-		return std::move(_inputData);
+		return std::move(*_inputData);
 	}
 
 	TaskInfo FileWriteTask::GetInfo() const
@@ -45,7 +45,7 @@ namespace Elpida
 
 	void FileWriteTask::DoRun()
 	{
-		_fileStream.write((char*)_inputData.GetDataRaw(), _inputData.GetSize());
+		_fileStream.write((char*)_inputData->GetDataRaw(), _inputData->GetSize());
 	}
 
 	std::unique_ptr<Task> FileWriteTask::DoDuplicate() const

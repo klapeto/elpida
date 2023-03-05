@@ -4,6 +4,8 @@
 
 #include "MicroTask.hpp"
 
+#include "EnvironmentInfo.hpp"
+
 #include <cstdlib>
 #include <cmath>
 
@@ -12,8 +14,8 @@ namespace Elpida
 	Duration MicroTask::Run()
 	{
 		Duration minimumDuration = GetExecutionMinimumDuration();
-		Duration nowOverhead = _overheadsInfo.GetNowOverhead();
-		Duration loopOverhead = _overheadsInfo.GetLoopOverhead();
+		Duration nowOverhead = _environmentInfo->get().GetOverheadsInfo().GetNowOverhead();
+		Duration loopOverhead = _environmentInfo->get().GetOverheadsInfo().GetLoopOverhead();
 
 		std::size_t iterations = 1;
 		auto currentDuration = Duration::zero();
@@ -53,5 +55,10 @@ namespace Elpida
 		currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
 
 		return currentDuration / static_cast<double>(iterations) / static_cast<double>(GetOperationsPerformedPerRun());
+	}
+
+	void MicroTask::DoRun()
+	{
+
 	}
 } // Elpida
