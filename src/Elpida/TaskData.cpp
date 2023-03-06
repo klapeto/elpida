@@ -23,17 +23,6 @@ namespace Elpida
 		std::memset(_data.get(), 0, size);
 	}
 
-	void TaskData::Migrate(const ProcessingUnitNode& targetProcessor)
-	{
-		_targetProcessor = targetProcessor;
-
-		auto newData = NumaUniquePtr(GetNumaNodeId(), _size);
-
-		std::memcpy(newData.get(), _data.get(), _size);
-
-		_data = std::move(newData);
-	}
-
 	TaskData::TaskData(TaskData&& other) noexcept
 		: _targetProcessor(other._targetProcessor)
 	{

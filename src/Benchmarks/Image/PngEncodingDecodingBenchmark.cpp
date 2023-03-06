@@ -8,6 +8,9 @@
 #include "Benchmarks/Common/FileWriteTask.hpp"
 #include "PngDecodingTask.hpp"
 #include "PngEncodingTask.hpp"
+#include "ConvertToFloatTask.hpp"
+#include "ConvertToGrayscaleTask.hpp"
+#include "ConvertToUInt8Task.hpp"
 #include "Elpida/TaskConfiguration.hpp"
 
 namespace Elpida
@@ -16,6 +19,9 @@ namespace Elpida
 	{
 		FileReadTask read("");
 		PngDecodingTask decode;
+		ConvertToFloatTask floatTask;
+		ConvertToGrayscaleTask grayscaleTask;
+		ConvertToUInt8Task uInt8Task;
 		PngEncodingTask encode;
 		FileWriteTask write("");
 		return BenchmarkInfo(
@@ -26,6 +32,9 @@ namespace Elpida
 			{
 				read.GetInfo(),
 				decode.GetInfo(),
+				floatTask.GetInfo(),
+				grayscaleTask.GetInfo(),
+				uInt8Task.GetInfo(),
 				encode.GetInfo(),
 				write.GetInfo()
 			});
@@ -40,6 +49,9 @@ namespace Elpida
 
 		returnTasks.push_back(std::make_unique<FileReadTask>(configuration.at(0).GetValue()));
 		returnTasks.push_back(std::make_unique<PngDecodingTask>());
+		returnTasks.push_back(std::make_unique<ConvertToFloatTask>());
+		returnTasks.push_back(std::make_unique<ConvertToGrayscaleTask>());
+		returnTasks.push_back(std::make_unique<ConvertToUInt8Task>());
 		returnTasks.push_back(std::make_unique<PngEncodingTask>());
 		returnTasks.push_back(std::make_unique<FileWriteTask>(configuration.at(1).GetValue()));
 

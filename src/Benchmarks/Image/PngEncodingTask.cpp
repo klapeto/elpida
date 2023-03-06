@@ -15,11 +15,10 @@ namespace Elpida
 		auto& metadata = _inputData->GetMetadata();
 
 		auto str = metadata.at("width");
-		char* endPtr;
-		_width = std::strtol(str.c_str(), &endPtr, 0);
+		_width = std::stoi(str);
 
 		str = metadata.at("height");
-		_height = std::strtol(str.c_str(), &endPtr, 0);
+		_height = std::stoi(str);
 
 		_pngImg.width = _width;
 		_pngImg.height = _height;

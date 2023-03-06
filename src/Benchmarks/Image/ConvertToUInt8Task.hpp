@@ -1,19 +1,21 @@
 //
-// Created by klapeto on 1/3/2023.
+// Created by klapeto on 5/3/2023.
 //
 
-#ifndef _PNGENCODINGTASK_HPP_
-#define _PNGENCODINGTASK_HPP_
+#ifndef _CONVERTTOUINT8TASK_HPP_
+#define _CONVERTTOUINT8TASK_HPP_
 
+#include <cstdint>
+#include <memory>
 #include <optional>
-#include <png.h>
 
 #include "Elpida/Task.hpp"
+#include "ImageBenchmarksConfig.hpp"
 
 namespace Elpida
 {
 
-	class PngEncodingTask final : public Task
+	class ConvertToUInt8Task: public Task
 	{
 	 public:
 		void Prepare(TaskData&& inputData) override;
@@ -21,19 +23,20 @@ namespace Elpida
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 
-		PngEncodingTask();
-		~PngEncodingTask() override;
+		ConvertToUInt8Task();
+		~ConvertToUInt8Task() override = default;
 	 protected:
 		void DoRun() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
 		std::unique_ptr<TaskData> _outputData;
 		std::optional<TaskData> _inputData;
-		png_image _pngImg;
-		unsigned int _width;
-		unsigned int _height;
+		std::size_t _width;
+		std::size_t _height;
+		std::size_t _channels;
+		std::size_t _inputBytesPerChannel;
 	};
 
 } // Elpida
 
-#endif //_PNGENCODINGTASK_HPP_
+#endif //_CONVERTTOUINT8TASK_HPP_

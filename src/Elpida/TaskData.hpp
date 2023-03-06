@@ -27,6 +27,11 @@ namespace Elpida
 			return _metadata;
 		}
 
+		const Metadata& GetMetadata() const
+		{
+			return _metadata;
+		}
+
 		size_t GetSize() const
 		{
 			return _size;
@@ -49,7 +54,6 @@ namespace Elpida
 
 		void Allocate(std::size_t size);
 		void Deallocate();
-		void Migrate(const ProcessingUnitNode& targetProcessor);
 		std::vector<TaskData>
 		Split(const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors, std::size_t chunkDivisibleBy = 1);
 		void Merge(const std::vector<TaskData>& chunks);

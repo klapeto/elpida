@@ -1,39 +1,43 @@
 //
-// Created by klapeto on 1/3/2023.
+// Created by klapeto on 5/3/2023.
 //
 
-#ifndef _PNGENCODINGTASK_HPP_
-#define _PNGENCODINGTASK_HPP_
+#ifndef _CONVERTTOFLOATTASK_HPP_
+#define _CONVERTTOFLOATTASK_HPP_
 
+#include <cstdint>
+#include <memory>
 #include <optional>
-#include <png.h>
 
 #include "Elpida/Task.hpp"
+#include "ImageBenchmarksConfig.hpp"
 
 namespace Elpida
 {
 
-	class PngEncodingTask final : public Task
+	class ConvertToFloatTask : public Task
 	{
 	 public:
 		void Prepare(TaskData&& inputData) override;
+
 		TaskData Finalize() override;
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 
-		PngEncodingTask();
-		~PngEncodingTask() override;
+		ConvertToFloatTask();
+		~ConvertToFloatTask() override = default;
 	 protected:
 		void DoRun() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
 		std::unique_ptr<TaskData> _outputData;
 		std::optional<TaskData> _inputData;
-		png_image _pngImg;
-		unsigned int _width;
-		unsigned int _height;
+		std::size_t _width;
+		std::size_t _height;
+		std::size_t _channels;
+		std::size_t _inputBytesPerChannel;
 	};
 
 } // Elpida
 
-#endif //_PNGENCODINGTASK_HPP_
+#endif //_CONVERTTOFLOATTASK_HPP_

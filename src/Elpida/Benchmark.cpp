@@ -62,6 +62,8 @@ namespace Elpida
 	Duration
 	Benchmark::ExecuteMultiThread(TaskData& data, std::unique_ptr<Task> task, const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors)
 	{
+		auto originalSize = data.GetSize();
+		auto originalMetadata = data.GetMetadata();
 		auto chunks = data.Split(targetProcessors);
 
 		data.Deallocate();    // Reduce memory footprint
@@ -70,6 +72,8 @@ namespace Elpida
 		for (auto& chunk: chunks)
 		{
 			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), chunk.GetTargetProcessor());
+
+			chunk.GetMetadata() = originalMetadata;
 
 			threadTask->Prepare(std::move(chunk));
 
@@ -98,6 +102,7 @@ namespace Elpida
 
 		return totalDuration / threadTasks.size();
 	}
+
 	void Benchmark::ValidateConfiguration(const std::vector<TaskConfiguration>& configuration) const
 	{
 		auto expectedConfig = GetRequiredConfiguration();

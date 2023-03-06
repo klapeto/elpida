@@ -4,6 +4,7 @@
 
 #include "PngDecodingTask.hpp"
 #include "Elpida/ElpidaException.hpp"
+#include "ImageBenchmarksConfig.hpp"
 
 #include <png.h>
 
@@ -34,9 +35,10 @@ namespace Elpida
 	TaskData PngDecodingTask::Finalize()
 	{
 		auto& metadata = _outputData->GetMetadata();
-		metadata["width"] = std::to_string(_pngImg.width);
-		metadata["height"] = std::to_string(_pngImg.height);
-		metadata["stride"] = std::to_string(_pngImg.width * 4);
+		metadata[WidthProperty] = std::to_string(_pngImg.width);
+		metadata[HeightProperty] = std::to_string(_pngImg.height);
+		metadata[BytesPerChannelProperty] = std::to_string(sizeof(IntChannel));
+		metadata[ChannelsProperty] = std::to_string(4);
 		return std::move(*_outputData);
 	}
 
@@ -50,7 +52,7 @@ namespace Elpida
 			ScoreType::Throughput,
 			Elpida::DataInfo(),
 			DataInfo("Output image data", "The data of the image to encode to RGBA 8bpp format.", "Pixels", {
-				"stride", "width", "height"
+				"bytesPerChannel", "channels", "width", "height"
 			}));
 	}
 
