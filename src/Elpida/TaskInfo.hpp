@@ -17,18 +17,6 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		const DataInfo& GetInputInfo() const
-		{
-			return _inputInfo;
-		}
-
-		[[nodiscard]]
-		const DataInfo& GetOutputInfo() const
-		{
-			return _outputInfo;
-		}
-
-		[[nodiscard]]
 		const String& GetName() const
 		{
 			return _name;
@@ -62,15 +50,11 @@ namespace Elpida
 			String description,
 			String scoreUnit,
 			String scoreDescription,
-			ScoreType scoreType,
-			DataInfo inputInfo,
-			DataInfo outputInfo);
+			ScoreType scoreType);
 		TaskInfo(const TaskInfo&) = default;
 		TaskInfo(TaskInfo&&) = default;
 		~TaskInfo() = default;
 	 private:
-		DataInfo _inputInfo;
-		DataInfo _outputInfo;
 		String _name;
 		String _description;
 		String _scoreUnit;

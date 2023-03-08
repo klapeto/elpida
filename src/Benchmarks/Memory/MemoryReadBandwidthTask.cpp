@@ -25,9 +25,7 @@ namespace Elpida
 			"Continuously reads a stream a memory to determine th maximum memory readbandwidth.",
 			"B",
 			"The memory bandwidth throughput",
-			ScoreType::Throughput,
-			Elpida::DataInfo(),
-			Elpida::DataInfo()
+			ScoreType::Throughput
 		};
 	}
 

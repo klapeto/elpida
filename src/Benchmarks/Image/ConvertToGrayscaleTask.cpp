@@ -34,17 +34,13 @@ namespace Elpida
 
 	TaskInfo ConvertToGrayscaleTask::GetInfo() const
 	{
-		return TaskInfo("Convert to grayscale",
+		return {
+			"Convert to grayscale",
 			"Converts RGBA pixels to float channels to grayscale",
 			"Pixels",
 			"The amount of pixels processed per second.",
-			ScoreType::Throughput,
-			DataInfo("Input image data", "The data of the image that is in RGBA float pixels.", "Pixels", {
-				BytesPerChannelProperty, ChannelsProperty, WidthProperty, HeightProperty
-			}),
-			DataInfo("Output image data", "The data of the image converted to grayscale.", "Pixels", {
-				BytesPerChannelProperty, ChannelsProperty, WidthProperty, HeightProperty
-			}));
+			ScoreType::Throughput
+		};
 	}
 	bool ConvertToGrayscaleTask::CanBeMultiThreaded() const
 	{

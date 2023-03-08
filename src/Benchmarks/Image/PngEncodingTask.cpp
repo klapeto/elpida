@@ -44,15 +44,13 @@ namespace Elpida
 
 	TaskInfo PngEncodingTask::GetInfo() const
 	{
-		return TaskInfo("Png encoding",
+		return {
+			"Png encoding",
 			"Encodes data to png format.",
 			"Pixels",
 			"The amount of pixels encoded.",
-			ScoreType::Throughput,
-			DataInfo("Input image data", "The data of the image to encode to RGBA 8bpp format.", "Pixels", {
-				"stride", "width", "height"
-			}),
-			Elpida::DataInfo());
+			ScoreType::Throughput
+		};
 	}
 
 	bool PngEncodingTask::CanBeMultiThreaded() const

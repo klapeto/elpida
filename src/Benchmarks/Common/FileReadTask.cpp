@@ -43,9 +43,7 @@ namespace Elpida
 			"Reads a file from the filesystem to memory.",
 			"B",
 			"The amount of bytes read per second",
-			ScoreType::Throughput,
-			Elpida::DataInfo(),
-			Elpida::DataInfo()
+			ScoreType::Throughput
 		};
 	}
 	bool FileReadTask::CanBeMultiThreaded() const

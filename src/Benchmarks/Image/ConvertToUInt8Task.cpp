@@ -3,7 +3,6 @@
 //
 
 #include "ConvertToUInt8Task.hpp"
-#include "ImageUtilities.hpp"
 
 #include "ImageBenchmarksConfig.hpp"
 #include "ImageTaskData.hpp"
@@ -32,7 +31,7 @@ namespace Elpida
 
 		_channels = ptr->GetChannels();
 		_sizeInChannels = ptr->GetWidth() * ptr->GetHeight() * _channels;
-		_inPtr = reinterpret_cast<FloatChannel *>(_inputData->GetDataRaw());
+		_inPtr = reinterpret_cast<FloatChannel*>(_inputData->GetDataRaw());
 		_outPtr = static_cast<IntChannel*>(_outputData->GetDataRaw());
 	}
 
@@ -43,17 +42,13 @@ namespace Elpida
 
 	TaskInfo ConvertToUInt8Task::GetInfo() const
 	{
-		return TaskInfo("Convert to UInt8",
+		return {
+			"Convert to UInt8",
 			"Converts RGBA float pixels to uint8 channels (0 - 255)",
 			"Pixels",
 			"The amount of pixels processed per second.",
-			ScoreType::Throughput,
-			DataInfo("Input image data", "The data of the image that is in RGBA float pixels.", "Pixels", {
-				BytesPerChannelProperty, ChannelsProperty, WidthProperty, HeightProperty
-			}),
-			DataInfo("Output image data", "The data of the image converted to uint8 RGBA channels with value 0 - 255", "Pixels", {
-				BytesPerChannelProperty, ChannelsProperty, WidthProperty, HeightProperty
-			}));
+			ScoreType::Throughput
+		};
 	}
 	bool ConvertToUInt8Task::CanBeMultiThreaded() const
 	{

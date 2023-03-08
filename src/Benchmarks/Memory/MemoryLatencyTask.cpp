@@ -186,9 +186,7 @@ namespace Elpida
 			"Calculates the average access latency of memory.",
 			"",
 			"The average access time.",
-			ScoreType::Time,
-			Elpida::DataInfo(),
-			Elpida::DataInfo()
+			ScoreType::Time
 		};
 	}
 

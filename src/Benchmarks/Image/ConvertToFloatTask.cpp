@@ -4,7 +4,6 @@
 
 #include "ConvertToFloatTask.hpp"
 #include "Elpida/ElpidaException.hpp"
-#include "ImageUtilities.hpp"
 #include "ImageBenchmarksConfig.hpp"
 
 namespace Elpida
@@ -39,17 +38,12 @@ namespace Elpida
 
 	TaskInfo ConvertToFloatTask::GetInfo() const
 	{
-		return TaskInfo("Convert to float",
-			"Converts RGBA pixels to float channels (0.0 - 1.0)",
-			"Pixels",
-			"The amount of pixels processed per second.",
-			ScoreType::Throughput,
-			DataInfo("Input image data", "The data of the image that is in RGBA 32bpp pixels.", "Pixels", {
-				BytesPerChannelProperty, ChannelsProperty, WidthProperty, HeightProperty
-			}),
-			DataInfo("Output image data", "The data of the image converted to float RGBA channels with value 0.0 - 1.0", "Pixels", {
-				BytesPerChannelProperty, ChannelsProperty, WidthProperty, HeightProperty
-			}));
+		return { "Convert to float",
+				 "Converts RGBA pixels to float channels (0.0 - 1.0)",
+				 "Pixels",
+				 "The amount of pixels processed per second.",
+				 ScoreType::Throughput
+		};
 	}
 
 	bool ConvertToFloatTask::CanBeMultiThreaded() const
