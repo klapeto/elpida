@@ -7,15 +7,15 @@
 
 namespace Elpida
 {
-	std::vector<std::unique_ptr<Task>>
+	Vector<UniquePtr<Task>>
 	MemoryLatencyBenchmark::GetTasks(
-		const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-		const std::vector<TaskConfiguration>& configuration,
+		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+		const Vector<TaskConfiguration>& configuration,
 		const EnvironmentInfo& environmentInfo) const
 	{
-		std::size_t cacheSize = 16 * 1024 * 1024;
-		std::size_t cacheLineSize = 16;
-		std::size_t pageSize = 32;
+		Size cacheSize = 16 * 1024 * 1024;
+		Size cacheLineSize = 16;
+		Size pageSize = 32;
 
 		for (auto& processor: targetProcessors)
 		{
@@ -33,12 +33,12 @@ namespace Elpida
 			}
 		}
 
-		std::vector<std::unique_ptr<Task>> tasks;
+		Vector<UniquePtr<Task>> tasks;
 		tasks.push_back(std::make_unique<MemoryLatencyTask>(cacheSize * 8, cacheLineSize, pageSize));
 		return tasks;
 	}
 
-	double MemoryLatencyBenchmark::CalculateScore(const std::vector<TaskResult>& taskResults) const
+	double MemoryLatencyBenchmark::CalculateScore(const Vector<TaskResult>& taskResults) const
 	{
 		return taskResults.front().GetDuration().count();
 	}
@@ -54,7 +54,7 @@ namespace Elpida
 			{ task.GetInfo() });
 	}
 
-	std::vector<TaskConfiguration> MemoryLatencyBenchmark::GetRequiredConfiguration() const
+	Vector<TaskConfiguration> MemoryLatencyBenchmark::GetRequiredConfiguration() const
 	{
 		return {};
 	}

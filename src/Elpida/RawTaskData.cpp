@@ -37,6 +37,13 @@ namespace Elpida
 
 	void RawTaskData::Merge(const Vector<UniquePtr<AbstractTaskData>>& data)
 	{
+		if (data.empty())
+		{
+			_size = 0;
+			_data.reset();
+			return;
+		}
+
 		Vector<Ref<const AbstractTaskData>> inputChunks;
 		inputChunks.reserve(data.size());
 
@@ -79,6 +86,18 @@ namespace Elpida
 	Vector<UniquePtr<AbstractTaskData>>
 	RawTaskData::Split(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors) const
 	{
+		if (_size == 0)
+		{
+			Vector<UniquePtr<AbstractTaskData>> returnVector;
+			returnVector.reserve(targetProcessors.size());
+
+			for (auto& processor: targetProcessors)
+			{
+				returnVector.push_back(std::make_unique<RawTaskData>(processor.get()));
+			}
+			return returnVector;
+		}
+
 		return DataUtilities::SplitChunksToChunks<RawTaskData, AbstractTaskData>({ *this }, targetProcessors, 1,
 			[](auto processor, auto chunkSize)
 			{

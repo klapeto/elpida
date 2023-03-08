@@ -6,16 +6,16 @@
 
 namespace Elpida
 {
-	void MemoryReadBandwidthTask::Prepare(RawTaskData&& inputData)
+	void MemoryReadBandwidthTask::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
 		_data = std::move(inputData);
 		_data->Allocate(_size);
 		_ptr = _data->GetDataRaw();
 	}
 
-	RawTaskData MemoryReadBandwidthTask::Finalize()
+	UniquePtr<AbstractTaskData> MemoryReadBandwidthTask::Finalize()
 	{
-		return std::move(*_data);
+		return std::move(_data);
 	}
 
 	TaskInfo MemoryReadBandwidthTask::GetInfo() const
@@ -31,13 +31,13 @@ namespace Elpida
 		};
 	}
 
-	MemoryReadBandwidthTask::MemoryReadBandwidthTask(std::size_t size)
+	MemoryReadBandwidthTask::MemoryReadBandwidthTask(Size size)
 		: _size(size), _ptr(nullptr)
 	{
 
 	}
 
-	void MemoryReadBandwidthTask::DoRun(std::size_t iterations)
+	void MemoryReadBandwidthTask::DoRun(Size iterations)
 	{
 		volatile auto* ptr = (int*)_ptr;
 		const auto size = _size;
@@ -82,7 +82,7 @@ namespace Elpida
 		}
 	}
 
-	std::size_t MemoryReadBandwidthTask::GetOperationsPerformedPerRun()
+	Size MemoryReadBandwidthTask::GetOperationsPerformedPerRun()
 	{
 		return 1;
 	}
@@ -97,7 +97,7 @@ namespace Elpida
 		return true;
 	}
 
-	std::unique_ptr<Task> MemoryReadBandwidthTask::DoDuplicate() const
+	UniquePtr<Task> MemoryReadBandwidthTask::DoDuplicate() const
 	{
 		return std::unique_ptr<Task>(new MemoryReadBandwidthTask(_size));
 	}

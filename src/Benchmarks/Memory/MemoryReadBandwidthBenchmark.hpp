@@ -5,6 +5,9 @@
 #ifndef _MEMORYREADBANDWIDTHBENCHMARK_HPP_
 #define _MEMORYREADBANDWIDTHBENCHMARK_HPP_
 
+#include "Elpida/Vector.hpp"
+#include "Elpida/Ref.hpp"
+#include "Elpida/UniquePtr.hpp"
 #include "Elpida/Benchmark.hpp"
 
 namespace Elpida
@@ -15,17 +18,17 @@ namespace Elpida
 	 public:
 		[[nodiscard]]
 		BenchmarkInfo GetInfo() const override;
-		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
+		Vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
 		MemoryReadBandwidthBenchmark() = default;
 		~MemoryReadBandwidthBenchmark() override = default;
 	 protected:
 		[[nodiscard]]
-		std::vector<std::unique_ptr<Task>>
-		GetTasks(const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-			const std::vector<TaskConfiguration>& configuration,
+		Vector<UniquePtr<Task>> GetTasks(
+			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			const Vector<TaskConfiguration>& configuration,
 			const EnvironmentInfo& environmentInfo) const override;
-		double CalculateScore(const std::vector<TaskResult>& taskResults) const override;
+		double CalculateScore(const Vector<TaskResult>& taskResults) const override;
 	};
 
 } // Elpida

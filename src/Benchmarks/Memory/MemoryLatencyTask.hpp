@@ -5,9 +5,8 @@
 #ifndef _MEMORYLATENCYTASK_HPP_
 #define _MEMORYLATENCYTASK_HPP_
 
-#include <cstdlib>
-#include <optional>
-
+#include "Elpida/UniquePtr.hpp"
+#include "Elpida/Size.hpp"
 #include "Elpida/MicroTask.hpp"
 
 namespace Elpida
@@ -17,36 +16,36 @@ namespace Elpida
 	{
 	 public:
 
-		void Prepare(RawTaskData&& inputData) override;
+		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
 
 		[[nodiscard]]
 		bool CanBeMultiThreaded() const override;
 
 		[[nodiscard]]
-		RawTaskData Finalize() override;
+		UniquePtr<AbstractTaskData> Finalize() override;
 
 		[[nodiscard]]
 		TaskInfo GetInfo() const override;
 
-		MemoryLatencyTask(std::size_t size, std::size_t cacheLineSize, std::size_t pageSize);
+		MemoryLatencyTask(Size size, Size cacheLineSize, Size pageSize);
 		~MemoryLatencyTask() override = default;
 	 protected:
-		void DoRun(std::size_t iterations) override;
+		void DoRun(Size iterations) override;
 
 		[[nodiscard]]
-		size_t GetOperationsPerformedPerRun() override;
+		Size GetOperationsPerformedPerRun() override;
 
 		[[nodiscard]]
 		Duration GetExecutionMinimumDuration() override;
 
 		[[nodiscard]]
-		std::unique_ptr<Task> DoDuplicate() const override;
+		UniquePtr<Task> DoDuplicate() const override;
 	 private:
-		std::optional<RawTaskData> _data;
+		UniquePtr<AbstractTaskData> _data;
 		char* _ptr;
-		std::size_t _size;
-		std::size_t _cacheLineSize;
-		std::size_t _pageSize;
+		Size _size;
+		Size _cacheLineSize;
+		Size _pageSize;
 	};
 
 } // Elpida

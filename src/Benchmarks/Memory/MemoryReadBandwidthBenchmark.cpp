@@ -18,31 +18,9 @@ namespace Elpida
 			{ task.GetInfo() });
 	}
 
-	std::vector<std::unique_ptr<Task>>
-	MemoryReadBandwidthBenchmark::GetTasks(const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-		const std::vector<TaskConfiguration>& configuration,
-		const EnvironmentInfo& environmentInfo) const
+	double MemoryReadBandwidthBenchmark::CalculateScore(const Vector<TaskResult>& taskResults) const
 	{
-
-		std::size_t cacheSize = 16 * 1024 * 1024;
-
-		for (auto& processor: targetProcessors)
-		{
-			auto cache = processor.get().GetLastCache();
-			if (cache.has_value())
-			{
-				cacheSize = std::max(cacheSize, cache->get().GetSize());
-			}
-		}
-
-		std::vector<std::unique_ptr<Task>> tasks;
-		tasks.push_back(std::make_unique<MemoryReadBandwidthTask>(cacheSize * 8));
-		return tasks;
-	}
-
-	double MemoryReadBandwidthBenchmark::CalculateScore(const std::vector<TaskResult>& taskResults) const
-	{
-		std::size_t totalSize = 0;
+		Size totalSize = 0;
 		Duration totalDuration = Seconds(0);
 
 		for (auto& result: taskResults)
@@ -54,8 +32,27 @@ namespace Elpida
 		return static_cast<double>(totalSize) / totalDuration.count();
 	}
 
-	std::vector<TaskConfiguration> MemoryReadBandwidthBenchmark::GetRequiredConfiguration() const
+	Vector<TaskConfiguration> MemoryReadBandwidthBenchmark::GetRequiredConfiguration() const
 	{
 		return {};
+	}
+
+	Vector<UniquePtr<Task>>
+	MemoryReadBandwidthBenchmark::GetTasks(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors, const Vector<TaskConfiguration>& configuration, const EnvironmentInfo& environmentInfo) const
+	{
+		Size cacheSize = 16 * 1024 * 1024;
+
+		for (auto& processor: targetProcessors)
+		{
+			auto cache = processor.get().GetLastCache();
+			if (cache.has_value())
+			{
+				cacheSize = std::max(cacheSize, cache->get().GetSize());
+			}
+		}
+
+		Vector<UniquePtr<Task>> tasks;
+		tasks.push_back(std::make_unique<MemoryReadBandwidthTask>(cacheSize * 8));
+		return tasks;
 	}
 } // Elpida

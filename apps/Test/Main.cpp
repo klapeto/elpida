@@ -38,14 +38,14 @@ std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& 
 int main(int argC, char* argV[])
 {
 
-	PngEncodingDecodingBenchmark benchmark;
+	MemoryLatencyBenchmark benchmark;
 
 	EnvironmentInfo environmentInfo((OverheadsInfo()), TopologyInfo());
 
 	std::vector<TaskConfiguration> taskConfiguration = benchmark.GetRequiredConfiguration();
 
-	taskConfiguration[0].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9.png");
-	taskConfiguration[1].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9_out.png");
+//	taskConfiguration[0].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9.png");
+//	taskConfiguration[1].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9_out.png");
 
 	auto result = benchmark.Run(environmentInfo.GetTopologyInfo().GetAllProcessingUnits(), taskConfiguration, environmentInfo);
 

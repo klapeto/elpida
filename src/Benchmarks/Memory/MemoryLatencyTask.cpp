@@ -5,9 +5,8 @@
 #include "MemoryLatencyTask.hpp"
 
 #include "Elpida/RawTaskData.hpp"
+#include "Elpida/Vector.hpp"
 
-#include <cstdlib>
-#include <vector>
 #include <random>
 #include <algorithm>
 
@@ -18,14 +17,14 @@
 
 namespace Elpida
 {
-	static std::size_t calculateNumberOfBitsOfNumber(std::size_t number)
+	static Size calculateNumberOfBitsOfNumber(Size number)
 	{
-		std::size_t bits = 0;
-		for (std::size_t i = number >> 1; i != 0; i >>= 1, bits++);
+		Size bits = 0;
+		for (Size i = number >> 1; i != 0; i >>= 1, bits++);
 		return bits;
 	}
 
-	static std::vector<size_t> calculateLines(std::size_t linesCount, std::size_t lineSize)
+	static Vector<Size> calculateLines(Size linesCount, Size lineSize)
 	{
 		/*	From original lmbench 'words_initialize'
 		 *
@@ -45,13 +44,13 @@ namespace Elpida
 		// which in the end we have
 		//		returnLines[3] = (binary) 1100 0000 = 192
 
-		std::vector<std::size_t> returnLines(linesCount, 0);
+		Vector<Size> returnLines(linesCount, 0);
 
-		std::size_t bits = calculateNumberOfBitsOfNumber(linesCount);
+		Size bits = calculateNumberOfBitsOfNumber(linesCount);
 
-		for (std::size_t i = 0; i < linesCount; ++i)
+		for (Size i = 0; i < linesCount; ++i)
 		{
-			for (std::size_t j = 0; j < bits; j++)
+			for (Size j = 0; j < bits; j++)
 			{
 				// j = bit index
 				// search for bits in this i
@@ -76,15 +75,15 @@ namespace Elpida
 		return returnLines;
 	}
 
-	static std::vector<std::size_t> calculatePages(std::size_t pagesCount, std::size_t pageSize)
+	static Vector<Size> calculatePages(Size pagesCount, Size pageSize)
 	{
 		std::random_device rd;
 		std::mt19937_64 generator(rd());
 
-		std::vector<std::size_t> returnPages(pagesCount, 0);
+		Vector<Size> returnPages(pagesCount, 0);
 
 		// Generate the indexes for each page
-		for (std::size_t i = 0; i < pagesCount; ++i)
+		for (Size i = 0; i < pagesCount; ++i)
 		{
 			returnPages[i] = i * pageSize;
 		}
@@ -96,14 +95,14 @@ namespace Elpida
 	}
 
 	static void assignPointers(char* basePtr,
-		const std::vector<std::size_t>& lines,
-		std::size_t pageA,
-		std::size_t pageB,
-		std::size_t lineIndexOffsetA,
-		std::size_t lineIndexOffsetB)
+		const Vector<Size>& lines,
+		Size pageA,
+		Size pageB,
+		Size lineIndexOffsetA,
+		Size lineIndexOffsetB)
 	{
 		const auto linesCount = lines.size();
-		for (std::size_t i = 0; i < linesCount; ++i)
+		for (Size i = 0; i < linesCount; ++i)
 		{
 			// Indices are calculated by the respective page indices and a 'random'
 			// line. This 'random' line shifts +1 for each page iteration
@@ -116,7 +115,7 @@ namespace Elpida
 		}
 	}
 
-	void MemoryLatencyTask::Prepare(RawTaskData&& data)
+	void MemoryLatencyTask::Prepare(UniquePtr<AbstractTaskData> data)
 	{
 		// modified/modernized version of lmbech thrashing/latency algorithm
 		// Check the paper here:
@@ -125,8 +124,8 @@ namespace Elpida
 		_data = std::move(data);
 		_data->Allocate(_size);
 
-		const std::size_t linesPerPage = std::max((double)_pageSize / (double)_cacheLineSize, 1.0);
-		const std::size_t pagesCount = std::max((double)_size / (double)_pageSize, 1.0);
+		const Size linesPerPage = std::max((double)_pageSize / (double)_cacheLineSize, 1.0);
+		const Size pagesCount = std::max((double)_size / (double)_pageSize, 1.0);
 
 		auto pages = calculatePages(pagesCount, _pageSize);
 		_ptr = (char*)_data->GetDataRaw();
@@ -137,7 +136,7 @@ namespace Elpida
 
 			const size_t lastPageIndex = pagesCount - 1;
 
-			for (std::size_t i = 0; i < lastPageIndex; ++i)
+			for (Size i = 0; i < lastPageIndex; ++i)
 			{
 				// pageIndexA will be a random page
 				auto pageIndexA = pages[i];
@@ -169,14 +168,15 @@ namespace Elpida
 
 	}
 
-	MemoryLatencyTask::MemoryLatencyTask(std::size_t size, std::size_t cacheLineSize, std::size_t pageSize)
+	MemoryLatencyTask::MemoryLatencyTask(Size size, Size cacheLineSize, Size pageSize)
 		: MicroTask(), _ptr(nullptr), _size(size), _cacheLineSize(cacheLineSize), _pageSize(pageSize)
 	{
 
 	}
-	RawTaskData MemoryLatencyTask::Finalize()
+
+	UniquePtr<AbstractTaskData> MemoryLatencyTask::Finalize()
 	{
-		return std::move(*_data);
+		return std::move(_data);
 	}
 
 	TaskInfo MemoryLatencyTask::GetInfo() const
@@ -226,9 +226,9 @@ namespace Elpida
 		return false;
 	}
 
-	std::unique_ptr<Task> MemoryLatencyTask::DoDuplicate() const
+	UniquePtr<Task> MemoryLatencyTask::DoDuplicate() const
 	{
-		return std::unique_ptr<Task>(new MemoryLatencyTask(_size, _cacheLineSize, _pageSize));
+		return UniquePtr<Task>(new MemoryLatencyTask(_size, _cacheLineSize, _pageSize));
 	}
 
 } // Elpida

@@ -5,6 +5,9 @@
 #ifndef _MEMORYLATENCYBENCHMARK_HPP_
 #define _MEMORYLATENCYBENCHMARK_HPP_
 
+#include "Elpida/Vector.hpp"
+#include "Elpida/UniquePtr.hpp"
+#include "Elpida/Ref.hpp"
 #include "Elpida/Benchmark.hpp"
 
 namespace Elpida
@@ -17,17 +20,17 @@ namespace Elpida
 		BenchmarkInfo GetInfo() const override;
 
 		MemoryLatencyBenchmark() = default;
-		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
+		Vector<TaskConfiguration> GetRequiredConfiguration() const override;
 		~MemoryLatencyBenchmark() override = default;
 	 protected:
 		[[nodiscard]]
-		std::vector<std::unique_ptr<Task>> GetTasks(
-			const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-			const std::vector<TaskConfiguration>& configuration,
+		Vector<UniquePtr<Task>> GetTasks(
+			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			const Vector<TaskConfiguration>& configuration,
 			const EnvironmentInfo& environmentInfo) const override;
 
 		[[nodiscard]]
-		double CalculateScore(const std::vector<TaskResult>& taskResults) const override;
+		double CalculateScore(const Vector<TaskResult>& taskResults) const override;
 	};
 
 } // Elpida
