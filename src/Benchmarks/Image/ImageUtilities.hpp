@@ -5,7 +5,7 @@
 #ifndef _IMAGEUTILITIES_HPP_
 #define _IMAGEUTILITIES_HPP_
 
-#include "Elpida/TaskData.hpp"
+#include "Elpida/RawTaskData.hpp"
 
 namespace Elpida
 {
@@ -15,10 +15,9 @@ namespace Elpida
 	 public:
 		static void TransformMetadataForChunk(
 			std::size_t originalSize,
-			TaskData::Metadata& metadata,
 			std::size_t targetSize);
 
-		static std::size_t GetChunkDivisibleBy(const TaskData& taskData);
+		static std::size_t GetChunkDivisibleBy(const RawTaskData& taskData);
 	};
 
 } // Elpida

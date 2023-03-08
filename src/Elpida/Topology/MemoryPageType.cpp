@@ -2,20 +2,21 @@
 // Created by klapeto on 5/3/2023.
 //
 
-#include "MemoryPageType.hpp"
+#include "Elpida/Topology/MemoryPageType.hpp"
 
 namespace Elpida
 {
-	MemoryPageType::MemoryPageType(size_t pageSize, size_t pageCount) : _pageSize(pageSize), _pageCount(pageCount)
+	MemoryPageType::MemoryPageType(Size pageSize, Size pageCount)
+		: _pageSize(pageSize), _pageCount(pageCount)
 	{
 	}
 
-	std::size_t MemoryPageType::GetPageSize() const
+	Size MemoryPageType::GetPageSize() const
 	{
 		return _pageSize;
 	}
 
-	std::size_t MemoryPageType::GetPageCount() const
+	Size MemoryPageType::GetPageCount() const
 	{
 		return _pageCount;
 	}

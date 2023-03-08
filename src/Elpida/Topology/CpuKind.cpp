@@ -2,11 +2,11 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#include "CpuKind.hpp"
+#include "Elpida/Topology/CpuKind.hpp"
 
 namespace Elpida
 {
-	CpuKind::CpuKind(int efficiency, std::unordered_map<std::string, std::string>&& infos)
+	CpuKind::CpuKind(int efficiency, Map<String, String>&& infos)
 		: _infos(std::move(infos)), _efficiency(efficiency)
 	{
 
@@ -17,7 +17,7 @@ namespace Elpida
 		return _efficiency;
 	}
 
-	const std::unordered_map<std::string, std::string>& CpuKind::getInfos() const
+	const Map<String, String>& CpuKind::getInfos() const
 	{
 		return _infos;
 	}

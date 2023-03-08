@@ -5,7 +5,7 @@
 #ifndef _TASKCONFIGURATION_HPP_
 #define _TASKCONFIGURATION_HPP_
 
-#include <string>
+#include "Elpida/String.hpp"
 
 namespace Elpida
 {
@@ -27,13 +27,13 @@ namespace Elpida
 		using String = std::string;
 
 		[[nodiscard]]
-		const std::string& GetName() const
+		const String& GetName() const
 		{
 			return _name;
 		}
 
 		[[nodiscard]]
-		const std::string& GetValue() const
+		const String& GetValue() const
 		{
 			return _value;
 		}
@@ -51,15 +51,15 @@ namespace Elpida
 		Integer AsInteger();
 		Float AsFloat();
 
-		TaskConfiguration(std::string name, ConfigurationType type);
+		TaskConfiguration(String name, ConfigurationType type);
 		TaskConfiguration(const TaskConfiguration&) = default;
 		TaskConfiguration(TaskConfiguration&&) noexcept = default;
 		TaskConfiguration& operator=(const TaskConfiguration&) = default;
 		TaskConfiguration& operator=(TaskConfiguration&&) noexcept = default;
 		~TaskConfiguration() = default;
 	 private:
-		std::string _name;
-		std::string _value;
+		String _name;
+		String _value;
 		ConfigurationType _type;
 	};
 

@@ -5,14 +5,12 @@
 #ifndef _TOPOLOGYNODE_HPP_
 #define _TOPOLOGYNODE_HPP_
 
-#include <vector>
-#include <optional>
-#include <functional>
-#include <variant>
-#include <memory>
-#include <unordered_map>
 
 #include "Elpida/Topology/CpuKind.hpp"
+#include "Elpida/Vector.hpp"
+#include "Elpida/UniquePtr.hpp"
+#include "Elpida/Optional.hpp"
+#include "Elpida/Ref.hpp"
 
 namespace Elpida
 {
@@ -40,25 +38,25 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		const std::vector<std::unique_ptr<TopologyNode>>& GetChildren() const;
+		const Vector<UniquePtr<TopologyNode>>& GetChildren() const;
 
 		[[nodiscard]]
-		const std::vector<std::unique_ptr<TopologyNode>>& GetMemoryChildren() const;
+		const Vector<UniquePtr<TopologyNode>>& GetMemoryChildren() const;
 
 		[[nodiscard]]
-		const std::vector<std::reference_wrapper<const TopologyNode>>& GetSiblings() const;
+		const Vector<Ref<const TopologyNode>>& GetSiblings() const;
 
 		[[nodiscard]]
-		std::optional<std::reference_wrapper<const TopologyNode>> GetParent() const;
+		Optional<Ref<const TopologyNode>> GetParent() const;
 
 		[[nodiscard]]
 		NodeType GetType() const;
 
 		[[nodiscard]]
-		std::optional<int> GetOsIndex() const;
+		Optional<int> GetOsIndex() const;
 
 		[[nodiscard]]
-		std::optional<std::reference_wrapper<const TopologyNode>> GetLastAncestor(NodeType nodeTypes) const;
+		Optional<Ref<const TopologyNode>> GetLastAncestor(NodeType nodeTypes) const;
 
 		TopologyNode(const TopologyNode&) = delete;
 		TopologyNode(TopologyNode&&) noexcept = default;
@@ -66,17 +64,16 @@ namespace Elpida
 		TopologyNode& operator=(TopologyNode&&) noexcept = default;
 		virtual ~TopologyNode() = default;
 	 private:
-		std::vector<std::unique_ptr<TopologyNode>> _children;
-		std::vector<std::unique_ptr<TopologyNode>> _memoryChildren;
-		std::vector<std::reference_wrapper<const TopologyNode>> _siblings;
+		Vector<UniquePtr<TopologyNode>> _children;
+		Vector<UniquePtr<TopologyNode>> _memoryChildren;
+		Vector<Ref<const TopologyNode>> _siblings;
 
-		std::optional<std::reference_wrapper<const TopologyNode>> _parent;
+		Optional<Ref<const TopologyNode>> _parent;
 
 		NodeType _type;
-		std::optional<int> _osIndex;
-
+		Optional<int> _osIndex;
 	 protected:
-		TopologyNode(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
+		TopologyNode(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 		void addSibling(TopologyNode& node);
 
 		void loadMachine(void* node);
@@ -88,11 +85,11 @@ namespace Elpida
 		void loadCache(void* node);
 		void loadProcessingUnit(void* node);
 
-		void loadChildren(const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
+		void loadChildren(const Vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 		void loadSiblings();
-		void loadParents(std::optional<std::reference_wrapper<TopologyNode>> parent);
+		void loadParents(Optional<Ref<TopologyNode>> parent);
 
-		static std::unique_ptr<TopologyNode> Load(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
+		static UniquePtr<TopologyNode> Load(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 
 		friend class TopologyInfo;
 	};

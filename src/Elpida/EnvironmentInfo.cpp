@@ -2,7 +2,7 @@
 // Created by klapeto on 4/3/2023.
 //
 
-#include "EnvironmentInfo.hpp"
+#include "Elpida/EnvironmentInfo.hpp"
 
 namespace Elpida
 {

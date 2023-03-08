@@ -2,13 +2,13 @@
 // Created by klapeto on 4/3/2023.
 //
 
-#include "CpuCacheNode.hpp"
+#include "Elpida/Topology/CpuCacheNode.hpp"
 
 #include <hwloc.h>
 
 namespace Elpida
 {
-	CpuCacheNode::CpuCacheNode(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
+	CpuCacheNode::CpuCacheNode(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node)
 		: TopologyNode(parent, cpuKinds, rootObj, node)
 	{
 		auto currentNode = (hwloc_obj_t)node;
@@ -39,18 +39,18 @@ namespace Elpida
 			_cacheType = CacheType::Instruction;
 			break;
 		}
-
 	}
+
 	CacheType CpuCacheNode::GetCacheType() const
 	{
 		return _cacheType;
 	}
 
-	std::size_t CpuCacheNode::GetSize() const
+	Size CpuCacheNode::GetSize() const
 	{
 		return _size;
 	}
-	std::size_t CpuCacheNode::GetLineSize() const
+	Size CpuCacheNode::GetLineSize() const
 	{
 		return _lineSize;
 	}

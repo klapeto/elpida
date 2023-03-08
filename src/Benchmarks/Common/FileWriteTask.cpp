@@ -8,16 +8,16 @@
 
 namespace Elpida
 {
-	void FileWriteTask::Prepare(TaskData&& inputData)
+	void FileWriteTask::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
 
 		_fileStream = std::fstream(std::filesystem::u8path(_filePath), std::ios::out | std::ios::binary);
 	}
 
-	TaskData FileWriteTask::Finalize()
+	UniquePtr<AbstractTaskData> FileWriteTask::Finalize()
 	{
-		return std::move(*_inputData);
+		return std::move(_inputData);
 	}
 
 	TaskInfo FileWriteTask::GetInfo() const

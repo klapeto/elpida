@@ -5,9 +5,9 @@
 #ifndef _PNGENCODINGTASK_HPP_
 #define _PNGENCODINGTASK_HPP_
 
-#include <optional>
 #include <png.h>
 
+#include "Elpida/UniquePtr.hpp"
 #include "Elpida/Task.hpp"
 
 namespace Elpida
@@ -16,8 +16,8 @@ namespace Elpida
 	class PngEncodingTask final : public Task
 	{
 	 public:
-		void Prepare(TaskData&& inputData) override;
-		TaskData Finalize() override;
+		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
+		UniquePtr<AbstractTaskData> Finalize() override;
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 
@@ -25,10 +25,10 @@ namespace Elpida
 		~PngEncodingTask() override;
 	 protected:
 		void DoRun() override;
-		std::unique_ptr<Task> DoDuplicate() const override;
+		UniquePtr<Task> DoDuplicate() const override;
 	 private:
-		std::unique_ptr<TaskData> _outputData;
-		std::optional<TaskData> _inputData;
+		UniquePtr<AbstractTaskData> _outputData;
+		UniquePtr<AbstractTaskData> _inputData;
 		png_image _pngImg;
 		unsigned int _width;
 		unsigned int _height;

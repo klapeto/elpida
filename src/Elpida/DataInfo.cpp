@@ -2,16 +2,16 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#include "DataInfo.hpp"
+#include "Elpida/DataInfo.hpp"
 
 #include <utility>
 
 namespace Elpida
 {
-	DataInfo::DataInfo(std::string name,
-			std::string description,
-			std::string unit,
-			const std::vector<std::string>& metadata)
+	DataInfo::DataInfo(String name,
+			String description,
+			String unit,
+			const Vector<String>& metadata)
 			: _name(std::move(name)),
 			  _description(std::move(description)),
 			  _unit(std::move(unit)),

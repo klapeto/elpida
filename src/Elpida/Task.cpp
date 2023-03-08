@@ -2,7 +2,7 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#include "Task.hpp"
+#include "Elpida/Task.hpp"
 
 #include "Elpida/EnvironmentInfo.hpp"
 
@@ -20,7 +20,7 @@ namespace Elpida
 		return b - a - _environmentInfo->get().GetOverheadsInfo().GetNowOverhead();
 	}
 
-	std::unique_ptr<Task> Task::Duplicate() const
+	UniquePtr<Task> Task::Duplicate() const
 	{
 		auto task = DoDuplicate();
 		task->SetEnvironmentInfo(_environmentInfo->get());

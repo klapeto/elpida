@@ -8,10 +8,10 @@
 
 namespace Elpida
 {
-	TaskInfo::TaskInfo(std::string name,
-		std::string description,
-		std::string scoreUnit,
-		std::string scoreDescription,
+	TaskInfo::TaskInfo(String name,
+		String description,
+		String scoreUnit,
+		String scoreDescription,
 		ScoreType scoreType,
 		DataInfo inputInfo,
 		DataInfo outputInfo) : _inputInfo(std::move(inputInfo)),

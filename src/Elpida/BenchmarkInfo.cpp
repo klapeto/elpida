@@ -2,7 +2,7 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#include "BenchmarkInfo.hpp"
+#include "Elpida/BenchmarkInfo.hpp"
 
 namespace Elpida {
 } // Elpida

@@ -8,6 +8,9 @@
 #include "Elpida/Topology/TopologyNode.hpp"
 #include "Elpida/Topology/NumaNode.hpp"
 #include "Elpida/Topology/CpuCacheNode.hpp"
+#include "Elpida/Vector.hpp"
+#include "Elpida/Ref.hpp"
+#include "Elpida/Optional.hpp"
 
 namespace Elpida
 {
@@ -17,13 +20,13 @@ namespace Elpida
 	 public:
 
 		[[nodiscard]]
-		std::optional<std::reference_wrapper<const CpuKind>> GetCpuKind() const;
+		Optional<Ref<const CpuKind>> GetCpuKind() const;
 
 		[[nodiscard]]
-		std::optional<std::reference_wrapper<const CpuCacheNode>> GetLastCache() const;
+		Optional<Ref<const CpuCacheNode>> GetLastCache() const;
 
 		[[nodiscard]]
-		std::optional<std::reference_wrapper<const NumaNode>> GetNumaNode() const;
+		Optional<Ref<const NumaNode>> GetNumaNode() const;
 
 		ProcessingUnitNode(const ProcessingUnitNode&) = delete;
 		ProcessingUnitNode(ProcessingUnitNode&&) noexcept = delete;
@@ -31,12 +34,12 @@ namespace Elpida
 		ProcessingUnitNode& operator=(ProcessingUnitNode&&) noexcept = delete;
 		~ProcessingUnitNode() override = default;
 	 private:
-		ProcessingUnitNode(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
+		ProcessingUnitNode(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 
-		std::optional<std::reference_wrapper<const CpuCacheNode>> _lastCache;
-		std::optional<std::reference_wrapper<const NumaNode>> _numaNode;
+		Optional<Ref<const CpuCacheNode>> _lastCache;
+		Optional<Ref<const NumaNode>> _numaNode;
 
-		std::optional<std::reference_wrapper<const CpuKind>> _cpuKind;
+		Optional<Ref<const CpuKind>> _cpuKind;
 
 		friend class TopologyNode;
 	};

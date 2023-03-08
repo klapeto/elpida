@@ -5,10 +5,7 @@
 #ifndef ELPIDA_BENCHMARK_HPP
 #define ELPIDA_BENCHMARK_HPP
 
-#include <vector>
-#include <memory>
-#include <unordered_map>
-
+#include "Elpida/Vector.hpp"
 #include "Elpida/BenchmarkResult.hpp"
 #include "Elpida/BenchmarkInfo.hpp"
 #include "Elpida/Task.hpp"
@@ -25,12 +22,13 @@ namespace Elpida {
 		virtual BenchmarkInfo GetInfo() const = 0;
 
 		[[nodiscard]]
-		BenchmarkResult Run(const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-			const std::vector<TaskConfiguration>& configuration,
+		BenchmarkResult Run(
+			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			const Vector<TaskConfiguration>& configuration,
 			const EnvironmentInfo& environmentInfo) const;
 
 		[[nodiscard]]
-		virtual std::vector<TaskConfiguration> GetRequiredConfiguration() const = 0;
+		virtual Vector<TaskConfiguration> GetRequiredConfiguration() const = 0;
 
 		Benchmark() = default;
 		Benchmark(const Benchmark&) = delete;
@@ -41,18 +39,18 @@ namespace Elpida {
 	 protected:
 
 		[[nodiscard]]
-		virtual std::vector<std::unique_ptr<Task>> GetTasks(
-			const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-			const std::vector<TaskConfiguration>& configuration,
+		virtual Vector<UniquePtr<Task>> GetTasks(
+			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			const Vector<TaskConfiguration>& configuration,
 			const EnvironmentInfo& environmentInfo) const = 0;
 
 		[[nodiscard]]
-		virtual double CalculateScore(const std::vector<TaskResult>& taskResults) const = 0;
+		virtual double CalculateScore(const Vector<TaskResult>& taskResults) const = 0;
 	 private:
-		static Duration ExecuteSingleThread(TaskData& data, std::unique_ptr<Task> task, const TopologyNode& topologyNode);
-		static Duration ExecuteMultiThread(TaskData& data, std::unique_ptr<Task> task, const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors);
+		static Duration ExecuteSingleThread(UniquePtr<AbstractTaskData>& data, UniquePtr<Task> task, const TopologyNode& topologyNode);
+		static Duration ExecuteMultiThread(UniquePtr<AbstractTaskData>& data, UniquePtr<Task> task, const Vector<Ref<const ProcessingUnitNode>>& targetProcessors);
 
-		void ValidateConfiguration(const std::vector<TaskConfiguration>& configuration) const;
+		void ValidateConfiguration(const Vector<TaskConfiguration>& configuration) const;
 	};
 
 } // Elpida

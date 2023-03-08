@@ -15,8 +15,8 @@ namespace Elpida
 	class MemoryReadBandwidthTask : public MicroTask
 	{
 	 public:
-		void Prepare(TaskData&& inputData) override;
-		TaskData Finalize() override;
+		void Prepare(RawTaskData&& inputData) override;
+		RawTaskData Finalize() override;
 		bool CanBeMultiThreaded() const override;
 		TaskInfo GetInfo() const override;
 		explicit MemoryReadBandwidthTask(std::size_t size);
@@ -27,7 +27,7 @@ namespace Elpida
 		Duration GetExecutionMinimumDuration() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
-		std::optional<TaskData> _data;
+		std::optional<RawTaskData> _data;
 		char* _ptr;
 		std::size_t _size;
 	};

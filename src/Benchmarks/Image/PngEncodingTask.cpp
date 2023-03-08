@@ -4,30 +4,31 @@
 
 #include "PngEncodingTask.hpp"
 #include "Elpida/ElpidaException.hpp"
+#include "ImageTaskData.hpp"
 
 #include <png.h>
 
 namespace Elpida
 {
-	void PngEncodingTask::Prepare(TaskData&& inputData)
+	void PngEncodingTask::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
+		auto ptr = dynamic_cast<ImageTaskData*>(inputData.get());
+
+		if (inputData->GetSize() == 0)
+		{
+			throw ElpidaException("Png decoding must be supplied with data. It got zero size data.");
+		}
+
 		_inputData = std::move(inputData);
-		auto& metadata = _inputData->GetMetadata();
-
-		auto str = metadata.at("width");
-		_width = std::stoi(str);
-
-		str = metadata.at("height");
-		_height = std::stoi(str);
-
-		_pngImg.width = _width;
-		_pngImg.height = _height;
 
 		std::size_t outputSize;
 
+		_pngImg.width = ptr->GetWidth();
+		_pngImg.height = ptr->GetHeight();
+
 		if (png_image_write_to_memory(&_pngImg, nullptr, &outputSize, 0, _inputData->GetDataRaw(), 0, nullptr))
 		{
-			_outputData = std::make_unique<TaskData>(_inputData->GetTargetProcessor());
+			_outputData = std::make_unique<RawTaskData>(_inputData->GetTargetProcessor());
 			_outputData->Allocate(outputSize);
 		}
 		else
@@ -36,9 +37,9 @@ namespace Elpida
 		}
 	}
 
-	TaskData PngEncodingTask::Finalize()
+	UniquePtr<AbstractTaskData> PngEncodingTask::Finalize()
 	{
-		return std::move(*_outputData);
+		return std::move(_outputData);
 	}
 
 	TaskInfo PngEncodingTask::GetInfo() const

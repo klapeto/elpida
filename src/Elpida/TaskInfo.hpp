@@ -5,8 +5,7 @@
 #ifndef ELPIDA_TASKINFO_HPP
 #define ELPIDA_TASKINFO_HPP
 
-#include <string>
-
+#include "Elpida/String.hpp"
 #include "Elpida/ScoreComparisonType.hpp"
 #include "Elpida/ScoreType.hpp"
 #include "Elpida/DataInfo.hpp"
@@ -30,25 +29,25 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const std::string& GetName() const
+		const String& GetName() const
 		{
 			return _name;
 		}
 
 		[[nodiscard]]
-		const std::string& GetDescription() const
+		const String& GetDescription() const
 		{
 			return _description;
 		}
 
 		[[nodiscard]]
-		const std::string& GetScoreUnit() const
+		const String& GetScoreUnit() const
 		{
 			return _scoreUnit;
 		}
 
 		[[nodiscard]]
-		const std::string& GetScoreDescription() const
+		const String& GetScoreDescription() const
 		{
 			return _scoreDescription;
 		}
@@ -59,27 +58,23 @@ namespace Elpida
 			return _scoreType;
 		}
 
-		TaskInfo(std::string name,
-			std::string description,
-			std::string scoreUnit,
-			std::string scoreDescription,
+		TaskInfo(String name,
+			String description,
+			String scoreUnit,
+			String scoreDescription,
 			ScoreType scoreType,
 			DataInfo inputInfo,
 			DataInfo outputInfo);
-
 		TaskInfo(const TaskInfo&) = default;
-
 		TaskInfo(TaskInfo&&) = default;
-
 		~TaskInfo() = default;
-
 	 private:
 		DataInfo _inputInfo;
 		DataInfo _outputInfo;
-		std::string _name;
-		std::string _description;
-		std::string _scoreUnit;
-		std::string _scoreDescription;
+		String _name;
+		String _description;
+		String _scoreUnit;
+		String _scoreDescription;
 		ScoreType _scoreType;
 	};
 

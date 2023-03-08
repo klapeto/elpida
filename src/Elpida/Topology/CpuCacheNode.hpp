@@ -5,7 +5,10 @@
 #ifndef _CPUCACHENODE_HPP_
 #define _CPUCACHENODE_HPP_
 
-#include "TopologyNode.hpp"
+#include "Elpida/Topology/TopologyNode.hpp"
+#include "Elpida/Size.hpp"
+#include "Elpida/Optional.hpp"
+#include "Elpida/Vector.hpp"
 
 namespace Elpida
 {
@@ -23,10 +26,10 @@ namespace Elpida
 		CacheType GetCacheType() const;
 
 		[[nodiscard]]
-		std::size_t GetSize() const;
+		Size GetSize() const;
 
 		[[nodiscard]]
-		std::size_t GetLineSize() const;
+		Size GetLineSize() const;
 
 		[[nodiscard]]
 		int GetAssociativitySets() const;
@@ -40,11 +43,11 @@ namespace Elpida
 		CpuCacheNode& operator=(CpuCacheNode&&) noexcept = delete;
 		~CpuCacheNode() override = default;
 	 private:
-		CpuCacheNode(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
+		CpuCacheNode(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 
 		CacheType _cacheType;
-		std::size_t _size;
-		std::size_t _lineSize;
+		Size _size;
+		Size _lineSize;
 		int _associativitySets;
 		bool _fullyAssociative;
 

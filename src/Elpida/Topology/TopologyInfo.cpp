@@ -2,7 +2,9 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#include "TopologyInfo.hpp"
+#include "Elpida/Topology/TopologyInfo.hpp"
+#include "Elpida/Map.hpp"
+#include "Elpida/String.hpp"
 
 #include <hwloc.h>
 
@@ -25,7 +27,7 @@ namespace Elpida
 					int efficiency = 0;
 					unsigned int nrInfos = 0;
 					hwloc_info_s* hwInfos;
-					std::unordered_map<std::string, std::string> infos;
+					Map<String, String> infos;
 					if (!hwloc_cpukinds_get_info(topology, i, nullptr, &efficiency, &nrInfos, &hwInfos, 0))
 					{
 						for (auto j = 0u; j < nrInfos; ++j)
@@ -107,42 +109,42 @@ namespace Elpida
 		return *_root;
 	}
 
-	const std::vector<CpuKind>& TopologyInfo::GetCpuKinds() const
+	const Vector<CpuKind>& TopologyInfo::GetCpuKinds() const
 	{
 		return _cpuKinds;
 	}
 
-	std::size_t TopologyInfo::GetTotalLogicalCores() const
+	Size TopologyInfo::GetTotalLogicalCores() const
 	{
 		return _totalLogicalCores;
 	}
 
-	std::size_t TopologyInfo::GetTotalPhysicalCores() const
+	Size TopologyInfo::GetTotalPhysicalCores() const
 	{
 		return _totalPhysicalCores;
 	}
 
-	std::size_t TopologyInfo::GetTotalNumaNodes() const
+	Size TopologyInfo::GetTotalNumaNodes() const
 	{
 		return _totalNumaNodes;
 	}
 
-	std::size_t TopologyInfo::GetTotalPackages() const
+	Size TopologyInfo::GetTotalPackages() const
 	{
 		return _totalPackages;
 	}
 
-	const std::vector<std::reference_wrapper<const CpuCacheNode>>& TopologyInfo::GetAllCaches() const
+	const Vector<Ref<const CpuCacheNode>>& TopologyInfo::GetAllCaches() const
 	{
 		return _allCaches;
 	}
 
-	const std::vector<std::reference_wrapper<const NumaNode>>& TopologyInfo::GetAllNumaNodes() const
+	const Vector<Ref<const NumaNode>>& TopologyInfo::GetAllNumaNodes() const
 	{
 		return _allNumaNodes;
 	}
 
-	const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& TopologyInfo::GetAllProcessingUnits() const
+	const Vector<Ref<const ProcessingUnitNode>>& TopologyInfo::GetAllProcessingUnits() const
 	{
 		return _allProcessingUnits;
 	}

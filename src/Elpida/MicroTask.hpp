@@ -5,9 +5,8 @@
 #ifndef _MICROTASK_HPP_
 #define _MICROTASK_HPP_
 
-#include <cstdlib>
-
 #include "Elpida/Task.hpp"
+#include "Elpida/Size.hpp"
 
 namespace Elpida
 {
@@ -21,8 +20,8 @@ namespace Elpida
 		~MicroTask() override = default;
 	 protected:
 		void DoRun() final;
-		virtual void DoRun(std::size_t iterations) = 0;
-		virtual std::size_t GetOperationsPerformedPerRun() = 0;
+		virtual void DoRun(Size iterations) = 0;
+		virtual Size GetOperationsPerformedPerRun() = 0;
 		virtual Duration GetExecutionMinimumDuration() = 0;
 	};
 

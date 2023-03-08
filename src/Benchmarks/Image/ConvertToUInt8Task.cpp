@@ -6,34 +6,39 @@
 #include "ImageUtilities.hpp"
 
 #include "ImageBenchmarksConfig.hpp"
+#include "ImageTaskData.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #include <cstdint>
 
 namespace Elpida
 {
-	void ConvertToUInt8Task::Prepare(TaskData&& inputData)
+	void ConvertToUInt8Task::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
+		auto ptr = dynamic_cast<ImageTaskData*>(inputData.get());
+
+		if (ptr->GetBytesPerChannel() != sizeof(FloatChannel))
+		{
+			throw ElpidaException("ConvertToUInt8Task requires image data in float format");
+		}
+
 		_inputData = std::move(inputData);
 
-		auto& metadata = _inputData->GetMetadata();
-		_width = std::stoul(metadata.at(WidthProperty));
-		_height = std::stoul(metadata.at(HeightProperty));
-		_inputBytesPerChannel = std::stoul(metadata.at(BytesPerChannelProperty));
-		_channels = std::stoul(metadata.at(ChannelsProperty));
+		_outputData = std::make_unique<ImageTaskData>(ptr->GetTargetProcessor(),
+			ptr->GetWidth(),
+			ptr->GetHeight(),
+			ptr->GetChannels(),
+			sizeof(IntChannel));
 
-		_outputData = std::make_unique<TaskData>(_inputData->GetTargetProcessor());
-		_outputData->Allocate(_width * _height * _channels * sizeof(IntChannel));
+		_channels = ptr->GetChannels();
+		_sizeInChannels = ptr->GetWidth() * ptr->GetHeight() * _channels;
+		_inPtr = reinterpret_cast<FloatChannel *>(_inputData->GetDataRaw());
+		_outPtr = static_cast<IntChannel*>(_outputData->GetDataRaw());
 	}
 
-	TaskData ConvertToUInt8Task::Finalize()
+	UniquePtr<AbstractTaskData> ConvertToUInt8Task::Finalize()
 	{
-		auto& metadata = _outputData->GetMetadata();
-		metadata[WidthProperty] = std::to_string(_width);
-		metadata[HeightProperty] = std::to_string(_height);
-		metadata[ChannelsProperty] = std::to_string(_channels);
-		metadata[BytesPerChannelProperty] = std::to_string(sizeof(IntChannel));
-
-		return std::move(*_outputData);
+		return std::move(_outputData);
 	}
 
 	TaskInfo ConvertToUInt8Task::GetInfo() const
@@ -52,35 +57,30 @@ namespace Elpida
 	}
 	bool ConvertToUInt8Task::CanBeMultiThreaded() const
 	{
-		return false;
+		return true;
 	}
 
 	ConvertToUInt8Task::ConvertToUInt8Task()
-		: _width(0), _height(0), _channels(0), _inputBytesPerChannel(0)
+		: _inPtr(nullptr), _outPtr(nullptr), _sizeInChannels(0), _channels(0)
 	{
 
 	}
 
 	void ConvertToUInt8Task::DoRun()
 	{
-		const std::size_t size = _width * _height * _channels;
 		const auto multiplier = (FloatChannel)255.0;
-		const auto channels = _channels;
 
-		auto outPtr = (IntChannel*)_outputData->GetDataRaw();
-		auto inPtr = (FloatChannel *)_inputData->GetDataRaw();
-
-		for (std::size_t i = 0; i < size; i += channels)
+		for (std::size_t i = 0; i < _sizeInChannels; i += _channels)
 		{
-			outPtr[i] = (IntChannel)(inPtr[i] * multiplier);
-			outPtr[i + 1] = (IntChannel)(inPtr[i + 1] * multiplier);
-			outPtr[i + 2] = (IntChannel)(inPtr[i + 2] * multiplier);
-			outPtr[i + 3] = (IntChannel)(inPtr[i + 3] * multiplier);
+			_outPtr[i] = (IntChannel)(_inPtr[i] * multiplier);
+			_outPtr[i + 1] = (IntChannel)(_inPtr[i + 1] * multiplier);
+			_outPtr[i + 2] = (IntChannel)(_inPtr[i + 2] * multiplier);
+			_outPtr[i + 3] = (IntChannel)(_inPtr[i + 3] * multiplier);
 		}
 	}
 
-	std::unique_ptr<Task> ConvertToUInt8Task::DoDuplicate() const
+	UniquePtr<Task> ConvertToUInt8Task::DoDuplicate() const
 	{
-		return std::unique_ptr<Task>(new ConvertToUInt8Task());
+		return UniquePtr<Task>(new ConvertToUInt8Task());
 	}
 } // Elpida

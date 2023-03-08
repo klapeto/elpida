@@ -7,6 +7,7 @@
 
 #include <stdexcept>
 
+#include "Elpida/String.hpp"
 #include "Elpida/ValueUtilities.hpp"
 
 namespace Elpida
@@ -18,10 +19,10 @@ namespace Elpida
 
 		template<typename ... T>
 		explicit ElpidaException(T&& ... args):
-			ElpidaException((const std::string&)ValueUtilities::Cs(std::forward<T>(args)...))
+			ElpidaException((const String&)ValueUtilities::Cs(std::forward<T>(args)...))
 		{
 		}
-		explicit ElpidaException(const std::string& arg);
+		explicit ElpidaException(const String& arg);
 		ElpidaException(const ElpidaException&) = default;
 		ElpidaException(ElpidaException&&) noexcept = default;
 		ElpidaException& operator=(const ElpidaException&) = default;

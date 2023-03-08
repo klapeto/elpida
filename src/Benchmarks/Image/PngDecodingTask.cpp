@@ -10,9 +10,9 @@
 
 namespace Elpida
 {
-	void PngDecodingTask::Prepare(TaskData&& inputData)
+	void PngDecodingTask::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
-		if (inputData.GetSize() == 0)
+		if (inputData->GetSize() == 0)
 		{
 			throw ElpidaException("Png decoding must be supplied with data. It got zero size data.");
 		}
@@ -23,7 +23,7 @@ namespace Elpida
 		{
 			_pngImg.format = PNG_FORMAT_RGBA;
 
-			_outputData = std::make_unique<TaskData>(_inputData->GetTargetProcessor());
+			_outputData = std::make_unique<ImageTaskData>(_inputData->GetTargetProcessor(), _pngImg.width, _pngImg.height, 4, sizeof(IntChannel));
 			_outputData->Allocate(PNG_IMAGE_SIZE(_pngImg));
 		}
 		else
@@ -32,14 +32,9 @@ namespace Elpida
 		}
 	}
 
-	TaskData PngDecodingTask::Finalize()
+	UniquePtr<AbstractTaskData> PngDecodingTask::Finalize()
 	{
-		auto& metadata = _outputData->GetMetadata();
-		metadata[WidthProperty] = std::to_string(_pngImg.width);
-		metadata[HeightProperty] = std::to_string(_pngImg.height);
-		metadata[BytesPerChannelProperty] = std::to_string(sizeof(IntChannel));
-		metadata[ChannelsProperty] = std::to_string(4);
-		return std::move(*_outputData);
+		return std::move(_outputData);
 	}
 
 	TaskInfo PngDecodingTask::GetInfo() const
@@ -52,7 +47,7 @@ namespace Elpida
 			ScoreType::Throughput,
 			Elpida::DataInfo(),
 			DataInfo("Output image data", "The data of the image to encode to RGBA 8bpp format.", "Pixels", {
-				"bytesPerChannel", "channels", "width", "height"
+				BytesPerChannelProperty, ChannelsProperty, WidthProperty, HeightProperty
 			}));
 	}
 
@@ -68,9 +63,9 @@ namespace Elpida
 			throw ElpidaException("Failed to decode image: ", _pngImg.message);
 		}
 	}
-	std::unique_ptr<Task> PngDecodingTask::DoDuplicate() const
+	UniquePtr<Task> PngDecodingTask::DoDuplicate() const
 	{
-		return std::unique_ptr<Task>(new PngDecodingTask());
+		return UniquePtr<Task>(new PngDecodingTask());
 	}
 
 	PngDecodingTask::~PngDecodingTask()

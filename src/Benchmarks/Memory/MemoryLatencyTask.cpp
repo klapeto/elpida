@@ -4,7 +4,7 @@
 
 #include "MemoryLatencyTask.hpp"
 
-#include "Elpida/TaskData.hpp"
+#include "Elpida/RawTaskData.hpp"
 
 #include <cstdlib>
 #include <vector>
@@ -116,7 +116,7 @@ namespace Elpida
 		}
 	}
 
-	void MemoryLatencyTask::Prepare(TaskData&& data)
+	void MemoryLatencyTask::Prepare(RawTaskData&& data)
 	{
 		// modified/modernized version of lmbech thrashing/latency algorithm
 		// Check the paper here:
@@ -174,7 +174,7 @@ namespace Elpida
 	{
 
 	}
-	TaskData MemoryLatencyTask::Finalize()
+	RawTaskData MemoryLatencyTask::Finalize()
 	{
 		return std::move(*_data);
 	}

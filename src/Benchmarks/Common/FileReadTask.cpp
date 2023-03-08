@@ -10,7 +10,7 @@
 
 namespace Elpida
 {
-	void FileReadTask::Prepare(TaskData&& inputData)
+	void FileReadTask::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
 		if (!std::filesystem::exists(_filePath))
 		{
@@ -26,14 +26,14 @@ namespace Elpida
 		_fileStream = std::fstream(path, std::ios::in | std::ios::binary);
 	}
 
-	TaskData FileReadTask::Finalize()
+	UniquePtr<AbstractTaskData> FileReadTask::Finalize()
 	{
 		if (_fileStream.is_open())
 		{
 			_fileStream.close();
 		}
 
-		return std::move(*_outputData);
+		return std::move(_outputData);
 	}
 
 	TaskInfo FileReadTask::GetInfo() const

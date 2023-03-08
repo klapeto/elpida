@@ -6,14 +6,14 @@
 
 namespace Elpida
 {
-	void MemoryReadBandwidthTask::Prepare(TaskData&& inputData)
+	void MemoryReadBandwidthTask::Prepare(RawTaskData&& inputData)
 	{
 		_data = std::move(inputData);
 		_data->Allocate(_size);
 		_ptr = _data->GetDataRaw();
 	}
 
-	TaskData MemoryReadBandwidthTask::Finalize()
+	RawTaskData MemoryReadBandwidthTask::Finalize()
 	{
 		return std::move(*_data);
 	}

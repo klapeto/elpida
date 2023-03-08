@@ -5,8 +5,8 @@
 #ifndef _CPUKIND_HPP_
 #define _CPUKIND_HPP_
 
-#include <string>
-#include <unordered_map>
+#include "Elpida/String.hpp"
+#include "Elpida/Map.hpp"
 
 namespace Elpida
 {
@@ -15,19 +15,19 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		const std::unordered_map<std::string, std::string>& getInfos() const;
+		const Map<String, String>& getInfos() const;
 
 		[[nodiscard]]
 		int getEfficiency() const;
 
-		CpuKind(int efficiency, std::unordered_map<std::string, std::string>&& infos);
+		CpuKind(int efficiency, Map<String, String>&& infos);
 		CpuKind(const CpuKind&) = delete;
 		CpuKind(CpuKind&&) noexcept = default;
 		CpuKind& operator=(const CpuKind&) = delete;
 		CpuKind& operator=(CpuKind&&) = default;
 		~CpuKind() = default;
 	 private:
-		std::unordered_map<std::string, std::string> _infos;
+		Map<String, String> _infos;
 		int _efficiency;
 	};
 

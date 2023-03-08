@@ -5,10 +5,9 @@
 #ifndef _FILEWRITETASK_HPP_
 #define _FILEWRITETASK_HPP_
 
-#include <string>
 #include <fstream>
-#include <optional>
 
+#include "Elpida/String.hpp"
 #include "Elpida/Task.hpp"
 
 namespace Elpida
@@ -17,8 +16,8 @@ namespace Elpida
 	class FileWriteTask final : public Task
 	{
 	 public:
-		void Prepare(TaskData&& inputData) override;
-		TaskData Finalize() override;
+		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
+		UniquePtr<AbstractTaskData> Finalize() override;
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 
@@ -28,7 +27,7 @@ namespace Elpida
 		void DoRun() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
-		std::optional<TaskData> _inputData;
+		UniquePtr<AbstractTaskData> _inputData;
 		std::fstream _fileStream;
 		std::string _filePath;
 	};

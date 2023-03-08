@@ -7,8 +7,10 @@
 #if defined(ELPIDA_UNIX)
 
 #include "Elpida/ThreadTask.hpp"
+#include "ElpidaException.hpp"
 
 #include <sched.h>
+#include <string.h>
 
 namespace Elpida
 {
@@ -20,7 +22,7 @@ namespace Elpida
 
 		if (sched_setaffinity(0, sizeof(cpu_set_t), &mask))
 		{
-			// throw;
+			throw ElpidaException("Failed to pin thread to: ", topologyNode.GetOsIndex().value(), ": ", strerror(errno));
 		}
 	}
 }

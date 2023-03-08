@@ -5,8 +5,9 @@
 #ifndef _VALUEUTILITIES_HPP_
 #define _VALUEUTILITIES_HPP_
 
-#include <cstdlib>
-#include <string>
+#include "Elpida/Size.hpp"
+#include "Elpida/String.hpp"
+
 #include <sstream>
 
 namespace Elpida
@@ -104,24 +105,24 @@ namespace Elpida
 			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
 		};
 
-		template<class T, std::size_t N>
-		static constexpr std::size_t GetArrayLength(T (&)[N])
+		template<class T, Size N>
+		static constexpr Size GetArrayLength(T (&)[N])
 		{
 			return N;
 		}
 
-		static std::string GetValueScaleStringSI(double value, int decimals = 2)
+		static String GetValueScaleStringSI(double value, int decimals = 2)
 		{
 			return GetValueScaleStringImpl(value, ScaleValuesSI, PrefixesSI, GetArrayLength(PrefixesSI), decimals);
 		}
 
-		static std::string GetValueScaleStringIEC(double value, int decimals = 2)
+		static String GetValueScaleStringIEC(double value, int decimals = 2)
 		{
 			return GetValueScaleStringImpl(value, ScaleValuesIEC, PrefixesIEC, GetArrayLength(PrefixesIEC), decimals);
 		}
 
 		template<typename ... TArgs>
-		inline static std::string ConcatenateToString(TArgs&& ... args)
+		inline static String ConcatenateToString(TArgs&& ... args)
 		{
 			std::ostringstream stream;
 			concatenateToStringImpl(stream, std::forward<TArgs>(args)...);
@@ -129,19 +130,19 @@ namespace Elpida
 		}
 
 		template<typename ... TArgs>
-		inline static std::string Cs(TArgs&& ... args)
+		inline static String Cs(TArgs&& ... args)
 		{
 			return ConcatenateToString(std::forward<TArgs>(args)...);
 		}
 
-		static std::string WstringTostring(const std::wstring& wstring);
-		static std::wstring StringToWstring(const std::string& string);
+		static String WstringTostring(const WString& wstring);
+		static WString StringToWstring(const String& string);
 
 	 private:
-		static std::string GetValueScaleStringImpl(double value,
+		static String GetValueScaleStringImpl(double value,
 			const double denominators[],
 			const char* prefixes[],
-			size_t arraySize,
+			Size arraySize,
 			int decimals);
 
 		template<typename T, typename ... TRest>

@@ -5,7 +5,7 @@ set(ELPIDA_SOURCES
         TaskInfo.cpp
         DataInfo.cpp
         Task.cpp
-        TaskData.cpp
+        RawTaskData.cpp
         NumaMemory.cpp
         NumaMemory.Unix.cpp
         TaskResult.cpp
@@ -18,7 +18,7 @@ set(ELPIDA_SOURCES
         ThreadTask.Unix.cpp
         BenchmarkGroup.cpp
         TaskConfiguration.cpp
-        ElpidaException.cpp Topology/TopologyInfo.cpp Topology/TopologyInfo.hpp Topology/TopologyNode.cpp Topology/TopologyNode.hpp Topology/CpuKind.cpp Topology/CpuKind.hpp EnvironmentInfo.cpp EnvironmentInfo.hpp Topology/CpuCacheNode.cpp Topology/CpuCacheNode.hpp Topology/ProcessingUnitNode.cpp Topology/ProcessingUnitNode.hpp Topology/NumaNode.cpp Topology/NumaNode.hpp Topology/MemoryPageType.cpp Topology/MemoryPageType.hpp)
+        ElpidaException.cpp Topology/TopologyInfo.cpp Topology/TopologyInfo.hpp Topology/TopologyNode.cpp Topology/TopologyNode.hpp Topology/CpuKind.cpp Topology/CpuKind.hpp EnvironmentInfo.cpp EnvironmentInfo.hpp Topology/CpuCacheNode.cpp Topology/CpuCacheNode.hpp Topology/ProcessingUnitNode.cpp Topology/ProcessingUnitNode.hpp Topology/NumaNode.cpp Topology/NumaNode.hpp Topology/MemoryPageType.cpp Topology/MemoryPageType.hpp AbstractTaskData.cpp AbstractTaskData.hpp DataUtilities.cpp DataUtilities.hpp)
 
 configure_file("${PROJECT_SOURCE_DIR}/src/Elpida/Config.hpp.in" "Elpida/Config.hpp")
 

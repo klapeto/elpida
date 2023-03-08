@@ -55,17 +55,17 @@ namespace Elpida
 		std::size_t _size;
 	};
 
-	class NumaUniquePtr : public std::unique_ptr<char, NumaDeleter<char>>
+	class NumaUniquePtr : public std::unique_ptr<unsigned char, NumaDeleter<unsigned char>>
 	{
 	 public:
 		NumaUniquePtr()
-			: std::unique_ptr<char, NumaDeleter<char>>(nullptr, NumaDeleter<char>(0))
+			: std::unique_ptr<unsigned char, NumaDeleter<unsigned char>>(nullptr, NumaDeleter<unsigned char>(0))
 		{
 
 		}
 
 		explicit NumaUniquePtr(int numaNodeId, std::size_t size)
-			: std::unique_ptr<char, NumaDeleter<char>>((char*)NumaAllocator::Allocate(numaNodeId, size), NumaDeleter<char>(size))
+			: std::unique_ptr<unsigned char, NumaDeleter<unsigned char>>((unsigned char*)NumaAllocator::Allocate(numaNodeId, size), NumaDeleter<unsigned char>(size))
 		{
 
 		}

@@ -4,7 +4,7 @@
 
 #include "Elpida/Benchmark.hpp"
 
-#include "Elpida/TaskData.hpp"
+#include "Elpida/RawTaskData.hpp"
 #include "Elpida/ThreadTask.hpp"
 #include "Elpida/ElpidaException.hpp"
 #include "Elpida/TaskConfiguration.hpp"
@@ -13,16 +13,16 @@ namespace Elpida
 {
 
 	BenchmarkResult Benchmark::Run(
-		const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-		const std::vector<TaskConfiguration>& configuration,
+		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+		const Vector<TaskConfiguration>& configuration,
 		const EnvironmentInfo& environmentInfo) const
 	{
 		ValidateConfiguration(configuration);
 		auto tasks = GetTasks(targetProcessors, configuration, environmentInfo);
 
-		std::vector<TaskResult> taskResults;
+		Vector<TaskResult> taskResults;
 
-		TaskData data(targetProcessors.front());
+		UniquePtr<AbstractTaskData> data = std::make_unique<RawTaskData>(targetProcessors.front());
 		for (auto& task: tasks)
 		{
 			task->SetEnvironmentInfo(environmentInfo);
@@ -30,12 +30,12 @@ namespace Elpida
 			if (task->CanBeMultiThreaded())
 			{
 				auto duration = ExecuteMultiThread(data, std::move(task), targetProcessors);
-				taskResults.emplace_back(duration, data.GetSize());
+				taskResults.emplace_back(duration, data->GetSize());
 			}
 			else
 			{
 				auto duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front());
-				taskResults.emplace_back(duration, data.GetSize());
+				taskResults.emplace_back(duration, data->GetSize());
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace Elpida
 	}
 
 	Duration
-	Benchmark::ExecuteSingleThread(TaskData& data, std::unique_ptr<Task> task, const TopologyNode& targetProcessor)
+	Benchmark::ExecuteSingleThread(UniquePtr<AbstractTaskData>& data, UniquePtr<Task> task, const TopologyNode& targetProcessor)
 	{
 		ThreadTask threadTask(std::move(task), targetProcessor);
 
@@ -60,20 +60,16 @@ namespace Elpida
 	}
 
 	Duration
-	Benchmark::ExecuteMultiThread(TaskData& data, std::unique_ptr<Task> task, const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors)
+	Benchmark::ExecuteMultiThread(UniquePtr<AbstractTaskData>& data, UniquePtr<Task> task, const Vector<Ref<const ProcessingUnitNode>>& targetProcessors)
 	{
-		auto originalSize = data.GetSize();
-		auto originalMetadata = data.GetMetadata();
-		auto chunks = data.Split(targetProcessors);
+		auto chunks = data->Split(targetProcessors);
 
-		data.Deallocate();    // Reduce memory footprint
+		data->Deallocate();    // Reduce memory footprint
 
-		std::vector<std::unique_ptr<ThreadTask>> threadTasks;
+		Vector<UniquePtr<ThreadTask>> threadTasks;
 		for (auto& chunk: chunks)
 		{
-			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), chunk.GetTargetProcessor());
-
-			chunk.GetMetadata() = originalMetadata;
+			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), chunk->GetTargetProcessor());
 
 			threadTask->Prepare(std::move(chunk));
 
@@ -98,12 +94,12 @@ namespace Elpida
 			chunks.push_back(std::move(chunkTask->Finalize()));
 		}
 
-		data.Merge(chunks);
+		data->Merge(chunks);
 
 		return totalDuration / threadTasks.size();
 	}
 
-	void Benchmark::ValidateConfiguration(const std::vector<TaskConfiguration>& configuration) const
+	void Benchmark::ValidateConfiguration(const Vector<TaskConfiguration>& configuration) const
 	{
 		auto expectedConfig = GetRequiredConfiguration();
 		if (configuration.size() != expectedConfig.size())
@@ -111,7 +107,7 @@ namespace Elpida
 			throw ElpidaException("Benchmark configuration size was not met. It was: ", configuration.size(), " but expected ", expectedConfig.size());
 		}
 
-		for (std::size_t i = 0; i < expectedConfig.size(); ++i)
+		for (Size i = 0; i < expectedConfig.size(); ++i)
 		{
 			auto expected = expectedConfig[i];
 			auto& actual = configuration[i];

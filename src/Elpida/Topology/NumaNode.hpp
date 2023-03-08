@@ -5,11 +5,12 @@
 #ifndef _NUMANODE_HPP_
 #define _NUMANODE_HPP_
 
-#include "TopologyNode.hpp"
-#include "MemoryPageType.hpp"
-
-#include <cstdlib>
-#include <vector>
+#include "Elpida/Topology/TopologyNode.hpp"
+#include "Elpida/Topology/MemoryPageType.hpp"
+#include "Elpida/Vector.hpp"
+#include "Elpida/Size.hpp"
+#include "Elpida/Optional.hpp"
+#include "Elpida/Ref.hpp"
 
 namespace Elpida
 {
@@ -18,10 +19,10 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		const std::vector<MemoryPageType>& GetMemoryPageTypes() const;
+		const Vector<MemoryPageType>& GetMemoryPageTypes() const;
 
 		[[nodiscard]]
-		std::size_t GetLocalMemorySize() const;
+		Size GetLocalMemorySize() const;
 
 		NumaNode(const NumaNode&) = delete;
 		NumaNode(NumaNode&&) noexcept = delete;
@@ -29,10 +30,10 @@ namespace Elpida
 		NumaNode& operator=(NumaNode&&) noexcept = delete;
 		~NumaNode() override = default;
 	 private:
-		NumaNode(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node);
+		NumaNode(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 
-		std::vector<MemoryPageType> _memoryPageTypes;
-		std::size_t _localMemorySize;
+		Vector<MemoryPageType> _memoryPageTypes;
+		Size _localMemorySize;
 
 		friend class TopologyNode;
 	};

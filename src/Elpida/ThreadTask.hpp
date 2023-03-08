@@ -9,8 +9,10 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "Task.hpp"
-#include "Duration.hpp"
+#include "Elpida/UniquePtr.hpp"
+#include "Elpida/Ref.hpp"
+#include "Elpida/Task.hpp"
+#include "Elpida/Duration.hpp"
 #include "Elpida/Topology/TopologyNode.hpp"
 
 namespace Elpida
@@ -19,25 +21,35 @@ namespace Elpida
 	class ThreadTask final : public Task
 	{
 	 public:
-		void Prepare(TaskData&& inputData) final;
+		void Prepare(UniquePtr<AbstractTaskData> inputData) final;
+
+		[[nodiscard]]
 		Duration Run() final;
-		TaskData Finalize() final;
+
+		[[nodiscard]]
+		UniquePtr<AbstractTaskData> Finalize() final;
+
+		[[nodiscard]]
 		bool CanBeMultiThreaded() const final;
+
+		[[nodiscard]]
 		TaskInfo GetInfo() const final;
 
 		void WakeThread();
 
-		ThreadTask(std::unique_ptr<Task> taskToRun, std::reference_wrapper<const TopologyNode> targetProcessor);
+		ThreadTask(UniquePtr<Task> taskToRun, Ref<const TopologyNode> targetProcessor);
 		~ThreadTask() final;
 	 protected:
 		void DoRun() final;
-		std::unique_ptr<Task> DoDuplicate() const final;
+
+		[[nodiscard]]
+		UniquePtr<Task> DoDuplicate() const final;
 	 private:
-		std::unique_ptr<Task> _taskToRun;
+		UniquePtr<Task> _taskToRun;
 		std::thread _thread;
 		std::condition_variable _conditionVariable;
 		std::mutex _mutex;
-		std::reference_wrapper<const TopologyNode> _targetProcessor;
+		Ref<const TopologyNode> _targetProcessor;
 		Duration _taskRunDuration;
 		volatile bool _doStart;
 

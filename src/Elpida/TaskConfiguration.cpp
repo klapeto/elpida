@@ -2,8 +2,8 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#include "TaskConfiguration.hpp"
-#include "ElpidaException.hpp"
+#include "Elpida/TaskConfiguration.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 namespace Elpida
 {
@@ -22,7 +22,7 @@ namespace Elpida
 		}
 	}
 
-	TaskConfiguration::TaskConfiguration(std::string name, ConfigurationType type)
+	TaskConfiguration::TaskConfiguration(String name, ConfigurationType type)
 		: _name(std::move(name)), _type(type)
 	{
 

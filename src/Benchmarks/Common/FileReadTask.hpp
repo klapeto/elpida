@@ -5,10 +5,11 @@
 #ifndef _FILEREADTASK_HPP_
 #define _FILEREADTASK_HPP_
 
-#include <string>
-#include <fstream>
-#include <optional>
 
+#include <fstream>
+
+#include "Elpida/String.hpp"
+#include "Elpida/UniquePtr.hpp"
 #include "Elpida/Task.hpp"
 
 namespace Elpida
@@ -17,8 +18,8 @@ namespace Elpida
 	class FileReadTask: public Task
 	{
 	 public:
-		void Prepare(TaskData&& inputData) override;
-		TaskData Finalize() override;
+		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
+		UniquePtr<AbstractTaskData> Finalize() override;
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 
@@ -28,7 +29,7 @@ namespace Elpida
 		void DoRun() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
-		std::optional<TaskData> _outputData;
+		UniquePtr<AbstractTaskData> _outputData;
 		std::fstream _fileStream;
 		std::string _filePath;
 	};

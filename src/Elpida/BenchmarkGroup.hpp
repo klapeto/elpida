@@ -5,10 +5,9 @@
 #ifndef _BENCHMARKGROUP_HPP_
 #define _BENCHMARKGROUP_HPP_
 
-#include <string>
-#include <vector>
-#include <memory>
-
+#include "Elpida/String.hpp"
+#include "Elpida/Vector.hpp"
+#include "Elpida/UniquePtr.hpp"
 #include "Elpida/Benchmark.hpp"
 
 namespace Elpida
@@ -16,26 +15,26 @@ namespace Elpida
 	class BenchmarkGroup final
 	{
 		[[nodiscard]]
-		const std::string& GetName() const
+		const String& GetName() const
 		{
 			return _name;
 		}
 
 		[[nodiscard]]
-		const std::vector<std::unique_ptr<const Benchmark>>& GetBenchmarks() const
+		const Vector<UniquePtr<const Benchmark>>& GetBenchmarks() const
 		{
 			return _benchmarks;
 		}
 
 		~BenchmarkGroup() = default;
 	 protected:
-		BenchmarkGroup(std::string name)
+		BenchmarkGroup(String name)
 			: _name(std::move(name))
 		{
 		}
-		std::vector<std::unique_ptr<const Benchmark>> _benchmarks;
+		Vector<UniquePtr<const Benchmark>> _benchmarks;
 	 private:
-		std::string _name;
+		String _name;
 	};
 
 } // Elpida

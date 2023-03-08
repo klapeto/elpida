@@ -9,30 +9,32 @@
 
 namespace Elpida
 {
-	void ConvertToFloatTask::Prepare(TaskData&& inputData)
+	void ConvertToFloatTask::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
+		auto ptr = dynamic_cast<ImageTaskData*>(inputData.get());
+
+		if (ptr->GetBytesPerChannel() != sizeof(IntChannel))
+		{
+			throw ElpidaException("ConvertToFloatTask requires image data in integer format");
+		}
+
 		_inputData = std::move(inputData);
 
-		auto& metadata = _inputData->GetMetadata();
-		_width = std::stoul(metadata.at(WidthProperty));
-		_height = std::stoul(metadata.at(HeightProperty));
-		_inputBytesPerChannel = std::stoul(metadata.at(BytesPerChannelProperty));
-		_channels = std::stoul(metadata.at(ChannelsProperty));
+		_outputData = std::make_unique<ImageTaskData>(ptr->GetTargetProcessor(),
+			ptr->GetWidth(),
+			ptr->GetHeight(),
+			ptr->GetChannels(),
+			sizeof(FloatChannel));
 
-		_outputData = std::make_unique<TaskData>(_inputData->GetTargetProcessor());
-		_outputData->Allocate(_width * _height * _channels * sizeof(FloatChannel));
+		_channels = ptr->GetChannels();
+		_sizeInChannels = ptr->GetWidth() * ptr->GetHeight() * _channels;
+		_inPtr = static_cast<IntChannel*>(_inputData->GetDataRaw());
+		_outPtr = reinterpret_cast<FloatChannel*>(_outputData->GetDataRaw());
 	}
 
-	TaskData ConvertToFloatTask::Finalize()
+	UniquePtr<AbstractTaskData> ConvertToFloatTask::Finalize()
 	{
-		auto& metadata = _outputData->GetMetadata();
-
-		metadata[WidthProperty] = std::to_string(_width);
-		metadata[HeightProperty] = std::to_string(_height);
-		metadata[ChannelsProperty] = std::to_string(_channels);
-		metadata[BytesPerChannelProperty] = std::to_string(sizeof(FloatChannel));
-
-		return std::move(*_outputData);
+		return std::move(_outputData);
 	}
 
 	TaskInfo ConvertToFloatTask::GetInfo() const
@@ -52,33 +54,29 @@ namespace Elpida
 
 	bool ConvertToFloatTask::CanBeMultiThreaded() const
 	{
-		return false;
+		return true;
 	}
 
 	void ConvertToFloatTask::DoRun()
 	{
-		const std::size_t size = _width * _height * _channels;
 		const auto divider = (FloatChannel)255.0;
 
-		auto outPtr = (FloatChannel*)_outputData->GetDataRaw();
-		auto inPtr = (IntChannel*)_inputData->GetDataRaw();
-
-		for (std::size_t i = 0; i < size; i += _channels)
+		for (Size i = 0; i < _sizeInChannels; i += _channels)
 		{
-			outPtr[i] = (FloatChannel)inPtr[i] / divider;
-			outPtr[i + 1] = (FloatChannel)inPtr[i + 1] / divider;
-			outPtr[i + 2] = (FloatChannel)inPtr[i + 2] / divider;
-			outPtr[i + 3] = (FloatChannel)inPtr[i + 3] / divider;
+			_outPtr[i] = (FloatChannel)_inPtr[i] / divider;
+			_outPtr[i + 1] = (FloatChannel)_inPtr[i + 1] / divider;
+			_outPtr[i + 2] = (FloatChannel)_inPtr[i + 2] / divider;
+			_outPtr[i + 3] = (FloatChannel)_inPtr[i + 3] / divider;
 		}
 	}
 
-	std::unique_ptr<Task> ConvertToFloatTask::DoDuplicate() const
+	UniquePtr<Task> ConvertToFloatTask::DoDuplicate() const
 	{
-		return std::unique_ptr<Task>(new ConvertToFloatTask());
+		return UniquePtr<Task>(new ConvertToFloatTask());
 	}
 
 	ConvertToFloatTask::ConvertToFloatTask()
-		: _width(0), _height(0), _channels(0), _inputBytesPerChannel(0)
+		: _inPtr(nullptr), _outPtr(nullptr), _sizeInChannels(0), _channels(0)
 	{
 
 	}

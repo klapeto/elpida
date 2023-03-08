@@ -3,31 +3,33 @@
 //
 
 #include "ConvertToGrayscaleTask.hpp"
-#include "ImageUtilities.hpp"
+
 #include "ImageBenchmarksConfig.hpp"
+#include "Elpida/ElpidaException.hpp"
+#include "ImageTaskData.hpp"
 
 namespace Elpida
 {
-	void ConvertToGrayscaleTask::Prepare(TaskData&& inputData)
+	void ConvertToGrayscaleTask::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
+		auto ptr = dynamic_cast<ImageTaskData*>(inputData.get());
+
+		if (ptr->GetBytesPerChannel() != sizeof(FloatChannel))
+		{
+			throw ElpidaException("ConvertToFloatTask requires image data in integer format");
+		}
+
 		_inputData = std::move(inputData);
 
-		auto& metadata = _inputData->GetMetadata();
-		_width = std::stoul(metadata.at(WidthProperty));
-		_height = std::stoul(metadata.at(HeightProperty));
-		_channels = std::stoul(metadata.at(ChannelsProperty));
+		_channels = ptr->GetChannels();
+		_sizeInChannels = ptr->GetWidth() * ptr->GetHeight() * _channels;
+
+		_inPtr = reinterpret_cast<FloatChannel*>(_inputData->GetDataRaw());
 	}
 
-	TaskData ConvertToGrayscaleTask::Finalize()
+	UniquePtr<AbstractTaskData> ConvertToGrayscaleTask::Finalize()
 	{
-		auto& metadata = _inputData->GetMetadata();
-
-		metadata[WidthProperty] = std::to_string(_width);
-		metadata[HeightProperty] = std::to_string(_height);
-		metadata[ChannelsProperty] = std::to_string(_channels);
-		metadata[BytesPerChannelProperty] = std::to_string(sizeof(FloatChannel));
-
-		return std::move(*_inputData);
+		return std::move(_inputData);
 	}
 
 	TaskInfo ConvertToGrayscaleTask::GetInfo() const
@@ -46,32 +48,28 @@ namespace Elpida
 	}
 	bool ConvertToGrayscaleTask::CanBeMultiThreaded() const
 	{
-		return false;
+		return true;
 	}
 
 	ConvertToGrayscaleTask::ConvertToGrayscaleTask()
-		: _width(0), _height(0), _channels(0)
+		: _inPtr(nullptr), _sizeInChannels(0), _channels(0)
 	{
 
 	}
 
 	void ConvertToGrayscaleTask::DoRun()
 	{
-		const std::size_t size = _width * _height * _channels;
-		const auto channels = _channels;
-
-		auto inPtr = (FloatChannel*)_inputData->GetDataRaw();
-
-		for (std::size_t i = 0; i < size; i += channels)
+		for (std::size_t i = 0; i < _sizeInChannels; i += _channels)
 		{
-			FloatChannel valueToUse = (inPtr[i] + inPtr[i + 1] + inPtr[i + 2]) / (FloatChannel)3.0;
-			inPtr[i] = valueToUse;
-			inPtr[i + 1] = valueToUse;
-			inPtr[i + 2] = valueToUse;
+			FloatChannel valueToUse = (_inPtr[i] + _inPtr[i + 1] + _inPtr[i + 2]) / (FloatChannel)3.0;
+			_inPtr[i] = valueToUse;
+			_inPtr[i + 1] = valueToUse;
+			_inPtr[i + 2] = valueToUse;
 		}
 	}
-	std::unique_ptr<Task> ConvertToGrayscaleTask::DoDuplicate() const
+
+	UniquePtr<Task> ConvertToGrayscaleTask::DoDuplicate() const
 	{
-		return std::unique_ptr<Task>(new ConvertToGrayscaleTask());
+		return UniquePtr<Task>(new ConvertToGrayscaleTask());
 	}
 } // Elpida

@@ -2,13 +2,13 @@
 // Created by klapeto on 5/3/2023.
 //
 
-#include "ProcessingUnitNode.hpp"
+#include "Elpida/Topology/ProcessingUnitNode.hpp"
 
 #include <hwloc.h>
 
 namespace Elpida
 {
-	ProcessingUnitNode::ProcessingUnitNode(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
+	ProcessingUnitNode::ProcessingUnitNode(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node)
 		: TopologyNode(parent, cpuKinds, rootObj, node)
 	{
 
@@ -43,16 +43,16 @@ namespace Elpida
 		}
 	}
 
-	std::optional<std::reference_wrapper<const CpuKind>> ProcessingUnitNode::GetCpuKind() const
+	Optional<Ref<const CpuKind>> ProcessingUnitNode::GetCpuKind() const
 	{
 		return _cpuKind;
 	}
-	std::optional<std::reference_wrapper<const CpuCacheNode>> ProcessingUnitNode::GetLastCache() const
+	Optional<Ref<const CpuCacheNode>> ProcessingUnitNode::GetLastCache() const
 	{
 		return _lastCache;
 	}
 
-	std::optional<std::reference_wrapper<const NumaNode>> ProcessingUnitNode::GetNumaNode() const
+	Optional<Ref<const NumaNode>> ProcessingUnitNode::GetNumaNode() const
 	{
 		return _numaNode;
 	}

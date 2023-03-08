@@ -17,13 +17,13 @@ namespace Elpida
 	{
 	 public:
 
-		void Prepare(TaskData&& inputData) override;
+		void Prepare(RawTaskData&& inputData) override;
 
 		[[nodiscard]]
 		bool CanBeMultiThreaded() const override;
 
 		[[nodiscard]]
-		TaskData Finalize() override;
+		RawTaskData Finalize() override;
 
 		[[nodiscard]]
 		TaskInfo GetInfo() const override;
@@ -42,7 +42,7 @@ namespace Elpida
 		[[nodiscard]]
 		std::unique_ptr<Task> DoDuplicate() const override;
 	 private:
-		std::optional<TaskData> _data;
+		std::optional<RawTaskData> _data;
 		char* _ptr;
 		std::size_t _size;
 		std::size_t _cacheLineSize;

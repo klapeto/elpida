@@ -5,8 +5,8 @@
 #ifndef ELPIDA_DATAINFO_HPP
 #define ELPIDA_DATAINFO_HPP
 
-#include <string>
-#include <vector>
+#include "Elpida/String.hpp"
+#include "Elpida/Vector.hpp"
 
 namespace Elpida
 {
@@ -16,25 +16,25 @@ namespace Elpida
 	public:
 
 		[[nodiscard]]
-		const std::string& getName() const
+		const String& getName() const
 		{
 			return _name;
 		}
 
 		[[nodiscard]]
-		const std::string& getDescription() const
+		const String& getDescription() const
 		{
 			return _description;
 		}
 
 		[[nodiscard]]
-		const std::string& getUnit() const
+		const String& getUnit() const
 		{
 			return _unit;
 		}
 
 		[[nodiscard]]
-		const std::vector<std::string>& getMetadata() const
+		const Vector<String>& getMetadata() const
 		{
 			return _metadata;
 		}
@@ -46,23 +46,18 @@ namespace Elpida
 		}
 
 		DataInfo();
-
-		DataInfo(std::string name,
-				std::string description,
-				std::string unit,
-				const std::vector<std::string>& metadata);
-
+		DataInfo(String name,
+				String description,
+				String unit,
+				const Vector<String>& metadata);
 		DataInfo(const DataInfo&) = default;
-
 		DataInfo(DataInfo&&) = default;
-
 		~DataInfo() = default;
-
 	private:
-		std::string _name;
-		std::string _description;
-		std::string _unit;
-		std::vector<std::string> _metadata;
+		String _name;
+		String _description;
+		String _unit;
+		Vector<String> _metadata;
 
 		bool _isUsed;
 	};

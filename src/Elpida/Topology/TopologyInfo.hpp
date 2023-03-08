@@ -5,14 +5,15 @@
 #ifndef _TOPOLOGYINFO_HPP_
 #define _TOPOLOGYINFO_HPP_
 
-#include "TopologyNode.hpp"
+#include "Elpida/Topology/TopologyNode.hpp"
 #include "Elpida/Topology/CpuKind.hpp"
 #include "Elpida/Topology/CpuCacheNode.hpp"
 #include "Elpida/Topology/ProcessingUnitNode.hpp"
 #include "Elpida/Topology/NumaNode.hpp"
-
-#include <memory>
-#include <vector>
+#include "Elpida/Vector.hpp"
+#include "Elpida/Size.hpp"
+#include "Elpida/Ref.hpp"
+#include "Elpida/UniquePtr.hpp"
 
 namespace Elpida
 {
@@ -24,28 +25,28 @@ namespace Elpida
 		const TopologyNode& GetRoot() const;
 
 		[[nodiscard]]
-		const std::vector<CpuKind>& GetCpuKinds() const;
+		const Vector<CpuKind>& GetCpuKinds() const;
 
 		[[nodiscard]]
-		std::size_t GetTotalLogicalCores() const;
+		Size GetTotalLogicalCores() const;
 
 		[[nodiscard]]
-		std::size_t GetTotalPhysicalCores() const;
+		Size GetTotalPhysicalCores() const;
 
 		[[nodiscard]]
-		std::size_t GetTotalNumaNodes() const;
+		Size GetTotalNumaNodes() const;
 
 		[[nodiscard]]
-		std::size_t GetTotalPackages() const;
+		Size GetTotalPackages() const;
 
 		[[nodiscard]]
-		const std::vector<std::reference_wrapper<const CpuCacheNode>>& GetAllCaches() const;
+		const Vector<Ref<const CpuCacheNode>>& GetAllCaches() const;
 
 		[[nodiscard]]
-		const std::vector<std::reference_wrapper<const NumaNode>>& GetAllNumaNodes() const;
+		const Vector<Ref<const NumaNode>>& GetAllNumaNodes() const;
 
 		[[nodiscard]]
-		const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& GetAllProcessingUnits() const;
+		const Vector<Ref<const ProcessingUnitNode>>& GetAllProcessingUnits() const;
 
 		TopologyInfo();
 		TopologyInfo(const TopologyInfo&) = delete;
@@ -54,16 +55,16 @@ namespace Elpida
 		TopologyInfo& operator=(TopologyInfo&&) noexcept = default;
 		~TopologyInfo() = default;
 	 private:
-		std::vector<CpuKind> _cpuKinds;
-		std::vector<std::reference_wrapper<const CpuCacheNode>> _allCaches;
-		std::vector<std::reference_wrapper<const NumaNode>> _allNumaNodes;
-		std::vector<std::reference_wrapper<const ProcessingUnitNode>> _allProcessingUnits;
-		std::unique_ptr<TopologyNode> _root;
+		Vector<CpuKind> _cpuKinds;
+		Vector<Ref<const CpuCacheNode>> _allCaches;
+		Vector<Ref<const NumaNode>> _allNumaNodes;
+		Vector<Ref<const ProcessingUnitNode>> _allProcessingUnits;
+		UniquePtr<TopologyNode> _root;
 
-		std::size_t _totalLogicalCores;
-		std::size_t _totalPhysicalCores;
-		std::size_t _totalNumaNodes;
-		std::size_t _totalPackages;
+		Size _totalLogicalCores;
+		Size _totalPhysicalCores;
+		Size _totalNumaNodes;
+		Size _totalPackages;
 
 		void accumulateCores(const TopologyNode& node);
 

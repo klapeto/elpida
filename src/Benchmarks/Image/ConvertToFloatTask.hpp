@@ -5,11 +5,12 @@
 #ifndef _CONVERTTOFLOATTASK_HPP_
 #define _CONVERTTOFLOATTASK_HPP_
 
-#include <cstdint>
-#include <memory>
-#include <optional>
 
 #include "Elpida/Task.hpp"
+#include "Elpida/Size.hpp"
+#include "Elpida/UniquePtr.hpp"
+
+#include "ImageTaskData.hpp"
 #include "ImageBenchmarksConfig.hpp"
 
 namespace Elpida
@@ -18,9 +19,9 @@ namespace Elpida
 	class ConvertToFloatTask : public Task
 	{
 	 public:
-		void Prepare(TaskData&& inputData) override;
+		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
 
-		TaskData Finalize() override;
+		UniquePtr<AbstractTaskData> Finalize() override;
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 
@@ -28,14 +29,14 @@ namespace Elpida
 		~ConvertToFloatTask() override = default;
 	 protected:
 		void DoRun() override;
-		std::unique_ptr<Task> DoDuplicate() const override;
+		UniquePtr<Task> DoDuplicate() const override;
 	 private:
-		std::unique_ptr<TaskData> _outputData;
-		std::optional<TaskData> _inputData;
-		std::size_t _width;
-		std::size_t _height;
-		std::size_t _channels;
-		std::size_t _inputBytesPerChannel;
+		UniquePtr<ImageTaskData> _outputData;
+		UniquePtr<AbstractTaskData> _inputData;
+		IntChannel* _inPtr;
+		FloatChannel* _outPtr;
+		Size _sizeInChannels;
+		unsigned int _channels;
 	};
 
 } // Elpida

@@ -6,7 +6,6 @@
 #include <ctime>
 #include <iostream>
 #include <string>
-#include <png.h>
 #include <fstream>
 #include <filesystem>
 

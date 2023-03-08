@@ -2,11 +2,11 @@
 // Created by klapeto on 28/2/2023.
 //
 
-#include "ThreadTask.hpp"
+#include "Elpida/ThreadTask.hpp"
 
 namespace Elpida
 {
-	void ThreadTask::Prepare(TaskData&& inputData)
+	void ThreadTask::Prepare(UniquePtr<AbstractTaskData> inputData)
 	{
 		_taskToRun->Prepare(std::move(inputData));
 
@@ -23,7 +23,7 @@ namespace Elpida
 		return _taskRunDuration;
 	}
 
-	TaskData ThreadTask::Finalize()
+	UniquePtr<AbstractTaskData> ThreadTask::Finalize()
 	{
 		return _taskToRun->Finalize();
 	}
@@ -33,7 +33,7 @@ namespace Elpida
 		return false;
 	}
 
-	ThreadTask::ThreadTask(std::unique_ptr<Task> taskToRun, std::reference_wrapper<const TopologyNode> targetProcessor)
+	ThreadTask::ThreadTask(UniquePtr<Task> taskToRun, Ref<const TopologyNode> targetProcessor)
 		: _taskToRun(std::move(taskToRun)), _taskRunDuration(0), _targetProcessor(targetProcessor), _doStart(false)
 	{
 
@@ -53,9 +53,9 @@ namespace Elpida
 
 	}
 
-	std::unique_ptr<Task> ThreadTask::DoDuplicate() const
+	UniquePtr<Task> ThreadTask::DoDuplicate() const
 	{
-		return std::unique_ptr<Task>(new ThreadTask(_taskToRun->Duplicate(), _targetProcessor));
+		return UniquePtr<Task>(new ThreadTask(_taskToRun->Duplicate(), _targetProcessor));
 	}
 
 	TaskInfo ThreadTask::GetInfo() const

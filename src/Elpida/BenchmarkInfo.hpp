@@ -5,10 +5,8 @@
 #ifndef ELPIDA_BENCHMARKINFO_HPP
 #define ELPIDA_BENCHMARKINFO_HPP
 
-#include <string>
-#include <utility>
-#include <vector>
-
+#include "Elpida/String.hpp"
+#include "Elpida/Vector.hpp"
 #include "Elpida/ScoreType.hpp"
 #include "Elpida/TaskInfo.hpp"
 
@@ -19,40 +17,40 @@ namespace Elpida
 	 public:
 
 		[[nodiscard]]
-		const std::vector<TaskInfo>& GetTaskInfos() const
+		const Vector<TaskInfo>& GetTaskInfos() const
 		{
 			return _taskInfos;
 		}
 
 		[[nodiscard]]
-		const std::string& GetName() const
+		const String& GetName() const
 		{
 			return _name;
 		}
 
 		[[nodiscard]]
-		const std::string& GetDescription() const
+		const String& GetDescription() const
 		{
 			return _description;
 		}
 
 		[[nodiscard]]
-		const std::string& GetScoreUnit() const
+		const String& GetScoreUnit() const
 		{
 			return _scoreUnit;
 		}
 
 		[[nodiscard]]
-		const std::string& GetScoreDescription() const
+		const String& GetScoreDescription() const
 		{
 			return _scoreDescription;
 		}
 
-		BenchmarkInfo(std::string name,
-			std::string description,
-			std::string scoreUnit,
-			std::string scoreDescription,
-			const std::vector<TaskInfo>& taskInfos)
+		BenchmarkInfo(String name,
+			String description,
+			String scoreUnit,
+			String scoreDescription,
+			const Vector<TaskInfo>& taskInfos)
 			: _taskInfos(taskInfos),
 			  _name(std::move(name)),
 			  _description(std::move(description)),
@@ -62,11 +60,11 @@ namespace Elpida
 		}
 		~BenchmarkInfo() = default;
 	 private:
-		std::vector<TaskInfo> _taskInfos;
-		std::string _name;
-		std::string _description;
-		std::string _scoreUnit;
-		std::string _scoreDescription;
+		Vector<TaskInfo> _taskInfos;
+		String _name;
+		String _description;
+		String _scoreUnit;
+		String _scoreDescription;
 	};
 
 } // Elpida

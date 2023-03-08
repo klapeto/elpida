@@ -5,13 +5,9 @@
 #ifndef ELPIDA_BENCHMARKRESULT_HPP
 #define ELPIDA_BENCHMARKRESULT_HPP
 
-#include <utility>
-#include <vector>
-#include <string>
-
-#include "Elpida/Duration.hpp"
+#include "Elpida/Vector.hpp"
+#include "Elpida/String.hpp"
 #include "Elpida/TaskResult.hpp"
-#include "Elpida/ScoreType.hpp"
 
 namespace Elpida
 {
@@ -26,19 +22,19 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const std::vector<TaskResult>& GetTaskResults() const
+		const Vector<TaskResult>& GetTaskResults() const
 		{
 			return _taskResults;
 		}
 
-		BenchmarkResult(double score, const std::vector<TaskResult>& taskResults)
+		BenchmarkResult(double score, const Vector<TaskResult>& taskResults)
 			: _taskResults(taskResults), _score(score)
 		{
 		}
 
 		~BenchmarkResult() = default;
 	 private:
-		std::vector<TaskResult> _taskResults;
+		Vector<TaskResult> _taskResults;
 		double _score;
 	};
 

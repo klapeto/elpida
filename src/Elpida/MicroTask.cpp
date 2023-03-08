@@ -2,9 +2,9 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#include "MicroTask.hpp"
+#include "Elpida/MicroTask.hpp"
 
-#include "EnvironmentInfo.hpp"
+#include "Elpida/EnvironmentInfo.hpp"
 
 #include <cstdlib>
 #include <cmath>
@@ -17,7 +17,7 @@ namespace Elpida
 		Duration nowOverhead = _environmentInfo->get().GetOverheadsInfo().GetNowOverhead();
 		Duration loopOverhead = _environmentInfo->get().GetOverheadsInfo().GetLoopOverhead();
 
-		std::size_t iterations = 1;
+		Size iterations = 1;
 		auto currentDuration = Duration::zero();
 
 		while (currentDuration < minimumDuration * 0.98)

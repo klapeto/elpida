@@ -2,17 +2,17 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#include "TopologyNode.hpp"
+#include "Elpida/Topology/TopologyNode.hpp"
 
-#include "CpuCacheNode.hpp"
-#include "NumaNode.hpp"
-#include "ProcessingUnitNode.hpp"
+#include "Elpida/Topology/CpuCacheNode.hpp"
+#include "Elpida/Topology/NumaNode.hpp"
+#include "Elpida/Topology/ProcessingUnitNode.hpp"
 
 #include <hwloc.h>
 
 namespace Elpida
 {
-	TopologyNode::TopologyNode(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
+	TopologyNode::TopologyNode(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node)
 		: _parent(parent), _type(NodeType::Unknown)
 	{
 		auto currentNode = (hwloc_obj_t)node;
@@ -131,7 +131,7 @@ namespace Elpida
 		_type = NodeType::ProcessingUnit;
 	}
 
-	void TopologyNode::loadChildren(const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
+	void TopologyNode::loadChildren(const Vector<CpuKind>& cpuKinds, void* rootObj, void* node)
 	{
 		auto currentNode = (hwloc_obj_t)node;
 		_memoryChildren.reserve(currentNode->memory_arity);
@@ -165,7 +165,7 @@ namespace Elpida
 			child->loadSiblings();
 		}
 	}
-	void TopologyNode::loadParents(std::optional<std::reference_wrapper<TopologyNode>> parent)
+	void TopologyNode::loadParents(Optional<Ref<TopologyNode>> parent)
 	{
 		if (parent.has_value())
 		{
@@ -187,8 +187,7 @@ namespace Elpida
 		_siblings.emplace_back(node);
 	}
 
-	std::unique_ptr<TopologyNode>
-	TopologyNode::Load(std::optional<std::reference_wrapper<TopologyNode>> parent, const std::vector<CpuKind>& cpuKinds, void* rootObj, void* node)
+	UniquePtr<TopologyNode> TopologyNode::Load(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node)
 	{
 		auto currentNode = (hwloc_obj_t)node;
 		switch (currentNode->type)
@@ -201,35 +200,35 @@ namespace Elpida
 		case HWLOC_OBJ_L3ICACHE:
 		case HWLOC_OBJ_L4CACHE:
 		case HWLOC_OBJ_L5CACHE:
-			return std::unique_ptr<TopologyNode>(new CpuCacheNode(parent, cpuKinds, rootObj, node));
+			return UniquePtr<TopologyNode>(new CpuCacheNode(parent, cpuKinds, rootObj, node));
 		case HWLOC_OBJ_NUMANODE:
-			return std::unique_ptr<TopologyNode>(new NumaNode(parent, cpuKinds, rootObj, node));
+			return UniquePtr<TopologyNode>(new NumaNode(parent, cpuKinds, rootObj, node));
 		case HWLOC_OBJ_PU:
-			return std::unique_ptr<TopologyNode>(new ProcessingUnitNode(parent, cpuKinds, rootObj, node));
+			return UniquePtr<TopologyNode>(new ProcessingUnitNode(parent, cpuKinds, rootObj, node));
 		default:
-			return std::unique_ptr<TopologyNode>(new TopologyNode(parent, cpuKinds, rootObj, node));
+			return UniquePtr<TopologyNode>(new TopologyNode(parent, cpuKinds, rootObj, node));
 		}
 	}
-	std::optional<int> TopologyNode::GetOsIndex() const
+	Optional<int> TopologyNode::GetOsIndex() const
 	{
 		return _osIndex;
 	}
 
-	const std::vector<std::unique_ptr<TopologyNode>>& TopologyNode::GetChildren() const
+	const Vector<UniquePtr<TopologyNode>>& TopologyNode::GetChildren() const
 	{
 		return _children;
 	}
-	const std::vector<std::unique_ptr<TopologyNode>>& TopologyNode::GetMemoryChildren() const
+	const Vector<UniquePtr<TopologyNode>>& TopologyNode::GetMemoryChildren() const
 	{
 		return _memoryChildren;
 	}
 
-	const std::vector<std::reference_wrapper<const TopologyNode>>& TopologyNode::GetSiblings() const
+	const Vector<Ref<const TopologyNode>>& TopologyNode::GetSiblings() const
 	{
 		return _siblings;
 	}
 
-	std::optional<std::reference_wrapper<const TopologyNode>> TopologyNode::GetParent() const
+	Optional<Ref<const TopologyNode>> TopologyNode::GetParent() const
 	{
 		return _parent;
 	}
@@ -239,10 +238,10 @@ namespace Elpida
 		return _type;
 	}
 
-	std::optional<std::reference_wrapper<const TopologyNode>> TopologyNode::GetLastAncestor(NodeType nodeTypes) const
+	Optional<Ref<const TopologyNode>> TopologyNode::GetLastAncestor(NodeType nodeTypes) const
 	{
-		std::optional<std::reference_wrapper<const TopologyNode>> lastNode;
-		std::optional<std::reference_wrapper<const TopologyNode>> currentNode = *this;
+		Optional<Ref<const TopologyNode>> lastNode;
+		Optional<Ref<const TopologyNode>> currentNode = *this;
 		while (currentNode.has_value())
 		{
 			if (currentNode->get().GetType() & nodeTypes)
