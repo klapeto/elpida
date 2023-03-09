@@ -2,8 +2,8 @@
 // Created by klapeto on 4/3/2023.
 //
 
-#ifndef _CPUCACHENODE_HPP_
-#define _CPUCACHENODE_HPP_
+#ifndef ELPIDA_TOPOLOGY_CPUCACHENODE_HPP_
+#define ELPIDA_TOPOLOGY_CPUCACHENODE_HPP_
 
 #include "Elpida/Topology/TopologyNode.hpp"
 #include "Elpida/Size.hpp"
@@ -56,4 +56,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_CPUCACHENODE_HPP_
+#endif //ELPIDA_TOPOLOGY_CPUCACHENODE_HPP_

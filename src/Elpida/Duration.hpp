@@ -2,8 +2,8 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#ifndef ELPIDA_DURATION_H
-#define ELPIDA_DURATION_H
+#ifndef _ELPIDA_DURATION_HPP
+#define _ELPIDA_DURATION_HPP
 
 #include <chrono>
 
@@ -32,4 +32,4 @@ namespace Elpida
 
 }
 
-#endif //ELPIDA_DURATION_H
+#endif //_ELPIDA_DURATION_HPP

@@ -2,8 +2,8 @@
 // Created by klapeto on 7/3/2023.
 //
 
-#ifndef _VECTOR_HPP_
-#define _VECTOR_HPP_
+#ifndef ELPIDA_VECTOR_HPP_
+#define ELPIDA_VECTOR_HPP_
 
 #include <vector>
 
@@ -12,4 +12,4 @@ namespace Elpida {
 	using Vector = std::vector<T>;
 }
 
-#endif //_VECTOR_HPP_
+#endif //ELPIDA_VECTOR_HPP_

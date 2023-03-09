@@ -2,8 +2,8 @@
 // Created by klapeto on 5/3/2023.
 //
 
-#ifndef _PROCESSINGUNITNODE_HPP_
-#define _PROCESSINGUNITNODE_HPP_
+#ifndef ELPIDA_TOPOLOGY_PROCESSINGUNITNODE_HPP_
+#define ELPIDA_TOPOLOGY_PROCESSINGUNITNODE_HPP_
 
 #include "Elpida/Topology/TopologyNode.hpp"
 #include "Elpida/Topology/NumaNode.hpp"
@@ -46,4 +46,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_PROCESSINGUNITNODE_HPP_
+#endif //ELPIDA_TOPOLOGY_PROCESSINGUNITNODE_HPP_

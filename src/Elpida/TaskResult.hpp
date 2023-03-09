@@ -2,8 +2,8 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#ifndef _TASKRESULT_HPP_
-#define _TASKRESULT_HPP_
+#ifndef ELPIDA_TASKRESULT_HPP_
+#define ELPIDA_TASKRESULT_HPP_
 
 #include "Elpida/Duration.hpp"
 #include "Elpida/TaskInfo.hpp"
@@ -49,4 +49,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_TASKRESULT_HPP_
+#endif //ELPIDA_TASKRESULT_HPP_

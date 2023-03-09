@@ -19,10 +19,10 @@ namespace Elpida
 		switch (currentNode->type)
 		{
 		case HWLOC_OBJ_MACHINE:
-			loadMachine(node);
+			_type = NodeType::Machine;
 			break;
 		case HWLOC_OBJ_CORE:
-			loadCore(node);
+			_type = NodeType::Core;
 			break;
 		case HWLOC_OBJ_L1CACHE:
 		case HWLOC_OBJ_L1ICACHE:
@@ -35,19 +35,19 @@ namespace Elpida
 			loadCache(node);
 			break;
 		case HWLOC_OBJ_GROUP:
-			loadGroup(node);
+			_type = NodeType::Group;
 			break;
 		case HWLOC_OBJ_NUMANODE:
-			loadNumaNode(node);
+			_type = NodeType::NumaDomain;
 			break;
 		case HWLOC_OBJ_PACKAGE:
-			loadPackage(node);
+			_type = NodeType::Package;
 			break;
 		case HWLOC_OBJ_DIE:
-			loadDie(node);
+			_type = NodeType::Die;
 			break;
 		case HWLOC_OBJ_PU:
-			loadProcessingUnit(node);
+			_type = NodeType::ProcessingUnit;
 			break;
 		default:
 			break;
@@ -62,34 +62,6 @@ namespace Elpida
 		loadChildren(cpuKinds, rootObj, node);
 	}
 
-	void TopologyNode::loadMachine(void* node)
-	{
-		_type = NodeType::Machine;
-	}
-
-	void TopologyNode::loadPackage(void* node)
-	{
-		_type = NodeType::Package;
-	}
-
-	void TopologyNode::loadDie(void* node)
-	{
-		_type = NodeType::Die;
-	}
-
-	void TopologyNode::loadNumaNode(void* node)
-	{
-		_type = NodeType::NumaDomain;
-	}
-
-	void TopologyNode::loadGroup(void* node)
-	{
-		_type = NodeType::Group;
-	}
-	void TopologyNode::loadCore(void* node)
-	{
-		_type = NodeType::Core;
-	}
 
 	void TopologyNode::loadCache(void* node)
 	{
@@ -124,11 +96,6 @@ namespace Elpida
 			_type = NodeType::Unknown;
 			break;
 		}
-	}
-
-	void TopologyNode::loadProcessingUnit(void* node)
-	{
-		_type = NodeType::ProcessingUnit;
 	}
 
 	void TopologyNode::loadChildren(const Vector<CpuKind>& cpuKinds, void* rootObj, void* node)

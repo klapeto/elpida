@@ -5,12 +5,14 @@
 #ifndef ELPIDA_SCORETYPE_HPP
 #define ELPIDA_SCORETYPE_HPP
 
-namespace Elpida {
+namespace Elpida
+{
 
 	/**
 	 * @brief Defines what kind a score is.
 	 */
-	enum class ScoreType {
+	enum class ScoreType
+	{
 		/**
 		 * @brief The score it measured in units/s.
 		 */

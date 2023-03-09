@@ -2,8 +2,8 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#ifndef _TASKCONFIGURATION_HPP_
-#define _TASKCONFIGURATION_HPP_
+#ifndef ELPIDA_TASKCONFIGURATION_HPP_
+#define ELPIDA_TASKCONFIGURATION_HPP_
 
 #include "Elpida/String.hpp"
 
@@ -65,4 +65,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_TASKCONFIGURATION_HPP_
+#endif //ELPIDA_TASKCONFIGURATION_HPP_

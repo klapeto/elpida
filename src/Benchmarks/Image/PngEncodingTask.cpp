@@ -26,7 +26,7 @@ namespace Elpida
 		_pngImg.width = ptr->GetWidth();
 		_pngImg.height = ptr->GetHeight();
 
-		if (png_image_write_to_memory(&_pngImg, nullptr, &outputSize, 0, _inputData->GetDataRaw(), 0, nullptr))
+		if (png_image_write_to_memory(&_pngImg, nullptr, &outputSize, 0, _inputData->GetData(), 0, nullptr))
 		{
 			_outputData = std::make_unique<RawTaskData>(_inputData->GetTargetProcessor());
 			_outputData->Allocate(outputSize);
@@ -63,10 +63,10 @@ namespace Elpida
 		std::size_t outputSize;
 
 		if (!png_image_write_to_memory(&_pngImg,
-			_outputData->GetDataRaw(),
+			_outputData->GetData(),
 			&outputSize,
 			0,
-			_inputData->GetDataRaw(),
+			_inputData->GetData(),
 			0,
 			nullptr))
 		{

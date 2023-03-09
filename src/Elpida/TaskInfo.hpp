@@ -8,7 +8,6 @@
 #include "Elpida/String.hpp"
 #include "Elpida/ScoreComparisonType.hpp"
 #include "Elpida/ScoreType.hpp"
-#include "Elpida/DataInfo.hpp"
 
 namespace Elpida
 {

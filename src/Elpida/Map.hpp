@@ -2,8 +2,8 @@
 // Created by klapeto on 7/3/2023.
 //
 
-#ifndef _MAP_HPP_
-#define _MAP_HPP_
+#ifndef ELPIDA_MAP_HPP_
+#define ELPIDA_MAP_HPP_
 
 #include <unordered_map>
 
@@ -13,4 +13,4 @@ namespace Elpida
 	using Map = std::unordered_map<TKey, TValue>;
 }
 
-#endif //_MAP_HPP_
+#endif //ELPIDA_MAP_HPP_

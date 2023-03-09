@@ -3,7 +3,6 @@ set(ELPIDA_SOURCES
         BenchmarkResult.cpp
         BenchmarkInfo.cpp
         TaskInfo.cpp
-        DataInfo.cpp
         Task.cpp
         RawTaskData.cpp
         NumaMemory.cpp

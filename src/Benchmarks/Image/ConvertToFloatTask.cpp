@@ -27,8 +27,8 @@ namespace Elpida
 
 		_channels = ptr->GetChannels();
 		_sizeInChannels = ptr->GetWidth() * ptr->GetHeight() * _channels;
-		_inPtr = static_cast<IntChannel*>(_inputData->GetDataRaw());
-		_outPtr = reinterpret_cast<FloatChannel*>(_outputData->GetDataRaw());
+		_inPtr = static_cast<IntChannel*>(_inputData->GetData());
+		_outPtr = reinterpret_cast<FloatChannel*>(_outputData->GetData());
 	}
 
 	UniquePtr<AbstractTaskData> ConvertToFloatTask::Finalize()

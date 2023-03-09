@@ -128,7 +128,7 @@ namespace Elpida
 		const Size pagesCount = std::max((double)_size / (double)_pageSize, 1.0);
 
 		auto pages = calculatePages(pagesCount, _pageSize);
-		_ptr = (char*)_data->GetDataRaw();
+		_ptr = (char*)_data->GetData();
 
 		if (pagesCount > 1)
 		{

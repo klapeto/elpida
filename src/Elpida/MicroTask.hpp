@@ -2,8 +2,8 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#ifndef _MICROTASK_HPP_
-#define _MICROTASK_HPP_
+#ifndef ELPIDA_MICROTASK_HPP_
+#define ELPIDA_MICROTASK_HPP_
 
 #include "Elpida/Task.hpp"
 #include "Elpida/Size.hpp"
@@ -27,4 +27,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_MICROTASK_HPP_
+#endif //ELPIDA_MICROTASK_HPP_

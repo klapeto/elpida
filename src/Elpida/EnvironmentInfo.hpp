@@ -2,8 +2,8 @@
 // Created by klapeto on 4/3/2023.
 //
 
-#ifndef _ENVIRONMENTINFO_HPP_
-#define _ENVIRONMENTINFO_HPP_
+#ifndef ELPIDA_ENVIRONMENTINFO_HPP_
+#define ELPIDA_ENVIRONMENTINFO_HPP_
 
 #include "Elpida/OverheadsInfo.hpp"
 #include "Elpida/Topology/TopologyInfo.hpp"
@@ -33,4 +33,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_ENVIRONMENTINFO_HPP_
+#endif //ELPIDA_ENVIRONMENTINFO_HPP_

@@ -2,8 +2,8 @@
 // Created by klapeto on 5/3/2023.
 //
 
-#ifndef _MEMORYPAGETYPE_HPP_
-#define _MEMORYPAGETYPE_HPP_
+#ifndef ELPIDA_TOPOLOGY_MEMORYPAGETYPE_HPP_
+#define ELPIDA_TOPOLOGY_MEMORYPAGETYPE_HPP_
 
 #include "Elpida/Size.hpp"
 
@@ -31,4 +31,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_MEMORYPAGETYPE_HPP_
+#endif //ELPIDA_TOPOLOGY_MEMORYPAGETYPE_HPP_

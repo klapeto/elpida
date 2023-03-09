@@ -2,8 +2,8 @@
 // Created by klapeto on 7/3/2023.
 //
 
-#ifndef _ABSTRACTTASKDATA_HPP_
-#define _ABSTRACTTASKDATA_HPP_
+#ifndef ELPIDA_TOPOLOGY_ABSTRACTTASKDATA_HPP_
+#define ELPIDA_TOPOLOGY_ABSTRACTTASKDATA_HPP_
 
 #include "Elpida/UniquePtr.hpp"
 #include "Elpida/Vector.hpp"
@@ -18,7 +18,7 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		virtual unsigned char* GetDataRaw() const = 0;
+		virtual unsigned char* GetData() const = 0;
 
 		[[nodiscard]]
 		virtual const ProcessingUnitNode& GetTargetProcessor() const = 0;
@@ -40,4 +40,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_ABSTRACTTASKDATA_HPP_
+#endif //ELPIDA_TOPOLOGY_ABSTRACTTASKDATA_HPP_

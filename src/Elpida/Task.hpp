@@ -2,8 +2,8 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#ifndef _TASK_HPP_
-#define _TASK_HPP_
+#ifndef ELPIDA_TASK_HPP_
+#define ELPIDA_TASK_HPP_
 
 #include "Elpida/Size.hpp"
 #include "Elpida/Ref.hpp"
@@ -52,4 +52,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_TASK_HPP_
+#endif //ELPIDA_TASK_HPP_

@@ -105,7 +105,7 @@ namespace Elpida
 			});
 	}
 
-	unsigned char* RawTaskData::GetDataRaw() const
+	unsigned char* RawTaskData::GetData() const
 	{
 		return _data.get();
 	}

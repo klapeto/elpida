@@ -2,8 +2,8 @@
 // Created by klapeto on 28/2/2023.
 //
 
-#ifndef _THREADTASK_HPP_
-#define _THREADTASK_HPP_
+#ifndef ELPIDA_THREADTASK_HPP_
+#define ELPIDA_THREADTASK_HPP_
 
 #include <thread>
 #include <mutex>
@@ -59,4 +59,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_THREADTASK_HPP_
+#endif //ELPIDA_THREADTASK_HPP_

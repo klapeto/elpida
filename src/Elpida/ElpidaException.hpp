@@ -2,8 +2,8 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#ifndef _ELPIDAEXCEPTION_HPP_
-#define _ELPIDAEXCEPTION_HPP_
+#ifndef ELPIDA_ELPIDAEXCEPTION_HPP_
+#define ELPIDA_ELPIDAEXCEPTION_HPP_
 
 #include <stdexcept>
 
@@ -32,4 +32,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_ELPIDAEXCEPTION_HPP_
+#endif //ELPIDA_ELPIDAEXCEPTION_HPP_

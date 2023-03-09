@@ -2,8 +2,8 @@
 // Created by klapeto on 1/3/2023.
 //
 
-#ifndef _BENCHMARKGROUP_HPP_
-#define _BENCHMARKGROUP_HPP_
+#ifndef ELPIDA_BENCHMARKGROUP_HPP_
+#define ELPIDA_BENCHMARKGROUP_HPP_
 
 #include "Elpida/String.hpp"
 #include "Elpida/Vector.hpp"
@@ -39,4 +39,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_BENCHMARKGROUP_HPP_
+#endif //ELPIDA_BENCHMARKGROUP_HPP_

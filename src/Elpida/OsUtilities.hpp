@@ -2,8 +2,8 @@
 // Created by klapeto on 28/2/2023.
 //
 
-#ifndef _OSUTILITIES_HPP_
-#define _OSUTILITIES_HPP_
+#ifndef ELPIDA_OSUTILITIES_HPP_
+#define ELPIDA_OSUTILITIES_HPP_
 
 namespace Elpida
 {
@@ -16,4 +16,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_OSUTILITIES_HPP_
+#endif //ELPIDA_OSUTILITIES_HPP_

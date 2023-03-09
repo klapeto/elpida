@@ -43,7 +43,7 @@ namespace Elpida
 
 	void FileWriteTask::DoRun()
 	{
-		_fileStream.write((char*)_inputData->GetDataRaw(), _inputData->GetSize());
+		_fileStream.write((char*)_inputData->GetData(), _inputData->GetSize());
 	}
 
 	std::unique_ptr<Task> FileWriteTask::DoDuplicate() const

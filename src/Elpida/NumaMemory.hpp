@@ -2,8 +2,8 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#ifndef _NUMAMEMORY_HPP_
-#define _NUMAMEMORY_HPP_
+#ifndef ELPIDA_NUMAMEMORY_HPP_
+#define ELPIDA_NUMAMEMORY_HPP_
 
 #include <cstdlib>
 #include <memory>
@@ -73,4 +73,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_NUMAMEMORY_HPP_
+#endif //ELPIDA_NUMAMEMORY_HPP_

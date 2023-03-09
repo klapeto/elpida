@@ -2,8 +2,8 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#ifndef _RAWTASKDATA_HPP_
-#define _RAWTASKDATA_HPP_
+#ifndef ELPIDA_RAWTASKDATA_HPP_
+#define ELPIDA_RAWTASKDATA_HPP_
 
 #include "Elpida/Size.hpp"
 #include "Elpida/Map.hpp"
@@ -26,7 +26,7 @@ namespace Elpida
 		Size GetSize() const override;
 
 		[[nodiscard]]
-		unsigned char* GetDataRaw() const override;
+		unsigned char* GetData() const override;
 
 		[[nodiscard]]
 		const ProcessingUnitNode& GetTargetProcessor() const override;
@@ -58,4 +58,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_RAWTASKDATA_HPP_
+#endif //ELPIDA_RAWTASKDATA_HPP_

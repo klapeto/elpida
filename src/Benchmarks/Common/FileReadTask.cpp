@@ -61,7 +61,7 @@ namespace Elpida
 	{
 		try
 		{
-			_fileStream.read((char*)_outputData->GetDataRaw(), _outputData->GetSize());
+			_fileStream.read((char*)_outputData->GetData(), _outputData->GetSize());
 		}
 		catch (const std::fstream::failure& e)
 		{

@@ -2,8 +2,8 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#ifndef _TOPOLOGYINFO_HPP_
-#define _TOPOLOGYINFO_HPP_
+#ifndef ELPIDA_TOPOLOGY_TOPOLOGYINFO_HPP_
+#define ELPIDA_TOPOLOGY_TOPOLOGYINFO_HPP_
 
 #include "Elpida/Topology/TopologyNode.hpp"
 #include "Elpida/Topology/CpuKind.hpp"
@@ -73,4 +73,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_TOPOLOGYINFO_HPP_
+#endif //ELPIDA_TOPOLOGY_TOPOLOGYINFO_HPP_

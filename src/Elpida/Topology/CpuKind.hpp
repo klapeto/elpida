@@ -2,8 +2,8 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#ifndef _CPUKIND_HPP_
-#define _CPUKIND_HPP_
+#ifndef ELPIDA_TOPOLOGY_CPUKIND_HPP_
+#define ELPIDA_TOPOLOGY_CPUKIND_HPP_
 
 #include "Elpida/String.hpp"
 #include "Elpida/Map.hpp"
@@ -33,4 +33,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_CPUKIND_HPP_
+#endif //ELPIDA_TOPOLOGY_CPUKIND_HPP_

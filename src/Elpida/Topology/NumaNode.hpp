@@ -2,8 +2,8 @@
 // Created by klapeto on 5/3/2023.
 //
 
-#ifndef _NUMANODE_HPP_
-#define _NUMANODE_HPP_
+#ifndef ELPIDA_TOPOLOGY_NUMANODE_HPP_
+#define ELPIDA_TOPOLOGY_NUMANODE_HPP_
 
 #include "Elpida/Topology/TopologyNode.hpp"
 #include "Elpida/Topology/MemoryPageType.hpp"
@@ -40,4 +40,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_NUMANODE_HPP_
+#endif //ELPIDA_TOPOLOGY_NUMANODE_HPP_

@@ -2,8 +2,8 @@
 // Created by klapeto on 28/2/2023.
 //
 
-#ifndef _VALUEUTILITIES_HPP_
-#define _VALUEUTILITIES_HPP_
+#ifndef ELPIDA_VALUEUTILITIES_HPP_
+#define ELPIDA_VALUEUTILITIES_HPP_
 
 #include "Elpida/Size.hpp"
 #include "Elpida/String.hpp"
@@ -167,4 +167,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_VALUEUTILITIES_HPP_
+#endif //ELPIDA_VALUEUTILITIES_HPP_

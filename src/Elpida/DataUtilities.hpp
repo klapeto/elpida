@@ -2,8 +2,8 @@
 // Created by klapeto on 8/3/2023.
 //
 
-#ifndef _DATAUTILITIES_HPP_
-#define _DATAUTILITIES_HPP_
+#ifndef ELPIDA_DATAUTILITIES_HPP_
+#define ELPIDA_DATAUTILITIES_HPP_
 
 #include "Elpida/AbstractTaskData.hpp"
 #include "Elpida/Vector.hpp"
@@ -90,8 +90,8 @@ namespace Elpida
 					}
 
 					// copy the data
-					std::memcpy(currentChunk->GetDataRaw() + currentChunkOffset,
-						outChunk.get().GetDataRaw() + oChunkBytesCopied,
+					std::memcpy(currentChunk->GetData() + currentChunkOffset,
+						outChunk.get().GetData() + oChunkBytesCopied,
 						actualReadSize);
 
 					// add offsets of the actual copied data
@@ -115,4 +115,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_DATAUTILITIES_HPP_
+#endif //ELPIDA_DATAUTILITIES_HPP_

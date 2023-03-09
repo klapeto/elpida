@@ -5,11 +5,13 @@
 #ifndef ELPIDA_SCORECOMPARISONTYPE_HPP
 #define ELPIDA_SCORECOMPARISONTYPE_HPP
 
-namespace Elpida {
+namespace Elpida
+{
 	/**
 	 * @brief Determines how a score should be determined better or worse than another.
 	 */
-	enum class ScoreComparisonType {
+	enum class ScoreComparisonType
+	{
 		/**
 		 * @brief The lower the score the better.
 		 */

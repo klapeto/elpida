@@ -2,9 +2,8 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#ifndef _TOPOLOGYNODE_HPP_
-#define _TOPOLOGYNODE_HPP_
-
+#ifndef ELPIDA_TOPOLOGY_TOPOLOGYNODE_HPP_
+#define ELPIDA_TOPOLOGY_TOPOLOGYNODE_HPP_
 
 #include "Elpida/Topology/CpuKind.hpp"
 #include "Elpida/Vector.hpp"
@@ -76,14 +75,7 @@ namespace Elpida
 		TopologyNode(Optional<Ref<TopologyNode>> parent, const Vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 		void addSibling(TopologyNode& node);
 
-		void loadMachine(void* node);
-		void loadPackage(void* node);
-		void loadDie(void* node);
-		void loadNumaNode(void* node);
-		void loadGroup(void* node);
-		void loadCore(void* node);
 		void loadCache(void* node);
-		void loadProcessingUnit(void* node);
 
 		void loadChildren(const Vector<CpuKind>& cpuKinds, void* rootObj, void* node);
 		void loadSiblings();
@@ -96,4 +88,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_TOPOLOGYNODE_HPP_
+#endif //ELPIDA_TOPOLOGY_TOPOLOGYNODE_HPP_

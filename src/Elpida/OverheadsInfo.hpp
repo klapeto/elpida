@@ -2,8 +2,8 @@
 // Created by klapeto on 28/2/2023.
 //
 
-#ifndef _OVERHEADSINFO_HPP_
-#define _OVERHEADSINFO_HPP_
+#ifndef ELPIDA_OVERHEADSINFO_HPP_
+#define ELPIDA_OVERHEADSINFO_HPP_
 
 #include "Elpida/Duration.hpp"
 
@@ -50,4 +50,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_OVERHEADSINFO_HPP_
+#endif //ELPIDA_OVERHEADSINFO_HPP_

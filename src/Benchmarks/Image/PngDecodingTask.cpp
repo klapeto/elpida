@@ -19,7 +19,7 @@ namespace Elpida
 
 		_inputData = std::move(inputData);
 
-		if (png_image_begin_read_from_memory(&_pngImg, _inputData->GetDataRaw(), _inputData->GetSize()) != 0)
+		if (png_image_begin_read_from_memory(&_pngImg, _inputData->GetData(), _inputData->GetSize()) != 0)
 		{
 			_pngImg.format = PNG_FORMAT_RGBA;
 
@@ -55,7 +55,7 @@ namespace Elpida
 
 	void PngDecodingTask::DoRun()
 	{
-		if (png_image_finish_read(&_pngImg, nullptr, _outputData->GetDataRaw(), 0, nullptr) == 0)
+		if (png_image_finish_read(&_pngImg, nullptr, _outputData->GetData(), 0, nullptr) == 0)
 		{
 			throw ElpidaException("Failed to decode image: ", _pngImg.message);
 		}

@@ -10,7 +10,7 @@ namespace Elpida
 	{
 		_data = std::move(inputData);
 		_data->Allocate(_size);
-		_ptr = _data->GetDataRaw();
+		_ptr = _data->GetData();
 	}
 
 	UniquePtr<AbstractTaskData> MemoryReadBandwidthTask::Finalize()
