@@ -38,14 +38,14 @@ std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& 
 int main(int argC, char* argV[])
 {
 
-	MemoryLatencyBenchmark benchmark;
+	PngEncodingDecodingBenchmark benchmark;
 
 	EnvironmentInfo environmentInfo((OverheadsInfo()), TopologyInfo());
 
 	std::vector<TaskConfiguration> taskConfiguration = benchmark.GetRequiredConfiguration();
 
-//	taskConfiguration[0].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9.png");
-//	taskConfiguration[1].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9_out.png");
+	taskConfiguration[0].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9.png");
+	taskConfiguration[1].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9_out.png");
 
 	auto result = benchmark.Run(environmentInfo.GetTopologyInfo().GetAllProcessingUnits(), taskConfiguration, environmentInfo);
 
@@ -53,11 +53,9 @@ int main(int argC, char* argV[])
 	std::cout << "Result: " << TranslateResult(result, benchmarkInfo) << std::endl;
 
 	auto& taskResults = result.GetTaskResults();
-	auto& taskInfos = benchmarkInfo.GetTaskInfos();
-	for (std::size_t i = 0; i < taskResults.size(); ++i)
+	for (const auto& taskResult: taskResults)
 	{
-		auto& taskResult = taskResults[i];
-		auto& taskInfo = taskInfos[i];
+		auto& taskInfo = taskResult.GetTaskInfo();
 		if (taskInfo.GetScoreType() == Elpida::ScoreType::Throughput)
 		{
 			std::cout

@@ -25,17 +25,18 @@ namespace Elpida
 		UniquePtr<AbstractTaskData> data = std::make_unique<RawTaskData>(targetProcessors.front());
 		for (auto& task: tasks)
 		{
+			auto taskInfo = task->GetInfo();
 			task->SetEnvironmentInfo(environmentInfo);
 
 			if (task->CanBeMultiThreaded())
 			{
 				auto duration = ExecuteMultiThread(data, std::move(task), targetProcessors);
-				taskResults.emplace_back(duration, data->GetSize());
+				taskResults.emplace_back(std::move(taskInfo), duration, data->GetSize());
 			}
 			else
 			{
 				auto duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front());
-				taskResults.emplace_back(duration, data->GetSize());
+				taskResults.emplace_back(std::move(taskInfo), duration, data->GetSize());
 			}
 		}
 

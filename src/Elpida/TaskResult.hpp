@@ -6,6 +6,7 @@
 #define _TASKRESULT_HPP_
 
 #include "Elpida/Duration.hpp"
+#include "Elpida/TaskInfo.hpp"
 #include "Elpida/Size.hpp"
 
 namespace Elpida
@@ -14,6 +15,12 @@ namespace Elpida
 	class TaskResult
 	{
 	 public:
+		[[nodiscard]]
+		const TaskInfo& GetTaskInfo() const
+		{
+			return _taskInfo;
+		}
+
 		[[nodiscard]]
 		const Duration& GetDuration() const
 		{
@@ -26,8 +33,8 @@ namespace Elpida
 			return _inputSize;
 		}
 
-		TaskResult(const Duration& duration, Size inputSize)
-			: _duration(duration), _inputSize(inputSize)
+		TaskResult(TaskInfo&& taskInfo, const Duration& duration, Size inputSize)
+			: _taskInfo(std::move(taskInfo)), _duration(duration), _inputSize(inputSize)
 		{
 		}
 
@@ -35,6 +42,7 @@ namespace Elpida
 		TaskResult(TaskResult&&) = default;
 		~TaskResult() = default;
 	 private:
+		TaskInfo _taskInfo;
 		Duration _duration;
 		Size _inputSize;
 	};
