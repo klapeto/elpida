@@ -2,8 +2,8 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#ifndef _FILEWRITETASK_HPP_
-#define _FILEWRITETASK_HPP_
+#ifndef ELPIDA_COMMONTASKS_FILEWRITETASK_HPP_
+#define ELPIDA_COMMONTASKS_FILEWRITETASK_HPP_
 
 #include <fstream>
 
@@ -34,4 +34,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_FILEWRITETASK_HPP_
+#endif //ELPIDA_COMMONTASKS_FILEWRITETASK_HPP_

@@ -2,8 +2,8 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#ifndef _FILEREADTASK_HPP_
-#define _FILEREADTASK_HPP_
+#ifndef ELPIDA_COMMONTASKS_FILEREADTASK_HPP_
+#define ELPIDA_COMMONTASKS_FILEREADTASK_HPP_
 
 
 #include <fstream>
@@ -36,4 +36,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //_FILEREADTASK_HPP_
+#endif //ELPIDA_COMMONTASKS_FILEREADTASK_HPP_

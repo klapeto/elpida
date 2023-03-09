@@ -7,10 +7,10 @@
 #if defined(ELPIDA_UNIX)
 
 #include "Elpida/ThreadTask.hpp"
-#include "ElpidaException.hpp"
+#include "Elpida/ElpidaException.hpp"
 
 #include <sched.h>
-#include <string.h>
+#include <cstring>
 
 namespace Elpida
 {

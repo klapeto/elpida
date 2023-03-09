@@ -4,8 +4,8 @@
 
 #include "PngEncodingDecodingBenchmark.hpp"
 
-#include "Benchmarks/Common/FileReadTask.hpp"
-#include "Benchmarks/Common/FileWriteTask.hpp"
+#include "CommonTasks/FileReadTask.hpp"
+#include "CommonTasks/FileWriteTask.hpp"
 #include "PngDecodingTask.hpp"
 #include "PngEncodingTask.hpp"
 #include "ConvertToFloatTask.hpp"
