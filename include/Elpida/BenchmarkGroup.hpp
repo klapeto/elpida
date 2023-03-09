@@ -14,6 +14,7 @@ namespace Elpida
 {
 	class BenchmarkGroup final
 	{
+	 public:
 		[[nodiscard]]
 		const String& GetName() const
 		{
@@ -21,19 +22,23 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const Vector<UniquePtr<const Benchmark>>& GetBenchmarks() const
+		const Vector<UniquePtr<Benchmark>>& GetBenchmarks() const
 		{
 			return _benchmarks;
 		}
 
-		~BenchmarkGroup() = default;
-	 protected:
-		BenchmarkGroup(String name)
-			: _name(std::move(name))
+		BenchmarkGroup(String name, Vector<UniquePtr<Benchmark>>&& benchmarks)
+			: _name(std::move(name)), _benchmarks(std::move(benchmarks))
 		{
+
 		}
-		Vector<UniquePtr<const Benchmark>> _benchmarks;
+		BenchmarkGroup(BenchmarkGroup&&) noexcept = default;
+		BenchmarkGroup(const BenchmarkGroup&) = default;
+		BenchmarkGroup& operator=(BenchmarkGroup&&) noexcept = default;
+		BenchmarkGroup& operator=(const BenchmarkGroup&) = default;
+		~BenchmarkGroup() = default;
 	 private:
+		Vector<UniquePtr<Benchmark>> _benchmarks;
 		String _name;
 	};
 

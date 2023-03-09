@@ -8,12 +8,15 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
+#include <dlfcn.h>
 
-#include "Benchmarks/Memory/MemoryLatencyBenchmark.hpp"
-#include "Benchmarks/Memory/MemoryReadBandwidthBenchmark.hpp"
-#include "Benchmarks/Image/PngEncodingDecodingBenchmark.hpp"
 #include "Elpida/ValueUtilities.hpp"
+#include "Elpida/BenchmarkResult.hpp"
+#include "Elpida/BenchmarkInfo.hpp"
 #include "Elpida/OverheadsInfo.hpp"
+#include "Elpida/EnvironmentInfo.hpp"
+#include "Elpida/TaskConfiguration.hpp"
+#include "Elpida/BenchmarkGroup.hpp"
 
 using namespace Elpida;
 
@@ -38,18 +41,31 @@ std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& 
 int main(int argC, char* argV[])
 {
 
-	PngEncodingDecodingBenchmark benchmark;
-
 	EnvironmentInfo environmentInfo((OverheadsInfo()), TopologyInfo());
 
-	std::vector<TaskConfiguration> taskConfiguration = benchmark.GetRequiredConfiguration();
+	auto plugin = dlopen("libelpida-memory-benchmarks.so", RTLD_LAZY);
 
-	taskConfiguration[0].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9.png");
-	taskConfiguration[1].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9_out.png");
+	if (plugin == nullptr)
+	{
 
-	auto result = benchmark.Run(environmentInfo.GetTopologyInfo().GetAllProcessingUnits(), taskConfiguration, environmentInfo);
+		std::cerr << dlerror() << std::endl;
+		return EXIT_FAILURE;
+	}
 
-	auto benchmarkInfo = benchmark.GetInfo();
+ 	auto func = (BenchmarkGroup (*)())dlsym(plugin, "GetBenchmarkGroup");
+
+	BenchmarkGroup group = func();
+
+	auto& benchmark = group.GetBenchmarks().front();
+
+	std::vector<TaskConfiguration> taskConfiguration = benchmark->GetRequiredConfiguration();
+
+	//taskConfiguration[0].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9.png");
+	//taskConfiguration[1].SetValue("/home/klapeto/Εικόνες/Elpida-poster-9_out.png");
+
+	auto result = benchmark->Run(environmentInfo.GetTopologyInfo().GetAllProcessingUnits(), taskConfiguration, environmentInfo);
+
+	auto benchmarkInfo = benchmark->GetInfo();
 	std::cout << "Result: " << TranslateResult(result, benchmarkInfo) << std::endl;
 
 	auto& taskResults = result.GetTaskResults();

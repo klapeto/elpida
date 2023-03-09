@@ -51,7 +51,7 @@ namespace Elpida
 		Integer AsInteger();
 		Float AsFloat();
 
-		TaskConfiguration(String name, ConfigurationType type);
+		TaskConfiguration(String name, ConfigurationType type, String defaultValue = String());
 		TaskConfiguration(const TaskConfiguration&) = default;
 		TaskConfiguration(TaskConfiguration&&) noexcept = default;
 		TaskConfiguration& operator=(const TaskConfiguration&) = default;

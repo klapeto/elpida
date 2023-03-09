@@ -20,10 +20,11 @@ namespace Elpida
 		case ConfigurationType::File:
 			return "File path";
 		}
+		return "Unknown";
 	}
 
-	TaskConfiguration::TaskConfiguration(String name, ConfigurationType type)
-		: _name(std::move(name)), _type(type)
+	TaskConfiguration::TaskConfiguration(String name, ConfigurationType type, String defaultValue)
+		: _name(std::move(name)), _type(type), _value(std::move(defaultValue))
 	{
 
 	}
