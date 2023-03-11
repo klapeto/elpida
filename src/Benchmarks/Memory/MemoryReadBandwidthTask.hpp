@@ -6,8 +6,8 @@
 #define _MEMORYREADBANDWIDTHTASK_HPP_
 
 
-#include "Elpida/UniquePtr.hpp"
-#include "Elpida/MicroTask.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
+#include "Elpida/Core/MicroTask.hpp"
 
 namespace Elpida
 {

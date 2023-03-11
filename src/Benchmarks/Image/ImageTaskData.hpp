@@ -5,9 +5,9 @@
 #ifndef _IMAGETASKDATA_HPP_
 #define _IMAGETASKDATA_HPP_
 
-#include "Elpida/Size.hpp"
-#include "Elpida/Vector.hpp"
-#include "Elpida/RawTaskData.hpp"
+#include "Elpida/Core/Size.hpp"
+#include "Elpida/Core/Vector.hpp"
+#include "Elpida/Core/RawTaskData.hpp"
 
 namespace Elpida
 {

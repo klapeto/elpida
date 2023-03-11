@@ -6,7 +6,7 @@
 
 #include "ImageBenchmarksConfig.hpp"
 #include "ImageTaskData.hpp"
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
 
 #include <cstdint>
 

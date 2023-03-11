@@ -3,7 +3,8 @@
 //
 
 #include "FileReadTask.hpp"
-#include "Elpida/ElpidaException.hpp"
+
+#include "Elpida/Core/ElpidaException.hpp"
 
 #include <filesystem>
 #include <fstream>

@@ -11,7 +11,7 @@
 #include "ConvertToFloatTask.hpp"
 #include "ConvertToGrayscaleTask.hpp"
 #include "ConvertToUInt8Task.hpp"
-#include "Elpida/TaskConfiguration.hpp"
+#include "Elpida/Core/TaskConfiguration.hpp"
 
 namespace Elpida
 {

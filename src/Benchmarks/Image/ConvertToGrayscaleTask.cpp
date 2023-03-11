@@ -5,7 +5,7 @@
 #include "ConvertToGrayscaleTask.hpp"
 
 #include "ImageBenchmarksConfig.hpp"
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
 #include "ImageTaskData.hpp"
 
 namespace Elpida

@@ -10,13 +10,14 @@
 #include <filesystem>
 #include <dlfcn.h>
 
-#include "Elpida/ValueUtilities.hpp"
-#include "Elpida/BenchmarkResult.hpp"
-#include "Elpida/BenchmarkInfo.hpp"
-#include "Elpida/OverheadsInfo.hpp"
-#include "Elpida/EnvironmentInfo.hpp"
-#include "Elpida/TaskConfiguration.hpp"
-#include "Elpida/BenchmarkGroup.hpp"
+#include "Elpida/Core/ValueUtilities.hpp"
+#include "Elpida/Core/BenchmarkResult.hpp"
+#include "Elpida/Core/BenchmarkInfo.hpp"
+#include "Elpida/Core/OverheadsInfo.hpp"
+#include "Elpida/Core/EnvironmentInfo.hpp"
+#include "Elpida/Core/TaskConfiguration.hpp"
+#include "Elpida/Core/BenchmarkGroup.hpp"
+#include "Elpida/Info/TopologyLoader.hpp"
 
 using namespace Elpida;
 
@@ -40,8 +41,8 @@ std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& 
 
 int main(int argC, char* argV[])
 {
-
-	EnvironmentInfo environmentInfo((OverheadsInfo()), TopologyInfo());
+	TopologyLoader topologyLoader;
+	EnvironmentInfo environmentInfo((OverheadsInfo()), topologyLoader.LoadTopology());
 
 	auto plugin = dlopen("libelpida-memory-benchmarks.so", RTLD_LAZY);
 

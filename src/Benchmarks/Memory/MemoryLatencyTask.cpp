@@ -4,8 +4,8 @@
 
 #include "MemoryLatencyTask.hpp"
 
-#include "Elpida/RawTaskData.hpp"
-#include "Elpida/Vector.hpp"
+#include "Elpida/Core/RawTaskData.hpp"
+#include "Elpida/Core/Vector.hpp"
 
 #include <random>
 #include <algorithm>

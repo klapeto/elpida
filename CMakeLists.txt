@@ -16,6 +16,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(ELPIDA_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake-modules")
 
+message(${CMAKE_MODULE_PATH})
+
 #====================
 # RPATH Config
 #====================

@@ -7,8 +7,8 @@
 
 #include <png.h>
 
-#include "Elpida/Task.hpp"
-#include "Elpida/UniquePtr.hpp"
+#include "Elpida/Core/Task.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
 #include "ImageTaskData.hpp"
 
 namespace Elpida

@@ -5,9 +5,9 @@
 #ifndef _MEMORYLATENCYTASK_HPP_
 #define _MEMORYLATENCYTASK_HPP_
 
-#include "Elpida/UniquePtr.hpp"
-#include "Elpida/Size.hpp"
-#include "Elpida/MicroTask.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
+#include "Elpida/Core/Size.hpp"
+#include "Elpida/Core/MicroTask.hpp"
 
 namespace Elpida
 {

@@ -7,8 +7,8 @@
 
 #include <fstream>
 
-#include "Elpida/String.hpp"
-#include "Elpida/Task.hpp"
+#include "Elpida/Core/String.hpp"
+#include "Elpida/Core/Task.hpp"
 
 namespace Elpida
 {

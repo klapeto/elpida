@@ -12,4 +12,4 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
 
 set_target_properties(elpida-image-benchmarks PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(elpida-image-benchmarks PRIVATE elpida elpida-common-tasks png)
+target_link_libraries(elpida-image-benchmarks PRIVATE elpida-core elpida-common-tasks png)

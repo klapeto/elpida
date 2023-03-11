@@ -8,9 +8,9 @@
 
 #include <fstream>
 
-#include "Elpida/String.hpp"
-#include "Elpida/UniquePtr.hpp"
-#include "Elpida/Task.hpp"
+#include "Elpida/Core/String.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
+#include "Elpida/Core/Task.hpp"
 
 namespace Elpida
 {

@@ -5,9 +5,9 @@
 #ifndef _CONVERTTOGRAYSCALETASK_HPP_
 #define _CONVERTTOGRAYSCALETASK_HPP_
 
-#include "Elpida/Size.hpp"
-#include "Elpida/UniquePtr.hpp"
-#include "Elpida/Task.hpp"
+#include "Elpida/Core/Size.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
+#include "Elpida/Core/Task.hpp"
 
 #include "ImageBenchmarksConfig.hpp"
 

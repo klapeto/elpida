@@ -5,7 +5,7 @@
 #ifndef _PNGENCODINGDECODINGBENCHMARK_HPP_
 #define _PNGENCODINGDECODINGBENCHMARK_HPP_
 
-#include "Elpida/Benchmark.hpp"
+#include "Elpida/Core/Benchmark.hpp"
 
 namespace Elpida
 {

@@ -3,7 +3,7 @@
 //
 
 #include "ImageTaskData.hpp"
-#include "Elpida/DataUtilities.hpp"
+#include "Elpida/Core/DataUtilities.hpp"
 
 namespace Elpida
 {

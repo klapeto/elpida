@@ -2,10 +2,10 @@
 // Created by klapeto on 9/3/2023.
 //
 
-#include "Elpida/BenchmarkGroup.hpp"
-#include "Elpida/Config.hpp"
-#include "Elpida/Vector.hpp"
-#include "Elpida/UniquePtr.hpp"
+#include "Elpida/Core/BenchmarkGroup.hpp"
+#include "Elpida/Core/Config.hpp"
+#include "Elpida/Core/Vector.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
 #include "MemoryLatencyBenchmark.hpp"
 #include "MemoryReadBandwidthBenchmark.hpp"
 

@@ -9,7 +9,7 @@
 #include <memory>
 #include <optional>
 
-#include "Elpida/Task.hpp"
+#include "Elpida/Core/Task.hpp"
 #include "ImageBenchmarksConfig.hpp"
 
 namespace Elpida

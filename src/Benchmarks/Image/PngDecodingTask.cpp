@@ -3,7 +3,7 @@
 //
 
 #include "PngDecodingTask.hpp"
-#include "Elpida/ElpidaException.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
 #include "ImageBenchmarksConfig.hpp"
 
 #include <png.h>

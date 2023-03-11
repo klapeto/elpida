@@ -5,10 +5,10 @@
 #ifndef _MEMORYLATENCYBENCHMARK_HPP_
 #define _MEMORYLATENCYBENCHMARK_HPP_
 
-#include "Elpida/Vector.hpp"
-#include "Elpida/UniquePtr.hpp"
-#include "Elpida/Ref.hpp"
-#include "Elpida/Benchmark.hpp"
+#include "Elpida/Core/Vector.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
+#include "Elpida/Core/Ref.hpp"
+#include "Elpida/Core/Benchmark.hpp"
 
 namespace Elpida
 {

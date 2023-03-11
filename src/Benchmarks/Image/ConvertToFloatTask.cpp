@@ -3,8 +3,8 @@
 //
 
 #include "ConvertToFloatTask.hpp"
-#include "Elpida/ElpidaException.hpp"
 #include "ImageBenchmarksConfig.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
 
 namespace Elpida
 {
