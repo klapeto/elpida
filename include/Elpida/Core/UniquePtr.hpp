@@ -9,8 +9,8 @@
 
 namespace Elpida
 {
-	template<typename T>
-	using UniquePtr = std::unique_ptr<T>;
+	template<typename T, typename TDeleter = std::default_delete<T>>
+	using UniquePtr = std::unique_ptr<T, TDeleter>;
 }
 
 #endif //ELPIDA_UNIQUEPTR_HPP_

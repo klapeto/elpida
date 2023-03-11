@@ -22,7 +22,7 @@ namespace Elpida
 
 		Vector<TaskResult> taskResults;
 
-		UniquePtr<AbstractTaskData> data = std::make_unique<RawTaskData>(targetProcessors.front());
+		UniquePtr<AbstractTaskData> data = std::make_unique<RawTaskData>(targetProcessors.front(), environmentInfo.GetAllocator());
 		for (auto& task: tasks)
 		{
 			auto taskInfo = task->GetInfo();

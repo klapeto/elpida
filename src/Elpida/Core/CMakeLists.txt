@@ -10,14 +10,10 @@ set(ELPIDA_CORE_SOURCES
         TaskInfo.cpp
         Task.cpp
         RawTaskData.cpp
-        NumaMemory.cpp
-        NumaMemory.Unix.cpp
         TaskResult.cpp
         MicroTask.cpp
         ValueUtilities.cpp
         OverheadsInfo.cpp
-        OsUtilities.cpp
-        OsUtilities.Unix.cpp
         ThreadTask.cpp
         ThreadTask.Unix.cpp
         BenchmarkGroup.cpp
@@ -26,6 +22,8 @@ set(ELPIDA_CORE_SOURCES
         EnvironmentInfo.cpp
         AbstractTaskData.cpp
         DataUtilities.cpp
+        Allocator.cpp
+        DefaultAllocator.cpp
 
         Topology/TopologyInfo.cpp
         Topology/TopologyNode.cpp
@@ -34,7 +32,7 @@ set(ELPIDA_CORE_SOURCES
         Topology/ProcessingUnitNode.cpp
         Topology/NumaNode.cpp
         Topology/MemoryPageType.cpp
-        )
+)
 
 configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
 

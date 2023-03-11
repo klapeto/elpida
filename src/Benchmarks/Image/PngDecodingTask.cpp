@@ -23,7 +23,7 @@ namespace Elpida
 		{
 			_pngImg.format = PNG_FORMAT_RGBA;
 
-			_outputData = std::make_unique<ImageTaskData>(_inputData->GetTargetProcessor(), _pngImg.width, _pngImg.height, 4, sizeof(IntChannel));
+			_outputData = std::make_unique<ImageTaskData>(_inputData->GetTargetProcessor(), _inputData->GetAllocator(), _pngImg.width, _pngImg.height, 4, sizeof(IntChannel));
 			_outputData->Allocate(PNG_IMAGE_SIZE(_pngImg));
 		}
 		else

@@ -84,7 +84,7 @@ private:
 		switch (logType)
 		{
 		case LogType::Info:
-			return "[Info]";
+			return "[Platform]";
 		case LogType::Warning:
 			return "[Warning]";
 		case LogType::Error:

@@ -32,7 +32,7 @@ namespace Elpida
 
 		void Merge(const Vector<Elpida::UniquePtr<Elpida::AbstractTaskData>>& data) override;
 
-		ImageTaskData(const ProcessingUnitNode& targetProcessor, Size width, Size height, unsigned channels, unsigned bytesPerChannel);
+		ImageTaskData(const ProcessingUnitNode& targetProcessor, const Allocator& allocator, Size width, Size height, unsigned channels, unsigned bytesPerChannel);
 		~ImageTaskData() override = default;
 	 private:
 		Size _width;

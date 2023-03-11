@@ -2,7 +2,7 @@
 // Created by klapeto on 11/3/2023.
 //
 
-#include "TopologyLoader.hpp"
+#include "Elpida/Platform/TopologyLoader.hpp"
 
 #include <hwloc.h>
 

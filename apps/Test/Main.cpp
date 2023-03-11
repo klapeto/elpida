@@ -17,7 +17,8 @@
 #include "Elpida/Core/EnvironmentInfo.hpp"
 #include "Elpida/Core/TaskConfiguration.hpp"
 #include "Elpida/Core/BenchmarkGroup.hpp"
-#include "Elpida/Info/TopologyLoader.hpp"
+#include "Elpida/Platform/TopologyLoader.hpp"
+#include "Elpida/Core/DefaultAllocator.hpp"
 
 using namespace Elpida;
 
@@ -42,7 +43,7 @@ std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& 
 int main(int argC, char* argV[])
 {
 	TopologyLoader topologyLoader;
-	EnvironmentInfo environmentInfo((OverheadsInfo()), topologyLoader.LoadTopology());
+	EnvironmentInfo environmentInfo((OverheadsInfo()), topologyLoader.LoadTopology(), std::make_unique<DefaultAllocator>());
 
 	auto plugin = dlopen("libelpida-memory-benchmarks.so", RTLD_LAZY);
 

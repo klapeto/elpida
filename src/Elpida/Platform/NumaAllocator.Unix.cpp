@@ -1,22 +1,23 @@
 //
-// Created by klapeto on 27/2/2023.
+// Created by klapeto on 11/3/2023.
 //
 
 #include "Elpida/Core/Config.hpp"
 
 #if defined(ELPIDA_UNIX)
 
-#include "Elpida/Core/NumaMemory.hpp"
+#include "Elpida/Platform/NumaAllocator.hpp"
 
 #include "Elpida/Core/ElpidaException.hpp"
+#include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 
 #include <numa.h>
 
 namespace Elpida
 {
-
-	void* NumaAllocator::Allocate(int numaNodeId, std::size_t size)
+	void* NumaAllocator::Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const
 	{
+		auto numaNodeId = targetProcessingUnit.GetNumaNode().value().get().GetOsIndex().value();
 		bool numaAvailable = false;
 		void* ptr;
 		if (numa_available() < 0)
@@ -38,7 +39,7 @@ namespace Elpida
 		return ptr;
 	}
 
-	void NumaAllocator::Deallocate(void* ptr, std::size_t size)
+	void NumaAllocator::Deallocate(void* ptr, Size size) const
 	{
 		if (numa_available() < 0)
 		{
@@ -49,11 +50,7 @@ namespace Elpida
 			numa_free(ptr, size);
 		}
 	}
+} // Elpida
 
-	int NumaAllocator::GetProcessorNumaNode(int processorId)
-	{
-		return numa_node_of_cpu(processorId);
-	}
-}
 
-#endif
+#endif // defined(ELPIDA_UNIX)

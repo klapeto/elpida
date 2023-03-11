@@ -80,7 +80,7 @@ namespace Elpida
 		switch (logType)
 		{
 		case LogType::Info:
-			return new QStandardItem("Info");
+			return new QStandardItem("Platform");
 		case LogType::Error:
 		{
 			auto item = new QStandardItem("Error");

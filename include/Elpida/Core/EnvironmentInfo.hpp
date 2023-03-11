@@ -7,6 +7,8 @@
 
 #include "Elpida/Core/OverheadsInfo.hpp"
 #include "Elpida/Core/Topology/TopologyInfo.hpp"
+#include "Elpida/Core/Allocator.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
 
 namespace Elpida
 {
@@ -20,7 +22,10 @@ namespace Elpida
 		[[nodiscard]]
 		const OverheadsInfo& GetOverheadsInfo() const;
 
-		EnvironmentInfo(const OverheadsInfo& overheadsInfo, TopologyInfo&& topologyInfo);
+		[[nodiscard]]
+		const Allocator& GetAllocator() const;
+
+		EnvironmentInfo(const OverheadsInfo& overheadsInfo, TopologyInfo&& topologyInfo, UniquePtr<Allocator> allocator);
 		EnvironmentInfo(const EnvironmentInfo&) = delete;
 		EnvironmentInfo(EnvironmentInfo&&) noexcept = default;
 		EnvironmentInfo& operator=(const EnvironmentInfo&) = delete;
@@ -29,6 +34,7 @@ namespace Elpida
 	 private:
 		TopologyInfo _topologyInfo;
 		OverheadsInfo _overheadsInfo;
+		UniquePtr<Allocator> _allocator;
 	};
 
 } // Elpida

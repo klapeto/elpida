@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
 	screensModel.add(ScreenItem("Quick Start", quickStartView));
 
 	SystemInfoView systemInfoView(cpuInfo, topology, osInfo, timingInfo, memoryInfo);
-	screensModel.add(ScreenItem("System Info", systemInfoView));
+	screensModel.add(ScreenItem("System Platform", systemInfoView));
 
 	TopologyView topologyView(topology, affinityModel);
 

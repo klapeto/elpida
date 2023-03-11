@@ -9,8 +9,8 @@
 namespace Elpida
 {
 
-	RawTaskData::RawTaskData(const ProcessingUnitNode& targetProcessor)
-		: _targetProcessor(targetProcessor), _size(0)
+	RawTaskData::RawTaskData(const ProcessingUnitNode& targetProcessor, const Allocator& allocator)
+		: _data(nullptr, Deleter(allocator, 0)), _targetProcessor(targetProcessor), _allocator(allocator), _size(0)
 	{
 
 	}
@@ -18,21 +18,17 @@ namespace Elpida
 	void RawTaskData::Allocate(Size size)
 	{
 		_size = size;
-		_data = NumaUniquePtr(GetNumaNodeId(), size);
+		_data = UniquePtr<unsigned char, Deleter>(
+			(unsigned char*)_allocator.get().Allocate(_targetProcessor.get(), size),
+			Deleter(_allocator, size));
 		std::memset(_data.get(), 0, size);
 	}
 
 	RawTaskData::RawTaskData(RawTaskData&& other) noexcept
-		: _targetProcessor(other._targetProcessor)
+		: _data(std::move(other._data)), _targetProcessor(other._targetProcessor), _allocator(other._allocator)
 	{
-		_data = std::move(other._data);
 		_size = other._size;
 		other._size = 0;
-	}
-
-	int RawTaskData::GetNumaNodeId() const
-	{
-		return NumaAllocator::GetProcessorNumaNode(_targetProcessor.get().GetOsIndex().value());
 	}
 
 	void RawTaskData::Merge(const Vector<UniquePtr<AbstractTaskData>>& data)
@@ -51,10 +47,11 @@ namespace Elpida
 		{
 			inputChunks.emplace_back(*chunk);
 		}
+
 		auto outputChunks = DataUtilities::SplitChunksToChunks<RawTaskData, RawTaskData>(inputChunks, {
-			_targetProcessor }, 1, [](auto processor, auto chunkSize)
+			_targetProcessor }, 1, [this](auto processor, auto chunkSize)
 		{
-			return std::make_unique<RawTaskData>(processor, chunkSize);
+			return std::make_unique<RawTaskData>(processor, chunkSize, _allocator.get());
 		});
 
 		*this = std::move(*outputChunks.front());
@@ -62,6 +59,7 @@ namespace Elpida
 
 	RawTaskData& RawTaskData::operator=(RawTaskData&& other) noexcept
 	{
+		_allocator = other._allocator;
 		_targetProcessor = other._targetProcessor;
 		_data = std::move(other._data);
 		_size = other._size;
@@ -78,7 +76,7 @@ namespace Elpida
 	void RawTaskData::Migrate(const ProcessingUnitNode& targetProcessor)
 	{
 		_targetProcessor = targetProcessor;
-		auto newData = NumaUniquePtr(GetNumaNodeId(), _size);
+		auto newData = UniquePtr<unsigned char, Deleter>((unsigned char*)_allocator.get().Allocate(_targetProcessor.get(), _size), Deleter(_allocator, _size));
 		std::memcpy(newData.get(), _data.get(), _size);
 		_data = std::move(newData);
 	}
@@ -93,15 +91,15 @@ namespace Elpida
 
 			for (auto& processor: targetProcessors)
 			{
-				returnVector.push_back(std::make_unique<RawTaskData>(processor.get()));
+				returnVector.push_back(std::make_unique<RawTaskData>(processor.get(), _allocator));
 			}
 			return returnVector;
 		}
 
 		return DataUtilities::SplitChunksToChunks<RawTaskData, AbstractTaskData>({ *this }, targetProcessors, 1,
-			[](auto processor, auto chunkSize)
+			[this](auto processor, auto chunkSize)
 			{
-				return std::make_unique<RawTaskData>(processor, chunkSize);
+				return std::make_unique<RawTaskData>(processor, chunkSize, _allocator);
 			});
 	}
 
@@ -119,9 +117,15 @@ namespace Elpida
 	{
 		return _targetProcessor;
 	}
-	RawTaskData::RawTaskData(const ProcessingUnitNode& targetProcessor, Size size)
-		: RawTaskData(targetProcessor)
+
+	RawTaskData::RawTaskData(const ProcessingUnitNode& targetProcessor, Size size, const Allocator& allocator)
+		: RawTaskData(targetProcessor, allocator)
 	{
 		Allocate(size);
+	}
+
+	const Allocator& RawTaskData::GetAllocator() const
+	{
+		return _allocator.get();
 	}
 } // Elpida

@@ -13,6 +13,7 @@
 namespace Elpida
 {
 	class ProcessingUnitNode;
+	class Allocator;
 
 	class AbstractTaskData
 	{
@@ -30,6 +31,9 @@ namespace Elpida
 		virtual void Merge(const Vector<UniquePtr<AbstractTaskData>>& data) = 0;
 		virtual void Allocate(Size size) = 0;
 		virtual void Deallocate() = 0;
+
+		[[nodiscard]]
+		virtual const Allocator& GetAllocator() const = 0;
 
 		[[nodiscard]]
 		virtual Vector<UniquePtr<AbstractTaskData>>

@@ -6,8 +6,8 @@
 
 namespace Elpida
 {
-	EnvironmentInfo::EnvironmentInfo(const OverheadsInfo& overheadsInfo, TopologyInfo&& topologyInfo)
-		: _overheadsInfo(overheadsInfo), _topologyInfo(std::move(topologyInfo))
+	EnvironmentInfo::EnvironmentInfo(const OverheadsInfo& overheadsInfo, TopologyInfo&& topologyInfo, UniquePtr<Allocator> allocator)
+		: _overheadsInfo(overheadsInfo), _topologyInfo(std::move(topologyInfo)), _allocator(std::move(allocator))
 	{
 
 	}
@@ -19,5 +19,10 @@ namespace Elpida
 	const OverheadsInfo& EnvironmentInfo::GetOverheadsInfo() const
 	{
 		return _overheadsInfo;
+	}
+
+	const Allocator& EnvironmentInfo::GetAllocator() const
+	{
+		return *_allocator;
 	}
 } // Elpida

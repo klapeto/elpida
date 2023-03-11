@@ -19,7 +19,9 @@ namespace Elpida
 
 		_inputData = std::move(inputData);
 
-		_outputData = std::make_unique<ImageTaskData>(ptr->GetTargetProcessor(),
+		_outputData = std::make_unique<ImageTaskData>(
+			ptr->GetTargetProcessor(),
+			ptr->GetAllocator(),
 			ptr->GetWidth(),
 			ptr->GetHeight(),
 			ptr->GetChannels(),

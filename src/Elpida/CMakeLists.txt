@@ -1,2 +1,2 @@
 add_subdirectory(Core)
-add_subdirectory(Info)
+add_subdirectory(Platform)

@@ -17,8 +17,12 @@ namespace Elpida
 			stride,
 			[this, stride](auto& processor, Size chunkSize)
 			{
-				return std::make_unique<ImageTaskData>(processor, _width,
-					chunkSize / stride , _channels, _bytesPerChannel);
+				return std::make_unique<ImageTaskData>(processor,
+					GetAllocator(),
+					_width,
+					chunkSize / stride ,
+					_channels,
+					_bytesPerChannel);
 			});
 	}
 
@@ -42,8 +46,8 @@ namespace Elpida
 		return _bytesPerChannel;
 	}
 
-	ImageTaskData::ImageTaskData(const ProcessingUnitNode& targetProcessor, Size width, Size height, unsigned int channels, unsigned int bytesPerChannel)
-		: RawTaskData(targetProcessor), _width(width), _height(height), _channels(channels), _bytesPerChannel(bytesPerChannel)
+	ImageTaskData::ImageTaskData(const ProcessingUnitNode& targetProcessor,const Allocator& allocator, Size width, Size height, unsigned int channels, unsigned int bytesPerChannel)
+		: RawTaskData(targetProcessor, allocator), _width(width), _height(height), _channels(channels), _bytesPerChannel(bytesPerChannel)
 	{
 		RawTaskData::Allocate(_width * _height * _channels * _bytesPerChannel);
 	}
@@ -64,6 +68,5 @@ namespace Elpida
 		_bytesPerChannel = first->GetBytesPerChannel();
 
 		RawTaskData::Merge(data);
-
 	}
 } // Elpida
