@@ -10,6 +10,9 @@
 #include <filesystem>
 #include <dlfcn.h>
 
+
+#include <execinfo.h>
+
 #include "Elpida/Core/ValueUtilities.hpp"
 #include "Elpida/Core/BenchmarkResult.hpp"
 #include "Elpida/Core/BenchmarkInfo.hpp"
@@ -19,6 +22,9 @@
 #include "Elpida/Core/BenchmarkGroup.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
 #include "Elpida/Core/DefaultAllocator.hpp"
+#include "Elpida/Core/ModuleExports.hpp"
+#include "Elpida/Platform/NumaAllocator.hpp"
+#include "Elpida/Platform/BenchmarkGroupModule.hpp"
 
 using namespace Elpida;
 
@@ -35,6 +41,21 @@ static void Load()
 	std::cout << "Done with: " << f << std::endl;
 }
 
+void
+handler()
+{
+	void *trace_elems[20];
+	int trace_elem_count(backtrace( trace_elems, 20 ));
+	char **stack_syms(backtrace_symbols( trace_elems, trace_elem_count ));
+	for ( int i = 0 ; i < trace_elem_count ; ++i )
+	{
+		std::cout << stack_syms[i] << "\n";
+	}
+	free( stack_syms );
+
+	exit(1);
+}
+
 std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& benchmarkInfo)
 {
 	return ValueUtilities::GetValueScaleStringSI(result.GetScore()) + benchmarkInfo.GetScoreUnit();
@@ -42,23 +63,13 @@ std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& 
 
 int main(int argC, char* argV[])
 {
+	//std::set_terminate(handler);
 	TopologyLoader topologyLoader;
-	EnvironmentInfo environmentInfo((OverheadsInfo()), topologyLoader.LoadTopology(), std::make_unique<DefaultAllocator>());
+	EnvironmentInfo environmentInfo((OverheadsInfo()), topologyLoader.LoadTopology(), std::make_unique<NumaAllocator>());
 
-	auto plugin = dlopen("libelpida-memory-benchmarks.so", RTLD_LAZY);
+	BenchmarkGroupModule externalBenchmarkGroup("/home/klapeto/code/elpida/AppDir/bin/Benchmarks/libelpida-memory-benchmarks.so");
 
-	if (plugin == nullptr)
-	{
-
-		std::cerr << dlerror() << std::endl;
-		return EXIT_FAILURE;
-	}
-
- 	auto func = (BenchmarkGroup (*)())dlsym(plugin, "GetBenchmarkGroup");
-
-	BenchmarkGroup group = func();
-
-	auto& benchmark = group.GetBenchmarks().front();
+	auto& benchmark = externalBenchmarkGroup.GetBenchmarkGroup().GetBenchmarks().front();
 
 	std::vector<TaskConfiguration> taskConfiguration = benchmark->GetRequiredConfiguration();
 

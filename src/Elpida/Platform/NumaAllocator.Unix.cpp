@@ -17,7 +17,7 @@ namespace Elpida
 {
 	void* NumaAllocator::Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const
 	{
-		auto numaNodeId = targetProcessingUnit.GetNumaNode().value().get().GetOsIndex().value();
+		auto numaNodeId = numa_node_of_cpu(targetProcessingUnit.GetOsIndex().value());
 		bool numaAvailable = false;
 		void* ptr;
 		if (numa_available() < 0)

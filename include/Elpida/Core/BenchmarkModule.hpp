@@ -1,0 +1,14 @@
+//
+// Created by klapeto on 11/3/2023.
+//
+
+#ifndef ELPIDA_BENCHMARKMODULE_HPP_
+#define ELPIDA_BENCHMARKMODULE_HPP_
+
+#include "Elpida/Core/ModuleExports.hpp"
+
+
+ELPIDA_CREATE_BENCHMARK_GROUP_DECL;
+ELPIDA_DESTROY_BENCHMARK_GROUP_DECL;
+
+#endif //ELPIDA_BENCHMARKMODULE_HPP_

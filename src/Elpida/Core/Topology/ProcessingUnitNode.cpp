@@ -10,26 +10,20 @@ namespace Elpida
 	{
 		return _cpuKind;
 	}
+
 	Optional<Ref<const CpuCacheNode>> ProcessingUnitNode::GetLastCache() const
 	{
 		return _lastCache;
-	}
-
-	Optional<Ref<const NumaNode>> ProcessingUnitNode::GetNumaNode() const
-	{
-		return _numaNode;
 	}
 
 	ProcessingUnitNode::ProcessingUnitNode(Optional<Ref<const CpuKind>> cpuKind)
 		: TopologyNode(NodeType::ProcessingUnit), _cpuKind(cpuKind)
 	{
 
-		auto numaNode = GetLastAncestor(NodeType::NumaDomain);
-		if (numaNode.has_value())
-		{
-			_numaNode = static_cast<const NumaNode&>(numaNode.value().get());
-		}
+	}
 
+	void ProcessingUnitNode::PostProcessImpl()
+	{
 		constexpr const auto cacheTypes = NodeType::L5Cache
 										  | NodeType::L4Cache
 										  | NodeType::L3DCache
@@ -45,5 +39,6 @@ namespace Elpida
 		{
 			_lastCache = static_cast<const CpuCacheNode&>(cacheNode.value().get());
 		}
+
 	}
 } // Elpida

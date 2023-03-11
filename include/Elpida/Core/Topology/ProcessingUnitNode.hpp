@@ -25,9 +25,6 @@ namespace Elpida
 		[[nodiscard]]
 		Optional<Ref<const CpuCacheNode>> GetLastCache() const;
 
-		[[nodiscard]]
-		Optional<Ref<const NumaNode>> GetNumaNode() const;
-
 		explicit ProcessingUnitNode(Optional<Ref<const CpuKind>> cpuKind);
 		ProcessingUnitNode(const ProcessingUnitNode&) = delete;
 		ProcessingUnitNode(ProcessingUnitNode&&) noexcept = delete;
@@ -36,11 +33,9 @@ namespace Elpida
 		~ProcessingUnitNode() override = default;
 	 private:
 		Optional<Ref<const CpuCacheNode>> _lastCache;
-		Optional<Ref<const NumaNode>> _numaNode;
-
 		Optional<Ref<const CpuKind>> _cpuKind;
-
-		friend class TopologyNode;
+	 protected:
+		void PostProcessImpl() final;
 	};
 
 } // Elpida

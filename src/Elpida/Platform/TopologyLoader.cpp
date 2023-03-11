@@ -244,7 +244,8 @@ namespace Elpida
 
 			auto root = LoadNode(hwloc_get_root_obj(topology), cpuKinds, topology);
 
-			root->loadSiblings();
+			root->PostProcess();
+			root->LoadSiblings();
 
 			hwloc_topology_destroy(topology);
 

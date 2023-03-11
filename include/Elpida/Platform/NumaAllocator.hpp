@@ -14,8 +14,8 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		void* Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const = 0;
-		void Deallocate(void* ptr, Size size) const = 0;
+		void* Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const;
+		void Deallocate(void* ptr, Size size) const;
 
 		NumaAllocator() = default;
 		~NumaAllocator() final = default;

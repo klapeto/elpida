@@ -6,7 +6,7 @@
 
 namespace Elpida
 {
-	void TopologyNode::loadSiblings()
+	void TopologyNode::LoadSiblings()
 	{
 		if (_parent.has_value())
 		{
@@ -14,17 +14,17 @@ namespace Elpida
 			{
 				if (sibling.get() != this)
 				{
-					addSibling(*sibling);
+					AddSibling(*sibling);
 				}
 			}
 		}
 
 		for (auto& child: _children)
 		{
-			child->loadSiblings();
+			child->LoadSiblings();
 		}
 	}
-	void TopologyNode::loadParents(Optional<Ref<TopologyNode>> parent)
+	void TopologyNode::LoadParents(Optional<Ref<TopologyNode>> parent)
 	{
 		if (parent.has_value())
 		{
@@ -32,16 +32,16 @@ namespace Elpida
 		}
 		for (auto& child: _children)
 		{
-			child->loadParents(*this);
+			child->LoadParents(*this);
 		}
 
 		for (auto& child: _memoryChildren)
 		{
-			child->loadParents(*this);
+			child->LoadParents(*this);
 		}
 	}
 
-	void TopologyNode::addSibling(TopologyNode& node)
+	void TopologyNode::AddSibling(TopologyNode& node)
 	{
 		_siblings.emplace_back(node);
 	}
@@ -91,6 +91,7 @@ namespace Elpida
 
 		return lastNode;
 	}
+
 	void TopologyNode::SetParent(Ref<const TopologyNode> parent)
 	{
 		_parent = parent;
@@ -115,6 +116,25 @@ namespace Elpida
 	void TopologyNode::SetOsIndex(unsigned int index)
 	{
 		_osIndex = index;
+	}
+
+	void TopologyNode::PostProcess()
+	{
+		PostProcessImpl();
+		for (auto& child: _children)
+		{
+			child->PostProcess();
+		}
+
+		for (auto& child: _memoryChildren)
+		{
+			child->PostProcess();
+		}
+	}
+
+	void TopologyNode::PostProcessImpl()
+	{
+
 	}
 
 } // Elpida
