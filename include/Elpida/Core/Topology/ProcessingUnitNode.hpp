@@ -20,22 +20,28 @@ namespace Elpida
 	 public:
 
 		[[nodiscard]]
+		const NumaNode& GetNumaNode() const;
+
+		[[nodiscard]]
 		Optional<Ref<const CpuKind>> GetCpuKind() const;
 
 		[[nodiscard]]
 		Optional<Ref<const CpuCacheNode>> GetLastCache() const;
 
-		explicit ProcessingUnitNode(Optional<Ref<const CpuKind>> cpuKind);
+		void SetLastCache(const CpuCacheNode& cacheNode);
+		void SetNumaNode(const NumaNode& cacheNode);
+		void SetCpuKind(const CpuKind& cacheNode);
+
+		explicit ProcessingUnitNode();
 		ProcessingUnitNode(const ProcessingUnitNode&) = delete;
 		ProcessingUnitNode(ProcessingUnitNode&&) noexcept = delete;
 		ProcessingUnitNode& operator=(const ProcessingUnitNode&) = delete;
 		ProcessingUnitNode& operator=(ProcessingUnitNode&&) noexcept = delete;
 		~ProcessingUnitNode() override = default;
 	 private:
+		Optional<Ref<const NumaNode>> _numaNode;
 		Optional<Ref<const CpuCacheNode>> _lastCache;
 		Optional<Ref<const CpuKind>> _cpuKind;
-	 protected:
-		void PostProcessImpl() final;
 	};
 
 } // Elpida

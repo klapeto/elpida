@@ -102,23 +102,5 @@ namespace Elpida
 		_osIndex = index;
 	}
 
-	void TopologyNode::PostProcess()
-	{
-		PostProcessImpl();
-		for (auto& child: _children)
-		{
-			child->PostProcess();
-		}
-
-		for (auto& child: _memoryChildren)
-		{
-			child->PostProcess();
-		}
-	}
-
-	void TopologyNode::PostProcessImpl()
-	{
-
-	}
 
 } // Elpida

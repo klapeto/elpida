@@ -11,6 +11,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <numa.h>
 
 namespace Elpida
 {
@@ -18,6 +19,12 @@ namespace Elpida
 	String OsUtilities::GetLastErrorString()
 	{
 		return { strerror(errno) };
+	}
+
+	unsigned int OsUtilities::GetNumaNodeIdForProcessor(unsigned int processorId)
+	{
+		if (numa_available() < 0) return 0;
+		return numa_node_of_cpu(processorId);
 	}
 
 } // Elpida

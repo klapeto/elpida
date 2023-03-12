@@ -16,29 +16,28 @@ namespace Elpida
 		return _lastCache;
 	}
 
-	ProcessingUnitNode::ProcessingUnitNode(Optional<Ref<const CpuKind>> cpuKind)
-		: TopologyNode(NodeType::ProcessingUnit), _cpuKind(cpuKind)
+	ProcessingUnitNode::ProcessingUnitNode()
+		: TopologyNode(NodeType::ProcessingUnit)
 	{
 
 	}
-
-	void ProcessingUnitNode::PostProcessImpl()
+	const NumaNode& ProcessingUnitNode::GetNumaNode() const
 	{
-		constexpr const auto cacheTypes = NodeType::L5Cache
-										  | NodeType::L4Cache
-										  | NodeType::L3DCache
-										  | NodeType::L3ICache
-										  | NodeType::L2DCache
-										  | NodeType::L2ICache
-										  | NodeType::L1DCache
-										  | NodeType::L1ICache;
+		return _numaNode.value();
+	}
 
-		auto cacheNode = GetLastAncestor((NodeType)(cacheTypes));
+	void ProcessingUnitNode::SetLastCache(const CpuCacheNode& cacheNode)
+	{
+		_lastCache = cacheNode;
+	}
 
-		if (cacheNode.has_value())
-		{
-			_lastCache = static_cast<const CpuCacheNode&>(cacheNode.value().get());
-		}
+	void ProcessingUnitNode::SetNumaNode(const NumaNode& numaNode)
+	{
+		_numaNode = numaNode;
+	}
 
+	void ProcessingUnitNode::SetCpuKind(const CpuKind& cpuKind)
+	{
+		_cpuKind = cpuKind;
 	}
 } // Elpida

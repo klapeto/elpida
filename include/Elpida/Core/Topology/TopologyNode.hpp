@@ -66,7 +66,6 @@ namespace Elpida
 		void SetParent(Ref<const TopologyNode> parent);
 		void SetOsIndex(unsigned int index);
 		void LoadSiblings();
-		void PostProcess();
 
 		explicit TopologyNode(NodeType type);
 		TopologyNode(const TopologyNode&) = delete;
@@ -85,7 +84,6 @@ namespace Elpida
 		Optional<unsigned int> _osIndex;
 	 protected:
 		void AddSibling(TopologyNode& node);
-		virtual void PostProcessImpl();
 	};
 
 } // Elpida

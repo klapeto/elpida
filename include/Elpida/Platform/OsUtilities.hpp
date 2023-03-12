@@ -12,7 +12,9 @@ namespace Elpida
 
 	class OsUtilities
 	{
+	 public:
 		static String GetLastErrorString();
+		static unsigned int GetNumaNodeIdForProcessor(unsigned int processorId);
 	};
 
 } // Elpida

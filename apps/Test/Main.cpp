@@ -8,8 +8,6 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
-#include <dlfcn.h>
-
 
 #include <execinfo.h>
 
@@ -69,7 +67,7 @@ int main(int argC, char* argV[])
 
 	BenchmarkGroupModule externalBenchmarkGroup("/home/klapeto/code/elpida/AppDir/bin/Benchmarks/libelpida-memory-benchmarks.so");
 
-	auto& benchmark = externalBenchmarkGroup.GetBenchmarkGroup().GetBenchmarks().front();
+	auto& benchmark = externalBenchmarkGroup.GetBenchmarkGroup().GetBenchmarks().back();
 
 	std::vector<TaskConfiguration> taskConfiguration = benchmark->GetRequiredConfiguration();
 

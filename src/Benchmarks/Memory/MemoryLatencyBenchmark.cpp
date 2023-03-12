@@ -26,11 +26,8 @@ namespace Elpida
 				cacheLineSize = std::max(cacheLineSize, cache->get().GetLineSize());
 			}
 
-			auto numaDomain = processor.get().GetNumaNode();
-			if (numaDomain.has_value())
-			{
-				pageSize = std::max(pageSize, numaDomain->get().GetMemoryPageTypes().front().GetPageSize());
-			}
+			auto& numaDomain = processor.get().GetNumaNode();
+			pageSize = std::max(pageSize, numaDomain.GetMemoryPageTypes().front().GetPageSize());
 		}
 
 		Vector<UniquePtr<Task>> tasks;

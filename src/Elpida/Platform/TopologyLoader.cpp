@@ -3,6 +3,7 @@
 //
 
 #include "Elpida/Platform/TopologyLoader.hpp"
+#include "Elpida/Platform/OsUtilities.hpp"
 
 #include <hwloc.h>
 
@@ -185,23 +186,15 @@ namespace Elpida
 	static UniquePtr<TopologyNode>
 	LoadProcessingUnit(hwloc_obj_t node, const Vector<CpuKind>& cpuKinds, hwloc_topology_t topology)
 	{
-		auto kindIndex = hwloc_cpukinds_get_by_cpuset(topology, node->cpuset, 0);
-
-		Optional<Ref<const CpuKind>> _cpuKind;
-
-		if (kindIndex != -1)
-		{
-			_cpuKind = cpuKinds.at(kindIndex);
-		}
-
-		auto thisNode = std::make_unique<ProcessingUnitNode>(_cpuKind);
+		auto thisNode = std::make_unique<ProcessingUnitNode>();
 
 		LoadDefaultProperties(*thisNode, node, cpuKinds, topology);
 
 		return thisNode;
 	}
 
-	static UniquePtr<TopologyNode> LoadNode(hwloc_obj_t node, const Vector<CpuKind>& cpuKinds, hwloc_topology_t rootObj)
+	static UniquePtr<TopologyNode>
+	LoadNode(hwloc_obj_t node, const Vector<CpuKind>& cpuKinds, hwloc_topology_t topology)
 	{
 		auto type = TranslateType(node);
 		switch (type)
@@ -212,9 +205,9 @@ namespace Elpida
 		case Die:
 		case Core:
 		case Unknown:
-			return LoadDefault(type, node, cpuKinds, rootObj);
+			return LoadDefault(type, node, cpuKinds, topology);
 		case NumaDomain:
-			return LoadNumaDomain(node, cpuKinds, rootObj);
+			return LoadNumaDomain(node, cpuKinds, topology);
 		case L1ICache:
 		case L1DCache:
 		case L2ICache:
@@ -223,16 +216,126 @@ namespace Elpida
 		case L3DCache:
 		case L4Cache:
 		case L5Cache:
-			return LoadCache(type, node, cpuKinds, rootObj);
+			return LoadCache(type, node, cpuKinds, topology);
 		case ProcessingUnit:
-			return LoadProcessingUnit(node, cpuKinds, rootObj);
+			return LoadProcessingUnit(node, cpuKinds, topology);
 		}
-		return LoadDefault(type, node, cpuKinds, rootObj);
+		return LoadDefault(type, node, cpuKinds, topology);
+	}
+
+	static void AccumulateCollections(TopologyNode& node,
+		Vector<Ref<const CpuCacheNode>>& allCaches,
+		Vector<Ref<const NumaNode>>& allNumaNodes,
+		Vector<Ref<const ProcessingUnitNode>>& allProcessingUnits,
+		Vector<Ref<ProcessingUnitNode>>& allProcessingUnitsMut)
+	{
+		switch (node.GetType())
+		{
+		case NodeType::ProcessingUnit:
+			allProcessingUnitsMut.emplace_back(static_cast<ProcessingUnitNode&>(node));
+			allProcessingUnits.emplace_back(static_cast<const ProcessingUnitNode&>(node));
+			break;
+		case NodeType::Core:
+			break;
+		case NodeType::NumaDomain:
+			allNumaNodes.emplace_back(static_cast<const NumaNode&>(node));
+			break;
+		case NodeType::Package:
+			break;
+		case NodeType::L5Cache:
+		case NodeType::L4Cache:
+		case NodeType::L3DCache:
+		case NodeType::L3ICache:
+		case NodeType::L2DCache:
+		case NodeType::L2ICache:
+		case NodeType::L1DCache:
+		case NodeType::L1ICache:
+			allCaches.emplace_back(static_cast<const CpuCacheNode&>(node));
+		default:
+			break;
+		}
+
+		for (const auto& child: node.GetMemoryChildren())
+		{
+			AccumulateCollections(*child, allCaches, allNumaNodes, allProcessingUnits, allProcessingUnitsMut);
+		}
+
+		for (const auto& child: node.GetChildren())
+		{
+			AccumulateCollections(*child, allCaches, allNumaNodes, allProcessingUnits, allProcessingUnitsMut);
+		}
+	}
+
+	static Optional<Ref<const TopologyNode>> GetLastAncestor(const TopologyNode& topologyNode, NodeType nodeTypes)
+	{
+		Optional<Ref<const TopologyNode>> lastNode;
+		Optional<Ref<const TopologyNode>> currentNode = topologyNode;
+		while (currentNode.has_value())
+		{
+			if (currentNode->get().GetType() & nodeTypes)
+			{
+				lastNode = currentNode;
+			}
+			currentNode = currentNode->get().GetParent();
+		}
+
+		return lastNode;
+	}
+
+	static void AssignProcessorsData(const Vector<CpuKind>& cpuKinds,
+		Vector<Ref<const NumaNode>>& allNumaNodes,
+		Vector<Ref<ProcessingUnitNode>>& allProcessingUnits,
+		hwloc_topology_t topology)
+	{
+		for (auto& processor: allProcessingUnits)
+		{
+			auto osIndex = processor.get().GetOsIndex().value();
+
+			hwloc_bitmap_t bitmap = hwloc_bitmap_alloc();
+			hwloc_bitmap_set(bitmap, osIndex);
+			auto kindIndex = hwloc_cpukinds_get_by_cpuset(topology, bitmap, 0);
+			hwloc_bitmap_free(bitmap);
+
+			if (kindIndex != -1)
+			{
+				processor.get().SetCpuKind(cpuKinds.at(kindIndex));
+			}
+
+			auto numaNodeId = OsUtilities::GetNumaNodeIdForProcessor(osIndex);
+			for (auto& numaNode: allNumaNodes)
+			{
+				if (numaNode.get().GetOsIndex().value() == numaNodeId)
+				{
+					processor.get().SetNumaNode(numaNode.get());
+					break;
+				}
+			}
+
+			auto lastCache = GetLastAncestor(processor,
+				(NodeType)(NodeType::L1ICache
+						   | NodeType::L1DCache
+						   | NodeType::L2ICache
+						   | NodeType::L2DCache
+						   | NodeType::L3ICache
+						   | NodeType::L3DCache
+						   | NodeType::L4Cache
+						   | NodeType::L5Cache)
+			);
+
+			if (lastCache.has_value())
+			{
+				processor.get().SetLastCache(static_cast<const CpuCacheNode&>(lastCache.value().get()));
+			}
+		}
 	}
 
 	TopologyInfo TopologyLoader::LoadTopology() const
 	{
 		Vector<CpuKind> cpuKinds;
+		Vector<Ref<const CpuCacheNode>> allCaches;
+		Vector<Ref<const NumaNode>> allNumaNodes;
+		Vector<Ref<const ProcessingUnitNode>> allProcessingUnits;
+		Vector<Ref<ProcessingUnitNode>> allProcessingUnitsMut;
 		hwloc_topology_t topology;
 		try
 		{
@@ -244,14 +347,18 @@ namespace Elpida
 
 			auto root = LoadNode(hwloc_get_root_obj(topology), cpuKinds, topology);
 
-			root->PostProcess();
 			root->LoadSiblings();
+			AccumulateCollections(*root, allCaches, allNumaNodes, allProcessingUnits, allProcessingUnitsMut);
+			AssignProcessorsData(cpuKinds, allNumaNodes, allProcessingUnitsMut, topology);
 
 			hwloc_topology_destroy(topology);
 
 			return {
+				std::move(root),
 				std::move(cpuKinds),
-				std::move(root)
+				std::move(allCaches),
+				std::move(allNumaNodes),
+				std::move(allProcessingUnits),
 			};
 		}
 		catch (...)

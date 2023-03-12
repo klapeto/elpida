@@ -28,18 +28,6 @@ namespace Elpida
 		const Vector<CpuKind>& GetCpuKinds() const;
 
 		[[nodiscard]]
-		Size GetTotalLogicalCores() const;
-
-		[[nodiscard]]
-		Size GetTotalPhysicalCores() const;
-
-		[[nodiscard]]
-		Size GetTotalNumaNodes() const;
-
-		[[nodiscard]]
-		Size GetTotalPackages() const;
-
-		[[nodiscard]]
 		const Vector<Ref<const CpuCacheNode>>& GetAllCaches() const;
 
 		[[nodiscard]]
@@ -48,7 +36,11 @@ namespace Elpida
 		[[nodiscard]]
 		const Vector<Ref<const ProcessingUnitNode>>& GetAllProcessingUnits() const;
 
-		TopologyInfo(Vector<CpuKind>&& cpuKinds, UniquePtr<TopologyNode> root);
+		TopologyInfo(UniquePtr<TopologyNode> root,
+			Vector<CpuKind>&& cpuKinds,
+			Vector<Ref<const CpuCacheNode>>&& allCaches,
+			Vector<Ref<const NumaNode>>&& allNumaNodes,
+			Vector<Ref<const ProcessingUnitNode>> allProcessingUnits);
 		TopologyInfo(const TopologyInfo&) = delete;
 		TopologyInfo(TopologyInfo&&) noexcept = default;
 		TopologyInfo& operator=(const TopologyInfo&) = delete;
@@ -60,15 +52,6 @@ namespace Elpida
 		Vector<Ref<const NumaNode>> _allNumaNodes;
 		Vector<Ref<const ProcessingUnitNode>> _allProcessingUnits;
 		UniquePtr<TopologyNode> _root;
-
-		Size _totalLogicalCores;
-		Size _totalPhysicalCores;
-		Size _totalNumaNodes;
-		Size _totalPackages;
-
-		void accumulateCores(const TopologyNode& node);
-
-		void processChildNode(const TopologyNode& node);
 	};
 
 } // Elpida
