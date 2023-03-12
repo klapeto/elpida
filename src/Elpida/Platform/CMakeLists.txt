@@ -7,7 +7,13 @@ set(ELPIDA_PLATFORM_SOURCES
         TopologyLoader.cpp
         BenchmarkGroupModule.cpp
         BenchmarkGroupModule.Unix.cpp
-        NumaAllocator.Unix.cpp)
+        BenchmarkGroupModule.Windows.cpp
+
+        NumaAllocator.Unix.cpp
+        NumaAllocator.Windows.cpp
+
+        OsUtilities.Unix.cpp
+        OsUtilities.Windows.cpp)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 

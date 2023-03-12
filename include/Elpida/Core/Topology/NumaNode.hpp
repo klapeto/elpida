@@ -33,8 +33,6 @@ namespace Elpida
 	 private:
 		Vector<MemoryPageType> _memoryPageTypes;
 		Size _localMemorySize;
-
-		friend class TopologyNode;
 	};
 
 } // Elpida

@@ -85,7 +85,6 @@ namespace Elpida
 		Optional<unsigned int> _osIndex;
 	 protected:
 		void AddSibling(TopologyNode& node);
-		void LoadParents(Optional<Ref<TopologyNode>> parent);
 		virtual void PostProcessImpl();
 	};
 

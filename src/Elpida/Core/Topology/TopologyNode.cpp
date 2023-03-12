@@ -24,22 +24,6 @@ namespace Elpida
 			child->LoadSiblings();
 		}
 	}
-	void TopologyNode::LoadParents(Optional<Ref<TopologyNode>> parent)
-	{
-		if (parent.has_value())
-		{
-			_parent = *parent;
-		}
-		for (auto& child: _children)
-		{
-			child->LoadParents(*this);
-		}
-
-		for (auto& child: _memoryChildren)
-		{
-			child->LoadParents(*this);
-		}
-	}
 
 	void TopologyNode::AddSibling(TopologyNode& node)
 	{

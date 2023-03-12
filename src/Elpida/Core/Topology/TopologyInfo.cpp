@@ -100,7 +100,7 @@ namespace Elpida
 	}
 
 	TopologyInfo::TopologyInfo(Vector<CpuKind>&& cpuKinds, UniquePtr<TopologyNode> root)
-		: _cpuKinds(std::move(cpuKinds)), _root(std::move(root))
+		: _cpuKinds(std::move(cpuKinds)), _root(std::move(root)), _totalLogicalCores(0), _totalPhysicalCores(0), _totalNumaNodes(0), _totalPackages(0)
 	{
 		accumulateCores(*_root);
 	}
