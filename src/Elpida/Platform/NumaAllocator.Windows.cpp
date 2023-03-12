@@ -31,7 +31,7 @@ namespace Elpida
 
 		if (ptr == nullptr)
 		{
-			throw ElpidaException("Failed to allocate NUMA memory of size: ", size, " on numa node: ", numaNodeId, " (NUMA available: ", std::to_string(numaAvailable), "): ", OsUtilities::GetLastErrorString());
+			throw ElpidaException("Failed to allocate NUMA memory of size: ", size, " on numa node: ", numaNodeId, ": ", OsUtilities::GetLastErrorString());
 		}
 
 		return ptr;
@@ -44,16 +44,9 @@ namespace Elpida
 
 	unsigned int OsUtilities::GetNumaNodeIdForProcessor(unsigned int processorId)
 	{
-		PROCESSOR_NUMBER ProcessorNumber;
+		UCHAR NodeNumber;
 
-		if (!NT_SUCCESS(KeGetProcessorNumberFromIndex((ULONG)processorId, &ProcessorNumber))
-		{
-			throw ElpidaException("Failed to get the numa node id of processor '",processorId,"': ", OsUtilities::GetLastErrorString());
-		}
-
-		USHORT NodeNumber;
-
-		GetNumaProcessorNodeEx(ProcessorNumber, &NodeNumber);
+		GetNumaProcessorNode((UCHAR)processorId, &NodeNumber);	// TODO: does not work with 64+ processors (thanks windows)
 		return NodeNumber;
 	}
 
