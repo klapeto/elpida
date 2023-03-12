@@ -41,6 +41,7 @@ namespace Elpida
 		}
 
 		return {
+			GetInfo(),
 			CalculateScore(taskResults),
 			taskResults
 		};

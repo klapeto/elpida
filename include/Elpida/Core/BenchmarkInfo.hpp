@@ -12,7 +12,7 @@
 
 namespace Elpida
 {
-	class BenchmarkInfo
+	class BenchmarkInfo final
 	{
 	 public:
 
@@ -58,6 +58,11 @@ namespace Elpida
 			  _scoreDescription(std::move(scoreDescription))
 		{
 		}
+
+		BenchmarkInfo(const BenchmarkInfo&) = default;
+		BenchmarkInfo(BenchmarkInfo&&) noexcept = default;
+		BenchmarkInfo& operator=(const BenchmarkInfo&) = default;
+		BenchmarkInfo& operator=(BenchmarkInfo&&) noexcept = default;
 		~BenchmarkInfo() = default;
 	 private:
 		Vector<TaskInfo> _taskInfos;

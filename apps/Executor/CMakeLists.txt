@@ -5,12 +5,13 @@ project("Elpida Benchmark Executor" VERSION ${ELPIDA_VERSION}
 
 set(ELPIDA_EXECUTOR_SOURCES
         Main.cpp
+        ArgumentsValidator.cpp
+        ResultFormatter.cpp
+        DefaultFormatter.cpp
         )
 
 
 add_executable(elpida-executor ${ELPIDA_EXECUTOR_SOURCES})
+target_link_libraries(elpida-executor elpida-core elpida-platform)
 
-target_include_directories(elpida-executor PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(elpida-executor elpida elpidaCore)
-
-install(TARGETS elpida-executor RUNTIME DESTINATION ${ELPIDA_APP_INSTALL_DIR})
+install(TARGETS elpida-executor RUNTIME)

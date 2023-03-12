@@ -8,12 +8,19 @@
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/TaskResult.hpp"
+#include "BenchmarkInfo.hpp"
 
 namespace Elpida
 {
 	class BenchmarkResult
 	{
 	 public:
+
+		[[nodiscard]]
+		const BenchmarkInfo& GetBenchmarkInfo() const
+		{
+			return _benchmarkInfo;
+		}
 
 		[[nodiscard]]
 		double GetScore() const
@@ -27,13 +34,14 @@ namespace Elpida
 			return _taskResults;
 		}
 
-		BenchmarkResult(double score, const Vector<TaskResult>& taskResults)
-			: _taskResults(taskResults), _score(score)
+		BenchmarkResult(BenchmarkInfo&& benchmarkInfo, double score, const Vector<TaskResult>& taskResults)
+			: _benchmarkInfo(std::move(benchmarkInfo)), _taskResults(taskResults), _score(score)
 		{
 		}
 
 		~BenchmarkResult() = default;
 	 private:
+		BenchmarkInfo _benchmarkInfo;
 		Vector<TaskResult> _taskResults;
 		double _score;
 	};

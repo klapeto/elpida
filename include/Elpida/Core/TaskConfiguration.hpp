@@ -47,6 +47,7 @@ namespace Elpida
 		void SetValue(Integer value);
 		void SetValue(const String& value);
 		void SetValue(Float value);
+		void Parse(const String& value);
 
 		Integer AsInteger();
 		Float AsFloat();

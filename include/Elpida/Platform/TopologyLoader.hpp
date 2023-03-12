@@ -14,10 +14,9 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		TopologyInfo LoadTopology() const;
+		static TopologyInfo LoadTopology();
 
-		TopologyLoader() = default;
-		~TopologyLoader() = default;
+		TopologyLoader() = delete;
 	};
 
 } // Elpida

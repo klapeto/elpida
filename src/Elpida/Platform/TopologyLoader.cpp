@@ -329,7 +329,7 @@ namespace Elpida
 		}
 	}
 
-	TopologyInfo TopologyLoader::LoadTopology() const
+	TopologyInfo TopologyLoader::LoadTopology()
 	{
 		Vector<CpuKind> cpuKinds;
 		Vector<Ref<const CpuCacheNode>> allCaches;

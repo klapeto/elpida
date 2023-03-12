@@ -76,4 +76,22 @@ namespace Elpida
 
 		return std::stod(_value);
 	}
+
+	void TaskConfiguration::Parse(const String& value)
+	{
+		switch (_type)
+		{
+
+		case ConfigurationType::Integer:
+			SetValue(std::stol(value));
+			break;
+		case ConfigurationType::Float:
+			SetValue(std::stod(value));
+			break;
+		case ConfigurationType::String:
+		case ConfigurationType::File:
+			SetValue(value);
+			break;
+		}
+	}
 } // Elpida
