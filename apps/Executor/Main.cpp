@@ -31,7 +31,7 @@
 #include "Elpida/Platform/BenchmarkGroupModule.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
 
-#include "ArgumentsValidator.hpp"
+#include "ArgumentsHelper.hpp"
 #include "Elpida/Platform/NumaAllocator.hpp"
 
 #define NON_EXIT_CODE (-1)
@@ -146,7 +146,7 @@ int main(int argC, char** argV)
 
 	try
 	{
-		ArgumentsValidator validator(modulePath, benchmarkIndex, affinity, format);
+		ArgumentsHelper validator(modulePath, benchmarkIndex, affinity, format);
 
 		BenchmarkGroupModule module(modulePath);
 

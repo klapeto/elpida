@@ -18,7 +18,7 @@
 namespace Elpida
 {
 
-	class ArgumentsValidator final
+	class ArgumentsHelper final
 	{
 	 public:
 
@@ -33,12 +33,12 @@ namespace Elpida
 		[[nodiscard]]
 		Vector<Ref<const ProcessingUnitNode>> ValidateAndGetProcessingUnits(const TopologyInfo& topologyInfo) const;
 
-		ArgumentsValidator(
+		ArgumentsHelper(
 			const String& modulePath,
 			const String& benchmarkIndex,
 			const String& affinity,
 			const String& format);
-		~ArgumentsValidator() = default;
+		~ArgumentsHelper() = default;
 	 private:
 		UniquePtr<ResultFormatter> _resultFormatter;
 		Vector<unsigned int> _parsedAffinity;

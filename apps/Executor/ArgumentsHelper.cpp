@@ -2,7 +2,7 @@
 // Created by klapeto on 12/3/2023.
 //
 
-#include "ArgumentsValidator.hpp"
+#include "ArgumentsHelper.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "DefaultFormatter.hpp"
@@ -11,7 +11,7 @@
 
 namespace Elpida
 {
-	void ArgumentsValidator::ValidateAffinity(const Vector<unsigned int>& affinity)
+	void ArgumentsHelper::ValidateAffinity(const Vector<unsigned int>& affinity)
 	{
 		for (Size i = 0; i < affinity.size(); ++i)
 		{
@@ -26,12 +26,12 @@ namespace Elpida
 		}
 	}
 
-	Size ArgumentsValidator::GetBenchmarkIndex() const
+	Size ArgumentsHelper::GetBenchmarkIndex() const
 	{
 		return _benchmarkIndex;
 	}
 
-	ArgumentsValidator::ArgumentsValidator(const String& modulePath, const String& benchmarkIndex, const String& affinity, const String& format)
+	ArgumentsHelper::ArgumentsHelper(const String& modulePath, const String& benchmarkIndex, const String& affinity, const String& format)
 	{
 		if (modulePath.empty())
 		{
@@ -47,7 +47,18 @@ namespace Elpida
 		{
 			throw ElpidaException("index cannot be empty");
 		}
-		_benchmarkIndex = std::stoul(benchmarkIndex);
+		try
+		{
+			_benchmarkIndex = std::stoul(benchmarkIndex);
+		}
+		catch (const std::invalid_argument& e)
+		{
+			throw ElpidaException("benchmark index had invalid value: ", benchmarkIndex);
+		}
+		catch (const std::out_of_range& e)
+		{
+			throw ElpidaException("benchmark index had value out of range: ", benchmarkIndex);
+		}
 
 		if (affinity.empty())
 		{
@@ -59,11 +70,11 @@ namespace Elpida
 		ValidateAffinity(_parsedAffinity);
 
 		//if (format == "json"){
-			_resultFormatter = std::make_unique<DefaultFormatter>();
+		_resultFormatter = std::make_unique<DefaultFormatter>();
 		//}
 	}
 	void
-	ArgumentsValidator::ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector<TaskConfiguration>& taskConfigurations) const
+	ArgumentsHelper::ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector<TaskConfiguration>& taskConfigurations) const
 	{
 		if (configurationValues.size() != taskConfigurations.size())
 		{
@@ -75,8 +86,9 @@ namespace Elpida
 			taskConfigurations[i].Parse(configurationValues[i]);
 		}
 	}
+
 	Vector<Ref<const ProcessingUnitNode>>
-	ArgumentsValidator::ValidateAndGetProcessingUnits(const TopologyInfo& topologyInfo) const
+	ArgumentsHelper::ValidateAndGetProcessingUnits(const TopologyInfo& topologyInfo) const
 	{
 		Vector<Ref<const ProcessingUnitNode>> returnVector;
 		returnVector.reserve(_parsedAffinity.size());
@@ -104,11 +116,11 @@ namespace Elpida
 		return returnVector;
 	}
 
-	const ResultFormatter& ArgumentsValidator::GetResultFormatter() const
+	const ResultFormatter& ArgumentsHelper::GetResultFormatter() const
 	{
 		return *_resultFormatter;
 	}
-	Vector<unsigned int> ArgumentsValidator::Parse(const String& value)
+	Vector<unsigned int> ArgumentsHelper::Parse(const String& value)
 	{
 		Vector<unsigned int> returnVector;
 		std::ostringstream accumulator;

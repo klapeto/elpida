@@ -5,7 +5,7 @@ project("Elpida Benchmark Executor" VERSION ${ELPIDA_VERSION}
 
 set(ELPIDA_EXECUTOR_SOURCES
         Main.cpp
-        ArgumentsValidator.cpp
+        ArgumentsHelper.cpp
         ResultFormatter.cpp
         DefaultFormatter.cpp
         )
