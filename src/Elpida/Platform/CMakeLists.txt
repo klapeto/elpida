@@ -5,6 +5,7 @@ project("Elpida platform specific" VERSION ${ELPIDA_VERSION}
 
 set(ELPIDA_PLATFORM_SOURCES
         TopologyLoader.cpp
+
         BenchmarkGroupModule.cpp
         BenchmarkGroupModule.Unix.cpp
         BenchmarkGroupModule.Windows.cpp
@@ -16,7 +17,10 @@ set(ELPIDA_PLATFORM_SOURCES
         OsUtilities.Windows.cpp
 
         OsInfoLoader.Unix.cpp
-        OsInfoLoader.Windows.cpp)
+        OsInfoLoader.Windows.cpp
+
+        MemoryInfoLoader.Unix.cpp
+        MemoryInfoLoader.Windows.cpp)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 

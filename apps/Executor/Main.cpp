@@ -33,6 +33,8 @@
 #include "Elpida/Platform/NumaAllocator.hpp"
 
 #include "ArgumentsHelper.hpp"
+#include "Elpida/Core/OsInfo.hpp"
+#include "Elpida/Platform/OsInfoLoader.hpp"
 
 using namespace Elpida;
 
@@ -81,6 +83,8 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 
 int main(int argC, char** argV)
 {
+	OsInfo osInfo = OsInfoLoader::Load();
+
 	try
 	{
 		ArgumentsHelper helper;

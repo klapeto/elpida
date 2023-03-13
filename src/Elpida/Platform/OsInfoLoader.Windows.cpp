@@ -90,7 +90,7 @@ namespace Elpida
 		}
 		catch (const std::exception&)
 		{
-			version = "Uknown version";
+			version = "Unknown version";
 		}
 
 		try
@@ -99,7 +99,7 @@ namespace Elpida
 		}
 		catch (const std::exception&)
 		{
-			version = "Uknown Build";
+			version = "Unknown Build";
 		}
 
 		return {
