@@ -25,6 +25,7 @@ set(ELPIDA_CORE_SOURCES
         Allocator.cpp
         DefaultAllocator.cpp
         OsInfo.cpp
+        MemoryInfo.cpp
 
         Topology/TopologyInfo.cpp
         Topology/TopologyNode.cpp
@@ -33,7 +34,7 @@ set(ELPIDA_CORE_SOURCES
         Topology/ProcessingUnitNode.cpp
         Topology/NumaNode.cpp
         Topology/MemoryPageType.cpp
-        MemoryInfo.cpp MemoryInfo.hpp)
+        )
 
 configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
 
