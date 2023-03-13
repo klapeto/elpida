@@ -33,135 +33,88 @@
 
 #include "ArgumentsHelper.hpp"
 #include "Elpida/Platform/NumaAllocator.hpp"
-
-#define NON_EXIT_CODE (-1)
+#include "Elpida/Core/ElpidaException.hpp"
 
 using namespace Elpida;
 
-static void printVersion()
+static Vector<Ref<const ProcessingUnitNode>>
+ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const TopologyInfo& topologyInfo)
 {
-	std::cout << "Elpida Benchmark Executor: " << ELPIDA_VERSION << std::endl;
-	std::cout << "Compiler: " << ELPIDA_COMPILER_NAME << " Version: " << ELPIDA_COMPILER_VERSION << std::endl;
-}
+	Vector<Ref<const ProcessingUnitNode>> returnVector;
+	returnVector.reserve(affinity.size());
 
-static void printHelp()
-{
-	std::cout << R"("Elpida Benchmark Executor: )" << ELPIDA_VERSION << std::endl;
-	std::cout
-		<< R"(Example usage: elpida-executor --module="./dir/benchmark.so" --index=0 --affinity=0,1,5,32 --format=json --config="Config A" --config="Config B" ...)"
-		<< std::endl;
-	std::cout << R"("       -v, --version)" << std::endl;
-	std::cout << R"("           Prints the version and exits)" << std::endl;
-	std::cout << R"("       -h, --help)" << std::endl;
-	std::cout << R"("           Prints this help and exits)" << std::endl;
-	std::cout << R"("       -m="MODULE_PATH", --module="MODULE_PATH")" << std::endl;
-	std::cout << R"("           The library that contains the benchmark group)" << std::endl;
-	std::cout << R"("       -i=BENCHMARK_INDEX, --index=BENCHMARK_INDEX)" << std::endl;
-	std::cout << R"("           The index of the benchmark in the benchmark group)" << std::endl;
-	std::cout << R"("       -a=AFFINITY, --affinity=AFFINITY)" << std::endl;
-	std::cout << R"("           The comma separated processors to use.)" << std::endl;
-	std::cout << R"("       -f=FORMAT, --format=FORMAT)" << std::endl;
-	std::cout << R"("           The result output format. Accepted values (default, json))" << std::endl;
-	std::cout << R"("       -c="CONFIG_VALUE", --config="CONFIG_VALUE")" << std::endl;
-	std::cout << R"("           Sets a configuration. Successive configurations are appended in the order defined)"
-			  << std::endl;
-}
-
-static const char* GetValueOrDefault(const char* value)
-{
-	return value ? value : "";
-}
-
-static int ReadArgumentsAndCheckIfWeMustExit(
-	int argC,
-	char* argV[],
-	String& modulePath,
-	String& benchmarkIndex,
-	String& affinity,
-	String& format,
-	Vector<String>& taskConfigurations)
-{
-	struct option options[] = {
-		{ "version",  no_argument,       nullptr, 'v' },
-		{ "help",     no_argument,       nullptr, 'h' },
-		{ "module",   required_argument, nullptr, 'm' },
-		{ "index",    required_argument, nullptr, 'i' },
-		{ "affinity", required_argument, nullptr, 'a' },
-		{ "format",   required_argument, nullptr, 'f' },
-		{ "config",   required_argument, nullptr, 'c' },
-		{ nullptr, 0,                    nullptr, 0 }
-	};
-
-	int option_index = 0;
-	int c;
-	while ((c = getopt_long(argC, argV, "vhm:i:a:f:c:", options, &option_index)) != -1)
+	auto& processors = topologyInfo.GetAllProcessingUnits();
+	for (auto index: affinity)
 	{
-		switch (c)
+		bool found = false;
+		for (auto& processor: processors)
 		{
-		case 'v':
-			printVersion();
-			return EXIT_SUCCESS;
-		case 'h':
-			printHelp();
-			return EXIT_SUCCESS;
-		case 'm':
-			modulePath = GetValueOrDefault(optarg);
-			break;
-		case 'i':
-			benchmarkIndex = GetValueOrDefault(optarg);
-			break;
-		case 'a':
-			affinity = GetValueOrDefault(optarg);
-			break;
-		case 'f':
-			format = GetValueOrDefault(optarg);
-			break;
-		case 'c':
-			taskConfigurations.emplace_back(GetValueOrDefault(optarg));
-			break;
-		case '?':
-			return EXIT_FAILURE;
-		default:
-			break;
+			if (processor.get().GetOsIndex().value() == index)
+			{
+				returnVector.emplace_back(processor.get());
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			throw ElpidaException("No processor with id ", index, " was found");
 		}
 	}
 
-	return NON_EXIT_CODE;
+	return returnVector;
+}
+
+static void
+ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector<TaskConfiguration>& taskConfigurations)
+{
+	if (configurationValues.size() != taskConfigurations.size())
+	{
+		throw ElpidaException("benchmark required ", taskConfigurations.size(), " configurations but were provided ", configurationValues.size());
+	}
+
+	for (Size i = 0; i < taskConfigurations.size(); ++i)
+	{
+		taskConfigurations[i].Parse(configurationValues[i]);
+	}
 }
 
 int main(int argC, char** argV)
 {
-
-	Vector<String> taskConfigurations;
-	String modulePath;
-	String benchmarkIndex;
-	String affinity;
-	String format;
-
-	auto exitCode = ReadArgumentsAndCheckIfWeMustExit(argC, argV, modulePath, benchmarkIndex, affinity, format, taskConfigurations);
-	if (exitCode != NON_EXIT_CODE)
-	{
-		return exitCode;
-	}
-
 	try
 	{
-		ArgumentsHelper validator(modulePath, benchmarkIndex, affinity, format);
+		ArgumentsHelper helper;
 
-		BenchmarkGroupModule module(modulePath);
+		{
+			auto returnText = helper.ParseAndGetExitText(argC, argV);
 
-		auto& benchmark = module.GetBenchmarkGroup().GetBenchmarks().at(validator.GetBenchmarkIndex());
+			if (!returnText.empty())
+			{
+				std::cout << returnText << std::endl;
+				return EXIT_SUCCESS;
+			}
+		}
+
+		BenchmarkGroupModule module(helper.GetModulePath());
+
+		auto& benchmark = module
+			.GetBenchmarkGroup()
+			.GetBenchmarks()
+			.at(helper.GetBenchmarkIndex());
 
 		auto config = benchmark->GetRequiredConfiguration();
-		validator.ValidateAndAssignConfiguration(taskConfigurations, config);
+		ValidateAndAssignConfiguration(helper.GetConfigurationValues(), config);
 
 		EnvironmentInfo environmentInfo(OverheadsInfo(), TopologyLoader::LoadTopology(), std::make_unique<NumaAllocator>());
 
-		auto targetProcessors = validator.ValidateAndGetProcessingUnits(environmentInfo.GetTopologyInfo());
+		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
 
 		auto result = benchmark->Run(targetProcessors, config, environmentInfo);
 
-		std::cout << validator.GetResultFormatter().ConvertToString(result) << std::endl;
+		std::cout
+			<< helper.GetResultFormatter().ConvertToString(result)
+			<< std::endl;
 	}
 	catch (const std::exception& ex)
 	{

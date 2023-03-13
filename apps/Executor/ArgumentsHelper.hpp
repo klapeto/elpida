@@ -21,6 +21,8 @@ namespace Elpida
 	class ArgumentsHelper final
 	{
 	 public:
+		[[nodiscard]]
+		const String& GetModulePath() const;
 
 		[[nodiscard]]
 		const ResultFormatter& GetResultFormatter() const;
@@ -28,23 +30,31 @@ namespace Elpida
 		[[nodiscard]]
 		Size GetBenchmarkIndex() const;
 
-		void ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector<TaskConfiguration>& taskConfigurations) const;
+		[[nodiscard]]
+		const Vector<unsigned int>& GetAffinity() const;
 
 		[[nodiscard]]
-		Vector<Ref<const ProcessingUnitNode>> ValidateAndGetProcessingUnits(const TopologyInfo& topologyInfo) const;
+		const Vector<String>& GetConfigurationValues() const;
 
-		ArgumentsHelper(
-			const String& modulePath,
-			const String& benchmarkIndex,
-			const String& affinity,
-			const String& format);
+		String ParseAndGetExitText(int argC, char* argV[]);
+
+		ArgumentsHelper() = default;
 		~ArgumentsHelper() = default;
 	 private:
+		Vector<unsigned int> _affinity;
+		Vector<String> _configurationValues;
 		UniquePtr<ResultFormatter> _resultFormatter;
-		Vector<unsigned int> _parsedAffinity;
+		String _modulePath;
 		Size _benchmarkIndex;
-		static void ValidateAffinity(const Vector<unsigned int>& affinity);
-		static Vector<unsigned int> Parse(const String& value);
+
+		void ParseAffinity(const String& value);
+		void ParseFormat(const String& value);
+		void ParseIndex(const String& value);
+		void ParseModulePath(const String& value);
+
+		void ValidateAffinity();
+		static String GetHelpString();
+		static String GetVersionString() ;
 	};
 
 } // Elpida
