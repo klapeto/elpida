@@ -1,5 +1,3 @@
 #add_subdirectory(Core)
 add_subdirectory(Executor)
 #add_subdirectory(Qt)
-#add_subdirectory(MetadataDumper)
-add_subdirectory(Test)

@@ -23,17 +23,16 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <getopt.h>
 
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/String.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Platform/BenchmarkGroupModule.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
+#include "Elpida/Platform/NumaAllocator.hpp"
 
 #include "ArgumentsHelper.hpp"
-#include "Elpida/Platform/NumaAllocator.hpp"
-#include "Elpida/Core/ElpidaException.hpp"
 
 using namespace Elpida;
 

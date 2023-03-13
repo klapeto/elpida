@@ -52,5 +52,4 @@ namespace Elpida
 	}
 } // Elpida
 
-
 #endif // defined(ELPIDA_UNIX)

@@ -13,7 +13,10 @@ set(ELPIDA_PLATFORM_SOURCES
         NumaAllocator.Windows.cpp
 
         OsUtilities.Unix.cpp
-        OsUtilities.Windows.cpp)
+        OsUtilities.Windows.cpp
+
+        OsInfoLoader.Unix.cpp
+        OsInfoLoader.Windows.cpp)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 
