@@ -85,9 +85,6 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 
 int main(int argC, char** argV)
 {
-	OsInfo osInfo = OsInfoLoader::Load();
-	CpuInfo cpuInfo = CpuInfoLoader::Load();
-	MemoryInfo memoryInfo =  MemoryInfoLoader::Load();
 	try
 	{
 		ArgumentsHelper helper;
@@ -112,7 +109,13 @@ int main(int argC, char** argV)
 		auto config = benchmark->GetRequiredConfiguration();
 		ValidateAndAssignConfiguration(helper.GetConfigurationValues(), config);
 
-		EnvironmentInfo environmentInfo(OverheadsInfo(), TopologyLoader::LoadTopology(), std::make_unique<NumaAllocator>());
+		EnvironmentInfo environmentInfo(
+			CpuInfoLoader::Load(),
+			MemoryInfoLoader::Load(),
+			OsInfoLoader::Load(),
+			TopologyLoader::LoadTopology(),
+			OverheadsInfo(),
+			std::make_unique<NumaAllocator>());
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
 
