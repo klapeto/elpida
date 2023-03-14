@@ -35,6 +35,7 @@
 #include "ArgumentsHelper.hpp"
 #include "Elpida/Core/OsInfo.hpp"
 #include "Elpida/Platform/OsInfoLoader.hpp"
+#include "Elpida/Platform/CpuInfoLoader.hpp"
 
 using namespace Elpida;
 
@@ -84,7 +85,7 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 int main(int argC, char** argV)
 {
 	OsInfo osInfo = OsInfoLoader::Load();
-
+	CpuInfo cpuInfo = CpuInfoLoader::Load();
 	try
 	{
 		ArgumentsHelper helper;

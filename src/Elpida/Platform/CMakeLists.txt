@@ -20,7 +20,9 @@ set(ELPIDA_PLATFORM_SOURCES
         OsInfoLoader.Windows.cpp
 
         MemoryInfoLoader.Unix.cpp
-        MemoryInfoLoader.Windows.cpp)
+        MemoryInfoLoader.Windows.cpp
+
+        CpuInfoLoader.X86.cpp)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 

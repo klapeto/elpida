@@ -26,6 +26,7 @@ set(ELPIDA_CORE_SOURCES
         DefaultAllocator.cpp
         OsInfo.cpp
         MemoryInfo.cpp
+        CpuInfo.cpp
 
         Topology/TopologyInfo.cpp
         Topology/TopologyNode.cpp
