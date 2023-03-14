@@ -36,6 +36,7 @@
 #include "Elpida/Core/OsInfo.hpp"
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
+#include "Elpida/Platform/MemoryInfoLoader.hpp"
 
 using namespace Elpida;
 
@@ -86,6 +87,7 @@ int main(int argC, char** argV)
 {
 	OsInfo osInfo = OsInfoLoader::Load();
 	CpuInfo cpuInfo = CpuInfoLoader::Load();
+	MemoryInfo memoryInfo =  MemoryInfoLoader::Load();
 	try
 	{
 		ArgumentsHelper helper;
