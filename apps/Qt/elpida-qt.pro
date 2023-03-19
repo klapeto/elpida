@@ -31,7 +31,6 @@ SOURCES += \
     Views/CommonDialog/CommonDialog.cpp \
     Views/ConfigurationViews/FileInputView/FileInputView.cpp \
     Views/ConfigurationViews/TaskListItemView/TaskListItemView.cpp \
-    Views/LogsView/LogsView.cpp \
     Views/MainWindow/MainWindow.cpp \
     Views/NavigationBarView/NavigationBarView.cpp \
     Views/QuickStartView/QuickStartView.cpp \
@@ -48,7 +47,6 @@ HEADERS += \
     Views/CommonDialog/CommonDialog.hpp \
     Views/ConfigurationViews/FileInputView/FileInputView.hpp \
     Views/ConfigurationViews/TaskListItemView/TaskListItemView.hpp \
-    Views/LogsView/LogsView.hpp \
     Views/MainWindow/MainWindow.hpp \
     Views/NavigationBarView/NavigationBarView.hpp \
     Views/QuickStartView/QuickStartView.hpp \
@@ -64,7 +62,6 @@ FORMS += \
     Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.ui \
     Views/CommonDialog/CommonDialog.ui \
     Views/ConfigurationViews/FileInputView/FileInputView.ui \
-    Views/LogsView/LogsView.ui \
     Views/MainWindow/MainWindow.ui \
     Views/NavigationBarView/NavigationBarView.ui \
     Views/QuickStartView/QuickStartView.ui \

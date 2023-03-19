@@ -17,74 +17,24 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
-#include <Elpida/Config.hpp>
+#include "Elpida/Core/Config.hpp"
 
-#include "ConfigurationViewsPool.hpp"
-
-#include "Controllers/BenchmarksController.hpp"
-#include "Controllers/BenchmarkRunnerController.hpp"
-#include "Controllers/UploadController.hpp"
-
-#include "Models/Benchmarks/BenchmarksModel.hpp"
-#include "Models/BenchmarkResultsModel.hpp"
-#include "Models/BenchmarkConfigurationsCollectionModel.hpp"
-#include "Models/BenchmarkRunnerModel.hpp"
-#include "Models/SelectedBenchmarksModel.hpp"
-#include "Models/GlobalConfigurationModel.hpp"
-#include "Models/AffinityModel.hpp"
-#include "UiModels/Screens/ScreensModel.hpp"
-
-#include "Views/MainWindow/MainWindow.hpp"
-#include "Views/SystemInfoView/SystemInfoView.hpp"
-#include "Views/TopologyView/TopologyView.hpp"
-#include "Views/BenchmarkResultsView/BenchmarkResultsView.hpp"
-#include "Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.hpp"
-#include "Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp"
-#include "Views/BenchmarkListView/BenchmarkListView.hpp"
-#include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
-#include "Views/LogsView/LogsView.hpp"
-#include "Views/QuickStartView/QuickStartView.hpp"
-
-#include "Core/ElpidaMediator.hpp"
-#include "Core/DataUploader.hpp"
-#include "Core/JsonResultFormatter.hpp"
-
-#include <Elpida/SystemInfo/CpuInfo.hpp>
-#include <Elpida/SystemInfo/SystemTopology.hpp>
-#include <Elpida/Utilities/Logging/Logger.hpp>
-#include <Elpida/SystemInfo/MemoryInfo.hpp>
-#include <Elpida/SystemInfo/OsInfo.hpp>
-#include <Elpida/SystemInfo/TimingInfo.hpp>
-#include <Elpida/ServiceProvider.hpp>
-#include <Elpida/Utilities/OsUtilities.hpp>
-
-#include <QtWidgets/QScrollArea>
-#include <QtWidgets/QVBoxLayout>
+#include <QApplication>
+#include <QIcon>
 #include <QSplashScreen>
 #include <QScreen>
-#include <QMessageBox>
-#include "QCustomApplication.hpp"
 
-#include <getopt.h>
-#include <iostream>
+#include "MainWindow.hpp"
 
-#define NON_EXIT_CODE -1
+#include "Elpida/Platform/OsInfoLoader.hpp"
+#include "Elpida/Platform/MemoryInfoLoader.hpp"
+#include "Elpida/Platform/CpuInfoLoader.hpp"
+#include "Elpida/Core/OverheadsInfo.hpp"
 
 using namespace Elpida;
 
-void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWidget);
-void loadDefaultGlobalConfiguration(GlobalConfigurationModel& configurationModel);
-int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configurationModel, int argC, char** argV);
-void initializeTaskTab(ScreensModel& screensModel,
-	BenchmarkListView& taskBatchesListWidget,
-	BenchmarkResultsView& taskResultsWidget,
-	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
-	BenchmarkRunnerControlsView& taskBatchRunnerControlsView,
-	BenchmarkConfigurationView& benchmarkConfigurationView);
-void printHelp();
-void printVersion();
+#ifdef ELPIDA_UNIX
 
-#ifdef ELPIDA_LINUX
 #include <execinfo.h>
 #include <csignal>
 #include <cstdlib>
@@ -98,11 +48,12 @@ void segFaultHandler(int sig)
 	backtrace_symbols_fd(array, size, STDERR_FILENO);
 	exit(EXIT_FAILURE);
 }
+
 #endif
 
 static void setupPlatformSpecifics()
 {
-#ifdef ELPIDA_LINUX
+#ifdef ELPIDA_UNIX
 	signal(SIGSEGV, segFaultHandler);
 	signal(SIGABRT, segFaultHandler);
 #endif
@@ -112,16 +63,6 @@ int main(int argc, char* argv[])
 {
 	setupPlatformSpecifics();
 
-	GlobalConfigurationModel globalConfigurationModel;
-
-	loadDefaultGlobalConfiguration(globalConfigurationModel);
-
-	auto exitCode = processArgumentsAndCheckIfWeMustExit(globalConfigurationModel, argc, argv);
-	if (exitCode != NON_EXIT_CODE)
-	{
-		return exitCode;
-	}
-
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -130,254 +71,28 @@ int main(int argc, char* argv[])
 	QCoreApplication::setOrganizationDomain(ELPIDA_WEBSITE_URL);
 	QCoreApplication::setApplicationName("Elpida Qt");
 
-	ElpidaMediator mediator;
-	Logger logger;
-
-	QCustomApplication application(argc, argv, mediator, logger);
+	QApplication application(argc, argv);
 
 	auto screenSize = QGuiApplication::primaryScreen()->size();
 	auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(QSize(screenSize.width() / 2, screenSize.height() / 2));
 	QSplashScreen splash(pixmap);
 
 	splash.show();
-	Elpida::QCustomApplication::processEvents();
+	QApplication::processEvents();
 
-	// System Information
+	OsInfo osInfo = OsInfoLoader::Load();
+	MemoryInfo memoryInfo = MemoryInfoLoader::Load();
+	CpuInfo cpuInfo = CpuInfoLoader::Load();
+	OverheadsInfo overheadsInfo(NanoSeconds(561),NanoSeconds(321),NanoSeconds(132));
+
+	MainWindow mainWindow(osInfo, memoryInfo, cpuInfo, overheadsInfo);
+
 	splash.showMessage("Getting CPU info...");
-	const CpuInfo& cpuInfo = CpuInfo::get();
-
-	splash.showMessage("Getting System topology...");
-	SystemTopology topology;
-
-	splash.showMessage("Getting Memory info...");
-	MemoryInfo memoryInfo;
-
-	splash.showMessage("Getting OS info...");
-	OsInfo osInfo;
-
-	splash.showMessage("Calculating overheads...");
-	TimingInfo timingInfo;
-	timingInfo.reCalculate(topology);
-
-	ServiceProvider serviceProvider(cpuInfo, memoryInfo, topology, osInfo, timingInfo, logger);
-
-	// UI
-	splash.showMessage("Initializing Ui...");
-
-	BenchmarkResultsModel taskRunResultsModel;
-	JsonResultFormatter formatter(topology, cpuInfo, osInfo, memoryInfo, timingInfo);
-
-	ScreensModel screensModel;
-	AffinityModel affinityModel;
-	MainWindow mainWindow(mediator, screensModel, affinityModel, taskRunResultsModel, formatter, cpuInfo);
-	ConfigurationViewsPool configurationViewsPool;
-	QuickStartView quickStartView;
-
-	screensModel.add(ScreenItem("Quick Start", quickStartView));
-
-	SystemInfoView systemInfoView(cpuInfo, topology, osInfo, timingInfo, memoryInfo);
-	screensModel.add(ScreenItem("System Platform", systemInfoView));
-
-	TopologyView topologyView(topology, affinityModel);
-
-	initializeTopologyTab(screensModel, topologyView);
-
-	BenchmarksModel taskBatchesModel;
-	BenchmarkRunnerModel taskRunnerModel;
-	BenchmarkConfigurationsCollectionModel benchmarkConfigurationsModel;
-	SelectedBenchmarksModel selectedBenchmarksModel;
-	BenchmarksController
-		benchmarksController
-		(taskBatchesModel, benchmarkConfigurationsModel, globalConfigurationModel, serviceProvider, logger);
-	benchmarksController.reload();
-	BenchmarkRunnerController
-		runnerController
-		(mediator,
-			taskRunResultsModel,
-			taskRunnerModel,
-			benchmarkConfigurationsModel,
-			selectedBenchmarksModel,
-			affinityModel,
-			serviceProvider,
-			timingInfo,
-			logger);
-	BenchmarkListView taskBatchesListView(taskBatchesModel, selectedBenchmarksModel, mediator, taskRunnerModel);
-	BenchmarkResultsView benchmarkResultsView(taskRunResultsModel);
-	BenchmarkRunnerStatusView benchmarkRunnerStatusView(taskRunnerModel);
-	BenchmarkRunnerControlsView benchmarkRunnerControlsView(mediator, taskRunnerModel, globalConfigurationModel);
-	BenchmarkConfigurationView benchmarkConfigurationView(benchmarkConfigurationsModel, configurationViewsPool, selectedBenchmarksModel, taskRunnerModel);
-
-	mediator.registerCommandHandler(runnerController);
-	mediator.registerCommandHandler(mainWindow);
-
-	initializeTaskTab(screensModel,
-		taskBatchesListView,
-		benchmarkResultsView,
-		benchmarkRunnerStatusView,
-		benchmarkRunnerControlsView,
-		benchmarkConfigurationView);
-
-	LogsView logsView(logger);
-	screensModel.add(ScreenItem("Logs", logsView));
-
-	UploadController uploadController(mediator, taskRunResultsModel, globalConfigurationModel, logger);
-	mediator.registerCommandHandler(uploadController);
-
-	DataUploader uploader(mediator, formatter, logger);
-	mediator.registerCommandHandler(uploader);
 
 	mainWindow.show();
 
 	splash.finish(&mainWindow);
 
-	if (timingInfo.isTargetTimeFallback())
-	{
-		QMessageBox::warning(&mainWindow,
-				"Unstable system timing",
-				"<strong style=\"color: #d73e3e\">WARNING!</strong> Elpida detected unstable system timing. This usually comes from active running programs on the system."
-				"<p><u>This will affect the benchmark results accuracy.</u> It is strongly recommended to close all programs and restart Elpida.</p>"
-#ifdef ELPIDA_WINDOWS
-				"<p><strong style=\"color: #d73e3e\">WINDOWS USERS BEWARE!</strong> If the problem persists after closing all programs, then Windows may be thrashing the CPU by updating. "
-				"It is advised to disconnect the system from any networks/internet and restart Elpida.</p>"
-#endif
-		);
-	}
-
 
 	return QApplication::exec();
-}
-
-void initializeTaskTab(ScreensModel& screensModel,
-	BenchmarkListView& taskBatchesListWidget,
-	BenchmarkResultsView& taskResultsWidget,
-	BenchmarkRunnerStatusView& taskBatchRunnerStatusView,
-	BenchmarkRunnerControlsView& taskBatchRunnerControlsView,
-	BenchmarkConfigurationView& benchmarkConfigurationView)
-{
-	// TODO: create as normal widgets
-	auto rootWidget = new QWidget();
-	auto rootLayout = new QVBoxLayout();
-	auto topLayout = new QHBoxLayout();
-
-	topLayout->addWidget(&taskBatchesListWidget);
-	topLayout->addWidget(&benchmarkConfigurationView);
-	topLayout->addWidget(&taskResultsWidget);
-	rootLayout->addLayout(topLayout);
-	rootLayout->addWidget(&taskBatchRunnerStatusView);
-	rootLayout->addWidget(&taskBatchRunnerControlsView);
-	rootWidget->setLayout(rootLayout);
-
-	screensModel.add(ScreenItem("Benchmarks", *rootWidget));
-}
-
-void initializeTopologyTab(ScreensModel& screensModel, TopologyView& topologyWidget)
-{
-	auto container = new QWidget;
-	auto scrollArea = new QScrollArea;
-	auto rootLayout = new QVBoxLayout;
-
-	container->setLayout(rootLayout);
-	container->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
-	rootLayout->addWidget(scrollArea);
-
-	scrollArea->setWidgetResizable(false);
-	scrollArea->setWidget(&topologyWidget);
-	scrollArea->setAlignment(Qt::AlignmentFlag::AlignCenter);
-
-	topologyWidget.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
-	screensModel.add(ScreenItem("System Topology", *container));
-}
-
-void loadDefaultGlobalConfiguration(GlobalConfigurationModel& configurationModel)
-{
-	configurationModel.transactional<GlobalConfigurationModel>([](GlobalConfigurationModel& configurationModel)
-	{
-#if ELPIDA_DEBUG_BUILD
-		configurationModel.setBenchmarksPath(TASK_BATCH_DEBUG_DIR);
-#else
-		configurationModel.setBenchmarksPath("./Benchmarks");
-#endif
-		configurationModel.setDataPath("./Data");
-	});
-}
-
-int processArgumentsAndCheckIfWeMustExit(GlobalConfigurationModel& configurationModel, int argC, char* argV[])
-{
-	enum Opts
-	{
-		Arg_Version,
-		Arg_Help,
-		Arg_BenchmarkPath,
-	};
-	struct option options[] = {
-		{ "version", no_argument, nullptr, 'v' },
-		{ "help", no_argument, nullptr, 'h' },
-		{ "benchmarksPath", required_argument, nullptr, 'b' },
-		{ "dataPath", required_argument, nullptr, 'd' },
-		{ nullptr, 0, nullptr, 0 }
-	};
-
-	int option_index = 0;
-	int c = 0;
-	while ((c = getopt_long(argC, argV, "v:h:b:d:", options, &option_index)) != -1)
-	{
-		switch (c)
-		{
-		case 'v':
-			printVersion();
-			return EXIT_SUCCESS;
-		case 'h':
-			printHelp();
-			return EXIT_SUCCESS;
-		case 'b':
-			if (optarg != nullptr)
-			{
-				configurationModel.setBenchmarksPath(optarg);
-			}
-			else
-			{
-				std::cerr << "--benchmarksPath requires a path eg: --benchmarksPath=./Benchmarks";
-				return EXIT_FAILURE;
-			}
-			break;
-		case 'd':
-			if (optarg != nullptr)
-			{
-				configurationModel.setDataPath(optarg);
-			}
-			else
-			{
-				std::cerr << "--dataPath requires a path eg: --dataPath=./Images";
-				return EXIT_FAILURE;
-			}
-			break;
-		case '?':
-			return EXIT_FAILURE;
-		default:
-			break;
-		}
-	}
-	return NON_EXIT_CODE;
-}
-
-void printVersion()
-{
-	std::cout << "Elpida Qt: " << ELPIDA_VERSION << std::endl;
-	std::cout << "Compiler: " << ELPIDA_COMPILER_NAME << " Version: " << ELPIDA_COMPILER_VERSION << std::endl;
-}
-
-void printHelp()
-{
-	std::cout << "Elpida Qt: " << ELPIDA_VERSION << std::endl;
-	std::cout << "Usage: " << std::endl;
-	std::cout << "       -v, --version" << std::endl;
-	std::cout << "           Prints the version and exits" << std::endl;
-	std::cout << "       -h, --help" << std::endl;
-	std::cout << "           Prints this help and exits" << std::endl;
-	std::cout << "       -b=DIRECTORY, --benchmarksPath=DIRECTORY" << std::endl;
-	std::cout << "           Overrides the directory to load the Benchmarks from" << std::endl;
-	std::cout << "       -d=DIRECTORY, --dataPath=DIRECTORY" << std::endl;
-	std::cout << "           Overrides the directory where the benchmarks will get their data" << std::endl;
 }
