@@ -7,18 +7,20 @@ namespace Ui
 {
 	class TopologyNodeView;
 }
-
-class TopologyNodeView : public QFrame
+namespace Elpida::Application
 {
-Q_OBJECT
+	class TopologyNodeView : public QFrame
+	{
+	Q_OBJECT
 
-public:
-	explicit TopologyNodeView(QWidget* parent = nullptr);
+	public:
+		explicit TopologyNodeView(QWidget* parent = nullptr);
 
-	~TopologyNodeView() override;
+		~TopologyNodeView() override;
 
-private:
-	Ui::TopologyNodeView* _ui;
-};
+	private:
+		Ui::TopologyNodeView* _ui;
+	};
+}
 
 #endif // ELPIDA_TOPOLOGYNODEVIEW_HPP

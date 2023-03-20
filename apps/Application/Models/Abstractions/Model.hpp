@@ -33,7 +33,7 @@ namespace Elpida::Application
 
 	class Model
 	{
-	 public:
+	public:
 		Event<>& DataChanged()
 		{
 			return _dataChanged;
@@ -51,55 +51,25 @@ namespace Elpida::Application
 			}
 			catch (...)
 			{
-				if (_lock.owns_lock())
-				{
-					_lock.unlock();
-				}
 				_transaction = false;
 				throw;
 			}
 		}
 
-		Model()
-			: _lock(_mutex, std::defer_lock_t()), _transaction(false)
-		{
-
-		}
-
+		Model();
+		Model(const Model&) = delete;
+		Model(Model&&) noexcept = default;
+		Model& operator=(const Model&) = delete;
+		Model& operator=(Model&&) noexcept = default;
 		virtual ~Model() = default;
-	 private:
+	protected:
+		void OnDataChanged();
+	private:
 		Event<> _dataChanged;
-		std::mutex _mutex;
-		std::unique_lock<std::mutex> _lock;
 		bool _transaction;
 
-		void OnDataChanged()
-		{
-			if (!_transaction && !_lock.owns_lock())
-			{
-				_dataChanged.Raise();
-			}
-		}
-
-		void BeginUpdateTransaction()
-		{
-			_lock.lock();
-			_transaction = true;
-		}
-
-		void EndUpdateTransaction()
-		{
-			if (_lock.owns_lock())
-			{
-				_transaction = false;
-				_lock.unlock();
-				OnDataChanged();
-			}
-			else
-			{
-				throw ElpidaException("Attempted to end a transaction that was not initiated or initiated from a different thread");
-			}
-		}
+		void BeginUpdateTransaction();
+		void EndUpdateTransaction();
 	};
 }
 

@@ -11,19 +11,23 @@ namespace Ui
 namespace Elpida
 {
 	class CpuInfo;
+
+	namespace Application
+	{
+		class CpuInfoView : public QWidget
+		{
+		Q_OBJECT
+
+		public:
+			explicit CpuInfoView(const Elpida::CpuInfo& cpuInfo, QWidget* parent = nullptr);
+
+			~CpuInfoView() override;
+
+		private:
+			Ui::CpuInfoView* _ui;
+		};
+	}
+
 }
-
-class CpuInfoView : public QWidget
-{
-Q_OBJECT
-
-public:
-	explicit CpuInfoView(const Elpida::CpuInfo& cpuInfo, QWidget* parent = nullptr);
-
-	~CpuInfoView() override;
-
-private:
-	Ui::CpuInfoView* _ui;
-};
 
 #endif // ELPIDA_CPUINFOVIEW_HPP

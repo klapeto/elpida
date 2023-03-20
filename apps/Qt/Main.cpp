@@ -32,6 +32,7 @@
 #include "Elpida/Core/OverheadsInfo.hpp"
 
 using namespace Elpida;
+using namespace Elpida::Application;
 
 #ifdef ELPIDA_UNIX
 

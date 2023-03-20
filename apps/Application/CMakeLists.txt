@@ -14,10 +14,8 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/Abstractions/ListModel/ListModelItem.cpp
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
 
-        Models/AvailableBenchmarksModel.cpp
-
         Event.cpp
-        EventSubscription.cpp)
+        EventSubscription.cpp Models/TopologyModel.cpp Models/TopologyModel.hpp Models/TopologyNodeModel.cpp Models/TopologyNodeModel.hpp Models/Abstractions/Model.cpp)
 
 
 if (MSYS OR MINGW)

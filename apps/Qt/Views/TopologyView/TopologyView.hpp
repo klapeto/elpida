@@ -8,17 +8,22 @@ namespace Ui
 	class TopologyView;
 }
 
-class TopologyView : public QWidget
+namespace Elpida::Application
 {
-Q_OBJECT
+	class TopologyNodeModel;
 
-public:
-	explicit TopologyView(QWidget* parent = nullptr);
+	class TopologyView : public QWidget
+	{
+	Q_OBJECT
+	public:
+		explicit TopologyView(TopologyNodeModel& model, QWidget* parent);
 
-	~TopologyView() override;
+		~TopologyView() override;
 
-private:
-	Ui::TopologyView* _ui;
-};
+	private:
+		Ui::TopologyView* _ui;
+		TopologyNodeModel& _model;
+	};
+}
 
 #endif // ELPIDA_TOPOLOGYVIEW_HPP

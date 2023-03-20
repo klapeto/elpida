@@ -31,9 +31,9 @@ namespace Elpida::Application
 
 		Event() = default;
 		Event(const Event&) = delete;
-		Event(Event&&) noexcept = delete;
+		Event(Event&&) noexcept = default;
 		Event& operator=(const Event&) = delete;
-		Event& operator=(Event&&) noexcept = delete;
+		Event& operator=(Event&&) noexcept = default;
 		~Event() = default;
 	 private:
 		using Callback = std::function<void(T...)>;

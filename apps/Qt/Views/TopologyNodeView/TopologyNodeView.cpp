@@ -1,14 +1,18 @@
 #include "TopologyNodeView.hpp"
 #include "ui_TopologyNodeView.h"
 
-TopologyNodeView::TopologyNodeView(QWidget *parent) :
-	QFrame(parent),
-	_ui(new Ui::TopologyNodeView)
+namespace Elpida::Application
 {
-	_ui->setupUi(this);
-}
+	TopologyNodeView::TopologyNodeView(QWidget* parent) :
+			QFrame(parent),
+			_ui(new Ui::TopologyNodeView)
+	{
+		_ui->setupUi(this);
+	}
 
-TopologyNodeView::~TopologyNodeView()
-{
-	delete _ui;
+	TopologyNodeView::~TopologyNodeView()
+	{
+		delete _ui;
+	}
+
 }

@@ -6,17 +6,22 @@
 
 using Vu = Elpida::ValueUtilities;
 
-MemoryInfoView::MemoryInfoView(const Elpida::MemoryInfo& memoryInfo, QWidget *parent) :
-	QWidget(parent),
-	_ui(new Ui::MemoryInfoView)
+namespace Elpida::Application
 {
-	_ui->setupUi(this);
+	MemoryInfoView::MemoryInfoView(const Elpida::MemoryInfo& memoryInfo, QWidget* parent) :
+			QWidget(parent),
+			_ui(new Ui::MemoryInfoView)
+	{
+		_ui->setupUi(this);
 
-	_ui->lblTotalSizeValue->setText(QString::fromStdString(Vu::Cs(Vu::GetValueScaleStringIEC(memoryInfo.GetTotalSize()), "B")));
-	_ui->lblPageSizeValue->setText(QString::fromStdString(Vu::Cs(Vu::GetValueScaleStringIEC(memoryInfo.GetPageSize()), "B")));
-}
+		_ui->lblTotalSizeValue->setText(
+				QString::fromStdString(Vu::Cs(Vu::GetValueScaleStringIEC(memoryInfo.GetTotalSize()), "B")));
+		_ui->lblPageSizeValue->setText(
+				QString::fromStdString(Vu::Cs(Vu::GetValueScaleStringIEC(memoryInfo.GetPageSize()), "B")));
+	}
 
-MemoryInfoView::~MemoryInfoView()
-{
-	delete _ui;
+	MemoryInfoView::~MemoryInfoView()
+	{
+		delete _ui;
+	}
 }
