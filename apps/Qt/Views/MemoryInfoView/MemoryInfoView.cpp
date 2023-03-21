@@ -1,14 +1,14 @@
 #include "MemoryInfoView.hpp"
 #include "ui_MemoryInfoView.h"
 
-#include "Elpida/Core/MemoryInfo.hpp"
+#include "Models/MemoryInfoModel.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
 
 using Vu = Elpida::ValueUtilities;
 
 namespace Elpida::Application
 {
-	MemoryInfoView::MemoryInfoView(const Elpida::MemoryInfo& memoryInfo, QWidget* parent) :
+	MemoryInfoView::MemoryInfoView(const MemoryInfoModel& memoryInfo, QWidget* parent) :
 			QWidget(parent),
 			_ui(new Ui::MemoryInfoView)
 	{

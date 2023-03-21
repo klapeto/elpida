@@ -8,23 +8,19 @@ namespace Ui
 	class OverheadsInfoView;
 }
 
-namespace Elpida
-{
-	class OverheadsInfo;
-
-	namespace Application
+namespace Elpida::Application
 	{
+		class OverheadsModel;
 		class OverheadsInfoView : public QWidget
 		{
 		Q_OBJECT
 
 		public:
-			explicit OverheadsInfoView(const OverheadsInfo& overheadsInfo, QWidget* parent = nullptr);
+			explicit OverheadsInfoView(const OverheadsModel& overheadsInfo, QWidget* parent = nullptr);
 			~OverheadsInfoView() override;
 		private:
 			Ui::OverheadsInfoView* _ui;
 		};
 	}
-}
 
 #endif // ELPIDA_OVERHEADSINFOVIEW_HPP

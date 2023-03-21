@@ -8,25 +8,21 @@ namespace Ui
 	class OsInfoView;
 }
 
-namespace Elpida
+namespace Elpida::Application
 {
-	class OsInfo;
+	class OsInfoModel;
 
-	namespace Application
+	class OsInfoView : public QWidget
 	{
-		class OsInfoView : public QWidget
-		{
-		Q_OBJECT
+	Q_OBJECT
+	public:
+		explicit OsInfoView(const OsInfoModel& osInfo, QWidget* parent = nullptr);
 
-		public:
-			explicit OsInfoView(const Elpida::OsInfo& osInfo, QWidget* parent = nullptr);
+		~OsInfoView() override;
 
-			~OsInfoView() override;
-
-		private:
-			Ui::OsInfoView* _ui;
-		};
-	}
+	private:
+		Ui::OsInfoView* _ui;
+	};
 }
 
 #endif // ELPIDA_OSINFOVIEW_HPP

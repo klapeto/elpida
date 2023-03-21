@@ -8,18 +8,16 @@ namespace Ui
 	class MemoryInfoView;
 }
 
-namespace Elpida
-{
-	class MemoryInfo;
-
-	namespace Application
+namespace Elpida::Application
 	{
+		class MemoryInfoModel;
+
 		class MemoryInfoView : public QWidget
 		{
 		Q_OBJECT
 
 		public:
-			explicit MemoryInfoView(const MemoryInfo& memoryInfo, QWidget* parent = nullptr);
+			explicit MemoryInfoView(const MemoryInfoModel& memoryInfo, QWidget* parent = nullptr);
 
 			~MemoryInfoView() override;
 
@@ -27,6 +25,5 @@ namespace Elpida
 			Ui::MemoryInfoView* _ui;
 		};
 	}
-}
 
 #endif // ELPIDA_MEMORYINFOVIEW_HPP

@@ -12,10 +12,10 @@
 
 namespace Elpida::Application
 {
-	MainWindow::MainWindow(const Elpida::OsInfo& osInfo,
-			const Elpida::MemoryInfo& memoryInfo,
-			const Elpida::CpuInfo& cpuInfo,
-			const Elpida::OverheadsInfo& overheadsInfo,
+	MainWindow::MainWindow(const OsInfoModel& osInfo,
+			const MemoryInfoModel& memoryInfo,
+			const CpuInfoModel& cpuInfo,
+			const OverheadsModel& overheadsInfo,
 			QWidget* parent) :
 			QMainWindow(parent),
 			_ui(new Ui::MainWindow)

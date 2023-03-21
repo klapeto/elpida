@@ -31,6 +31,11 @@
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Core/OverheadsInfo.hpp"
 
+#include "Models/OsInfoModel.hpp"
+#include "Models/MemoryInfoModel.hpp"
+#include "Models/CpuInfoModel.hpp"
+#include "Models/OverheadsModel.hpp"
+
 using namespace Elpida;
 using namespace Elpida::Application;
 
@@ -82,11 +87,18 @@ int main(int argc, char* argv[])
 	QApplication::processEvents();
 
 	OsInfo osInfo = OsInfoLoader::Load();
-	MemoryInfo memoryInfo = MemoryInfoLoader::Load();
-	CpuInfo cpuInfo = CpuInfoLoader::Load();
-	OverheadsInfo overheadsInfo(NanoSeconds(561),NanoSeconds(321),NanoSeconds(132));
+	OsInfoModel osInfoModel(osInfo.GetCategory(), osInfo.GetName(), osInfo.GetVersion());
 
-	MainWindow mainWindow(osInfo, memoryInfo, cpuInfo, overheadsInfo);
+	MemoryInfo memoryInfo = MemoryInfoLoader::Load();
+	MemoryInfoModel memoryInfoModel(memoryInfo.GetTotalSize(), memoryInfo.GetPageSize());
+
+	CpuInfo cpuInfo = CpuInfoLoader::Load();
+	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(), cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
+
+	OverheadsInfo overheadsInfo(NanoSeconds(561), NanoSeconds(321), NanoSeconds(132));
+	OverheadsModel overheadsModel(overheadsInfo.GetNowOverhead(), overheadsInfo.GetLoopOverhead(), overheadsInfo.GetVirtualCallOverhead());
+
+	MainWindow mainWindow(osInfoModel, memoryInfoModel, cpuInfoModel, overheadsModel);
 
 	splash.showMessage("Getting CPU info...");
 

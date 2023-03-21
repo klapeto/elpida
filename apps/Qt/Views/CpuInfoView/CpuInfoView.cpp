@@ -5,14 +5,14 @@
 
 #include <QLabel>
 
-#include "Elpida/Core/CpuInfo.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
+#include "Models/CpuInfoModel.hpp"
 
 using Vu = Elpida::ValueUtilities;
 
 namespace Elpida::Application
 {
-	CpuInfoView::CpuInfoView(const Elpida::CpuInfo& cpuInfo, QWidget* parent) :
+	CpuInfoView::CpuInfoView(const CpuInfoModel& cpuInfo, QWidget* parent) :
 			QWidget(parent),
 			_ui(new Ui::CpuInfoView)
 	{

@@ -1,14 +1,14 @@
 #include "OverheadsInfoView.hpp"
 #include "ui_OverheadsInfoView.h"
 
-#include "Elpida/Core/OverheadsInfo.hpp"
+#include "Models/OverheadsModel.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
 
 using Vu = Elpida::ValueUtilities;
 
 namespace Elpida::Application
 {
-	OverheadsInfoView::OverheadsInfoView(const Elpida::OverheadsInfo& overheadsInfo, QWidget* parent) :
+	OverheadsInfoView::OverheadsInfoView(const OverheadsModel& overheadsInfo, QWidget* parent) :
 			QWidget(parent),
 			_ui(new Ui::OverheadsInfoView)
 	{

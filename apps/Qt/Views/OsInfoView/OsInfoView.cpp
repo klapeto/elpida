@@ -1,11 +1,11 @@
 #include "OsInfoView.hpp"
 #include "ui_OsInfoView.h"
 
-#include "Elpida/Core/OsInfo.hpp"
+#include "Models/OsInfoModel.hpp"
 
 namespace Elpida::Application
 {
-	OsInfoView::OsInfoView(const OsInfo& osInfo, QWidget* parent) :
+	OsInfoView::OsInfoView(const OsInfoModel& osInfo, QWidget* parent) :
 			QWidget(parent),
 			_ui(new Ui::OsInfoView)
 	{

@@ -8,33 +8,28 @@ namespace Ui
 	class MainWindow;
 }
 
-namespace Elpida
+namespace Elpida::Application
 {
-	class OsInfo;
-	class MemoryInfo;
-	class OverheadsInfo;
-	class CpuInfo;
+	class OsInfoModel;
+	class MemoryInfoModel;
+	class CpuInfoModel;
+	class OverheadsModel;
 
-	namespace Application
+	class MainWindow : public QMainWindow
 	{
-		class MainWindow : public QMainWindow
-		{
-		Q_OBJECT
-		public:
-			explicit MainWindow(
-					const OsInfo& osInfo,
-					const MemoryInfo& memoryInfo,
-					const CpuInfo& cpuInfo,
-					const OverheadsInfo& overheadsInfo,
-					QWidget* parent = nullptr);
+	Q_OBJECT
+	public:
+		explicit MainWindow(
+				const OsInfoModel& osInfo,
+				const MemoryInfoModel& memoryInfo,
+				const CpuInfoModel& cpuInfo,
+				const OverheadsModel& overheadsInfo,
+				QWidget* parent = nullptr);
 
-			~MainWindow() override;
+		~MainWindow() override;
 
-		private:
-			Ui::MainWindow* _ui;
-		};
-	}
-
-
+	private:
+		Ui::MainWindow* _ui;
+	};
 }
 #endif // MAINWINDOW_HPP
