@@ -2,27 +2,29 @@
 #define ELPIDA_TOPOLOGYVIEW_HPP
 
 #include <QWidget>
-
-namespace Ui
-{
-	class TopologyView;
-}
+#include <QGraphicsScene>
 
 namespace Elpida::Application
 {
-	class TopologyNodeModel;
+	namespace Ui
+	{
+		class TopologyView;
+	}
+
+	class TopologyModel;
 
 	class TopologyView : public QWidget
 	{
 	Q_OBJECT
 	public:
-		explicit TopologyView(TopologyNodeModel& model, QWidget* parent);
+		explicit TopologyView(TopologyModel& model, QWidget* parent = nullptr);
 
 		~TopologyView() override;
 
 	private:
 		Ui::TopologyView* _ui;
-		TopologyNodeModel& _model;
+		QGraphicsScene _scene;
+		TopologyModel& _model;
 	};
 }
 

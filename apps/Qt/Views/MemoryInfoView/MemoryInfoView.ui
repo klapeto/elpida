@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MemoryInfoView</class>
- <widget class="QWidget" name="MemoryInfoView">
+ <class>Elpida::Application::MemoryInfoView</class>
+ <widget class="QWidget" name="Elpida::Application::MemoryInfoView">
   <property name="windowTitle">
    <string>Form</string>
   </property>

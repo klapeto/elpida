@@ -15,7 +15,7 @@ namespace Elpida::Application
 	{
 	public:
 		[[nodiscard]]
-		const TopologyNodeModel& GetRoot() const;
+		TopologyNodeModel& GetRoot();
 
 		explicit TopologyModel(TopologyNodeModel root);
 		TopologyModel(const TopologyModel&) = delete;

@@ -3,13 +3,13 @@
 
 #include <QWidget>
 
-namespace Ui
-{
-	class CpuInfoView;
-}
-
 namespace Elpida::Application
 {
+	namespace Ui
+	{
+		class CpuInfoView;
+	}
+
 	class CpuInfoModel;
 
 	class CpuInfoView : public QWidget

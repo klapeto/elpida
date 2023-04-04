@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>Elpida::Application::MainWindow</class>
+ <widget class="QMainWindow" name="Elpida::Application::MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>583</width>
+    <height>283</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,10 +36,10 @@
            <string>System information</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="1" column="0" colspan="3">
-            <widget class="QGroupBox" name="gbCpuInfo">
+           <item row="0" column="1">
+            <widget class="QGroupBox" name="gbMemoryInfo">
              <property name="title">
-              <string>CPU information</string>
+              <string>Memory information</string>
              </property>
             </widget>
            </item>
@@ -57,10 +57,10 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QGroupBox" name="gbMemoryInfo">
+           <item row="1" column="0" colspan="3">
+            <widget class="QGroupBox" name="gbCpuInfo">
              <property name="title">
-              <string>Memory information</string>
+              <string>CPU information</string>
              </property>
             </widget>
            </item>
@@ -77,14 +77,20 @@
              </property>
             </spacer>
            </item>
+           <item row="0" column="3" rowspan="3">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="gbTopology">
-          <property name="title">
-           <string>Topology</string>
-          </property>
          </widget>
         </item>
        </layout>
@@ -93,6 +99,11 @@
        <attribute name="title">
         <string>System topology</string>
        </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QWidget" name="wTopologyContainer" native="true"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tabBenchmarks">
        <attribute name="title">
@@ -108,7 +119,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>583</width>
      <height>22</height>
     </rect>
    </property>

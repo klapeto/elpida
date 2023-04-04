@@ -36,16 +36,16 @@ namespace Elpida::Application
 	{
 	public:
 
-		void ToggleSelection();
+		void SetSelected(bool selected);
 
 		[[nodiscard]]
 		bool CanBeSelected() const;
 
 		[[nodiscard]]
-		const std::vector<TopologyNodeModel>& GetChildren() const;
+		std::vector<TopologyNodeModel>& GetChildren();
 
 		[[nodiscard]]
-		const std::vector<TopologyNodeModel>& GetMemoryChildren() const;
+		std::vector<TopologyNodeModel>& GetMemoryChildren();
 
 		[[nodiscard]]
 		TopologyNodeType GetType() const;

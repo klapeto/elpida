@@ -12,7 +12,7 @@ namespace Elpida::Application
 
 	}
 
-	const TopologyNodeModel& TopologyModel::GetRoot() const
+	TopologyNodeModel& TopologyModel::GetRoot()
 	{
 		return _root;
 	}

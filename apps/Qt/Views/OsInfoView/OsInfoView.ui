@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>OsInfoView</class>
- <widget class="QWidget" name="OsInfoView">
+ <class>Elpida::Application::OsInfoView</class>
+ <widget class="QWidget" name="Elpida::Application::OsInfoView">
   <property name="windowTitle">
    <string>Form</string>
   </property>

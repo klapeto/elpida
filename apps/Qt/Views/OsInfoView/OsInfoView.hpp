@@ -3,13 +3,13 @@
 
 #include <QWidget>
 
-namespace Ui
-{
-	class OsInfoView;
-}
-
 namespace Elpida::Application
 {
+	namespace Ui
+	{
+		class OsInfoView;
+	}
+
 	class OsInfoModel;
 
 	class OsInfoView : public QWidget

@@ -9,6 +9,7 @@
 #include "Views/MemoryInfoView/MemoryInfoView.hpp"
 #include "Views/OverheadsInfoView/OverheadsInfoView.hpp"
 #include "Views/CpuInfoView/CpuInfoView.hpp"
+#include "Views/TopologyView/TopologyView.hpp"
 
 namespace Elpida::Application
 {
@@ -16,6 +17,7 @@ namespace Elpida::Application
 			const MemoryInfoModel& memoryInfo,
 			const CpuInfoModel& cpuInfo,
 			const OverheadsModel& overheadsInfo,
+			TopologyModel& topologyModel,
 			QWidget* parent) :
 			QMainWindow(parent),
 			_ui(new Ui::MainWindow)
@@ -34,8 +36,8 @@ namespace Elpida::Application
 		_ui->gbCpuInfo->setLayout(new QVBoxLayout);
 		_ui->gbCpuInfo->layout()->addWidget(new CpuInfoView(cpuInfo));
 
-		//_ui->gbTopology->setLayout(new FlowLayout);
-		//_ui->gbTopology->layout()->addWidget(new )
+		_ui->wTopologyContainer->setLayout(new QVBoxLayout);
+		_ui->wTopologyContainer->layout()->addWidget(new TopologyView(topologyModel));
 	}
 
 	MainWindow::~MainWindow()

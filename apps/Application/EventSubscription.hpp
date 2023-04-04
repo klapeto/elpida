@@ -7,6 +7,7 @@
 
 #include <list>
 #include <functional>
+#include <memory>
 
 namespace Elpida::Application
 {
@@ -26,8 +27,8 @@ namespace Elpida::Application
 			}
 		}
 
-		EventSubscription(SubscriptionList& list, SubscriptionIterator index)
-			: _list(&list), _index(index)
+		EventSubscription(std::shared_ptr<SubscriptionList> list, SubscriptionIterator index)
+			: _list(std::move(list)), _index(index)
 		{
 
 		}
@@ -40,7 +41,7 @@ namespace Elpida::Application
 			UnSubscribe();
 		}
 	 private:
-		SubscriptionList* _list;
+		std::shared_ptr<SubscriptionList> _list;
 		SubscriptionIterator _index;
 	};
 

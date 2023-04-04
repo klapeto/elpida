@@ -3,17 +3,18 @@
 
 #include <QMainWindow>
 
-namespace Ui
-{
-	class MainWindow;
-}
-
 namespace Elpida::Application
 {
+	namespace Ui
+	{
+		class MainWindow;
+	}
+
 	class OsInfoModel;
 	class MemoryInfoModel;
 	class CpuInfoModel;
 	class OverheadsModel;
+	class TopologyModel;
 
 	class MainWindow : public QMainWindow
 	{
@@ -24,6 +25,7 @@ namespace Elpida::Application
 				const MemoryInfoModel& memoryInfo,
 				const CpuInfoModel& cpuInfo,
 				const OverheadsModel& overheadsInfo,
+				TopologyModel& topologyModel,
 				QWidget* parent = nullptr);
 
 		~MainWindow() override;

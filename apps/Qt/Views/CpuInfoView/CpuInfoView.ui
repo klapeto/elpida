@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CpuInfoView</class>
- <widget class="QWidget" name="CpuInfoView">
+ <class>Elpida::Application::CpuInfoView</class>
+ <widget class="QWidget" name="Elpida::Application::CpuInfoView">
   <property name="windowTitle">
    <string>Form</string>
   </property>

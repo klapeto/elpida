@@ -8,16 +8,21 @@
 #include "EventSubscription.hpp"
 #include <functional>
 #include <list>
+#include <memory>
 
 namespace Elpida::Application
 {
 	template<typename ... T>
 	class Event final
 	{
-	 public:
+	private:
+		using Callback = std::function<void(T...)>;
+		using CallbackCollection = std::list<Callback>;
+
+	public:
 		void Raise(T...  arguments)
 		{
-			for (auto& callback: _subscriptions)
+			for (auto& callback: *_subscriptions)
 			{
 				callback(std::forward<T>(arguments)...);
 			}
@@ -26,19 +31,21 @@ namespace Elpida::Application
 		template<typename TCallable>
 		EventSubscription<T...> Subscribe(TCallable callable)
 		{
-			return EventSubscription<T...>(_subscriptions, _subscriptions.insert(callable));
+			return EventSubscription<T...>(_subscriptions, _subscriptions->insert(_subscriptions->end(), callable));
 		}
 
-		Event() = default;
+		Event()
+		{
+			_subscriptions = std::make_shared<CallbackCollection>();
+		}
+
 		Event(const Event&) = delete;
 		Event(Event&&) noexcept = default;
 		Event& operator=(const Event&) = delete;
 		Event& operator=(Event&&) noexcept = default;
 		~Event() = default;
-	 private:
-		using Callback = std::function<void(T...)>;
-		using CallbackCollection = std::list<Callback>;
-		CallbackCollection _subscriptions;
+	private:
+		std::shared_ptr<CallbackCollection> _subscriptions;
 	};
 
 } // Application

@@ -21,10 +21,23 @@ namespace Elpida::Application
 	{
 	}
 
-	void TopologyNodeModel::ToggleSelection()
+	void TopologyNodeModel::SetSelected(bool selected)
 	{
-		_selected = !_selected;
-		OnDataChanged();
+		_selected = selected;
+		for (auto& child: _children)
+		{
+			child.SetSelected(selected);
+		}
+
+		for (auto& child: _memoryChildren)
+		{
+			child.SetSelected(selected);
+		}
+
+		if (_type == TopologyNodeType::ProcessingUnit)
+		{
+			OnDataChanged();
+		}
 	}
 
 	bool TopologyNodeModel::CanBeSelected() const
@@ -32,12 +45,12 @@ namespace Elpida::Application
 		return _type == TopologyNodeType::ProcessingUnit;
 	}
 
-	const std::vector<TopologyNodeModel>& TopologyNodeModel::GetChildren() const
+	std::vector<TopologyNodeModel>& TopologyNodeModel::GetChildren()
 	{
 		return _children;
 	}
 
-	const std::vector<TopologyNodeModel>& TopologyNodeModel::GetMemoryChildren() const
+	std::vector<TopologyNodeModel>& TopologyNodeModel::GetMemoryChildren()
 	{
 		return _memoryChildren;
 	}

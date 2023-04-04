@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>OverheadsInfoView</class>
- <widget class="QWidget" name="OverheadsInfoView">
+ <class>Elpida::Application::OverheadsInfoView</class>
+ <widget class="QWidget" name="Elpida::Application::OverheadsInfoView">
   <property name="windowTitle">
    <string>Form</string>
   </property>
