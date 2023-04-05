@@ -4,7 +4,7 @@
 #include <QFrame>
 #include <QGraphicsScene>
 #include "Models/TopologyNodeModel.hpp"
-
+#include "EventSubscription.hpp"
 
 namespace Elpida::Application
 {
@@ -36,6 +36,7 @@ namespace Elpida::Application
 		QGraphicsScene _memChildrenScene;
 		QGraphicsScene _childrenScene;
 		TopologyNodeModel& _topologyNodeModel;
+		EventSubscription<> _dataChangedSubscription;
 		bool _mouseDown;
 		bool _mouseOver;
 		void OnModelChanged();

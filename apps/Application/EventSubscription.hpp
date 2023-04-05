@@ -27,6 +27,7 @@ namespace Elpida::Application
 			}
 		}
 
+		EventSubscription() = default;
 		EventSubscription(std::shared_ptr<SubscriptionList> list, SubscriptionIterator index)
 			: _list(std::move(list)), _index(index)
 		{

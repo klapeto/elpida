@@ -112,7 +112,7 @@ namespace Elpida::Application
 	{
 		_ui->setupUi(this);
 
-		_topologyNodeModel.DataChanged().Subscribe([this]()
+		_dataChangedSubscription = _topologyNodeModel.DataChanged().Subscribe([this]()
 		{
 			OnModelChanged();
 		});
@@ -167,16 +167,6 @@ namespace Elpida::Application
 		delete _ui;
 	}
 
-//	void TopologyNodeView::on_TopologyNodeView_clicked()
-//	{
-//		_topologyNodeModel.SetSelected(!_topologyNodeModel.IsSelected());
-//	}
-//
-//	void TopologyNodeView::on_chkSelected_stateChanged(int arg1)
-//	{
-//		_topologyNodeModel.SetSelected(arg1 == Qt::CheckState::Checked);
-//	}
-
 	void TopologyNodeView::OnModelChanged()
 	{
 		auto selected = _topologyNodeModel.IsSelected();
@@ -199,6 +189,8 @@ namespace Elpida::Application
 		_mouseDown = false;
 
 		setStyleSheet(HoverStyles[(int)_topologyNodeModel.GetType()]);
+
+		_topologyNodeModel.SetSelected(!_topologyNodeModel.IsSelected());
 
 		emit clicked(this);
 	}
