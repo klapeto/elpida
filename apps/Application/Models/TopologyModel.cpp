@@ -11,6 +11,7 @@ namespace Elpida::Application
 	{
 		_rootDataChanged = _root.DataChanged().Subscribe([this]()
 		{
+			SetSelectedLeafNodes();
 			OnDataChanged();
 		});
 	}
@@ -39,12 +40,14 @@ namespace Elpida::Application
 		}
 	}
 
-	std::vector<std::reference_wrapper<TopologyNodeModel>> TopologyModel::GetSelectedLeafNodes()
+	void TopologyModel::SetSelectedLeafNodes()
 	{
-		std::vector<std::reference_wrapper<TopologyNodeModel>> returnVector;
+		_selectedLeafNodes.clear();
+		GetSelectedNodes(_selectedLeafNodes, _root);
+	}
 
-		GetSelectedNodes(returnVector, _root);
-
-		return returnVector;
+	const std::vector<std::reference_wrapper<TopologyNodeModel>>& TopologyModel::GetSelectedLeafNodes()
+	{
+		return _selectedLeafNodes;
 	}
 } // Application

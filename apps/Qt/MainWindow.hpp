@@ -38,8 +38,10 @@ namespace Elpida::Application
 		TopologyModel& _topologyModel;
 		QLabel* _selectedNodesLabel;
 		QLabel* _selectedBenchmarkLabel;
-		QString _nonSelected = "<b style=\"color: red;\">No selected</b>";
+		QString _nonSelected = "<b style=\"color: #d73e3e;\">No selected</b>";
 		Ui::MainWindow* _ui;
+
+		void OnTopologyModelChanged();
 	};
 }
 #endif // MAINWINDOW_HPP

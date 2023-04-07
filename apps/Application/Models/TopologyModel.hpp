@@ -18,7 +18,7 @@ namespace Elpida::Application
 		[[nodiscard]]
 		TopologyNodeModel& GetRoot();
 
-		std::vector<std::reference_wrapper<TopologyNodeModel>> GetSelectedLeafNodes();
+		const std::vector<std::reference_wrapper<TopologyNodeModel>>& GetSelectedLeafNodes();
 
 		explicit TopologyModel(TopologyNodeModel root);
 		TopologyModel(const TopologyModel&) = delete;
@@ -28,7 +28,9 @@ namespace Elpida::Application
 		~TopologyModel() override = default;
 	private:
 		TopologyNodeModel _root;
+		std::vector<std::reference_wrapper<TopologyNodeModel>> _selectedLeafNodes;
 		EventSubscription<> _rootDataChanged;
+		void SetSelectedLeafNodes();
 	};
 
 } // Application
