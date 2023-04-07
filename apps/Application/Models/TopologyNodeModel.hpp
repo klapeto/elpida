@@ -39,9 +39,6 @@ namespace Elpida::Application
 		void SetSelected(bool selected);
 
 		[[nodiscard]]
-		bool CanBeSelected() const;
-
-		[[nodiscard]]
 		std::vector<TopologyNodeModel>& GetChildren();
 
 		[[nodiscard]]
@@ -58,6 +55,8 @@ namespace Elpida::Application
 
 		[[nodiscard]]
 		bool IsSelected() const;
+
+		void SetParents();
 
 		TopologyNodeModel() = default;
 		TopologyNodeModel(
@@ -77,7 +76,12 @@ namespace Elpida::Application
 		TopologyNodeType _type;
 		std::optional<std::size_t> _osIndex;
 		std::optional<std::size_t> _size;
+		TopologyNodeModel* _parent;
 		bool _selected;
+
+		void SetSelectedInternal(bool selected);
+	protected:
+		void OnDataChanged() override;
 	};
 
 } // Application

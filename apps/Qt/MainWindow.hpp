@@ -2,6 +2,9 @@
 #define MAINWINDOW_HPP
 
 #include <QMainWindow>
+#include <QLabel>
+
+#include "EventSubscription.hpp"
 
 namespace Elpida::Application
 {
@@ -31,6 +34,11 @@ namespace Elpida::Application
 		~MainWindow() override;
 
 	private:
+		EventSubscription<> _topologyModelChanged;
+		TopologyModel& _topologyModel;
+		QLabel* _selectedNodesLabel;
+		QLabel* _selectedBenchmarkLabel;
+		QString _nonSelected = "<b style=\"color: red;\">No selected</b>";
 		Ui::MainWindow* _ui;
 	};
 }

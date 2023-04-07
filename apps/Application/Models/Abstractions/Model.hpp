@@ -63,7 +63,7 @@ namespace Elpida::Application
 		Model& operator=(Model&&) noexcept = default;
 		virtual ~Model() = default;
 	protected:
-		void OnDataChanged();
+		virtual void OnDataChanged();
 	private:
 		Event<> _dataChanged;
 		bool _transaction;

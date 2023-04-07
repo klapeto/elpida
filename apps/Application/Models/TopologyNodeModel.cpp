@@ -17,32 +17,18 @@ namespace Elpida::Application
 			  _type(type),
 			  _osIndex(osIndex),
 			  _size(size),
+			  _parent(nullptr),
 			  _selected(false)
 	{
+
 	}
 
 	void TopologyNodeModel::SetSelected(bool selected)
 	{
-		_selected = selected;
-		for (auto& child: _children)
+		Transactional<TopologyNodeModel>([&selected](TopologyNodeModel& model)
 		{
-			child.SetSelected(selected);
-		}
-
-		for (auto& child: _memoryChildren)
-		{
-			child.SetSelected(selected);
-		}
-
-		if (_type == TopologyNodeType::ProcessingUnit)
-		{
-			OnDataChanged();
-		}
-	}
-
-	bool TopologyNodeModel::CanBeSelected() const
-	{
-		return _type == TopologyNodeType::ProcessingUnit;
+			model.SetSelectedInternal(selected);
+		});
 	}
 
 	std::vector<TopologyNodeModel>& TopologyNodeModel::GetChildren()
@@ -73,5 +59,44 @@ namespace Elpida::Application
 	bool TopologyNodeModel::IsSelected() const
 	{
 		return _selected;
+	}
+
+	void TopologyNodeModel::OnDataChanged()
+	{
+		Model::OnDataChanged();
+		if (_parent != nullptr)
+		{
+			_parent->OnDataChanged();
+		}
+	}
+
+	void TopologyNodeModel::SetParents()
+	{
+		for (auto& child: _children)
+		{
+			child._parent = this;
+			child.SetParents();
+		}
+
+		for (auto& child: _memoryChildren)
+		{
+			child._parent = this;
+			child.SetParents();
+		}
+	}
+
+	void TopologyNodeModel::SetSelectedInternal(bool selected)
+	{
+		_selected = selected;
+		for (auto& child: _children)
+		{
+			child.SetSelectedInternal(selected);
+		}
+
+		for (auto& child: _memoryChildren)
+		{
+			child.SetSelectedInternal(selected);
+		}
+		Model::OnDataChanged();
 	}
 } // Elpida::Application

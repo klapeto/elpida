@@ -163,109 +163,6 @@ static TopologyNodeModel GetNode(const TopologyNode& node)
 			std::move(memoryChildren));
 }
 
-TopologyNodeModel GetDummyTopologyNode()
-{
-	TopologyNodeModel eu1{
-			TopologyNodeType::ProcessingUnit,
-			0,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel eu2{
-			TopologyNodeType::ProcessingUnit,
-			1,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel eu3{
-			TopologyNodeType::ProcessingUnit,
-			2,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel eu4{
-			TopologyNodeType::ProcessingUnit,
-			3,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel eu5{
-			TopologyNodeType::ProcessingUnit,
-			3,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel eu6{
-			TopologyNodeType::ProcessingUnit,
-			3,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel numa{
-			TopologyNodeType::NumaDomain,
-			1,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel core{
-			TopologyNodeType::Core,
-			1,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel core2{
-			TopologyNodeType::Core,
-			1,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel package{
-			TopologyNodeType::Package,
-			std::nullopt,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	TopologyNodeModel machine{
-			TopologyNodeType::Machine,
-			std::nullopt,
-			std::nullopt,
-			{},
-			{}
-	};
-
-	core.GetChildren().push_back(std::move(eu1));
-	core.GetChildren().push_back(std::move(eu2));
-	core.GetChildren().push_back(std::move(eu3));
-	core.GetChildren().push_back(std::move(eu4));
-	core.GetChildren().push_back(std::move(eu5));
-	core.GetChildren().push_back(std::move(eu6));
-	//core.GetMemoryChildren().push_back(std::move(numa));
-	//package.GetChildren().push_back(std::move(core));
-	machine.GetChildren().push_back(std::move(core));
-
-	return machine;
-}
-
 int main(int argc, char* argv[])
 {
 	setupPlatformSpecifics();
@@ -293,21 +190,25 @@ int main(int argc, char* argv[])
 	MemoryInfo memoryInfo = MemoryInfoLoader::Load();
 	MemoryInfoModel memoryInfoModel(memoryInfo.GetTotalSize(), memoryInfo.GetPageSize());
 
+
+	splash.showMessage("Getting CPU info...");
+
 	CpuInfo cpuInfo = CpuInfoLoader::Load();
 	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(),
 			cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
+
+	splash.showMessage("Getting overheads info...");
 
 	OverheadsInfo overheadsInfo(NanoSeconds(561), NanoSeconds(321), NanoSeconds(132));
 	OverheadsModel overheadsModel(overheadsInfo.GetNowOverhead(), overheadsInfo.GetLoopOverhead(),
 			overheadsInfo.GetVirtualCallOverhead());
 
+	splash.showMessage("Getting topology info...");
 	TopologyInfo topologyInfo = TopologyLoader::LoadTopology();
 	TopologyModel topologyModel(GetNode(topologyInfo.GetRoot()));
-	//TopologyModel topologyModel(GetDummyTopologyNode());
+	topologyModel.GetRoot().SetParents();
 
 	MainWindow mainWindow(osInfoModel, memoryInfoModel, cpuInfoModel, overheadsModel, topologyModel);
-
-	splash.showMessage("Getting CPU info...");
 
 	mainWindow.show();
 

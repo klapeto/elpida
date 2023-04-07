@@ -7,6 +7,7 @@
 
 #include "Models/Abstractions/Model.hpp"
 #include "Models/TopologyNodeModel.hpp"
+#include "EventSubscription.hpp"
 
 namespace Elpida::Application
 {
@@ -17,6 +18,8 @@ namespace Elpida::Application
 		[[nodiscard]]
 		TopologyNodeModel& GetRoot();
 
+		std::vector<std::reference_wrapper<TopologyNodeModel>> GetSelectedLeafNodes();
+
 		explicit TopologyModel(TopologyNodeModel root);
 		TopologyModel(const TopologyModel&) = delete;
 		TopologyModel& operator=(const TopologyModel&) = delete;
@@ -25,6 +28,7 @@ namespace Elpida::Application
 		~TopologyModel() override = default;
 	private:
 		TopologyNodeModel _root;
+		EventSubscription<> _rootDataChanged;
 	};
 
 } // Application
