@@ -15,7 +15,16 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
 
         Event.cpp
-        EventSubscription.cpp Models/TopologyModel.cpp Models/TopologyModel.hpp Models/TopologyNodeModel.cpp Models/TopologyNodeModel.hpp Models/Abstractions/Model.cpp Models/CpuInfoModel.cpp Models/CpuInfoModel.hpp Models/MemoryInfoModel.cpp Models/MemoryInfoModel.hpp Models/OsInfoModel.cpp Models/OsInfoModel.hpp Models/OverheadsModel.cpp Models/OverheadsModel.hpp)
+        EventSubscription.cpp
+        Models/TopologyModel.cpp
+        Models/TopologyNodeModel.cpp
+        Models/Abstractions/Model.cpp
+
+        Models/CpuInfoModel.cpp
+        Models/MemoryInfoModel.cpp
+        Models/OsInfoModel.cpp
+        Models/OverheadsModel.cpp
+        Models/OsInfoModel.cpp Models/OsInfoModel.hpp)
 
 
 if (MSYS OR MINGW)

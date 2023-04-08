@@ -112,6 +112,8 @@ namespace Elpida::Application
 	{
 		_ui->setupUi(this);
 
+		setContentsMargins(4,4,4,4);
+
 		_dataChangedSubscription = _topologyNodeModel.DataChanged().Subscribe([this]()
 		{
 			OnModelChanged();
@@ -141,7 +143,7 @@ namespace Elpida::Application
 
 		if (_topologyNodeModel.GetOsIndex().has_value())
 		{
-			_ui->lblOsIndex->setText(QString::fromStdString(Vu::Cs(": ", _topologyNodeModel.GetOsIndex().value())));
+			_ui->lblOsIndex->setText(QString::fromStdString(Vu::Cs(" (", _topologyNodeModel.GetOsIndex().value(), ") ")));
 		}
 		else
 		{
