@@ -32,7 +32,6 @@ namespace Elpida::Application
 				QWidget* parent = nullptr);
 
 		~MainWindow() override;
-
 	private:
 		EventSubscription<> _topologyModelChanged;
 		TopologyModel& _topologyModel;
@@ -42,6 +41,11 @@ namespace Elpida::Application
 		Ui::MainWindow* _ui;
 
 		void OnTopologyModelChanged();
+
+	private slots:
+		void on_actionExit_triggered();
+		void on_actionSave_results_as_triggered();
+		void on_actionAbout_triggered();
 	};
 }
 #endif // MAINWINDOW_HPP

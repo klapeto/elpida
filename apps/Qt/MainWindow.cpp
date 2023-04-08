@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 
 #include <sstream>
+#include <QMessageBox>
 
 #include "Elpida/Core/Config.hpp"
 
@@ -18,6 +19,17 @@
 
 namespace Elpida::Application
 {
+	constexpr const char* aboutText = "<h2>Elpida " ELPIDA_VERSION "</h2>"
+									  "<p>Elpida is an Open Source (GPLv3) Benchmarking framework for measuring "
+									  "performance of computer hardware or algorithms.</p>"
+									  "<p>It's goal is to be as transparent and open as possible "
+									  "as well as extensible by the community. It comes with a library (libelpida), a Qt application and a "
+									  "set of predefined benchmarks for measuring computer hardware capabilities.</p>"
+									  "<p>Copyright (C) 2023  Ioannis Panagiotopoulos</p>"
+									  "More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
+
+
+
 	MainWindow::MainWindow(const OsInfoModel& osInfo,
 			const MemoryInfoModel& memoryInfo,
 			const CpuInfoModel& cpuInfo,
@@ -109,6 +121,21 @@ namespace Elpida::Application
 			}
 			_selectedNodesLabel->setText(QString::fromStdString(accumulator.str()));
 		}
+	}
+
+	void MainWindow::on_actionExit_triggered()
+	{
+		QApplication::quit();
+	}
+
+	void MainWindow::on_actionSave_results_as_triggered()
+	{
+		//QMessageBox::about(QApplication::activeWindow(), "About: Elpida", "LOL");
+	}
+
+	void MainWindow::on_actionAbout_triggered()
+	{
+		QMessageBox::about(QApplication::activeWindow(), "About: Elpida", aboutText);
 	}
 
 }
