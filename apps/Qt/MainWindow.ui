@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>583</width>
-    <height>283</height>
+    <width>746</width>
+    <height>461</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabQuickStart">
        <attribute name="title">
@@ -109,6 +109,13 @@
        <attribute name="title">
         <string>Benchmarks</string>
        </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QWidget" name="wBenchmarks" native="true">
+          <layout class="QGridLayout" name="gridLayout_2"/>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -119,8 +126,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>583</width>
-     <height>22</height>
+     <width>746</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

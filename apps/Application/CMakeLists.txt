@@ -24,7 +24,7 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/MemoryInfoModel.cpp
         Models/OsInfoModel.cpp
         Models/OverheadsModel.cpp
-        Models/OsInfoModel.cpp Models/OsInfoModel.hpp)
+        Models/OsInfoModel.cpp Models/OsInfoModel.hpp Models/BenchmarksModel.cpp Models/BenchmarksModel.hpp Models/BenchmarkGroupModel.cpp Models/BenchmarkGroupModel.hpp Models/BenchmarkModel.cpp Models/BenchmarkModel.hpp Models/ConfigurationModel.cpp Models/ConfigurationModel.hpp)
 
 
 if (MSYS OR MINGW)

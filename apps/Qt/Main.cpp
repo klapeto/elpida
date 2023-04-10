@@ -24,12 +24,15 @@
 #include <QSplashScreen>
 #include <QScreen>
 
+#include <filesystem>
+
 #include "MainWindow.hpp"
 
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
+#include "Elpida/Platform/BenchmarkGroupModule.hpp"
 #include "Elpida/Core/OverheadsInfo.hpp"
 
 #include "Models/OsInfoModel.hpp"
@@ -38,6 +41,8 @@
 #include "Models/OverheadsModel.hpp"
 #include "Models/TopologyModel.hpp"
 #include "Models/TopologyNodeModel.hpp"
+#include "Models/BenchmarksModel.hpp"
+#include "Models/BenchmarkModel.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -150,7 +155,6 @@ static TopologyNodeModel GetNode(const TopologyNode& node)
 		memoryChildren.push_back(GetNode(*child));
 	}
 
-
 	auto& originalChildren = node.GetChildren();
 	std::vector<TopologyNodeModel> children;
 	memoryChildren.reserve(children.size());
@@ -160,7 +164,57 @@ static TopologyNodeModel GetNode(const TopologyNode& node)
 	}
 
 	return TopologyNodeModel(TranslateType(node.GetType()), node.GetOsIndex(), GetSize(node), std::move(children),
-			std::move(memoryChildren));
+		std::move(memoryChildren));
+}
+
+static Elpida::Application::ConfigurationType TranslateConfigurationType(Elpida::ConfigurationType configurationType)
+{
+	return (Elpida::Application::ConfigurationType)configurationType;
+}
+
+static BenchmarksModel LoadBenchmarks()
+{
+	auto benchmarksDirectory = std::filesystem::current_path() / "Benchmarks";
+	if (!std::filesystem::exists(benchmarksDirectory))
+	{
+		return BenchmarksModel({});
+	}
+
+	std::vector<BenchmarkGroupModel> benchmarkGroups;
+	for (auto& entry: std::filesystem::directory_iterator(benchmarksDirectory))
+	{
+		if (!entry.is_directory() && entry.is_regular_file())
+		{
+			try
+			{
+				BenchmarkGroupModule module(entry.path());
+
+				auto& benchmarks = module.GetBenchmarkGroup().GetBenchmarks();
+				std::vector<BenchmarkModel> benchmarkModels;
+				benchmarkModels.reserve(benchmarks.size());
+
+				for (std::size_t i = 0; i < benchmarks.size(); ++i)
+				{
+					auto& benchmark = benchmarks[i];
+					std::vector<ConfigurationModel> configurations;
+					configurations.reserve(benchmark->GetRequiredConfiguration().size());
+					for (auto& config: benchmark->GetRequiredConfiguration())
+					{
+						configurations.emplace_back(config.GetName(), config.GetValue(), TranslateConfigurationType(config.GetType()));
+					}
+					BenchmarkModel benchmarkModel(benchmark->GetInfo().GetName(), entry.path(), i, std::move(configurations));
+				}
+
+				benchmarkGroups.emplace_back(module.GetBenchmarkGroup().GetName(), std::move(benchmarkModels));
+			}
+			catch (const std::exception& ex)
+			{
+				// invalid file
+			}
+		}
+	}
+
+	return BenchmarksModel(std::move(benchmarkGroups));
 }
 
 int main(int argc, char* argv[])
@@ -190,30 +244,30 @@ int main(int argc, char* argv[])
 	MemoryInfo memoryInfo = MemoryInfoLoader::Load();
 	MemoryInfoModel memoryInfoModel(memoryInfo.GetTotalSize(), memoryInfo.GetPageSize());
 
-
 	splash.showMessage("Getting CPU info...");
 
 	CpuInfo cpuInfo = CpuInfoLoader::Load();
 	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(),
-			cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
+		cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
 
 	splash.showMessage("Getting overheads info...");
 
 	OverheadsInfo overheadsInfo(NanoSeconds(561), NanoSeconds(321), NanoSeconds(132));
 	OverheadsModel overheadsModel(overheadsInfo.GetNowOverhead(), overheadsInfo.GetLoopOverhead(),
-			overheadsInfo.GetVirtualCallOverhead());
+		overheadsInfo.GetVirtualCallOverhead());
 
 	splash.showMessage("Getting topology info...");
 	TopologyInfo topologyInfo = TopologyLoader::LoadTopology();
 	TopologyModel topologyModel(GetNode(topologyInfo.GetRoot()));
 	topologyModel.GetRoot().SetParents();
 
-	MainWindow mainWindow(osInfoModel, memoryInfoModel, cpuInfoModel, overheadsModel, topologyModel);
+	splash.showMessage("Loading benchmarks...");
+	auto benchmarksModel = LoadBenchmarks();
+	MainWindow mainWindow(osInfoModel, memoryInfoModel, cpuInfoModel, overheadsModel, topologyModel, benchmarksModel);
 
 	mainWindow.show();
 
 	splash.finish(&mainWindow);
-
 
 	return QApplication::exec();
 }

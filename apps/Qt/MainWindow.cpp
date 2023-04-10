@@ -16,6 +16,7 @@
 #include "Views/OverheadsInfoView/OverheadsInfoView.hpp"
 #include "Views/CpuInfoView/CpuInfoView.hpp"
 #include "Views/TopologyView/TopologyView.hpp"
+#include "Views/BenchmarksView/BenchmarksView.hpp"
 
 namespace Elpida::Application
 {
@@ -35,6 +36,7 @@ namespace Elpida::Application
 			const CpuInfoModel& cpuInfo,
 			const OverheadsModel& overheadsInfo,
 			TopologyModel& topologyModel,
+			BenchmarksModel& benchmarksModel,
 			QWidget* parent) :
 			QMainWindow(parent),
 			_topologyModel(topologyModel),
@@ -69,6 +71,8 @@ namespace Elpida::Application
 		{
 			OnTopologyModelChanged();
 		});
+
+		_ui->wBenchmarks->layout()->addWidget(new BenchmarksView(benchmarksModel));
 	}
 
 	MainWindow::~MainWindow()

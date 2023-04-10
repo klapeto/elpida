@@ -1,4 +1,4 @@
-project("Elpida Qt" VERSION ${ELPIDA_VERSION}
+project("Elpida Qt"
 		DESCRIPTION "Elpida Qt Front End"
 		HOMEPAGE_URL ${ELPIDA_WEBSITE}
 		LANGUAGES CXX C)
@@ -36,6 +36,10 @@ set(ELPIDA_QT_SOURCES
 		Views/TopologyView/TopologyView.hpp
 		Views/TopologyView/TopologyView.cpp
 		Views/TopologyView/TopologyView.ui
+
+		Views/BenchmarksView/BenchmarksView.hpp
+		Views/BenchmarksView/BenchmarksView.cpp
+		Views/BenchmarksView/BenchmarksView.ui
 
 		Images/Images.qrc)
 

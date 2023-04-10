@@ -18,21 +18,23 @@ namespace Elpida::Application
 	class CpuInfoModel;
 	class OverheadsModel;
 	class TopologyModel;
+	class BenchmarksModel;
 
 	class MainWindow : public QMainWindow
 	{
-	Q_OBJECT
-	public:
+	 Q_OBJECT
+	 public:
 		explicit MainWindow(
-				const OsInfoModel& osInfo,
-				const MemoryInfoModel& memoryInfo,
-				const CpuInfoModel& cpuInfo,
-				const OverheadsModel& overheadsInfo,
-				TopologyModel& topologyModel,
-				QWidget* parent = nullptr);
+			const OsInfoModel& osInfo,
+			const MemoryInfoModel& memoryInfo,
+			const CpuInfoModel& cpuInfo,
+			const OverheadsModel& overheadsInfo,
+			TopologyModel& topologyModel,
+			BenchmarksModel& benchmarksModel,
+			QWidget* parent = nullptr);
 
 		~MainWindow() override;
-	private:
+	 private:
 		EventSubscription<> _topologyModelChanged;
 		TopologyModel& _topologyModel;
 		QLabel* _selectedNodesLabel;
@@ -42,7 +44,7 @@ namespace Elpida::Application
 
 		void OnTopologyModelChanged();
 
-	private slots:
+	 private slots:
 		void on_actionExit_triggered();
 		void on_actionSave_results_as_triggered();
 		void on_actionAbout_triggered();
