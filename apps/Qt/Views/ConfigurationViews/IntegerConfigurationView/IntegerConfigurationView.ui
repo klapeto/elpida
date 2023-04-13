@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Elpida::Application::IntegerConfigurationView</class>
+ <widget class="QWidget" name="Elpida::Application::IntegerConfigurationView">
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QLabel" name="lblName">
+     <property name="text">
+      <string>Name:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSpinBox" name="spnValue"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

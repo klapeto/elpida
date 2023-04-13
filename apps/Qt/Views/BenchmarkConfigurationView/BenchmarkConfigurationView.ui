@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Elpida::Application::BenchmarksView</class>
- <widget class="QWidget" name="BenchmarksView">
+ <class>Elpida::Application::BenchmarkConfigurationView</class>
+ <widget class="QWidget" name="BenchmarkConfigurationView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,19 +15,10 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="lblSelectBenchmark">
-     <property name="text">
-      <string>Select benchmark:</string>
+    <widget class="QGroupBox" name="gbConfiguration">
+     <property name="title">
+      <string>Configuration</string>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTreeWidget" name="twBenchmarks">
-     <column>
-      <property name="text">
-       <string notr="true">Name</string>
-      </property>
-     </column>
     </widget>
    </item>
   </layout>

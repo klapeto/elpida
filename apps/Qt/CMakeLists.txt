@@ -41,6 +41,27 @@ set(ELPIDA_QT_SOURCES
 		Views/BenchmarksView/BenchmarksView.cpp
 		Views/BenchmarksView/BenchmarksView.ui
 
+		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp
+		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp
+		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
+
+
+		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp
+		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.cpp
+		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.ui
+
+		Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.hpp
+		Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.cpp
+		Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.ui
+
+		Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.hpp
+		Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.cpp
+		Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.ui
+
+		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.hpp
+		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.cpp
+		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.ui
+
 		Images/Images.qrc)
 
 

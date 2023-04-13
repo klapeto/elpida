@@ -33,8 +33,6 @@ namespace Elpida::Application
 		void leaveEvent(QEvent* event) override;
 	private:
 		Ui::TopologyNodeView* _ui;
-		QGraphicsScene _memChildrenScene;
-		QGraphicsScene _childrenScene;
 		TopologyNodeModel& _topologyNodeModel;
 		EventSubscription<> _dataChangedSubscription;
 		bool _mouseDown;

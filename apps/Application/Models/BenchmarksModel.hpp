@@ -15,12 +15,18 @@ namespace Elpida::Application
 	 public:
 
 		[[nodiscard]]
+		const BenchmarkModel* GetSelectedBenchmark() const;
+
+		void SetSelectedBenchmark(const BenchmarkModel* benchmark);
+
+		[[nodiscard]]
 		const std::vector<BenchmarkGroupModel>& GetBenchmarkGroups() const;
 
 		explicit BenchmarksModel(std::vector<BenchmarkGroupModel>&& benchmarkGroups);
 		~BenchmarksModel() override = default;
 	 private:
 		std::vector<BenchmarkGroupModel> _benchmarkGroups;
+		const BenchmarkModel* _selectedBenchmark;
 	};
 
 } // Application
