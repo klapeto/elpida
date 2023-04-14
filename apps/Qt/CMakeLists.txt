@@ -62,7 +62,7 @@ set(ELPIDA_QT_SOURCES
 		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.cpp
 		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.ui
 
-		Images/Images.qrc)
+		Images/Images.qrc Views/ConfigurationViews/ConfigurationView.cpp Views/ConfigurationViews/ConfigurationView.hpp)
 
 
 if (MSVC)
