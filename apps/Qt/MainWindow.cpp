@@ -10,6 +10,7 @@
 
 #include "Layouts/FlowLayout.hpp"
 #include "Models/TopologyModel.hpp"
+#include "Models/BenchmarksModel.hpp"
 
 #include "Views/OsInfoView/OsInfoView.hpp"
 #include "Views/MemoryInfoView/MemoryInfoView.hpp"
@@ -29,18 +30,17 @@ namespace Elpida::Application
 									  "<p>Copyright (C) 2023  Ioannis Panagiotopoulos</p>"
 									  "More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
 
-
-
 	MainWindow::MainWindow(const OsInfoModel& osInfo,
-			const MemoryInfoModel& memoryInfo,
-			const CpuInfoModel& cpuInfo,
-			const OverheadsModel& overheadsInfo,
-			TopologyModel& topologyModel,
-			BenchmarksModel& benchmarksModel,
-			QWidget* parent) :
-			QMainWindow(parent),
-			_topologyModel(topologyModel),
-			_ui(new Ui::MainWindow)
+		const MemoryInfoModel& memoryInfo,
+		const CpuInfoModel& cpuInfo,
+		const OverheadsModel& overheadsInfo,
+		TopologyModel& topologyModel,
+		BenchmarksModel& benchmarksModel,
+		QWidget* parent) :
+		QMainWindow(parent),
+		_topologyModel(topologyModel),
+		_benchmarksModel(benchmarksModel),
+		_ui(new Ui::MainWindow)
 	{
 		_ui->setupUi(this);
 
@@ -72,6 +72,11 @@ namespace Elpida::Application
 			OnTopologyModelChanged();
 		});
 
+		_benchmarksModelChanged = benchmarksModel.DataChanged().Subscribe([this]()
+		{
+			OnBenchmarksModelChanged();
+		});
+
 		_ui->wBenchmarks->layout()->addWidget(new BenchmarksView(benchmarksModel));
 	}
 
@@ -91,7 +96,8 @@ namespace Elpida::Application
 		{
 			std::ostringstream accumulator;
 
-			std::sort(selected.begin(), selected.end(), [](auto& a, auto& b){
+			std::sort(selected.begin(), selected.end(), [](auto& a, auto& b)
+			{
 				return a.get().GetOsIndex().value() < b.get().GetOsIndex().value();
 			});
 
@@ -140,6 +146,19 @@ namespace Elpida::Application
 	void MainWindow::on_actionAbout_triggered()
 	{
 		QMessageBox::about(QApplication::activeWindow(), "About: Elpida", aboutText);
+	}
+
+	void MainWindow::OnBenchmarksModelChanged()
+	{
+		auto selectedBenchmark = _benchmarksModel.GetSelectedBenchmark();
+		if (selectedBenchmark != nullptr)
+		{
+			_selectedBenchmarkLabel->setText(QString::fromStdString(selectedBenchmark->GetName()));
+		}
+		else
+		{
+			_selectedBenchmarkLabel->setText(_nonSelected);
+		}
 	}
 
 }

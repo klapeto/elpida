@@ -13,6 +13,9 @@ set(ELPIDA_QT_SOURCES
 		Layouts/FlowLayout.cpp
 		Layouts/FlowLayout.hpp
 
+		Views/ConfigurationViews/ConfigurationView.cpp
+		Views/ConfigurationViews/ConfigurationView.hpp
+
 		Views/OsInfoView/OsInfoView.hpp
 		Views/OsInfoView/OsInfoView.cpp
 		Views/OsInfoView/OsInfoView.ui
@@ -45,7 +48,6 @@ set(ELPIDA_QT_SOURCES
 		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp
 		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
 
-
 		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp
 		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.cpp
 		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.ui
@@ -62,7 +64,12 @@ set(ELPIDA_QT_SOURCES
 		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.cpp
 		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.ui
 
-		Images/Images.qrc Views/ConfigurationViews/ConfigurationView.cpp Views/ConfigurationViews/ConfigurationView.hpp)
+		Views/BenchmarkResultsView/BenchmarkResultsView.hpp
+		Views/BenchmarkResultsView/BenchmarkResultsView.cpp
+		Views/BenchmarkResultsView/BenchmarkResultsView.ui
+
+		Images/Images.qrc
+		)
 
 
 if (MSVC)

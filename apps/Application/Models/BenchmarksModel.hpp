@@ -19,6 +19,19 @@ namespace Elpida::Application
 
 		void SetSelectedBenchmark(const BenchmarkModel* benchmark);
 
+		void SetIterationsToRun(int iterations);
+		void SetUploadResults(bool uploadResults);
+		void SetOpenResult(bool openResult);
+
+		[[nodiscard]]
+		int GetIterationsToRun() const;
+
+		[[nodiscard]]
+		bool IsUploadResults() const;
+
+		[[nodiscard]]
+		bool IsOpenResult() const;
+
 		[[nodiscard]]
 		const std::vector<BenchmarkGroupModel>& GetBenchmarkGroups() const;
 
@@ -27,6 +40,9 @@ namespace Elpida::Application
 	 private:
 		std::vector<BenchmarkGroupModel> _benchmarkGroups;
 		const BenchmarkModel* _selectedBenchmark;
+		int _iterationsToRun;
+		bool _uploadResults;
+		bool _openResult;
 	};
 
 } // Application

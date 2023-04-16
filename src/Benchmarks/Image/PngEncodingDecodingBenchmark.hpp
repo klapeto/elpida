@@ -16,6 +16,7 @@ namespace Elpida
 		[[nodiscard]]
 		BenchmarkInfo GetInfo() const override;
 
+		[[nodiscard]]
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
 		PngEncodingDecodingBenchmark() = default;

@@ -3,11 +3,12 @@
 
 #include "Models/BenchmarksModel.hpp"
 #include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
+#include "Views/BenchmarkResultsView/BenchmarkResultsView.hpp"
 
 namespace Elpida::Application
 {
 	BenchmarksView::BenchmarksView(BenchmarksModel& benchmarksModel)
-		: QWidget(), _ui(new Ui::BenchmarksView), _benchmarksModel(benchmarksModel)
+		: QWidget(), _ui(new Ui::BenchmarksView), _benchmarksModel(benchmarksModel), _uiUpdating(false)
 	{
 		_ui->setupUi(this);
 
@@ -29,7 +30,12 @@ namespace Elpida::Application
 
 		_configurationView = new BenchmarkConfigurationView();
 
-		_ui->verticalLayout->addWidget(_configurationView);
+		_ui->glMain->addWidget(_configurationView, 0, 1);
+
+		_resultsView = new BenchmarkResultsView();
+		_ui->glMain->addWidget(_resultsView, 1, 1);
+
+		UpdateUi();
 	}
 
 	BenchmarksView::~BenchmarksView()
@@ -60,5 +66,36 @@ namespace Elpida::Application
 			_benchmarksModel.SetSelectedBenchmark(nullptr);
 			_configurationView->SetModel(nullptr);
 		}
+		UpdateUi();
+	}
+
+	void BenchmarksView::UpdateUi()
+	{
+		if (_uiUpdating) return;
+		_uiUpdating = true;
+		_ui->pbRun->setEnabled(_benchmarksModel.GetSelectedBenchmark() != nullptr);
+		_ui->chkUpload->setChecked(_benchmarksModel.IsUploadResults());
+		_ui->chkOpenResult->setChecked(_benchmarksModel.IsOpenResult());
+		_ui->chkOpenResult->setEnabled(_benchmarksModel.IsUploadResults());
+		_ui->spnTimes->setValue(_benchmarksModel.GetIterationsToRun());
+		_uiUpdating = false;
+	}
+
+	void BenchmarksView::on_chkUpload_stateChanged(int state)
+	{
+		_benchmarksModel.SetUploadResults(state == Qt::Checked);
+		UpdateUi();
+	}
+
+	void BenchmarksView::on_chkOpenResult_stateChanged(int state)
+	{
+		_benchmarksModel.SetOpenResult(state == Qt::Checked);
+		UpdateUi();
+	}
+
+	void BenchmarksView::on_spnTimes_valueChanged(int value)
+	{
+		_benchmarksModel.SetIterationsToRun(value);
+		UpdateUi();
 	}
 }

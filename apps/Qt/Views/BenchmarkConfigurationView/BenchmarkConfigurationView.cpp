@@ -7,16 +7,15 @@
 #include "Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.hpp"
 #include "Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp"
 #include "Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.hpp"
-#include <QLabel>
 
 namespace Elpida::Application
 {
 	BenchmarkConfigurationView::BenchmarkConfigurationView()
 		: QWidget(),
-		  _ui(new Ui::BenchmarkConfigurationView)
+		  _ui(new Ui::BenchmarkConfigurationView), _benchmarkModel(nullptr)
 	{
 		_ui->setupUi(this);
-		_ui->gbConfiguration->setLayout(new QVBoxLayout);
+		_ui->container->setLayout(new QVBoxLayout);
 	}
 
 	BenchmarkConfigurationView::~BenchmarkConfigurationView()
@@ -51,7 +50,7 @@ namespace Elpida::Application
 
 		if (_benchmarkModel != nullptr)
 		{
-			auto layout = _ui->gbConfiguration->layout();
+			auto layout = _ui->container->layout();
 			for (auto& config: _benchmarkModel->GetConfigurations())
 			{
 				auto view = RentView(const_cast<ConfigurationModel&>(config));
@@ -63,9 +62,9 @@ namespace Elpida::Application
 
 	void BenchmarkConfigurationView::ClearViews()
 	{
-		auto layout = _ui->gbConfiguration->layout();
+		auto layout = _ui->container->layout();
 
-		for (auto& tuple : _createdWidgets)
+		for (auto& tuple: _createdWidgets)
 		{
 			auto view = std::get<ConfigurationView*>(tuple);
 			layout->removeWidget(view);
@@ -82,16 +81,20 @@ namespace Elpida::Application
 		switch (configurationModel.GetType())
 		{
 		case ConfigurationType::Integer:
-			view =  GetOrCreate(_integerViews, [](){return new IntegerConfigurationView();});
+			view = GetOrCreate(_integerViews, []()
+			{ return new IntegerConfigurationView(); });
 			break;
 		case ConfigurationType::Float:
-			view =  GetOrCreate(_floatViews, [](){return new FloatConfigurationView();});
+			view = GetOrCreate(_floatViews, []()
+			{ return new FloatConfigurationView(); });
 			break;
 		case ConfigurationType::String:
-			view =  GetOrCreate(_stringViews, [](){return new StringConfigurationView();});
+			view = GetOrCreate(_stringViews, []()
+			{ return new StringConfigurationView(); });
 			break;
 		case ConfigurationType::File:
-			view =  GetOrCreate(_fileViews, [](){return new FileConfigurationView();});
+			view = GetOrCreate(_fileViews, []()
+			{ return new FileConfigurationView(); });
 			break;
 		}
 		_createdWidgets.emplace_back(&configurationModel, view);
