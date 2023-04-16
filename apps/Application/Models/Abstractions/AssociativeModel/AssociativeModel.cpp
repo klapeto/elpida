@@ -22,7 +22,7 @@
 
 #include "Models/Abstractions/AssociativeModel/AssociativeModel.hpp"
 
-namespace Elpida
+namespace Elpida::Application
 {
 
 }

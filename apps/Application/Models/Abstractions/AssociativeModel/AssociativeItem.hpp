@@ -26,7 +26,7 @@
 
 #include "Models/Abstractions/CollectionItem.hpp"
 
-namespace Elpida
+namespace Elpida::Application
 {
 	template<typename T, typename R>
 	class AssociativeModel;

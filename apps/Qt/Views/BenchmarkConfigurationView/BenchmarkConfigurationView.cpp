@@ -1,7 +1,8 @@
 #include "BenchmarkConfigurationView.hpp"
 #include "ui_BenchmarkConfigurationView.h"
 
-#include "Models/BenchmarksModel.hpp"
+#include "Models/BenchmarkConfigurationModel.hpp"
+#include "Models/BenchmarkConfigurationInstanceModel.hpp"
 
 #include "Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.hpp"
 #include "Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.hpp"
@@ -10,12 +11,33 @@
 
 namespace Elpida::Application
 {
-	BenchmarkConfigurationView::BenchmarkConfigurationView()
+	BenchmarkConfigurationView::BenchmarkConfigurationView(BenchmarkConfigurationModel& configurationModel)
 		: QWidget(),
-		  _ui(new Ui::BenchmarkConfigurationView), _benchmarkModel(nullptr)
+		  _ui(new Ui::BenchmarkConfigurationView), _configurationModel(configurationModel)
 	{
 		_ui->setupUi(this);
 		_ui->container->setLayout(new QVBoxLayout);
+
+		_itemAddedSubscription = _configurationModel.ItemAdded().Subscribe([this](CollectionItem<BenchmarkConfigurationInstanceModel>& item)
+		{
+			auto layout = _ui->container->layout();
+			auto view = RentView(const_cast<BenchmarkConfigurationInstanceModel&>(item.GetValue()));
+			view->SetModel(const_cast<BenchmarkConfigurationInstanceModel*>(&item.GetValue()));
+			layout->addWidget(view);
+		});
+
+		_itemRemovedSubscription = _configurationModel.ItemRemoved().Subscribe([this](CollectionItem<BenchmarkConfigurationInstanceModel>& item)
+		{
+			auto model = &item.GetValue();
+			auto view = _createdWidgets.at(model);
+			Remove(&item.GetValue(), view);
+			_createdWidgets.erase(model);
+		});
+
+		_clearedSubscription = _configurationModel.Cleared().Subscribe([this]()
+		{
+			ClearViews();
+		});
 	}
 
 	BenchmarkConfigurationView::~BenchmarkConfigurationView()
@@ -43,39 +65,26 @@ namespace Elpida::Application
 		delete _ui;
 	}
 
-	void BenchmarkConfigurationView::SetModel(BenchmarkModel* benchmarkModel)
-	{
-		_benchmarkModel = benchmarkModel;
-		ClearViews();
-
-		if (_benchmarkModel != nullptr)
-		{
-			auto layout = _ui->container->layout();
-			for (auto& config: _benchmarkModel->GetConfigurations())
-			{
-				auto view = RentView(const_cast<ConfigurationModel&>(config));
-				view->SetModel(const_cast<ConfigurationModel*>(&config));
-				layout->addWidget(view);
-			}
-		}
-	}
-
 	void BenchmarkConfigurationView::ClearViews()
 	{
-		auto layout = _ui->container->layout();
-
-		for (auto& tuple: _createdWidgets)
+		for (auto& pair: _createdWidgets)
 		{
-			auto view = std::get<ConfigurationView*>(tuple);
-			layout->removeWidget(view);
-			view->setParent(nullptr);
-			ReturnView(std::get<ConfigurationModel*>(tuple), std::get<ConfigurationView*>(tuple));
+			Remove(pair.first, pair.second);
 		}
 
 		_createdWidgets.clear();
 	}
 
-	ConfigurationView* BenchmarkConfigurationView::RentView(ConfigurationModel& configurationModel)
+	void
+	BenchmarkConfigurationView::Remove(BenchmarkConfigurationInstanceModel* model, ConfigurationView* view)
+	{
+		auto layout = _ui->container->layout();
+		layout->removeWidget(view);
+		view->setParent(nullptr);
+		ReturnView(model, view);
+	}
+
+	ConfigurationView* BenchmarkConfigurationView::RentView(BenchmarkConfigurationInstanceModel& configurationModel)
 	{
 		ConfigurationView* view = nullptr;
 		switch (configurationModel.GetType())
@@ -97,11 +106,12 @@ namespace Elpida::Application
 			{ return new FileConfigurationView(); });
 			break;
 		}
-		_createdWidgets.emplace_back(&configurationModel, view);
+		_createdWidgets.insert({ &configurationModel, view });
 		return view;
 	}
+
 	void
-	BenchmarkConfigurationView::ReturnView(ConfigurationModel* configurationModel, ConfigurationView* configurationView)
+	BenchmarkConfigurationView::ReturnView(BenchmarkConfigurationInstanceModel* configurationModel, ConfigurationView* configurationView)
 	{
 		switch (configurationModel->GetType())
 		{

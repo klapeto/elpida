@@ -29,7 +29,7 @@
 #include "Models/Abstractions/AssociativeModel/AssociativeItem.hpp"
 #include <unordered_map>
 
-namespace Elpida
+namespace Elpida::Application
 {
 	template<typename TKey, typename TValue>
 	class AssociativeModel : public CollectionModel<std::pair<const TKey&, const TValue&>>
