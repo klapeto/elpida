@@ -26,7 +26,9 @@
 
 #include "Models/Abstractions/CollectionItem.hpp"
 
-namespace Elpida
+#include <list>
+
+namespace Elpida::Application
 {
 	template<typename TR>
 	class ListModel;
@@ -46,9 +48,7 @@ namespace Elpida
 
 		Iterator _iterator;
 
-		template<typename TR>
-		friend
-		class ListModel;
+		friend class ListModel<T>;
 	};
 }
 

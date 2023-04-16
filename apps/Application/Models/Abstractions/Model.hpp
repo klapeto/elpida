@@ -26,7 +26,6 @@
 
 #include "Event.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
-#include <mutex>
 
 namespace Elpida::Application
 {

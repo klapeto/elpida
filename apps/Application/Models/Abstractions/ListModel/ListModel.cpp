@@ -23,7 +23,7 @@
 
 #include "Models/Abstractions/ListModel/ListModel.hpp"
 
-namespace Elpida
+namespace Elpida::Application
 {
 
 }

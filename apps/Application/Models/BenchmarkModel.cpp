@@ -8,7 +8,7 @@
 
 namespace Elpida::Application
 {
-	BenchmarkModel::BenchmarkModel(std::string name, std::string filePath, std::size_t index, std::vector<ConfigurationModel>&& configurations)
+	BenchmarkModel::BenchmarkModel(std::string name, std::string filePath, std::size_t index, std::vector<BenchmarkConfigurationInstanceModel>&& configurations)
 		: _name(std::move(name)), _filePath(std::move(filePath)), _configurations(std::move(configurations)), _index(index)
 	{
 	}
@@ -18,7 +18,7 @@ namespace Elpida::Application
 		return _name;
 	}
 
-	const std::vector<ConfigurationModel>& BenchmarkModel::GetConfigurations() const
+	const std::vector<BenchmarkConfigurationInstanceModel>& BenchmarkModel::GetConfigurations() const
 	{
 		return _configurations;
 	}

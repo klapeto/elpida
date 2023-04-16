@@ -26,7 +26,7 @@
 
 #include <list>
 
-namespace Elpida
+namespace Elpida::Application
 {
 	template<typename TR>
 	class CollectionModel;
@@ -36,6 +36,11 @@ namespace Elpida
 	{
 	 public:
 		const T& GetValue() const
+		{
+			return _value;
+		}
+
+		T& GetValue()
 		{
 			return _value;
 		}
@@ -56,9 +61,7 @@ namespace Elpida
 
 		}
 
-		template<typename TR>
-		friend
-		class CollectionModel;
+		friend class CollectionModel<T>;
 	};
 }
 

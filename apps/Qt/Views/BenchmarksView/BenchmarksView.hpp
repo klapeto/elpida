@@ -15,13 +15,15 @@ namespace Elpida::Application
 	class BenchmarksModel;
 	class BenchmarkModel;
 	class BenchmarkConfigurationView;
+	class BenchmarkConfigurationModel;
 	class BenchmarkResultsView;
+
 	class BenchmarksView : public QWidget
 	{
 	 Q_OBJECT
 
 	 public:
-		explicit BenchmarksView(BenchmarksModel& benchmarksModel);
+		explicit BenchmarksView(BenchmarksModel& benchmarksModel, BenchmarkConfigurationModel& benchmarkConfigurationModel);
 		~BenchmarksView() override;
 	 private slots:
 		void on_twBenchmarks_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
@@ -31,6 +33,7 @@ namespace Elpida::Application
 	 private:
 		Ui::BenchmarksView* _ui;
 		BenchmarksModel& _benchmarksModel;
+		BenchmarkConfigurationModel& _benchmarkConfigurationModel;
 		BenchmarkConfigurationView* _configurationView;
 		BenchmarkResultsView* _resultsView;
 		std::unordered_map<QString, BenchmarkModel*> _benchmarkMap;

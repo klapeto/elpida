@@ -19,6 +19,7 @@ namespace Elpida::Application
 	class OverheadsModel;
 	class TopologyModel;
 	class BenchmarksModel;
+	class BenchmarkConfigurationModel;
 
 	class MainWindow : public QMainWindow
 	{
@@ -31,6 +32,7 @@ namespace Elpida::Application
 			const OverheadsModel& overheadsInfo,
 			TopologyModel& topologyModel,
 			BenchmarksModel& benchmarksModel,
+			BenchmarkConfigurationModel& benchmarkConfigurationModel,
 			QWidget* parent = nullptr);
 
 		~MainWindow() override;

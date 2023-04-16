@@ -15,6 +15,7 @@ namespace Elpida::Application
 	{
 		return _benchmarkGroups;
 	}
+
 	void BenchmarksModel::SetSelectedBenchmark(const BenchmarkModel* benchmark)
 	{
 		if (_selectedBenchmark != benchmark)
@@ -23,6 +24,7 @@ namespace Elpida::Application
 			OnDataChanged();
 		}
 	}
+
 	const BenchmarkModel* BenchmarksModel::GetSelectedBenchmark() const
 	{
 		return _selectedBenchmark;
@@ -45,14 +47,17 @@ namespace Elpida::Application
 		_openResult = openResult;
 		OnDataChanged();
 	}
+
 	int BenchmarksModel::GetIterationsToRun() const
 	{
 		return _iterationsToRun;
 	}
+
 	bool BenchmarksModel::IsUploadResults() const
 	{
 		return _uploadResults;
 	}
+
 	bool BenchmarksModel::IsOpenResult() const
 	{
 		return _openResult;

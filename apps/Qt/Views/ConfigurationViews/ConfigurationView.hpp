@@ -10,15 +10,15 @@
 namespace Elpida::Application
 {
 
-	class ConfigurationModel;
+	class BenchmarkConfigurationInstanceModel;
 	class ConfigurationView : public QWidget
 	{
 	 public:
-		void SetModel(ConfigurationModel* model);
+		void SetModel(BenchmarkConfigurationInstanceModel* model);
 		explicit ConfigurationView(QWidget* parent = nullptr);
 		~ConfigurationView() override = default;
 	 protected:
-		ConfigurationModel* _model;
+		BenchmarkConfigurationInstanceModel* _model;
 		virtual void OnModelSet() = 0;
 	};
 

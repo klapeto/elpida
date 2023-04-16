@@ -2,13 +2,16 @@
 #include "ui_BenchmarksView.h"
 
 #include "Models/BenchmarksModel.hpp"
+#include "Models/BenchmarkConfigurationModel.hpp"
+#include "Models/BenchmarkConfigurationInstanceModel.hpp"
+
 #include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
 #include "Views/BenchmarkResultsView/BenchmarkResultsView.hpp"
 
 namespace Elpida::Application
 {
-	BenchmarksView::BenchmarksView(BenchmarksModel& benchmarksModel)
-		: QWidget(), _ui(new Ui::BenchmarksView), _benchmarksModel(benchmarksModel), _uiUpdating(false)
+	BenchmarksView::BenchmarksView(BenchmarksModel& benchmarksModel, BenchmarkConfigurationModel& benchmarkConfigurationModel)
+		: QWidget(), _ui(new Ui::BenchmarksView), _benchmarksModel(benchmarksModel), _benchmarkConfigurationModel(benchmarkConfigurationModel), _uiUpdating(false)
 	{
 		_ui->setupUi(this);
 
@@ -28,7 +31,7 @@ namespace Elpida::Application
 			_ui->twBenchmarks->addTopLevelItem(groupItem);
 		}
 
-		_configurationView = new BenchmarkConfigurationView();
+		_configurationView = new BenchmarkConfigurationView(benchmarkConfigurationModel);
 
 		_ui->glMain->addWidget(_configurationView, 0, 1);
 
@@ -53,18 +56,21 @@ namespace Elpida::Application
 			if (itr != _benchmarkMap.end())
 			{
 				_benchmarksModel.SetSelectedBenchmark(itr->second);
-				_configurationView->SetModel(itr->second);
+				for (auto& config: itr->second->GetConfigurations())
+				{
+					_benchmarkConfigurationModel.Add(BenchmarkConfigurationInstanceModel(config.GetName(), config.GetValue(), config.GetType()));
+				}
 			}
 			else
 			{
 				_benchmarksModel.SetSelectedBenchmark(nullptr);
-				_configurationView->SetModel(nullptr);
+				_benchmarkConfigurationModel.Clear();
 			}
 		}
 		else
 		{
 			_benchmarksModel.SetSelectedBenchmark(nullptr);
-			_configurationView->SetModel(nullptr);
+			_benchmarkConfigurationModel.Clear();
 		}
 		UpdateUi();
 	}

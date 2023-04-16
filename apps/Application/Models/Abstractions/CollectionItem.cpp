@@ -23,7 +23,7 @@
 
 #include "Models/Abstractions/CollectionItem.hpp"
 
-namespace Elpida
+namespace Elpida::Application
 {
 
 }

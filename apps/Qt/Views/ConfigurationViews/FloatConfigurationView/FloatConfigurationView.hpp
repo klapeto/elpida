@@ -12,7 +12,7 @@ namespace Elpida::Application
 	}
 
 
-	class ConfigurationModel;
+	class BenchmarkConfigurationInstanceModel;
 	class FloatConfigurationView : public ConfigurationView
 	{
 	 Q_OBJECT

@@ -12,7 +12,7 @@ namespace Elpida::Application
 
 	}
 
-	void ConfigurationView::SetModel(ConfigurationModel* model)
+	void ConfigurationView::SetModel(BenchmarkConfigurationInstanceModel* model)
 	{
 		_model = model;
 		OnModelSet();

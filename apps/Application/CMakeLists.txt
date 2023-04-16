@@ -5,9 +5,11 @@ project(elpida-application VERSION ${ELPIDA_VERSION}
 
 set(ELPIDA_APPLICATION_SOURCES
 
+        Controllers/BenchmarksController.cpp
+        Controllers/BenchmarksController.hpp
+
         Models/Abstractions/CollectionModel.cpp
         Models/Abstractions/CollectionItem.cpp
-        Models/Abstractions/EventArgs/CollectionChangedEventArgs.cpp
         Models/Abstractions/CollectionModelObserver.cpp
         Models/Abstractions/AssociativeModel/AssociativeModel.cpp
         Models/Abstractions/ListModel/ListModel.cpp
@@ -24,7 +26,7 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/MemoryInfoModel.cpp
         Models/OsInfoModel.cpp
         Models/OverheadsModel.cpp
-        Models/OsInfoModel.cpp Models/OsInfoModel.hpp Models/BenchmarksModel.cpp Models/BenchmarksModel.hpp Models/BenchmarkGroupModel.cpp Models/BenchmarkGroupModel.hpp Models/BenchmarkModel.cpp Models/BenchmarkModel.hpp Models/ConfigurationModel.cpp Models/ConfigurationModel.hpp)
+        Models/OsInfoModel.cpp Models/OsInfoModel.hpp Models/BenchmarksModel.cpp Models/BenchmarksModel.hpp Models/BenchmarkGroupModel.cpp Models/BenchmarkGroupModel.hpp Models/BenchmarkModel.cpp Models/BenchmarkModel.hpp Models/BenchmarkConfigurationInstanceModel.cpp Models/BenchmarkConfigurationInstanceModel.hpp Models/BenchmarkConfigurationModel.cpp Models/BenchmarkConfigurationModel.hpp)
 
 
 if (MSYS OR MINGW)

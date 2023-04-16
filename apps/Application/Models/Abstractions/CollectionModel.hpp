@@ -24,8 +24,8 @@
 #ifndef APPS_QT_MODELS_ABSTRACTIONS_COLLECTIONMODEL_HPP
 #define APPS_QT_MODELS_ABSTRACTIONS_COLLECTIONMODEL_HPP
 
-#include "Models/Abstractions/EventArgs/CollectionChangedEventArgs.hpp"
 #include "Models/Abstractions/Model.hpp"
+#include "Models/Abstractions/CollectionItem.hpp"
 
 namespace Elpida::Application
 {
@@ -33,17 +33,17 @@ namespace Elpida::Application
 	class CollectionModel : public Model
 	{
 	 public:
-		Event<const CollectionChangedEventArgs<T>&>& ItemAdded()
+		Event<CollectionItem<T>&>& ItemAdded()
 		{
 			return _itemAdded;
 		}
 
-		Event<const CollectionChangedEventArgs<T>&>& ItemRemoved()
+		Event<CollectionItem<T>&>& ItemRemoved()
 		{
 			return _itemRemoved;
 		}
 
-		Event<const CollectionChangedEventArgs<T>&>& Cleared()
+		Event<>& Cleared()
 		{
 			return _cleared;
 		}
@@ -55,23 +55,21 @@ namespace Elpida::Application
 		CollectionModel<T>& operator=(CollectionModel<T>&&) noexcept = delete;
 		~CollectionModel() override = default;
 	 private:
-		Event<const CollectionChangedEventArgs<T>&> _itemAdded;
-		Event<const CollectionChangedEventArgs<T>&> _itemRemoved;
+		Event<CollectionItem<T>&> _itemAdded;
+		Event<CollectionItem<T>&> _itemRemoved;
 		Event<> _cleared;
 	 protected:
-		void onItemAdded(const CollectionItem<T>& item)
+		void OnItemAdded(CollectionItem<T>& item)
 		{
-			auto args = CollectionChangedEventArgs<T>(item);
-			_itemAdded.Raise(args);
+			_itemAdded.Raise(item);
 		}
 
-		void onItemRemoved(const CollectionItem<T>& item)
+		void OnItemRemoved(CollectionItem<T>& item)
 		{
-			auto args = CollectionChangedEventArgs<T>(item);
-			_itemRemoved.Raise(args);
+			_itemRemoved.Raise(item);
 		}
 
-		void onCleared()
+		void OnCleared()
 		{
 			_cleared.Raise();
 		}

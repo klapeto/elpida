@@ -3,26 +3,25 @@
 
 #include <QWidget>
 
-namespace Elpida {
-namespace Application {
-
-namespace Ui {
-class BenchmarkResultsView;
-}
-
-class BenchmarkResultsView : public QWidget
+namespace Elpida::Application
 {
-    Q_OBJECT
 
-public:
-    explicit BenchmarkResultsView(QWidget *parent = nullptr);
-    ~BenchmarkResultsView();
+	namespace Ui
+	{
+		class BenchmarkResultsView;
+	}
 
-private:
-    Ui::BenchmarkResultsView *ui;
-};
+	class BenchmarkResultsView : public QWidget
+	{
+	 Q_OBJECT
 
+	 public:
+		explicit BenchmarkResultsView(QWidget* parent = nullptr);
+		~BenchmarkResultsView() override;
 
-} // namespace Application
+	 private:
+		Ui::BenchmarkResultsView* _ui;
+	};
+
 } // namespace Elpida
 #endif // ELPIDA_APPLICATION_BENCHMARKRESULTSVIEW_HPP

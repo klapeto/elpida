@@ -6,7 +6,7 @@
 #define ELPIDA_BENCHMARKMODEL_HPP_
 
 #include "Models/Abstractions/Model.hpp"
-#include "ConfigurationModel.hpp"
+#include "BenchmarkConfigurationInstanceModel.hpp"
 
 #include <vector>
 #include <cstdlib>
@@ -28,9 +28,9 @@ namespace Elpida::Application
 		std::size_t GetIndex() const;
 
 		[[nodiscard]]
-		const std::vector<ConfigurationModel>& GetConfigurations() const;
+		const std::vector<BenchmarkConfigurationInstanceModel>& GetConfigurations() const;
 
-		BenchmarkModel(std::string name, std::string filePath, std::size_t index, std::vector<ConfigurationModel>&& configurations);
+		BenchmarkModel(std::string name, std::string filePath, std::size_t index, std::vector<BenchmarkConfigurationInstanceModel>&& configurations);
 		BenchmarkModel(const BenchmarkModel&) = delete;
 		BenchmarkModel(BenchmarkModel&&) noexcept = default;
 		BenchmarkModel& operator=(const BenchmarkModel&) = delete;
@@ -39,7 +39,7 @@ namespace Elpida::Application
 	 private:
 		std::string _name;
 		std::string _filePath;
-		std::vector<ConfigurationModel> _configurations;
+		std::vector<BenchmarkConfigurationInstanceModel> _configurations;
 		std::size_t _index;
 	};
 

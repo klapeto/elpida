@@ -43,6 +43,7 @@
 #include "Models/TopologyNodeModel.hpp"
 #include "Models/BenchmarksModel.hpp"
 #include "Models/BenchmarkModel.hpp"
+#include "Models/BenchmarkConfigurationModel.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -196,7 +197,7 @@ static BenchmarksModel LoadBenchmarks()
 				for (std::size_t i = 0; i < benchmarks.size(); ++i)
 				{
 					auto& benchmark = benchmarks[i];
-					std::vector<ConfigurationModel> configurations;
+					std::vector<BenchmarkConfigurationInstanceModel> configurations;
 					configurations.reserve(benchmark->GetRequiredConfiguration().size());
 					for (auto& config: benchmark->GetRequiredConfiguration())
 					{
@@ -263,7 +264,8 @@ int main(int argc, char* argv[])
 
 	splash.showMessage("Loading benchmarks...");
 	auto benchmarksModel = LoadBenchmarks();
-	MainWindow mainWindow(osInfoModel, memoryInfoModel, cpuInfoModel, overheadsModel, topologyModel, benchmarksModel);
+	BenchmarkConfigurationModel benchmarkConfigurationModel;
+	MainWindow mainWindow(osInfoModel, memoryInfoModel, cpuInfoModel, overheadsModel, topologyModel, benchmarksModel, benchmarkConfigurationModel);
 
 	mainWindow.show();
 

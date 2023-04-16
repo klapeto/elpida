@@ -67,8 +67,8 @@ namespace Elpida
 	std::vector<TaskConfiguration> PngEncodingDecodingBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-			TaskConfiguration("Input PNG file", ConfigurationType::File),
-			TaskConfiguration("Output PNG file", ConfigurationType::File),
+			TaskConfiguration("Input PNG file", ConfigurationType::File, "./testImage.png"),
+			TaskConfiguration("Output PNG file", ConfigurationType::File, "./testImage.out.png"),
 		};
 	}
 } // Elpida

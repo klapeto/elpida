@@ -29,7 +29,7 @@
 
 #include <cstdlib>
 
-namespace Elpida
+namespace Elpida::Application
 {
 
 	template<typename T>
@@ -59,7 +59,7 @@ namespace Elpida
 		void Clear()
 		{
 			_items.clear();
-			CollectionModel<T>::sOnCleared();
+			CollectionModel<T>::OnCleared();
 		}
 
 		[[nodiscard]]

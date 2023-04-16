@@ -1,20 +1,19 @@
 #include "BenchmarkResultsView.hpp"
 #include "ui_BenchmarkResultsView.h"
 
-namespace Elpida {
-namespace Application {
-
-BenchmarkResultsView::BenchmarkResultsView(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::BenchmarkResultsView)
+namespace Elpida::Application
 {
-    ui->setupUi(this);
-}
 
-BenchmarkResultsView::~BenchmarkResultsView()
-{
-    delete ui;
-}
+	BenchmarkResultsView::BenchmarkResultsView(QWidget* parent) :
+		QWidget(parent),
+		_ui(new Ui::BenchmarkResultsView)
+	{
+		_ui->setupUi(this);
+	}
 
-} // namespace Application
+	BenchmarkResultsView::~BenchmarkResultsView()
+	{
+		delete _ui;
+	}
+
 } // namespace Elpida

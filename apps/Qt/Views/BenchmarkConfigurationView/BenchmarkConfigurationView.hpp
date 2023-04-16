@@ -2,8 +2,11 @@
 #define BENCHMARKCONFIGURATIONVIEW_HPP
 
 #include <QWidget>
-
 #include <vector>
+#include <unordered_map>
+
+#include "EventSubscription.hpp"
+#include "Models/Abstractions/CollectionItem.hpp"
 
 namespace Elpida::Application
 {
@@ -12,30 +15,31 @@ namespace Elpida::Application
 		class BenchmarkConfigurationView;
 	}
 
-	class BenchmarkModel;
-	class ConfigurationModel;
+	class BenchmarkConfigurationModel;
+	class BenchmarkConfigurationInstanceModel;
 	class ConfigurationView;
 
 	class BenchmarkConfigurationView : public QWidget
 	{
 	 Q_OBJECT
 	 public:
-		void SetModel(BenchmarkModel* benchmarkModel);
-
-		explicit BenchmarkConfigurationView();
+		explicit BenchmarkConfigurationView(BenchmarkConfigurationModel& configurationModel);
 		~BenchmarkConfigurationView() override;
 	 private:
 		Ui::BenchmarkConfigurationView* _ui;
-		BenchmarkModel* _benchmarkModel;
+		BenchmarkConfigurationModel& _configurationModel;
+		EventSubscription<CollectionItem<BenchmarkConfigurationInstanceModel>&> _itemAddedSubscription;
+		EventSubscription<CollectionItem<BenchmarkConfigurationInstanceModel>&> _itemRemovedSubscription;
+		EventSubscription<> _clearedSubscription;
 		std::vector<ConfigurationView*> _fileViews;
 		std::vector<ConfigurationView*> _floatViews;
 		std::vector<ConfigurationView*> _integerViews;
 		std::vector<ConfigurationView*> _stringViews;
-		std::vector<std::tuple<ConfigurationModel*, ConfigurationView*>> _createdWidgets;
+		std::unordered_map<BenchmarkConfigurationInstanceModel*, ConfigurationView*> _createdWidgets;
 
 		void ClearViews();
-		ConfigurationView* RentView(ConfigurationModel& configurationModel);
-		void ReturnView(ConfigurationModel* configurationModel, ConfigurationView* configurationView);
+		ConfigurationView* RentView(BenchmarkConfigurationInstanceModel& configurationModel);
+		void ReturnView(BenchmarkConfigurationInstanceModel* configurationModel, ConfigurationView* configurationView);
 
 		template<typename TFactory>
 		ConfigurationView* GetOrCreate(std::vector<ConfigurationView*>& pool, TFactory factory)
@@ -51,6 +55,8 @@ namespace Elpida::Application
 				return factory();
 			}
 		}
+
+		void Remove(BenchmarkConfigurationInstanceModel* model, ConfigurationView* view);
 	};
 }
 

@@ -1,7 +1,7 @@
 #include "IntegerConfigurationView.hpp"
 #include "ui_IntegerConfigurationView.h"
 
-#include "Models/ConfigurationModel.hpp"
+#include "Models/BenchmarkConfigurationInstanceModel.hpp"
 
 namespace Elpida::Application
 {

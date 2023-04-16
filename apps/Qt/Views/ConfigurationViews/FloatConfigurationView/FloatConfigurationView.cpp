@@ -1,7 +1,7 @@
 #include "FloatConfigurationView.hpp"
 #include "ui_FloatConfigurationView.h"
 
-#include "Models/ConfigurationModel.hpp"
+#include "Models/BenchmarkConfigurationInstanceModel.hpp"
 
 namespace Elpida::Application
 {

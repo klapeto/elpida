@@ -1,7 +1,7 @@
 #include "FileConfigurationView.hpp"
 #include "ui_FileConfigurationView.h"
 
-#include "Models/ConfigurationModel.hpp"
+#include "Models/BenchmarkConfigurationInstanceModel.hpp"
 #include <QFileDialog>
 
 namespace Elpida::Application

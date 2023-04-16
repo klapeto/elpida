@@ -69,7 +69,7 @@ set(ELPIDA_QT_SOURCES
 		Views/BenchmarkResultsView/BenchmarkResultsView.ui
 
 		Images/Images.qrc
-		)
+)
 
 
 if (MSVC)

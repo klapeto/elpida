@@ -25,9 +25,8 @@
 #define APPS_QT_MODELS_ABSTRACTIONS_COLLECTIONMODELOBSERVER_HPP
 
 #include "Models/Abstractions/CollectionModel.hpp"
-#include "Models/Abstractions/EventArgs/CollectionChangedEventArgs.hpp"
 
-namespace Elpida
+namespace Elpida::Application
 {
 
 	template<typename T>
