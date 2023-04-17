@@ -15,7 +15,6 @@ namespace Elpida::Application
 	class BenchmarksModel;
 	class BenchmarkModel;
 	class BenchmarkConfigurationView;
-	class BenchmarkConfigurationModel;
 	class BenchmarkResultsView;
 	class BenchmarksController;
 	class ConfigurationViewPool;
@@ -27,7 +26,6 @@ namespace Elpida::Application
 	 public:
 		explicit BenchmarksView(
 			const BenchmarksModel& benchmarksModel,
-			const BenchmarkConfigurationModel& benchmarkConfigurationModel,
 			BenchmarksController& benchmarksController,
 			ConfigurationViewPool& configurationViewPool);
 		~BenchmarksView() override;

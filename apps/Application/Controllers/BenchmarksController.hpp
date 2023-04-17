@@ -11,8 +11,6 @@ namespace Elpida::Application
 {
 	class BenchmarksModel;
 	class BenchmarkModel;
-	class BenchmarkConfigurationModel;
-
 	class BenchmarksController : public Controller<BenchmarksModel>
 	{
 	 public:
@@ -22,10 +20,8 @@ namespace Elpida::Application
 		void SetOpenResultAfterUpload(bool openResult);
 		void SetIterationsToRun(int iterations);
 
-		explicit BenchmarksController(BenchmarksModel& model, BenchmarkConfigurationModel& configurationModel);
+		explicit BenchmarksController(BenchmarksModel& model);
 		~BenchmarksController() = default;
-	 private:
-		BenchmarkConfigurationModel& _configurationModel;
 	};
 
 } // Application

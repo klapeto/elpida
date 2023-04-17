@@ -2,33 +2,33 @@
 #include "ui_BenchmarkConfigurationView.h"
 
 #include "Models/BenchmarkConfigurationModel.hpp"
-#include "Models/BenchmarkConfigurationInstanceModel.hpp"
 #include "Views/ConfigurationViews/ConfigurationView.hpp"
 
 #include "ConfigurationViewPool.hpp"
+#include "Models/BenchmarksModel.hpp"
 
 namespace Elpida::Application
 {
-	BenchmarkConfigurationView::BenchmarkConfigurationView(const BenchmarkConfigurationModel& configurationModel, ConfigurationViewPool& configurationViewPool)
+	BenchmarkConfigurationView::BenchmarkConfigurationView(const BenchmarksModel& benchmarksModel, ConfigurationViewPool& configurationViewPool)
 		: QWidget(),
-		  _ui(new Ui::BenchmarkConfigurationView), _configurationModel(configurationModel), _configurationViewPool(configurationViewPool)
+		  _ui(new Ui::BenchmarkConfigurationView), _benchmarksModel(benchmarksModel), _configurationViewPool(configurationViewPool), _currentBenchmark(nullptr)
 	{
 		_ui->setupUi(this);
 		_ui->container->setLayout(new QVBoxLayout);
 
-		_itemAddedSubscription = _configurationModel.ItemAdded().Subscribe([this](const CollectionItem<BenchmarkConfigurationInstanceModel>& item)
+		_currentBenchmarkChanged = _benchmarksModel.DataChanged().Subscribe([this]()
 		{
-			Add(item.GetValue());
-		});
-
-		_itemRemovedSubscription = _configurationModel.ItemRemoved().Subscribe([this](const CollectionItem<BenchmarkConfigurationInstanceModel>& item)
-		{
-			Remove(item.GetValue());
-		});
-
-		_clearedSubscription = _configurationModel.Cleared().Subscribe([this]()
-		{
+			auto currentBenchmark = _benchmarksModel.GetSelectedBenchmark();
+			if (_currentBenchmark == currentBenchmark) return;
+			_currentBenchmark = currentBenchmark;
 			ClearViews();
+			if (currentBenchmark != nullptr)
+			{
+				for (auto& config: currentBenchmark->GetConfigurations())
+				{
+					Add(config);
+				}
+			}
 		});
 	}
 
@@ -45,7 +45,7 @@ namespace Elpida::Application
 			Remove(*pair.first);
 		}
 	}
-	void BenchmarkConfigurationView::Add(const BenchmarkConfigurationInstanceModel& model)
+	void BenchmarkConfigurationView::Add(const BenchmarkConfigurationModel& model)
 	{
 		auto layout = _ui->container->layout();
 		auto view = _configurationViewPool.RentViewForModel(model);
@@ -54,7 +54,7 @@ namespace Elpida::Application
 	}
 
 	void
-	BenchmarkConfigurationView::Remove(const BenchmarkConfigurationInstanceModel& model)
+	BenchmarkConfigurationView::Remove(const BenchmarkConfigurationModel& model)
 	{
 		auto view = _rentedViews.at(&model);
 		auto layout = _ui->container->layout();

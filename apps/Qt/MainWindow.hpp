@@ -19,7 +19,6 @@ namespace Elpida::Application
 	class OverheadsModel;
 	class TopologyModel;
 	class BenchmarksModel;
-	class BenchmarkConfigurationModel;
 	class BenchmarksController;
 	class ConfigurationViewPool;
 
@@ -34,7 +33,6 @@ namespace Elpida::Application
 			const OverheadsModel& overheadsInfo,
 			TopologyModel& topologyModel,
 			BenchmarksModel& benchmarksModel,
-			BenchmarkConfigurationModel& benchmarkConfigurationModel,
 			BenchmarksController& benchmarksController,
 			ConfigurationViewPool& configurationViewPool,
 			QWidget* parent = nullptr);

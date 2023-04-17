@@ -36,7 +36,6 @@ namespace Elpida::Application
 		const OverheadsModel& overheadsInfo,
 		TopologyModel& topologyModel,
 		BenchmarksModel& benchmarksModel,
-		BenchmarkConfigurationModel& benchmarkConfigurationModel,
 		BenchmarksController& benchmarksController,
 		ConfigurationViewPool& configurationViewPool,
 		QWidget* parent)
@@ -80,7 +79,7 @@ namespace Elpida::Application
 			OnBenchmarksModelChanged();
 		});
 
-		_ui->wBenchmarks->layout()->addWidget(new BenchmarksView(benchmarksModel, benchmarkConfigurationModel, benchmarksController, configurationViewPool));
+		_ui->wBenchmarks->layout()->addWidget(new BenchmarksView(benchmarksModel, benchmarksController, configurationViewPool));
 	}
 
 	MainWindow::~MainWindow()

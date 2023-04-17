@@ -13,7 +13,7 @@ namespace Elpida::Application
 	}
 
 	void
-	ConfigurationView::SetModel(const BenchmarkConfigurationInstanceModel* model, BenchmarkConfigurationInstanceController& controller)
+	ConfigurationView::SetModel(const BenchmarkConfigurationModel* model, BenchmarkConfigurationInstanceController& controller)
 	{
 		_model = model;
 		_controller = &controller;

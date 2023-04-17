@@ -1,7 +1,7 @@
 #include "StringConfigurationView.hpp"
 #include "ui_StringConfigurationView.h"
 
-#include "Models/BenchmarkConfigurationInstanceModel.hpp"
+#include "Models/BenchmarkConfigurationModel.hpp"
 #include "Controllers/BenchmarkConfigurationInstanceController.hpp"
 
 namespace Elpida::Application

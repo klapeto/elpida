@@ -15,14 +15,14 @@
 namespace Elpida::Application
 {
 
-	class BenchmarkConfigurationInstanceModel;
+	class BenchmarkConfigurationModel;
 	class ConfigurationView;
 
 	class ConfigurationViewPool final
 	{
 	 public:
-		ConfigurationView* RentViewForModel(const BenchmarkConfigurationInstanceModel& configurationModel);
-		void ReturnViewFromModel(const BenchmarkConfigurationInstanceModel& configurationModel, ConfigurationView* view);
+		ConfigurationView* RentViewForModel(const BenchmarkConfigurationModel& configurationModel);
+		void ReturnViewFromModel(const BenchmarkConfigurationModel& configurationModel, ConfigurationView* view);
 
 		ConfigurationViewPool() = default;
 		ConfigurationViewPool(const ConfigurationViewPool&) = delete;
@@ -41,7 +41,7 @@ namespace Elpida::Application
 		std::vector<std::unique_ptr<ConfigurationView>> _floatViews;
 		std::vector<std::unique_ptr<ConfigurationView>> _integerViews;
 		std::vector<std::unique_ptr<ConfigurationView>> _stringViews;
-		std::unordered_map<const BenchmarkConfigurationInstanceModel*, CreatedInstance> _rentedInstances;
+		std::unordered_map<const BenchmarkConfigurationModel*, CreatedInstance> _rentedInstances;
 
 		template<typename T>
 		std::unique_ptr<ConfigurationView> GetOrCreate(std::vector<std::unique_ptr<ConfigurationView>>& pool)

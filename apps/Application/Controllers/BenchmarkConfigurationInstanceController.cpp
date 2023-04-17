@@ -6,7 +6,7 @@
 
 namespace Elpida::Application
 {
-	BenchmarkConfigurationInstanceController::BenchmarkConfigurationInstanceController(BenchmarkConfigurationInstanceModel& model)
+	BenchmarkConfigurationInstanceController::BenchmarkConfigurationInstanceController(BenchmarkConfigurationModel& model)
 		: Controller(model)
 	{
 	}

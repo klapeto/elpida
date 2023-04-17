@@ -6,16 +6,16 @@
 #define ELPIDA_BENCHMARKCONFIGURATIONINSTANCECONTROLLER_HPP_
 
 #include "Controller.hpp"
-#include "Models/BenchmarkConfigurationInstanceModel.hpp"
+#include "Models/BenchmarkConfigurationModel.hpp"
 
 namespace Elpida::Application
 {
 
-	class BenchmarkConfigurationInstanceController : public Controller<BenchmarkConfigurationInstanceModel>
+	class BenchmarkConfigurationInstanceController : public Controller<BenchmarkConfigurationModel>
 	{
 	 public:
 		void SetValue(std::string value);
-		explicit BenchmarkConfigurationInstanceController(BenchmarkConfigurationInstanceModel& model);
+		explicit BenchmarkConfigurationInstanceController(BenchmarkConfigurationModel& model);
 	};
 
 } // Application

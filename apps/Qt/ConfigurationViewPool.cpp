@@ -12,7 +12,7 @@
 namespace Elpida::Application
 {
 	ConfigurationView*
-	ConfigurationViewPool::RentViewForModel(const BenchmarkConfigurationInstanceModel& configurationModel)
+	ConfigurationViewPool::RentViewForModel(const BenchmarkConfigurationModel& configurationModel)
 	{
 		std::unique_ptr<ConfigurationView> view;
 		switch (configurationModel.GetType())
@@ -31,7 +31,7 @@ namespace Elpida::Application
 			break;
 		}
 
-		BenchmarkConfigurationInstanceController controller(const_cast<BenchmarkConfigurationInstanceModel&>(configurationModel));
+		BenchmarkConfigurationInstanceController controller(const_cast<BenchmarkConfigurationModel&>(configurationModel));
 		CreatedInstance instance{ view.release(), std::move(controller) };
 		auto& actualInstance =  _rentedInstances.insert({ &configurationModel, std::move(instance) }).first->second;
 
@@ -41,7 +41,7 @@ namespace Elpida::Application
 	}
 
 	void
-	ConfigurationViewPool::ReturnViewFromModel(const BenchmarkConfigurationInstanceModel& configurationModel, ConfigurationView* view)
+	ConfigurationViewPool::ReturnViewFromModel(const BenchmarkConfigurationModel& configurationModel, ConfigurationView* view)
 	{
 		auto itr = _rentedInstances.find(&configurationModel);
 

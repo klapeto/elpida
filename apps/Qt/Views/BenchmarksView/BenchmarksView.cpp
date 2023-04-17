@@ -3,7 +3,6 @@
 
 #include "Models/BenchmarksModel.hpp"
 #include "Models/BenchmarkConfigurationModel.hpp"
-#include "Models/BenchmarkConfigurationInstanceModel.hpp"
 
 #include "Controllers/BenchmarksController.hpp"
 
@@ -14,7 +13,6 @@ namespace Elpida::Application
 {
 	BenchmarksView::BenchmarksView(
 		const BenchmarksModel& benchmarksModel,
-		const BenchmarkConfigurationModel& benchmarkConfigurationModel,
 		BenchmarksController& benchmarksController,
 		ConfigurationViewPool& configurationViewPool)
 		: QWidget(),
@@ -27,7 +25,7 @@ namespace Elpida::Application
 
 		LoadBenchmarkTree();
 
-		_configurationView = new BenchmarkConfigurationView(benchmarkConfigurationModel, configurationViewPool);
+		_configurationView = new BenchmarkConfigurationView(benchmarksModel, configurationViewPool);
 
 		_ui->glMain->addWidget(_configurationView, 0, 1);
 

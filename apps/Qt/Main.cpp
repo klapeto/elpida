@@ -44,7 +44,6 @@
 #include "Models/TopologyNodeModel.hpp"
 #include "Models/BenchmarksModel.hpp"
 #include "Models/BenchmarkModel.hpp"
-#include "Models/BenchmarkConfigurationModel.hpp"
 
 #include "Controllers/BenchmarksController.hpp"
 
@@ -200,7 +199,7 @@ static BenchmarksModel LoadBenchmarks()
 				for (std::size_t i = 0; i < benchmarks.size(); ++i)
 				{
 					auto& benchmark = benchmarks[i];
-					std::vector<BenchmarkConfigurationInstanceModel> configurations;
+					std::vector<BenchmarkConfigurationModel> configurations;
 					configurations.reserve(benchmark->GetRequiredConfiguration().size());
 					for (auto& config: benchmark->GetRequiredConfiguration())
 					{
@@ -267,8 +266,7 @@ int main(int argc, char* argv[])
 
 	splash.showMessage("Loading benchmarks...");
 	auto benchmarksModel = LoadBenchmarks();
-	BenchmarkConfigurationModel benchmarkConfigurationModel;
-	BenchmarksController benchmarksController(benchmarksModel, benchmarkConfigurationModel);
+	BenchmarksController benchmarksController(benchmarksModel);
 	ConfigurationViewPool configurationViewPool;
 	MainWindow mainWindow(osInfoModel,
 		memoryInfoModel,
@@ -276,7 +274,6 @@ int main(int argc, char* argv[])
 		overheadsModel,
 		topologyModel,
 		benchmarksModel,
-		benchmarkConfigurationModel,
 		benchmarksController,
 		configurationViewPool);
 

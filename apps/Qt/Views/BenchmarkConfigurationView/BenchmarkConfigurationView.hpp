@@ -16,8 +16,9 @@ namespace Elpida::Application
 		class BenchmarkConfigurationView;
 	}
 
+	class BenchmarksModel;
+	class BenchmarkModel;
 	class BenchmarkConfigurationModel;
-	class BenchmarkConfigurationInstanceModel;
 	class ConfigurationView;
 	class ConfigurationViewPool;
 
@@ -25,20 +26,19 @@ namespace Elpida::Application
 	{
 	 Q_OBJECT
 	 public:
-		explicit BenchmarkConfigurationView(const BenchmarkConfigurationModel& configurationModel, ConfigurationViewPool& configurationViewPool);
+		explicit BenchmarkConfigurationView(const BenchmarksModel& benchmarksModel, ConfigurationViewPool& configurationViewPool);
 		~BenchmarkConfigurationView() override;
 	 private:
 		Ui::BenchmarkConfigurationView* _ui;
-		const BenchmarkConfigurationModel& _configurationModel;
+		const BenchmarksModel& _benchmarksModel;
 		ConfigurationViewPool& _configurationViewPool;
-		EventSubscription<const CollectionItem<BenchmarkConfigurationInstanceModel>&> _itemAddedSubscription;
-		EventSubscription<const CollectionItem<BenchmarkConfigurationInstanceModel>&> _itemRemovedSubscription;
-		EventSubscription<> _clearedSubscription;
-		std::unordered_map<const BenchmarkConfigurationInstanceModel*, ConfigurationView*> _rentedViews;
+		const BenchmarkModel* _currentBenchmark;
+		EventSubscription<> _currentBenchmarkChanged;
+		std::unordered_map<const BenchmarkConfigurationModel*, ConfigurationView*> _rentedViews;
 
 		void ClearViews();
-		void Remove(const BenchmarkConfigurationInstanceModel& model);
-		void Add(const BenchmarkConfigurationInstanceModel& model);
+		void Remove(const BenchmarkConfigurationModel& model);
+		void Add(const BenchmarkConfigurationModel& model);
 	};
 }
 
