@@ -7,6 +7,7 @@
 
 #include "EventSubscription.hpp"
 #include "Models/Abstractions/CollectionItem.hpp"
+#include "Controllers/BenchmarkConfigurationInstanceController.hpp"
 
 namespace Elpida::Application
 {
@@ -18,45 +19,26 @@ namespace Elpida::Application
 	class BenchmarkConfigurationModel;
 	class BenchmarkConfigurationInstanceModel;
 	class ConfigurationView;
+	class ConfigurationViewPool;
 
 	class BenchmarkConfigurationView : public QWidget
 	{
 	 Q_OBJECT
 	 public:
-		explicit BenchmarkConfigurationView(BenchmarkConfigurationModel& configurationModel);
+		explicit BenchmarkConfigurationView(const BenchmarkConfigurationModel& configurationModel, ConfigurationViewPool& configurationViewPool);
 		~BenchmarkConfigurationView() override;
 	 private:
 		Ui::BenchmarkConfigurationView* _ui;
-		BenchmarkConfigurationModel& _configurationModel;
-		EventSubscription<CollectionItem<BenchmarkConfigurationInstanceModel>&> _itemAddedSubscription;
-		EventSubscription<CollectionItem<BenchmarkConfigurationInstanceModel>&> _itemRemovedSubscription;
+		const BenchmarkConfigurationModel& _configurationModel;
+		ConfigurationViewPool& _configurationViewPool;
+		EventSubscription<const CollectionItem<BenchmarkConfigurationInstanceModel>&> _itemAddedSubscription;
+		EventSubscription<const CollectionItem<BenchmarkConfigurationInstanceModel>&> _itemRemovedSubscription;
 		EventSubscription<> _clearedSubscription;
-		std::vector<ConfigurationView*> _fileViews;
-		std::vector<ConfigurationView*> _floatViews;
-		std::vector<ConfigurationView*> _integerViews;
-		std::vector<ConfigurationView*> _stringViews;
-		std::unordered_map<BenchmarkConfigurationInstanceModel*, ConfigurationView*> _createdWidgets;
+		std::unordered_map<const BenchmarkConfigurationInstanceModel*, ConfigurationView*> _rentedViews;
 
 		void ClearViews();
-		ConfigurationView* RentView(BenchmarkConfigurationInstanceModel& configurationModel);
-		void ReturnView(BenchmarkConfigurationInstanceModel* configurationModel, ConfigurationView* configurationView);
-
-		template<typename TFactory>
-		ConfigurationView* GetOrCreate(std::vector<ConfigurationView*>& pool, TFactory factory)
-		{
-			if (!pool.empty())
-			{
-				auto view = pool.back();
-				pool.pop_back();
-				return view;
-			}
-			else
-			{
-				return factory();
-			}
-		}
-
-		void Remove(BenchmarkConfigurationInstanceModel* model, ConfigurationView* view);
+		void Remove(const BenchmarkConfigurationInstanceModel& model);
+		void Add(const BenchmarkConfigurationInstanceModel& model);
 	};
 }
 

@@ -40,11 +40,6 @@ namespace Elpida::Application
 			return _value;
 		}
 
-		T& GetValue()
-		{
-			return _value;
-		}
-
 		CollectionItem(const CollectionItem<T>&) = default;
 		CollectionItem(CollectionItem<T>&&) noexcept = default;
 		CollectionItem<T>& operator=(const CollectionItem<T>&) = delete;

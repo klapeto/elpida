@@ -20,15 +20,15 @@ namespace Elpida::Application
 
 		void UnSubscribe()
 		{
-			if (_list != nullptr)
+			if (auto ptr = _list.lock())
 			{
-				_list->erase(_index);
-				_list = nullptr;
+				ptr->erase(_index);
+				_list.reset();
 			}
 		}
 
 		EventSubscription() = default;
-		EventSubscription(std::shared_ptr<SubscriptionList> list, SubscriptionIterator index)
+		EventSubscription(std::weak_ptr<SubscriptionList> list, SubscriptionIterator index)
 			: _list(std::move(list)), _index(index)
 		{
 
@@ -42,7 +42,7 @@ namespace Elpida::Application
 			UnSubscribe();
 		}
 	 private:
-		std::shared_ptr<SubscriptionList> _list;
+		std::weak_ptr<SubscriptionList> _list;
 		SubscriptionIterator _index;
 	};
 

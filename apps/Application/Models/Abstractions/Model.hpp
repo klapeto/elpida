@@ -33,7 +33,7 @@ namespace Elpida::Application
 	class Model
 	{
 	public:
-		Event<>& DataChanged()
+		Event<>& DataChanged() const
 		{
 			return _dataChanged;
 		}
@@ -62,9 +62,9 @@ namespace Elpida::Application
 		Model& operator=(Model&&) noexcept = default;
 		virtual ~Model() = default;
 	protected:
-		virtual void OnDataChanged();
+		virtual void OnDataChanged() const;
 	private:
-		Event<> _dataChanged;
+		mutable Event<> _dataChanged;
 		bool _transaction;
 
 		void BeginUpdateTransaction();

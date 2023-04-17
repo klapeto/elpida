@@ -33,17 +33,17 @@ namespace Elpida::Application
 	class CollectionModel : public Model
 	{
 	 public:
-		Event<CollectionItem<T>&>& ItemAdded()
+		Event<const CollectionItem<T>&>& ItemAdded() const
 		{
 			return _itemAdded;
 		}
 
-		Event<CollectionItem<T>&>& ItemRemoved()
+		Event<const CollectionItem<T>&>& ItemRemoved() const
 		{
 			return _itemRemoved;
 		}
 
-		Event<>& Cleared()
+		Event<>& Cleared() const
 		{
 			return _cleared;
 		}
@@ -55,16 +55,16 @@ namespace Elpida::Application
 		CollectionModel<T>& operator=(CollectionModel<T>&&) noexcept = delete;
 		~CollectionModel() override = default;
 	 private:
-		Event<CollectionItem<T>&> _itemAdded;
-		Event<CollectionItem<T>&> _itemRemoved;
-		Event<> _cleared;
+		mutable Event<const CollectionItem<T>&> _itemAdded;
+		mutable Event<const CollectionItem<T>&> _itemRemoved;
+		mutable Event<> _cleared;
 	 protected:
-		void OnItemAdded(CollectionItem<T>& item)
+		void OnItemAdded(const CollectionItem<T>& item)
 		{
 			_itemAdded.Raise(item);
 		}
 
-		void OnItemRemoved(CollectionItem<T>& item)
+		void OnItemRemoved(const CollectionItem<T>& item)
 		{
 			_itemRemoved.Raise(item);
 		}

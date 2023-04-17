@@ -5,17 +5,40 @@
 #include "Models/BenchmarkConfigurationModel.hpp"
 #include "Models/BenchmarkConfigurationInstanceModel.hpp"
 
+#include "Controllers/BenchmarksController.hpp"
+
 #include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
 #include "Views/BenchmarkResultsView/BenchmarkResultsView.hpp"
 
 namespace Elpida::Application
 {
-	BenchmarksView::BenchmarksView(BenchmarksModel& benchmarksModel, BenchmarkConfigurationModel& benchmarkConfigurationModel)
-		: QWidget(), _ui(new Ui::BenchmarksView), _benchmarksModel(benchmarksModel), _benchmarkConfigurationModel(benchmarkConfigurationModel), _uiUpdating(false)
+	BenchmarksView::BenchmarksView(
+		const BenchmarksModel& benchmarksModel,
+		const BenchmarkConfigurationModel& benchmarkConfigurationModel,
+		BenchmarksController& benchmarksController,
+		ConfigurationViewPool& configurationViewPool)
+		: QWidget(),
+		_ui(new Ui::BenchmarksView),
+		_benchmarksModel(benchmarksModel),
+		_benchmarksController(benchmarksController),
+		_uiUpdating(false)
 	{
 		_ui->setupUi(this);
 
-		for (auto& group: benchmarksModel.GetBenchmarkGroups())
+		LoadBenchmarkTree();
+
+		_configurationView = new BenchmarkConfigurationView(benchmarkConfigurationModel, configurationViewPool);
+
+		_ui->glMain->addWidget(_configurationView, 0, 1);
+
+		_resultsView = new BenchmarkResultsView();
+		_ui->glMain->addWidget(_resultsView, 1, 1);
+
+		UpdateUi();
+	}
+	void BenchmarksView::LoadBenchmarkTree()
+	{
+		for (auto& group: _benchmarksModel.GetBenchmarkGroups())
 		{
 			auto groupItem = new QTreeWidgetItem(QStringList(QString::fromStdString(group.GetName())));
 
@@ -30,15 +53,6 @@ namespace Elpida::Application
 
 			_ui->twBenchmarks->addTopLevelItem(groupItem);
 		}
-
-		_configurationView = new BenchmarkConfigurationView(benchmarkConfigurationModel);
-
-		_ui->glMain->addWidget(_configurationView, 0, 1);
-
-		_resultsView = new BenchmarkResultsView();
-		_ui->glMain->addWidget(_resultsView, 1, 1);
-
-		UpdateUi();
 	}
 
 	BenchmarksView::~BenchmarksView()
@@ -48,6 +62,7 @@ namespace Elpida::Application
 
 	void BenchmarksView::on_twBenchmarks_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 	{
+		BenchmarkModel* benchmarkModel = nullptr;
 		if (current != nullptr)
 		{
 			auto key = current->data(1, 0).value<QString>();
@@ -55,23 +70,10 @@ namespace Elpida::Application
 
 			if (itr != _benchmarkMap.end())
 			{
-				_benchmarksModel.SetSelectedBenchmark(itr->second);
-				for (auto& config: itr->second->GetConfigurations())
-				{
-					_benchmarkConfigurationModel.Add(BenchmarkConfigurationInstanceModel(config.GetName(), config.GetValue(), config.GetType()));
-				}
-			}
-			else
-			{
-				_benchmarksModel.SetSelectedBenchmark(nullptr);
-				_benchmarkConfigurationModel.Clear();
+				benchmarkModel = itr->second;
 			}
 		}
-		else
-		{
-			_benchmarksModel.SetSelectedBenchmark(nullptr);
-			_benchmarkConfigurationModel.Clear();
-		}
+		_benchmarksController.SetCurrentBenchmark(benchmarkModel);
 		UpdateUi();
 	}
 
@@ -89,19 +91,19 @@ namespace Elpida::Application
 
 	void BenchmarksView::on_chkUpload_stateChanged(int state)
 	{
-		_benchmarksModel.SetUploadResults(state == Qt::Checked);
+		_benchmarksController.SetUploadResults(state == Qt::Checked);
 		UpdateUi();
 	}
 
 	void BenchmarksView::on_chkOpenResult_stateChanged(int state)
 	{
-		_benchmarksModel.SetOpenResult(state == Qt::Checked);
+		_benchmarksController.SetOpenResultAfterUpload(state == Qt::Checked);
 		UpdateUi();
 	}
 
 	void BenchmarksView::on_spnTimes_valueChanged(int value)
 	{
-		_benchmarksModel.SetIterationsToRun(value);
+		_benchmarksController.SetIterationsToRun(value);
 		UpdateUi();
 	}
 }

@@ -61,7 +61,7 @@ namespace Elpida::Application
 		return _selected;
 	}
 
-	void TopologyNodeModel::OnDataChanged()
+	void TopologyNodeModel::OnDataChanged() const
 	{
 		Model::OnDataChanged();
 		if (_parent != nullptr)

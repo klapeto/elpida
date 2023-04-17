@@ -2,6 +2,7 @@
 #include "ui_FloatConfigurationView.h"
 
 #include "Models/BenchmarkConfigurationInstanceModel.hpp"
+#include "Controllers/BenchmarkConfigurationInstanceController.hpp"
 
 namespace Elpida::Application
 {
@@ -22,7 +23,7 @@ namespace Elpida::Application
 	{
 		if (_model != nullptr)
 		{
-			_model->SetValue(std::to_string(value));
+			_controller->SetValue(std::to_string(value));
 		}
 	}
 

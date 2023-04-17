@@ -81,7 +81,7 @@ namespace Elpida::Application
 
 		void SetSelectedInternal(bool selected);
 	protected:
-		void OnDataChanged() override;
+		void OnDataChanged() const override;
 	};
 
 } // Application

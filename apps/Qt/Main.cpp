@@ -27,6 +27,7 @@
 #include <filesystem>
 
 #include "MainWindow.hpp"
+#include "ConfigurationViewPool.hpp"
 
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
@@ -44,6 +45,8 @@
 #include "Models/BenchmarksModel.hpp"
 #include "Models/BenchmarkModel.hpp"
 #include "Models/BenchmarkConfigurationModel.hpp"
+
+#include "Controllers/BenchmarksController.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -265,7 +268,17 @@ int main(int argc, char* argv[])
 	splash.showMessage("Loading benchmarks...");
 	auto benchmarksModel = LoadBenchmarks();
 	BenchmarkConfigurationModel benchmarkConfigurationModel;
-	MainWindow mainWindow(osInfoModel, memoryInfoModel, cpuInfoModel, overheadsModel, topologyModel, benchmarksModel, benchmarkConfigurationModel);
+	BenchmarksController benchmarksController(benchmarksModel, benchmarkConfigurationModel);
+	ConfigurationViewPool configurationViewPool;
+	MainWindow mainWindow(osInfoModel,
+		memoryInfoModel,
+		cpuInfoModel,
+		overheadsModel,
+		topologyModel,
+		benchmarksModel,
+		benchmarkConfigurationModel,
+		benchmarksController,
+		configurationViewPool);
 
 	mainWindow.show();
 

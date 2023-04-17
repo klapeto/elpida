@@ -13,7 +13,7 @@ namespace Elpida::Application
 
 	}
 
-	void Model::OnDataChanged()
+	void Model::OnDataChanged() const
 	{
 		if (!_transaction)
 		{
@@ -31,15 +31,4 @@ namespace Elpida::Application
 	{
 		_transaction = true;
 	}
-
-//	Model::Model(const Model&)
-//		:_transaction(false)
-//	{
-//	}
-//
-//	Model& Model::operator=(const Model&)
-//	{
-//		return *this;
-//	}
-
 }

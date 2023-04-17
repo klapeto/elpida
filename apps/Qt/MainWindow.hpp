@@ -20,6 +20,8 @@ namespace Elpida::Application
 	class TopologyModel;
 	class BenchmarksModel;
 	class BenchmarkConfigurationModel;
+	class BenchmarksController;
+	class ConfigurationViewPool;
 
 	class MainWindow : public QMainWindow
 	{
@@ -33,6 +35,8 @@ namespace Elpida::Application
 			TopologyModel& topologyModel,
 			BenchmarksModel& benchmarksModel,
 			BenchmarkConfigurationModel& benchmarkConfigurationModel,
+			BenchmarksController& benchmarksController,
+			ConfigurationViewPool& configurationViewPool,
 			QWidget* parent = nullptr);
 
 		~MainWindow() override;

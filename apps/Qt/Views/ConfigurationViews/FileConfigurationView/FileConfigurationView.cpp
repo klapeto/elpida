@@ -2,6 +2,7 @@
 #include "ui_FileConfigurationView.h"
 
 #include "Models/BenchmarkConfigurationInstanceModel.hpp"
+#include "Controllers/BenchmarkConfigurationInstanceController.hpp"
 #include <QFileDialog>
 
 namespace Elpida::Application
@@ -35,7 +36,7 @@ namespace Elpida::Application
 	{
 		if (_model != nullptr)
 		{
-			_model->SetValue(value.toStdString());
+			_controller->SetValue(value.toStdString());
 		}
 	}
 	void FileConfigurationView::OnModelSet()

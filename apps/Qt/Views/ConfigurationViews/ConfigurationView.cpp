@@ -7,14 +7,16 @@
 namespace Elpida::Application
 {
 	ConfigurationView::ConfigurationView(QWidget* parent)
-		: QWidget(parent), _model(nullptr)
+		: QWidget(parent), _controller(nullptr), _model(nullptr)
 	{
 
 	}
 
-	void ConfigurationView::SetModel(BenchmarkConfigurationInstanceModel* model)
+	void
+	ConfigurationView::SetModel(const BenchmarkConfigurationInstanceModel* model, BenchmarkConfigurationInstanceController& controller)
 	{
 		_model = model;
+		_controller = &controller;
 		OnModelSet();
 	}
 } // Application
