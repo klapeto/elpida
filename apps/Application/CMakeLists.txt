@@ -10,7 +10,6 @@ set(ELPIDA_APPLICATION_SOURCES
 
         Models/Abstractions/CollectionModel.cpp
         Models/Abstractions/CollectionItem.cpp
-        Models/Abstractions/CollectionModelObserver.cpp
         Models/Abstractions/AssociativeModel/AssociativeModel.cpp
         Models/Abstractions/ListModel/ListModel.cpp
         Models/Abstractions/ListModel/ListModelItem.cpp
@@ -26,7 +25,7 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/MemoryInfoModel.cpp
         Models/OsInfoModel.cpp
         Models/OverheadsModel.cpp
-        Models/OsInfoModel.cpp Models/OsInfoModel.hpp Models/BenchmarksModel.cpp Models/BenchmarksModel.hpp Models/BenchmarkGroupModel.cpp Models/BenchmarkGroupModel.hpp Models/BenchmarkModel.cpp Models/BenchmarkModel.hpp Models/BenchmarkConfigurationModel.cpp Models/BenchmarkConfigurationModel.hpp Controllers/Controller.cpp Controllers/Controller.hpp Controllers/BenchmarkConfigurationInstanceController.cpp Controllers/BenchmarkConfigurationInstanceController.hpp)
+        Models/OsInfoModel.cpp Models/OsInfoModel.hpp Models/BenchmarksModel.cpp Models/BenchmarksModel.hpp Models/BenchmarkGroupModel.cpp Models/BenchmarkGroupModel.hpp Models/BenchmarkModel.cpp Models/BenchmarkModel.hpp Models/BenchmarkConfigurationModel.cpp Models/BenchmarkConfigurationModel.hpp Controllers/Controller.cpp Controllers/Controller.hpp Controllers/BenchmarkConfigurationInstanceController.cpp Controllers/BenchmarkConfigurationInstanceController.hpp Core/MessageService.cpp Core/MessageService.hpp Core/BenchmarkExecutionService.cpp Core/BenchmarkExecutionService.hpp)
 
 
 if (MSYS OR MINGW)

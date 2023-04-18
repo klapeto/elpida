@@ -36,6 +36,15 @@ namespace Elpida
 		[[nodiscard]]
 		const Vector<String>& GetConfigurationValues() const;
 
+		[[nodiscard]]
+		double GetNowOverhead() const;
+
+		[[nodiscard]]
+		double GetLoopOverhead() const;
+
+		[[nodiscard]]
+		double GetVCallOverhead() const;
+
 		String ParseAndGetExitText(int argC, char* argV[]);
 
 		ArgumentsHelper() = default;
@@ -46,6 +55,9 @@ namespace Elpida
 		UniquePtr<ResultFormatter> _resultFormatter;
 		String _modulePath;
 		Size _benchmarkIndex;
+		double _nowOverhead;
+		double _loopOverhead;
+		double _vCallOverhead;
 
 		void ParseAffinity(const String& value);
 		void ParseFormat(const String& value);

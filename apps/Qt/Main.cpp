@@ -28,6 +28,7 @@
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
+#include "QtMessageService.hpp"
 
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
@@ -266,7 +267,8 @@ int main(int argc, char* argv[])
 
 	splash.showMessage("Loading benchmarks...");
 	auto benchmarksModel = LoadBenchmarks();
-	BenchmarksController benchmarksController(benchmarksModel);
+	QtMessageService messageService;
+	BenchmarksController benchmarksController(benchmarksModel, topologyModel, messageService);
 	ConfigurationViewPool configurationViewPool;
 	MainWindow mainWindow(osInfoModel,
 		memoryInfoModel,

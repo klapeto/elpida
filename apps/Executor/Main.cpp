@@ -33,7 +33,6 @@
 #include "Elpida/Platform/NumaAllocator.hpp"
 
 #include "ArgumentsHelper.hpp"
-#include "Elpida/Core/OsInfo.hpp"
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
@@ -114,7 +113,7 @@ int main(int argC, char** argV)
 			MemoryInfoLoader::Load(),
 			OsInfoLoader::Load(),
 			TopologyLoader::LoadTopology(),
-			OverheadsInfo(),
+			OverheadsInfo(NanoSeconds(helper.GetNowOverhead()), NanoSeconds(helper.GetLoopOverhead()), NanoSeconds(helper.GetVCallOverhead())),
 			std::make_unique<NumaAllocator>());
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());

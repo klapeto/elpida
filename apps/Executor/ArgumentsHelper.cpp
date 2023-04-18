@@ -112,6 +112,32 @@ namespace Elpida
 		return value ? value : "";
 	}
 
+	double static ParseTime(const String& value, const char* name)
+	{
+		if (value.empty())
+		{
+			throw ElpidaException("'--", name, "' option cannot be empty");
+		}
+		try
+		{
+			auto actualValue = std::stod(value);
+			if (actualValue < 0.0)
+			{
+				throw ElpidaException("'--", name, "' option cannot be negative");
+			}
+
+			return actualValue;
+		}
+		catch (const std::invalid_argument& e)
+		{
+			throw ElpidaException("'--", name, "' has invalid value: ", value);
+		}
+		catch (const std::out_of_range& e)
+		{
+			throw ElpidaException("'--", name, "' has value out of range: ", value);
+		}
+	}
+
 	String ArgumentsHelper::ParseAndGetExitText(int argC, char** argV)
 	{
 		enum Flags
@@ -129,14 +155,17 @@ namespace Elpida
 		};
 
 		struct option options[] = {
-			{ "version",  no_argument,       nullptr, Version },
-			{ "help",     no_argument,       nullptr, Help },
-			{ "module",   required_argument, nullptr, Module },
-			{ "index",    required_argument, nullptr, Index },
-			{ "affinity", required_argument, nullptr, Affinity },
-			{ "format",   required_argument, nullptr, Format },
-			{ "config",   required_argument, nullptr, Config },
-			{ nullptr, 0,                    nullptr, 0 }
+			{ "version",             no_argument,       nullptr, Version },
+			{ "help",                no_argument,       nullptr, Help },
+			{ "module",              required_argument, nullptr, Module },
+			{ "index",               required_argument, nullptr, Index },
+			{ "affinity",            required_argument, nullptr, Affinity },
+			{ "format",              required_argument, nullptr, Format },
+			{ "config",              required_argument, nullptr, Config },
+			{ "now-nanoseconds",     required_argument, nullptr, NowOverhead },
+			{ "loop-nanoseconds",    required_argument, nullptr, LoopOverhead },
+			{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
+			{ nullptr, 0,                               nullptr, 0 }
 		};
 
 		int option_index = 0;
@@ -165,6 +194,15 @@ namespace Elpida
 				break;
 			case Config:
 				_configurationValues.emplace_back(GetValueOrDefault(optarg));
+				break;
+			case NowOverhead:
+				_nowOverhead = ParseTime(GetValueOrDefault(optarg), "now-overhead");
+				break;
+			case LoopOverhead:
+				_loopOverhead = ParseTime(GetValueOrDefault(optarg), "loop-overhead");
+				break;
+			case VirtualOverhead:
+				_vCallOverhead = ParseTime(GetValueOrDefault(optarg), "virtual-overhead");
 				break;
 			case '?':
 				return "Unknown option";
@@ -238,5 +276,17 @@ namespace Elpida
 	const Vector<String>& ArgumentsHelper::GetConfigurationValues() const
 	{
 		return _configurationValues;
+	}
+	double ArgumentsHelper::GetNowOverhead() const
+	{
+		return _nowOverhead;
+	}
+	double ArgumentsHelper::GetLoopOverhead() const
+	{
+		return _loopOverhead;
+	}
+	double ArgumentsHelper::GetVCallOverhead() const
+	{
+		return _vCallOverhead;
 	}
 } // Elpida

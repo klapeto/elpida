@@ -4,11 +4,14 @@
 
 #include "BenchmarksController.hpp"
 #include "Models/BenchmarksModel.hpp"
+#include "Models/TopologyModel.hpp"
+
+#include "Core/MessageService.hpp"
 
 namespace Elpida::Application
 {
-	BenchmarksController::BenchmarksController(BenchmarksModel& model)
-		: Controller<BenchmarksModel>(model)
+	BenchmarksController::BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, MessageService& messageService)
+		: Controller<BenchmarksModel>(model), _topologyModel(topologyModel), _messageService(messageService)
 	{
 
 	}
@@ -31,5 +34,18 @@ namespace Elpida::Application
 	void BenchmarksController::SetIterationsToRun(int iterations)
 	{
 		_model.SetIterationsToRun(iterations);
+	}
+
+	void BenchmarksController::Run()
+	{
+		if (_model.GetSelectedBenchmark() == nullptr)
+		{
+			_messageService.ShowError("You have to select a benchmark first.");
+		}
+
+		if (_topologyModel.GetSelectedLeafNodes().empty())
+		{
+			_messageService.ShowError("You have to select a the target processors first.");
+		}
 	}
 } // Application

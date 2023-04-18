@@ -104,4 +104,10 @@ namespace Elpida::Application
 		_benchmarksController.SetIterationsToRun(value);
 		UpdateUi();
 	}
+
+	void BenchmarksView::on_pbRun_clicked(bool checked)
+	{
+		_benchmarksController.Run();
+		UpdateUi();
+	}
 }

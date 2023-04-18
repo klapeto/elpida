@@ -34,6 +34,7 @@ namespace Elpida::Application
 		void on_chkUpload_stateChanged(int state);
 		void on_chkOpenResult_stateChanged(int state);
 		void on_spnTimes_valueChanged(int value);
+		void on_pbRun_clicked(bool checked);
 	 private:
 		Ui::BenchmarksView* _ui;
 		const BenchmarksModel& _benchmarksModel;
