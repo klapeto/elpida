@@ -4,11 +4,54 @@
 
 #include "BenchmarkExecutionService.hpp"
 
+#include "Elpida/Core/Config.hpp"
+#include "Elpida/Platform/OsUtilities.hpp"
+
+#include <sstream>
+
 namespace Elpida::Application
 {
+	static inline const char* ExecutableName = "elpida-executor";
+	static inline const char* Extension =
+#if defined(ELPIDA_WINDOWS)
+			".exe";
+#elif defined(ELPIDA_UNIX)
+			"";
+#endif
+
 	std::string
-	BenchmarkExecutionService::Execute(const std::string& libraryPath, std::size_t index, const std::vector<int>& affinity, const std::vector<std::tuple<std::string, std::string>>& configuration, double nowOverheadNanoseconds, double loopOverheadNanoseconds, double virtualCallOverheadNanoseconds)
+	BenchmarkExecutionService::Execute(const std::string& libraryPath,
+			std::size_t index,
+			const std::vector<std::size_t>& affinity,
+			const std::vector<std::string>& configurations,
+			double nowOverheadNanoseconds,
+			double loopOverheadNanoseconds,
+			double virtualCallOverheadNanoseconds)
 	{
-		return std::string();
+		std::vector<std::string> arguments
+				{
+						std::string("--module=") + "\"" + libraryPath + "\"",
+						"--index=" + std::to_string(index),
+						"--now-nanoseconds=" + std::to_string(nowOverheadNanoseconds),
+						"--loop-nanoseconds=" + std::to_string(loopOverheadNanoseconds),
+						"--virtual-nanoseconds=" + std::to_string(virtualCallOverheadNanoseconds),
+						"--format=json"
+				};
+
+		std::ostringstream affinityAccumulator;
+		affinityAccumulator << "--affinity=";
+		for (auto processor: affinity)
+		{
+			affinityAccumulator << processor << ',';
+		}
+		auto affinityStr = affinityAccumulator.str();
+
+		arguments.push_back(affinityStr.substr(0, affinityStr.size() - 1));
+
+		for (auto& value : configurations)
+		{
+			arguments.push_back(std::string("--config\"").append(value).append("\""));
+		}
+		return OsUtilities::ExecuteProcess(std::string("./") + ExecutableName + Extension, arguments);
 	}
 } // Application

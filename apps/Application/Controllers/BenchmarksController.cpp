@@ -5,13 +5,18 @@
 #include "BenchmarksController.hpp"
 #include "Models/BenchmarksModel.hpp"
 #include "Models/TopologyModel.hpp"
+#include "Models/OverheadsModel.hpp"
 
 #include "Core/MessageService.hpp"
+#include "Core/BenchmarkExecutionService.hpp"
 
 namespace Elpida::Application
 {
-	BenchmarksController::BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, MessageService& messageService)
-		: Controller<BenchmarksModel>(model), _topologyModel(topologyModel), _messageService(messageService)
+	BenchmarksController::BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel,
+			OverheadsModel& overheadsModel, BenchmarkExecutionService& benchmarkExecutionService,
+			MessageService& messageService)
+			: Controller<BenchmarksModel>(model), _topologyModel(topologyModel), _overheadsModel(overheadsModel),
+			  _messageService(messageService), _benchmarkExecutionService(benchmarkExecutionService)
 	{
 
 	}
@@ -38,14 +43,52 @@ namespace Elpida::Application
 
 	void BenchmarksController::Run()
 	{
-		if (_model.GetSelectedBenchmark() == nullptr)
+		auto selectedBenchmark = _model.GetSelectedBenchmark();
+		if (selectedBenchmark == nullptr)
 		{
 			_messageService.ShowError("You have to select a benchmark first.");
+			return;
 		}
 
 		if (_topologyModel.GetSelectedLeafNodes().empty())
 		{
 			_messageService.ShowError("You have to select a the target processors first.");
+			return;
+		}
+
+		std::vector<std::size_t> affinity;
+		affinity.reserve(_topologyModel.GetSelectedLeafNodes().size());
+		for (auto& node: _topologyModel.GetSelectedLeafNodes())
+		{
+			affinity.push_back(node.get().GetOsIndex().value());
+		}
+
+		std::vector<std::string> configuration;
+		configuration.reserve(selectedBenchmark->GetConfigurations().size());
+
+		for (auto& config: selectedBenchmark->GetConfigurations())
+		{
+			configuration.emplace_back(config.GetValue());
+		}
+
+		try
+		{
+			auto returnValue = _benchmarkExecutionService.Execute(
+					selectedBenchmark->GetFilePath(),
+					selectedBenchmark->GetIndex(),
+					affinity,
+					configuration,
+					std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+							_overheadsModel.GetNowOverhead()).count(),
+					std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+							_overheadsModel.GetLoopOverhead()).count(),
+					std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+							_overheadsModel.GetVirtualCallOverhead()).count());
+			_messageService.ShowMessage(returnValue);
+		}
+		catch (const ElpidaException& ex)
+		{
+			_messageService.ShowError(ex.what());
 		}
 	}
 } // Application

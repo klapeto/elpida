@@ -6,6 +6,7 @@
 #define ELPIDA_BENCHMARKEXECUTIONSERVICE_HPP_
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace Elpida::Application
@@ -16,14 +17,12 @@ namespace Elpida::Application
 	 public:
 		std::string Execute(const std::string& libraryPath,
 			std::size_t index,
-			const std::vector<int>& affinity,
-			const std::vector<std::tuple<std::string, std::string>>& configuration,
+			const std::vector<std::size_t>& affinity,
+			const std::vector<std::string>& configurations,
 			double nowOverheadNanoseconds,
 			double loopOverheadNanoseconds,
 			double virtualCallOverheadNanoseconds);
-
 	 private:
-
 	};
 
 } // Application

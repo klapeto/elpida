@@ -48,6 +48,8 @@
 
 #include "Controllers/BenchmarksController.hpp"
 
+#include "Core/BenchmarkExecutionService.hpp"
+
 using namespace Elpida;
 using namespace Elpida::Application;
 
@@ -268,7 +270,8 @@ int main(int argc, char* argv[])
 	splash.showMessage("Loading benchmarks...");
 	auto benchmarksModel = LoadBenchmarks();
 	QtMessageService messageService;
-	BenchmarksController benchmarksController(benchmarksModel, topologyModel, messageService);
+	BenchmarkExecutionService executionService;
+	BenchmarksController benchmarksController(benchmarksModel, topologyModel, overheadsModel, executionService, messageService);
 	ConfigurationViewPool configurationViewPool;
 	MainWindow mainWindow(osInfoModel,
 		memoryInfoModel,

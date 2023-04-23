@@ -15,7 +15,6 @@
 
 namespace Elpida
 {
-
 	String ReadRegistryKeyFromHKLM(const String& subKey, const String& key)
 	{
 		// Modified version of https://stackoverflow.com/a/50821858

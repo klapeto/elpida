@@ -161,4 +161,5 @@ target_include_directories(elpida-qt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(elpida-qt elpida-core elpida-platform elpida-application Qt5::Core Qt5::Widgets)
 
 #install(TARGETS elpida-qt RUNTIME DESTINATION ${ELPIDA_APP_INSTALL_DIR})
-#install(FILES qt.conf DESTINATION ${ELPIDA_APP_INSTALL_DIR})
+install(FILES qt.conf TYPE BIN)
+install(TARGETS elpida-qt RUNTIME)

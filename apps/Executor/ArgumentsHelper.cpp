@@ -48,7 +48,7 @@ namespace Elpida
 			{
 				auto str = accumulator.str();
 				_affinity.push_back(std::stoul(str));
-				accumulator.clear();
+				accumulator.str(std::string());
 			}
 			else if (std::isdigit(c))
 			{
@@ -87,7 +87,7 @@ namespace Elpida
 		accumulator
 			<< R"("           Sets a configuration. Successive configurations are appended in the order defined)"
 			<< std::endl;
-		accumulator << R"("       ---now-nanoseconds=NANOSECONDS)" << std::endl;
+		accumulator << R"("       --now-nanoseconds=NANOSECONDS)" << std::endl;
 		accumulator << R"("           The now overhead in nanoseconds)" << std::endl;
 		accumulator << R"("       --loop-nanoseconds=NANOSECONDS)" << std::endl;
 		accumulator << R"("           The loop overhead in nanoseconds)" << std::endl;
@@ -213,6 +213,11 @@ namespace Elpida
 
 		ValidateAffinity();
 
+		if (!_resultFormatter)
+		{
+			_resultFormatter = std::make_unique<DefaultFormatter>();
+		}
+
 		return {};
 	}
 
@@ -256,13 +261,14 @@ namespace Elpida
 		{
 			throw ElpidaException("'--module' option cannot be empty");
 		}
+		auto actualPath = ValueUtilities::Trim(value, '"');
 
-		if (!std::filesystem::exists(value))
+		if (!std::filesystem::exists(actualPath))
 		{
 			throw ElpidaException("module '", value, "' does not exist");
 		}
 
-		_modulePath = value;
+		_modulePath = actualPath;
 	}
 
 	const String& ArgumentsHelper::GetModulePath() const

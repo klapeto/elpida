@@ -15,8 +15,9 @@ namespace Elpida
 
 	class ValueUtilities
 	{
-	 public:
+	public:
 		ValueUtilities() = delete;
+
 		~ValueUtilities() = delete;
 
 		enum class SIPrefixes
@@ -50,59 +51,59 @@ namespace Elpida
 		};
 
 		static inline const char* PrefixesSI[(int)SIPrefixes::Yotta + 1] = {
-			"p",
-			"n",
-			"μ",
-			"m",
-			"",
-			"K",
-			"M",
-			"G",
-			"T",
-			"P",
-			"E",
-			"Z",
-			"Y"
+				"p",
+				"n",
+				"μ",
+				"m",
+				"",
+				"K",
+				"M",
+				"G",
+				"T",
+				"P",
+				"E",
+				"Z",
+				"Y"
 		};
 
 		static inline const char* PrefixesIEC[(int)IECPrefixes::Yobi + 1] = {
-			"",
-			"Ki",
-			"Mi",
-			"Gi",
-			"Ti",
-			"Pi",
-			"Ei",
-			"Zi",
-			"Yi"
+				"",
+				"Ki",
+				"Mi",
+				"Gi",
+				"Ti",
+				"Pi",
+				"Ei",
+				"Zi",
+				"Yi"
 		};
 
 		static inline const double ScaleValuesSI[] = {
-			1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0,
-			1.0 / 1000.0 / 1000.0 / 1000.0,
-			1.0 / 1000.0 / 1000.0,
-			1.0 / 1000.0,
-			1.0,
-			1000.0,
-			1000.0 * 1000.0,
-			1000.0 * 1000.0 * 1000.0,
-			1000.0 * 1000.0 * 1000.0 * 1000.0,
-			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
-			1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0
+				1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0,
+				1.0 / 1000.0 / 1000.0 / 1000.0,
+				1.0 / 1000.0 / 1000.0,
+				1.0 / 1000.0,
+				1.0,
+				1000.0,
+				1000.0 * 1000.0,
+				1000.0 * 1000.0 * 1000.0,
+				1000.0 * 1000.0 * 1000.0 * 1000.0,
+				1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+				1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+				1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0,
+				1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0 * 1000.0
 		};
 
 		static inline const double ScaleValuesIEC[] = {
-			1.0,
-			1024.0,
-			1024.0 * 1024.0,
-			1024.0 * 1024.0 * 1024.0,
-			1024.0 * 1024.0 * 1024.0 * 1024.0,
-			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-			1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
+				1.0,
+				1024.0,
+				1024.0 * 1024.0,
+				1024.0 * 1024.0 * 1024.0,
+				1024.0 * 1024.0 * 1024.0 * 1024.0,
+				1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+				1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+				1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+				1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
 		};
 
 		template<class T, Size N>
@@ -135,15 +136,31 @@ namespace Elpida
 			return ConcatenateToString(std::forward<TArgs>(args)...);
 		}
 
+		inline static String Trim(const String& input, char c = ' ')
+		{
+			const Size size = input.size();
+
+			Size startCount = 0;
+			while (input[startCount] == c) startCount++;
+
+			Size endCount = 1;
+			while (size - endCount > startCount && input[size - endCount] == c) endCount++;
+
+			--endCount;
+
+			return input.substr(startCount, size - endCount - startCount);
+		}
+
 		static String WstringTostring(const WString& wstring);
+
 		static WString StringToWstring(const String& string);
 
-	 private:
+	private:
 		static String GetValueScaleStringImpl(double value,
-			const double denominators[],
-			const char* prefixes[],
-			Size arraySize,
-			int decimals);
+				const double denominators[],
+				const char* prefixes[],
+				Size arraySize,
+				int decimals);
 
 		template<typename T, typename ... TRest>
 		inline static void concatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)

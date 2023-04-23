@@ -6,6 +6,7 @@
 #define ELPIDA_OSUTILITIES_HPP_
 
 #include "Elpida/Core/String.hpp"
+#include "Elpida/Core/Vector.hpp"
 
 namespace Elpida
 {
@@ -15,6 +16,7 @@ namespace Elpida
 	 public:
 		static String GetLastErrorString();
 		static unsigned int GetNumaNodeIdForProcessor(unsigned int processorId);
+		static String ExecuteProcess(const String& path, const Vector<String>& args);
 	};
 
 } // Elpida

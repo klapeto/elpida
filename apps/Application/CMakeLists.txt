@@ -5,8 +5,12 @@ project(elpida-application VERSION ${ELPIDA_VERSION}
 
 set(ELPIDA_APPLICATION_SOURCES
 
+        Event.cpp
+        EventSubscription.cpp
+
         Controllers/BenchmarksController.cpp
-        Controllers/BenchmarksController.hpp
+        Controllers/Controller.cpp
+        Controllers/BenchmarkConfigurationInstanceController.cpp
 
         Models/Abstractions/CollectionModel.cpp
         Models/Abstractions/CollectionItem.cpp
@@ -15,8 +19,6 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/Abstractions/ListModel/ListModelItem.cpp
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
 
-        Event.cpp
-        EventSubscription.cpp
         Models/TopologyModel.cpp
         Models/TopologyNodeModel.cpp
         Models/Abstractions/Model.cpp
@@ -25,7 +27,14 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/MemoryInfoModel.cpp
         Models/OsInfoModel.cpp
         Models/OverheadsModel.cpp
-        Models/OsInfoModel.cpp Models/OsInfoModel.hpp Models/BenchmarksModel.cpp Models/BenchmarksModel.hpp Models/BenchmarkGroupModel.cpp Models/BenchmarkGroupModel.hpp Models/BenchmarkModel.cpp Models/BenchmarkModel.hpp Models/BenchmarkConfigurationModel.cpp Models/BenchmarkConfigurationModel.hpp Controllers/Controller.cpp Controllers/Controller.hpp Controllers/BenchmarkConfigurationInstanceController.cpp Controllers/BenchmarkConfigurationInstanceController.hpp Core/MessageService.cpp Core/MessageService.hpp Core/BenchmarkExecutionService.cpp Core/BenchmarkExecutionService.hpp)
+        Models/OsInfoModel.cpp
+        Models/BenchmarksModel.cpp
+        Models/BenchmarkGroupModel.cpp
+        Models/BenchmarkModel.cpp
+        Models/BenchmarkConfigurationModel.cpp
+
+        Core/MessageService.cpp
+        Core/BenchmarkExecutionService.cpp)
 
 
 if (MSYS OR MINGW)
@@ -62,7 +71,7 @@ else()
     target_link_libraries(elpida-application)
 endif()
 
-target_link_libraries(elpida-application elpida-core OpenSSL::SSL)
+target_link_libraries(elpida-application elpida-core elpida-platform OpenSSL::SSL)
 
 if (UNIX OR MSYS OR MINGW)
     if (${CMAKE_CXX_COMPILER_VERSION} STRLESS 9.3)

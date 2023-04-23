@@ -108,11 +108,11 @@ namespace Elpida::Application
 
 	TopologyNodeView::TopologyNodeView(TopologyNodeModel& topologyNodeModel, QWidget* parent) :
 			QFrame(parent),
-			_ui(new Ui::TopologyNodeView), _topologyNodeModel(topologyNodeModel), _mouseDown(false), _mouseOver(false)
+			_ui(new Ui::TopologyNodeView), _topologyNodeModel(topologyNodeModel), _uiUpdating(false)
 	{
 		_ui->setupUi(this);
 
-		setContentsMargins(4,4,4,4);
+		setContentsMargins(4, 4, 4, 4);
 
 		_dataChangedSubscription = _topologyNodeModel.DataChanged().Subscribe([this]()
 		{
@@ -143,7 +143,8 @@ namespace Elpida::Application
 
 		if (_topologyNodeModel.GetOsIndex().has_value())
 		{
-			_ui->lblOsIndex->setText(QString::fromStdString(Vu::Cs(" (", _topologyNodeModel.GetOsIndex().value(), ") ")));
+			_ui->lblOsIndex->setText(
+					QString::fromStdString(Vu::Cs(" (", _topologyNodeModel.GetOsIndex().value(), ") ")));
 		}
 		else
 		{
@@ -161,7 +162,7 @@ namespace Elpida::Application
 			_ui->lblName->setVisible(false);
 		}
 
-		_ui->verticalLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+		_ui->verticalLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 	}
 
 	TopologyNodeView::~TopologyNodeView()
@@ -171,43 +172,40 @@ namespace Elpida::Application
 
 	void TopologyNodeView::OnModelChanged()
 	{
+		if (_uiUpdating) return;
+
 		auto selected = _topologyNodeModel.IsSelected();
-		if (selected == (_ui->chkSelected->checkState() == Qt::Checked))
-		{
-			return;    // avoid recursion
-		}
 		_ui->chkSelected->setCheckState(selected ? Qt::Checked : Qt::Unchecked);
 	}
 
 	void TopologyNodeView::mousePressEvent(QMouseEvent* event)
 	{
-		_mouseDown = true;
-
 		setStyleSheet(ClickStyles[(int)_topologyNodeModel.GetType()]);
 	}
 
 	void TopologyNodeView::mouseReleaseEvent(QMouseEvent* event)
 	{
-		_mouseDown = false;
-
 		setStyleSheet(HoverStyles[(int)_topologyNodeModel.GetType()]);
 
 		_topologyNodeModel.SetSelected(!_topologyNodeModel.IsSelected());
-
-		emit clicked(this);
 	}
 
 	void TopologyNodeView::enterEvent(QEvent* event)
 	{
-		_mouseOver = true;
-
 		setStyleSheet(HoverStyles[(int)_topologyNodeModel.GetType()]);
 	}
 
 	void TopologyNodeView::leaveEvent(QEvent* event)
 	{
-		_mouseOver = false;
-
 		setStyleSheet(DefaultStyles[(int)_topologyNodeModel.GetType()]);
+	}
+
+	void TopologyNodeView::on_chkSelected_stateChanged(int state)
+	{
+		_uiUpdating = true;
+
+		_topologyNodeModel.SetSelected(state == Qt::CheckState::Checked);
+
+		_uiUpdating = false;
 	}
 }
