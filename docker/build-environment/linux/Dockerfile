@@ -9,6 +9,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y update && \
     apt-get -y install \
         git \
+        cmake \
         gcc-9 \
         g++-9 \
         libnuma-dev \
