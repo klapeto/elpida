@@ -20,7 +20,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         automake \
         libtool \
         libssl-dev \
-        libgdk-pixbuf2.0-dev \
+        libgdk-pixbuf2.0-dev && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 && \
     git clone https://github.com/open-mpi/hwloc && \
     cd hwloc && \
