@@ -1,12 +1,16 @@
-FROM gcc:9.4
+FROM appimagecrafters/appimage-builder:latest
 LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y update && \
     apt-get -y upgrade && \
+    apt-get -y install software-properties-common && \
+    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    apt-get -y update && \
     apt-get -y install \
         git \
-        cmake \
+        gcc-9 \
+        g++-9 \
         libnuma-dev \
         pkg-config \
         qtbase5-dev \
@@ -16,21 +20,12 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         automake \
         libtool \
         libssl-dev \
-        wget \
-        python3-pip \
-        python3-setuptools \
-        patchelf \
-        desktop-file-utils \
         libgdk-pixbuf2.0-dev \
-        fakeroot \
-        strace && \
-    pip3 install appimage-builder && \
-    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /opt/appimagetool && \
-    chmod +x /opt/appimagetool && \
-    cd /opt/ && \
-    /opt/appimagetool --appimage-extract && \
-    mv /opt/squashfs-root /opt/appimagetool.AppDir && \
-    ln -s /opt/appimagetool.AppDir/AppRun /usr/local/bin/appimagetool && \
+        wget && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.sh && \
+    chmod +x cmake-3.26.3-linux-x86_64.sh && \
+    ./cmake-3.26.3-linux-x86_64.sh --skip-license && \
     git clone https://github.com/open-mpi/hwloc && \
     cd hwloc && \
     git checkout hwloc-2.4.0 && \

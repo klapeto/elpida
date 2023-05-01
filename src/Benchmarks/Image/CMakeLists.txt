@@ -1,6 +1,5 @@
 project("Image Benchmarks" VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Image Benchmarks for Elpida"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(IMAGE_BENCHMARKS_SOURCES
