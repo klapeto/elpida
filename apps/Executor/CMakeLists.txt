@@ -8,7 +8,7 @@ set(ELPIDA_EXECUTOR_SOURCES
         ArgumentsHelper.cpp
         ResultFormatter.cpp
         DefaultFormatter.cpp
-        )
+        JsonFormatter.cpp)
 
 
 add_executable(elpida-executor ${ELPIDA_EXECUTOR_SOURCES})

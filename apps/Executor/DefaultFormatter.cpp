@@ -7,6 +7,7 @@
 #include "Elpida/Core/BenchmarkInfo.hpp"
 
 #include <sstream>
+
 namespace Elpida
 {
 	std::string TranslateResult(const BenchmarkResult& result, const BenchmarkInfo& benchmarkInfo)
@@ -19,7 +20,7 @@ namespace Elpida
 		std::ostringstream accumulator;
 
 		auto& benchmarkInfo = result.GetBenchmarkInfo();
-		accumulator << "Result: " << TranslateResult(result, benchmarkInfo) << std::endl;
+		accumulator << "Score: " << TranslateResult(result, benchmarkInfo) << std::endl;
 
 		auto& taskResults = result.GetTaskResults();
 		for (const auto& taskResult: taskResults)

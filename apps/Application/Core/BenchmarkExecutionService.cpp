@@ -11,8 +11,7 @@
 
 namespace Elpida::Application
 {
-	static inline const char* ExecutableName = "elpida-executor";
-	static inline const char* Extension =
+	static inline const char* ExecutablePath = "./elpida-executor"
 #if defined(ELPIDA_WINDOWS)
 			".exe";
 #elif defined(ELPIDA_UNIX)
@@ -52,6 +51,6 @@ namespace Elpida::Application
 		{
 			arguments.push_back(std::string("--config\"").append(value).append("\""));
 		}
-		return OsUtilities::ExecuteProcess(std::string("./") + ExecutableName + Extension, arguments);
+		return OsUtilities::ExecuteProcess(ExecutablePath, arguments);
 	}
 } // Application
