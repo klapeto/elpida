@@ -1,10 +1,11 @@
-FROM gcc:9.4
+FROM appimagecrafters/appimage-builder:latest
 LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y install \
+        g++ \
         git \
         cmake \
         libnuma-dev \
@@ -16,21 +17,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         automake \
         libtool \
         libssl-dev \
-        wget \
-        python3-pip \
-        python3-setuptools \
-        patchelf \
-        desktop-file-utils \
-        libgdk-pixbuf2.0-dev \
-        fakeroot \
-        strace && \
-    pip3 install appimage-builder && \
-    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /opt/appimagetool && \
-    chmod +x /opt/appimagetool && \
-    cd /opt/ && \
-    /opt/appimagetool --appimage-extract && \
-    mv /opt/squashfs-root /opt/appimagetool.AppDir && \
-    ln -s /opt/appimagetool.AppDir/AppRun /usr/local/bin/appimagetool && \
+        libgdk-pixbuf2.0-dev && \
     git clone https://github.com/open-mpi/hwloc && \
     cd hwloc && \
     git checkout hwloc-2.4.0 && \
