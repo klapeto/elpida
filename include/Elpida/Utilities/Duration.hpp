@@ -32,7 +32,7 @@ namespace Elpida
 	using MicroSeconds = std::chrono::duration<double, std::micro>;
 	using MilliSeconds = std::chrono::duration<double, std::milli>;
 	using Seconds = std::chrono::duration<double, std::ratio<1, 1>>;
-	using Duration = NanoSeconds;
+	using Duration = Seconds;
 
 
 	template<typename T>

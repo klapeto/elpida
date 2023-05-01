@@ -71,22 +71,11 @@ namespace Elpida
 		return Duration(accumulator);
 	}
 
-	static std::string getScoreString(const std::vector<ProcessedTaskResult>& results,
-		const BenchmarkScoreCalculator& calculator)
+	static std::string getScoreString(const BenchmarkScore& score,
+		const Benchmark& benchmark)
 	{
-		if (calculator.getResultType() == ResultType::Throughput)
-		{
-			auto seconds = DurationCast<Seconds>(getTotalDuration(results)).count();
-			auto value = calculator.calculate(results);
+		return Vu::Cs(Vu::getValueScaleStringSI(score.getValue()), benchmark.getScoreSpecification().getUnit());
 
-			auto str = Vu::getValueScaleStringSI(value / seconds);
-
-			return Vu::Cs(str, calculator.getSuffix(), "/s");
-		}
-		else
-		{
-			return Vu::Cs(Vu::getValueScaleStringSI(calculator.calculate(results)), calculator.getSuffix());
-		}
 	}
 
 	void BenchmarkResultsView::onItemAdded(const BenchmarkResult& item)
@@ -109,8 +98,7 @@ namespace Elpida
 				QString::fromStdString(getResultString(result)));
 			parent->addChild(child);
 		}
-		auto& scoreCalculator = item.getBenchmark().getScoreCalculator();
-		parent->setText(2, QString::fromStdString(getScoreString(results, scoreCalculator)));
+		parent->setText(2, QString::fromStdString(getScoreString(item.getScore(), item.getBenchmark())));
 		_createdItems.emplace(item.getId(), parent);
 		_ui->twResultList->addTopLevelItem(parent);
 		_ui->twResultList->setCurrentItem(parent);

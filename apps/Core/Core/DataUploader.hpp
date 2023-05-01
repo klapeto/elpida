@@ -31,7 +31,9 @@
 #define ELPIDA_WEB_API_KEY "Test API Key"
 #endif
 
-//#define ELPIDA_DEBUG_SERVER
+#ifndef ELPIDA_WEB_API_URL
+#define ELPIDA_WEB_API_URL "localhost"
+#endif
 
 namespace Elpida
 {
@@ -56,9 +58,9 @@ namespace Elpida
 		static inline const char* apiUrl = "localhost";
 #else
 		const int apiPort = 443;
-		static inline const char* apiUrl = "api.elpida.dev";
+		static inline const char* apiUrl = ELPIDA_WEB_API_URL;
 #endif
-		static inline const char* resultPath = "/api/v1/result";
+		static inline const char* resultPath = "/api/v1/benchmarkresult";
 		static inline const char* contentType = "application/json";
 		static inline const char* apiKey = ELPIDA_WEB_API_KEY;
 		static inline const char* apiKeyHeader = "api_key";

@@ -15,6 +15,17 @@ variables:
   PACKAGE_FILENAME: Elpida-$ELPIDA_VERSION_MAJOR.$ELPIDA_VERSION_MINOR.$ELPIDA_VERSION_REVISION.$CI_PIPELINE_IID-x86_64
   PACKAGE_FILENAME_DEPLOY: Elpida-latest-x86_64
   PACKAGE_FILENAME_DEPLOY_BETA: Elpida-latest-beta-x86_64
+  DEPLOY_ENVIRONMENT: "development"
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      variables:
+        DEPLOY_ENVIRONMENT: "production"
+    - if: $CI_COMMIT_REF_NAME == "staging"
+      variables:
+        DEPLOY_ENVIRONMENT: "staging"
+    - when: always  
 
 include:
   - local: 'ci/docker-image-linux.yml'

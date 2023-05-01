@@ -32,37 +32,44 @@ namespace Elpida
 	class DataSpecification
 	{
 	public:
-		[[nodiscard]] const std::string& getName() const
+		[[nodiscard]]
+		const std::string& getName() const
 		{
 			return _name;
 		}
 
-		[[nodiscard]] const std::string& getDescription() const
+		[[nodiscard]]
+		const std::string& getDescription() const
 		{
 			return _description;
 		}
 
-		[[nodiscard]] const std::string& getUnit() const
+		[[nodiscard]]
+		const std::string& getUnit() const
 		{
 			return _unit;
 		}
 
-		[[nodiscard]] size_t getSizeShouldBeDivisibleBy() const
+		[[nodiscard]]
+		size_t getSizeShouldBeDivisibleBy() const
 		{
 			return _sizeShouldBeDivisibleBy;
 		}
 
-		[[nodiscard]] const std::vector<std::string>& getRequiredPropertiesNames() const
+		[[nodiscard]]
+		const std::vector<std::string>& getRequiredPropertiesNames() const
 		{
 			return _requiredPropertiesNames;
 		}
 
-		[[nodiscard]] bool divisibleByProperty() const
+		[[nodiscard]]
+		bool divisibleByProperty() const
 		{
 			return _sizeShouldBeDivisibleBy == 0;
 		}
 
-		[[nodiscard]] const std::string& getSizeDivisibleByPropertyName() const
+		[[nodiscard]]
+		const std::string& getSizeDivisibleByPropertyName() const
 		{
 			return _sizeShouldBeDivisibleByProperty;
 		}

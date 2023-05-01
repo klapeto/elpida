@@ -23,4 +23,7 @@ if (ELPIDA_BETA EQUAL 1)
 endif()
 
 set(ELPIDA_VERSION ${ELPIDA_VERSION_MAJOR}.${ELPIDA_VERSION_MINOR}.${ELPIDA_VERSION_REVISION}.${ELPIDA_VERSION_BUILD})
-set(ELPIDA_WEBSITE "https://www.elpida.dev")
+
+if (NOT ELPIDA_WEBSITE)
+    set(ELPIDA_WEBSITE "https://www.elpida.dev")
+endif()

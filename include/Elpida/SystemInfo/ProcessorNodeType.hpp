@@ -32,6 +32,7 @@ namespace Elpida
 		Package,
 		NumaNode,
 		Group,
+		Die,
 		Core,
 		L1ICache,
 		L1DCache,

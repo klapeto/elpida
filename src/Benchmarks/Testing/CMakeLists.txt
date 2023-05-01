@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 project("Testing Benchmarks" VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Test Benchmark for Elpida"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(TESTING_BENCHMARK_SOURCES

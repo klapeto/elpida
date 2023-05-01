@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2020 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,70 +27,92 @@
 #include <vector>
 #include "BenchmarkTaskInstance.hpp"
 #include "Elpida/Engine/Task/TaskBuilder.hpp"
+#include "Elpida/Engine/Result/BenchmarkScoreSpecification.hpp"
 #include <string>
 #include <memory>
 
 namespace Elpida
 {
 	class TaskAffinity;
+
 	class BenchmarkConfiguration;
+
 	class BenchmarkScoreCalculator;
 
 	class Benchmark final
 	{
 	public:
-		[[nodiscard]] std::vector<BenchmarkTaskInstance> createNewTasks(const TaskAffinity& affinity,
-			const BenchmarkConfiguration& configuration,
-			const ServiceProvider& serviceProvider) const;
+		[[nodiscard]]
+		std::vector<BenchmarkTaskInstance> createNewTasks(const TaskAffinity& affinity,
+				const BenchmarkConfiguration& configuration,
+				const ServiceProvider& serviceProvider) const;
 
-		[[nodiscard]] size_t getTotalTasksCount() const
+		[[nodiscard]]
+		size_t getTotalTasksCount() const
 		{
 			return _taskBuilders.size();
 		}
 
-		[[nodiscard]] const BenchmarkScoreCalculator& getScoreCalculator() const
+		[[nodiscard]]
+		const BenchmarkScoreCalculator& getScoreCalculator() const
 		{
 			return *_scoreCalculator;
 		}
 
-		[[nodiscard]] const std::string& getName() const
+		[[nodiscard]]
+		const std::string& getName() const
 		{
 			return _name;
 		}
 
-		template <typename TSpec>
+		template<typename TSpec>
 		TaskBuilder& AddTask()
 		{
 			_taskBuilders.push_back(TaskBuilder(std::make_shared<TSpec>()));
 			return _taskBuilders.back();
 		}
 
-		template <typename TSpec>
+		template<typename TSpec>
 		TaskBuilder& AddTask(std::shared_ptr<TSpec> specification)
 		{
 			_taskBuilders.push_back(TaskBuilder(std::move(specification)));
 			return _taskBuilders.back();
 		}
 
-		[[nodiscard]] const std::string& getId() const
+		[[nodiscard]]
+		const std::string& getUuid() const
 		{
 			return _id;
 		}
 
-		[[nodiscard]] const std::vector<TaskBuilder>& getTaskBuilders() const
+		[[nodiscard]]
+		const std::vector<TaskBuilder>& getTaskBuilders() const
 		{
 			return _taskBuilders;
 		}
 
-		Benchmark(std::string name, std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator);
+		[[nodiscard]]
+		const BenchmarkScoreSpecification& getScoreSpecification() const
+		{
+			return _scoreSpecification;
+		}
+
+		Benchmark(std::string name,
+				const BenchmarkScoreSpecification& scoreSpecification,
+				std::shared_ptr<BenchmarkScoreCalculator> scoreCalculator,
+				std::string uuid = std::string());
+
 		Benchmark(const Benchmark&) = delete;
+
 		Benchmark& operator=(const Benchmark&) = delete;
+
 		~Benchmark() = default;
 	protected:
 		std::vector<TaskBuilder> _taskBuilders;
+		BenchmarkScoreSpecification _scoreSpecification;
 		std::string _name;
 		std::string _id;
-		std::shared_ptr<BenchmarkScoreCalculator>_scoreCalculator;
+		std::shared_ptr<BenchmarkScoreCalculator> _scoreCalculator;
 	};
 }
 

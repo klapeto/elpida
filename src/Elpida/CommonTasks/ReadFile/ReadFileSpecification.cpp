@@ -43,10 +43,11 @@ namespace Elpida
 
 	ReadFileSpecification::ReadFileSpecification()
 		: TaskSpecification("Read File to Memory",
-		ResultSpecification("Read Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative))
+		ResultSpecification("Read Rate", "B", ResultType::Throughput, ResultSpecification::Accumulative),
+		Uuid)
 	{
 		withDescription("Reads a file from disk to memory");
-		withOutputData(DataSpecification("File contents", "B", "File contents in bytes"));
+		withOutputData(DataSpecification("File contents", "B", "The file contents in bytes"));
 
 		withConfiguration(std::make_shared<ConfigurationSpecification<ConfigurationType::FilePath>>(ConfigurationType::Type::FilePath,
 			"",

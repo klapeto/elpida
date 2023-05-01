@@ -23,18 +23,7 @@
 
 #include "Elpida/Engine/Calculators/BenchmarkScoreCalculator.hpp"
 
-#include <utility>
-
 namespace Elpida
 {
-	BenchmarkScoreCalculator::BenchmarkScoreCalculator(std::string suffix, ResultType resultType)
-		: _suffix(std::move(suffix)), _resultType(resultType)
-	{
-	}
 
-	BenchmarkScoreCalculator::BenchmarkScoreCalculator()
-		: _resultType(ResultType::Raw)
-	{
-
-	}
 }

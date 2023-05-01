@@ -27,12 +27,13 @@
 #include <Elpida/CommonTasks/ReadFile/ReadFileSpecification.hpp>
 #include <Elpida/CommonTasks/WriteFile/WriteFileSpecification.hpp>
 #include <Elpida/Engine/Task/TaskBuilder.hpp>
+#include <Elpida/ServiceProvider.hpp>
 
 using namespace Elpida;
 
 extern "C" ELPIDA_EXPORT ELPIDA_STDCALL int32_t elpidaPluginAbiVersion()
 {
- 	return ELPIDA_PLUGIN_ABI_VERSION;
+	return ELPIDA_PLUGIN_ABI_VERSION;
 }
 
 extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void elpidaDestroyPlugin(BenchmarksContainerPlugin<Benchmark>* plugin)
@@ -40,25 +41,29 @@ extern "C" ELPIDA_EXPORT ELPIDA_STDCALL void elpidaDestroyPlugin(BenchmarksConta
 	delete plugin;
 }
 
-extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Benchmark>* elpidaCreatePlugin(const ServiceProvider* serviceProvider)
+extern "C" ELPIDA_EXPORT ELPIDA_STDCALL Elpida::BenchmarksContainerPlugin<Benchmark>*
+elpidaCreatePlugin(const ServiceProvider* serviceProvider)
 {
 	auto plugin = new BenchmarksContainerPlugin<Benchmark>("Testing Benchmarks");
+	auto& sharedStructures = serviceProvider->getSharedStructuresProvider();
 
-	auto benchmark = std::make_unique<Benchmark>("Test Benchmark", std::make_shared<AccumulativeScoreCalculator>());
+	auto benchmark = std::make_unique<Benchmark>("Test Benchmark",
+			BenchmarkScoreSpecification("Internets/s", Elpida::BenchmarkScoreComparison::Greater),
+			sharedStructures.getAverageThroughputScoreCalculator());
 
-	benchmark->AddTask<ReadFileSpecification>()
-		.shouldBeCountedOnResults()
-		.canBeMultiThreaded(false)
-		.canBeDisabled(false)
-		.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
-			ConfigurationType::FilePath("/media/klapeto/Αρχεία/Isos/neon-user-20200326-1117.iso"));
+	benchmark->AddTask(sharedStructures.getSharedTaskSpecification<ReadFileSpecification>())
+			.shouldBeCountedOnResults()
+			.canBeMultiThreaded(false)
+			.canBeDisabled(false)
+			.withDefaultConfiguration(ReadFileSpecification::Settings::InputFilePath,
+					ConfigurationType::FilePath("/media/klapeto/Αρχεία/Isos/neon-user-20200326-1117.iso"));
 
-	benchmark->AddTask<WriteFileSpecification>()
-		.shouldBeCountedOnResults()
-		.canBeMultiThreaded(false)
-		.canBeDisabled(false)
-		.withDefaultConfiguration(WriteFileSpecification::Settings::OutputFilePath,
-			ConfigurationType::FilePath("/media/klapeto/Αρχεία/Isos/TEST.iso"));;
+	benchmark->AddTask(sharedStructures.getSharedTaskSpecification<WriteFileSpecification>())
+			.shouldBeCountedOnResults()
+			.canBeMultiThreaded(false)
+			.canBeDisabled(false)
+			.withDefaultConfiguration(WriteFileSpecification::Settings::OutputFilePath,
+					ConfigurationType::FilePath("/media/klapeto/Αρχεία/Isos/TEST.iso"));;
 
 
 	plugin->add(std::move(benchmark));

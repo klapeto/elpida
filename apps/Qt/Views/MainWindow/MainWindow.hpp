@@ -38,6 +38,7 @@ namespace Elpida
 	class AffinityModel;
 	class BenchmarkResultsModel;
 	class ResultFormatter;
+	class CpuInfo;
 
 	namespace Ui
 	{
@@ -55,7 +56,8 @@ namespace Elpida
 			ScreensModel& screensModel,
 			const AffinityModel& affinityModel,
 			BenchmarkResultsModel& benchmarkResultsModel,
-			const ResultFormatter& resultFormatter);
+			const ResultFormatter& resultFormatter,
+			const CpuInfo& cpuInfo);
 		~MainWindow() override;
 	private slots:
 		void on_actionExit_triggered();
@@ -85,6 +87,7 @@ namespace Elpida
 		const AffinityModel& _affinityModel;
 		BenchmarkResultsModel& _benchmarkResultsModel;
 		const ResultFormatter& _resultFormatter;
+		const CpuInfo& _cpuInfo;
 	};
 
 }  // namespace Elpida

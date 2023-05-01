@@ -41,7 +41,8 @@ namespace Elpida
 			"Pixels",
 			ResultType::Throughput,
 			ResultSpecification::Accumulative,
-			"The rate that pixels are encoded into PNG format"))
+			"The rate that pixels are encoded into PNG format"),
+		"30948762-9B7B-4CEA-8D9B-6913F3DA2097")
 	{
 
 		withDescription("Encodes the image data to PNG Format");

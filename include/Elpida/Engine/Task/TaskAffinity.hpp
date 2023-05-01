@@ -29,6 +29,7 @@
 
 #include <vector>
 #include <forward_list>
+#include <cstdlib>
 
 namespace Elpida
 {

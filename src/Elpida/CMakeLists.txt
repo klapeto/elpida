@@ -7,6 +7,7 @@ set(ELPIDA_SOURCES
         Timer.cpp
         EventsSubscriber.cpp
         ServiceProvider.cpp
+        SharedStructuresProvider.cpp
 
         ElpidaException.cpp
         OperationCanceledException.cpp
@@ -19,6 +20,10 @@ set(ELPIDA_SOURCES
         SystemInfo/MemoryInfo.cpp
         SystemInfo/OsInfo.cpp
         SystemInfo/TimingInfo.cpp
+        SystemInfo/TargetTimeCalculator.cpp
+
+        SystemInfo/X86Info.cpp
+        SystemInfo/ArmInfo.cpp
 
         Utilities/Logging/Logger.cpp
         Utilities/Logging/LogAppender.cpp
@@ -78,13 +83,11 @@ set(ELPIDA_SOURCES
         Engine/Result/ProcessedTaskResult.cpp
         Engine/Task/WorkloadTask.cpp
         Engine/Task/MicroTask.cpp
-        Engine/Task/ExecutionParameters.cpp)
-
-
-
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "^x86_64*" OR CMAKE_SYSTEM_PROCESSOR MATCHES "^AMD64")
-    set(ELPIDA_SOURCES ${ELPIDA_SOURCES} SystemInfo/X86Info.cpp)
-endif()
+        Engine/Task/ExecutionParameters.cpp
+        Engine/Result/BenchmarkScore.cpp
+        Engine/Result/BenchmarkScoreSpecification.cpp
+        Engine/Calculators/Benchmark/AverageThroughputScoreCalculator.cpp
+)
 
 set(ELPIDA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
@@ -108,10 +111,10 @@ add_library(elpida SHARED ${ELPIDA_SOURCES})
 
 if (UNIX)
     include(FindThreads)
-    find_library(numa REQUIRED)
-    find_library(dl REQUIRED)
+    include(${CMAKE_SOURCE_DIR}/cmake-modules/FindNUMA.cmake)
+#    find_library(numa REQUIRED)
     find_package(Threads)
-    target_link_libraries(elpida numa dl ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(elpida numa ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 include(FindHWLOC)

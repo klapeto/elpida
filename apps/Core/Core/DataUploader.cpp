@@ -51,10 +51,14 @@ namespace Elpida
 #else
 		httplib::SSLClient cli(apiUrl, apiPort);
 #endif
+		std::vector<BenchmarkResult> results =
+		{
+				command.getBenchmarkResult()
+		};
 		auto res =
 			cli.Post(resultPath,
 				{{ apiKeyHeader, apiKey }},
-				_resultFormatter.serialize(command.getBenchmarkResult()),
+				_resultFormatter.serialize(results),
 				contentType);
 		if (res)
 		{

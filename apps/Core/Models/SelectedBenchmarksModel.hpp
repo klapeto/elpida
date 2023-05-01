@@ -1,7 +1,7 @@
 /**************************************************************************
  *   Elpida - Benchmark library
  *
- *   Copyright (C) 2020  Ioannis Panagiotopoulos
+ *   Copyright (C) 2021 Ioannis Panagiotopoulos
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,12 +18,22 @@
  *************************************************************************/
 
 //
-// Created by klapeto on 23/4/20.
+// Created by klapeto on 8/5/21.
 //
 
-#include "Models/BenchmarkConfigurationModel.hpp"
+#ifndef ELPIDA_SELECTEDBENCHMARKSMODEL_HPP
+#define ELPIDA_SELECTEDBENCHMARKSMODEL_HPP
+
+#include "Models/Abstractions/AssociativeModel/AssociativeModel.hpp"
+#include <Elpida/Engine/Benchmark/Benchmark.hpp>
+#include <Elpida/Utilities/Reference.hpp>
 
 namespace Elpida
 {
+	class SelectedBenchmarksModel : public AssociativeModel<std::string, Reference<const Benchmark>>
+	{
 
+	};
 }
+
+#endif //ELPIDA_SELECTEDBENCHMARKSMODEL_HPP

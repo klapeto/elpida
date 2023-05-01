@@ -43,7 +43,8 @@ namespace Elpida
 			"Pixels",
 			ResultType::Throughput,
 			ResultSpecification::Accumulative,
-			"Pixel conversion rate"))
+			"Pixel conversion rate"),
+		"BA657EF0-80EE-45B6-AABA-306435774F75")
 	{
 		withDescription("Converts image data to Gray scale using the average of pixels");
 

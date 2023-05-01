@@ -38,10 +38,11 @@ namespace Elpida
 
 	ConvertToFloatSpecification::ConvertToFloatSpecification()
 		: TaskSpecification("Convert To Float",
-		ResultSpecification("Convert Rate",
+		ResultSpecification("Conversion Rate",
 			"Pixels",
 			ResultType::Throughput,
-			ResultSpecification::AggregationType::Accumulative))
+			ResultSpecification::AggregationType::Accumulative),
+		"0E442DBF-5E96-4190-81B8-1435765546E0")
 	{
 
 		withDescription("Converts an Image with integer values to float values between 0.0 and 1.0");

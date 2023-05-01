@@ -31,7 +31,9 @@
 #include <hwloc.h>
 
 #ifdef ELPIDA_LINUX
+
 #include <sys/resource.h>
+
 #else
 #include <windows.h>
 #include <iostream>
@@ -40,7 +42,12 @@
 namespace Elpida
 {
 	SystemTopology::SystemTopology()
-		: _root(nullptr), _depth(0), _totalLogicalCores(0), _totalPhysicalCores(0)
+			: _root(nullptr),
+			_depth(0),
+			_totalLogicalCores(0),
+			_totalPhysicalCores(0),
+			_totalNumaNodes(0),
+			_totalPackages(0)
 	{
 		reload();
 	}
@@ -51,6 +58,8 @@ namespace Elpida
 		hwloc_topology_init(&topo);
 		hwloc_topology_set_all_types_filter(topo, HWLOC_TYPE_FILTER_KEEP_ALL);
 		hwloc_topology_load(topo);
+
+		//_depth = hwloc_topology_get_depth(topo);
 
 		auto kindsN = hwloc_cpukinds_get_nr(topo, 0);
 		if (kindsN != -1)
@@ -79,25 +88,21 @@ namespace Elpida
 		_root->loadParents(nullptr);
 
 		hwloc_topology_destroy(topo);
+		processChildNode(*_root);
 		accumulateCores(*_root);
 	}
 
 	void SystemTopology::accumulateCores(const ProcessorNode& node)
 	{
+		for (const auto& child : node.getMemoryChildren())
+		{
+			processChildNode(child);
+			accumulateCores(child);
+		}
+
 		for (const auto& child : node.getChildren())
 		{
-			switch (child.getType())
-			{
-			case ProcessorNodeType::ExecutionUnit:
-				_totalLogicalCores++;
-				_allProcessors.push_back(&child);
-				break;
-			case ProcessorNodeType::Core:
-				_totalPhysicalCores++;
-				break;
-			default:
-				break;
-			}
+			processChildNode(child);
 			accumulateCores(child);
 		}
 	}
@@ -120,6 +125,28 @@ namespace Elpida
 			std::cout << "Warning! Failed to set process priority: " << GetLastError() << std::endl;
 		}
 #endif
+	}
+
+	void SystemTopology::processChildNode(const ProcessorNode& node)
+	{
+		switch (node.getType())
+		{
+		case ProcessorNodeType::ExecutionUnit:
+			_totalLogicalCores++;
+			_allProcessors.push_back(&node);
+			break;
+		case ProcessorNodeType::Core:
+			_totalPhysicalCores++;
+			break;
+		case ProcessorNodeType::NumaNode:
+			_totalNumaNodes++;
+			break;
+		case ProcessorNodeType::Package:
+			_totalPackages++;
+			break;
+		default:
+			break;
+		}
 	}
 
 } /* namespace Elpida */
