@@ -1,6 +1,5 @@
 project("Memory Benchmarks" VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Memory Benchmarks for Elpida"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(MEMORY_BENCHMARKS_SOURCES

@@ -1,6 +1,5 @@
 project(elpidaCore VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Application Core"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(ELPIDA_CORE_SOURCES
