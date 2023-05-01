@@ -7,7 +7,6 @@ set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
 
 project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)

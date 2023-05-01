@@ -1,6 +1,5 @@
 project("Elpida Benchmark Metadata Dumper" VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Dumps the metadata from all benchmarks to a JSON file"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 
