@@ -5,6 +5,8 @@ build:linux:
     name: $DEPLOY_ENVIRONMENT
   script:
     - git submodule update --init
+    - mkdir "$BUILD_DIR"
+    - cd "$BUILD_DIR"
     - cmake
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
@@ -15,8 +17,8 @@ build:linux:
       -DELPIDA_VERSION_MINOR=$ELPIDA_VERSION_MINOR
       -DELPIDA_VERSION_REVISION=$ELPIDA_VERSION_REVISION
       -DELPIDA_VERSION_BUILD=$ELPIDA_VERSION_BUILD
-      -S .
-      -B "$BUILD_DIR"
+      ..
+    - cd ..
     - make -C "$BUILD_DIR" -j$(nproc) install
   artifacts:
     expire_in: 2h30min
