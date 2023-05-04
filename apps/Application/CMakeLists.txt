@@ -34,7 +34,7 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/BenchmarkConfigurationModel.cpp
 
         Core/MessageService.cpp
-        Core/BenchmarkExecutionService.cpp)
+        Core/BenchmarkExecutionService.cpp Core/Promise.cpp Core/Promise.hpp Core/ThreadQueue.cpp Core/ThreadQueue.hpp)
 
 
 if (MSYS OR MINGW)

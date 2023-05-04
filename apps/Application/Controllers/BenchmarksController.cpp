@@ -2,6 +2,7 @@
 // Created by klapeto on 16/4/2023.
 //
 
+#include <future>
 #include "BenchmarksController.hpp"
 #include "Models/BenchmarksModel.hpp"
 #include "Models/TopologyModel.hpp"
@@ -9,6 +10,7 @@
 
 #include "Core/MessageService.hpp"
 #include "Core/BenchmarkExecutionService.hpp"
+#include "Core/Promise.hpp"
 
 namespace Elpida::Application
 {
@@ -56,35 +58,39 @@ namespace Elpida::Application
 			return;
 		}
 
-		std::vector<std::size_t> affinity;
-		affinity.reserve(_topologyModel.GetSelectedLeafNodes().size());
-		for (auto& node: _topologyModel.GetSelectedLeafNodes())
-		{
-			affinity.push_back(node.get().GetOsIndex().value());
-		}
-
-		std::vector<std::string> configuration;
-		configuration.reserve(selectedBenchmark->GetConfigurations().size());
-
-		for (auto& config: selectedBenchmark->GetConfigurations())
-		{
-			configuration.emplace_back(config.GetValue());
-		}
-
 		try
 		{
-			auto returnValue = _benchmarkExecutionService.Execute(
-					selectedBenchmark->GetFilePath(),
-					selectedBenchmark->GetIndex(),
-					affinity,
-					configuration,
-					std::chrono::duration_cast<std::chrono::nanoseconds, double>(
-							_overheadsModel.GetNowOverhead()).count(),
-					std::chrono::duration_cast<std::chrono::nanoseconds, double>(
-							_overheadsModel.GetLoopOverhead()).count(),
-					std::chrono::duration_cast<std::chrono::nanoseconds, double>(
-							_overheadsModel.GetVirtualCallOverhead()).count());
-			_messageService.ShowMessage(returnValue);
+			Promise([&, selectedBenchmark](){
+				std::vector<std::size_t> affinity;
+				affinity.reserve(_topologyModel.GetSelectedLeafNodes().size());
+				for (auto& node: _topologyModel.GetSelectedLeafNodes())
+				{
+					affinity.push_back(node.get().GetOsIndex().value());
+				}
+
+				std::vector<std::string> configuration;
+				configuration.reserve(selectedBenchmark->GetConfigurations().size());
+
+				for (auto& config: selectedBenchmark->GetConfigurations())
+				{
+					configuration.emplace_back(config.GetValue());
+				}
+
+
+				return _benchmarkExecutionService.Execute(
+						selectedBenchmark->GetFilePath(),
+						selectedBenchmark->GetIndex(),
+						affinity,
+						configuration,
+						std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+								_overheadsModel.GetNowOverhead()).count(),
+						std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+								_overheadsModel.GetLoopOverhead()).count(),
+						std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+								_overheadsModel.GetVirtualCallOverhead()).count());
+			}, [&](auto value){
+				_messageService.ShowMessage(value);
+			});
 		}
 		catch (const ElpidaException& ex)
 		{
