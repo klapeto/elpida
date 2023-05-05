@@ -76,7 +76,6 @@ namespace Elpida::Application
 					configuration.emplace_back(config.GetValue());
 				}
 
-
 				return _benchmarkExecutionService.Execute(
 						selectedBenchmark->GetFilePath(),
 						selectedBenchmark->GetIndex(),

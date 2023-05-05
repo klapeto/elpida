@@ -9,7 +9,6 @@
 #include "Elpida/Platform/OsInfoLoader.hpp"
 
 #include <sys/utsname.h>
-#include <cstring>
 #include <fstream>
 
 namespace Elpida

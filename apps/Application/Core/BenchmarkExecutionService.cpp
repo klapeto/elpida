@@ -53,4 +53,9 @@ namespace Elpida::Application
 		}
 		return OsUtilities::ExecuteProcess(ExecutablePath, arguments);
 	}
+
+	void BenchmarkExecutionService::StopCurrentExecution()
+	{
+
+	}
 } // Application

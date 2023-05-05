@@ -22,6 +22,7 @@ namespace Elpida::Application
 			double nowOverheadNanoseconds,
 			double loopOverheadNanoseconds,
 			double virtualCallOverheadNanoseconds);
+		void StopCurrentExecution();
 	 private:
 	};
 
