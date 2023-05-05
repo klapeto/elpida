@@ -289,5 +289,6 @@ int main(int argc, char* argv[])
 
 	ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
 	ThreadQueue::Current().lock()->Run();
+	//return QApplication::exec();
 	return EXIT_SUCCESS;
 }

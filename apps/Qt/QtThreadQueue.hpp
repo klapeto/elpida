@@ -7,16 +7,30 @@
 
 #include "Core/ThreadQueue.hpp"
 
+#include <QObject>
+#include <deque>
+#include <mutex>
+
 namespace Elpida::Application
 {
 
-	class QtThreadQueue final : public ThreadQueue
+	class QtThreadQueue final : public QObject, public ThreadQueue
 	{
+	Q_OBJECT
 	public:
-		QtThreadQueue() = default;
+		void Enqueue(std::function<void()> func) override;
+
+		int Run() override;
+
+		QtThreadQueue();
 		~QtThreadQueue() override = default;
-	protected:
-		bool DefaultProcedure() override;
+	 signals:
+		void ProcedureEnqueued();
+	private slots:
+		void OnProcedureEnqueued();
+	private:
+		std::mutex mutex;
+		std::deque<std::function<void()>> _queue;
 	};
 
 } // Application

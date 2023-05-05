@@ -20,24 +20,17 @@ namespace Elpida::Application
 		static std::weak_ptr<ThreadQueue> Current();
 		static void SetCurrent(std::shared_ptr<ThreadQueue> current);
 
-		void Enqueue(std::function<void()> func);
-		void Run();
-		void Stop();
+		virtual void Enqueue(std::function<void()> func) = 0;
+		virtual int Run() = 0;
 
-		ThreadQueue();
+		ThreadQueue() = default;
 		ThreadQueue(const ThreadQueue&) = delete;
 		ThreadQueue& operator=(const ThreadQueue&) = delete;
 		ThreadQueue(ThreadQueue&&) noexcept= delete;
 		ThreadQueue& operator=(ThreadQueue&&) noexcept= delete;
 		virtual ~ThreadQueue() = default;
-	protected:
-		virtual bool DefaultProcedure() = 0;
 	private:
 		static inline thread_local std::shared_ptr<ThreadQueue> _current;
-
-		std::mutex _mutex;
-		std::deque<std::function<void()>> _queue;
-		bool _keepRunning;
 	};
 
 } // Application
