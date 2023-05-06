@@ -16,6 +16,7 @@ set(ELPIDA_CORE_SOURCES
         OverheadsInfo.cpp
         ThreadTask.cpp
         ThreadTask.Unix.cpp
+        ThreadTask.Windows.cpp
         BenchmarkGroup.cpp
         TaskConfiguration.cpp
         ElpidaException.cpp

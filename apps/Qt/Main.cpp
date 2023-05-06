@@ -211,7 +211,7 @@ static BenchmarksModel LoadBenchmarks()
 					{
 						configurations.emplace_back(config.GetName(), config.GetValue(), TranslateConfigurationType(config.GetType()));
 					}
-					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(), entry.path(), i, std::move(configurations));
+					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(), entry.path().string(), i, std::move(configurations));
 				}
 
 				benchmarkGroups.emplace_back(module.GetBenchmarkGroup().GetName(), std::move(benchmarkModels));

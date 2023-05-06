@@ -34,7 +34,7 @@ namespace Elpida
 	}
 
 	ThreadTask::ThreadTask(UniquePtr<Task> taskToRun, Ref<const TopologyNode> targetProcessor)
-		: _taskToRun(std::move(taskToRun)), _taskRunDuration(0), _targetProcessor(targetProcessor), _doStart(false)
+			: _taskToRun(std::move(taskToRun)), _targetProcessor(targetProcessor), _taskRunDuration(0), _doStart(false)
 	{
 
 	}

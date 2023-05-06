@@ -6,6 +6,8 @@
 
 namespace Elpida::Application
 {
+	thread_local std::shared_ptr<ThreadQueue> _current;
+
 	void ThreadQueue::SetCurrent(std::shared_ptr<ThreadQueue> current)
 	{
 		_current = std::move(current);

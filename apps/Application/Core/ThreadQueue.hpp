@@ -29,8 +29,6 @@ namespace Elpida::Application
 		ThreadQueue(ThreadQueue&&) noexcept= delete;
 		ThreadQueue& operator=(ThreadQueue&&) noexcept= delete;
 		virtual ~ThreadQueue() = default;
-	private:
-		static inline thread_local std::shared_ptr<ThreadQueue> _current;
 	};
 
 } // Application
