@@ -23,7 +23,7 @@ set(ELPIDA_PLATFORM_SOURCES
         MemoryInfoLoader.Windows.cpp
 
         CpuInfoLoader.X86.cpp
-        CpuInfoLoader.Arm.Unix.cpp Process.cpp Process.hpp)
+        CpuInfoLoader.Arm.Unix.cpp Process.cpp Process.hpp Process.Unix.cpp AnonymousPipe.cpp AnonymousPipe.hpp AnonymousPipe.Unix.cpp AnonymousPipe.Windows.cpp Process.Windows.cpp)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 

@@ -5,8 +5,10 @@
 #ifndef ELPIDA_PROCESS_HPP
 #define ELPIDA_PROCESS_HPP
 
+#include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/Vector.hpp"
+#include "Elpida/Platform/AnonymousPipe.hpp"
 
 #include <sstream>
 #include <thread>
@@ -38,12 +40,18 @@ namespace Elpida
 		std::thread _stdErrorThread;
 		String _path;
 		std::atomic<bool> _keepGoing;
-		int _outputPipe[2];
-		int _errorPipe[2];
+		AnonymousPipe _outputPipe;
+		AnonymousPipe _errorPipe;
 		int _pid;
 
-		void ParentProcessProcedure();
-		void ReadAllFromFileDescriptor(int fileDescriptor, std::ostream* stream);
+		static int DoStartProcess(const String& path,
+				const Vector<String>& args,
+				AnonymousPipe& outputPipe,
+				AnonymousPipe& errorPipe);
+		void WaitToExitImpl(bool noThrow);
+		void ReadAllFromPipe(AnonymousPipe* pipe, std::ostream* stream);
+		static bool ReadFromPipe(AnonymousPipe& pipe, char* buffer, std::size_t size, std::size_t& bytesRead);
+		static bool WriteToPipe(AnonymousPipe& pipe, char* buffer, std::size_t size, std::size_t& bytesWriten);
 	};
 
 } // Elpida

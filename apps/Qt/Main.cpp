@@ -25,6 +25,7 @@
 #include <QScreen>
 
 #include <filesystem>
+#include <iostream>
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
@@ -50,6 +51,7 @@
 
 #include "Core/BenchmarkExecutionService.hpp"
 #include "QtThreadQueue.hpp"
+#include "Elpida/Platform/Process.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -224,8 +226,17 @@ static BenchmarksModel LoadBenchmarks()
 	return BenchmarksModel(std::move(benchmarkGroups));
 }
 
+#include "Elpida/Platform/Process.hpp"
+#include <iostream>
 int main(int argc, char* argv[])
 {
+	Process process("sleep", {"5"});
+
+//	std::string str;
+//	process.GetStdOutput() >> str;
+//	std::cout << str;
+
+	return EXIT_SUCCESS;
 	setupPlatformSpecifics();
 
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
