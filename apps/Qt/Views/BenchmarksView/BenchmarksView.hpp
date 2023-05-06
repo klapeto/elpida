@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QTreeWidgetItem>
 #include <unordered_map>
+#include <string>
 
 namespace Elpida::Application
 {
@@ -41,7 +42,7 @@ namespace Elpida::Application
 		BenchmarksController& _benchmarksController;
 		BenchmarkConfigurationView* _configurationView;
 		BenchmarkResultsView* _resultsView;
-		std::unordered_map<QString, BenchmarkModel*> _benchmarkMap;
+		std::unordered_map<std::string, BenchmarkModel*> _benchmarkMap;
 		bool _uiUpdating;
 		void UpdateUi();
 		void LoadBenchmarkTree();

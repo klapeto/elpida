@@ -42,10 +42,10 @@ namespace Elpida::Application
 
 			for (auto& benchmark: group.GetBenchmarks())
 			{
-				auto key = QString::fromStdString(group.GetName() + benchmark.GetName());
+				auto key = group.GetName() + benchmark.GetName();
 				_benchmarkMap.insert({ key, const_cast<BenchmarkModel*>(&benchmark) });
 				auto item = new QTreeWidgetItem(QStringList(QString::fromStdString(benchmark.GetName())));
-				item->setData(1, 0, QVariant(key));
+				item->setData(1, 0, QVariant(QString::fromStdString(key)));
 				groupItem->addChild(item);
 			}
 
@@ -64,7 +64,7 @@ namespace Elpida::Application
 		if (current != nullptr)
 		{
 			auto key = current->data(1, 0).value<QString>();
-			auto itr = _benchmarkMap.find(key);
+			auto itr = _benchmarkMap.find(key.toStdString());
 
 			if (itr != _benchmarkMap.end())
 			{
