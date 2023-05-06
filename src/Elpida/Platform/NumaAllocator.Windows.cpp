@@ -14,6 +14,7 @@
 
 #include <windows.h>
 #include <strsafe.h>
+#include <memoryapi.h>
 
 namespace Elpida
 {
