@@ -6,6 +6,7 @@
 
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
+#include "Elpida/Platform/Process.hpp"
 
 #include <sstream>
 
@@ -51,7 +52,12 @@ namespace Elpida::Application
 		{
 			arguments.push_back(std::string("--config\"").append(value).append("\""));
 		}
-		return OsUtilities::ExecuteProcess(ExecutablePath, arguments);
+
+		Process process(ExecutablePath, arguments);
+		process.WaitToExit();
+		std::string str;
+		process.GetStdOutput() >> str;
+		return str;
 	}
 
 	void BenchmarkExecutionService::StopCurrentExecution()

@@ -196,7 +196,7 @@ static BenchmarksModel LoadBenchmarks()
 		{
 			try
 			{
-				BenchmarkGroupModule module(entry.path());
+				BenchmarkGroupModule module(entry.path().string());
 
 				auto& benchmarks = module.GetBenchmarkGroup().GetBenchmarks();
 				std::vector<BenchmarkModel> benchmarkModels;
@@ -226,17 +226,8 @@ static BenchmarksModel LoadBenchmarks()
 	return BenchmarksModel(std::move(benchmarkGroups));
 }
 
-#include "Elpida/Platform/Process.hpp"
-#include <iostream>
 int main(int argc, char* argv[])
 {
-	Process process("sleep", {"5"});
-
-//	std::string str;
-//	process.GetStdOutput() >> str;
-//	std::cout << str;
-
-	return EXIT_SUCCESS;
 	setupPlatformSpecifics();
 
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);

@@ -39,15 +39,7 @@ namespace Elpida
 
 	void NumaAllocator::Deallocate(void* ptr, Size size) const
 	{
-		VirtualFree(data, 0, MEM_RELEASE);
-	}
-
-	unsigned int OsUtilities::GetNumaNodeIdForProcessor(unsigned int processorId)
-	{
-		UCHAR NodeNumber;
-
-		GetNumaProcessorNode((UCHAR)processorId, &NodeNumber);	// TODO: does not work with 64+ processors (thanks windows)
-		return NodeNumber;
+		VirtualFree(ptr, 0, MEM_RELEASE);
 	}
 
 } // Elpida

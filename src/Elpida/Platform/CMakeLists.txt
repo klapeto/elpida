@@ -23,8 +23,21 @@ set(ELPIDA_PLATFORM_SOURCES
         MemoryInfoLoader.Windows.cpp
 
         CpuInfoLoader.X86.cpp
-        CpuInfoLoader.Arm.Unix.cpp Process.cpp Process.hpp Process.Unix.cpp AnonymousPipe.cpp AnonymousPipe.hpp AnonymousPipe.Unix.cpp AnonymousPipe.Windows.cpp Process.Windows.cpp)
+        CpuInfoLoader.Arm.Unix.cpp
+
+        Process.cpp
+        Process.Unix.cpp
+        Process.Windows.cpp
+
+        AnonymousPipe.cpp
+        AnonymousPipe.Unix.cpp
+        AnonymousPipe.Windows.cpp
+)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 
-target_link_libraries(elpida-platform elpida-core hwloc numa)
+target_link_libraries(elpida-platform elpida-core hwloc)
+
+if (UNIX)
+    target_link_libraries(elpida-platform elpida-core numa)
+endif ()

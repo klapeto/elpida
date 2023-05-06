@@ -54,7 +54,7 @@ namespace Elpida
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 		success = CreateProcessW(NULL,
-				(LPWSTR)Vu::stringToWstring(GetCommandLine(path, args)).c_str(), // command line
+				(LPWSTR)Vu::StringToWstring(GetCommandLine(path, args)).c_str(), // command line
 				NULL,                                        // process security attributes
 				NULL,                                        // primary thread security attributes
 				TRUE,                                        // handles are inherited
