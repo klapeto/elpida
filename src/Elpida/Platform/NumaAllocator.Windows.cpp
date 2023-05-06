@@ -12,9 +12,9 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 
-#include <windows.h>
+#include <Windows.h>
 #include <strsafe.h>
-#include <memoryapi.h>
+#include <Memoryapi.h>
 
 namespace Elpida
 {
