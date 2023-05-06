@@ -12,7 +12,7 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 
-#include <Windows.h>
+#include <windows.h>
 #include <strsafe.h>
 #include <Memoryapi.h>
 
