@@ -21,6 +21,7 @@ namespace Elpida
 	void* NumaAllocator::Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const
 	{
 		auto numaNodeId = targetProcessingUnit.GetNumaNode().GetOsIndex().value();
+#if _WIN32_WINNT >= 0x0600
 		void* ptr = (void*)VirtualAllocExNuma(
 			GetCurrentProcess(),
 			NULL,
@@ -29,6 +30,16 @@ namespace Elpida
 			PAGE_READWRITE,
 			(UCHAR)numaNodeId
 		);
+#else
+		// Very old windows, no numa support
+		void* ptr = (void*)VirtualAllocEx(
+			GetCurrentProcess(),
+			NULL,
+			size,
+			MEM_RESERVE | MEM_COMMIT,
+			PAGE_READWRITE
+		);
+#endif
 
 		if (ptr == nullptr)
 		{

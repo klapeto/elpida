@@ -74,6 +74,7 @@ if (MSYS OR MINGW)
     set(ELPIDA_LIB_INSTALL_DIR bin)
     set(ELPIDA_APP_INSTALL_DIR bin)
     add_definitions(-DWIN32=1)
+    add_definitions(-DWINVER=0x0600) # We support Vista and above
 else()
     set(ELPIDA_TASK_BATCH_INSTALL_DIR bin/Benchmarks)
     set(ELPIDA_HEADER_INSTALL_DIR include)
