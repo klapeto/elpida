@@ -4,9 +4,6 @@
 
 #include "Promise.hpp"
 
-namespace Elpida
-{
-	namespace Application
-	{
-	} // Elpida
-} // Application
+namespace Elpida::Application {
+} // Elpida
+// Application

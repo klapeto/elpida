@@ -107,7 +107,11 @@ namespace Elpida::Application
 
 	void BenchmarksView::on_pbRun_clicked(bool checked)
 	{
-		_benchmarksController.Run();
+		Run();
+	}
+
+	Promise<> BenchmarksView::Run() {
+		co_await _benchmarksController.Run();
 		UpdateUi();
 	}
 }

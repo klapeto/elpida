@@ -3,6 +3,7 @@
 //
 
 #include "Elpida/Core/Config.hpp"
+#include <cstddef>
 
 #if defined(ELPIDA_WINDOWS)
 
@@ -15,7 +16,7 @@
 
 namespace Elpida
 {
-	AnonymousPipe::AnonymousPipe()
+	void AnonymousPipe::Open()
 	{
 		SECURITY_ATTRIBUTES securityAttributes;
 		securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -42,6 +43,30 @@ namespace Elpida
 
 		_readHandle = readHandle;
 		_writeHandle = writeHandle;
+	}
+
+	std::size_t AnonymousPipe::Read(char* buffer, std::size_t size) const
+	{
+		DWORD bytes;
+
+		if (!ReadFile(std::any_cast<HANDLE>(_readHandle), buffer, size, &bytes, NULL))
+		{
+			throw ElpidaException("Failed to read from pipe: ", OsUtilities::GetLastErrorString());
+		}
+
+		return bytes;
+	}
+
+	std::size_t AnonymousPipe::Write(char* buffer, std::size_t size) const
+	{
+		DWORD bytes;
+
+		if (!WriteFile(std::any_cast<HANDLE>(_readHandle), buffer, size, &bytes, NULL))
+		{
+			throw ElpidaException("Failed to write to pipe: ", OsUtilities::GetLastErrorString());
+		}
+
+		return bytes;
 	}
 
 	void AnonymousPipe::Close()

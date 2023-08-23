@@ -5,8 +5,10 @@
 #ifndef ELPIDA_BENCHMARKEXECUTIONSERVICE_HPP_
 #define ELPIDA_BENCHMARKEXECUTIONSERVICE_HPP_
 
+#include "Elpida/Platform/Process.hpp"
+#include "Models/BenchmarkResultModel.hpp"
+
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace Elpida::Application
@@ -14,16 +16,19 @@ namespace Elpida::Application
 
 	class BenchmarkExecutionService
 	{
-	 public:
-		std::string Execute(const std::string& libraryPath,
-			std::size_t index,
-			const std::vector<std::size_t>& affinity,
-			const std::vector<std::string>& configurations,
-			double nowOverheadNanoseconds,
-			double loopOverheadNanoseconds,
-			double virtualCallOverheadNanoseconds);
+	public:
+		BenchmarkResultModel Execute(const std::string& libraryPath,
+				std::size_t index,
+				const std::vector<std::size_t>& affinity,
+				const std::vector<std::string>& configurations,
+				double nowOverheadNanoseconds,
+				double loopOverheadNanoseconds,
+				double virtualCallOverheadNanoseconds);
+
 		void StopCurrentExecution();
-	 private:
+
+	private:
+		Process _currentProcess;
 	};
 
 } // Application

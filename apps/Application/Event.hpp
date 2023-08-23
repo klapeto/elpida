@@ -40,15 +40,10 @@ namespace Elpida::Application
 		}
 
 		Event(const Event&) = delete;
-
 		Event(Event&& other) noexcept = default;
-
 		Event& operator=(const Event&) = delete;
-
 		Event& operator=(Event&&) noexcept = default;
-
 		~Event() = default;
-
 	private:
 		std::shared_ptr<CallbackCollection> _subscriptions;
 	};

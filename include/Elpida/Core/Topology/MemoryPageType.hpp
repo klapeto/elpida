@@ -9,7 +9,7 @@
 
 namespace Elpida
 {
-	class MemoryPageType
+	class MemoryPageType final
 	{
 	 public:
 		[[nodiscard]]

@@ -51,7 +51,6 @@
 
 #include "Core/BenchmarkExecutionService.hpp"
 #include "QtThreadQueue.hpp"
-#include "Elpida/Platform/Process.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -291,6 +290,5 @@ int main(int argc, char* argv[])
 
 	ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
 	ThreadQueue::Current().lock()->Run();
-	//return QApplication::exec();
 	return EXIT_SUCCESS;
 }

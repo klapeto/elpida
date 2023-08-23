@@ -38,11 +38,11 @@ namespace Elpida
 		int associativitySets,
 		bool fullyAssociative)
 		: TopologyNode(type),
-		  _cacheType(cacheType),
+		  _fullyAssociative(fullyAssociative),
 		  _size(size),
 		  _lineSize(lineSize),
-		  _associativitySets(associativitySets),
-		  _fullyAssociative(fullyAssociative)
+		  _cacheType(cacheType),
+		  _associativitySets(associativitySets)
 	{
 
 	}

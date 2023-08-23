@@ -14,7 +14,7 @@
 
 namespace Elpida
 {
-	AnonymousPipe::AnonymousPipe()
+	void AnonymousPipe::Open()
 	{
 		int pipes[2]{ 0, 0 };
 		if (pipe(pipes) == -1)
@@ -29,13 +29,34 @@ namespace Elpida
 	{
 		if (_readHandle.has_value())
 		{
-			close(GetReadHandle<int>());
+			close(std::any_cast<int>(_readHandle));
+			close(std::any_cast<int>(_writeHandle));
 		}
+	}
 
-		if (_writeHandle.has_value())
+	std::size_t AnonymousPipe::Read(char* buffer, std::size_t size) const
+	{
+		auto bytesRead = read(std::any_cast<int>(_readHandle), buffer, size);
+		if (bytesRead <= 0)
 		{
-			close(GetWriteHandle<int>());
+			throw ElpidaException("Failed to read from pipe: ", strerror(errno));
 		}
+		return bytesRead;
+	}
+
+	std::size_t AnonymousPipe::Write(char* buffer, std::size_t size) const
+	{
+		auto bytesWritten = write(std::any_cast<int>(_readHandle), buffer, size);
+		if (bytesWritten <= 0)
+		{
+			throw ElpidaException("Failed to read from pipe: ", strerror(errno));
+		}
+		return bytesWritten;
+	}
+
+	bool AnonymousPipe::IsOpen() const
+	{
+		return _readHandle.has_value();
 	}
 
 } // Elpida

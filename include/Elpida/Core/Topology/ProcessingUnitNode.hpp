@@ -15,7 +15,7 @@
 namespace Elpida
 {
 
-	class ProcessingUnitNode : public TopologyNode
+	class ProcessingUnitNode final : public TopologyNode
 	{
 	 public:
 

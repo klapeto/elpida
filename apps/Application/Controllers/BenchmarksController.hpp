@@ -6,6 +6,7 @@
 #define ELPIDA_BENCHMARKSCONTROLLER_HPP_
 
 #include "Controller.hpp"
+#include "Core/Promise.hpp"
 
 namespace Elpida::Application
 {
@@ -24,7 +25,7 @@ namespace Elpida::Application
 		void SetOpenResultAfterUpload(bool openResult);
 		void SetIterationsToRun(int iterations);
 
-		void Run();
+		Promise<> Run();
 
 		explicit BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, OverheadsModel& overheadsModel, BenchmarkExecutionService& benchmarkExecutionService, MessageService& messageService);
 		~BenchmarksController() = default;

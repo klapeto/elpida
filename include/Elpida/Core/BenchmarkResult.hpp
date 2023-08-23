@@ -12,7 +12,7 @@
 
 namespace Elpida
 {
-	class BenchmarkResult
+	class BenchmarkResult final
 	{
 	 public:
 
@@ -34,8 +34,8 @@ namespace Elpida
 			return _taskResults;
 		}
 
-		BenchmarkResult(BenchmarkInfo&& benchmarkInfo, double score, const Vector<TaskResult>& taskResults)
-			: _benchmarkInfo(std::move(benchmarkInfo)), _taskResults(taskResults), _score(score)
+		BenchmarkResult(BenchmarkInfo&& benchmarkInfo, double score, Vector<TaskResult>&& taskResults)
+			: _benchmarkInfo(std::move(benchmarkInfo)), _taskResults(std::move(taskResults)), _score(score)
 		{
 		}
 

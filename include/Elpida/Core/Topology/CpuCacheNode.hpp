@@ -19,7 +19,7 @@ namespace Elpida
 		Unified
 	};
 
-	class CpuCacheNode : public TopologyNode
+	class CpuCacheNode final : public TopologyNode
 	{
 	 public:
 		[[nodiscard]]
@@ -51,11 +51,11 @@ namespace Elpida
 		CpuCacheNode& operator=(CpuCacheNode&&) noexcept = delete;
 		~CpuCacheNode() override = default;
 	 private:
-		CacheType _cacheType;
+		bool _fullyAssociative;
 		Size _size;
 		Size _lineSize;
+		CacheType _cacheType;
 		int _associativitySets;
-		bool _fullyAssociative;
 	};
 
 } // Elpida

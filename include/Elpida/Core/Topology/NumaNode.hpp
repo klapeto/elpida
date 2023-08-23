@@ -15,7 +15,7 @@
 namespace Elpida
 {
 
-	class NumaNode : public TopologyNode
+	class NumaNode final : public TopologyNode
 	{
 	 public:
 		[[nodiscard]]

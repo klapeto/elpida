@@ -11,7 +11,7 @@
 namespace Elpida
 {
 
-	class CpuKind
+	class CpuKind final 
 	{
 	 public:
 		[[nodiscard]]

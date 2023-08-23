@@ -5,7 +5,6 @@
 #include "Elpida/Core/BenchmarkGroup.hpp"
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Vector.hpp"
-#include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/BenchmarkModule.hpp"
 #include "MemoryLatencyBenchmark.hpp"
 #include "MemoryReadBandwidthBenchmark.hpp"

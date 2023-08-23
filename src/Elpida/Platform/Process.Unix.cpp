@@ -13,7 +13,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#include <thread>
 #include <sstream>
 #include <filesystem>
 #include <cerrno>
@@ -60,12 +59,12 @@ namespace Elpida
 	{
 		auto argV = CreateArgVFromVector(path, args);
 
-		if (dup2(outputPipe.GetWriteHandle<int>(), STDOUT_FILENO) == -1)
+		if (outputPipe.IsOpen() && dup2(outputPipe.GetWriteHandle<int>(), STDOUT_FILENO) == -1)
 		{
 			_exit(1);
 		}
 
-		if (dup2(errorPipe.GetWriteHandle<int>(), STDERR_FILENO) == -1)
+		if (errorPipe.IsOpen() && dup2(errorPipe.GetWriteHandle<int>(), STDERR_FILENO) == -1)
 		{
 			_exit(1);
 		}
@@ -97,28 +96,18 @@ namespace Elpida
 		return pid;
 	}
 
-	bool Process::ReadFromPipe(AnonymousPipe& pipe, char* buffer, std::size_t size, size_t& bytesRead)
-	{
-		bytesRead = read(pipe.GetReadHandle<int>(), buffer, size);
-		return bytesRead != 0;
-	}
-
-	bool Process::WriteToPipe(AnonymousPipe& pipe, char* buffer, std::size_t size, size_t& bytesWriten)
-	{
-		bytesWriten = write(pipe.GetWriteHandle<int>(), buffer, size);
-		return bytesWriten != 0;
-	}
-
 	void Process::Terminate()
 	{
+		if (_pid < 0) return;
 		if (kill(_pid, SIGTERM) == -1)
 		{
 			throw ElpidaException("Failed to terminate process: (", _path, ") (", _pid, "): ", strerror(errno));
 		}
 	}
 
-	void Process::WaitToExitImpl(bool noThrow)
+	void Process::WaitToExitImpl(bool noThrow) const
 	{
+		if (_pid < 0) return;
 		int status;
 		pid_t waitResult;
 		do
@@ -142,7 +131,7 @@ namespace Elpida
 		if (WEXITSTATUS(status) == 1)
 		{
 			if (noThrow) return;
-			throw ElpidaException("Process exited with error: (", _path, ") (", _pid, "): ", _stdError.str());
+			throw ElpidaException("Process exited with error: (", _path, ") (", _pid, ")");
 		}
 	}
 

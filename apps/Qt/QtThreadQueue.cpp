@@ -39,7 +39,7 @@ namespace Elpida::Application
 			try
 			{
 				func();
-			} catch (...){
+			} catch (...) {
 
 			}
 			lock.lock();

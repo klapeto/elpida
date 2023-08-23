@@ -12,7 +12,7 @@
 namespace Elpida
 {
 
-	class TaskInfo
+	class TaskInfo final
 	{
 	 public:
 		[[nodiscard]]

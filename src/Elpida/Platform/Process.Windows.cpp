@@ -48,8 +48,8 @@ namespace Elpida
 		STARTUPINFOW siStartInfo;
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
 		siStartInfo.cb = sizeof(STARTUPINFOW);
-		siStartInfo.hStdError = errorPipe.GetWriteHandle<HANDLE>();
-		siStartInfo.hStdOutput = outputPipe.GetWriteHandle<HANDLE>();
+		siStartInfo.hStdError = errorPipe.IsOpen() ? errorPipe.GetWriteHandle<HANDLE>() : NULL;
+		siStartInfo.hStdOutput = outputPipe.IsOpen() ? outputPipe.GetWriteHandle<HANDLE>() : NULL;
 		siStartInfo.hStdInput = NULL;
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
@@ -76,26 +76,9 @@ namespace Elpida
 		return static_cast<int>(piProcInfo.dwProcessId);
 	}
 
-	bool Process::ReadFromPipe(AnonymousPipe& pipe, char* buffer, std::size_t size, std::size_t& bytesRead)
-	{
-		DWORD bytes;
-		auto success = ReadFile(pipe.GetReadHandle<HANDLE>(), buffer, size, &bytes, NULL);
-
-		bytesRead = bytes;
-		return success;
-	}
-
-	bool Process::WriteToPipe(AnonymousPipe& pipe, char* buffer, std::size_t size, std::size_t& bytesWriten)
-	{
-		DWORD bytes;
-		auto success = WriteFile(pipe.GetWriteHandle<HANDLE>(), buffer, size, &bytes, NULL);
-
-		bytesWriten = bytes;
-		return success;
-	}
-
 	void Process::Terminate()
 	{
+		if (_pid < 0) return;
 		auto handle = OpenProcess(PROCESS_TERMINATE, FALSE, _pid);
 		if (handle == nullptr)
 		{
@@ -114,6 +97,7 @@ namespace Elpida
 
 	void Process::WaitToExitImpl(bool noThrow)
 	{
+		if (_pid < 0) return;
 		auto handle = OpenProcess(SYNCHRONIZE, FALSE, _pid);
 		if (handle == nullptr)
 		{

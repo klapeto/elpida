@@ -14,4 +14,4 @@ add_library(elpida-memory-benchmarks SHARED ${ELPIDA_MEMORY_BENCHMARKS_SOURCES})
 
 target_link_libraries(elpida-memory-benchmarks PRIVATE elpida-core elpida-common-tasks)
 
-install(TARGETS elpida-memory-benchmarks DESTINATION ${ELPIDA_TASK_BATCH_INSTALL_DIR})
+install(TARGETS elpida-memory-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})

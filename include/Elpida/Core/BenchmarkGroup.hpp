@@ -28,7 +28,7 @@ namespace Elpida
 		}
 
 		BenchmarkGroup(String name, Vector<UniquePtr<Benchmark>>&& benchmarks)
-			: _name(std::move(name)), _benchmarks(std::move(benchmarks))
+			:  _benchmarks(std::move(benchmarks)), _name(std::move(name))
 		{
 
 		}

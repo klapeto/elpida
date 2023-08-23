@@ -79,9 +79,8 @@ namespace Elpida
 		Vector<Ref<const TopologyNode>> _siblings;
 
 		Optional<Ref<const TopologyNode>> _parent;
-
-		NodeType _type;
 		Optional<unsigned int> _osIndex;
+		NodeType _type;
 	 protected:
 		void AddSibling(TopologyNode& node);
 	};

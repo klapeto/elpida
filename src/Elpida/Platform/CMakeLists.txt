@@ -32,7 +32,7 @@ set(ELPIDA_PLATFORM_SOURCES
         AnonymousPipe.cpp
         AnonymousPipe.Unix.cpp
         AnonymousPipe.Windows.cpp
-)
+        AsyncPipeReader.cpp ../../../include/Elpida/Platform/AsyncPipeReader.hpp)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 

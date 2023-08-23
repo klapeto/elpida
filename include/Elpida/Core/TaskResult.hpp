@@ -12,15 +12,9 @@
 namespace Elpida
 {
 
-	class TaskResult
+	class TaskResult final
 	{
 	 public:
-		[[nodiscard]]
-		const TaskInfo& GetTaskInfo() const
-		{
-			return _taskInfo;
-		}
-
 		[[nodiscard]]
 		const Duration& GetDuration() const
 		{
@@ -33,16 +27,15 @@ namespace Elpida
 			return _inputSize;
 		}
 
-		TaskResult(TaskInfo&& taskInfo, const Duration& duration, Size inputSize)
-			: _taskInfo(std::move(taskInfo)), _duration(duration), _inputSize(inputSize)
+		TaskResult(const Duration& duration, Size inputSize)
+			: _duration(duration), _inputSize(inputSize)
 		{
 		}
 
-		TaskResult(const TaskResult&) = default;
+		TaskResult(const TaskResult&) = delete;
 		TaskResult(TaskResult&&) = default;
 		~TaskResult() = default;
 	 private:
-		TaskInfo _taskInfo;
 		Duration _duration;
 		Size _inputSize;
 	};

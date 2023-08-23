@@ -10,7 +10,7 @@ project(Elpida VERSION ${ELPIDA_VERSION}
 
 set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(ELPIDA_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
@@ -44,6 +44,8 @@ endif("${isSystemDir}" STREQUAL "-1")
 
 include(GNUInstallDirs)
 
+add_compile_options(-fcoroutines)
+
 if (UNIX)
     set(ELPIDA_UNIX ON)
     add_compile_options(-Wextra)
@@ -56,6 +58,7 @@ if (MSVC)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 endif()
 
+# Enable debug stuff if we build debug
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(ELPIDA_DEBUG ON)
     set(ELPIDA_DEBUG_BUILD 1)
@@ -69,7 +72,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 if (MSYS OR MINGW)
-    set(ELPIDA_TASK_BATCH_INSTALL_DIR bin/Benchmarks)
+    set(ELPIDA_BENCHMARK_INSTALL_DIR bin/Benchmarks)
     set(ELPIDA_HEADER_INSTALL_DIR include)
     set(ELPIDA_LIB_INSTALL_DIR bin)
     set(ELPIDA_APP_INSTALL_DIR bin)
@@ -77,11 +80,13 @@ if (MSYS OR MINGW)
     add_definitions(-DWINVER=0x0600) # We support Vista and above
     add_definitions(-D_WIN32_WINNT=0x0600) # We support Vista and above
 else()
-    set(ELPIDA_TASK_BATCH_INSTALL_DIR bin/Benchmarks)
+    set(ELPIDA_BENCHMARK_INSTALL_DIR bin/Benchmarks)
     set(ELPIDA_HEADER_INSTALL_DIR include)
     set(ELPIDA_LIB_INSTALL_DIR lib)
     set(ELPIDA_APP_INSTALL_DIR bin)
 endif()
+
+include_directories(include)
 
 add_subdirectory(extern)
 add_subdirectory(src)

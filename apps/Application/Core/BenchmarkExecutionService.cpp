@@ -5,21 +5,22 @@
 #include "BenchmarkExecutionService.hpp"
 
 #include "Elpida/Core/Config.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
+#include "Elpida/Platform/AsyncPipeReader.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
-#include "Elpida/Platform/Process.hpp"
 
 #include <sstream>
 
 namespace Elpida::Application
 {
 	static inline const char* ExecutablePath = "./elpida-executor"
-#if defined(ELPIDA_WINDOWS)
-			".exe";
-#elif defined(ELPIDA_UNIX)
-			"";
+											   #if defined(ELPIDA_WINDOWS)
+											   ".exe";
+											   #elif defined(ELPIDA_UNIX)
+											   "";
 #endif
 
-	std::string
+	BenchmarkResultModel
 	BenchmarkExecutionService::Execute(const std::string& libraryPath,
 			std::size_t index,
 			const std::vector<std::size_t>& affinity,
@@ -48,15 +49,29 @@ namespace Elpida::Application
 
 		arguments.push_back(affinityStr.substr(0, affinityStr.size() - 1));
 
-		for (auto& value : configurations)
+		for (auto& value: configurations)
 		{
 			arguments.push_back(std::string("--config\"").append(value).append("\""));
 		}
 
-		Process process(ExecutablePath, arguments);
-		process.WaitToExit();
-		std::string str;
-		process.GetStdOutput() >> str;
+		_currentProcess = std::move(Process(ExecutablePath, arguments, true, true));
+
+
+		AsyncPipeReader stdOutReader(_currentProcess.GetStdOut());
+		AsyncPipeReader stdErrReader(_currentProcess.GetStdErr());
+		stdOutReader.StartReading();
+		stdErrReader.StartReading();
+		try
+		{
+			_currentProcess.WaitToExit();
+		}
+		catch (const ElpidaException& ex)
+		{
+			stdErrReader.StopReading();
+			throw ElpidaException(stdErrReader.GetString());
+		}
+
+
 		return str;
 	}
 
