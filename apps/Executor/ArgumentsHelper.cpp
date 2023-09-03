@@ -70,8 +70,8 @@ namespace Elpida
 		std::ostringstream accumulator;
 		accumulator << R"("Elpida Benchmark Executor: )" << ELPIDA_VERSION << std::endl;
 		accumulator
-				<< R"(Example usage: elpida-executor --module="./dir/benchmark.so" --index=0 --affinity=0,1,5,32 --format=json --config="Config A" --config="Config B" ...)"
-				<< std::endl;
+			<< R"(Example usage: elpida-executor --module="./dir/benchmark.so" --index=0 --affinity=0,1,5,32 --format=json --config="Config A" --config="Config B" ...)"
+			<< std::endl;
 		accumulator << R"("       -v, --version)" << std::endl;
 		accumulator << R"("           Prints the version and exits)" << std::endl;
 		accumulator << R"("       -h, --help)" << std::endl;
@@ -86,8 +86,8 @@ namespace Elpida
 		accumulator << R"("           The result output format. Accepted values (default, json))" << std::endl;
 		accumulator << R"("       --config="CONFIG_VALUE")" << std::endl;
 		accumulator
-				<< R"("           Sets a configuration. Successive configurations are appended in the order defined)"
-				<< std::endl;
+			<< R"("           Sets a configuration. Successive configurations are appended in the order defined)"
+			<< std::endl;
 		accumulator << R"("       --now-nanoseconds=NANOSECONDS)" << std::endl;
 		accumulator << R"("           The now overhead in nanoseconds)" << std::endl;
 		accumulator << R"("       --loop-nanoseconds=NANOSECONDS)" << std::endl;
@@ -156,17 +156,17 @@ namespace Elpida
 		};
 
 		struct option options[] = {
-				{ "version",             no_argument,       nullptr, Version },
-				{ "help",                no_argument,       nullptr, Help },
-				{ "module",              required_argument, nullptr, Module },
-				{ "index",               required_argument, nullptr, Index },
-				{ "affinity",            required_argument, nullptr, Affinity },
-				{ "format",              required_argument, nullptr, Format },
-				{ "config",              required_argument, nullptr, Config },
-				{ "now-nanoseconds",     required_argument, nullptr, NowOverhead },
-				{ "loop-nanoseconds",    required_argument, nullptr, LoopOverhead },
-				{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
-				{ nullptr, 0,                               nullptr, 0 }
+			{ "version", no_argument, nullptr, Version },
+			{ "help", no_argument, nullptr, Help },
+			{ "module", required_argument, nullptr, Module },
+			{ "index", required_argument, nullptr, Index },
+			{ "affinity", required_argument, nullptr, Affinity },
+			{ "format", required_argument, nullptr, Format },
+			{ "config", required_argument, nullptr, Config },
+			{ "now-nanoseconds", required_argument, nullptr, NowOverhead },
+			{ "loop-nanoseconds", required_argument, nullptr, LoopOverhead },
+			{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
+			{ nullptr, 0, nullptr, 0 }
 		};
 
 		int option_index = 0;
@@ -306,5 +306,11 @@ namespace Elpida
 	double ArgumentsHelper::GetVCallOverhead() const
 	{
 		return _vCallOverhead;
+	}
+
+	ArgumentsHelper::ArgumentsHelper()
+		: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0)
+	{
+
 	}
 } // Elpida

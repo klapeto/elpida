@@ -5,11 +5,15 @@
 #include "BenchmarkExecutionService.hpp"
 
 #include "Elpida/Core/Config.hpp"
+#include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Platform/AsyncPipeReader.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
+#include "Models/BenchmarkResultModel.hpp"
+#include "json.hpp"
 
 #include <sstream>
+#include <vector>
 
 namespace Elpida::Application
 {
@@ -22,26 +26,26 @@ namespace Elpida::Application
 
 	BenchmarkResultModel
 	BenchmarkExecutionService::Execute(const std::string& libraryPath,
-			std::size_t index,
-			const std::vector<std::size_t>& affinity,
-			const std::vector<std::string>& configurations,
-			double nowOverheadNanoseconds,
-			double loopOverheadNanoseconds,
-			double virtualCallOverheadNanoseconds)
+		std::size_t index,
+		const std::vector<std::size_t>& affinity,
+		const std::vector<std::string>& configurations,
+		double nowOverheadNanoseconds,
+		double loopOverheadNanoseconds,
+		double virtualCallOverheadNanoseconds)
 	{
 		std::vector<std::string> arguments
-				{
-						std::string("--module=") + "\"" + libraryPath + "\"",
-						"--index=" + std::to_string(index),
-						"--now-nanoseconds=" + std::to_string(nowOverheadNanoseconds),
-						"--loop-nanoseconds=" + std::to_string(loopOverheadNanoseconds),
-						"--virtual-nanoseconds=" + std::to_string(virtualCallOverheadNanoseconds),
-						"--format=json"
-				};
+			{
+				std::string("--module=") + "\"" + libraryPath + "\"",
+				"--index=" + std::to_string(index),
+				"--now-nanoseconds=" + std::to_string(nowOverheadNanoseconds),
+				"--loop-nanoseconds=" + std::to_string(loopOverheadNanoseconds),
+				"--virtual-nanoseconds=" + std::to_string(virtualCallOverheadNanoseconds),
+				"--format=json"
+			};
 
 		std::ostringstream affinityAccumulator;
 		affinityAccumulator << "--affinity=";
-		for (auto processor: affinity)
+		for (auto processor : affinity)
 		{
 			affinityAccumulator << processor << ',';
 		}
@@ -49,13 +53,12 @@ namespace Elpida::Application
 
 		arguments.push_back(affinityStr.substr(0, affinityStr.size() - 1));
 
-		for (auto& value: configurations)
+		for (auto& value : configurations)
 		{
 			arguments.push_back(std::string("--config\"").append(value).append("\""));
 		}
 
-		_currentProcess = std::move(Process(ExecutablePath, arguments, true, true));
-
+		_currentProcess = Process(ExecutablePath, arguments, true, true);
 
 		AsyncPipeReader stdOutReader(_currentProcess.GetStdOut());
 		AsyncPipeReader stdErrReader(_currentProcess.GetStdErr());
@@ -71,12 +74,30 @@ namespace Elpida::Application
 			throw ElpidaException(stdErrReader.GetString());
 		}
 
+		stdOutReader.StopReading();
+		stdErrReader.StopReading();
 
-		return str;
+		nlohmann::json json = nlohmann::json::parse(stdOutReader.GetString());
+
+		auto score = json["score"].template get<double>();
+		auto taskResultsJ = json["taskResults"];
+
+		std::vector<TaskResultModel> taskResults;
+		taskResults.reserve(taskResultsJ.size());
+
+		for (auto& taskJ : taskResultsJ)
+		{
+			taskResults.emplace_back(
+				NanoSeconds(taskJ["durationNanoseconds"].get<double>()),
+				taskJ["inputSize"].get<std::size_t>()
+			);
+		}
+
+		return { score, std::move(taskResults) };
 	}
 
 	void BenchmarkExecutionService::StopCurrentExecution()
 	{
-
+		_currentProcess.Terminate();
 	}
 } // Application

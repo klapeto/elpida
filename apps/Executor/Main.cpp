@@ -121,7 +121,7 @@ int main(int argC, char** argV)
 		auto result = benchmark->Run(targetProcessors, config, environmentInfo);
 
 		std::cout
-			<< helper.GetResultFormatter().ConvertToString(result)
+			<< helper.GetResultFormatter().ConvertToString(result, *benchmark.get())
 			<< std::endl;
 	}
 	catch (const std::exception& ex)

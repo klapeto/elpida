@@ -15,7 +15,7 @@ namespace Elpida
 		return ValueUtilities::GetValueScaleStringSI(result.GetScore()) + benchmarkInfo.GetScoreUnit();
 	}
 
-	String DefaultFormatter::ConvertToString(const BenchmarkResult& result) const
+	String DefaultFormatter::ConvertToString(const BenchmarkResult& result, const Benchmark& benchmark) const
 	{
 		std::ostringstream accumulator;
 
@@ -23,9 +23,10 @@ namespace Elpida
 		accumulator << "Score: " << TranslateResult(result, benchmarkInfo) << std::endl;
 
 		auto& taskResults = result.GetTaskResults();
-		for (const auto& taskResult: taskResults)
-		{
-			auto& taskInfo = taskResult.GetTaskInfo();
+		auto taskInfos = benchmark.GetInfo().GetTaskInfos();
+		for (std::size_t i = 0; i< taskResults.size(); ++i){
+			auto& taskInfo = taskInfos[i];
+			auto& taskResult = taskResults[i];
 			if (taskInfo.GetScoreType() == Elpida::ScoreType::Throughput)
 			{
 				accumulator

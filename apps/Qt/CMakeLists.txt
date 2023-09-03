@@ -68,8 +68,16 @@ set(ELPIDA_QT_SOURCES
 		Views/BenchmarkResultsView/BenchmarkResultsView.cpp
 		Views/BenchmarkResultsView/BenchmarkResultsView.ui
 
+		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.hpp
+		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.cpp
+		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.ui
+
 		Images/Images.qrc
-        ConfigurationViewPool.cpp ConfigurationViewPool.hpp QtMessageService.cpp QtMessageService.hpp QtThreadQueue.cpp QtThreadQueue.hpp)
+
+        ConfigurationViewPool.cpp
+		QtMessageService.cpp
+		QtThreadQueue.cpp
+		)
 
 
 if (MSVC)

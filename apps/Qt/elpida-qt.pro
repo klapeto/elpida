@@ -23,6 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+	Dialogs/BenchmarkRunningDialog.cpp \
 	Main.cpp \
     Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp \
     Views/BenchmarkListView/BenchmarkListView.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
     Views/TopologyView/TopologyView.cpp
 
 HEADERS += \
+    Dialogs/BenchmarkRunningDialog.hpp \
     Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp \
     Views/BenchmarkListView/BenchmarkListView.hpp \
     Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.hpp \
@@ -56,19 +58,20 @@ HEADERS += \
     Views/TopologyView/TopologyView.hpp
 
 FORMS += \
-    Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui \
-    Views/BenchmarkListView/BenchmarkListView.ui \
-    Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui \
-    Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.ui \
-    Views/CommonDialog/CommonDialog.ui \
-    Views/ConfigurationViews/FileInputView/FileInputView.ui \
-    Views/MainWindow/MainWindow.ui \
-    Views/NavigationBarView/NavigationBarView.ui \
-    Views/QuickStartView/QuickStartView.ui \
-    Views/SystemInfoView/SystemInfoView.ui \
-    Views/BenchmarkResultsView/BenchmarkResultsView.ui \
-    Views/TopologyNodeFrame/TopologyNodeFrame.ui \
-    Views/TopologyView/TopologyView.ui
+    Dialogs/BenchmarkRunningDialog._ui \
+    Views/BenchmarkConfigurationView/BenchmarkConfigurationView._ui \
+    Views/BenchmarkListView/BenchmarkListView._ui \
+    Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView._ui \
+    Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView._ui \
+    Views/CommonDialog/CommonDialog._ui \
+    Views/ConfigurationViews/FileInputView/FileInputView._ui \
+    Views/MainWindow/MainWindow._ui \
+    Views/NavigationBarView/NavigationBarView._ui \
+    Views/QuickStartView/QuickStartView._ui \
+    Views/SystemInfoView/SystemInfoView._ui \
+    Views/BenchmarkResultsView/BenchmarkResultsView._ui \
+    Views/TopologyNodeFrame/TopologyNodeFrame._ui \
+    Views/TopologyView/TopologyView._ui
 
 RESOURCES += \
     Images/Images.qrc

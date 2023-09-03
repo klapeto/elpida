@@ -5,6 +5,7 @@
 #ifndef ELPIDA_RESULTSFORMATTER_HPP_
 #define ELPIDA_RESULTSFORMATTER_HPP_
 
+#include "Elpida/Core/Benchmark.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/BenchmarkResult.hpp"
 
@@ -14,7 +15,7 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		virtual String ConvertToString(const BenchmarkResult& result) const = 0;
+		virtual String ConvertToString(const BenchmarkResult& result, const Benchmark& benchmark) const = 0;
 
 		ResultFormatter() = default;
 		virtual ~ResultFormatter() = default;

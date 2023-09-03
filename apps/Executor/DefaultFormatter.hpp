@@ -17,7 +17,7 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		String ConvertToString(const BenchmarkResult& result) const final;
+		String ConvertToString(const BenchmarkResult& result, const Benchmark& benchmark) const final;
 
 		DefaultFormatter() = default;
 		~DefaultFormatter() final = default;

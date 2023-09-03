@@ -46,7 +46,7 @@ namespace Elpida
 
 	std::size_t AnonymousPipe::Write(char* buffer, std::size_t size) const
 	{
-		auto bytesWritten = write(std::any_cast<int>(_readHandle), buffer, size);
+		auto bytesWritten = write(std::any_cast<int>(_writeHandle), buffer, size);
 		if (bytesWritten <= 0)
 		{
 			throw ElpidaException("Failed to read from pipe: ", strerror(errno));

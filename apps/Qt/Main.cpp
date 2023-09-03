@@ -260,7 +260,7 @@ int main(int argc, char* argv[])
 
 	splash.showMessage("Getting overheads info...");
 
-	OverheadsInfo overheadsInfo(NanoSeconds(561), NanoSeconds(321), NanoSeconds(132));
+	OverheadsInfo overheadsInfo(NanoSeconds(0), NanoSeconds(0), NanoSeconds(0));
 	OverheadsModel overheadsModel(overheadsInfo.GetNowOverhead(), overheadsInfo.GetLoopOverhead(),
 		overheadsInfo.GetVirtualCallOverhead());
 

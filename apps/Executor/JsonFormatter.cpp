@@ -10,7 +10,7 @@ using namespace nlohmann;
 
 namespace Elpida
 {
-	String JsonFormatter::ConvertToString(const BenchmarkResult& result) const
+	String JsonFormatter::ConvertToString(const BenchmarkResult& result, const Benchmark& benchmark) const
 	{
 		json rootJ;
 

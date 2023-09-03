@@ -56,7 +56,7 @@ namespace Elpida
 
 		auto duration = threadTask.Run();
 
-		data = std::move(threadTask.Finalize());
+		data = threadTask.Finalize();
 
 		return duration;
 	}

@@ -47,7 +47,7 @@ namespace Elpida
 
 		String ParseAndGetExitText(int argC, char* argV[]);
 
-		ArgumentsHelper() = default;
+		ArgumentsHelper();
 		~ArgumentsHelper() = default;
 	 private:
 		Vector<unsigned int> _affinity;

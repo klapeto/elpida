@@ -60,7 +60,7 @@ namespace Elpida
 
 	void PngEncodingTask::DoRun()
 	{
-		std::size_t outputSize;
+		std::size_t outputSize = _outputData->GetSize();
 
 		if (!png_image_write_to_memory(&_pngImg,
 			_outputData->GetData(),

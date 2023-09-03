@@ -1,4 +1,5 @@
 #include "BenchmarksView.hpp"
+#include "Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.hpp"
 #include "ui_BenchmarksView.h"
 
 #include "Models/BenchmarksModel.hpp"
@@ -16,10 +17,10 @@ namespace Elpida::Application
 		BenchmarksController& benchmarksController,
 		ConfigurationViewPool& configurationViewPool)
 		: QWidget(),
-		_ui(new Ui::BenchmarksView),
-		_benchmarksModel(benchmarksModel),
-		_benchmarksController(benchmarksController),
-		_uiUpdating(false)
+		  _ui(new Ui::BenchmarksView),
+		  _benchmarksModel(benchmarksModel),
+		  _benchmarksController(benchmarksController),
+		  _uiUpdating(false)
 	{
 		_ui->setupUi(this);
 
@@ -36,11 +37,11 @@ namespace Elpida::Application
 	}
 	void BenchmarksView::LoadBenchmarkTree()
 	{
-		for (auto& group: _benchmarksModel.GetBenchmarkGroups())
+		for (auto& group : _benchmarksModel.GetBenchmarkGroups())
 		{
 			auto groupItem = new QTreeWidgetItem(QStringList(QString::fromStdString(group.GetName())));
 
-			for (auto& benchmark: group.GetBenchmarks())
+			for (auto& benchmark : group.GetBenchmarks())
 			{
 				auto key = group.GetName() + benchmark.GetName();
 				_benchmarkMap.insert({ key, const_cast<BenchmarkModel*>(&benchmark) });
@@ -110,8 +111,12 @@ namespace Elpida::Application
 		Run();
 	}
 
-	Promise<> BenchmarksView::Run() {
+	Promise<> BenchmarksView::Run()
+	{
+		BenchmarkRunningDialog dialog(_benchmarksController, this);
+		dialog.showNormal();
 		co_await _benchmarksController.Run();
+		dialog.close();
 		UpdateUi();
 	}
 }

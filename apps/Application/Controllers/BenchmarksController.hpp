@@ -26,6 +26,7 @@ namespace Elpida::Application
 		void SetIterationsToRun(int iterations);
 
 		Promise<> Run();
+		void StopRunning();
 
 		explicit BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, OverheadsModel& overheadsModel, BenchmarkExecutionService& benchmarkExecutionService, MessageService& messageService);
 		~BenchmarksController() = default;
@@ -34,6 +35,7 @@ namespace Elpida::Application
 		OverheadsModel& _overheadsModel;
 		MessageService& _messageService;
 		BenchmarkExecutionService& _benchmarkExecutionService;
+		bool _cancelling;
 	};
 
 } // Application
