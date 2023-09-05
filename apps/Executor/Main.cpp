@@ -89,12 +89,12 @@ int main(int argC, char** argV)
 		ArgumentsHelper helper;
 
 		{
-			auto returnText = helper.ParseAndGetExitText(argC, argV);
-
+			std::string returnText;
+			auto success = helper.ParseAndGetExitText(argC, argV, returnText);
 			if (!returnText.empty())
 			{
 				std::cout << returnText << std::endl;
-				return EXIT_SUCCESS;
+				return success ? EXIT_SUCCESS : EXIT_FAILURE;
 			}
 		}
 

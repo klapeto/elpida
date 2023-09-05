@@ -12,6 +12,8 @@
 namespace Elpida::Application
 {
 
+	class BenchmarkModel;
+
 	class BenchmarkResultModel final : public Model
 	{
 	public:
@@ -26,8 +28,13 @@ namespace Elpida::Application
 			return _score;
 		}
 
-		BenchmarkResultModel(double score, Vector<TaskResultModel>&& taskResults)
-				: _taskResults(std::move(taskResults)), _score(score)
+		const BenchmarkModel& GetBenchmark() const
+		{
+			return *_benchmark;
+		}
+
+		BenchmarkResultModel(const BenchmarkModel& benchmark, double score, Vector<TaskResultModel>&& taskResults)
+			: _taskResults(std::move(taskResults)), _benchmark(&benchmark), _score(score)
 		{
 
 		}
@@ -39,6 +46,7 @@ namespace Elpida::Application
 		~BenchmarkResultModel() override = default;
 	private:
 		Vector<TaskResultModel> _taskResults;
+		const BenchmarkModel* _benchmark;
 		double _score;
 	};
 

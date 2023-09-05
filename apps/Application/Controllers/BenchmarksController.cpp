@@ -8,19 +8,23 @@
 #include "Models/BenchmarksModel.hpp"
 #include "Models/TopologyModel.hpp"
 #include "Models/OverheadsModel.hpp"
+#include "Models/BenchmarkResultsModel.hpp"
 
 #include "Core/MessageService.hpp"
 #include "Core/BenchmarkExecutionService.hpp"
 #include "Core/Promise.hpp"
+#include "json.hpp"
 
 namespace Elpida::Application
 {
-	BenchmarksController::BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel,
+	BenchmarksController::BenchmarksController(BenchmarksModel& model,
+		TopologyModel& topologyModel,
 		OverheadsModel& overheadsModel,
+		BenchmarkResultsModel& benchmarkResultsModel,
 		BenchmarkExecutionService& benchmarkExecutionService,
 		MessageService& messageService)
 		: Controller<BenchmarksModel>(model), _topologyModel(topologyModel), _overheadsModel(overheadsModel),
-		  _messageService(messageService), _benchmarkExecutionService(benchmarkExecutionService), _cancelling(false)
+		  _benchmarkResultsModel(benchmarkResultsModel), _messageService(messageService), _benchmarkExecutionService(benchmarkExecutionService), _cancelling(false)
 	{
 
 	}
@@ -63,7 +67,7 @@ namespace Elpida::Application
 
 		try
 		{
-			auto result = co_await AsyncPromise<BenchmarkResultModel>([this, selectedBenchmark]()
+			auto serializedResult = co_await AsyncPromise<std::string>([this, selectedBenchmark]()
 			{
 			  std::vector<std::size_t> affinity;
 
@@ -93,6 +97,24 @@ namespace Elpida::Application
 				  std::chrono::duration_cast<std::chrono::nanoseconds, double>(
 					  _overheadsModel.GetVirtualCallOverhead()).count());
 			});
+
+			nlohmann::json json = nlohmann::json::parse(serializedResult);
+
+			auto score = json["score"].template get<double>();
+			auto taskResultsJ = json["taskResults"];
+
+			std::vector<TaskResultModel> taskResults;
+			taskResults.reserve(taskResultsJ.size());
+
+			for (auto& taskJ : taskResultsJ)
+			{
+				taskResults.emplace_back(
+					NanoSeconds(taskJ["durationNanoseconds"].template get<double>()),
+					taskJ["inputSize"].get<std::size_t>()
+				);
+			}
+
+			_benchmarkResultsModel.Add(BenchmarkResultModel(*selectedBenchmark,  score, std::move(taskResults)));
 		}
 		catch (const ElpidaException& ex)
 		{

@@ -45,7 +45,7 @@ namespace Elpida
 		[[nodiscard]]
 		double GetVCallOverhead() const;
 
-		String ParseAndGetExitText(int argC, char* argV[]);
+		bool ParseAndGetExitText(int argC, char* argV[], std::string& returnText);
 
 		ArgumentsHelper();
 		~ArgumentsHelper() = default;

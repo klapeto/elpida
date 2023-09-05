@@ -4,6 +4,7 @@
 
 #include "JsonFormatter.hpp"
 
+#include "Elpida/Core/Duration.hpp"
 #include "json.hpp"
 
 using namespace nlohmann;
@@ -23,7 +24,7 @@ namespace Elpida
 		{
 			json resultJ;
 
-			resultJ["durationNanoseconds"] = std::chrono::duration_cast<std::chrono::nanoseconds>(
+			resultJ["durationNanoseconds"] = std::chrono::duration_cast<NanoSeconds>(
 					taskResult.GetDuration()).count();
 			resultJ["inputSize"] = taskResult.GetInputSize();
 

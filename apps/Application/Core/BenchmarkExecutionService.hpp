@@ -6,7 +6,6 @@
 #define ELPIDA_BENCHMARKEXECUTIONSERVICE_HPP_
 
 #include "Elpida/Platform/Process.hpp"
-#include "Models/BenchmarkResultModel.hpp"
 
 #include <string>
 #include <vector>
@@ -17,7 +16,7 @@ namespace Elpida::Application
 	class BenchmarkExecutionService
 	{
 	public:
-		BenchmarkResultModel Execute(const std::string& libraryPath,
+		std::string Execute(const std::string& libraryPath,
 				std::size_t index,
 				const std::vector<std::size_t>& affinity,
 				const std::vector<std::string>& configurations,

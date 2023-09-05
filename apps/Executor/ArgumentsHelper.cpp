@@ -113,6 +113,23 @@ namespace Elpida
 		return value ? value : "";
 	}
 
+	static std::string GetConfigValue(const char* value)
+	{
+		if (!value) return {};
+		std::string str(value);
+
+		while (str.starts_with('\"'))
+		{
+			str = str.substr(1);
+		}
+
+		while (str.ends_with('\"'))
+		{
+			str = str.substr(0, str.length() - 1);
+		}
+		return str;
+	}
+
 	double static ParseTime(const String& value, const char* name)
 	{
 		if (value.empty())
@@ -139,7 +156,7 @@ namespace Elpida
 		}
 	}
 
-	String ArgumentsHelper::ParseAndGetExitText(int argC, char** argV)
+	bool ArgumentsHelper::ParseAndGetExitText(int argC, char** argV, std::string& returnText)
 	{
 		enum Flags
 		{
@@ -177,10 +194,12 @@ namespace Elpida
 			{
 			case 'v':
 			case Version:
-				return GetVersionString();
+				returnText = GetVersionString();
+				return true;
 			case 'h':
 			case Help:
-				return GetHelpString();
+				returnText = GetHelpString();
+				return true;
 			case Module:
 				ParseModulePath(GetValueOrDefault(optarg));
 				break;
@@ -194,7 +213,7 @@ namespace Elpida
 				ParseFormat(GetValueOrDefault(optarg));
 				break;
 			case Config:
-				_configurationValues.emplace_back(GetValueOrDefault(optarg));
+				_configurationValues.emplace_back(GetConfigValue(optarg));
 				break;
 			case NowOverhead:
 				_nowOverhead = ParseTime(GetValueOrDefault(optarg), "now-overhead");
@@ -206,7 +225,8 @@ namespace Elpida
 				_vCallOverhead = ParseTime(GetValueOrDefault(optarg), "virtual-overhead");
 				break;
 			case '?':
-				return "Unknown option";
+				returnText = "Unknown option: " + std::string(GetValueOrDefault(optarg));
+				return false;
 			default:
 				break;
 			}
@@ -219,7 +239,7 @@ namespace Elpida
 			_resultFormatter = std::make_unique<DefaultFormatter>();
 		}
 
-		return {};
+		return true;
 	}
 
 	void ArgumentsHelper::ParseFormat(const String& value)

@@ -32,9 +32,16 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/BenchmarkGroupModel.cpp
         Models/BenchmarkModel.cpp
         Models/BenchmarkConfigurationModel.cpp
+        Models/BenchmarkResultModel.cpp
+        Models/BenchmarkResultsModel.cpp
+        Models/TaskResultModel.cpp
+        Models/TaskModel.cpp
 
         Core/MessageService.cpp
-        Core/BenchmarkExecutionService.cpp Core/Promise.cpp Core/Promise.hpp Core/ThreadQueue.cpp Core/ThreadQueue.hpp Models/BenchmarkResultModel.cpp Models/BenchmarkResultModel.hpp Models/TaskResultModel.cpp Models/TaskResultModel.hpp)
+        Core/BenchmarkExecutionService.cpp
+        Core/Promise.cpp
+        Core/ThreadQueue.cpp
+)
 
 
 if (MSYS OR MINGW)

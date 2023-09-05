@@ -7,6 +7,7 @@
 
 #include "Models/Abstractions/Model.hpp"
 #include "BenchmarkConfigurationModel.hpp"
+#include "Models/TaskModel.hpp"
 
 #include <vector>
 #include <cstdlib>
@@ -27,10 +28,14 @@ namespace Elpida::Application
 		[[nodiscard]]
 		std::size_t GetIndex() const;
 
+		const std::string& GetScoreUnit() const;
+
+		const std::vector<TaskModel>& GetTasks() const;
+
 		[[nodiscard]]
 		const std::vector<BenchmarkConfigurationModel>& GetConfigurations() const;
 
-		BenchmarkModel(std::string name, std::string filePath, std::size_t index, std::vector<BenchmarkConfigurationModel>&& configurations);
+		BenchmarkModel(std::string name, std::string filePath, std::size_t index, std::string scoreUnit, std::vector<TaskModel>&& tasks, std::vector<BenchmarkConfigurationModel>&& configurations);
 		BenchmarkModel(const BenchmarkModel&) = delete;
 		BenchmarkModel(BenchmarkModel&&) noexcept = default;
 		BenchmarkModel& operator=(const BenchmarkModel&) = delete;
@@ -39,6 +44,8 @@ namespace Elpida::Application
 	 private:
 		std::string _name;
 		std::string _filePath;
+		std::string _scoreUnit;
+		std::vector<TaskModel> _tasks;
 		std::vector<BenchmarkConfigurationModel> _configurations;
 		std::size_t _index;
 	};

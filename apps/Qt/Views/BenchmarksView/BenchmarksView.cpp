@@ -14,6 +14,7 @@ namespace Elpida::Application
 {
 	BenchmarksView::BenchmarksView(
 		const BenchmarksModel& benchmarksModel,
+		const BenchmarkResultsModel& benchmarkResultsModel,
 		BenchmarksController& benchmarksController,
 		ConfigurationViewPool& configurationViewPool)
 		: QWidget(),
@@ -30,7 +31,7 @@ namespace Elpida::Application
 
 		_ui->glMain->addWidget(_configurationView, 0, 1);
 
-		_resultsView = new BenchmarkResultsView();
+		_resultsView = new BenchmarkResultsView(benchmarkResultsModel);
 		_ui->glMain->addWidget(_resultsView, 1, 1);
 
 		UpdateUi();

@@ -10,8 +10,8 @@
 #include "Elpida/Platform/AsyncPipeReader.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "Models/BenchmarkResultModel.hpp"
-#include "json.hpp"
 
+#include <locale>
 #include <sstream>
 #include <vector>
 
@@ -24,7 +24,7 @@ namespace Elpida::Application
 											   "";
 #endif
 
-	BenchmarkResultModel
+	std::string
 	BenchmarkExecutionService::Execute(const std::string& libraryPath,
 		std::size_t index,
 		const std::vector<std::size_t>& affinity,
@@ -33,6 +33,7 @@ namespace Elpida::Application
 		double loopOverheadNanoseconds,
 		double virtualCallOverheadNanoseconds)
 	{
+		setlocale(LC_ALL, nullptr);
 		std::vector<std::string> arguments
 			{
 				std::string("--module=") + "\"" + libraryPath + "\"",
@@ -55,9 +56,10 @@ namespace Elpida::Application
 
 		for (auto& value : configurations)
 		{
-			arguments.push_back(std::string("--config\"").append(value).append("\""));
+			arguments.push_back(std::string("--config=\"").append(value).append("\""));
 		}
 
+		setlocale(LC_ALL, "");
 		_currentProcess = Process(ExecutablePath, arguments, true, true);
 
 		AsyncPipeReader stdOutReader(_currentProcess.GetStdOut());
@@ -77,23 +79,7 @@ namespace Elpida::Application
 		stdOutReader.StopReading();
 		stdErrReader.StopReading();
 
-		nlohmann::json json = nlohmann::json::parse(stdOutReader.GetString());
-
-		auto score = json["score"].template get<double>();
-		auto taskResultsJ = json["taskResults"];
-
-		std::vector<TaskResultModel> taskResults;
-		taskResults.reserve(taskResultsJ.size());
-
-		for (auto& taskJ : taskResultsJ)
-		{
-			taskResults.emplace_back(
-				NanoSeconds(taskJ["durationNanoseconds"].get<double>()),
-				taskJ["inputSize"].get<std::size_t>()
-			);
-		}
-
-		return { score, std::move(taskResults) };
+		return stdOutReader.GetString();
 	}
 
 	void BenchmarkExecutionService::StopCurrentExecution()

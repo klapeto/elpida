@@ -25,10 +25,10 @@
 #include <QScreen>
 
 #include <filesystem>
-#include <iostream>
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
+#include "Models/TaskModel.hpp"
 #include "QtMessageService.hpp"
 
 #include "Elpida/Platform/OsInfoLoader.hpp"
@@ -46,6 +46,8 @@
 #include "Models/TopologyNodeModel.hpp"
 #include "Models/BenchmarksModel.hpp"
 #include "Models/BenchmarkModel.hpp"
+#include "Models/BenchmarkResultsModel.hpp"
+#include "Models/TaskModel.hpp"
 
 #include "Controllers/BenchmarksController.hpp"
 
@@ -204,13 +206,24 @@ static BenchmarksModel LoadBenchmarks()
 				for (std::size_t i = 0; i < benchmarks.size(); ++i)
 				{
 					auto& benchmark = benchmarks[i];
+					auto info = benchmark->GetInfo();
+					auto& taskInfos = info.GetTaskInfos();
+
+					std::vector<TaskModel> tasks;
+					tasks.reserve(taskInfos.size());
+
+					for (auto& task: taskInfos)
+					{
+						tasks.emplace_back(task.GetName(), task.GetScoreUnit(), task.GetScoreType());
+					}
+
 					std::vector<BenchmarkConfigurationModel> configurations;
 					configurations.reserve(benchmark->GetRequiredConfiguration().size());
 					for (auto& config: benchmark->GetRequiredConfiguration())
 					{
 						configurations.emplace_back(config.GetName(), config.GetValue(), TranslateConfigurationType(config.GetType()));
 					}
-					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(), entry.path().string(), i, std::move(configurations));
+					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(), entry.path().string(), i, info.GetScoreUnit(), std::move(tasks), std::move(configurations));
 				}
 
 				benchmarkGroups.emplace_back(module.GetBenchmarkGroup().GetName(), std::move(benchmarkModels));
@@ -263,6 +276,7 @@ int main(int argc, char* argv[])
 	OverheadsInfo overheadsInfo(NanoSeconds(0), NanoSeconds(0), NanoSeconds(0));
 	OverheadsModel overheadsModel(overheadsInfo.GetNowOverhead(), overheadsInfo.GetLoopOverhead(),
 		overheadsInfo.GetVirtualCallOverhead());
+	BenchmarkResultsModel benchmarkResultsModel;
 
 	splash.showMessage("Getting topology info...");
 	TopologyInfo topologyInfo = TopologyLoader::LoadTopology();
@@ -273,7 +287,7 @@ int main(int argc, char* argv[])
 	auto benchmarksModel = LoadBenchmarks();
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;
-	BenchmarksController benchmarksController(benchmarksModel, topologyModel, overheadsModel, executionService, messageService);
+	BenchmarksController benchmarksController(benchmarksModel, topologyModel, overheadsModel, benchmarkResultsModel, executionService, messageService);
 	ConfigurationViewPool configurationViewPool;
 	MainWindow mainWindow(osInfoModel,
 		memoryInfoModel,
@@ -281,6 +295,7 @@ int main(int argc, char* argv[])
 		overheadsModel,
 		topologyModel,
 		benchmarksModel,
+		benchmarkResultsModel,
 		benchmarksController,
 		configurationViewPool);
 

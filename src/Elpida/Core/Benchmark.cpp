@@ -93,7 +93,7 @@ namespace Elpida
 
 		for (auto& chunkTask: threadTasks)
 		{
-			chunks.push_back(std::move(chunkTask->Finalize()));
+			chunks.push_back(chunkTask->Finalize());
 		}
 
 		data->Merge(chunks);

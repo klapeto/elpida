@@ -16,6 +16,8 @@ namespace Elpida::Application
 	class MessageService;
 	class BenchmarkExecutionService;
 	class OverheadsModel;
+	class BenchmarkResultsModel;
+
 	class BenchmarksController : public Controller<BenchmarksModel>
 	{
 	 public:
@@ -28,11 +30,12 @@ namespace Elpida::Application
 		Promise<> Run();
 		void StopRunning();
 
-		explicit BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, OverheadsModel& overheadsModel, BenchmarkExecutionService& benchmarkExecutionService, MessageService& messageService);
+		explicit BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, OverheadsModel& overheadsModel, BenchmarkResultsModel& benchmarkResultsModel, BenchmarkExecutionService& benchmarkExecutionService, MessageService& messageService);
 		~BenchmarksController() = default;
 	 private:
 		TopologyModel& _topologyModel;
 		OverheadsModel& _overheadsModel;
+		BenchmarkResultsModel& _benchmarkResultsModel;
 		MessageService& _messageService;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		bool _cancelling;
