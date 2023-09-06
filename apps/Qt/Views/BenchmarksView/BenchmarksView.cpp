@@ -115,8 +115,9 @@ namespace Elpida::Application
 	Promise<> BenchmarksView::Run()
 	{
 		BenchmarkRunningDialog dialog(_benchmarksController, this);
-		dialog.showNormal();
-		co_await _benchmarksController.Run();
+		auto promise =_benchmarksController.Run();
+		dialog.exec();
+		co_await promise;
 		dialog.close();
 		UpdateUi();
 	}

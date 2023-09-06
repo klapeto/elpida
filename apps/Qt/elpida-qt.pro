@@ -32,13 +32,25 @@ SOURCES += \
     Views/CommonDialog/CommonDialog.cpp \
     Views/ConfigurationViews/FileInputView/FileInputView.cpp \
     Views/ConfigurationViews/TaskListItemView/TaskListItemView.cpp \
-    Views/MainWindow/MainWindow.cpp \
+    MainWindow.cpp \
     Views/NavigationBarView/NavigationBarView.cpp \
     Views/QuickStartView/QuickStartView.cpp \
     Views/SystemInfoView/SystemInfoView.cpp \
     Views/BenchmarkResultsView/BenchmarkResultsView.cpp \
     Views/TopologyNodeFrame/TopologyNodeFrame.cpp \
-    Views/TopologyView/TopologyView.cpp
+    Views/TopologyView/TopologyView.cpp \
+    Views/ConfigurationViews/ConfigurationView.cpp \
+    Views/OsInfoView/OsInfoView.hpp \
+    Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.cpp \
+    Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.cpp \
+    Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.cpp \
+    Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.cpp \
+    Views/BenchmarksView/BenchmarksView.cpp \
+    Views/TopologyNodeView/TopologyNodeView.cpp \
+    Views/CpuInfoView/CpuInfoView.cpp \
+    Views/OverheadsInfoView/OverheadsInfoView.cpp \
+    Views/MemoryInfoView/MemoryInfoView.cpp
+
 
 HEADERS += \
     Dialogs/BenchmarkRunningDialog.hpp \
@@ -49,29 +61,51 @@ HEADERS += \
     Views/CommonDialog/CommonDialog.hpp \
     Views/ConfigurationViews/FileInputView/FileInputView.hpp \
     Views/ConfigurationViews/TaskListItemView/TaskListItemView.hpp \
-    Views/MainWindow/MainWindow.hpp \
+    MainWindow.hpp \
     Views/NavigationBarView/NavigationBarView.hpp \
     Views/QuickStartView/QuickStartView.hpp \
     Views/SystemInfoView/SystemInfoView.hpp \
     Views/BenchmarkResultsView/BenchmarkResultsView.hpp \
     Views/TopologyNodeFrame/TopologyNodeFrame.hpp \
-    Views/TopologyView/TopologyView.hpp
+    Views/TopologyView/TopologyView.hpp \
+    Views/ConfigurationViews/ConfigurationView.hpp \
+    Views/OsInfoView/OsInfoView.hpp \
+    Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.hpp \
+    Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.hpp \
+    Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.hpp \
+    Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp \
+    Views/BenchmarksView/BenchmarksView.hpp \
+    Views/TopologyNodeView/TopologyNodeView.hpp \
+    Views/CpuInfoView/CpuInfoView.hpp \
+    Views/OverheadsInfoView/OverheadsInfoView.hpp \
+    Views/MemoryInfoView/MemoryInfoView.hpp
+
 
 FORMS += \
-    Dialogs/BenchmarkRunningDialog._ui \
-    Views/BenchmarkConfigurationView/BenchmarkConfigurationView._ui \
-    Views/BenchmarkListView/BenchmarkListView._ui \
-    Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView._ui \
-    Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView._ui \
-    Views/CommonDialog/CommonDialog._ui \
-    Views/ConfigurationViews/FileInputView/FileInputView._ui \
-    Views/MainWindow/MainWindow._ui \
-    Views/NavigationBarView/NavigationBarView._ui \
-    Views/QuickStartView/QuickStartView._ui \
-    Views/SystemInfoView/SystemInfoView._ui \
-    Views/BenchmarkResultsView/BenchmarkResultsView._ui \
-    Views/TopologyNodeFrame/TopologyNodeFrame._ui \
-    Views/TopologyView/TopologyView._ui
+    Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.ui \
+    Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui \
+    Views/BenchmarkListView/BenchmarkListView.ui \
+    Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui \
+    Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.ui \
+    Views/CommonDialog/CommonDialog.ui \
+    Views/ConfigurationViews/FileInputView/FileInputView.ui \
+    MainWindow.ui \
+    Views/NavigationBarView/NavigationBarView.ui \
+    Views/QuickStartView/QuickStartView.ui \
+    Views/SystemInfoView/SystemInfoView.ui \
+    Views/BenchmarkResultsView/BenchmarkResultsView.ui \
+    Views/TopologyNodeFrame/TopologyNodeFrame.ui \
+    Views/TopologyView/TopologyView.ui \
+    Views/OsInfoView/OsInfoView.ui \
+    Views/MemoryInfoView/MemoryInfoView.ui \
+    Views/OverheadsInfoView/OverheadsInfoView.ui \
+    Views/CpuInfoView/CpuInfoView.ui \
+    Views/TopologyNodeView/TopologyNodeView.ui \
+    Views/BenchmarksView/BenchmarksView.ui \
+    Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.ui \
+    Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.ui \
+    Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.ui \
+    Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.ui
 
 RESOURCES += \
     Images/Images.qrc
