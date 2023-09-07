@@ -6,8 +6,6 @@
 #include <unordered_map>
 #include <string>
 
-#include "Core/Promise.hpp"
-
 namespace Elpida::Application
 {
 	namespace Ui
@@ -49,7 +47,7 @@ namespace Elpida::Application
 		std::unordered_map<std::string, BenchmarkModel*> _benchmarkMap;
 		bool _uiUpdating;
 
-		Promise<> Run();
+		void Run();
 		void UpdateUi();
 		void LoadBenchmarkTree();
 	};

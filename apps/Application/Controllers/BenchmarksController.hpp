@@ -27,16 +27,15 @@ namespace Elpida::Application
 		void SetOpenResultAfterUpload(bool openResult);
 		void SetIterationsToRun(int iterations);
 
-		Promise<> Run();
+		void Run();
 		void StopRunning();
 
-		explicit BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, OverheadsModel& overheadsModel, BenchmarkResultsModel& benchmarkResultsModel, BenchmarkExecutionService& benchmarkExecutionService, MessageService& messageService);
+		explicit BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, OverheadsModel& overheadsModel, BenchmarkResultsModel& benchmarkResultsModel, BenchmarkExecutionService& benchmarkExecutionService);
 		~BenchmarksController() = default;
 	 private:
 		TopologyModel& _topologyModel;
 		OverheadsModel& _overheadsModel;
 		BenchmarkResultsModel& _benchmarkResultsModel;
-		MessageService& _messageService;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		bool _cancelling;
 	};

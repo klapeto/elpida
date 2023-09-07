@@ -21,16 +21,16 @@ namespace Elpida::Application
 		_ui->lblVendorValue->setText(QString::fromStdString(cpuInfo.GetVendorName()));
 		_ui->lblModelNameValue->setText(QString::fromStdString(cpuInfo.GetModelName()));
 
-		auto additionalInfoLayout = new QGridLayout();
-
-		auto row = 0;
-		for (auto& info: cpuInfo.GetAdditionalInfo())
-		{
-			additionalInfoLayout->addWidget(new QLabel(QString::fromStdString(Vu::Cs(info.first, ':'))), row, 0);
-			additionalInfoLayout->addWidget(new QLabel(QString::fromStdString(info.second)), row, 1);
-			row++;
-		}
-		_ui->gnAdditionalInfo->setLayout(additionalInfoLayout);
+//		auto additionalInfoLayout = new QGridLayout();
+//
+//		auto row = 0;
+//		for (auto& info: cpuInfo.GetAdditionalInfo())
+//		{
+//			additionalInfoLayout->addWidget(new QLabel(QString::fromStdString(Vu::Cs(info.first, ':'))), row, 0);
+//			additionalInfoLayout->addWidget(new QLabel(QString::fromStdString(info.second)), row, 1);
+//			row++;
+//		}
+//		_ui->gnAdditionalInfo->setLayout(additionalInfoLayout);
 
 
 		auto featuresLayout = new FlowLayout();
@@ -38,7 +38,7 @@ namespace Elpida::Application
 		{
 			featuresLayout->addWidget(new QLabel(QString::fromStdString(feature)));
 		}
-		_ui->gbFeatures->setLayout(featuresLayout);
+		_ui->saFeatures->setLayout(featuresLayout);
 	}
 
 	CpuInfoView::~CpuInfoView()

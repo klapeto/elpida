@@ -12,6 +12,8 @@ using Vu = Elpida::ValueUtilities;
 
 namespace Elpida::Application
 {
+	const int contentMargins = 1;
+
 	static QString Names[] = {
 			"Machine",
 			"Package",
@@ -112,7 +114,7 @@ namespace Elpida::Application
 	{
 		_ui->setupUi(this);
 
-		setContentsMargins(4, 4, 4, 4);
+		setContentsMargins(contentMargins, contentMargins, contentMargins, contentMargins);
 
 		_dataChangedSubscription = _topologyNodeModel.DataChanged().Subscribe([this]()
 		{

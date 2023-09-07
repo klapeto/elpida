@@ -2,12 +2,13 @@
 #include "ui_BenchmarkRunningDialog.h"
 
 #include "Controllers/BenchmarksController.hpp"
+#include <qnamespace.h>
 
 namespace Elpida::Application
 {
-	BenchmarkRunningDialog::BenchmarkRunningDialog(BenchmarksController& benchmarksController, QWidget* parent) :
+	BenchmarkRunningDialog::BenchmarkRunningDialog(QWidget* parent) :
 		QDialog(parent),
-		_ui(new Ui::BenchmarkRunningDialog), _benchmarksController(benchmarksController)
+		_ui(new Ui::BenchmarkRunningDialog)
 	{
 		_ui->setupUi(this);
 	}
@@ -19,8 +20,6 @@ namespace Elpida::Application
 
 	void BenchmarkRunningDialog::on_btnCancel_clicked(bool checked)
 	{
-		_benchmarksController.StopRunning();
-		close();
+		reject();
 	}
-
 }

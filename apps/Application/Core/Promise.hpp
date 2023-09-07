@@ -198,9 +198,7 @@ namespace Elpida::Application
 			return _future.get();
 		}
 
-		template<typename TCallable, typename ... TArgs, typename std::enable_if_t<std::is_invocable_v<TCallable,
-																									   TArgs...>,
-																				   bool> = true>
+		template<typename TCallable, typename ... TArgs, typename std::enable_if_t<std::is_invocable_v<TCallable, TArgs...>,bool> = true>
 		explicit AsyncPromise(TCallable&& callable, TArgs&& ... args)
 		{
 			_future = _promise.get_future();

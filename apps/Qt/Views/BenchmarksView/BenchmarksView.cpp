@@ -1,14 +1,20 @@
 #include "BenchmarksView.hpp"
 #include "Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.hpp"
+#include "Elpida/Core/Duration.hpp"
 #include "ui_BenchmarksView.h"
 
 #include "Models/BenchmarksModel.hpp"
-#include "Models/BenchmarkConfigurationModel.hpp"
 
 #include "Controllers/BenchmarksController.hpp"
 
 #include "Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp"
 #include "Views/BenchmarkResultsView/BenchmarkResultsView.hpp"
+#include <exception>
+#include <qmessagebox.h>
+
+#include <qwindowdefs.h>
+#include <thread>
+#include <atomic>
 
 namespace Elpida::Application
 {
@@ -112,13 +118,45 @@ namespace Elpida::Application
 		Run();
 	}
 
-	Promise<> BenchmarksView::Run()
+	void BenchmarksView::Run()
 	{
-		BenchmarkRunningDialog dialog(_benchmarksController, this);
-		auto promise =_benchmarksController.Run();
-		dialog.exec();
-		co_await promise;
-		dialog.close();
+		BenchmarkRunningDialog dialog(this);
+
+		std::string exceptionMessage;
+		std::atomic<bool> rejected = false;
+		auto th = std::thread([this, &dialog, &exceptionMessage, &rejected]()
+		{
+		  try
+		  {
+			  _benchmarksController.Run();
+		  }
+		  catch (const std::exception& ex)
+		  {
+			  exceptionMessage = ex.what();
+		  }
+
+		  while (!rejected.load(std::memory_order::acquire) && !dialog.isVisible())
+		  {
+			  std::this_thread::sleep_for(MilliSeconds(10));
+		  }
+		  if (!rejected.load(std::memory_order::acquire))
+		  {
+			  dialog.accept();
+		  }
+		});
+		if (dialog.exec() == QDialog::Rejected)
+		{
+			rejected.store(true, std::memory_order::release);
+			_benchmarksController.StopRunning();
+		}
+		th.join();
+
+		if (!exceptionMessage.empty())
+		{
+			QMessageBox::critical(this, "Error", QString::fromStdString(exceptionMessage));
+			return;
+		}
+
 		UpdateUi();
 	}
 }

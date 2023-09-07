@@ -287,7 +287,7 @@ int main(int argc, char* argv[])
 	auto benchmarksModel = LoadBenchmarks();
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;
-	BenchmarksController benchmarksController(benchmarksModel, topologyModel, overheadsModel, benchmarkResultsModel, executionService, messageService);
+	BenchmarksController benchmarksController(benchmarksModel, topologyModel, overheadsModel, benchmarkResultsModel, executionService);
 	ConfigurationViewPool configurationViewPool;
 	MainWindow mainWindow(osInfoModel,
 		memoryInfoModel,

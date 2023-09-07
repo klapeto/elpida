@@ -10,18 +10,15 @@ namespace Elpida::Application
 		class BenchmarkRunningDialog;
 	}
 
-	class BenchmarksController;
-
 	class BenchmarkRunningDialog : public QDialog
 	{
 	Q_OBJECT
 
 	public:
-		explicit BenchmarkRunningDialog(BenchmarksController& benchmarksController, QWidget* parent = nullptr);
+		explicit BenchmarkRunningDialog(QWidget* parent = nullptr);
 		~BenchmarkRunningDialog() override;
 	private:
 		Ui::BenchmarkRunningDialog* _ui;
-		BenchmarksController& _benchmarksController;
 
 	private slots:
 		void on_btnCancel_clicked(bool checked);
