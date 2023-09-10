@@ -5,6 +5,7 @@
 #ifndef ELPIDA_OVERHEADSMODEL_HPP
 #define ELPIDA_OVERHEADSMODEL_HPP
 
+#include "Elpida/Core/Duration.hpp"
 #include "Models/Abstractions/Model.hpp"
 
 #include <chrono>
@@ -12,30 +13,28 @@
 namespace Elpida::Application
 {
 
-	using Time = std::chrono::duration<double, std::nano>;
-
 	class OverheadsModel : public Model
 	{
 	public:
 		[[nodiscard]]
-		const Time& GetNowOverhead() const;
+		const Duration& GetNowOverhead() const;
 
 		[[nodiscard]]
-		const Time& GetLoopOverhead() const;
+		const Duration& GetLoopOverhead() const;
 
 		[[nodiscard]]
-		const Time& GetVirtualCallOverhead() const;
+		const Duration& GetVirtualCallOverhead() const;
 
 		OverheadsModel() = default;
 
-		OverheadsModel(const Time& nowOverhead, const Time& loopOverhead, const Time& virtualCallOverhead);
+		OverheadsModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead);
 
 		~OverheadsModel() override = default;
 
 	private:
-		Time _nowOverhead;
-		Time _loopOverhead;
-		Time _virtualCallOverhead;
+		Duration _nowOverhead;
+		Duration _loopOverhead;
+		Duration _virtualCallOverhead;
 	};
 
 } // Application

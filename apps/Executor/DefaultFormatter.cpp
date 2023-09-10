@@ -19,7 +19,7 @@ namespace Elpida
 	{
 		std::ostringstream accumulator;
 
-		auto& benchmarkInfo = result.GetBenchmarkInfo();
+		auto benchmarkInfo = benchmark.GetInfo();
 		accumulator << "Score: " << TranslateResult(result, benchmarkInfo) << std::endl;
 
 		auto& taskResults = result.GetTaskResults();

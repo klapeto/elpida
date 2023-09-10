@@ -24,7 +24,7 @@ namespace Elpida
 	{
 		auto task = DoDuplicate();
 		task->SetEnvironmentInfo(_environmentInfo->get());
-		return std::move(task);
+		return task;
 	}
 
 	void Task::SetEnvironmentInfo(const EnvironmentInfo& environmentInfo)

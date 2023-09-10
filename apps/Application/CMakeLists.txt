@@ -7,6 +7,7 @@ set(ELPIDA_APPLICATION_SOURCES
 
         Event.cpp
         EventSubscription.cpp
+        DataUploader.cpp
 
         Controllers/BenchmarksController.cpp
         Controllers/Controller.cpp

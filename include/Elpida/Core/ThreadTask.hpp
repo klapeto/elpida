@@ -37,6 +37,8 @@ namespace Elpida
 
 		void WakeThread();
 
+		static void PinCurrentThreadToProcessor(const TopologyNode& topologyNode);
+
 		ThreadTask(UniquePtr<Task> taskToRun, Ref<const TopologyNode> targetProcessor);
 		~ThreadTask() final;
 	 protected:
@@ -53,7 +55,6 @@ namespace Elpida
 		Duration _taskRunDuration;
 		volatile bool _doStart;
 
-		void PinCurrentThreadToProcessor(const TopologyNode& topologyNode);
 		void ThreadProcedure();
 	};
 

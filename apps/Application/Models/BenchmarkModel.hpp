@@ -45,6 +45,7 @@ namespace Elpida::Application
 		std::string _name;
 		std::string _filePath;
 		std::string _scoreUnit;
+		std::string _uuid;
 		std::vector<TaskModel> _tasks;
 		std::vector<BenchmarkConfigurationModel> _configurations;
 		std::size_t _index;

@@ -41,7 +41,6 @@ namespace Elpida
 
 		auto score = CalculateScore(taskResults);
 		return {
-			GetInfo(),
 			score,
 			std::move(taskResults)
 		};

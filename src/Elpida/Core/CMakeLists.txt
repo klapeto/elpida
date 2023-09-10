@@ -28,6 +28,7 @@ set(ELPIDA_CORE_SOURCES
         OsInfo.cpp
         MemoryInfo.cpp
         CpuInfo.cpp
+        Pool.cpp
 
         Topology/TopologyInfo.cpp
         Topology/TopologyNode.cpp

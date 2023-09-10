@@ -6,24 +6,24 @@
 
 namespace Elpida::Application
 {
-	OverheadsModel::OverheadsModel(const Time& nowOverhead,
-			const Time& loopOverhead,
-			const Time& virtualCallOverhead)
+	OverheadsModel::OverheadsModel(const Duration& nowOverhead,
+			const Duration& loopOverhead,
+			const Duration& virtualCallOverhead)
 			: _nowOverhead(nowOverhead), _loopOverhead(loopOverhead), _virtualCallOverhead(virtualCallOverhead)
 	{
 	}
 
-	const Time& OverheadsModel::GetNowOverhead() const
+	const Duration& OverheadsModel::GetNowOverhead() const
 	{
 		return _nowOverhead;
 	}
 
-	const Time& OverheadsModel::GetLoopOverhead() const
+	const Duration& OverheadsModel::GetLoopOverhead() const
 	{
 		return _loopOverhead;
 	}
 
-	const Time& OverheadsModel::GetVirtualCallOverhead() const
+	const Duration& OverheadsModel::GetVirtualCallOverhead() const
 	{
 		return _virtualCallOverhead;
 	}

@@ -12,22 +12,27 @@ namespace Elpida
 		: _features(std::move(features)), _additionalInfo(std::move(additionalInfo)), _architecture(std::move(architecture)), _vendorName(std::move(vendorName)), _modelName(std::move(modelName))
 	{
 	}
+
 	const Vector<String>& CpuInfo::GetFeatures() const
 	{
 		return _features;
 	}
+
 	const Map<String, String>& CpuInfo::GetAdditionalInfo() const
 	{
 		return _additionalInfo;
 	}
+
 	const String& CpuInfo::GetArchitecture() const
 	{
 		return _architecture;
 	}
+
 	const String& CpuInfo::GetVendorName() const
 	{
 		return _vendorName;
 	}
+
 	const String& CpuInfo::GetModelName() const
 	{
 		return _modelName;

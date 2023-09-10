@@ -165,6 +165,8 @@ if (MSYS OR MINGW)
 	target_link_options(elpida-qt PRIVATE -Wl,-subsystem,windows)
 endif()
 
+target_compile_options(elpida-qt PRIVATE -O2 -fno-dce -fno-tree-dce)
+
 target_include_directories(elpida-qt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(elpida-qt elpida-core elpida-platform elpida-application Qt5::Core Qt5::Widgets)
 

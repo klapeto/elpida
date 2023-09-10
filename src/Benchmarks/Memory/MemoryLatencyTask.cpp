@@ -10,11 +10,6 @@
 #include <random>
 #include <algorithm>
 
-#define REPEAT_5(x) x;x;x;x
-#define REPEAT_10(x) REPEAT_5(x);REPEAT_5(x)
-#define REPEAT_50(x) REPEAT_10(x);REPEAT_10(x);REPEAT_10(x);REPEAT_10(x);REPEAT_10(x)
-#define REPEAT_100(x) REPEAT_50(x);REPEAT_50(x)
-
 namespace Elpida
 {
 	static Size calculateNumberOfBitsOfNumber(Size number)

@@ -50,12 +50,14 @@ namespace Elpida
 			String description,
 			String scoreUnit,
 			String scoreDescription,
-			const Vector<TaskInfo>& taskInfos)
+			const Vector<TaskInfo>& taskInfos,
+			String uuid = String())
 			: _taskInfos(taskInfos),
 			  _name(std::move(name)),
 			  _description(std::move(description)),
 			  _scoreUnit(std::move(scoreUnit)),
-			  _scoreDescription(std::move(scoreDescription))
+			  _scoreDescription(std::move(scoreDescription)),
+			  _uuid(std::move(uuid))
 		{
 		}
 
@@ -70,6 +72,7 @@ namespace Elpida
 		String _description;
 		String _scoreUnit;
 		String _scoreDescription;
+		String _uuid;
 	};
 
 } // Elpida
