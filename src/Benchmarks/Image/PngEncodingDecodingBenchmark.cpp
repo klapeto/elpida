@@ -60,8 +60,8 @@ namespace Elpida
 
 	double PngEncodingDecodingBenchmark::CalculateScore(const std::vector<TaskResult>& taskResults) const
 	{
-		return static_cast<double >(taskResults[1].GetInputSize()) / taskResults[1].GetDuration().count()
-			   + static_cast<double >(taskResults[2].GetInputSize()) / taskResults[2].GetDuration().count();
+		return static_cast<double >(taskResults[1].GetDataSize()) / taskResults[1].GetDuration().count()
+			   + static_cast<double >(taskResults[2].GetDataSize()) / taskResults[2].GetDuration().count();
 	}
 
 	std::vector<TaskConfiguration> PngEncodingDecodingBenchmark::GetRequiredConfiguration() const

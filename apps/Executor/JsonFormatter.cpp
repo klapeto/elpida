@@ -26,7 +26,7 @@ namespace Elpida
 
 			resultJ["durationNanoseconds"] = std::chrono::duration_cast<NanoSeconds>(
 					taskResult.GetDuration()).count();
-			resultJ["inputSize"] = taskResult.GetInputSize();
+			resultJ["dataSize"] = taskResult.GetDataSize();
 
 			arrayJ.push_back(std::move(resultJ));
 		}

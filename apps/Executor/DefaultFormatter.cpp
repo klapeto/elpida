@@ -33,7 +33,7 @@ namespace Elpida
 					<< taskInfo.GetName()
 					<< ": "
 					<< ValueUtilities::GetValueScaleStringSI(
-						(double)taskResult.GetInputSize() / taskResult.GetDuration().count())
+						(double)taskResult.GetDataSize() / taskResult.GetDuration().count())
 					<< taskInfo.GetScoreUnit()
 					<< "/s"
 					<< std::endl;

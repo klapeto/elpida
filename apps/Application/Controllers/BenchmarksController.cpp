@@ -88,11 +88,11 @@ namespace Elpida::Application
 				selectedBenchmark->GetIndex(),
 				affinity,
 				configuration,
-				std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+				std::chrono::duration_cast<NanoSeconds>(
 					_overheadsModel.GetNowOverhead()).count(),
-				std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+				std::chrono::duration_cast<NanoSeconds>(
 					_overheadsModel.GetLoopOverhead()).count(),
-				std::chrono::duration_cast<std::chrono::nanoseconds, double>(
+				std::chrono::duration_cast<NanoSeconds>(
 					_overheadsModel.GetVirtualCallOverhead()).count());
 
 			nlohmann::json json = nlohmann::json::parse(serializedResult);
@@ -107,7 +107,7 @@ namespace Elpida::Application
 			{
 				taskResults.emplace_back(
 					NanoSeconds(taskJ["durationNanoseconds"].template get<double>()),
-					taskJ["inputSize"].get<std::size_t>()
+					taskJ["dataSize"].get<std::size_t>()
 				);
 			}
 

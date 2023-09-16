@@ -33,7 +33,7 @@ namespace Elpida::Application
 		double loopOverheadNanoseconds,
 		double virtualCallOverheadNanoseconds)
 	{
-		setlocale(LC_ALL, nullptr);
+		std::locale::global(std::locale());
 		std::vector<std::string> arguments
 			{
 				std::string("--module=") + "\"" + libraryPath + "\"",
@@ -59,7 +59,7 @@ namespace Elpida::Application
 			arguments.push_back(std::string("--config=\"").append(value).append("\""));
 		}
 
-		setlocale(LC_ALL, "");
+		std::locale::global(std::locale(""));
 		_currentProcess = Process(ExecutablePath, arguments, true, true);
 
 		AsyncPipeReader stdOutReader(_currentProcess.GetStdOut());

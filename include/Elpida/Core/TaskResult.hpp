@@ -22,13 +22,13 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		Size GetInputSize() const
+		Size GetDataSize() const
 		{
-			return _inputSize;
+			return _dataSize;
 		}
 
-		TaskResult(const Duration& duration, Size inputSize)
-			: _duration(duration), _inputSize(inputSize)
+		TaskResult(const Duration& duration, Size dataSize)
+			: _duration(duration), _dataSize(dataSize)
 		{
 		}
 
@@ -37,7 +37,7 @@ namespace Elpida
 		~TaskResult() = default;
 	 private:
 		Duration _duration;
-		Size _inputSize;
+		Size _dataSize;
 	};
 
 } // Elpida

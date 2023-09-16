@@ -8,7 +8,8 @@
 #include "Elpida/Core/OverheadsInfo.hpp"
 #include "Elpida/Core/Topology/TopologyInfo.hpp"
 
-namespace Elpida {
+namespace Elpida
+{
 	class TopologyInfo;
 }
 

@@ -25,7 +25,7 @@ namespace Elpida
 
 		for (auto& result: taskResults)
 		{
-			totalSize += result.GetInputSize();
+			totalSize += result.GetDataSize();
 			totalDuration += result.GetDuration();
 		}
 

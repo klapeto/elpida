@@ -30,16 +30,17 @@ namespace Elpida
 		for (auto& task : tasks)
 		{
 			task->SetEnvironmentInfo(environmentInfo);
-			auto inputSize = data->GetSize();
+			Duration duration;
 			if (task->CanBeMultiThreaded())
 			{
-				taskResults.emplace_back(ExecuteMultiThread(data, std::move(task), targetProcessors), inputSize);
+				duration = ExecuteMultiThread(data, std::move(task), targetProcessors);
 			}
 			else
 			{
-				taskResults.emplace_back(ExecuteSingleThread(data, std::move(task), targetProcessors.front()), inputSize);
+				duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front());
 			}
 
+			taskResults.emplace_back(duration, data->GetSize());
 		}
 
 		auto score = CalculateScore(taskResults);
