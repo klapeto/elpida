@@ -6,6 +6,7 @@
 
 #include "Elpida/Core/RawTaskData.hpp"
 #include "Elpida/Core/Vector.hpp"
+#include "Elpida/Core/Repeat.hpp"
 
 #include <random>
 #include <algorithm>
@@ -191,16 +192,7 @@ namespace Elpida
 
 		while (iterations-- > 0)
 		{
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
-			REPEAT_100(ptr = (char**)*ptr);
+			REPEAT_1000(ptr = (char**)*ptr);
 		}
 	}
 

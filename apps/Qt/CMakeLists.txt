@@ -166,10 +166,12 @@ if (MSYS OR MINGW)
 	target_link_options(elpida-qt PRIVATE -Wl,-subsystem,windows)
 endif()
 
-target_include_directories(elpida-qt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(elpida-qt elpida-core elpida-platform elpida-application Qt5::Core Qt5::Widgets)
+add_library(overheads-calculator OverheadsCalculator/OverheadsCalculator.cpp OverheadsCalculator/DummyClass.cpp)
+target_link_libraries(overheads-calculator elpida-core)
+target_compile_options(overheads-calculator PRIVATE -O3 -fno-dce -fno-tree-dce)
 
-target_compile_options(elpida-qt PRIVATE -fno-dce -fno-tree-dce)
+target_include_directories(elpida-qt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(elpida-qt elpida-core elpida-platform elpida-application overheads-calculator Qt5::Core Qt5::Widgets)
 
 install(TARGETS elpida-qt RUNTIME)
 install(FILES qt.conf TYPE BIN)

@@ -40,6 +40,7 @@
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
+#include "OverheadsCalculator/OverheadsCalculator.hpp"
 #include "QtMessageService.hpp"
 #include "QtThreadQueue.hpp"
 #include "QtSettingsService.hpp"
@@ -263,64 +264,6 @@ static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
 	return BenchmarksModel(std::move(benchmarkGroups));
 }
 
-static Duration CalculateLoopOverhead()
-{
-	return Seconds(
-		1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1),
-			Seconds(0),
-			Seconds(0),
-			[](auto x)
-			{
-			  while (x--);
-			}));
-}
-
-static Duration CalculateNowOverhead(Duration loopOverhead)
-{
-	return Seconds(
-		1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1),
-			Seconds(0),
-			loopOverhead,
-			[](auto x)
-			{
-			  while (x--) std::chrono::high_resolution_clock::now();
-			}));
-}
-
-class Base
-{
-public:
-	virtual void Foo() = 0;
-	virtual ~Base() = default;
-};
-
-class Derived : public Base
-{
-public:
-	void Foo() override
-	{
-
-	}
-	~Derived() override = default;
-};
-
-static Duration CalculateVCallOverhead(Duration loopOverhead, Duration nowOverhead)
-{
-	Base* base = new Derived();
-	auto duration = Seconds(1.0
-		/ (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1),
-			nowOverhead,
-			loopOverhead,
-			[base](auto x)
-			{
-			  auto p = base;
-			  while (x--) p->Foo();
-			}));
-	delete base;
-
-	return duration;
-}
-
 static void SaveSelectedNodes(SettingsService& settingsService, TopologyModel& topologyModel)
 {
 	std::string selectedNodesStr;
@@ -363,21 +306,6 @@ static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& t
 	{
 		leafs[index].get().SetSelected(true);
 	}
-}
-
-static OverheadsInfo CalculateOverheads(const TopologyInfo& topologyInfo)
-{
-	return OverheadsInfo(Seconds(0), Seconds(0), Seconds(0));
-	ThreadTask::PinCurrentThreadToProcessor(topologyInfo.GetAllProcessingUnits().back());
-
-	std::vector<std::thread> threads;
-	Duration loopOverhead = CalculateLoopOverhead();
-
-	Duration nowOverhead = CalculateNowOverhead(loopOverhead);
-
-	Duration vCallOverhead = CalculateVCallOverhead(loopOverhead, nowOverhead);
-
-	return OverheadsInfo(nowOverhead, loopOverhead, vCallOverhead);
 }
 
 int main(int argc, char* argv[])
@@ -424,7 +352,7 @@ int main(int argc, char* argv[])
 
 	splash.showMessage("Calculating Overheads...");
 
-	auto overheadsInfo = CalculateOverheads(topologyInfo);
+	auto overheadsInfo = OverheadsCalculator::CalculateOverheads(topologyInfo);
 	OverheadsModel overheadsModel(overheadsInfo.GetNowOverhead(), overheadsInfo.GetLoopOverhead(),
 		overheadsInfo.GetVirtualCallOverhead());
 	BenchmarkResultsModel benchmarkResultsModel;
