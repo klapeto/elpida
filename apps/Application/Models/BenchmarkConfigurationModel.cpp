@@ -8,8 +8,8 @@
 
 namespace Elpida::Application
 {
-	BenchmarkConfigurationModel::BenchmarkConfigurationModel(std::string name, std::string value, ConfigurationType type)
-		: _name(std::move(name)), _value(std::move(value)), _type(type)
+	BenchmarkConfigurationModel::BenchmarkConfigurationModel(std::string name, std::string id, std::string value, ConfigurationType type)
+		: _name(std::move(name)), _id(std::move(id)), _value(std::move(value)), _type(type)
 	{
 	}
 
@@ -32,5 +32,10 @@ namespace Elpida::Application
 	{
 		_value = std::move(value);
 		OnDataChanged();
+	}
+
+	const std::string& BenchmarkConfigurationModel::GetId() const
+	{
+		return _id;
 	}
 } // Application

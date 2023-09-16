@@ -31,11 +31,14 @@ namespace Elpida::Application
 		const std::string& GetValue() const;
 
 		[[nodiscard]]
+		const std::string& GetId() const;
+
+		[[nodiscard]]
 		ConfigurationType GetType() const;
 
 		void SetValue(std::string value);
 
-		BenchmarkConfigurationModel(std::string name, std::string value, ConfigurationType type);
+		BenchmarkConfigurationModel(std::string name, std::string id, std::string value, ConfigurationType type);
 		BenchmarkConfigurationModel(const BenchmarkConfigurationModel&) = delete;
 		BenchmarkConfigurationModel(BenchmarkConfigurationModel&&) noexcept = default;
 		BenchmarkConfigurationModel& operator=(const BenchmarkConfigurationModel&) = delete;
@@ -43,6 +46,7 @@ namespace Elpida::Application
 		~BenchmarkConfigurationModel() override = default;
 	 private:
 		std::string _name;
+		std::string _id;
 		std::string _value;
 		ConfigurationType _type;
 	};

@@ -17,6 +17,7 @@ namespace Elpida::Application
 
 	class BenchmarkConfigurationModel;
 	class ConfigurationView;
+	class SettingsService;
 
 	class ConfigurationViewPool final
 	{
@@ -24,11 +25,11 @@ namespace Elpida::Application
 		ConfigurationView* RentViewForModel(const BenchmarkConfigurationModel& configurationModel);
 		void ReturnViewFromModel(const BenchmarkConfigurationModel& configurationModel, ConfigurationView* view);
 
-		ConfigurationViewPool() = default;
+		ConfigurationViewPool(SettingsService& settingsService);
 		ConfigurationViewPool(const ConfigurationViewPool&) = delete;
-		ConfigurationViewPool(ConfigurationViewPool&&) noexcept = default;
+		ConfigurationViewPool(ConfigurationViewPool&&) noexcept = delete;
 		ConfigurationViewPool& operator=(const ConfigurationViewPool&) = delete;
-		ConfigurationViewPool& operator=(ConfigurationViewPool&&) noexcept = default;
+		ConfigurationViewPool& operator=(ConfigurationViewPool&&) noexcept = delete;
 		~ConfigurationViewPool() = default;
 	 private:
 		struct CreatedInstance
@@ -42,6 +43,7 @@ namespace Elpida::Application
 		std::vector<std::unique_ptr<ConfigurationView>> _integerViews;
 		std::vector<std::unique_ptr<ConfigurationView>> _stringViews;
 		std::unordered_map<const BenchmarkConfigurationModel*, CreatedInstance> _rentedInstances;
+		SettingsService& _settingsService;
 
 		template<typename T>
 		std::unique_ptr<ConfigurationView> GetOrCreate(std::vector<std::unique_ptr<ConfigurationView>>& pool)

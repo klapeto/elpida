@@ -13,7 +13,7 @@
 namespace Elpida::Application
 {
 
-	class BenchmarkExecutionService
+	class BenchmarkExecutionService final
 	{
 	public:
 		std::string Execute(const std::string& libraryPath,
@@ -26,6 +26,8 @@ namespace Elpida::Application
 
 		void StopCurrentExecution();
 
+		BenchmarkExecutionService() = default;
+		~BenchmarkExecutionService() = default;
 	private:
 		Process _currentProcess;
 	};

@@ -42,6 +42,7 @@ set(ELPIDA_APPLICATION_SOURCES
         Core/BenchmarkExecutionService.cpp
         Core/Promise.cpp
         Core/ThreadQueue.cpp
+        Core/SettingsService.cpp
 )
 
 

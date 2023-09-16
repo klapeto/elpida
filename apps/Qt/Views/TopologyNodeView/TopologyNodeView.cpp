@@ -165,6 +165,8 @@ namespace Elpida::Application
 		}
 
 		_ui->verticalLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+		OnModelChanged();
 	}
 
 	TopologyNodeView::~TopologyNodeView()

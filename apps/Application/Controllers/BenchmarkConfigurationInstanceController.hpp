@@ -11,11 +11,15 @@
 namespace Elpida::Application
 {
 
+	class SettingsService;
+
 	class BenchmarkConfigurationInstanceController : public Controller<BenchmarkConfigurationModel>
 	{
 	 public:
 		void SetValue(std::string value);
-		explicit BenchmarkConfigurationInstanceController(BenchmarkConfigurationModel& model);
+		explicit BenchmarkConfigurationInstanceController(BenchmarkConfigurationModel& model, SettingsService& settingsService);
+	private:
+		SettingsService& _settingsService;
 	};
 
 } // Application

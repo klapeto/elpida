@@ -17,6 +17,7 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>
  *************************************************************************/
 
+#include "Core/SettingsService.hpp"
 #include "Elpida/Core/Config.hpp"
 
 #include <QApplication>
@@ -24,28 +25,24 @@
 #include <QSplashScreen>
 #include <QScreen>
 
+#include <cctype>
 #include <filesystem>
-#include <memory>
-#include <queue>
-#include <ratio>
+#include <string>
+#include <vector>
 
-#include "Elpida/Core/DefaultAllocator.hpp"
 #include "Elpida/Core/Duration.hpp"
-#include "Elpida/Core/EnvironmentInfo.hpp"
-#include "Elpida/Core/MicroTask.hpp"
-#include "Elpida/Core/Ref.hpp"
-#include "Elpida/Core/ScoreType.hpp"
+#include "Elpida/Core/TaskConfiguration.hpp"
 #include "Elpida/Core/ThreadTask.hpp"
 #include "Elpida/Core/TimingUtilities.hpp"
 #include "Elpida/Core/Topology/TopologyNode.hpp"
-#include "Elpida/Core/ValueUtilities.hpp"
 #include "Elpida/Core/Pool.hpp"
 #include "Elpida/Core/OverheadsInfo.hpp"
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
-#include "Models/TaskModel.hpp"
 #include "QtMessageService.hpp"
+#include "QtThreadQueue.hpp"
+#include "QtSettingsService.hpp"
 
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
@@ -53,6 +50,7 @@
 #include "Elpida/Platform/TopologyLoader.hpp"
 #include "Elpida/Platform/BenchmarkGroupModule.hpp"
 
+#include "Models/TaskModel.hpp"
 #include "Models/OsInfoModel.hpp"
 #include "Models/MemoryInfoModel.hpp"
 #include "Models/CpuInfoModel.hpp"
@@ -62,12 +60,9 @@
 #include "Models/BenchmarksModel.hpp"
 #include "Models/BenchmarkModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
-#include "Models/TaskModel.hpp"
 
 #include "Controllers/BenchmarksController.hpp"
-
 #include "Core/BenchmarkExecutionService.hpp"
-#include "QtThreadQueue.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -197,7 +192,7 @@ static Elpida::Application::ConfigurationType TranslateConfigurationType(Elpida:
 	return (Elpida::Application::ConfigurationType)configurationType;
 }
 
-static BenchmarksModel LoadBenchmarks()
+static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
 {
 	auto benchmarksDirectory = std::filesystem::current_path() / "Benchmarks";
 	if (!std::filesystem::exists(benchmarksDirectory))
@@ -205,6 +200,7 @@ static BenchmarksModel LoadBenchmarks()
 		return BenchmarksModel({});
 	}
 
+	QSettings settings;
 	std::vector<BenchmarkGroupModel> benchmarkGroups;
 	for (auto& entry : std::filesystem::directory_iterator(benchmarksDirectory))
 	{
@@ -236,8 +232,15 @@ static BenchmarksModel LoadBenchmarks()
 					configurations.reserve(benchmark->GetRequiredConfiguration().size());
 					for (auto& config : benchmark->GetRequiredConfiguration())
 					{
+						std::string id = info.GetName() + config.GetName();
+						std::string value = settingsService.Get(id);
+						if (value.empty())
+						{
+							value = config.GetValue();
+						}
 						configurations.emplace_back(config.GetName(),
-							config.GetValue(),
+							std::move(id),
+							std::move(value),
 							TranslateConfigurationType(config.GetType()));
 					}
 					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(),
@@ -263,19 +266,25 @@ static BenchmarksModel LoadBenchmarks()
 static Duration CalculateLoopOverhead()
 {
 	return Seconds(
-		1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1), Seconds(0), Seconds(0), [](auto x)
-	{
-	  while (x--);
-	}));
+		1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1),
+			Seconds(0),
+			Seconds(0),
+			[](auto x)
+			{
+			  while (x--);
+			}));
 }
 
 static Duration CalculateNowOverhead(Duration loopOverhead)
 {
 	return Seconds(
-		1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1), Seconds(0), loopOverhead, [](auto x)
-		{
-		  while (x--) std::chrono::high_resolution_clock::now();
-		}));
+		1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1),
+			Seconds(0),
+			loopOverhead,
+			[](auto x)
+			{
+			  while (x--) std::chrono::high_resolution_clock::now();
+			}));
 }
 
 class Base
@@ -299,18 +308,66 @@ static Duration CalculateVCallOverhead(Duration loopOverhead, Duration nowOverhe
 {
 	Base* base = new Derived();
 	auto duration = Seconds(1.0
-		/ (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1), nowOverhead, loopOverhead, [base](auto x)
-		{
-		  auto p = base;
-		  while (x--) p->Foo();
-		}));
+		/ (double)TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1),
+			nowOverhead,
+			loopOverhead,
+			[base](auto x)
+			{
+			  auto p = base;
+			  while (x--) p->Foo();
+			}));
 	delete base;
 
 	return duration;
 }
 
+static void SaveSelectedNodes(SettingsService& settingsService, TopologyModel& topologyModel)
+{
+	std::string selectedNodesStr;
+	for (auto& node : topologyModel.GetSelectedLeafNodes())
+	{
+		selectedNodesStr += std::to_string(node.get().GetOsIndex().value()) + ',';
+	}
+	selectedNodesStr = selectedNodesStr.substr(0, selectedNodesStr.size() - 1);
+	settingsService.Set("selectedNodes", selectedNodesStr);
+}
+
+static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& topologyModel)
+{
+	auto selectedNodes = settingsService.Get("selectedNodes");
+	std::string buffer;
+	auto leafs = topologyModel.GetLeafNodes();
+	std::sort(leafs.begin(), leafs.end(), [](auto& a, auto& b){ return a.get().GetOsIndex() < b.get().GetOsIndex(); });
+	for (Size i = 0; i < selectedNodes.size(); ++i)
+	{
+		auto c = selectedNodes[i];
+		if (c == ',')
+		{
+			if (buffer.empty()) continue;
+			auto index = std::stoul(buffer);
+			if (index < leafs.size())
+			{
+				leafs[index].get().SetSelected(true);
+			}
+			buffer.clear();
+		}
+		else if (std::isdigit(c))
+		{
+			buffer += c;
+		}
+	}
+
+	if (buffer.empty()) return;
+	auto index = std::stoul(buffer);
+	if (index < leafs.size())
+	{
+		leafs[index].get().SetSelected(true);
+	}
+}
+
 static OverheadsInfo CalculateOverheads(const TopologyInfo& topologyInfo)
 {
+	return OverheadsInfo(Seconds(0), Seconds(0), Seconds(0));
 	ThreadTask::PinCurrentThreadToProcessor(topologyInfo.GetAllProcessingUnits().back());
 
 	std::vector<std::thread> threads;
@@ -325,7 +382,6 @@ static OverheadsInfo CalculateOverheads(const TopologyInfo& topologyInfo)
 
 int main(int argc, char* argv[])
 {
-
 	setupPlatformSpecifics();
 
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
@@ -345,6 +401,8 @@ int main(int argc, char* argv[])
 	splash.show();
 	QApplication::processEvents();
 
+	QtSettingsService settingsService;
+
 	OsInfo osInfo = OsInfoLoader::Load();
 	OsInfoModel osInfoModel(osInfo.GetCategory(), osInfo.GetName(), osInfo.GetVersion());
 
@@ -362,6 +420,8 @@ int main(int argc, char* argv[])
 	TopologyModel topologyModel(GetNode(topologyInfo.GetRoot()));
 	topologyModel.GetRoot().SetParents();
 
+	LoadSelectedNodes(settingsService, topologyModel);
+
 	splash.showMessage("Calculating Overheads...");
 
 	auto overheadsInfo = CalculateOverheads(topologyInfo);
@@ -370,12 +430,12 @@ int main(int argc, char* argv[])
 	BenchmarkResultsModel benchmarkResultsModel;
 
 	splash.showMessage("Loading benchmarks...");
-	auto benchmarksModel = LoadBenchmarks();
+	auto benchmarksModel = LoadBenchmarks(settingsService);
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;
 	BenchmarksController
 		benchmarksController(benchmarksModel, topologyModel, overheadsModel, benchmarkResultsModel, executionService);
-	ConfigurationViewPool configurationViewPool;
+	ConfigurationViewPool configurationViewPool(settingsService);
 	MainWindow mainWindow(osInfoModel,
 		memoryInfoModel,
 		cpuInfoModel,
@@ -392,5 +452,7 @@ int main(int argc, char* argv[])
 
 	ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
 	ThreadQueue::Current().lock()->Run();
+
+	SaveSelectedNodes(settingsService, topologyModel);
 	return EXIT_SUCCESS;
 }

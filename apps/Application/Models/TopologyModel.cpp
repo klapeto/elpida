@@ -7,12 +7,12 @@
 namespace Elpida::Application
 {
 	TopologyModel::TopologyModel(TopologyNodeModel root)
-			: _root(std::move(root))
+		: _root(std::move(root))
 	{
 		_rootDataChanged = _root.DataChanged().Subscribe([this]()
 		{
-			SetSelectedLeafNodes();
-			OnDataChanged();
+		  SetSelectedLeafNodes();
+		  OnDataChanged();
 		});
 	}
 
@@ -29,12 +29,12 @@ namespace Elpida::Application
 			accumulator.emplace_back(node);
 		}
 
-		for (auto& child: node.GetMemoryChildren())
+		for (auto& child : node.GetMemoryChildren())
 		{
 			GetSelectedNodes(accumulator, child);
 		}
 
-		for (auto& child: node.GetChildren())
+		for (auto& child : node.GetChildren())
 		{
 			GetSelectedNodes(accumulator, child);
 		}
@@ -43,11 +43,47 @@ namespace Elpida::Application
 	void TopologyModel::SetSelectedLeafNodes()
 	{
 		_selectedLeafNodes.clear();
-		GetSelectedNodes(_selectedLeafNodes, _root);
+		auto& leafs = GetLeafNodes();
+		for (auto leaf : leafs)
+		{
+			if (leaf.get().IsSelected())
+			{
+				_selectedLeafNodes.push_back(leaf);
+			}
+		}
+		//GetSelectedNodes(_selectedLeafNodes, _root);
 	}
 
 	const std::vector<std::reference_wrapper<TopologyNodeModel>>& TopologyModel::GetSelectedLeafNodes()
 	{
 		return _selectedLeafNodes;
+	}
+
+	static void
+	GetLeafNodesImpl(std::vector<std::reference_wrapper<TopologyNodeModel>>& accumulator, TopologyNodeModel& node)
+	{
+		if (node.GetType() == TopologyNodeType::ProcessingUnit)
+		{
+			accumulator.emplace_back(node);
+		}
+
+		for (auto& child : node.GetMemoryChildren())
+		{
+			GetLeafNodesImpl(accumulator, child);
+		}
+
+		for (auto& child : node.GetChildren())
+		{
+			GetLeafNodesImpl(accumulator, child);
+		}
+	}
+
+	const std::vector<std::reference_wrapper<TopologyNodeModel>>& TopologyModel::GetLeafNodes()
+	{
+		if (_leafNodes.empty())
+		{
+			GetLeafNodesImpl(_leafNodes, _root);
+		}
+		return _leafNodes;
 	}
 } // Application

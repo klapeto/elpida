@@ -4,10 +4,13 @@
 
 #include "Elpida/Core/Benchmark.hpp"
 
+#include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/RawTaskData.hpp"
+#include "Elpida/Core/TaskResult.hpp"
 #include "Elpida/Core/ThreadTask.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Core/TaskConfiguration.hpp"
+#include "Elpida/Core/Vector.hpp"
 
 namespace Elpida
 {
@@ -22,21 +25,21 @@ namespace Elpida
 
 		Vector<TaskResult> taskResults;
 
-		UniquePtr<AbstractTaskData> data = std::make_unique<RawTaskData>(targetProcessors.front(), environmentInfo.GetAllocator());
-		for (auto& task: tasks)
+		UniquePtr<AbstractTaskData>
+			data = std::make_unique<RawTaskData>(targetProcessors.front(), environmentInfo.GetAllocator());
+		for (auto& task : tasks)
 		{
 			task->SetEnvironmentInfo(environmentInfo);
-
+			auto inputSize = data->GetSize();
 			if (task->CanBeMultiThreaded())
 			{
-				auto duration = ExecuteMultiThread(data, std::move(task), targetProcessors);
-				taskResults.emplace_back(duration, data->GetSize());
+				taskResults.emplace_back(ExecuteMultiThread(data, std::move(task), targetProcessors), inputSize);
 			}
 			else
 			{
-				auto duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front());
-				taskResults.emplace_back(duration, data->GetSize());
+				taskResults.emplace_back(ExecuteSingleThread(data, std::move(task), targetProcessors.front()), inputSize);
 			}
+
 		}
 
 		auto score = CalculateScore(taskResults);
@@ -47,7 +50,9 @@ namespace Elpida
 	}
 
 	Duration
-	Benchmark::ExecuteSingleThread(UniquePtr<AbstractTaskData>& data, UniquePtr<Task> task, const TopologyNode& targetProcessor)
+	Benchmark::ExecuteSingleThread(UniquePtr<AbstractTaskData>& data,
+		UniquePtr<Task> task,
+		const TopologyNode& targetProcessor)
 	{
 		ThreadTask threadTask(std::move(task), targetProcessor);
 
@@ -61,14 +66,16 @@ namespace Elpida
 	}
 
 	Duration
-	Benchmark::ExecuteMultiThread(UniquePtr<AbstractTaskData>& data, UniquePtr<Task> task, const Vector<Ref<const ProcessingUnitNode>>& targetProcessors)
+	Benchmark::ExecuteMultiThread(UniquePtr<AbstractTaskData>& data,
+		UniquePtr<Task> task,
+		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors)
 	{
 		auto chunks = data->Split(targetProcessors);
 
 		data->Deallocate();    // Reduce memory footprint
 
 		Vector<UniquePtr<ThreadTask>> threadTasks;
-		for (auto& chunk: chunks)
+		for (auto& chunk : chunks)
 		{
 			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), chunk->GetTargetProcessor());
 
@@ -77,20 +84,20 @@ namespace Elpida
 			threadTasks.push_back(std::move(threadTask));
 		}
 
-		for (auto& thread: threadTasks)
+		for (auto& thread : threadTasks)
 		{
 			thread->WakeThread();
 		}
 
 		Duration totalDuration;
-		for (auto& thread: threadTasks)
+		for (auto& thread : threadTasks)
 		{
 			totalDuration += thread->Run();
 		}
 
 		chunks.clear();
 
-		for (auto& chunkTask: threadTasks)
+		for (auto& chunkTask : threadTasks)
 		{
 			chunks.push_back(chunkTask->Finalize());
 		}
@@ -105,7 +112,10 @@ namespace Elpida
 		auto expectedConfig = GetRequiredConfiguration();
 		if (configuration.size() != expectedConfig.size())
 		{
-			throw ElpidaException("Benchmark configuration size was not met. It was: ", configuration.size(), " but expected ", expectedConfig.size());
+			throw ElpidaException("Benchmark configuration size was not met. It was: ",
+				configuration.size(),
+				" but expected ",
+				expectedConfig.size());
 		}
 
 		for (Size i = 0; i < expectedConfig.size(); ++i)
@@ -114,17 +124,29 @@ namespace Elpida
 			auto& actual = configuration[i];
 			if (actual.GetName() != expected.GetName())
 			{
-				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ", i , "should be '", expected.GetName(), "' but was '", actual.GetName());
+				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
+					i,
+					"should be '",
+					expected.GetName(),
+					"' but was '",
+					actual.GetName());
 			}
 
 			if (actual.GetType() != expected.GetType())
 			{
-				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ", i , "should be of type '", (int)expected.GetType(), "' but was '", (int)actual.GetType());
+				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
+					i,
+					"should be of type '",
+					(int)expected.GetType(),
+					"' but was '",
+					(int)actual.GetType());
 			}
 
 			if (actual.GetValue().empty())
 			{
-				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ", i , " has empty value");
+				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
+					i,
+					" has empty value");
 			}
 		}
 

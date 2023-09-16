@@ -81,6 +81,8 @@ namespace Elpida::Application
 		});
 
 		_ui->wBenchmarks->layout()->addWidget(new BenchmarksView(benchmarksModel, benchmarkResultsModel, benchmarksController, configurationViewPool));
+		OnTopologyModelChanged();
+		OnBenchmarksModelChanged();
 	}
 
 	MainWindow::~MainWindow()

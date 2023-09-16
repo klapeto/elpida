@@ -9,8 +9,16 @@
 #include "Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp"
 #include "Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.hpp"
 
+#include "Core/SettingsService.hpp"
+
 namespace Elpida::Application
 {
+	ConfigurationViewPool::ConfigurationViewPool(SettingsService& settingsService)
+		: _settingsService(settingsService)
+	{
+
+	}
+
 	ConfigurationView*
 	ConfigurationViewPool::RentViewForModel(const BenchmarkConfigurationModel& configurationModel)
 	{
@@ -31,9 +39,10 @@ namespace Elpida::Application
 			break;
 		}
 
-		BenchmarkConfigurationInstanceController controller(const_cast<BenchmarkConfigurationModel&>(configurationModel));
+		BenchmarkConfigurationInstanceController
+			controller(const_cast<BenchmarkConfigurationModel&>(configurationModel), _settingsService);
 		CreatedInstance instance{ view.release(), std::move(controller) };
-		auto& actualInstance =  _rentedInstances.insert({ &configurationModel, std::move(instance) }).first->second;
+		auto& actualInstance = _rentedInstances.insert({ &configurationModel, std::move(instance) }).first->second;
 
 		actualInstance.view->SetModel(&configurationModel, actualInstance.controller);
 
@@ -41,7 +50,8 @@ namespace Elpida::Application
 	}
 
 	void
-	ConfigurationViewPool::ReturnViewFromModel(const BenchmarkConfigurationModel& configurationModel, ConfigurationView* view)
+	ConfigurationViewPool::ReturnViewFromModel(const BenchmarkConfigurationModel& configurationModel,
+		ConfigurationView* view)
 	{
 		auto itr = _rentedInstances.find(&configurationModel);
 
