@@ -5,7 +5,7 @@
 #ifndef ELPIDA_ENVIRONMENTINFO_HPP_
 #define ELPIDA_ENVIRONMENTINFO_HPP_
 
-#include "Elpida/Core/OverheadsInfo.hpp"
+#include "Elpida/Core/TimingInfo.hpp"
 #include "Elpida/Core/MemoryInfo.hpp"
 #include "Elpida/Core/CpuInfo.hpp"
 #include "Elpida/Core/Topology/TopologyInfo.hpp"
@@ -33,12 +33,12 @@ namespace Elpida
 		const TopologyInfo& GetTopologyInfo() const;
 
 		[[nodiscard]]
-		const OverheadsInfo& GetOverheadsInfo() const;
+		const TimingInfo& GetOverheadsInfo() const;
 
 		[[nodiscard]]
 		const Allocator& GetAllocator() const;
 
-		EnvironmentInfo(CpuInfo&& cpuInfo, MemoryInfo&& memoryInfo, OsInfo&& osInfo, TopologyInfo&& topologyInfo, OverheadsInfo&& overheadsInfo, UniquePtr<Allocator> allocator);
+		EnvironmentInfo(CpuInfo&& cpuInfo, MemoryInfo&& memoryInfo, OsInfo&& osInfo, TopologyInfo&& topologyInfo, TimingInfo&& overheadsInfo, UniquePtr<Allocator> allocator);
 		EnvironmentInfo(const EnvironmentInfo&) = delete;
 		EnvironmentInfo(EnvironmentInfo&&) noexcept = default;
 		EnvironmentInfo& operator=(const EnvironmentInfo&) = delete;
@@ -49,7 +49,7 @@ namespace Elpida
 		MemoryInfo _memoryInfo;
 		TopologyInfo _topologyInfo;
 		OsInfo _osInfo;
-		OverheadsInfo _overheadsInfo;
+		TimingInfo _overheadsInfo;
 
 		UniquePtr<Allocator> _allocator;
 	};

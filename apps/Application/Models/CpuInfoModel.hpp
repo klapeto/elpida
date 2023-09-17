@@ -30,10 +30,14 @@ namespace Elpida::Application
 		[[nodiscard]]
 		const std::string& GetModelName() const;
 
+		[[nodiscard]]
+		double GetFrequency() const;
+
 		CpuInfoModel() = default;
 		CpuInfoModel(std::string architecture,
 				std::string vendorName,
 				std::string modelName,
+				double frequency,
 				std::vector<std::string> features,
 				std::unordered_map<std::string, std::string> additionalInfo);
 		~CpuInfoModel() override = default;
@@ -43,6 +47,7 @@ namespace Elpida::Application
 		std::string _architecture;
 		std::string _vendorName;
 		std::string _modelName;
+		double _frequency;
 	};
 
 } // Application

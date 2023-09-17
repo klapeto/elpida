@@ -13,7 +13,7 @@
 namespace Elpida::Application
 {
 
-	class OverheadsModel : public Model
+	class TimingModel : public Model
 	{
 	public:
 		[[nodiscard]]
@@ -25,16 +25,21 @@ namespace Elpida::Application
 		[[nodiscard]]
 		const Duration& GetVirtualCallOverhead() const;
 
-		OverheadsModel() = default;
+		[[nodiscard]]
+		const Duration& GetStableTime() const;
 
-		OverheadsModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead);
+		[[nodiscard]]
+		bool IsSystemStable() const;
 
-		~OverheadsModel() override = default;
-
+		TimingModel() = default;
+		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead, const Duration stableTime, bool systemStable);
+		~TimingModel() override = default;
 	private:
 		Duration _nowOverhead;
 		Duration _loopOverhead;
 		Duration _virtualCallOverhead;
+		Duration _stableTime;
+		bool _systemStable;
 	};
 
 } // Application

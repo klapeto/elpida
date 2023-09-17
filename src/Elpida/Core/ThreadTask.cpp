@@ -34,7 +34,7 @@ namespace Elpida
 	}
 
 	ThreadTask::ThreadTask(UniquePtr<Task> taskToRun, Ref<const TopologyNode> targetProcessor)
-			: _taskToRun(std::move(taskToRun)), _targetProcessor(targetProcessor), _taskRunDuration(0), _doStart(false)
+		: _taskToRun(std::move(taskToRun)), _targetProcessor(targetProcessor), _taskRunDuration(0), _doStart(false)
 	{
 
 	}
@@ -70,9 +70,14 @@ namespace Elpida
 		std::unique_lock<std::mutex> lock(_mutex);
 		_conditionVariable.wait(lock, [this]()
 		{
-			return _doStart;
+		  return _doStart;
 		});
 		_taskRunDuration = _taskToRun->Run();
+	}
+
+	void ThreadTask::PinCurrentThreadToProcessor(const TopologyNode& topologyNode)
+	{
+		PinCurrentThreadToProcessor(topologyNode.GetOsIndex().value());
 	}
 
 	void ThreadTask::WakeThread()

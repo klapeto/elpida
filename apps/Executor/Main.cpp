@@ -25,6 +25,7 @@
 #include <iostream>
 
 #include "Elpida/Core/Config.hpp"
+#include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
@@ -113,7 +114,7 @@ int main(int argC, char** argV)
 			MemoryInfoLoader::Load(),
 			OsInfoLoader::Load(),
 			TopologyLoader::LoadTopology(),
-			OverheadsInfo(NanoSeconds(helper.GetNowOverhead()), NanoSeconds(helper.GetLoopOverhead()), NanoSeconds(helper.GetVCallOverhead())),
+			TimingInfo(NanoSeconds(helper.GetNowOverhead()), NanoSeconds(helper.GetLoopOverhead()), NanoSeconds(helper.GetVCallOverhead()), Seconds(0), 0),
 			std::make_unique<NumaAllocator>());
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());

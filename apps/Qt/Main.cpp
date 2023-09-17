@@ -27,6 +27,7 @@
 
 #include <cctype>
 #include <filesystem>
+#include <ratio>
 #include <string>
 #include <vector>
 
@@ -36,11 +37,11 @@
 #include "Elpida/Core/TimingUtilities.hpp"
 #include "Elpida/Core/Topology/TopologyNode.hpp"
 #include "Elpida/Core/Pool.hpp"
-#include "Elpida/Core/OverheadsInfo.hpp"
+#include "Elpida/Core/TimingInfo.hpp"
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
-#include "OverheadsCalculator/OverheadsCalculator.hpp"
+#include "TimingCalculator/TimingCalculator.hpp"
 #include "QtMessageService.hpp"
 #include "QtThreadQueue.hpp"
 #include "QtSettingsService.hpp"
@@ -55,7 +56,7 @@
 #include "Models/OsInfoModel.hpp"
 #include "Models/MemoryInfoModel.hpp"
 #include "Models/CpuInfoModel.hpp"
-#include "Models/OverheadsModel.hpp"
+#include "Models/TimingModel.hpp"
 #include "Models/TopologyModel.hpp"
 #include "Models/TopologyNodeModel.hpp"
 #include "Models/BenchmarksModel.hpp"
@@ -310,6 +311,7 @@ static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& t
 
 int main(int argc, char* argv[])
 {
+
 	setupPlatformSpecifics();
 
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
@@ -337,12 +339,6 @@ int main(int argc, char* argv[])
 	MemoryInfo memoryInfo = MemoryInfoLoader::Load();
 	MemoryInfoModel memoryInfoModel(memoryInfo.GetTotalSize(), memoryInfo.GetPageSize());
 
-	splash.showMessage("Getting CPU info...");
-
-	CpuInfo cpuInfo = CpuInfoLoader::Load();
-	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(),
-		cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
-
 	splash.showMessage("Getting topology info...");
 	TopologyInfo topologyInfo = TopologyLoader::LoadTopology();
 	TopologyModel topologyModel(GetNode(topologyInfo.GetRoot()));
@@ -352,10 +348,19 @@ int main(int argc, char* argv[])
 
 	splash.showMessage("Calculating Overheads...");
 
-	auto overheadsInfo = OverheadsCalculator::CalculateOverheads(topologyInfo);
-	OverheadsModel overheadsModel(overheadsInfo.GetNowOverhead(), overheadsInfo.GetLoopOverhead(),
-		overheadsInfo.GetVirtualCallOverhead());
+	auto timingInfo = TimingCalculator::CalculateTiming(topologyInfo);
+	TimingModel overheadsModel(timingInfo.GetNowOverhead(),
+		timingInfo.GetLoopOverhead(),
+		timingInfo.GetVirtualCallOverhead(),
+		timingInfo.GetMinimumTimeForStableMeasurement(),
+		timingInfo.GetMinimumTimeForStableMeasurement() < Seconds(1));
 	BenchmarkResultsModel benchmarkResultsModel;
+
+	splash.showMessage("Getting CPU info...");
+
+	CpuInfo cpuInfo = CpuInfoLoader::LoadAndCalculateFrequency(timingInfo.GetNowOverhead(), timingInfo.GetLoopOverhead());
+	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(),
+		cpuInfo.GetFrequency(), cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
 
 	splash.showMessage("Loading benchmarks...");
 	auto benchmarksModel = LoadBenchmarks(settingsService);

@@ -14,7 +14,7 @@
 
 namespace Elpida {
 
-	class OverheadsInfo;
+	class TimingInfo;
 
 	class Benchmark {
 	public:

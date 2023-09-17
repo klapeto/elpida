@@ -7,7 +7,11 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         PngEncodingTask.cpp
         PngDecodingTask.cpp
         PngEncodingDecodingBenchmark.cpp
-        ConvertToFloatTask.cpp ConvertToGrayscaleTask.cpp ConvertToGrayscaleTask.hpp ConvertToUInt8Task.cpp ConvertToUInt8Task.hpp ImageTaskData.cpp ImageTaskData.hpp Plugin.cpp)
+        ConvertToFloatTask.cpp
+        ConvertToGrayscaleTask.cpp
+        ConvertToUInt8Task.cpp
+        ImageTaskData.cpp
+        Plugin.cpp)
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
 

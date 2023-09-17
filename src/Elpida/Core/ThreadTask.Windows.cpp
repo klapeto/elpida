@@ -13,12 +13,12 @@
 
 namespace Elpida
 {
-	void ThreadTask::PinCurrentThreadToProcessor(const TopologyNode& topologyNode)
+	void ThreadTask::PinCurrentThreadToProcessor(unsigned int processorId)
 	{
-        auto fail = !SetThreadAffinityMask(GetCurrentThread(), 1 << (int)topologyNode.GetOsIndex().value());
+        auto fail = !SetThreadAffinityMask(GetCurrentThread(), 1 << (int)processorId);
 		if (fail)
 		{
-			throw ElpidaException("Failed to pin thread to: ", topologyNode.GetOsIndex().value());
+			throw ElpidaException("Failed to pin thread to: ", processorId);
 		}
 	}
 }

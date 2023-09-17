@@ -38,6 +38,7 @@ namespace Elpida
 		void WakeThread();
 
 		static void PinCurrentThreadToProcessor(const TopologyNode& topologyNode);
+		static void PinCurrentThreadToProcessor(unsigned int processorId);
 
 		ThreadTask(UniquePtr<Task> taskToRun, Ref<const TopologyNode> targetProcessor);
 		~ThreadTask() final;

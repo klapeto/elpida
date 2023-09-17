@@ -48,7 +48,7 @@ SOURCES += \
     Views/BenchmarksView/BenchmarksView.cpp \
     Views/TopologyNodeView/TopologyNodeView.cpp \
     Views/CpuInfoView/CpuInfoView.cpp \
-    Views/OverheadsInfoView/OverheadsInfoView.cpp \
+    Views/TimingInfoView/TimingInfoView.cpp \
     Views/MemoryInfoView/MemoryInfoView.cpp
 
 
@@ -77,7 +77,7 @@ HEADERS += \
     Views/BenchmarksView/BenchmarksView.hpp \
     Views/TopologyNodeView/TopologyNodeView.hpp \
     Views/CpuInfoView/CpuInfoView.hpp \
-    Views/OverheadsInfoView/OverheadsInfoView.hpp \
+    Views/TimingInfoView/TimingInfoView.hpp \
     Views/MemoryInfoView/MemoryInfoView.hpp
 
 
@@ -98,7 +98,7 @@ FORMS += \
     Views/TopologyView/TopologyView.ui \
     Views/OsInfoView/OsInfoView.ui \
     Views/MemoryInfoView/MemoryInfoView.ui \
-    Views/OverheadsInfoView/OverheadsInfoView.ui \
+    Views/TimingInfoView/TimingInfoView.ui \
     Views/CpuInfoView/CpuInfoView.ui \
     Views/TopologyNodeView/TopologyNodeView.ui \
     Views/BenchmarksView/BenchmarksView.ui \

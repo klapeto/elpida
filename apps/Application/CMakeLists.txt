@@ -27,7 +27,7 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/CpuInfoModel.cpp
         Models/MemoryInfoModel.cpp
         Models/OsInfoModel.cpp
-        Models/OverheadsModel.cpp
+        Models/TimingModel.cpp
         Models/OsInfoModel.cpp
         Models/BenchmarksModel.cpp
         Models/BenchmarkGroupModel.cpp

@@ -22,6 +22,7 @@ namespace Elpida
 			Duration loopOverhead,
 			TCallable callable)
 		{
+			const double marginOfError = 0.02;
 			Size iterations = 1;
 			auto currentDuration = Duration::zero();
 
@@ -33,12 +34,12 @@ namespace Elpida
 
 				currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
 
-				if (currentDuration > (targetDuration * 0.98) && currentDuration < (targetDuration * 1.02))
+				if (currentDuration > (targetDuration * (1.0 - marginOfError)) && currentDuration < (targetDuration * (1.0 + marginOfError)))
 				{
 					break;
 				}
 				iterations =
-					std::ceil((((double)iterations * targetDuration.count()) / currentDuration.count()) * 1.005);
+					std::ceil((((double)iterations * targetDuration.count()) / currentDuration.count()) * (1.0 + (marginOfError / 2.0)));
 			}
 			return iterations;
 		}

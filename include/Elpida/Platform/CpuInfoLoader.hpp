@@ -6,6 +6,9 @@
 #define ELPIDA_CPUINFOLOADER_HPP_
 
 #include "Elpida/Core/CpuInfo.hpp"
+#include "Elpida/Core/Duration.hpp"
+#include "Elpida/Core/Size.hpp"
+
 namespace Elpida
 {
 
@@ -13,6 +16,7 @@ namespace Elpida
 	{
 	 public:
 		static CpuInfo Load();
+		static CpuInfo LoadAndCalculateFrequency(Duration loopDuration, Duration nowOverhead);
 		CpuInfoLoader() = delete;
 	};
 

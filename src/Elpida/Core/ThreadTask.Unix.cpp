@@ -14,15 +14,15 @@
 
 namespace Elpida
 {
-	void ThreadTask::PinCurrentThreadToProcessor(const TopologyNode& topologyNode)
+	void ThreadTask::PinCurrentThreadToProcessor(unsigned int processorId)
 	{
 		cpu_set_t mask;
 		CPU_ZERO(&mask);
-		CPU_SET(topologyNode.GetOsIndex().value(), &mask);
+		CPU_SET(processorId, &mask);
 
 		if (sched_setaffinity(0, sizeof(cpu_set_t), &mask))
 		{
-			throw ElpidaException("Failed to pin thread to: ", topologyNode.GetOsIndex().value(), ": ", strerror(errno));
+			throw ElpidaException("Failed to pin thread to: ", processorId, ": ", strerror(errno));
 		}
 	}
 }

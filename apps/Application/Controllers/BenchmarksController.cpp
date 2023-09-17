@@ -8,7 +8,7 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Models/BenchmarksModel.hpp"
 #include "Models/TopologyModel.hpp"
-#include "Models/OverheadsModel.hpp"
+#include "Models/TimingModel.hpp"
 #include "Models/BenchmarkResultsModel.hpp"
 
 #include "Core/MessageService.hpp"
@@ -20,7 +20,7 @@ namespace Elpida::Application
 {
 	BenchmarksController::BenchmarksController(BenchmarksModel& model,
 		TopologyModel& topologyModel,
-		OverheadsModel& overheadsModel,
+		TimingModel& overheadsModel,
 		BenchmarkResultsModel& benchmarkResultsModel,
 		BenchmarkExecutionService& benchmarkExecutionService)
 		: Controller<BenchmarksModel>(model), _topologyModel(topologyModel), _overheadsModel(overheadsModel),

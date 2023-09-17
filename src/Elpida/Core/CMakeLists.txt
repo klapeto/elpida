@@ -13,7 +13,7 @@ set(ELPIDA_CORE_SOURCES
         TaskResult.cpp
         MicroTask.cpp
         ValueUtilities.cpp
-        OverheadsInfo.cpp
+        TimingInfo.cpp
         ThreadTask.cpp
         ThreadTask.Unix.cpp
         ThreadTask.Windows.cpp

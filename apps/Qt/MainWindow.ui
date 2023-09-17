@@ -32,9 +32,9 @@
           </property>
           <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,1">
            <item row="2" column="0">
-            <widget class="QGroupBox" name="gbOverheadsInfo">
+            <widget class="QGroupBox" name="gbTimingInfo">
              <property name="title">
-              <string>Overheads information</string>
+              <string>Timing information</string>
              </property>
             </widget>
            </item>

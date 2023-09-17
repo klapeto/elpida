@@ -15,7 +15,7 @@ namespace Elpida::Application
 	class TopologyModel;
 	class MessageService;
 	class BenchmarkExecutionService;
-	class OverheadsModel;
+	class TimingModel;
 	class BenchmarkResultsModel;
 
 	class BenchmarksController : public Controller<BenchmarksModel>
@@ -30,11 +30,11 @@ namespace Elpida::Application
 		void Run();
 		void StopRunning();
 
-		explicit BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, OverheadsModel& overheadsModel, BenchmarkResultsModel& benchmarkResultsModel, BenchmarkExecutionService& benchmarkExecutionService);
+		explicit BenchmarksController(BenchmarksModel& model, TopologyModel& topologyModel, TimingModel& overheadsModel, BenchmarkResultsModel& benchmarkResultsModel, BenchmarkExecutionService& benchmarkExecutionService);
 		~BenchmarksController() = default;
 	 private:
 		TopologyModel& _topologyModel;
-		OverheadsModel& _overheadsModel;
+		TimingModel& _overheadsModel;
 		BenchmarkResultsModel& _benchmarkResultsModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		bool _cancelling;

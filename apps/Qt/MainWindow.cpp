@@ -14,7 +14,7 @@
 
 #include "Views/OsInfoView/OsInfoView.hpp"
 #include "Views/MemoryInfoView/MemoryInfoView.hpp"
-#include "Views/OverheadsInfoView/OverheadsInfoView.hpp"
+#include "Views/TimingInfoView/TimingInfoView.hpp"
 #include "Views/CpuInfoView/CpuInfoView.hpp"
 #include "Views/TopologyView/TopologyView.hpp"
 #include "Views/BenchmarksView/BenchmarksView.hpp"
@@ -33,7 +33,7 @@ namespace Elpida::Application
 	MainWindow::MainWindow(const OsInfoModel& osInfo,
 		const MemoryInfoModel& memoryInfo,
 		const CpuInfoModel& cpuInfo,
-		const OverheadsModel& overheadsInfo,
+		const TimingModel& overheadsInfo,
 		TopologyModel& topologyModel,
 		BenchmarksModel& benchmarksModel,
 		const BenchmarkResultsModel& benchmarkResultsModel,
@@ -53,8 +53,8 @@ namespace Elpida::Application
 		_ui->gbMemoryInfo->setLayout(new QVBoxLayout);
 		_ui->gbMemoryInfo->layout()->addWidget(new MemoryInfoView(memoryInfo));
 
-		_ui->gbOverheadsInfo->setLayout(new QVBoxLayout);
-		_ui->gbOverheadsInfo->layout()->addWidget(new OverheadsInfoView(overheadsInfo));
+		_ui->gbTimingInfo->setLayout(new QVBoxLayout);
+		_ui->gbTimingInfo->layout()->addWidget(new TimingInfoView(overheadsInfo));
 
 		_ui->gbCpuInfo->setLayout(new QVBoxLayout);
 		_ui->gbCpuInfo->layout()->addWidget(new CpuInfoView(cpuInfo));

@@ -24,9 +24,9 @@ set(ELPIDA_QT_SOURCES
 		Views/MemoryInfoView/MemoryInfoView.cpp
 		Views/MemoryInfoView/MemoryInfoView.ui
 
-		Views/OverheadsInfoView/OverheadsInfoView.hpp
-		Views/OverheadsInfoView/OverheadsInfoView.cpp
-		Views/OverheadsInfoView/OverheadsInfoView.ui
+		Views/TimingInfoView/TimingInfoView.hpp
+		Views/TimingInfoView/TimingInfoView.cpp
+		Views/TimingInfoView/TimingInfoView.ui
 
 		Views/CpuInfoView/CpuInfoView.hpp
 		Views/CpuInfoView/CpuInfoView.cpp
@@ -166,7 +166,7 @@ if (MSYS OR MINGW)
 	target_link_options(elpida-qt PRIVATE -Wl,-subsystem,windows)
 endif()
 
-add_library(overheads-calculator OverheadsCalculator/OverheadsCalculator.cpp OverheadsCalculator/DummyClass.cpp)
+add_library(overheads-calculator TimingCalculator/TimingCalculator.cpp TimingCalculator/DummyClass.cpp)
 target_link_libraries(overheads-calculator elpida-core)
 target_compile_options(overheads-calculator PRIVATE -O3 -fno-dce -fno-tree-dce)
 

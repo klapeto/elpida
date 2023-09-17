@@ -3,10 +3,16 @@
 //
 
 #include "Elpida/Core/Config.hpp"
+#include <thread>
 
 #if defined(__x86_64__) || defined(_M_X64)
 
 #include "Elpida/Platform/CpuInfoLoader.hpp"
+#include "Elpida/Core/Repeat.hpp"
+#include "Elpida/Core/Duration.hpp"
+#include "Elpida/Core/TimingUtilities.hpp"
+#include "Elpida/Core/ThreadTask.hpp"
+#include <chrono>
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -98,7 +104,6 @@ namespace Elpida
 		AddFeature(features, "SSE2", edx, 26);
 		AddFeature(features, "SSE", edx, 25);
 		AddFeature(features, "CMOV", edx, 15);
-
 
 		// EAX = 0x7 => Structured Extended Feature Identifiers
 		eax = ebx = ecx = edx = 0;
@@ -283,7 +288,52 @@ namespace Elpida
 		return modelName.substr(0, index);
 	}
 
-	CpuInfo CpuInfoLoader::Load()
+#pragma GCC push_options
+#pragma GCC optimize ("O3")
+	double DoCalculateFrequency(Size loopCount)
+	{
+		// we estimate the frequency based on an instruction that has known cycles
+		// according to Agner Fog (https://www.agner.org/optimize/instruction_tables.pdf)
+		// "test r,r" has 1 cycle latency with 0.25 throuput which means each cycle can perform 4 instructions
+		const size_t count = loopCount;
+
+		auto a = std::chrono::high_resolution_clock::now();
+
+		while (loopCount--)
+		{
+			REPEAT_1000(__asm("test %ah, %ah"));
+			REPEAT_1000(__asm("test %ah, %ah"));
+			REPEAT_1000(__asm("test %ah, %ah"));
+			REPEAT_1000(__asm("test %ah, %ah"));
+			REPEAT_1000(__asm("test %ah, %ah"));
+		}
+
+		auto b = std::chrono::high_resolution_clock::now();
+
+		return ((count * 5000) / std::chrono::duration_cast<Seconds>(b - a).count()) / 4.0;
+	}
+#pragma GCC pop_options
+
+
+	static double CalculateFrequency(Duration loopDuration, Duration nowOverhead)
+	{
+		double freq = 0.0;
+		std::thread([&](){
+		  ThreadTask::PinCurrentThreadToProcessor(0);
+		  TimingUtilities::GetIterationsNeededForExecutionTime(Seconds(1),
+			  loopDuration,
+			  nowOverhead,
+			  [&](auto x)
+			  {
+				freq = DoCalculateFrequency(x);
+			  });
+		}).join();
+
+		return freq;
+	}
+
+
+	static CpuInfo DoLoad(double frequency)
 	{
 		unsigned eax = 0, ebx = 0, ecx = 0, edx = 0;
 
@@ -317,15 +367,26 @@ namespace Elpida
 			GetIntelSpecifics(maximumStandardFunction, maximumExtendedFunction, modelName, features, additionalInfo);
 		}
 
-
 		return {
 			"x86_64",
 			vendorName,
 			SanitizeModelName(modelName),
+			frequency,
 			std::move(features),
 			std::move(additionalInfo)
 		};
 	}
+
+	CpuInfo CpuInfoLoader::Load()
+	{
+		return DoLoad(0.0);
+	}
+
+	CpuInfo CpuInfoLoader::LoadAndCalculateFrequency(Duration loopDuration, Duration nowOverhead)
+	{
+		return DoLoad(CalculateFrequency(loopDuration,nowOverhead));
+	}
+
 } // Elpida
 
 #endif

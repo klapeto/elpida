@@ -16,7 +16,7 @@ namespace Elpida::Application
 	class OsInfoModel;
 	class MemoryInfoModel;
 	class CpuInfoModel;
-	class OverheadsModel;
+	class TimingModel;
 	class TopologyModel;
 	class BenchmarksModel;
 	class BenchmarkResultsModel;
@@ -31,7 +31,7 @@ namespace Elpida::Application
 			const OsInfoModel& osInfo,
 			const MemoryInfoModel& memoryInfo,
 			const CpuInfoModel& cpuInfo,
-			const OverheadsModel& overheadsInfo,
+			const TimingModel& overheadsInfo,
 			TopologyModel& topologyModel,
 			BenchmarksModel& benchmarksModel,
 			const BenchmarkResultsModel& benchmarkResultsModel,
