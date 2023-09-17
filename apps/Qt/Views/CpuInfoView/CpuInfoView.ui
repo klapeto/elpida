@@ -7,24 +7,31 @@
     <x>0</x>
     <y>0</y>
     <width>198</width>
-    <height>178</height>
+    <height>176</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0">
-    <widget class="QLabel" name="lblModelName">
-     <property name="text">
-      <string>Model name:</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="2">
     <widget class="QLabel" name="lblVendor">
      <property name="text">
       <string>Vendor:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="lblArchitectureValue">
+     <property name="text">
+      <string>N/A</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="3">
+    <widget class="QLabel" name="lblModelNameValue">
+     <property name="text">
+      <string>N/A</string>
      </property>
     </widget>
    </item>
@@ -35,14 +42,14 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="lblFrequency">
+   <item row="1" column="0">
+    <widget class="QLabel" name="lblModelName">
      <property name="text">
-      <string>Frequency:</string>
+      <string>Model name:</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="4">
+   <item row="2" column="0" colspan="4">
     <widget class="QGroupBox" name="gbFeatures">
      <property name="title">
       <string>Features</string>
@@ -71,7 +78,7 @@
            <x>0</x>
            <y>0</y>
            <width>156</width>
-           <height>47</height>
+           <height>68</height>
           </rect>
          </property>
         </widget>
@@ -80,31 +87,10 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="1" colspan="3">
-    <widget class="QLabel" name="lblModelNameValue">
-     <property name="text">
-      <string>N/A</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="lblArchitectureValue">
-     <property name="text">
-      <string>N/A</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="lblArchitecture">
      <property name="text">
       <string>Architecture:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="3">
-    <widget class="QLabel" name="lblFrequencyValue">
-     <property name="text">
-      <string>N/A</string>
      </property>
     </widget>
    </item>

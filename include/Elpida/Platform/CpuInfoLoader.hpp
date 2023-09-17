@@ -16,7 +16,6 @@ namespace Elpida
 	{
 	 public:
 		static CpuInfo Load();
-		static CpuInfo LoadAndCalculateFrequency(Duration loopDuration, Duration nowOverhead);
 		CpuInfoLoader() = delete;
 	};
 

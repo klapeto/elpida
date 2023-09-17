@@ -28,6 +28,9 @@ namespace Elpida::Application
 			Vu::Cs("<b>", model.IsSystemStable() ? "True": "False", "</b>")));
 
 		_ui->lblSystemStableValue->setStyleSheet(model.IsSystemStable() ? "color: green" : "color: red");
+
+		_ui->lblIpsValue->setText(QString::fromStdString(
+			Vu::Cs(Vu::GetValueScaleStringSI(model.GetBogusIps()), "ips")));
 	}
 
 	TimingInfoView::~TimingInfoView()

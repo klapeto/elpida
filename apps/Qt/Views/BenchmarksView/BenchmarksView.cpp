@@ -12,7 +12,6 @@
 #include <exception>
 #include <qmessagebox.h>
 
-#include <qwindowdefs.h>
 #include <thread>
 #include <atomic>
 
@@ -42,6 +41,7 @@ namespace Elpida::Application
 
 		UpdateUi();
 	}
+
 	void BenchmarksView::LoadBenchmarkTree()
 	{
 		for (auto& group : _benchmarksModel.GetBenchmarkGroups())

@@ -31,14 +31,18 @@ namespace Elpida::Application
 		[[nodiscard]]
 		bool IsSystemStable() const;
 
+		[[nodiscard]]
+		Size GetBogusIps() const;
+
 		TimingModel() = default;
-		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead, const Duration stableTime, bool systemStable);
+		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead, Size bogusIps, const Duration& stableTime, bool systemStable);
 		~TimingModel() override = default;
 	private:
 		Duration _nowOverhead;
 		Duration _loopOverhead;
 		Duration _virtualCallOverhead;
 		Duration _stableTime;
+		Size _bogusIps;
 		bool _systemStable;
 	};
 

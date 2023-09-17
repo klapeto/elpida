@@ -39,8 +39,6 @@ namespace Elpida::Application
 			featuresLayout->addWidget(new QLabel(QString::fromStdString(feature)));
 		}
 		_ui->saFeatures->setLayout(featuresLayout);
-
-		_ui->lblFrequencyValue->setText(QString::fromStdString(ValueUtilities::GetValueScaleStringSI(cpuInfo.GetFrequency()) + "Hz"));
 	}
 
 	CpuInfoView::~CpuInfoView()

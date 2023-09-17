@@ -30,10 +30,7 @@ namespace Elpida
 		[[nodiscard]]
 		const String& GetModelName() const;
 
-		[[nodiscard]]
-		double GetFrequency() const;
-
-		CpuInfo(String architecture, String vendorName, String modelName, double frequency, Vector<String>&& features, Map<String, String>&& additionalInfo);
+		CpuInfo(String architecture, String vendorName, String modelName, Vector<String>&& features, Map<String, String>&& additionalInfo);
 		CpuInfo(const CpuInfo&) = default;
 		CpuInfo(CpuInfo&&) noexcept = default;
 		CpuInfo& operator=(const CpuInfo&) = default;
@@ -45,7 +42,6 @@ namespace Elpida
 		String _architecture;
 		String _vendorName;
 		String _modelName;
-		double _frequency;
 	};
 
 } // Elpida

@@ -352,15 +352,15 @@ int main(int argc, char* argv[])
 	TimingModel overheadsModel(timingInfo.GetNowOverhead(),
 		timingInfo.GetLoopOverhead(),
 		timingInfo.GetVirtualCallOverhead(),
+		timingInfo.GetIterationsNeededForOneSecond(),
 		timingInfo.GetMinimumTimeForStableMeasurement(),
 		timingInfo.GetMinimumTimeForStableMeasurement() < Seconds(1));
 	BenchmarkResultsModel benchmarkResultsModel;
 
 	splash.showMessage("Getting CPU info...");
 
-	CpuInfo cpuInfo = CpuInfoLoader::LoadAndCalculateFrequency(timingInfo.GetNowOverhead(), timingInfo.GetLoopOverhead());
-	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(),
-		cpuInfo.GetFrequency(), cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
+	CpuInfo cpuInfo = CpuInfoLoader::Load();
+	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(), cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
 
 	splash.showMessage("Loading benchmarks...");
 	auto benchmarksModel = LoadBenchmarks(settingsService);

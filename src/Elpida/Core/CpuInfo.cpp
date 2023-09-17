@@ -8,8 +8,8 @@
 
 namespace Elpida
 {
-	CpuInfo::CpuInfo(String architecture, String vendorName, String modelName, double frequency, Vector<String>&& features, Map<String, String>&& additionalInfo)
-		: _features(std::move(features)), _additionalInfo(std::move(additionalInfo)), _architecture(std::move(architecture)), _vendorName(std::move(vendorName)), _modelName(std::move(modelName)), _frequency(frequency)
+	CpuInfo::CpuInfo(String architecture, String vendorName, String modelName, Vector<String>&& features, Map<String, String>&& additionalInfo)
+		: _features(std::move(features)), _additionalInfo(std::move(additionalInfo)), _architecture(std::move(architecture)), _vendorName(std::move(vendorName)), _modelName(std::move(modelName))
 	{
 	}
 
@@ -36,9 +36,5 @@ namespace Elpida
 	const String& CpuInfo::GetModelName() const
 	{
 		return _modelName;
-	}
-	double CpuInfo::GetFrequency() const
-	{
-		return _frequency;
 	}
 } // Elpida

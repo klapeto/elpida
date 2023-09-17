@@ -9,10 +9,15 @@ namespace Elpida::Application
 	TimingModel::TimingModel(const Duration& nowOverhead,
 		const Duration& loopOverhead,
 		const Duration& virtualCallOverhead,
-		const Duration stableTime,
+		Size bogusIps,
+		const Duration& stableTime,
 		bool systemStable)
-		: _nowOverhead(nowOverhead), _loopOverhead(loopOverhead), _virtualCallOverhead(virtualCallOverhead),
-		  _stableTime(stableTime), _systemStable(systemStable)
+		: _nowOverhead(nowOverhead),
+		  _loopOverhead(loopOverhead),
+		  _virtualCallOverhead(virtualCallOverhead),
+		  _stableTime(stableTime),
+		  _bogusIps(bogusIps),
+		  _systemStable(systemStable)
 	{
 	}
 
@@ -39,6 +44,11 @@ namespace Elpida::Application
 	bool TimingModel::IsSystemStable() const
 	{
 		return _systemStable;
+	}
+
+	Size TimingModel::GetBogusIps() const
+	{
+		return _bogusIps;
 	}
 
 } // Application
