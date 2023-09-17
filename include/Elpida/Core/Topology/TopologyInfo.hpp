@@ -36,10 +36,14 @@ namespace Elpida
 		[[nodiscard]]
 		const Vector<Ref<const ProcessingUnitNode>>& GetAllProcessingUnits() const;
 
+		[[nodiscard]]
+		const Vector<Ref<const TopologyNode>>& GetAllCores() const;
+
 		TopologyInfo(UniquePtr<TopologyNode> root,
 			Vector<CpuKind>&& cpuKinds,
 			Vector<Ref<const CpuCacheNode>>&& allCaches,
 			Vector<Ref<const NumaNode>>&& allNumaNodes,
+			Vector<Ref<const TopologyNode>>&& allCores,
 			Vector<Ref<const ProcessingUnitNode>> allProcessingUnits);
 		TopologyInfo(const TopologyInfo&) = delete;
 		TopologyInfo(TopologyInfo&&) noexcept = default;
@@ -50,6 +54,7 @@ namespace Elpida
 		Vector<CpuKind> _cpuKinds;
 		Vector<Ref<const CpuCacheNode>> _allCaches;
 		Vector<Ref<const NumaNode>> _allNumaNodes;
+		Vector<Ref<const TopologyNode>> _allCores;
 		Vector<Ref<const ProcessingUnitNode>> _allProcessingUnits;
 		UniquePtr<TopologyNode> _root;
 	};

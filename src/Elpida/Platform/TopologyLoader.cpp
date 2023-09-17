@@ -3,6 +3,7 @@
 //
 
 #include "Elpida/Platform/TopologyLoader.hpp"
+#include "Elpida/Core/Topology/TopologyNode.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 
 #include <hwloc.h>
@@ -226,6 +227,7 @@ namespace Elpida
 	static void AccumulateCollections(TopologyNode& node,
 		Vector<Ref<const CpuCacheNode>>& allCaches,
 		Vector<Ref<const NumaNode>>& allNumaNodes,
+		Vector<Ref<const TopologyNode>>& allCores,
 		Vector<Ref<const ProcessingUnitNode>>& allProcessingUnits,
 		Vector<Ref<ProcessingUnitNode>>& allProcessingUnitsMut)
 	{
@@ -236,6 +238,7 @@ namespace Elpida
 			allProcessingUnits.emplace_back(static_cast<const ProcessingUnitNode&>(node));
 			break;
 		case NodeType::Core:
+			allCores.emplace_back(node);
 			break;
 		case NodeType::NumaDomain:
 			allNumaNodes.emplace_back(static_cast<const NumaNode&>(node));
@@ -257,12 +260,12 @@ namespace Elpida
 
 		for (const auto& child: node.GetMemoryChildren())
 		{
-			AccumulateCollections(*child, allCaches, allNumaNodes, allProcessingUnits, allProcessingUnitsMut);
+			AccumulateCollections(*child, allCaches, allNumaNodes, allCores, allProcessingUnits, allProcessingUnitsMut);
 		}
 
 		for (const auto& child: node.GetChildren())
 		{
-			AccumulateCollections(*child, allCaches, allNumaNodes, allProcessingUnits, allProcessingUnitsMut);
+			AccumulateCollections(*child, allCaches, allNumaNodes, allCores, allProcessingUnits, allProcessingUnitsMut);
 		}
 	}
 
@@ -335,6 +338,7 @@ namespace Elpida
 		Vector<Ref<const CpuCacheNode>> allCaches;
 		Vector<Ref<const NumaNode>> allNumaNodes;
 		Vector<Ref<const ProcessingUnitNode>> allProcessingUnits;
+		Vector<Ref<const TopologyNode>> allCores;
 		Vector<Ref<ProcessingUnitNode>> allProcessingUnitsMut;
 		hwloc_topology_t topology;
 		try
@@ -348,7 +352,7 @@ namespace Elpida
 			auto root = LoadNode(hwloc_get_root_obj(topology), cpuKinds, topology);
 
 			root->LoadSiblings();
-			AccumulateCollections(*root, allCaches, allNumaNodes, allProcessingUnits, allProcessingUnitsMut);
+			AccumulateCollections(*root, allCaches, allNumaNodes, allCores, allProcessingUnits, allProcessingUnitsMut);
 			AssignProcessorsData(cpuKinds, allNumaNodes, allProcessingUnitsMut, topology);
 
 			hwloc_topology_destroy(topology);
@@ -358,6 +362,7 @@ namespace Elpida
 				std::move(cpuKinds),
 				std::move(allCaches),
 				std::move(allNumaNodes),
+				std::move(allCores),
 				std::move(allProcessingUnits),
 			};
 		}

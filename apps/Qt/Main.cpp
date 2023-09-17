@@ -41,7 +41,7 @@
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
-#include "TimingCalculator/TimingCalculator.hpp"
+#include "Elpida/Core/TimingCalculator.hpp"
 #include "QtMessageService.hpp"
 #include "QtThreadQueue.hpp"
 #include "QtSettingsService.hpp"
@@ -75,6 +75,7 @@ using namespace Elpida::Application;
 #include <csignal>
 #include <cstdlib>
 #include <unistd.h>
+#include <QMessageBox>
 
 void segFaultHandler(int sig)
 {
@@ -349,7 +350,7 @@ int main(int argc, char* argv[])
 	splash.showMessage("Calculating Overheads...");
 
 	auto timingInfo = TimingCalculator::CalculateTiming(topologyInfo);
-	TimingModel overheadsModel(timingInfo.GetNowOverhead(),
+	TimingModel timingModel(timingInfo.GetNowOverhead(),
 		timingInfo.GetLoopOverhead(),
 		timingInfo.GetVirtualCallOverhead(),
 		timingInfo.GetIterationsNeededForOneSecond(),
@@ -367,12 +368,12 @@ int main(int argc, char* argv[])
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;
 	BenchmarksController
-		benchmarksController(benchmarksModel, topologyModel, overheadsModel, benchmarkResultsModel, executionService);
+		benchmarksController(benchmarksModel, topologyModel, timingModel, benchmarkResultsModel, executionService);
 	ConfigurationViewPool configurationViewPool(settingsService);
 	MainWindow mainWindow(osInfoModel,
 		memoryInfoModel,
 		cpuInfoModel,
-		overheadsModel,
+		timingModel,
 		topologyModel,
 		benchmarksModel,
 		benchmarkResultsModel,
@@ -382,6 +383,20 @@ int main(int argc, char* argv[])
 	mainWindow.show();
 
 	splash.finish(&mainWindow);
+
+	if (!timingModel.IsSystemStable())
+	{
+		QMessageBox::warning(&mainWindow,
+			"Unstable system timing",
+			"<b style=\"color: #d73e3e\">WARNING!</b> Elpida detected unstable system timing. This usually comes from active running programs on the system."
+			"<p><b>This will affect the benchmark results accuracy.</b> It is strongly recommended to close all programs and restart Elpida.</p>"
+#ifdef ELPIDA_WINDOWS
+			"<p><strong style=\"color: #d73e3e\">WINDOWS USERS BEWARE!</strong> If the problem persists after closing all programs, then Windows may be thrashing the CPU by updating. "
+				"It is advised to disconnect the system from any networks/internet and restart Elpida.</p>"
+#endif
+		);
+	}
+
 
 	ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
 	ThreadQueue::Current().lock()->Run();

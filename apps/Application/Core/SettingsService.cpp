@@ -4,9 +4,6 @@
 
 #include "SettingsService.hpp"
 
-namespace Elpida
+namespace Elpida::Application
 {
-	namespace Application
-	{
-	} // Elpida
 } // Application

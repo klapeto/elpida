@@ -2,21 +2,21 @@
 // Created by klapeto on 16/9/2023.
 //
 
-#include "TimingCalculator.hpp"
+#include "Elpida/Core/TimingCalculator.hpp"
 
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingUtilities.hpp"
 #include "Elpida/Core/ThreadTask.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
 #include "Elpida/Core/Pool.hpp"
-#include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 #include "Elpida/Core/Repeat.hpp"
 
-#include "DummyClass.hpp"
+#include "Elpida/Core/DummyClass.hpp"
+#include "Elpida/Core/Topology/TopologyNode.hpp"
 #include <thread>
 #include <vector>
 
-namespace Elpida::Application
+namespace Elpida
 {
 	const constexpr Duration DefaultTestDuration = Seconds(1);
 
@@ -119,55 +119,68 @@ namespace Elpida::Application
 
 	TimingInfo TimingCalculator::CalculateTiming(const TopologyInfo& topologyInfo)
 	{
-		auto& processors = topologyInfo.GetAllProcessingUnits();
-		ThreadTask::PinCurrentThreadToProcessor(processors.back());
-
-		Duration loopOverhead = CalculateLoopOverhead();
-		Duration nowOverhead = CalculateNowOverhead(loopOverhead);
-
-		Pool<Ref<const ProcessingUnitNode>> processorPool;
-		processorPool.Add(processors);
-
+		Duration loopOverhead;
+		Duration nowOverhead;
 		Duration vCallOverhead;
-		std::thread vCallThread = std::thread([&]()
-		{
-		  auto processor = processorPool.Rent();
-		  ThreadTask::PinCurrentThreadToProcessor(processor.Get());
-		  vCallOverhead = CalculateVCallOverhead(loopOverhead, nowOverhead);
-		});
+		Duration minimumTimeForStableMeasurement;
 
-		std::vector<TimingTest> timingTests;
-		timingTests.reserve(sizeof(TestDurations) / sizeof(Duration));
-		for (auto& duration : TestDurations)
+		std::thread([&]()
 		{
-			timingTests.push_back({
-				.testDuration = duration,
-				.success = false,
-				.thread = {}
-			});
-		}
+		  auto& processors = topologyInfo.GetAllCores();
+		  ThreadTask::PinCurrentThreadToProcessor(0);
 
-		for (auto& test : timingTests)
-		{
-			test.thread = std::thread([&]()
-			{
-			  auto processor = processorPool.Rent();
-			  ThreadTask::PinCurrentThreadToProcessor(processor.Get());
-			  TestTiming(test, nowOverhead);
-			});
-		}
+		  loopOverhead = CalculateLoopOverhead();
+		  nowOverhead = CalculateNowOverhead(loopOverhead);
 
-		Duration minimumTimeForStableMeasurement = Seconds(1);
-		for (auto& test : timingTests)
-		{
-			test.thread.join();
-			if (test.success && test.testDuration < minimumTimeForStableMeasurement)
-			{
-				minimumTimeForStableMeasurement = test.testDuration;
-			}
-		}
-		vCallThread.join();
+		  Pool<Ref<const TopologyNode>> processorPool;
+		  processorPool.Add(processors);
 
-		return TimingInfo(nowOverhead, loopOverhead, vCallOverhead, minimumTimeForStableMeasurement, 1.0 / loopOverhead.count());
+		  std::thread vCallThread = std::thread([&]()
+		  {
+			auto processor = processorPool.Rent();
+			ThreadTask::PinCurrentThreadToProcessor(processor.Get().get().GetChildren().front()->GetOsIndex().value());
+			vCallOverhead = CalculateVCallOverhead(loopOverhead, nowOverhead);
+		  });
+
+		  std::vector<TimingTest> timingTests;
+		  timingTests.reserve(sizeof(TestDurations) / sizeof(Duration));
+		  for (auto& duration : TestDurations)
+		  {
+			  timingTests.push_back({
+				  .testDuration = duration,
+				  .success = false,
+				  .thread = {}
+			  });
+		  }
+
+		  for (auto& test : timingTests)
+		  {
+			  test.thread = std::thread([&]()
+			  {
+				auto processor = processorPool.Rent();
+				ThreadTask::PinCurrentThreadToProcessor(processor.Get().get().GetChildren().front()->GetOsIndex()
+					.value());
+				TestTiming(test, nowOverhead);
+			  });
+		  }
+
+		  minimumTimeForStableMeasurement = Seconds(1);
+		  for (auto& test : timingTests)
+		  {
+			  test.thread.join();
+			  if (test.success && test.testDuration < minimumTimeForStableMeasurement)
+			  {
+				  minimumTimeForStableMeasurement = test.testDuration;
+			  }
+		  }
+		  vCallThread.join();
+
+		}).join();
+
+		return TimingInfo(nowOverhead,
+			loopOverhead,
+			vCallOverhead,
+			minimumTimeForStableMeasurement,
+			1.0 / loopOverhead.count());
 	}
 } // Application

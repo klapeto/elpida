@@ -2,10 +2,10 @@
 // Created by klapeto on 16/9/2023.
 //
 
-#ifndef ELPIDA_APPS_QT_OVERHEADSCALCULATOR_DUMMYCLASS_HPP
-#define ELPIDA_APPS_QT_OVERHEADSCALCULATOR_DUMMYCLASS_HPP
+#ifndef ELPIDA_DUMMYCLASS_HPP
+#define ELPIDA_DUMMYCLASS_HPP
 
-namespace Elpida::Application
+namespace Elpida
 {
 	class Base
 	{
@@ -24,4 +24,4 @@ namespace Elpida::Application
 
 } // Application
 
-#endif //ELPIDA_APPS_QT_OVERHEADSCALCULATOR_DUMMYCLASS_HPP
+#endif //ELPIDA_DUMMYCLASS_HPP

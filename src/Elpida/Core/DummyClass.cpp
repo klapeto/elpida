@@ -2,9 +2,9 @@
 // Created by klapeto on 16/9/2023.
 //
 
-#include "DummyClass.hpp"
+#include "Elpida/Core/DummyClass.hpp"
 
-namespace Elpida::Application
+namespace Elpida
 {
 	void Derived::Foo()
 	{

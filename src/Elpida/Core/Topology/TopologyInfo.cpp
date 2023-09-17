@@ -32,14 +32,21 @@ namespace Elpida
 		return _allProcessingUnits;
 	}
 
+	const Vector<Ref<const TopologyNode>>& TopologyInfo::GetAllCores() const
+	{
+		return _allCores;
+	}
+
 	TopologyInfo::TopologyInfo(UniquePtr<TopologyNode> root,
 		Vector<CpuKind>&& cpuKinds,
 		Vector<Ref<const CpuCacheNode>>&& allCaches,
 		Vector<Ref<const NumaNode>>&& allNumaNodes,
+		Vector<Ref<const TopologyNode>>&& allCores,
 		Vector<Ref<const ProcessingUnitNode>> allProcessingUnits)
 		: _cpuKinds(std::move(cpuKinds)),
 		  _allCaches(std::move(allCaches)),
 		  _allNumaNodes(std::move(allNumaNodes)),
+		  _allCores(std::move(allCores)),
 		  _allProcessingUnits(std::move(allProcessingUnits)),
 		  _root(std::move(root))
 	{
