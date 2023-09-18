@@ -186,7 +186,7 @@ namespace Elpida
 		};
 	}
 
-	void MemoryLatencyTask::DoRun(std::size_t iterations)
+	void MemoryLatencyTask::DoRun(Iterations iterations)
 	{
 		volatile auto* ptr = (char**)_ptr;
 

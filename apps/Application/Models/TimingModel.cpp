@@ -3,21 +3,23 @@
 //
 
 #include "TimingModel.hpp"
+#include "Elpida/Core/Iterations.hpp"
+#include "Elpida/Core/TimingInfo.hpp"
 
 namespace Elpida::Application
 {
 	TimingModel::TimingModel(const Duration& nowOverhead,
 		const Duration& loopOverhead,
 		const Duration& virtualCallOverhead,
-		Size bogusIps,
+		Iterations iterationsPerSecond,
 		const Duration& stableTime,
-		bool systemStable)
+		TimingStability timingStability)
 		: _nowOverhead(nowOverhead),
 		  _loopOverhead(loopOverhead),
 		  _virtualCallOverhead(virtualCallOverhead),
 		  _stableTime(stableTime),
-		  _bogusIps(bogusIps),
-		  _systemStable(systemStable)
+		  _iterationsPerSecond(iterationsPerSecond),
+		  _timingStability(timingStability)
 	{
 	}
 
@@ -41,14 +43,14 @@ namespace Elpida::Application
 		return _stableTime;
 	}
 
-	bool TimingModel::IsSystemStable() const
+	TimingStability TimingModel::GetTimingStability() const
 	{
-		return _systemStable;
+		return _timingStability;
 	}
 
-	Size TimingModel::GetBogusIps() const
+	Size TimingModel::GetIterationsPerSecond() const
 	{
-		return _bogusIps;
+		return _iterationsPerSecond;
 	}
 
 } // Application

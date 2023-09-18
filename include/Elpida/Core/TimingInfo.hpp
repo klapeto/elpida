@@ -6,14 +6,24 @@
 #define ELPIDA_OVERHEADSINFO_HPP_
 
 #include "Elpida/Core/Duration.hpp"
-#include "Elpida/Core/Size.hpp"
+#include "Elpida/Core/Iterations.hpp"
 
 namespace Elpida
 {
 
+	enum class TimingStability
+	{
+		ExtremelyUnstable,
+		VeryUnstable,
+		Unstable,
+		Stable,
+		VeryStable,
+		ExtremelyStable
+	};
+
 	class TimingInfo final
 	{
-	 public:
+	public:
 
 		[[nodiscard]]
 		const Duration& GetMinimumTimeForStableMeasurement() const
@@ -22,9 +32,9 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		Size GetIterationsNeededForOneSecond() const
+		Iterations GetIterationsPerSecond() const
 		{
-			return _iterationsNeededForOneSecond;
+			return _iterationsPerSecond;
 		}
 
 		[[nodiscard]]
@@ -45,30 +55,39 @@ namespace Elpida
 			return _virtualCallOverhead;
 		}
 
+		[[nodiscard]]
+		TimingStability GetTimingStability() const
+		{
+			return _timingStability;
+		}
+
 		TimingInfo() = default;
 		TimingInfo(const TimingInfo&) = default;
 		TimingInfo(TimingInfo&&) noexcept = default;
 		TimingInfo& operator=(const TimingInfo&) = default;
-		TimingInfo& operator=(TimingInfo&&) noexcept= default;
+		TimingInfo& operator=(TimingInfo&&) noexcept = default;
 		TimingInfo(const Duration& nowOverhead,
 			const Duration& loopOverhead,
 			const Duration& virtualCallOverhead,
 			const Duration& minimumTimeForStableMeasurement,
-			Size iterationsNeededForOneSecond)
+			Iterations iterationsPerSecond,
+			TimingStability timingStability)
 			: _nowOverhead(nowOverhead),
-			_loopOverhead(loopOverhead),
-			_virtualCallOverhead(virtualCallOverhead),
-			_minimumTimeForStableMeasurement(minimumTimeForStableMeasurement),
-			_iterationsNeededForOneSecond(iterationsNeededForOneSecond)
+			  _loopOverhead(loopOverhead),
+			  _virtualCallOverhead(virtualCallOverhead),
+			  _minimumTimeForStableMeasurement(minimumTimeForStableMeasurement),
+			  _iterationsPerSecond(iterationsPerSecond),
+			  _timingStability(timingStability)
 		{
 		}
 		~TimingInfo() = default;
-	 private:
+	private:
 		Duration _nowOverhead;
 		Duration _loopOverhead;
 		Duration _virtualCallOverhead;
 		Duration _minimumTimeForStableMeasurement;
-		Size _iterationsNeededForOneSecond;
+		Iterations _iterationsPerSecond;
+		TimingStability _timingStability;
 	};
 
 } // Elpida

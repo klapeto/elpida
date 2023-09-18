@@ -6,6 +6,8 @@
 #define ELPIDA_OVERHEADSMODEL_HPP
 
 #include "Elpida/Core/Duration.hpp"
+#include "Elpida/Core/Iterations.hpp"
+#include "Elpida/Core/TimingInfo.hpp"
 #include "Models/Abstractions/Model.hpp"
 
 #include <chrono>
@@ -29,21 +31,21 @@ namespace Elpida::Application
 		const Duration& GetStableTime() const;
 
 		[[nodiscard]]
-		bool IsSystemStable() const;
+		TimingStability GetTimingStability() const;
 
 		[[nodiscard]]
-		Size GetBogusIps() const;
+		Iterations GetIterationsPerSecond() const;
 
 		TimingModel() = default;
-		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead, Size bogusIps, const Duration& stableTime, bool systemStable);
+		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead, Iterations iterationsPerSecond, const Duration& stableTime, TimingStability timingStability);
 		~TimingModel() override = default;
 	private:
 		Duration _nowOverhead;
 		Duration _loopOverhead;
 		Duration _virtualCallOverhead;
 		Duration _stableTime;
-		Size _bogusIps;
-		bool _systemStable;
+		Size _iterationsPerSecond;
+		TimingStability _timingStability;
 	};
 
 } // Application

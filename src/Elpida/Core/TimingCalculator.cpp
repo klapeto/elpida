@@ -14,16 +14,20 @@
 #include "Elpida/Core/DummyClass.hpp"
 #include "Elpida/Core/Topology/TopologyNode.hpp"
 #include <thread>
+#include <tuple>
 #include <vector>
 
 namespace Elpida
 {
 	const constexpr Duration DefaultTestDuration = Seconds(1);
 
-	const constexpr Duration TestDurations[] = {
-		MilliSeconds(100),
-		MilliSeconds(250),
-		MilliSeconds(500),
+	const constexpr std::tuple<Duration, TimingStability> TestDurations[] = {
+		std::make_tuple(MilliSeconds(5), TimingStability::ExtremelyStable),
+		std::make_tuple(MilliSeconds(10), TimingStability::VeryStable),
+		std::make_tuple(MilliSeconds(50), TimingStability::Stable),
+		std::make_tuple(MilliSeconds(100), TimingStability::Unstable),
+		std::make_tuple(MilliSeconds(250), TimingStability::VeryUnstable),
+		std::make_tuple(MilliSeconds(500), TimingStability::ExtremelyUnstable)
 	};
 
 	const constexpr float TimingTestVariations[]{
@@ -36,7 +40,7 @@ namespace Elpida
 
 	struct TimingTest
 	{
-		Duration testDuration;
+		std::tuple<Duration, TimingStability> testDuration;
 		bool success;
 		std::thread thread;
 	};
@@ -49,7 +53,7 @@ namespace Elpida
 				Seconds(0),
 				[](auto x)
 				{
-				  while (x--);
+				  while (x-- > 0);
 				}));
 	}
 
@@ -61,7 +65,7 @@ namespace Elpida
 				loopOverhead,
 				[](auto x)
 				{
-				  while (x--) std::chrono::high_resolution_clock::now();
+				  while (x-- > 0) std::chrono::high_resolution_clock::now();
 				}));
 	}
 
@@ -75,7 +79,7 @@ namespace Elpida
 				[base](auto x)
 				{
 				  auto p = base;
-				  while (x--) p->Foo();
+				  while (x-- > 0) p->Foo();
 				}));
 		delete base;
 
@@ -91,20 +95,21 @@ namespace Elpida
 			Seconds(0),
 			[&](auto x)
 			{
-			  while (x--)
+			  while (x-- > 0)
 			  {
-				  REPEAT_1000(ptr = reinterpret_cast<long**>(*ptr));
+				  REPEAT_10(ptr = reinterpret_cast<long**>(*ptr));
 			  }
 			});
 	}
 
 	static void TestTiming(TimingTest& test, const Duration& nowOverhead)
 	{
-		auto baseIterations = static_cast<double>(GetIterationsForTime(test.testDuration, nowOverhead));
+		auto duration = get<Duration>(test.testDuration);
+		auto baseIterations = static_cast<double>(GetIterationsForTime(duration, nowOverhead));
 
 		for (auto point : TimingTestVariations)
 		{
-			auto thisIterations = static_cast<double>(GetIterationsForTime(test.testDuration * point, nowOverhead));
+			auto thisIterations = static_cast<double>(GetIterationsForTime(duration * point, nowOverhead));
 
 			auto diff = std::abs(thisIterations - (baseIterations * point));
 			if (diff / baseIterations > DiffVarianceMaxMargin)
@@ -123,6 +128,7 @@ namespace Elpida
 		Duration nowOverhead;
 		Duration vCallOverhead;
 		Duration minimumTimeForStableMeasurement;
+		TimingStability stability = TimingStability::ExtremelyUnstable;
 
 		std::thread([&]()
 		{
@@ -143,7 +149,7 @@ namespace Elpida
 		  });
 
 		  std::vector<TimingTest> timingTests;
-		  timingTests.reserve(sizeof(TestDurations) / sizeof(Duration));
+		  timingTests.reserve(sizeof(TestDurations) / sizeof(std::tuple<Duration, TimingStability>));
 		  for (auto& duration : TestDurations)
 		  {
 			  timingTests.push_back({
@@ -168,9 +174,11 @@ namespace Elpida
 		  for (auto& test : timingTests)
 		  {
 			  test.thread.join();
-			  if (test.success && test.testDuration < minimumTimeForStableMeasurement)
+			  auto duration = get<Duration>(test.testDuration);
+			  if (test.success && duration < minimumTimeForStableMeasurement)
 			  {
-				  minimumTimeForStableMeasurement = test.testDuration;
+				  minimumTimeForStableMeasurement = duration;
+				  stability = get<TimingStability>(test.testDuration);
 			  }
 		  }
 		  vCallThread.join();
@@ -181,6 +189,7 @@ namespace Elpida
 			loopOverhead,
 			vCallOverhead,
 			minimumTimeForStableMeasurement,
-			1.0 / loopOverhead.count());
+			1.0 / loopOverhead.count(),
+			stability);
 	}
 } // Application

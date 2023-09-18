@@ -26,6 +26,7 @@
 
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Duration.hpp"
+#include "Elpida/Core/TimingInfo.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
@@ -47,10 +48,10 @@ ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const Topolo
 	returnVector.reserve(affinity.size());
 
 	auto& processors = topologyInfo.GetAllProcessingUnits();
-	for (auto index: affinity)
+	for (auto index : affinity)
 	{
 		bool found = false;
-		for (auto& processor: processors)
+		for (auto& processor : processors)
 		{
 			if (processor.get().GetOsIndex().value() == index)
 			{
@@ -74,7 +75,10 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 {
 	if (configurationValues.size() != taskConfigurations.size())
 	{
-		throw ElpidaException("benchmark required ", taskConfigurations.size(), " configurations but were provided ", configurationValues.size());
+		throw ElpidaException("benchmark required ",
+			taskConfigurations.size(),
+			" configurations but were provided ",
+			configurationValues.size());
 	}
 
 	for (Size i = 0; i < taskConfigurations.size(); ++i)
@@ -102,7 +106,7 @@ int main(int argC, char** argV)
 		BenchmarkGroupModule module(helper.GetModulePath());
 
 		auto& benchmark = module
-			.GetBenchmarkGroup()
+		.GetBenchmarkGroup()
 			.GetBenchmarks()
 			.at(helper.GetBenchmarkIndex());
 
@@ -114,7 +118,12 @@ int main(int argC, char** argV)
 			MemoryInfoLoader::Load(),
 			OsInfoLoader::Load(),
 			TopologyLoader::LoadTopology(),
-			TimingInfo(NanoSeconds(helper.GetNowOverhead()), NanoSeconds(helper.GetLoopOverhead()), NanoSeconds(helper.GetVCallOverhead()), Seconds(0), 0),
+			TimingInfo(NanoSeconds(helper.GetNowOverhead()),
+				NanoSeconds(helper.GetLoopOverhead()),
+				NanoSeconds(helper.GetVCallOverhead()),
+				Seconds(0),
+				0,
+				TimingStability::ExtremelyUnstable),
 			std::make_unique<NumaAllocator>());
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());

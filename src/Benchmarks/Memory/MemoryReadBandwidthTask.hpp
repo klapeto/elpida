@@ -5,7 +5,6 @@
 #ifndef _MEMORYREADBANDWIDTHTASK_HPP_
 #define _MEMORYREADBANDWIDTHTASK_HPP_
 
-
 #include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/MicroTask.hpp"
 
@@ -21,7 +20,7 @@ namespace Elpida
 		explicit MemoryReadBandwidthTask(Size size);
 		~MemoryReadBandwidthTask() override = default;
 	 protected:
-		void DoRun(Size iterations) override;
+		void DoRun(Iterations iterations) override;
 		Size GetOperationsPerformedPerRun() override;
 		Duration GetExecutionMinimumDuration() override;
 		UniquePtr<Task> DoDuplicate() const override;

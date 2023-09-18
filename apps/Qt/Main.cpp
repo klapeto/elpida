@@ -347,15 +347,15 @@ int main(int argc, char* argv[])
 
 	LoadSelectedNodes(settingsService, topologyModel);
 
-	splash.showMessage("Calculating Overheads...");
+	splash.showMessage("Calculating Overheads (it should take about 5 seconds)...");
 
 	auto timingInfo = TimingCalculator::CalculateTiming(topologyInfo);
 	TimingModel timingModel(timingInfo.GetNowOverhead(),
 		timingInfo.GetLoopOverhead(),
 		timingInfo.GetVirtualCallOverhead(),
-		timingInfo.GetIterationsNeededForOneSecond(),
+		timingInfo.GetIterationsPerSecond(),
 		timingInfo.GetMinimumTimeForStableMeasurement(),
-		timingInfo.GetMinimumTimeForStableMeasurement() < Seconds(1));
+		timingInfo.GetTimingStability());
 	BenchmarkResultsModel benchmarkResultsModel;
 
 	splash.showMessage("Getting CPU info...");
@@ -384,7 +384,7 @@ int main(int argc, char* argv[])
 
 	splash.finish(&mainWindow);
 
-	if (!timingModel.IsSystemStable())
+	if (timingModel.GetTimingStability() < TimingStability::Stable)
 	{
 		QMessageBox::warning(&mainWindow,
 			"Unstable system timing",

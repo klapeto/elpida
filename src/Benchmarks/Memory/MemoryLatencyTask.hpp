@@ -30,7 +30,7 @@ namespace Elpida
 		MemoryLatencyTask(Size size, Size cacheLineSize, Size pageSize);
 		~MemoryLatencyTask() override = default;
 	 protected:
-		void DoRun(Size iterations) override;
+		void DoRun(Iterations iterations) override;
 
 		[[nodiscard]]
 		Size GetOperationsPerformedPerRun() override;

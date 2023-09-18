@@ -30,12 +30,12 @@ namespace Elpida
 	}
 
 	MemoryReadBandwidthTask::MemoryReadBandwidthTask(Size size)
-		: _size(size), _ptr(nullptr)
+		: _ptr(nullptr), _size(size)
 	{
 
 	}
 
-	void MemoryReadBandwidthTask::DoRun(Size iterations)
+	void MemoryReadBandwidthTask::DoRun(Iterations iterations)
 	{
 		volatile auto* ptr = (int*)_ptr;
 		const auto size = _size;
