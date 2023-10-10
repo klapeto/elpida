@@ -146,7 +146,7 @@ namespace Elpida::Application
 		if (_topologyNodeModel.GetOsIndex().has_value())
 		{
 			_ui->lblOsIndex->setText(
-					QString::fromStdString(Vu::Cs(" (", _topologyNodeModel.GetOsIndex().value(), ") ")));
+					QString::fromStdString(Vu::Cs("(", _topologyNodeModel.GetOsIndex().value(), ")")));
 		}
 		else
 		{
@@ -158,10 +158,22 @@ namespace Elpida::Application
 		if (_topologyNodeModel.GetType() != TopologyNodeType::ProcessingUnit)
 		{
 			_ui->chkSelected->setVisible(false);
+			_ui->lblEfficiencyValue->setVisible(false);
 		}
 		else
 		{
 			_ui->lblName->setVisible(false);
+			auto efficiency = _topologyNodeModel.GetEfficiency();
+			if (efficiency.has_value())
+			{
+				_ui->lblEfficiencyValue->setText(QString::fromStdString(
+						Vu::Cs("[", std::to_string(efficiency.value()), "]"))
+				);
+			}
+			else
+			{
+				_ui->lblEfficiencyValue->setVisible(false);
+			}
 		}
 
 		_ui->verticalLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));

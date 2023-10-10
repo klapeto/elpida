@@ -36,12 +36,13 @@
 #include "Elpida/Core/ThreadTask.hpp"
 #include "Elpida/Core/TimingUtilities.hpp"
 #include "Elpida/Core/Topology/TopologyNode.hpp"
+#include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 #include "Elpida/Core/Pool.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
+#include "Elpida/Core/TimingCalculator.hpp"
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
-#include "Elpida/Core/TimingCalculator.hpp"
 #include "QtMessageService.hpp"
 #include "QtThreadQueue.hpp"
 #include "QtSettingsService.hpp"
@@ -173,7 +174,7 @@ static TopologyNodeModel GetNode(const TopologyNode& node)
 	std::vector<TopologyNodeModel> memoryChildren;
 	memoryChildren.reserve(originalMemoryChildren.size());
 
-	for (auto& child : originalMemoryChildren)
+	for (auto& child: originalMemoryChildren)
 	{
 		memoryChildren.push_back(GetNode(*child));
 	}
@@ -181,13 +182,24 @@ static TopologyNodeModel GetNode(const TopologyNode& node)
 	auto& originalChildren = node.GetChildren();
 	std::vector<TopologyNodeModel> children;
 	memoryChildren.reserve(children.size());
-	for (auto& child : originalChildren)
+	for (auto& child: originalChildren)
 	{
 		children.push_back(GetNode(*child));
 	}
 
-	return TopologyNodeModel(TranslateType(node.GetType()), node.GetOsIndex(), GetSize(node), std::move(children),
-		std::move(memoryChildren));
+	std::optional<int> efficiency;
+	if (node.GetType() == ProcessingUnit)
+	{
+		auto kind = static_cast<const ProcessingUnitNode&>(node).GetCpuKind();
+		if (kind.has_value())
+		{
+			efficiency = kind->get().GetEfficiency();
+		}
+
+	}
+
+	return TopologyNodeModel(TranslateType(node.GetType()), node.GetOsIndex(), GetSize(node), efficiency, std::move(children),
+			std::move(memoryChildren));
 }
 
 static Elpida::Application::ConfigurationType TranslateConfigurationType(Elpida::ConfigurationType configurationType)
@@ -205,7 +217,7 @@ static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
 
 	QSettings settings;
 	std::vector<BenchmarkGroupModel> benchmarkGroups;
-	for (auto& entry : std::filesystem::directory_iterator(benchmarksDirectory))
+	for (auto& entry: std::filesystem::directory_iterator(benchmarksDirectory))
 	{
 		if (!entry.is_directory() && entry.is_regular_file())
 		{
@@ -226,14 +238,14 @@ static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
 					std::vector<TaskModel> tasks;
 					tasks.reserve(taskInfos.size());
 
-					for (auto& task : taskInfos)
+					for (auto& task: taskInfos)
 					{
 						tasks.emplace_back(task.GetName(), task.GetScoreUnit(), task.GetScoreType());
 					}
 
 					std::vector<BenchmarkConfigurationModel> configurations;
 					configurations.reserve(benchmark->GetRequiredConfiguration().size());
-					for (auto& config : benchmark->GetRequiredConfiguration())
+					for (auto& config: benchmark->GetRequiredConfiguration())
 					{
 						std::string id = info.GetName() + config.GetName();
 						std::string value = settingsService.Get(id);
@@ -242,16 +254,16 @@ static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
 							value = config.GetValue();
 						}
 						configurations.emplace_back(config.GetName(),
-							std::move(id),
-							std::move(value),
-							TranslateConfigurationType(config.GetType()));
+								std::move(id),
+								std::move(value),
+								TranslateConfigurationType(config.GetType()));
 					}
 					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(),
-						entry.path().string(),
-						i,
-						info.GetScoreUnit(),
-						std::move(tasks),
-						std::move(configurations));
+							entry.path().string(),
+							i,
+							info.GetScoreUnit(),
+							std::move(tasks),
+							std::move(configurations));
 				}
 
 				benchmarkGroups.emplace_back(module.GetBenchmarkGroup().GetName(), std::move(benchmarkModels));
@@ -269,7 +281,7 @@ static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
 static void SaveSelectedNodes(SettingsService& settingsService, TopologyModel& topologyModel)
 {
 	std::string selectedNodesStr;
-	for (auto& node : topologyModel.GetSelectedLeafNodes())
+	for (auto& node: topologyModel.GetSelectedLeafNodes())
 	{
 		selectedNodesStr += std::to_string(node.get().GetOsIndex().value()) + ',';
 	}
@@ -282,7 +294,8 @@ static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& t
 	auto selectedNodes = settingsService.Get("selectedNodes");
 	std::string buffer;
 	auto leafs = topologyModel.GetLeafNodes();
-	std::sort(leafs.begin(), leafs.end(), [](auto& a, auto& b){ return a.get().GetOsIndex() < b.get().GetOsIndex(); });
+	std::sort(leafs.begin(), leafs.end(), [](auto& a, auto& b)
+	{ return a.get().GetOsIndex() < b.get().GetOsIndex(); });
 	for (Size i = 0; i < selectedNodes.size(); ++i)
 	{
 		auto c = selectedNodes[i];
@@ -351,34 +364,35 @@ int main(int argc, char* argv[])
 
 	auto timingInfo = TimingCalculator::CalculateTiming(topologyInfo);
 	TimingModel timingModel(timingInfo.GetNowOverhead(),
-		timingInfo.GetLoopOverhead(),
-		timingInfo.GetVirtualCallOverhead(),
-		timingInfo.GetIterationsPerSecond(),
-		timingInfo.GetMinimumTimeForStableMeasurement(),
-		timingInfo.GetTimingStability());
+			timingInfo.GetLoopOverhead(),
+			timingInfo.GetVirtualCallOverhead(),
+			timingInfo.GetIterationsPerSecond(),
+			timingInfo.GetMinimumTimeForStableMeasurement(),
+			timingInfo.GetTimingStability());
 	BenchmarkResultsModel benchmarkResultsModel;
 
 	splash.showMessage("Getting CPU info...");
 
 	CpuInfo cpuInfo = CpuInfoLoader::Load();
-	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(), cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
+	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(),
+			cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
 
 	splash.showMessage("Loading benchmarks...");
 	auto benchmarksModel = LoadBenchmarks(settingsService);
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;
 	BenchmarksController
-		benchmarksController(benchmarksModel, topologyModel, timingModel, benchmarkResultsModel, executionService);
+			benchmarksController(benchmarksModel, topologyModel, timingModel, benchmarkResultsModel, executionService);
 	ConfigurationViewPool configurationViewPool(settingsService);
 	MainWindow mainWindow(osInfoModel,
-		memoryInfoModel,
-		cpuInfoModel,
-		timingModel,
-		topologyModel,
-		benchmarksModel,
-		benchmarkResultsModel,
-		benchmarksController,
-		configurationViewPool);
+			memoryInfoModel,
+			cpuInfoModel,
+			timingModel,
+			topologyModel,
+			benchmarksModel,
+			benchmarkResultsModel,
+			benchmarksController,
+			configurationViewPool);
 
 	mainWindow.show();
 
@@ -387,12 +401,12 @@ int main(int argc, char* argv[])
 	if (timingModel.GetTimingStability() < TimingStability::Stable)
 	{
 		QMessageBox::warning(&mainWindow,
-			"Unstable system timing",
-			"<b style=\"color: #d73e3e\">WARNING!</b> Elpida detected unstable system timing. This usually comes from active running programs on the system."
-			"<p><b>This will affect the benchmark results accuracy.</b> It is strongly recommended to close all programs and restart Elpida.</p>"
+				"Unstable system timing",
+				"<b style=\"color: #d73e3e\">WARNING!</b> Elpida detected unstable system timing. This usually comes from active running programs on the system."
+				"<p><b>This will affect the benchmark results accuracy.</b> It is strongly recommended to close all programs and restart Elpida.</p>"
 #ifdef ELPIDA_WINDOWS
-			"<p><strong style=\"color: #d73e3e\">WINDOWS USERS BEWARE!</strong> If the problem persists after closing all programs, then Windows may be thrashing the CPU by updating. "
-				"It is advised to disconnect the system from any networks/internet and restart Elpida.</p>"
+				"<p><strong style=\"color: #d73e3e\">WINDOWS USERS BEWARE!</strong> If the problem persists after closing all programs, then Windows may be thrashing the CPU by updating. "
+					"It is advised to disconnect the system from any networks/internet and restart Elpida.</p>"
 #endif
 		);
 	}

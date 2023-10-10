@@ -54,6 +54,9 @@ namespace Elpida::Application
 		std::optional<std::size_t> GetSize() const;
 
 		[[nodiscard]]
+		std::optional<int> GetEfficiency() const;
+
+		[[nodiscard]]
 		bool IsSelected() const;
 
 		void SetParents();
@@ -63,6 +66,7 @@ namespace Elpida::Application
 				TopologyNodeType type,
 				std::optional<std::size_t> osIndex,
 				std::optional<std::size_t> size,
+				std::optional<int> efficiency,
 				std::vector<TopologyNodeModel>&& children,
 				std::vector<TopologyNodeModel>&& memoryChildren);
 		TopologyNodeModel(const TopologyNodeModel&) = delete;
@@ -76,6 +80,7 @@ namespace Elpida::Application
 		TopologyNodeType _type;
 		std::optional<std::size_t> _osIndex;
 		std::optional<std::size_t> _size;
+		std::optional<int> _efficiency;
 		TopologyNodeModel* _parent;
 		bool _selected;
 

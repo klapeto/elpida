@@ -77,7 +77,8 @@ namespace Elpida
 	}
 
 	static void
-	LoadDefaultProperties(TopologyNode& thisNode, hwloc_obj_t node, const Vector<CpuKind>& cpuKinds, hwloc_topology_t topology)
+	LoadDefaultProperties(TopologyNode& thisNode, hwloc_obj_t node, const Vector<CpuKind>& cpuKinds,
+			hwloc_topology_t topology)
 	{
 		Optional<int> osIndex;
 
@@ -177,7 +178,8 @@ namespace Elpida
 			break;
 		}
 
-		auto thisNode = std::make_unique<CpuCacheNode>(type, cacheType, size, lineSize, associativitySets, fullyAssociative);
+		auto thisNode = std::make_unique<CpuCacheNode>(type, cacheType, size, lineSize, associativitySets,
+				fullyAssociative);
 
 		LoadDefaultProperties(*thisNode, node, cpuKinds, topology);
 
@@ -190,6 +192,13 @@ namespace Elpida
 		auto thisNode = std::make_unique<ProcessingUnitNode>();
 
 		LoadDefaultProperties(*thisNode, node, cpuKinds, topology);
+
+		auto index = hwloc_cpukinds_get_by_cpuset(topology, node->cpuset, 0);
+
+		if (index >= 0)
+		{
+			thisNode->SetCpuKind(cpuKinds.at(index));
+		}
 
 		return thisNode;
 	}
@@ -225,11 +234,11 @@ namespace Elpida
 	}
 
 	static void AccumulateCollections(TopologyNode& node,
-		Vector<Ref<const CpuCacheNode>>& allCaches,
-		Vector<Ref<const NumaNode>>& allNumaNodes,
-		Vector<Ref<const TopologyNode>>& allCores,
-		Vector<Ref<const ProcessingUnitNode>>& allProcessingUnits,
-		Vector<Ref<ProcessingUnitNode>>& allProcessingUnitsMut)
+			Vector<Ref<const CpuCacheNode>>& allCaches,
+			Vector<Ref<const NumaNode>>& allNumaNodes,
+			Vector<Ref<const TopologyNode>>& allCores,
+			Vector<Ref<const ProcessingUnitNode>>& allProcessingUnits,
+			Vector<Ref<ProcessingUnitNode>>& allProcessingUnitsMut)
 	{
 		switch (node.GetType())
 		{
@@ -286,9 +295,9 @@ namespace Elpida
 	}
 
 	static void AssignProcessorsData(const Vector<CpuKind>& cpuKinds,
-		Vector<Ref<const NumaNode>>& allNumaNodes,
-		Vector<Ref<ProcessingUnitNode>>& allProcessingUnits,
-		hwloc_topology_t topology)
+			Vector<Ref<const NumaNode>>& allNumaNodes,
+			Vector<Ref<ProcessingUnitNode>>& allProcessingUnits,
+			hwloc_topology_t topology)
 	{
 		for (auto& processor: allProcessingUnits)
 		{
@@ -315,14 +324,14 @@ namespace Elpida
 			}
 
 			auto lastCache = GetLastAncestor(processor,
-				(NodeType)(NodeType::L1ICache
-						   | NodeType::L1DCache
-						   | NodeType::L2ICache
-						   | NodeType::L2DCache
-						   | NodeType::L3ICache
-						   | NodeType::L3DCache
-						   | NodeType::L4Cache
-						   | NodeType::L5Cache)
+					(NodeType)(NodeType::L1ICache
+							   | NodeType::L1DCache
+							   | NodeType::L2ICache
+							   | NodeType::L2DCache
+							   | NodeType::L3ICache
+							   | NodeType::L3DCache
+							   | NodeType::L4Cache
+							   | NodeType::L5Cache)
 			);
 
 			if (lastCache.has_value())
@@ -358,12 +367,12 @@ namespace Elpida
 			hwloc_topology_destroy(topology);
 
 			return {
-				std::move(root),
-				std::move(cpuKinds),
-				std::move(allCaches),
-				std::move(allNumaNodes),
-				std::move(allCores),
-				std::move(allProcessingUnits),
+					std::move(root),
+					std::move(cpuKinds),
+					std::move(allCaches),
+					std::move(allNumaNodes),
+					std::move(allCores),
+					std::move(allProcessingUnits),
 			};
 		}
 		catch (...)

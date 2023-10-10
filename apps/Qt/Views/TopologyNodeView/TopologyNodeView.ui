@@ -23,6 +23,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="lblEfficiencyValue">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="lblValue">
        <property name="text">
         <string>Value</string>

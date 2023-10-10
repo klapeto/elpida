@@ -10,6 +10,7 @@ namespace Elpida::Application
 			TopologyNodeType type,
 			std::optional<std::size_t> osIndex,
 			std::optional<std::size_t> size,
+			std::optional<int> efficiency,
 			std::vector<TopologyNodeModel>&& children,
 			std::vector<TopologyNodeModel>&& memoryChildren)
 			: _children(std::move(children)),
@@ -17,6 +18,7 @@ namespace Elpida::Application
 			  _type(type),
 			  _osIndex(osIndex),
 			  _size(size),
+			  _efficiency(efficiency),
 			  _parent(nullptr),
 			  _selected(false)
 	{
@@ -98,5 +100,10 @@ namespace Elpida::Application
 			child.SetSelectedInternal(selected);
 		}
 		Model::OnDataChanged();
+	}
+
+	std::optional<int> TopologyNodeModel::GetEfficiency() const
+	{
+		return _efficiency;
 	}
 } // Elpida::Application
