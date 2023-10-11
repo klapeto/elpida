@@ -10,26 +10,6 @@ using Vu = Elpida::ValueUtilities;
 
 namespace Elpida::Application
 {
-	static QString GetStabilityString(TimingStability stability)
-	{
-		switch (stability)
-		{
-		case TimingStability::ExtremelyUnstable:
-			return "<b style=\"color: red\">Extremely unstable (0/10)</b>";
-		case TimingStability::VeryUnstable:
-			return "<b style=\"color: red\">Very unstable (2/10)</b>";
-		case TimingStability::Unstable:
-			return "<b style=\"color: red\">Unstable (4/10)</b>";
-		case TimingStability::Stable:
-			return "<b style=\"color: green\">Stable (6/10)</b>";
-		case TimingStability::VeryStable:
-			return "<b style=\"color: green\">Very Stable (8/10)</b>";
-		case TimingStability::ExtremelyStable:
-			return "<b style=\"color: green\">Extremely Stable (10/10)</b>";
-		}
-		return "<b style=\"color: green\">Extremely Stable</b>";
-	}
-
 	TimingInfoView::TimingInfoView(const TimingModel& model, QWidget* parent) :
 		QWidget(parent),
 		_ui(new Ui::TimingInfoView)
@@ -41,8 +21,6 @@ namespace Elpida::Application
 			Vu::Cs(Vu::GetValueScaleStringSI(model.GetLoopOverhead().count()), "s")));
 		_ui->lblVirtualOverheadValue->setText(QString::fromStdString(
 			Vu::Cs(Vu::GetValueScaleStringSI(model.GetVirtualCallOverhead().count()), "s")));
-
-		_ui->lblTimingStabilityValue->setText(GetStabilityString(model.GetTimingStability()));
 
 		_ui->lblIpsValue->setText(QString::fromStdString(
 			Vu::Cs(Vu::GetValueScaleStringSI(model.GetIterationsPerSecond()), "ips")));

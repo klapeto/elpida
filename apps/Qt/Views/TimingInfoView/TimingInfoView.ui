@@ -24,16 +24,6 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QLabel" name="lblTimingStabilityValue">
-     <property name="toolTip">
-      <string>The minimum time that was calculated that can produce a stable result. Lower values indicate more stable system.</string>
-     </property>
-     <property name="text">
-      <string>N/A</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="lblNowOverhead">
      <property name="toolTip">
@@ -101,16 +91,6 @@
      </property>
      <property name="text">
       <string>B. Ips:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="lblTimingStability">
-     <property name="toolTip">
-      <string>The minimum time that was calculated that can produce a stable result. Lower values indicate more stable system.</string>
-     </property>
-     <property name="text">
-      <string>Timing stability:</string>
      </property>
     </widget>
    </item>

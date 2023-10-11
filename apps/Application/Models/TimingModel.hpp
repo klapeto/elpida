@@ -31,13 +31,10 @@ namespace Elpida::Application
 		const Duration& GetStableTime() const;
 
 		[[nodiscard]]
-		TimingStability GetTimingStability() const;
-
-		[[nodiscard]]
 		Iterations GetIterationsPerSecond() const;
 
 		TimingModel() = default;
-		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead, Iterations iterationsPerSecond, const Duration& stableTime, TimingStability timingStability);
+		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead, Iterations iterationsPerSecond, const Duration& stableTime);
 		~TimingModel() override = default;
 	private:
 		Duration _nowOverhead;
@@ -45,7 +42,6 @@ namespace Elpida::Application
 		Duration _virtualCallOverhead;
 		Duration _stableTime;
 		Size _iterationsPerSecond;
-		TimingStability _timingStability;
 	};
 
 } // Application

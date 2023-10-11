@@ -3,7 +3,6 @@
 //
 
 #include "TimingModel.hpp"
-#include "Elpida/Core/Iterations.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
 
 namespace Elpida::Application
@@ -12,14 +11,12 @@ namespace Elpida::Application
 		const Duration& loopOverhead,
 		const Duration& virtualCallOverhead,
 		Iterations iterationsPerSecond,
-		const Duration& stableTime,
-		TimingStability timingStability)
+		const Duration& stableTime)
 		: _nowOverhead(nowOverhead),
 		  _loopOverhead(loopOverhead),
 		  _virtualCallOverhead(virtualCallOverhead),
 		  _stableTime(stableTime),
-		  _iterationsPerSecond(iterationsPerSecond),
-		  _timingStability(timingStability)
+		  _iterationsPerSecond(iterationsPerSecond)
 	{
 	}
 
@@ -41,11 +38,6 @@ namespace Elpida::Application
 	const Duration& TimingModel::GetStableTime() const
 	{
 		return _stableTime;
-	}
-
-	TimingStability TimingModel::GetTimingStability() const
-	{
-		return _timingStability;
 	}
 
 	Size TimingModel::GetIterationsPerSecond() const

@@ -10,17 +10,6 @@
 
 namespace Elpida
 {
-
-	enum class TimingStability
-	{
-		ExtremelyUnstable,
-		VeryUnstable,
-		Unstable,
-		Stable,
-		VeryStable,
-		ExtremelyStable
-	};
-
 	class TimingInfo final
 	{
 	public:
@@ -55,12 +44,6 @@ namespace Elpida
 			return _virtualCallOverhead;
 		}
 
-		[[nodiscard]]
-		TimingStability GetTimingStability() const
-		{
-			return _timingStability;
-		}
-
 		TimingInfo() = default;
 		TimingInfo(const TimingInfo&) = default;
 		TimingInfo(TimingInfo&&) noexcept = default;
@@ -70,14 +53,12 @@ namespace Elpida
 			const Duration& loopOverhead,
 			const Duration& virtualCallOverhead,
 			const Duration& minimumTimeForStableMeasurement,
-			Iterations iterationsPerSecond,
-			TimingStability timingStability)
+			Iterations iterationsPerSecond)
 			: _nowOverhead(nowOverhead),
 			  _loopOverhead(loopOverhead),
 			  _virtualCallOverhead(virtualCallOverhead),
 			  _minimumTimeForStableMeasurement(minimumTimeForStableMeasurement),
-			  _iterationsPerSecond(iterationsPerSecond),
-			  _timingStability(timingStability)
+			  _iterationsPerSecond(iterationsPerSecond)
 		{
 		}
 		~TimingInfo() = default;
@@ -87,7 +68,6 @@ namespace Elpida
 		Duration _virtualCallOverhead;
 		Duration _minimumTimeForStableMeasurement;
 		Iterations _iterationsPerSecond;
-		TimingStability _timingStability;
 	};
 
 } // Elpida
