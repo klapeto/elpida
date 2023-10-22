@@ -47,19 +47,21 @@
 #include "Elpida/Platform/TopologyLoader.hpp"
 #include "Elpida/Platform/BenchmarkGroupModule.hpp"
 
-#include "Models/TaskModel.hpp"
-#include "Models/OsInfoModel.hpp"
-#include "Models/MemoryInfoModel.hpp"
-#include "Models/CpuInfoModel.hpp"
-#include "Models/TimingModel.hpp"
-#include "Models/TopologyModel.hpp"
-#include "Models/TopologyNodeModel.hpp"
-#include "Models/BenchmarksModel.hpp"
-#include "Models/BenchmarkModel.hpp"
-#include "Models/BenchmarkResultsModel.hpp"
+#include "Models/Benchmark/TaskModel.hpp"
+#include "Models/SystemInfo/OsInfoModel.hpp"
+#include "Models/SystemInfo/MemoryInfoModel.hpp"
+#include "Models/SystemInfo/CpuInfoModel.hpp"
+#include "Models/SystemInfo/TimingModel.hpp"
+#include "Models/SystemInfo/TopologyModel.hpp"
+#include "Models/SystemInfo/TopologyNodeModel.hpp"
+#include "Models/Custom/CustomBenchmarkModel.hpp"
+#include "Models/Benchmark/BenchmarkModel.hpp"
+#include "Models/Custom/CustomBenchmarkResultsModel.hpp"
 
-#include "Controllers/BenchmarksController.hpp"
+#include "Controllers/CustomBenchmarkController.hpp"
 #include "Core/BenchmarkExecutionService.hpp"
+#include "Models/BenchmarkRunConfigurationModel.hpp"
+#include "Controllers/BenchmarkRunConfigurationController.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -200,12 +202,12 @@ static Elpida::Application::ConfigurationType TranslateConfigurationType(Elpida:
 	return (Elpida::Application::ConfigurationType)configurationType;
 }
 
-static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
+static std::vector<BenchmarkGroupModel> LoadBenchmarks()
 {
 	auto benchmarksDirectory = std::filesystem::current_path() / "Benchmarks";
 	if (!std::filesystem::exists(benchmarksDirectory))
 	{
-		return BenchmarksModel({});
+		return {};
 	}
 
 	QSettings settings;
@@ -240,15 +242,15 @@ static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
 					configurations.reserve(benchmark->GetRequiredConfiguration().size());
 					for (auto& config: benchmark->GetRequiredConfiguration())
 					{
-						std::string id = info.GetName() + config.GetName();
-						std::string value = settingsService.Get(id);
-						if (value.empty())
-						{
-							value = config.GetValue();
-						}
+//						std::string id = info.GetName() + config.GetName();
+//						std::string value = settingsService.Get(id);
+//						if (value.empty())
+//						{
+//							value = config.GetValue();
+//						}
 						configurations.emplace_back(config.GetName(),
-								std::move(id),
-								std::move(value),
+								info.GetName() + config.GetName(),
+								config.GetValue(),
 								TranslateConfigurationType(config.GetType()));
 					}
 					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(),
@@ -268,7 +270,7 @@ static BenchmarksModel LoadBenchmarks(SettingsService& settingsService)
 		}
 	}
 
-	return BenchmarksModel(std::move(benchmarkGroups));
+	return benchmarkGroups;
 }
 
 static void SaveSelectedNodes(SettingsService& settingsService, TopologyModel& topologyModel)
@@ -350,7 +352,6 @@ int main(int argc, char* argv[])
 	TopologyInfo topologyInfo = TopologyLoader::LoadTopology();
 	TopologyModel topologyModel(GetNode(topologyInfo.GetRoot()));
 	topologyModel.GetRoot().SetParents();
-
 	LoadSelectedNodes(settingsService, topologyModel);
 
 	splash.showMessage("Calculating Overheads (it should take about 5 seconds)...");
@@ -361,7 +362,6 @@ int main(int argc, char* argv[])
 			timingInfo.GetVirtualCallOverhead(),
 			timingInfo.GetIterationsPerSecond(),
 			timingInfo.GetMinimumTimeForStableMeasurement());
-	BenchmarkResultsModel benchmarkResultsModel;
 
 	splash.showMessage("Getting CPU info...");
 
@@ -370,22 +370,34 @@ int main(int argc, char* argv[])
 			cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
 
 	splash.showMessage("Loading benchmarks...");
-	auto benchmarksModel = LoadBenchmarks(settingsService);
+	auto benchmarkGroups = LoadBenchmarks();
+
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;
-	BenchmarksController
-			benchmarksController(benchmarksModel, topologyModel, timingModel, benchmarkResultsModel, executionService);
+
+	CustomBenchmarkResultsModel customBenchmarkResultsModel;
+	CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
+	CustomBenchmarkController
+			benchmarksController(customBenchmarkModel, topologyModel, timingModel, customBenchmarkResultsModel, executionService);
+
 	ConfigurationViewPool configurationViewPool(settingsService);
+
+	BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
+	BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel);
+
 	MainWindow mainWindow(osInfoModel,
 			memoryInfoModel,
 			cpuInfoModel,
 			timingModel,
+			customBenchmarkResultsModel,
+			benchmarkRunConfigurationModel,
 			topologyModel,
-			benchmarksModel,
-			benchmarkResultsModel,
+			customBenchmarkModel,
 			benchmarksController,
+			benchmarkRunConfigurationController,
 			configurationViewPool);
 
+	mainWindow.resize(QSize(screenSize.width() / 2, screenSize.height() / 2));
 	mainWindow.show();
 
 	splash.finish(&mainWindow);

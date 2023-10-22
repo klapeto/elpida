@@ -25,8 +25,8 @@ namespace Elpida
 		PngEncodingTask encode;
 		FileWriteTask write("");
 		return BenchmarkInfo(
-			"Png decoding",
-			"Decodes a stream of data from PNG decoded data to RGBA data.",
+			"Png Encoding/Decoding",
+			"Decodes a stream of data from PNG decoded data to RGBA data and then encodes it back to a file.",
 			"png_marks",
 			"The input amount of bytes processed per second.",
 			{
@@ -60,8 +60,8 @@ namespace Elpida
 
 	double PngEncodingDecodingBenchmark::CalculateScore(const std::vector<TaskResult>& taskResults) const
 	{
-		return static_cast<double >(taskResults[1].GetDataSize()) / taskResults[1].GetDuration().count()
-			   + static_cast<double >(taskResults[2].GetDataSize()) / taskResults[2].GetDuration().count();
+		return static_cast<double>(taskResults[1].GetDataSize()) / taskResults[1].GetDuration().count()
+			   + static_cast<double>(taskResults[2].GetDataSize()) / taskResults[2].GetDuration().count();
 	}
 
 	std::vector<TaskConfiguration> PngEncodingDecodingBenchmark::GetRequiredConfiguration() const

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Elpida::Application::MainWindow</class>
- <widget class="QMainWindow" name="Elpida::Application::MainWindow">
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>511</height>
+    <width>845</width>
+    <height>567</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="tbBenchmark">
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -84,22 +84,45 @@
              </layout>
             </widget>
            </item>
+           <item row="2" column="1">
+            <widget class="QGroupBox" name="gbTopologyLegend">
+             <property name="title">
+              <string>Topology Legend</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <item>
+               <widget class="QLabel" name="lblId">
+                <property name="text">
+                 <string>(n) =&gt; Component OS Index</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="lblEfficiency">
+                <property name="text">
+                 <string>[n] =&gt; Processing Unit Efficiency</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tabBenchmarks">
+      <widget class="QWidget" name="tabFullBenchmark">
        <attribute name="title">
-        <string>Benchmarks</string>
+        <string>Benchmark</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QWidget" name="wBenchmarks" native="true">
-          <layout class="QGridLayout" name="gridLayout_2"/>
-         </widget>
-        </item>
-       </layout>
+       <layout class="QHBoxLayout" name="horizontalLayout_5"/>
+      </widget>
+      <widget class="QWidget" name="tabCustomBenchmark">
+       <attribute name="title">
+        <string>Custom Benchmark</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_4"/>
       </widget>
      </widget>
     </item>
@@ -110,8 +133,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
-     <height>22</height>
+     <width>845</width>
+     <height>33</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

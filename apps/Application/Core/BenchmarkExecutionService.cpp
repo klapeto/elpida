@@ -9,7 +9,9 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Platform/AsyncPipeReader.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
-#include "Models/BenchmarkResultModel.hpp"
+#include "Models/Benchmark/BenchmarkModel.hpp"
+
+#include "json.hpp"
 
 #include <locale>
 #include <sstream>
@@ -24,9 +26,8 @@ namespace Elpida::Application
 											   "";
 #endif
 
-	std::string
-	BenchmarkExecutionService::Execute(const std::string& libraryPath,
-		std::size_t index,
+	BenchmarkResultModel
+	BenchmarkExecutionService::Execute(const BenchmarkModel& benchmarkModel,
 		const std::vector<std::size_t>& affinity,
 		const std::vector<std::string>& configurations,
 		double nowOverheadNanoseconds,
@@ -36,8 +37,8 @@ namespace Elpida::Application
 		std::locale::global(std::locale());
 		std::vector<std::string> arguments
 			{
-				std::string("--module=") + "\"" + libraryPath + "\"",
-				"--index=" + std::to_string(index),
+				std::string("--module=") + "\"" + benchmarkModel.GetFilePath() + "\"",
+				"--index=" + std::to_string(benchmarkModel.GetIndex()),
 				"--now-nanoseconds=" + std::to_string(nowOverheadNanoseconds),
 				"--loop-nanoseconds=" + std::to_string(loopOverheadNanoseconds),
 				"--virtual-nanoseconds=" + std::to_string(virtualCallOverheadNanoseconds),
@@ -79,7 +80,24 @@ namespace Elpida::Application
 		stdOutReader.StopReading();
 		stdErrReader.StopReading();
 
-		return stdOutReader.GetString();
+		auto serializedResult = stdOutReader.GetString();
+
+		nlohmann::json json = nlohmann::json::parse(serializedResult);
+
+		auto score = json["score"].template get<double>();
+		auto taskResultsJ = json["taskResults"];
+
+		std::vector<TaskResultModel> taskResults;
+		taskResults.reserve(taskResultsJ.size());
+
+		for (auto& taskJ : taskResultsJ)
+		{
+			taskResults.emplace_back(
+					NanoSeconds(taskJ["durationNanoseconds"].template get<double>()),
+					taskJ["dataSize"].get<std::size_t>()
+			);
+		}
+		return BenchmarkResultModel(benchmarkModel, score, std::move(taskResults));
 	}
 
 	void BenchmarkExecutionService::StopCurrentExecution()

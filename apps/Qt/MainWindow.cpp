@@ -8,16 +8,16 @@
 
 #include "Elpida/Core/Config.hpp"
 
-#include "Layouts/FlowLayout.hpp"
-#include "Models/TopologyModel.hpp"
-#include "Models/BenchmarksModel.hpp"
+#include "Models/SystemInfo/TopologyModel.hpp"
+#include "Models/Custom/CustomBenchmarkModel.hpp"
 
 #include "Views/OsInfoView/OsInfoView.hpp"
 #include "Views/MemoryInfoView/MemoryInfoView.hpp"
 #include "Views/TimingInfoView/TimingInfoView.hpp"
 #include "Views/CpuInfoView/CpuInfoView.hpp"
 #include "Views/TopologyView/TopologyView.hpp"
-#include "Views/BenchmarksView/BenchmarksView.hpp"
+#include "Views/CustomBenchmarkView/CustomBenchmarkView.hpp"
+#include "Views/FullBenchmarkView/FullBenchmarkView.hpp"
 
 namespace Elpida::Application
 {
@@ -30,37 +30,41 @@ namespace Elpida::Application
 									  "<p>Copyright (C) 2023  Ioannis Panagiotopoulos</p>"
 									  "More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
 
-	MainWindow::MainWindow(const OsInfoModel& osInfo,
-		const MemoryInfoModel& memoryInfo,
-		const CpuInfoModel& cpuInfo,
-		const TimingModel& overheadsInfo,
-		TopologyModel& topologyModel,
-		BenchmarksModel& benchmarksModel,
-		const BenchmarkResultsModel& benchmarkResultsModel,
-		BenchmarksController& benchmarksController,
-		ConfigurationViewPool& configurationViewPool,
+	MainWindow::MainWindow(const OsInfoModel& osInfoModel,
+			const MemoryInfoModel& memoryInfoModel,
+			const CpuInfoModel& cpuInfoModel,
+			const TimingModel& timingModel,
+			const CustomBenchmarkResultsModel& customBenchmarkResultsModel,
+			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
+			TopologyModel& topologyModel,
+			CustomBenchmarkModel& customBenchmarksModel,
+			CustomBenchmarkController& customBenchmarksController,
+			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
+			ConfigurationViewPool& configurationViewPool,
 		QWidget* parent)
 		: QMainWindow(parent),
 		_topologyModel(topologyModel),
-		_benchmarksModel(benchmarksModel),
+		_benchmarksModel(customBenchmarksModel),
 		_ui(new Ui::MainWindow)
 	{
 		_ui->setupUi(this);
 
 		_ui->gbOsInfo->setLayout(new QVBoxLayout);
-		_ui->gbOsInfo->layout()->addWidget(new OsInfoView(osInfo));
+		_ui->gbOsInfo->layout()->addWidget(new OsInfoView(osInfoModel));
 
 		_ui->gbMemoryInfo->setLayout(new QVBoxLayout);
-		_ui->gbMemoryInfo->layout()->addWidget(new MemoryInfoView(memoryInfo));
+		_ui->gbMemoryInfo->layout()->addWidget(new MemoryInfoView(memoryInfoModel));
 
 		_ui->gbTimingInfo->setLayout(new QVBoxLayout);
-		_ui->gbTimingInfo->layout()->addWidget(new TimingInfoView(overheadsInfo));
+		_ui->gbTimingInfo->layout()->addWidget(new TimingInfoView(timingModel));
 
 		_ui->gbCpuInfo->setLayout(new QVBoxLayout);
-		_ui->gbCpuInfo->layout()->addWidget(new CpuInfoView(cpuInfo));
+		_ui->gbCpuInfo->layout()->addWidget(new CpuInfoView(cpuInfoModel));
 
 		_ui->wTopologyContainer->setLayout(new QVBoxLayout);
 		_ui->wTopologyContainer->layout()->addWidget(new TopologyView(topologyModel));
+
+		_ui->tabFullBenchmark->layout()->addWidget(new FullBenchmarkView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController));
 
 		_selectedNodesLabel = new QLabel(_nonSelected);
 		_selectedBenchmarkLabel = new QLabel(_nonSelected);
@@ -75,12 +79,12 @@ namespace Elpida::Application
 			OnTopologyModelChanged();
 		});
 
-		_benchmarksModelChanged = benchmarksModel.DataChanged().Subscribe([this]()
+		_benchmarksModelChanged = customBenchmarksModel.DataChanged().Subscribe([this]()
 		{
 			OnBenchmarksModelChanged();
 		});
 
-		_ui->wBenchmarks->layout()->addWidget(new BenchmarksView(benchmarksModel, benchmarkResultsModel, benchmarksController, configurationViewPool));
+		_ui->tabCustomBenchmark->layout()->addWidget(new CustomBenchmarkView(customBenchmarksModel, customBenchmarkResultsModel, benchmarkRunConfigurationModel, customBenchmarksController, benchmarkRunConfigurationController, configurationViewPool));
 		OnTopologyModelChanged();
 		OnBenchmarksModelChanged();
 	}

@@ -18,9 +18,11 @@ namespace Elpida::Application
 	class CpuInfoModel;
 	class TimingModel;
 	class TopologyModel;
-	class BenchmarksModel;
-	class BenchmarkResultsModel;
-	class BenchmarksController;
+	class BenchmarkRunConfigurationModel;
+	class BenchmarkRunConfigurationController;
+	class CustomBenchmarkModel;
+	class CustomBenchmarkResultsModel;
+	class CustomBenchmarkController;
 	class ConfigurationViewPool;
 
 	class MainWindow : public QMainWindow
@@ -28,14 +30,16 @@ namespace Elpida::Application
 	 Q_OBJECT
 	 public:
 		explicit MainWindow(
-			const OsInfoModel& osInfo,
-			const MemoryInfoModel& memoryInfo,
-			const CpuInfoModel& cpuInfo,
-			const TimingModel& overheadsInfo,
+			const OsInfoModel& osInfoModel,
+			const MemoryInfoModel& memoryInfoModel,
+			const CpuInfoModel& cpuInfoModel,
+			const TimingModel& timingModel,
+			const CustomBenchmarkResultsModel& customBenchmarkResultsModel,
+			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			TopologyModel& topologyModel,
-			BenchmarksModel& benchmarksModel,
-			const BenchmarkResultsModel& benchmarkResultsModel,
-			BenchmarksController& benchmarksController,
+			CustomBenchmarkModel& customBenchmarksModel,
+			CustomBenchmarkController& customBenchmarksController,
+			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
 			ConfigurationViewPool& configurationViewPool,
 			QWidget* parent = nullptr);
 
@@ -44,7 +48,7 @@ namespace Elpida::Application
 		EventSubscription<> _topologyModelChanged;
 		EventSubscription<> _benchmarksModelChanged;
 		TopologyModel& _topologyModel;
-		BenchmarksModel& _benchmarksModel;
+		CustomBenchmarkModel& _benchmarksModel;
 		QLabel* _selectedNodesLabel;
 		QLabel* _selectedBenchmarkLabel;
 		QString _nonSelected = "<b style=\"color: #d73e3e;\">No selected</b>";

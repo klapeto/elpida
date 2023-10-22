@@ -5,7 +5,7 @@
 #ifndef ELPIDA_APPS_APPLICATION_DATAUPLOADER_HPP
 #define ELPIDA_APPS_APPLICATION_DATAUPLOADER_HPP
 
-#include "Models/BenchmarkResultModel.hpp"
+#include "Models/Benchmark/BenchmarkResultModel.hpp"
 
 namespace Elpida::Application
 {

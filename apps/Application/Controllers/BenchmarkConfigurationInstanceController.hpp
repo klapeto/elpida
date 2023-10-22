@@ -6,7 +6,7 @@
 #define ELPIDA_BENCHMARKCONFIGURATIONINSTANCECONTROLLER_HPP_
 
 #include "Controller.hpp"
-#include "Models/BenchmarkConfigurationModel.hpp"
+#include "Models/Benchmark/BenchmarkConfigurationModel.hpp"
 
 namespace Elpida::Application
 {

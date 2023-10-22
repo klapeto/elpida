@@ -20,6 +20,10 @@ set(ELPIDA_QT_SOURCES
 		Views/OsInfoView/OsInfoView.cpp
 		Views/OsInfoView/OsInfoView.ui
 
+		Views/BenchmarkRunConfigurationView/BenchmarkRunConfigurationView.hpp
+		Views/BenchmarkRunConfigurationView/BenchmarkRunConfigurationView.cpp
+		Views/BenchmarkRunConfigurationView/BenchmarkRunConfigurationView.ui
+
 		Views/MemoryInfoView/MemoryInfoView.hpp
 		Views/MemoryInfoView/MemoryInfoView.cpp
 		Views/MemoryInfoView/MemoryInfoView.ui
@@ -40,13 +44,17 @@ set(ELPIDA_QT_SOURCES
 		Views/TopologyView/TopologyView.cpp
 		Views/TopologyView/TopologyView.ui
 
-		Views/BenchmarksView/BenchmarksView.hpp
-		Views/BenchmarksView/BenchmarksView.cpp
-		Views/BenchmarksView/BenchmarksView.ui
+		Views/CustomBenchmarkView/CustomBenchmarkView.hpp
+		Views/CustomBenchmarkView/CustomBenchmarkView.cpp
+		Views/CustomBenchmarkView/CustomBenchmarkView.ui
 
-		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.hpp
-		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp
-		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
+		Views/FullBenchmarkView/FullBenchmarkView.hpp
+		Views/FullBenchmarkView/FullBenchmarkView.cpp
+		Views/FullBenchmarkView/FullBenchmarkView.ui
+
+		Views/CustomBenchmarkConfigurationView/CustomBenchmarkConfigurationView.hpp
+		Views/CustomBenchmarkConfigurationView/CustomBenchmarkConfigurationView.cpp
+		Views/CustomBenchmarkConfigurationView/CustomBenchmarkConfigurationView.ui
 
 		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp
 		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.cpp
@@ -64,9 +72,9 @@ set(ELPIDA_QT_SOURCES
 		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.cpp
 		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.ui
 
-		Views/BenchmarkResultsView/BenchmarkResultsView.hpp
-		Views/BenchmarkResultsView/BenchmarkResultsView.cpp
-		Views/BenchmarkResultsView/BenchmarkResultsView.ui
+		Views/CustomBenchmarkResultsView/CustomBenchmarkResultsView.hpp
+		Views/CustomBenchmarkResultsView/CustomBenchmarkResultsView.cpp
+		Views/CustomBenchmarkResultsView/CustomBenchmarkResultsView.ui
 
 		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.hpp
 		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.cpp

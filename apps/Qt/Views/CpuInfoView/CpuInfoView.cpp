@@ -6,7 +6,7 @@
 #include <QLabel>
 
 #include "Elpida/Core/ValueUtilities.hpp"
-#include "Models/CpuInfoModel.hpp"
+#include "Models/SystemInfo/CpuInfoModel.hpp"
 
 using Vu = Elpida::ValueUtilities;
 

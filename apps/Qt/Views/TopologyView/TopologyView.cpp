@@ -4,7 +4,7 @@
 #include "Layouts/FlowLayout.hpp"
 
 #include "Views/TopologyNodeView/TopologyNodeView.hpp"
-#include "Models/TopologyModel.hpp"
+#include "Models/SystemInfo/TopologyModel.hpp"
 
 namespace Elpida::Application
 {

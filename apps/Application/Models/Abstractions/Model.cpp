@@ -31,4 +31,15 @@ namespace Elpida::Application
 	{
 		_transaction = true;
 	}
+
+	Model::Model(const Model&)
+			: _transaction(false)
+	{
+
+	}
+
+	Model& Model::operator=(const Model&)
+	{
+		return *this;
+	}
 }

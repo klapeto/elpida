@@ -9,7 +9,7 @@ set(ELPIDA_APPLICATION_SOURCES
         EventSubscription.cpp
         DataUploader.cpp
 
-        Controllers/BenchmarksController.cpp
+        Controllers/CustomBenchmarkController.cpp
         Controllers/Controller.cpp
         Controllers/BenchmarkConfigurationInstanceController.cpp
 
@@ -20,29 +20,43 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/Abstractions/ListModel/ListModelItem.cpp
         Models/Abstractions/AssociativeModel/AssociativeItem.cpp
 
-        Models/TopologyModel.cpp
-        Models/TopologyNodeModel.cpp
+        Models/SystemInfo/TopologyModel.cpp
+        Models/SystemInfo/TopologyNodeModel.cpp
         Models/Abstractions/Model.cpp
 
-        Models/CpuInfoModel.cpp
-        Models/MemoryInfoModel.cpp
-        Models/OsInfoModel.cpp
-        Models/TimingModel.cpp
-        Models/OsInfoModel.cpp
-        Models/BenchmarksModel.cpp
-        Models/BenchmarkGroupModel.cpp
-        Models/BenchmarkModel.cpp
-        Models/BenchmarkConfigurationModel.cpp
-        Models/BenchmarkResultModel.cpp
-        Models/BenchmarkResultsModel.cpp
-        Models/TaskResultModel.cpp
-        Models/TaskModel.cpp
+        Models/SystemInfo/CpuInfoModel.cpp
+        Models/SystemInfo/MemoryInfoModel.cpp
+        Models/SystemInfo/OsInfoModel.cpp
+        Models/SystemInfo/TimingModel.cpp
+        Models/SystemInfo/OsInfoModel.cpp
+        Models/Custom/CustomBenchmarkModel.cpp
+        Models/Benchmark/BenchmarkGroupModel.cpp
+        Models/Benchmark/BenchmarkModel.cpp
+        Models/Benchmark/BenchmarkConfigurationModel.cpp
+        Models/Benchmark/BenchmarkResultModel.cpp
+        Models/Custom/CustomBenchmarkResultsModel.cpp
+        Models/Benchmark/TaskResultModel.cpp
+        Models/Benchmark/TaskModel.cpp
 
         Core/MessageService.cpp
         Core/BenchmarkExecutionService.cpp
         Core/Promise.cpp
         Core/ThreadQueue.cpp
         Core/SettingsService.cpp
+        Core/BenchmarkUploaderService.cpp
+        Core/BenchmarkUploaderService.hpp
+        Models/BenchmarkRunConfigurationModel.cpp
+        Models/BenchmarkRunConfigurationModel.hpp
+        Controllers/BenchmarkRunConfigurationController.cpp
+        Controllers/BenchmarkRunConfigurationController.hpp
+        Models/Full/FullBenchmarkResultModel.cpp
+        Models/Full/FullBenchmarkResultModel.hpp
+        Models/Full/FullBenchmarkResultsModel.cpp
+        Models/Full/FullBenchmarkResultsModel.hpp
+        Controllers/FullBenchmarkController.cpp
+        Controllers/FullBenchmarkController.hpp
+        Models/Full/FullBenchmarkModel.cpp
+        Models/Full/FullBenchmarkModel.hpp
 )
 
 

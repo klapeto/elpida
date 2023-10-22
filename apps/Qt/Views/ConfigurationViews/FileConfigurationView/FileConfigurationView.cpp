@@ -1,7 +1,7 @@
 #include "FileConfigurationView.hpp"
 #include "ui_FileConfigurationView.h"
 
-#include "Models/BenchmarkConfigurationModel.hpp"
+#include "Models/Benchmark/BenchmarkConfigurationModel.hpp"
 #include "Controllers/BenchmarkConfigurationInstanceController.hpp"
 #include <QFileDialog>
 

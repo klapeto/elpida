@@ -21,7 +21,7 @@ namespace Elpida::Application
 		Controller(Controller&&) noexcept = default;
 		Controller& operator=(const Controller&) = delete;
 		Controller& operator=(Controller&&) noexcept = default;
-		~Controller() = default;
+		virtual ~Controller() = default;
 	 protected:
 		T& _model;
 	};

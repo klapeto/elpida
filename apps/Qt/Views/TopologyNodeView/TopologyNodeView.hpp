@@ -3,7 +3,7 @@
 
 #include <QFrame>
 
-#include "Models/TopologyNodeModel.hpp"
+#include "Models/SystemInfo/TopologyNodeModel.hpp"
 #include "EventSubscription.hpp"
 
 namespace Elpida::Application

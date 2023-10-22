@@ -2,7 +2,7 @@
 #include "Elpida/Core/TimingInfo.hpp"
 #include "ui_TimingInfoView.h"
 
-#include "Models/TimingModel.hpp"
+#include "Models/SystemInfo/TimingModel.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
 #include <string>
 

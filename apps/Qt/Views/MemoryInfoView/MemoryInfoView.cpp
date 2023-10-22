@@ -1,7 +1,7 @@
 #include "MemoryInfoView.hpp"
 #include "ui_MemoryInfoView.h"
 
-#include "Models/MemoryInfoModel.hpp"
+#include "Models/SystemInfo/MemoryInfoModel.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
 
 using Vu = Elpida::ValueUtilities;

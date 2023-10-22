@@ -56,9 +56,9 @@ namespace Elpida::Application
 		}
 
 		Model();
-		Model(const Model&) = delete;
+		Model(const Model&);
 		Model(Model&&) noexcept = default;
-		Model& operator=(const Model&) = delete;
+		Model& operator=(const Model&);
 		Model& operator=(Model&&) noexcept = default;
 		virtual ~Model() = default;
 	protected:

@@ -1,7 +1,7 @@
 #include "OsInfoView.hpp"
 #include "ui_OsInfoView.h"
 
-#include "Models/OsInfoModel.hpp"
+#include "Models/SystemInfo/OsInfoModel.hpp"
 
 namespace Elpida::Application
 {

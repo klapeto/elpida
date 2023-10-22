@@ -122,8 +122,7 @@ int main(int argC, char** argV)
 				NanoSeconds(helper.GetLoopOverhead()),
 				NanoSeconds(helper.GetVCallOverhead()),
 				Seconds(0),
-				0,
-				TimingStability::ExtremelyUnstable),
+				0),
 			std::make_unique<NumaAllocator>());
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());

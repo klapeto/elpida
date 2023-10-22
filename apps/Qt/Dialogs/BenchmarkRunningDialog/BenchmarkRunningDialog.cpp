@@ -1,7 +1,7 @@
 #include "BenchmarkRunningDialog.hpp"
 #include "ui_BenchmarkRunningDialog.h"
 
-#include "Controllers/BenchmarksController.hpp"
+#include "Controllers/CustomBenchmarkController.hpp"
 #include <qnamespace.h>
 
 namespace Elpida::Application

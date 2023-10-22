@@ -39,9 +39,13 @@ namespace Elpida::Application
 			_subscriptions = std::make_shared<CallbackCollection>();
 		}
 
-		Event(const Event&) = delete;
+		Event(const Event&){
+
+		}
 		Event(Event&& other) noexcept = default;
-		Event& operator=(const Event&) = delete;
+		Event& operator=(const Event&){
+			return *this;
+		}
 		Event& operator=(Event&&) noexcept = default;
 		~Event() = default;
 	private:
