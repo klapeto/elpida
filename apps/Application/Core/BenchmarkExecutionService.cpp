@@ -29,11 +29,19 @@ namespace Elpida::Application
 	BenchmarkResultModel
 	BenchmarkExecutionService::Execute(const BenchmarkModel& benchmarkModel,
 		const std::vector<std::size_t>& affinity,
-		const std::vector<std::string>& configurations,
 		double nowOverheadNanoseconds,
 		double loopOverheadNanoseconds,
 		double virtualCallOverheadNanoseconds)
 	{
+
+		std::vector<std::string> configuration;
+		configuration.reserve(benchmarkModel.GetConfigurations().size());
+
+		for (auto& config : benchmarkModel.GetConfigurations())
+		{
+			configuration.emplace_back(config.GetValue());
+		}
+
 		std::locale::global(std::locale());
 		std::vector<std::string> arguments
 			{
@@ -55,7 +63,7 @@ namespace Elpida::Application
 
 		arguments.push_back(affinityStr.substr(0, affinityStr.size() - 1));
 
-		for (auto& value : configurations)
+		for (auto& value : configuration)
 		{
 			arguments.push_back(std::string("--config=\"").append(value).append("\""));
 		}

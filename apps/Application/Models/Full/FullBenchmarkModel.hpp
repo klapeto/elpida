@@ -7,6 +7,7 @@
 
 #include "Models/Abstractions/Model.hpp"
 #include "Models/Benchmark/BenchmarkGroupModel.hpp"
+#include "FullBenchmarkResultModel.hpp"
 
 namespace Elpida::Application
 {
@@ -14,12 +15,29 @@ namespace Elpida::Application
 	class FullBenchmarkModel : public Model
 	{
 	public:
-		explicit FullBenchmarkModel(const std::vector<BenchmarkGroupModel>& benchmarkGroups);
+		const std::string& GetCurrentRunningBenchmark() const;
+		size_t GetTotalBenchmarks() const;
+		bool IsRunning() const;
+		const std::vector<FullBenchmarkResultModel>& GetResults() const;
+
+		Event<bool>& RunningChanged() const;
+		Event<const std::string&>& CurrentRunningBenchmarkChanged() const;
+
+		void SetCurrentRunningBenchmark(const std::string& benchmark);
+		void SetRunning(bool running);
+		void SetTotalBenchmarks(std::size_t totalBenchmarks);
+
+		void AddResult(FullBenchmarkResultModel&& result);
+
+		FullBenchmarkModel();
 		~FullBenchmarkModel() override = default;
 	private:
-		const BenchmarkModel* _memoryLatency;
-		const BenchmarkModel* _memoryReadBandwidth;
-		const BenchmarkModel* _pngEncoding;
+		std::vector<FullBenchmarkResultModel> _results;
+		std::string _currentRunningBenchmark;
+		std::size_t _totalBenchmarks;
+		bool _running;
+		mutable Event<bool> _runningChanged;
+		mutable Event<const std::string&> _currentRunningBenchmarkChanged;
 	};
 
 } // Elpida

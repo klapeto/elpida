@@ -61,18 +61,9 @@ namespace Elpida::Application
 				affinity.push_back(node.get().GetOsIndex().value());
 			}
 
-			std::vector<std::string> configuration;
-			configuration.reserve(selectedBenchmark->GetConfigurations().size());
-
-			for (auto& config : selectedBenchmark->GetConfigurations())
-			{
-				configuration.emplace_back(config.GetValue());
-			}
-
 			_benchmarkResultsModel.Add(_benchmarkExecutionService.Execute(
 					*selectedBenchmark,
 					affinity,
-					configuration,
 					std::chrono::duration_cast<NanoSeconds>(
 							_overheadsModel.GetNowOverhead()).count(),
 					std::chrono::duration_cast<NanoSeconds>(

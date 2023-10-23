@@ -36,10 +36,12 @@ namespace Elpida::Application
 			const TimingModel& timingModel,
 			const CustomBenchmarkResultsModel& customBenchmarkResultsModel,
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
+			const FullBenchmarkModel& fullBenchmarkModel,
 			TopologyModel& topologyModel,
 			CustomBenchmarkModel& customBenchmarksModel,
 			CustomBenchmarkController& customBenchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
+			FullBenchmarkController& fullBenchmarkController,
 			ConfigurationViewPool& configurationViewPool,
 		QWidget* parent)
 		: QMainWindow(parent),
@@ -64,7 +66,8 @@ namespace Elpida::Application
 		_ui->wTopologyContainer->setLayout(new QVBoxLayout);
 		_ui->wTopologyContainer->layout()->addWidget(new TopologyView(topologyModel));
 
-		_ui->tabFullBenchmark->layout()->addWidget(new FullBenchmarkView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController));
+		_ui->tabFullBenchmark->layout()->addWidget(new FullBenchmarkView(benchmarkRunConfigurationModel,
+				benchmarkRunConfigurationController, fullBenchmarkModel, fullBenchmarkController));
 
 		_selectedNodesLabel = new QLabel(_nonSelected);
 		_selectedBenchmarkLabel = new QLabel(_nonSelected);

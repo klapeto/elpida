@@ -62,6 +62,8 @@
 #include "Core/BenchmarkExecutionService.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 #include "Controllers/BenchmarkRunConfigurationController.hpp"
+#include "Models/Full/FullBenchmarkModel.hpp"
+#include "Controllers/FullBenchmarkController.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -385,16 +387,21 @@ int main(int argc, char* argv[])
 	BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
 	BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel);
 
+	FullBenchmarkModel fullBenchmarkModel;
+	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel, topologyModel, timingModel, executionService, benchmarkGroups);
+
 	MainWindow mainWindow(osInfoModel,
 			memoryInfoModel,
 			cpuInfoModel,
 			timingModel,
 			customBenchmarkResultsModel,
 			benchmarkRunConfigurationModel,
+			fullBenchmarkModel,
 			topologyModel,
 			customBenchmarkModel,
 			benchmarksController,
 			benchmarkRunConfigurationController,
+			fullBenchmarkController,
 			configurationViewPool);
 
 	mainWindow.resize(QSize(screenSize.width() / 2, screenSize.height() / 2));

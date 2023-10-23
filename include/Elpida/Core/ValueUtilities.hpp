@@ -112,6 +112,16 @@ namespace Elpida
 			return N;
 		}
 
+		static inline String ToSI(double value, int decimals = 2)
+		{
+			return GetValueScaleStringSI(value, decimals);
+		}
+
+		static inline String ToIEC(double value, int decimals = 2)
+		{
+			return GetValueScaleStringIEC(value, decimals);
+		}
+
 		static String GetValueScaleStringSI(double value, int decimals = 2)
 		{
 			return GetValueScaleStringImpl(value, ScaleValuesSI, PrefixesSI, GetArrayLength(PrefixesSI), decimals);

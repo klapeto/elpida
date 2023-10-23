@@ -51,8 +51,6 @@ set(ELPIDA_APPLICATION_SOURCES
         Controllers/BenchmarkRunConfigurationController.hpp
         Models/Full/FullBenchmarkResultModel.cpp
         Models/Full/FullBenchmarkResultModel.hpp
-        Models/Full/FullBenchmarkResultsModel.cpp
-        Models/Full/FullBenchmarkResultsModel.hpp
         Controllers/FullBenchmarkController.cpp
         Controllers/FullBenchmarkController.hpp
         Models/Full/FullBenchmarkModel.cpp

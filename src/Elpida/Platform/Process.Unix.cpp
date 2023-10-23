@@ -103,6 +103,7 @@ namespace Elpida
 		{
 			throw ElpidaException("Failed to terminate process: (", _path, ") (", _pid, "): ", strerror(errno));
 		}
+		_pid = -1;
 	}
 
 	void Process::WaitToExitImpl(bool noThrow) const

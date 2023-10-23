@@ -6,37 +6,72 @@
 
 namespace Elpida::Application
 {
-	FullBenchmarkModel::FullBenchmarkModel(const std::vector<BenchmarkGroupModel>& benchmarkGroups)
-			: _memoryLatency(nullptr), _memoryReadBandwidth(nullptr), _pngEncoding(nullptr)
+	FullBenchmarkModel::FullBenchmarkModel()
+			: _totalBenchmarks(1), _running(false)
 	{
-		for (auto& group: benchmarkGroups)
-		{
-			for (auto& benchmark: group.GetBenchmarks())
-			{
-				auto name = benchmark.GetName();
-				if (name == "Memory latency")
-				{
-					_memoryLatency = &benchmark;
-				}
-				else if (name == "Memory read bandwidth")
-				{
-					_memoryReadBandwidth = &benchmark;
-				}
-				else if (name == "Png Encoding/Decoding")
-				{
-					_pngEncoding = &benchmark;
-				}
-			}
-		}
-		if (!_memoryReadBandwidth || !_memoryLatency)
-		{
-			throw ElpidaException("Missing benchmarks: Memory benchmarks");
-		}
 
-		if (!_pngEncoding)
+	}
+
+	void FullBenchmarkModel::SetRunning(bool running)
+	{
+		if (running != _running)
 		{
-			throw ElpidaException("Missing benchmarks: Image benchmarks");
+			_running = running;
+			_runningChanged.Raise(_running);
+			OnDataChanged();
 		}
+	}
+
+	void FullBenchmarkModel::SetCurrentRunningBenchmark(const std::string& benchmark)
+	{
+		if (_currentRunningBenchmark != benchmark)
+		{
+			_currentRunningBenchmark = benchmark;
+			_currentRunningBenchmarkChanged.Raise(_currentRunningBenchmark);
+			OnDataChanged();
+		}
+	}
+
+	void FullBenchmarkModel::SetTotalBenchmarks(std::size_t totalBenchmarks)
+	{
+		_totalBenchmarks = totalBenchmarks;
+		OnDataChanged();
+	}
+
+	const std::string& FullBenchmarkModel::GetCurrentRunningBenchmark() const
+	{
+		return _currentRunningBenchmark;
+	}
+
+	size_t FullBenchmarkModel::GetTotalBenchmarks() const
+	{
+		return _totalBenchmarks;
+	}
+
+	bool FullBenchmarkModel::IsRunning() const
+	{
+		return _running;
+	}
+
+	Event<bool>& FullBenchmarkModel::RunningChanged() const
+	{
+		return _runningChanged;
+	}
+
+	Event<const std::string&>& FullBenchmarkModel::CurrentRunningBenchmarkChanged() const
+	{
+		return _currentRunningBenchmarkChanged;
+	}
+
+	void FullBenchmarkModel::AddResult(FullBenchmarkResultModel&& result)
+	{
+		_results.push_back(std::move(result));
+		OnDataChanged();
+	}
+
+	const std::vector<FullBenchmarkResultModel>& FullBenchmarkModel::GetResults() const
+	{
+		return _results;
 	}
 } // Elpida
 // Application
