@@ -36,7 +36,7 @@ namespace Elpida::Application
 		[[nodiscard]]
 		ConfigurationType GetType() const;
 
-		void SetValue(std::string value);
+		void SetValue(std::string value) const;
 
 		BenchmarkConfigurationModel(std::string name, std::string id, std::string value, ConfigurationType type);
 		BenchmarkConfigurationModel(const BenchmarkConfigurationModel&) = default;
@@ -47,7 +47,7 @@ namespace Elpida::Application
 	 private:
 		std::string _name;
 		std::string _id;
-		std::string _value;
+		mutable std::string _value;
 		ConfigurationType _type;
 	};
 

@@ -12,10 +12,12 @@ namespace Elpida::Application
 		: _name(std::move(name)), _benchmarks(std::move(benchmarks))
 	{
 	}
+
 	const std::string& BenchmarkGroupModel::GetName() const
 	{
 		return _name;
 	}
+
 	const std::vector<BenchmarkModel>& BenchmarkGroupModel::GetBenchmarks() const
 	{
 		return _benchmarks;

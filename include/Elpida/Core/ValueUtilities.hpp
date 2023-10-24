@@ -9,6 +9,7 @@
 #include "Elpida/Core/String.hpp"
 
 #include <sstream>
+#include <iomanip>
 
 namespace Elpida
 {
@@ -110,6 +111,13 @@ namespace Elpida
 		static constexpr Size GetArrayLength(T (&)[N])
 		{
 			return N;
+		}
+
+		template<typename T>
+		static String ToFixed(T value, int decimals){
+			std::ostringstream returnString;
+			returnString << std::fixed << std::setprecision(decimals) << value;
+			return returnString.str();
 		}
 
 		static inline String ToSI(double value, int decimals = 2)

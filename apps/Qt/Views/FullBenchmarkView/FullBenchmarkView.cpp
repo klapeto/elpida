@@ -10,6 +10,14 @@ namespace Elpida::Application
 {
 	using Vu = ValueUtilities;
 
+	static void SetDelta(QLabel* label, FullBenchmarkResultModel::Score currentScore, FullBenchmarkResultModel::Score previousScore)
+	{
+		if (previousScore == 0.0) return;
+		auto delta = (currentScore / previousScore * 100.0) - 100.0;
+		label->setText(QString::fromStdString((delta >= 0.0 ? "+" : "") + Vu::ToFixed(delta, 2) + "%"));
+		label->setStyleSheet(delta >= 0.0 ? "color: green" : "color: red");
+	}
+
 	FullBenchmarkView::FullBenchmarkView(
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
@@ -24,6 +32,11 @@ namespace Elpida::Application
 		dynamic_cast<QVBoxLayout*>(_ui->gbExecution->layout())->insertWidget(2,
 				new BenchmarkRunConfigurationView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController));
 
+		SetDelta(_ui->lblTotalScoreDelta, 1, 1);
+		SetDelta(_ui->lblSingleScoreDelta, 1, 1);
+		SetDelta(_ui->lblMultiCoreScoreDelta, 1, 1);
+		SetDelta(_ui->lblMemoryScoreDelta, 1, 1);
+
 		_runningChanged = _model.RunningChanged().Subscribe([this](auto running)
 		{
 			if (running)
@@ -32,12 +45,14 @@ namespace Elpida::Application
 				_maxBenchmarkIndex = _model.GetTotalBenchmarks();
 				_ui->pbProgress->setRange(0, _maxBenchmarkIndex);
 				_ui->bpStart->setText("Cancel");
+				_ui->lblStatus->setText("Running...");
 			}
 			else
 			{
 				_currentBenchmarkIndex = 0;
 				_maxBenchmarkIndex = 0;
 				_ui->bpStart->setText("Start");
+				_ui->lblStatus->setText("Ready");
 				if(!_cancel)
 				{
 					UpdateScore();
@@ -74,18 +89,19 @@ namespace Elpida::Application
 		if (results.empty()) return;
 		auto& currentResult = results.back();
 
-		_ui->lblTotalScore->setText(QString::fromStdString(std::to_string(currentResult.GetTotalScore())));
+		_ui->lblTotalScore->setText(QString::fromStdString(Vu::ToFixed(currentResult.GetTotalScore(), 2)));
 		_ui->lblSingleCoreScoreValue->setText(
-				QString::fromStdString(std::to_string(currentResult.GetSingleCoreScore())));
-		_ui->lblMultiCoreScoreValue->setText(QString::fromStdString(std::to_string(currentResult.GetMultiCoreScore())));
-		_ui->lblMemoryScoreValue->setText(QString::fromStdString(std::to_string(currentResult.GetMemoryScore())));
+				QString::fromStdString(Vu::ToFixed(currentResult.GetSingleCoreScore(),2)));
+		_ui->lblMultiCoreScoreValue->setText(QString::fromStdString(Vu::ToFixed(currentResult.GetMultiCoreScore(),2)));
+		_ui->lblMemoryScoreValue->setText(QString::fromStdString(Vu::ToFixed(currentResult.GetMemoryScore(), 2)));
 
 		if (results.size() > 1)
 		{
 			auto& previousResult = results[results.size() - 2];
-			auto delta = (currentResult.GetTotalScore() / previousResult.GetTotalScore()) * 100;
-			_ui->lblTotalScoreDelta->setText(QString::fromStdString(std::to_string(delta)));
-			_ui->lblTotalScoreDelta->setStyleSheet(delta >= 0.0 ? "color: green" : "color: red");
+			SetDelta(_ui->lblTotalScoreDelta, currentResult.GetTotalScore(), previousResult.GetTotalScore());
+			SetDelta(_ui->lblSingleScoreDelta, currentResult.GetSingleCoreScore(), previousResult.GetSingleCoreScore());
+			SetDelta(_ui->lblMultiCoreScoreDelta, currentResult.GetMultiCoreScore(), previousResult.GetMultiCoreScore());
+			SetDelta(_ui->lblMemoryScoreDelta, currentResult.GetMemoryScore(), previousResult.GetMemoryScore());
 		}
 	}
 

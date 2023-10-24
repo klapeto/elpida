@@ -28,7 +28,7 @@ namespace Elpida::Application
 		return _type;
 	}
 
-	void BenchmarkConfigurationModel::SetValue(std::string value)
+	void BenchmarkConfigurationModel::SetValue(std::string value) const
 	{
 		_value = std::move(value);
 		OnDataChanged();

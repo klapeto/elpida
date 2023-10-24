@@ -63,7 +63,7 @@ namespace Elpida
 		Duration loopOverhead;
 		Duration nowOverhead;
 		Duration vCallOverhead;
-		Duration minimumTimeForStableMeasurement;
+		Duration minimumTimeForStableMeasurement(0);
 
 		std::thread([&]()
 		{

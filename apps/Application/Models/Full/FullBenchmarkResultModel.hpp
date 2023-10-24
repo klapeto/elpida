@@ -16,13 +16,15 @@ namespace Elpida::Application
 	class FullBenchmarkResultModel : public Model
 	{
 	public:
-		const std::vector<BenchmarkResultModel>& GetBenchmarkResults() const;
-		double GetTotalScore() const;
-		double GetSingleCoreScore() const;
-		double GetMultiCoreScore() const;
-		double GetMemoryScore() const;
+		using Score = double;
 
-		FullBenchmarkResultModel(std::vector<BenchmarkResultModel>&& benchmarkResults, double totalScore, double singleCoreScore, double multiCoreScore, double memoryScore);
+		const std::vector<BenchmarkResultModel>& GetBenchmarkResults() const;
+		Score GetTotalScore() const;
+		Score GetSingleCoreScore() const;
+		Score GetMultiCoreScore() const;
+		Score GetMemoryScore() const;
+
+		FullBenchmarkResultModel(std::vector<BenchmarkResultModel>&& benchmarkResults, Score totalScore, Score singleCoreScore, Score multiCoreScore, Score memoryScore);
 
 		FullBenchmarkResultModel(const FullBenchmarkResultModel&) = delete;
 		FullBenchmarkResultModel(FullBenchmarkResultModel&&) noexcept = default;
@@ -31,10 +33,10 @@ namespace Elpida::Application
 		~FullBenchmarkResultModel() override = default;
 	private:
 		std::vector<BenchmarkResultModel> _benchmarkResults;
-		double _totalScore;
-		double _singleCoreScore;
-		double _multiCoreScore;
-		double _memoryScore;
+		Score _totalScore;
+		Score _singleCoreScore;
+		Score _multiCoreScore;
+		Score _memoryScore;
 	};
 
 } // Elpida
