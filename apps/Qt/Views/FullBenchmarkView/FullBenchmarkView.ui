@@ -150,6 +150,19 @@
      </layout>
     </widget>
    </item>
+   <item row="0" column="3">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="0" column="2">
     <widget class="QGroupBox" name="gbExecution">
      <property name="sizePolicy">
@@ -240,19 +253,6 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="3">
-    <spacer name="horizontalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="1" column="0" colspan="4">
     <widget class="QGroupBox" name="gbResultsHistory">
      <property name="title">
@@ -263,12 +263,27 @@
        <widget class="QTreeWidget" name="twBenchmarkResults">
         <column>
          <property name="text">
-          <string>Name</string>
+          <string>Total</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Score</string>
+          <string>Single Core</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Multi Core</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Memory</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Delta</string>
          </property>
         </column>
        </widget>

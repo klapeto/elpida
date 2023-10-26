@@ -10,12 +10,38 @@ namespace Elpida::Application
 {
 	using Vu = ValueUtilities;
 
-	static void SetDelta(QLabel* label, FullBenchmarkResultModel::Score currentScore, FullBenchmarkResultModel::Score previousScore)
+	static void
+	SetDelta(QLabel* label, FullBenchmarkResultModel::Score currentScore, FullBenchmarkResultModel::Score previousScore,
+			QTreeWidgetItem* treeItem = nullptr)
 	{
 		if (previousScore == 0.0) return;
 		auto delta = (currentScore / previousScore * 100.0) - 100.0;
-		label->setText(QString::fromStdString((delta >= 0.0 ? "+" : "") + Vu::ToFixed(delta, 2) + "%"));
+		auto deltaStr = QString::fromStdString((delta >= 0.0 ? "+" : "") + Vu::ToFixed(delta, 2) + "%");
+		label->setText(deltaStr);
 		label->setStyleSheet(delta >= 0.0 ? "color: green" : "color: red");
+
+		if (treeItem != nullptr)
+		{
+			treeItem->setText(4, deltaStr);
+			treeItem->setForeground(4, QBrush(QColor(delta >= 0.0 ? "green" : "red")));
+		}
+	}
+
+	static std::string GetTaskValue(const TaskModel& task, const TaskResultModel& taskResult)
+	{
+		auto type = task.GetScoreType();
+		if (type == ScoreType::Throughput)
+		{
+
+			return Elpida::ValueUtilities::GetValueScaleStringSI(
+					(double)taskResult.GetInputSize() / taskResult.GetDuration().count()) + task.GetUnit() + +"/s";
+		}
+		else if (type == ScoreType::Time)
+		{
+			return Elpida::ValueUtilities::GetValueScaleStringSI(taskResult.GetDuration().count()) + "s";
+		}
+
+		return Elpida::ValueUtilities::GetValueScaleStringSI((double)taskResult.GetInputSize()) + task.GetUnit();
 	}
 
 	FullBenchmarkView::FullBenchmarkView(
@@ -53,7 +79,7 @@ namespace Elpida::Application
 				_maxBenchmarkIndex = 0;
 				_ui->bpStart->setText("Start");
 				_ui->lblStatus->setText("Ready");
-				if(!_cancel)
+				if (!_cancel)
 				{
 					UpdateScore();
 				}
@@ -89,19 +115,50 @@ namespace Elpida::Application
 		if (results.empty()) return;
 		auto& currentResult = results.back();
 
-		_ui->lblTotalScore->setText(QString::fromStdString(Vu::ToFixed(currentResult.GetTotalScore(), 2)));
-		_ui->lblSingleCoreScoreValue->setText(
-				QString::fromStdString(Vu::ToFixed(currentResult.GetSingleCoreScore(),2)));
-		_ui->lblMultiCoreScoreValue->setText(QString::fromStdString(Vu::ToFixed(currentResult.GetMultiCoreScore(),2)));
-		_ui->lblMemoryScoreValue->setText(QString::fromStdString(Vu::ToFixed(currentResult.GetMemoryScore(), 2)));
+		auto totalScore = QString::fromStdString(Vu::ToFixed(currentResult.GetTotalScore(), 2));
+		auto singleScore = QString::fromStdString(Vu::ToFixed(currentResult.GetSingleCoreScore(), 2));
+		auto multiScore = QString::fromStdString(Vu::ToFixed(currentResult.GetMultiCoreScore(), 2));
+		auto memoryScore = QString::fromStdString(Vu::ToFixed(currentResult.GetMemoryScore(), 2));
+
+		_ui->lblTotalScore->setText(totalScore);
+		_ui->lblSingleCoreScoreValue->setText(singleScore);
+		_ui->lblMultiCoreScoreValue->setText(multiScore);
+		_ui->lblMemoryScoreValue->setText(memoryScore);
+
+		auto item = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
+				QStringList({ totalScore, singleScore, multiScore, memoryScore }));
 
 		if (results.size() > 1)
 		{
 			auto& previousResult = results[results.size() - 2];
-			SetDelta(_ui->lblTotalScoreDelta, currentResult.GetTotalScore(), previousResult.GetTotalScore());
+			SetDelta(_ui->lblTotalScoreDelta, currentResult.GetTotalScore(), previousResult.GetTotalScore(), item);
 			SetDelta(_ui->lblSingleScoreDelta, currentResult.GetSingleCoreScore(), previousResult.GetSingleCoreScore());
-			SetDelta(_ui->lblMultiCoreScoreDelta, currentResult.GetMultiCoreScore(), previousResult.GetMultiCoreScore());
+			SetDelta(_ui->lblMultiCoreScoreDelta, currentResult.GetMultiCoreScore(),
+					previousResult.GetMultiCoreScore());
 			SetDelta(_ui->lblMemoryScoreDelta, currentResult.GetMemoryScore(), previousResult.GetMemoryScore());
+		}
+
+		_ui->twBenchmarkResults->addTopLevelItem(item);
+
+		for (auto& benchmarkResult: currentResult.GetBenchmarkResults())
+		{
+			auto& benchmark = benchmarkResult.GetBenchmark();
+			auto root = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
+					QStringList({ QString::fromStdString(benchmark.GetName()),
+								  QString::fromStdString(Elpida::ValueUtilities::GetValueScaleStringSI(benchmarkResult.GetScore())
+														 + benchmark.GetScoreUnit()) }));
+			auto& taskResults = benchmarkResult.GetTaskResults();
+			auto& tasks = benchmark.GetTasks();
+			for (std::size_t i = 0; i < tasks.size(); ++i)
+			{
+				auto& taskResult = taskResults[i];
+				auto& task = tasks[i];
+				auto taskItem = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
+						QStringList({ QString::fromStdString(task.GetName()),
+									  QString::fromStdString(GetTaskValue(task, taskResult)) }));
+				root->addChild(taskItem);
+			}
+			item->addChild(root);
 		}
 	}
 

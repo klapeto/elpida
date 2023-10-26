@@ -55,6 +55,8 @@ namespace Elpida::Application
 		{
 			throw ElpidaException("Missing benchmarks: Image benchmarks");
 		}
+
+		_model.SetTotalBenchmarks(3);
 	}
 
 	Promise<> FullBenchmarkController::RunAsync()
@@ -74,7 +76,7 @@ namespace Elpida::Application
 		FullBenchmarkResultModel::Score memoryScore = 0.0;
 		std::vector<BenchmarkResultModel> benchmarkResults;
 
-		_model.SetCurrentRunningBenchmark(_memoryLatency->GetName());
+		_model.SetCurrentRunningBenchmark(_pngEncoding->GetName());
 
 		_pngEncoding->GetConfigurations()[0].SetValue("/home/klapeto/Elpida-1.png");
 		_pngEncoding->GetConfigurations()[1].SetValue("/home/klapeto/Elpida-1.out.png");
@@ -105,6 +107,64 @@ namespace Elpida::Application
 			multiCoreScore += grayscale.GetInputSize() / grayscale.GetDuration().count() / Divider / 10;
 
 			benchmarkResults.push_back(std::move(pngResult));
+		}
+		catch (const ElpidaException&)
+		{
+			_model.SetRunning(false);
+			co_return;
+		}
+
+		_model.SetCurrentRunningBenchmark(_memoryLatency->GetName());
+
+		try
+		{
+			auto latencyResult = co_await AsyncPromise<BenchmarkResultModel>([&]()
+			{
+				return _benchmarkExecutionService.Execute(
+						*_memoryLatency,
+						affinity,
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetNowOverhead()).count(),
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetLoopOverhead()).count(),
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetVirtualCallOverhead()).count());
+			});
+
+			auto& taskResults = latencyResult.GetTaskResults();
+
+			memoryScore += Divider / (latencyResult.GetScore() * std::nano::den);
+
+			benchmarkResults.push_back(std::move(latencyResult));
+		}
+		catch (const ElpidaException&)
+		{
+			_model.SetRunning(false);
+			co_return;
+		}
+
+
+		_model.SetCurrentRunningBenchmark(_memoryReadBandwidth->GetName());
+
+		try
+		{
+			auto bandwidthResult = co_await AsyncPromise<BenchmarkResultModel>([&]()
+			{
+				return _benchmarkExecutionService.Execute(
+						*_memoryReadBandwidth,
+						affinity,
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetNowOverhead()).count(),
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetLoopOverhead()).count(),
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetVirtualCallOverhead()).count());
+			});
+
+
+			memoryScore += bandwidthResult.GetScore() / Divider / 1000;
+
+			benchmarkResults.push_back(std::move(bandwidthResult));
 		}
 		catch (const ElpidaException&)
 		{
