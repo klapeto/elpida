@@ -17,6 +17,7 @@ namespace Elpida
 		[[nodiscard]]
 		virtual void* Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const = 0;
 		virtual void Deallocate(void* ptr, Size size) const = 0;
+		virtual void* Reallocate(const ProcessingUnitNode& targetProcessingUnit, void* ptr, Size oldSize, Size newSize) const = 0;
 
 		Allocator() = default;
 		virtual ~Allocator() = default;

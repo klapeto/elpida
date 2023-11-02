@@ -29,6 +29,7 @@
 #ifndef NANOSVG_H
 #define NANOSVG_H
 
+#include <stddef.h>
 #ifndef NANOSVG_CPLUSPLUS
 #ifdef __cplusplus
 extern "C" {
@@ -166,18 +167,16 @@ typedef struct NSVGimage
 	NSVGshape* shapes;			// Linked list of shapes in the image.
 } NSVGimage;
 
-// Parses SVG file from a file, returns SVG image as paths.
-NSVGimage* nsvgParseFromFile(const char* filename, const char* units, float dpi);
-
 // Parses SVG file from a null terminated string, returns SVG image as paths.
 // Important note: changes the string.
-NSVGimage* nsvgParse(char* input, const char* units, float dpi);
-
-// Duplicates a path.
-NSVGpath* nsvgDuplicatePath(NSVGpath* p);
+NSVGimage* nsvgParse(char* input, const char* units, float dpi,
+	void* (* allocate)(size_t size, void* state),
+	void (* deallocate)(void* ptr, size_t size, void* state),
+	void* (* reallocate)(void* ptr, size_t oldSize, size_t newSize, void* state),
+	void* state);
 
 // Deletes an image.
-void nsvgDelete(NSVGimage* image);
+void nsvgDelete(NSVGimage* image, void (* deallocate)(void* ptr, size_t size, void* state), void* state);
 
 #ifndef NANOSVG_CPLUSPLUS
 #ifdef __cplusplus

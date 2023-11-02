@@ -9,6 +9,7 @@
 
 #include "nanosvg.h"
 #include "nanosvgrast.h"
+#include "AllocatorData.hpp"
 
 namespace Elpida
 {
@@ -33,6 +34,7 @@ namespace Elpida
 		NSVGimage* _image;
 		NSVGrasterizer* _rasterizer;
 		float _scale;
+		AllocatorData allocatorData;
 	};
 
 } // Elpida

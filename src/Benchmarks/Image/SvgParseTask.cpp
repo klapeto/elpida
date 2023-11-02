@@ -31,11 +31,14 @@ namespace Elpida
 		_inputData->GetData()[inputData->GetSize()] = 0;
 
 		_outputData = std::make_unique<SvgImageData>(nullptr, _inputData->GetTargetProcessor(),_inputData->GetAllocator());
+
+		allocatorData.allocator = &_inputData->GetAllocator();
+		allocatorData.targetProcessor = &_inputData->GetTargetProcessor();
 	}
 
 	void SvgParseTask::DoRun()
 	{
-		_image = nsvgParse(reinterpret_cast<char*>(_inputData->GetData()), "px", 96.0f);
+		_image = nsvgParse(reinterpret_cast<char*>(_inputData->GetData()), "px", 96.0f, &N_Allocate, &N_Deallocate, &N_Reallocate, &this->allocatorData);
 	}
 
 	UniquePtr<AbstractTaskData> SvgParseTask::Finalize()
@@ -63,8 +66,8 @@ namespace Elpida
 
 	TaskInfo SvgParseTask::GetInfo() const
 	{
-		return TaskInfo("Parse SVG file",
-			"Parses an SVG file to node tree.",
+		return TaskInfo("SVG Parsing",
+			"Parses SVG data to node tree.",
 			"B",
 			"How many bytes are parsed per second",
 			ScoreType::Throughput);

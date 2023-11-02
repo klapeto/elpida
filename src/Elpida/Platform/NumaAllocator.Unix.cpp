@@ -3,6 +3,7 @@
 //
 
 #include "Elpida/Core/Config.hpp"
+#include <cstdlib>
 
 #if defined(ELPIDA_UNIX)
 
@@ -48,6 +49,19 @@ namespace Elpida
 		else
 		{
 			numa_free(ptr, size);
+		}
+	}
+
+	void* NumaAllocator::Reallocate(const ProcessingUnitNode& targetProcessingUnit, void* ptr, Size oldSize, Size newSize) const
+	{
+		if (ptr == nullptr) return Allocate(targetProcessingUnit, newSize);
+		if (numa_available() < 0)
+		{
+			return realloc(ptr, newSize);
+		}
+		else
+		{
+			return numa_realloc(ptr, oldSize, newSize);
 		}
 	}
 } // Elpida

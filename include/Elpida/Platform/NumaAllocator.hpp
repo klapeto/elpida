@@ -16,6 +16,7 @@ namespace Elpida
 		[[nodiscard]]
 		void* Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const;
 		void Deallocate(void* ptr, Size size) const;
+		void* Reallocate(const ProcessingUnitNode& targetProcessingUnit, void* ptr, Size oldSize, Size newSize) const override;
 
 		NumaAllocator() = default;
 		~NumaAllocator() final = default;

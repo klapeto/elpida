@@ -3,6 +3,7 @@
 //
 
 #include "SvgRasterization.hpp"
+#include "AllocatorData.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "ImageTaskData.hpp"
 
@@ -39,6 +40,9 @@ namespace Elpida
 			sizeof(u_int8_t));
 
 		_rasterizer = nsvgCreateRasterizer();
+
+		allocatorData.allocator = &_imageData->GetAllocator();
+		allocatorData.targetProcessor = &_imageData->GetTargetProcessor();
 	}
 
 	void SvgRasterization::DoRun()
