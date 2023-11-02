@@ -76,4 +76,9 @@ namespace Elpida
 	{
 
 	}
+
+	Size ConvertToFloatTask::GetProcessedDataSize() const
+	{
+		return _outputData->GetWidth() * _outputData->GetHeight();
+	}
 } // Elpida

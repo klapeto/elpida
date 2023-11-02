@@ -204,7 +204,7 @@ static Elpida::Application::ConfigurationType TranslateConfigurationType(Elpida:
 	return (Elpida::Application::ConfigurationType)configurationType;
 }
 
-static std::vector<BenchmarkGroupModel> LoadBenchmarks()
+static std::vector<BenchmarkGroupModel> LoadBenchmarks(SettingsService& settingsService)
 {
 	auto benchmarksDirectory = std::filesystem::current_path() / "Benchmarks";
 	if (!std::filesystem::exists(benchmarksDirectory))
@@ -244,15 +244,15 @@ static std::vector<BenchmarkGroupModel> LoadBenchmarks()
 					configurations.reserve(benchmark->GetRequiredConfiguration().size());
 					for (auto& config: benchmark->GetRequiredConfiguration())
 					{
-//						std::string id = info.GetName() + config.GetName();
-//						std::string value = settingsService.Get(id);
-//						if (value.empty())
-//						{
-//							value = config.GetValue();
-//						}
+						std::string id = info.GetName() + config.GetName();
+						std::string value = settingsService.Get(id);
+						if (value.empty())
+						{
+							value = config.GetValue();
+						}
 						configurations.emplace_back(config.GetName(),
 								info.GetName() + config.GetName(),
-								config.GetValue(),
+								value,
 								TranslateConfigurationType(config.GetType()));
 					}
 					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(),
@@ -372,7 +372,7 @@ int main(int argc, char* argv[])
 			cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
 
 	splash.showMessage("Loading benchmarks...");
-	auto benchmarkGroups = LoadBenchmarks();
+	auto benchmarkGroups = LoadBenchmarks(settingsService);
 
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;

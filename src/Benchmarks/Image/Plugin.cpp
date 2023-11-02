@@ -8,6 +8,7 @@
 #include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/BenchmarkModule.hpp"
 #include "PngEncodingDecodingBenchmark.hpp"
+#include "SvgBenchmark.hpp"
 
 using namespace Elpida;
 
@@ -16,6 +17,7 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	Vector<UniquePtr<Benchmark>> vec;
 
 	vec.emplace_back(new PngEncodingDecodingBenchmark());
+	vec.emplace_back(new SvgBenchmark());
 
 	return new BenchmarkGroup("Image benchmarks", std::move(vec));
 }

@@ -216,4 +216,9 @@ namespace Elpida
 		return UniquePtr<Task>(new MemoryLatencyTask(_size, _cacheLineSize, _pageSize));
 	}
 
+	Size MemoryLatencyTask::GetProcessedDataSize() const
+	{
+		return _size;
+	}
+
 } // Elpida

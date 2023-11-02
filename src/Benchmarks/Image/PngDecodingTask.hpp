@@ -21,6 +21,7 @@ namespace Elpida
 		UniquePtr<AbstractTaskData> Finalize() override;
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
+		Size GetProcessedDataSize() const override;
 
 		PngDecodingTask();
 		~PngDecodingTask() override;

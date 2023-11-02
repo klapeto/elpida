@@ -79,4 +79,9 @@ namespace Elpida
 	{
 		return UniquePtr<Task>(new ConvertToUInt8Task());
 	}
+
+	Size ConvertToUInt8Task::GetProcessedDataSize() const
+	{
+		return _sizeInChannels / _channels;
+	}
 } // Elpida

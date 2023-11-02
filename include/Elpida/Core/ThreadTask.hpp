@@ -35,6 +35,9 @@ namespace Elpida
 		[[nodiscard]]
 		TaskInfo GetInfo() const final;
 
+		[[nodiscard]]
+		Size GetProcessedDataSize() const override;
+
 		void WakeThread();
 
 		static void PinCurrentThreadToProcessor(const TopologyNode& topologyNode);

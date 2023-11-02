@@ -27,7 +27,6 @@ namespace Elpida
 		[[nodiscard]]
 		virtual Size GetSize() const = 0;
 
-		virtual void Migrate(const ProcessingUnitNode& targetProcessor) = 0;
 		virtual void Merge(const Vector<UniquePtr<AbstractTaskData>>& data) = 0;
 		virtual void Allocate(Size size) = 0;
 		virtual void Deallocate() = 0;

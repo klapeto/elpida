@@ -68,4 +68,9 @@ namespace Elpida
 	{
 		return UniquePtr<Task>(new ConvertToGrayscaleTask());
 	}
+
+	Size ConvertToGrayscaleTask::GetProcessedDataSize() const
+	{
+		return _sizeInChannels / _channels;
+	}
 } // Elpida

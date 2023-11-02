@@ -35,6 +35,9 @@ namespace Elpida
 		virtual bool CanBeMultiThreaded() const = 0;
 
 		[[nodiscard]]
+		virtual Size GetProcessedDataSize() const = 0;
+
+		[[nodiscard]]
 		UniquePtr<Task> Duplicate() const;
 
 		void SetEnvironmentInfo(const EnvironmentInfo& environmentInfo);

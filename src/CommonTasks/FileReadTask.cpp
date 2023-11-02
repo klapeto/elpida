@@ -74,4 +74,9 @@ namespace Elpida
 	{
 		return std::unique_ptr<Task>(new FileReadTask(_filePath));
 	}
+
+	Size FileReadTask::GetProcessedDataSize() const
+	{
+		return _outputData->GetSize();
+	}
 } // Elpida

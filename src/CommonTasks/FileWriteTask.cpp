@@ -50,4 +50,9 @@ namespace Elpida
 	{
 		return std::unique_ptr<Task>(new FileWriteTask(_filePath));
 	}
+
+	Size FileWriteTask::GetProcessedDataSize() const
+	{
+		return _inputData->GetSize();
+	}
 } // Elpida

@@ -1,43 +1,37 @@
 //
-// Created by klapeto on 5/3/2023.
+// Created by klapeto on 31/10/2023.
 //
 
-#ifndef _CONVERTTOUINT8TASK_HPP_
-#define _CONVERTTOUINT8TASK_HPP_
-
-#include <cstdint>
-#include <memory>
-#include <optional>
+#ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_SVGPARSETASK_HPP
+#define ELPIDA_SRC_BENCHMARKS_IMAGE_SVGPARSETASK_HPP
 
 #include "Elpida/Core/Task.hpp"
-#include "ImageBenchmarksConfig.hpp"
+
+#include "nanosvg.h"
 
 namespace Elpida
 {
 
-	class ConvertToUInt8Task: public Task
+	class SvgParseTask final: public Task
 	{
-	 public:
+	public:
 		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
 		UniquePtr<AbstractTaskData> Finalize() override;
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 		Size GetProcessedDataSize() const override;
 
-		ConvertToUInt8Task();
-		~ConvertToUInt8Task() override = default;
-	 protected:
+		SvgParseTask() = default;
+		~SvgParseTask() override = default;
+	protected:
 		void DoRun() override;
 		UniquePtr<Task> DoDuplicate() const override;
-	 private:
+	private:
+		NSVGimage* _image{nullptr};
 		UniquePtr<AbstractTaskData> _outputData;
 		UniquePtr<AbstractTaskData> _inputData;
-		IntChannel* _outPtr;
-		FloatChannel* _inPtr;
-		Size _sizeInChannels;
-		unsigned int _channels;
 	};
 
 } // Elpida
 
-#endif //_CONVERTTOUINT8TASK_HPP_
+#endif //ELPIDA_SRC_BENCHMARKS_IMAGE_SVGPARSETASK_HPP

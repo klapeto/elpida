@@ -11,6 +11,11 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         ConvertToGrayscaleTask.cpp
         ConvertToUInt8Task.cpp
         ImageTaskData.cpp
+        SvgParseTask.cpp
+        SvgRasterization.cpp
+        SvgBenchmark.cpp
+        nanosvg.c
+        nanosvgrast.c
         Plugin.cpp)
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
@@ -18,4 +23,5 @@ add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
 set_target_properties(elpida-image-benchmarks PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(elpida-image-benchmarks PRIVATE elpida-core elpida-common-tasks png)
 
+target_compile_options(elpida-image-benchmarks PRIVATE -O3)
 install(TARGETS elpida-image-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})

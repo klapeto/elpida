@@ -76,4 +76,9 @@ namespace Elpida
 		_pngImg.opaque = nullptr;
 		_pngImg.version = PNG_IMAGE_VERSION;
 	}
+
+	Size PngDecodingTask::GetProcessedDataSize() const
+	{
+		return _inputData->GetSize();
+	}
 } // Elpida

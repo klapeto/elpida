@@ -91,4 +91,9 @@ namespace Elpida
 		_pngImg.version = PNG_IMAGE_VERSION;
 		_pngImg.format = PNG_FORMAT_RGBA;
 	}
+
+	Size PngEncodingTask::GetProcessedDataSize() const
+	{
+		return _pngImg.width * _pngImg.height;
+	}
 } // Elpida

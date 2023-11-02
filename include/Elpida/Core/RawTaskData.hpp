@@ -36,7 +36,6 @@ namespace Elpida
 		void Allocate(Size size) final;
 		void Deallocate() final;
 
-		void Migrate(const ProcessingUnitNode& targetProcessor) override;
 		void Merge(const Vector<UniquePtr<AbstractTaskData>>& data) override;
 
 		[[nodiscard]]

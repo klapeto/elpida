@@ -99,4 +99,9 @@ namespace Elpida
 	{
 		return std::unique_ptr<Task>(new MemoryReadBandwidthTask(_size));
 	}
+
+	Size MemoryReadBandwidthTask::GetProcessedDataSize() const
+	{
+		return _size;
+	}
 } // Elpida

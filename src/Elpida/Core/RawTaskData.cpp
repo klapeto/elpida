@@ -73,14 +73,6 @@ namespace Elpida
 		_size = 0;
 	}
 
-	void RawTaskData::Migrate(const ProcessingUnitNode& targetProcessor)
-	{
-		_targetProcessor = targetProcessor;
-		auto newData = UniquePtr<unsigned char, Deleter>((unsigned char*)_allocator.get().Allocate(_targetProcessor.get(), _size), Deleter(_allocator, _size));
-		std::memcpy(newData.get(), _data.get(), _size);
-		_data = std::move(newData);
-	}
-
 	Vector<UniquePtr<AbstractTaskData>>
 	RawTaskData::Split(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors) const
 	{

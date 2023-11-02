@@ -17,6 +17,7 @@ namespace Elpida
 		UniquePtr<AbstractTaskData> Finalize() override;
 		bool CanBeMultiThreaded() const override;
 		TaskInfo GetInfo() const override;
+		Size GetProcessedDataSize() const override;
 		explicit MemoryReadBandwidthTask(Size size);
 		~MemoryReadBandwidthTask() override = default;
 	 protected:

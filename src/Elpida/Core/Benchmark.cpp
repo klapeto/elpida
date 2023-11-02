@@ -15,6 +15,11 @@
 namespace Elpida
 {
 
+	struct BenchmarkResultTuple {
+		Duration duration;
+		Size processDataSize;
+	};
+
 	BenchmarkResult Benchmark::Run(
 		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
 		const Vector<TaskConfiguration>& configuration,
@@ -31,16 +36,17 @@ namespace Elpida
 		{
 			task->SetEnvironmentInfo(environmentInfo);
 			Duration duration;
+			Size processedDataSize = 0;
 			if (task->CanBeMultiThreaded())
 			{
-				duration = ExecuteMultiThread(data, std::move(task), targetProcessors);
+				duration = ExecuteMultiThread(data, std::move(task), targetProcessors, processedDataSize);
 			}
 			else
 			{
-				duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front());
+				duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front(), processedDataSize);
 			}
 
-			taskResults.emplace_back(duration, data->GetSize());
+			taskResults.emplace_back(duration, processedDataSize);
 		}
 
 		auto score = CalculateScore(taskResults);
@@ -53,13 +59,16 @@ namespace Elpida
 	Duration
 	Benchmark::ExecuteSingleThread(UniquePtr<AbstractTaskData>& data,
 		UniquePtr<Task> task,
-		const TopologyNode& targetProcessor)
+		const TopologyNode& targetProcessor,
+		Size& processedDataSize)
 	{
 		ThreadTask threadTask(std::move(task), targetProcessor);
 
 		threadTask.Prepare(std::move(data));
 
 		auto duration = threadTask.Run();
+
+		processedDataSize = threadTask.GetProcessedDataSize();
 
 		data = threadTask.Finalize();
 
@@ -69,7 +78,8 @@ namespace Elpida
 	Duration
 	Benchmark::ExecuteMultiThread(UniquePtr<AbstractTaskData>& data,
 		UniquePtr<Task> task,
-		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors)
+		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+		Size& processedDataSize)
 	{
 		auto chunks = data->Split(targetProcessors);
 
@@ -100,6 +110,7 @@ namespace Elpida
 
 		for (auto& chunkTask : threadTasks)
 		{
+			processedDataSize += chunkTask->GetProcessedDataSize();
 			chunks.push_back(chunkTask->Finalize());
 		}
 

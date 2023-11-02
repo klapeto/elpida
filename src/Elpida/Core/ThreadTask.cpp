@@ -86,4 +86,9 @@ namespace Elpida
 		_doStart = true;
 		_conditionVariable.notify_all();
 	}
+
+	Size ThreadTask::GetProcessedDataSize() const
+	{
+		return _taskToRun->GetProcessedDataSize();
+	}
 } // Elpida

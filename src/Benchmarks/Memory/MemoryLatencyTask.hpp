@@ -27,6 +27,9 @@ namespace Elpida
 		[[nodiscard]]
 		TaskInfo GetInfo() const override;
 
+		[[nodiscard]]
+		Size GetProcessedDataSize() const override;
+
 		MemoryLatencyTask(Size size, Size cacheLineSize, Size pageSize);
 		~MemoryLatencyTask() override = default;
 	 protected:

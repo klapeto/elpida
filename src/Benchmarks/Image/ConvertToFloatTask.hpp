@@ -24,6 +24,7 @@ namespace Elpida
 		UniquePtr<AbstractTaskData> Finalize() override;
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
+		Size GetProcessedDataSize() const override;
 
 		ConvertToFloatTask();
 		~ConvertToFloatTask() override = default;

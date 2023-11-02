@@ -25,7 +25,7 @@ namespace Elpida::Application
 		ConfigurationView* RentViewForModel(const BenchmarkConfigurationModel& configurationModel);
 		void ReturnViewFromModel(const BenchmarkConfigurationModel& configurationModel, ConfigurationView* view);
 
-		ConfigurationViewPool(SettingsService& settingsService);
+		explicit ConfigurationViewPool(SettingsService& settingsService);
 		ConfigurationViewPool(const ConfigurationViewPool&) = delete;
 		ConfigurationViewPool(ConfigurationViewPool&&) noexcept = delete;
 		ConfigurationViewPool& operator=(const ConfigurationViewPool&) = delete;
