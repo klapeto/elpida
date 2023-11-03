@@ -22,8 +22,13 @@
 //
 
 #include <cstdlib>
+#include <fstream>
+#include <iosfwd>
 #include <iostream>
+#include <filesystem>
 
+#include "Benchmarks/Image/Svg/SvgDocument.hpp"
+#include "Benchmarks/Image/Svg/SvgUnits.hpp"
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
@@ -89,6 +94,18 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 
 int main(int argC, char** argV)
 {
+	std::fstream file("/home/klapeto/drawing.svg", std::ios::in | std::ios::binary);
+
+	auto size = std::filesystem::file_size("/home/klapeto/drawing.svg");;
+
+	auto data = new char[size];
+
+	file.read(data, size);
+	SvgDocument svg;
+
+	svg.Load(data, size, Elpida::SvgUnits::PX, 96);
+
+	return 0;
 	try
 	{
 		ArgumentsHelper helper;

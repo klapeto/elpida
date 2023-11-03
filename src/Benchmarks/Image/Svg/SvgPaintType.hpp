@@ -1,0 +1,21 @@
+//
+// Created by klapeto on 3/11/2023.
+//
+
+#ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGPAINTTYPE_HPP
+#define ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGPAINTTYPE_HPP
+
+namespace Elpida
+{
+	enum class SvgPaintType
+	{
+		UNDEF = -1,
+		NONE = 0,
+		COLOR = 1,
+		LINEAR_GRADIENT = 2,
+		RADIAL_GRADIENT = 3
+	};
+
+} // Elpida
+
+#endif //ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGPAINTTYPE_HPP

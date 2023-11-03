@@ -17,12 +17,8 @@
  * misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * The SVG parser is based on Anti-Grain Geometry 2.4 SVG example
- * Copyright (C) 2002-2004 Maxim Shemanarev (McSeem) (http://www.antigrain.com/)
- *
- * Arc calculation code based on canvg (https://code.google.com/p/canvg/)
- *
- * Bounding box calculation based on http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
+ * The polygon rasterization is heavily based on stb_truetype rasterizer
+ * by Sean Barrett - http://nothings.org/
  *
  */
 

@@ -21,7 +21,7 @@ namespace Elpida
 		_outputData = std::move(inputData);
 
 		auto path = std::filesystem::u8path(_filePath);
-		auto size =std::filesystem::file_size(_filePath);
+		auto size = std::filesystem::file_size(_filePath);
 		_outputData->Allocate(size);
 
 		_fileStream = std::fstream(path, std::ios::in | std::ios::binary);

@@ -1,0 +1,17 @@
+//
+// Created by klapeto on 3/11/2023.
+//
+
+#ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGGRADIENTUNITS_HPP
+#define ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGGRADIENTUNITS_HPP
+
+namespace Elpida
+{
+	enum class SvgGradientUnits
+	{
+		USER_SPACE = 0,
+		OBJECT_SPACE = 1
+	};
+}
+
+#endif //ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGGRADIENTUNITS_HPP
