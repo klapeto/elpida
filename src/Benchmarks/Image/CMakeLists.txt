@@ -16,12 +16,12 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         SvgBenchmark.cpp
         nanosvg.c
         nanosvgrast.c
-        Plugin.cpp)
+        Plugin.cpp Xml/XmlParser.cpp Xml/XmlParser.hpp Xml/XmlElement.cpp Xml/XmlElement.hpp Xml/CharacterStream.cpp Xml/CharacterStream.hpp)
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
 
 set_target_properties(elpida-image-benchmarks PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(elpida-image-benchmarks PRIVATE elpida-core elpida-common-tasks png)
 
-target_compile_options(elpida-image-benchmarks PRIVATE -O3)
+#target_compile_options(elpida-image-benchmarks PRIVATE -O3)
 install(TARGETS elpida-image-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
