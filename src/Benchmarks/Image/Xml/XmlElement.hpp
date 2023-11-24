@@ -16,9 +16,19 @@ namespace Elpida
 	{
 	public:
 
+		XmlElement(std::string&& name,
+			std::unordered_map<std::string, std::string>&& attributes,
+			std::string&& content,
+			std::vector<XmlElement>&& children)
+			: _name(std::move(name)), _attributes(std::move(attributes)), _content(std::move(content)),
+			  _children(std::move(children))
+		{
+
+		}
 	private:
 		std::string _name;
 		std::unordered_map<std::string, std::string> _attributes;
+		std::string _content;
 		std::vector<XmlElement> _children;
 	};
 

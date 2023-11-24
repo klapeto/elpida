@@ -7,8 +7,11 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "XmlElement.hpp"
 #include <cctype>
+#include <stack>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace Elpida
 {
@@ -30,6 +33,7 @@ namespace Elpida
 					}
 					else
 					{
+						stream.Back();
 						break;
 					}
 				}
@@ -40,11 +44,12 @@ namespace Elpida
 			}
 			else if (c == '>')
 			{
+				stream.Next();
 				continue;
 			}
 			else
 			{
-				throw ElpidaException("Unexpected character: expected <");
+				break;
 			}
 			stream.Next();
 		}
@@ -66,6 +71,7 @@ namespace Elpida
 				if (stream.Current() == '>')
 				{
 					inlineElement = true;
+					stream.Next();
 					break;
 				}
 
@@ -74,6 +80,7 @@ namespace Elpida
 			if (stream.Current() == '>')
 			{
 				inlineElement = false;
+				stream.Next();
 				break;
 			}
 
@@ -114,7 +121,7 @@ namespace Elpida
 		{
 			throw ElpidaException("Unexpected space after '<'");
 		}
-		return std::string(stream.GetStringViewWhile([](auto c) { return !std::isspace(c); }));
+		return std::string(stream.GetStringViewWhile([](auto c) { return !std::isspace(c) && c != '>'; }));
 	}
 
 	static XmlElement ParseElement(CharacterStream& stream)
@@ -130,7 +137,43 @@ namespace Elpida
 		bool inlineElement;
 		auto attributes = ParseAttributes(stream, inlineElement);
 
-		return XmlElement();
+		if (inlineElement)
+		{
+			return XmlElement(std::move(name), std::move(attributes), {}, {});
+		}
+
+
+		std::vector<XmlElement> children;
+
+		std::string content;
+		while (!stream.Eof())
+		{
+			SkipUnusable(stream);
+			if (stream.Current() == '<')
+			{
+				if (!stream.Next())
+				{
+					throw ElpidaException("Unexpected end of file. Expected element name after <");
+				}
+				if (stream.Current() == '/')
+				{
+					stream.Next();
+					auto currentName = stream.GetStringViewWhile([](auto c) { return c != '>'; });
+					if (currentName != name)
+					{
+						throw ElpidaException("Unexpected end of element name");
+					}
+					break;
+				}
+				children.push_back(ParseElement(stream));
+			}
+			else
+			{
+				content += stream.GetStringViewWhile([](auto c) { return c != '<'; });
+			}
+		}
+
+		return XmlElement(std::move(name), std::move(attributes), std::move(content), std::move(children));
 	}
 
 	XmlElement XmlParser::Parse(const char* data, std::size_t size)
