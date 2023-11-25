@@ -8,6 +8,7 @@
 #include "Elpida/Core/RawTaskData.hpp"
 
 #include "SvgImageData.hpp"
+#include "Xml/XmlParser.hpp"
 
 #define NANOSVG_IMPLEMENTATION
 #include "nanosvg.h"
@@ -28,7 +29,7 @@ namespace Elpida
 			inputData->GetSize() + 1,
 			inputData->GetAllocator());
 		std::memcpy(_inputData->GetData(), inputData->GetData(), inputData->GetSize());
-		_inputData->GetData()[inputData->GetSize()] = 0;
+		//_inputData->GetData()[inputData->GetSize()] = 0;
 
 		_outputData = std::make_unique<SvgImageData>(nullptr, _inputData->GetTargetProcessor(),_inputData->GetAllocator());
 
@@ -38,19 +39,20 @@ namespace Elpida
 
 	void SvgParseTask::DoRun()
 	{
-		_image = nsvgParse(reinterpret_cast<char*>(_inputData->GetData()), "px", 96.0f, &N_Allocate, &N_Deallocate, &N_Reallocate, &this->allocatorData);
+		_element = XmlParser::Parse(reinterpret_cast<const char*>(_inputData->GetData()), _inputData->GetSize());
+		//_image = nsvgParse(reinterpret_cast<char*>(_inputData->GetData()), "px", 96.0f, &N_Allocate, &N_Deallocate, &N_Reallocate, &this->allocatorData);
 	}
 
 	UniquePtr<AbstractTaskData> SvgParseTask::Finalize()
 	{
-		if (_image == nullptr)
-		{
-			throw ElpidaException("Failed to parse the SVG Image");
-		}
-
-		auto ptr = reinterpret_cast<NSVGimage**>(_outputData->GetData());
-		*ptr = _image;
-		_image = nullptr;
+//		if (_image == nullptr)
+//		{
+//			throw ElpidaException("Failed to parse the SVG Image");
+//		}
+//
+//		auto ptr = reinterpret_cast<NSVGimage**>(_outputData->GetData());
+//		*ptr = _image;
+//		_image = nullptr;
 		return std::move(_outputData);
 	}
 

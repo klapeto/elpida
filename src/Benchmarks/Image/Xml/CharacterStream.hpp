@@ -5,7 +5,6 @@
 #ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_XML_CHARACTERSTREAM_HPP
 #define ELPIDA_SRC_BENCHMARKS_IMAGE_XML_CHARACTERSTREAM_HPP
 
-#include <cctype>
 #include <cstddef>
 #include <string>
 #include <string_view>
@@ -15,6 +14,11 @@ namespace Elpida
 	class CharacterStream
 	{
 	public:
+
+		static inline int isspace(int c)
+		{
+			return c == ' ' || (unsigned)c-'\t' < 5;
+		}
 
 		template<typename TPredicate>
 		bool Skip(TPredicate predicate)
@@ -26,7 +30,7 @@ namespace Elpida
 
 		bool SkipSpace()
 		{
-			return Skip([](auto c) { return std::isspace(c); });
+			return Skip([](auto c) { return isspace(c); });
 		}
 
 		char Current() const
@@ -47,15 +51,61 @@ namespace Elpida
 		{
 			auto start = _index;
 			Skip(predicate);
-			return std::string_view(_data + start, _index - start);
+			return { _data + start, _index - start };
 		}
 
-		bool Back()
+		std::string_view GetStringView(std::size_t begin, std::size_t end)
 		{
-			if (_index == 0) return false;
+			return { _data + begin, end - begin };
+		}
 
-			--_index;
-			return true;
+		template<std::size_t N>
+		bool NextCharsAre(const char (&str)[N])
+		{
+			std::size_t i = 0;
+			while (!Eof())
+			{
+				if (Current() == str[i])
+				{
+					if (++i == N - 1)
+					{
+						return true;
+					}
+				}
+				else
+				{
+					return false;
+				}
+				Next();
+			}
+			return false;
+		}
+
+		template<std::size_t N>
+		bool SkipUntilString(const char (&str)[N])
+		{
+			std::size_t i = 0;
+			while (!Eof())
+			{
+				if (Current() == str[i])
+				{
+					if (++i == N - 1)
+					{
+						return true;
+					}
+				}
+				else
+				{
+					i = 0;
+				}
+				Next();
+			}
+			return false;
+		}
+
+		std::size_t Index() const
+		{
+			return _index;
 		}
 
 		bool Eof() const

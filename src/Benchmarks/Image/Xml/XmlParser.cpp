@@ -6,17 +6,20 @@
 #include "CharacterStream.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "XmlElement.hpp"
-#include <cctype>
-#include <stack>
 #include <string>
-#include <string_view>
 #include <unordered_map>
 #include <vector>
 
 namespace Elpida
 {
+	enum class NextNode
+	{
+		Element,
+		Content,
+		Cdata
+	};
 
-	static void SkipUnusable(CharacterStream& stream)
+	static NextNode SkipUnusableAndGetNextNodeType(CharacterStream& stream)
 	{
 		while (!stream.Eof())
 		{
@@ -27,14 +30,53 @@ namespace Elpida
 				if (stream.Next())
 				{
 					c = stream.Current();
-					if (c == '?' || c == '!')
+					if (c == '?')
 					{
-						stream.Skip([](auto c) { return c != '>'; });
+						if (!stream.SkipUntilString("?>"))
+						{
+							throw ElpidaException("Unexpected end of file: expected '?>'");
+						}
+					}
+					else if (c == '!')
+					{
+						if (!stream.Next())
+						{
+							throw ElpidaException("Unexpected end of file: expected '-' or '[CDATA['");
+						}
+						if (stream.Current() == '-')
+						{
+							if (!stream.Next())
+							{
+								throw ElpidaException("Unexpected end of file: expected '-'");
+							}
+
+							if (stream.Current() != '-')
+							{
+								throw ElpidaException("Unexpected character: expected '-'");
+							}
+
+							if (!stream.SkipUntilString("-->"))
+							{
+								throw ElpidaException("Unexpected end of file: expected '-->'");
+							}
+						}
+						else if (stream.Current() == '[')
+						{
+							if (!stream.NextCharsAre("[CDATA["))
+							{
+								throw ElpidaException("Unexpected character: expected '[CDATA['");
+							}
+							stream.Next();
+							return NextNode::Cdata;
+						}
+						else
+						{
+							throw ElpidaException("Unexpected character: expected '-' or '[CDATA['");
+						}
 					}
 					else
 					{
-						stream.Back();
-						break;
+						return NextNode::Element;
 					}
 				}
 				else
@@ -49,10 +91,11 @@ namespace Elpida
 			}
 			else
 			{
-				break;
+				return NextNode::Content;
 			}
 			stream.Next();
 		}
+		return NextNode::Content;
 	}
 
 	static std::unordered_map<std::string, std::string> ParseAttributes(CharacterStream& stream, bool& inlineElement)
@@ -112,25 +155,18 @@ namespace Elpida
 
 	static std::string ParseName(CharacterStream& stream)
 	{
-		stream.SkipSpace();
-		if (stream.Current() == '<')
-		{
-			stream.Next();
-		}
-		if (std::isspace(stream.Current()))
+		if (CharacterStream::isspace(stream.Current()))
 		{
 			throw ElpidaException("Unexpected space after '<'");
 		}
-		return std::string(stream.GetStringViewWhile([](auto c) { return !std::isspace(c) && c != '>'; }));
+		return std::string(stream.GetStringViewWhile([](auto c) { return !CharacterStream::isspace(c) && c != '>'; }));
 	}
 
 	static XmlElement ParseElement(CharacterStream& stream)
 	{
-		SkipUnusable(stream);
-
 		if (stream.Eof())
 		{
-			throw ElpidaException("Unexpected end of file. Expected at least one <element>");
+			throw ElpidaException("Unexpected end of file. Expected <element>");
 		}
 		auto name = ParseName(stream);
 
@@ -139,22 +175,16 @@ namespace Elpida
 
 		if (inlineElement)
 		{
-			return XmlElement(std::move(name), std::move(attributes), {}, {});
+			return {std::move(name), std::move(attributes), {}, {}};
 		}
-
 
 		std::vector<XmlElement> children;
 
-		std::string content;
 		while (!stream.Eof())
 		{
-			SkipUnusable(stream);
-			if (stream.Current() == '<')
+			auto type = SkipUnusableAndGetNextNodeType(stream);
+			if (type == NextNode::Element)
 			{
-				if (!stream.Next())
-				{
-					throw ElpidaException("Unexpected end of file. Expected element name after <");
-				}
 				if (stream.Current() == '/')
 				{
 					stream.Next();
@@ -167,19 +197,50 @@ namespace Elpida
 				}
 				children.push_back(ParseElement(stream));
 			}
+			else if (type == NextNode::Cdata)
+			{
+				auto firstCharacter = stream.Index();
+
+				if (!stream.SkipUntilString("]]>"))
+				{
+					throw ElpidaException("Unexpected end of file: expected ']]'");
+				}
+
+				auto content = std::string(stream.GetStringView(firstCharacter, stream.Index() - 2));
+				children.push_back(XmlElement("", {}, std::move(content), {}));
+			}
 			else
 			{
-				content += stream.GetStringViewWhile([](auto c) { return c != '<'; });
+				auto firstCharacter = stream.Index();
+				auto lastCharacter = firstCharacter;
+				while (!stream.Eof())
+				{
+					if (stream.Current() == '<')
+					{
+						break;
+					}
+					if (!CharacterStream::isspace(stream.Current()))
+					{
+						lastCharacter = stream.Index();
+					}
+					stream.Next();
+				}
+				auto content = std::string(stream.GetStringView(firstCharacter, lastCharacter + 1));
+				children.push_back(XmlElement("", {}, std::move(content), {}));
 			}
 		}
 
-		return XmlElement(std::move(name), std::move(attributes), std::move(content), std::move(children));
+		return {std::move(name), std::move(attributes), {}, std::move(children)};
 	}
 
 	XmlElement XmlParser::Parse(const char* data, std::size_t size)
 	{
 		CharacterStream stream(data, size);
 
+		if (SkipUnusableAndGetNextNodeType(stream) != NextNode::Element)
+		{
+			throw ElpidaException("Unexpected end of file: expected at least one <element>");
+		}
 		return ParseElement(stream);
 	}
 } // Elpida

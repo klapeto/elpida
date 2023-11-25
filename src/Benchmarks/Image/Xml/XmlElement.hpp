@@ -12,10 +12,11 @@
 namespace Elpida
 {
 
-	class XmlElement
+	class XmlElement final
 	{
 	public:
 
+		XmlElement() = default;
 		XmlElement(std::string&& name,
 			std::unordered_map<std::string, std::string>&& attributes,
 			std::string&& content,
@@ -25,6 +26,11 @@ namespace Elpida
 		{
 
 		}
+		XmlElement(const XmlElement&) = default;
+		XmlElement(XmlElement&&) noexcept = default;
+		XmlElement& operator =(XmlElement&&) noexcept = default;
+		XmlElement& operator =(const XmlElement&) = default;
+		~XmlElement() = default;
 	private:
 		std::string _name;
 		std::unordered_map<std::string, std::string> _attributes;

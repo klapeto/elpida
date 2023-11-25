@@ -22,8 +22,10 @@
 //
 
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 
+#include "Benchmarks/Image/Xml/XmlParser.hpp"
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
