@@ -28,7 +28,7 @@ namespace Elpida
 
 		if (png_image_write_to_memory(&_pngImg, nullptr, &outputSize, 0, _inputData->GetData(), 0, nullptr))
 		{
-			_outputData = std::make_unique<RawTaskData>(_inputData->GetTargetProcessor(), _inputData->GetAllocator());
+			_outputData = std::make_unique<RawTaskData>(_inputData->GetAllocator());
 			_outputData->Allocate(outputSize);
 		}
 		else

@@ -14,12 +14,14 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		void* Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const;
-		void Deallocate(void* ptr, Size size) const;
-		void* Reallocate(const ProcessingUnitNode& targetProcessingUnit, void* ptr, Size oldSize, Size newSize) const override;
+		void* Allocate(Size size) override;
+		void Deallocate(void* ptr, Size size) noexcept override;
+		void* Reallocate(void* ptr, Size oldSize, Size newSize) override;
 
-		NumaAllocator() = default;
+		explicit NumaAllocator(const ProcessingUnitNode& targetProcessingUnit);
 		~NumaAllocator() final = default;
+	private:
+		const ProcessingUnitNode& _targetProcessingUnit;
 	};
 
 } // Elpida

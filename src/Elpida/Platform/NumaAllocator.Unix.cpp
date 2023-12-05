@@ -16,9 +16,10 @@
 
 namespace Elpida
 {
-	void* NumaAllocator::Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const
+	void* NumaAllocator::Allocate(Size size)
 	{
-		auto numaNodeId = targetProcessingUnit.GetNumaNode().GetOsIndex().value();
+		auto a = Timer::now();
+		auto numaNodeId = _targetProcessingUnit.GetNumaNode().GetOsIndex().value();
 		bool numaAvailable = false;
 		void* ptr;
 		if (numa_available() < 0)
@@ -34,14 +35,23 @@ namespace Elpida
 
 		if (ptr == nullptr)
 		{
-			throw ElpidaException("Failed to allocate NUMA memory of size: ", size, " on numa node: ", numaNodeId, " (NUMA available: ", std::to_string(numaAvailable), ")");
+			throw ElpidaException("Failed to allocate NUMA memory of size: ",
+				size,
+				" on numa node: ",
+				numaNodeId,
+				" (NUMA available: ",
+				std::to_string(numaAvailable),
+				")");
 		}
 
+		auto b = Timer::now();
+		_totalTime += b - a;
 		return ptr;
 	}
 
-	void NumaAllocator::Deallocate(void* ptr, Size size) const
+	void NumaAllocator::Deallocate(void* ptr, Size size) noexcept
 	{
+		auto a = Timer::now();
 		if (numa_available() < 0)
 		{
 			free(ptr);
@@ -50,19 +60,33 @@ namespace Elpida
 		{
 			numa_free(ptr, size);
 		}
+		auto b = Timer::now();
+		_totalTime += b - a;
 	}
 
-	void* NumaAllocator::Reallocate(const ProcessingUnitNode& targetProcessingUnit, void* ptr, Size oldSize, Size newSize) const
+	void* NumaAllocator::Reallocate(void* ptr, Size oldSize, Size newSize)
 	{
-		if (ptr == nullptr) return Allocate(targetProcessingUnit, newSize);
+		if (ptr == nullptr) return Allocate(newSize);
+
+		auto a = Timer::now();
+		void* newPtr = nullptr;
 		if (numa_available() < 0)
 		{
-			return realloc(ptr, newSize);
+			newPtr = realloc(ptr, newSize);
 		}
 		else
 		{
-			return numa_realloc(ptr, oldSize, newSize);
+			newPtr =  numa_realloc(ptr, oldSize, newSize);
 		}
+
+		auto b = Timer::now();
+		_totalTime += b - a;
+		return newPtr;
+	}
+
+	NumaAllocator::NumaAllocator(const ProcessingUnitNode& targetProcessingUnit)
+		: _targetProcessingUnit(targetProcessingUnit)
+	{
 	}
 } // Elpida
 

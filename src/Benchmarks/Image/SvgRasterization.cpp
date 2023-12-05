@@ -3,7 +3,6 @@
 //
 
 #include "SvgRasterization.hpp"
-#include "AllocatorData.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "ImageTaskData.hpp"
 
@@ -32,7 +31,7 @@ namespace Elpida
 
 		_image = *reinterpret_cast<NSVGimage**>(_imageData->GetData());
 
-		_outputData = std::make_unique<ImageTaskData>(_imageData->GetTargetProcessor(),
+		_outputData = std::make_unique<ImageTaskData>(
 			_imageData->GetAllocator(),
 			_image->width * _scale,
 			_image->height * _scale,
@@ -40,9 +39,9 @@ namespace Elpida
 			sizeof(u_int8_t));
 
 		_rasterizer = nsvgCreateRasterizer();
-
-		allocatorData.allocator = &_imageData->GetAllocator();
-		allocatorData.targetProcessor = &_imageData->GetTargetProcessor();
+//
+//		allocatorData.allocator = &_imageData->GetAllocator();
+//		allocatorData.targetProcessor = &_imageData->GetTargetProcessor();
 	}
 
 	void SvgRasterization::DoRun()

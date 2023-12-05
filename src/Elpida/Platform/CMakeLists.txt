@@ -32,7 +32,7 @@ set(ELPIDA_PLATFORM_SOURCES
         AnonymousPipe.cpp
         AnonymousPipe.Unix.cpp
         AnonymousPipe.Windows.cpp
-        AsyncPipeReader.cpp ../../../include/Elpida/Platform/AsyncPipeReader.hpp)
+        AsyncPipeReader.cpp ../../../include/Elpida/Platform/AsyncPipeReader.hpp NumaAllocatorFactory.cpp ../../../include/Elpida/Platform/NumaAllocatorFactory.hpp)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 

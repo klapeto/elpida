@@ -8,17 +8,16 @@
 namespace Elpida
 {
 	Vector<UniquePtr<AbstractTaskData>>
-	ImageTaskData::Split(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors) const
+	ImageTaskData::Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const
 	{
 		auto stride = _width * _channels * _bytesPerChannel;
 
 		return DataUtilities::SplitChunksToChunks<ImageTaskData, AbstractTaskData>({ *this },
-			targetProcessors,
+			targetAllocators,
 			stride,
-			[this, stride](auto& processor, Size chunkSize)
+			[this, stride](auto& allocator, Size chunkSize)
 			{
-				return std::make_unique<ImageTaskData>(processor,
-					GetAllocator(),
+				return std::make_unique<ImageTaskData>(allocator,
 					_width,
 					chunkSize / stride ,
 					_channels,
@@ -46,8 +45,8 @@ namespace Elpida
 		return _bytesPerChannel;
 	}
 
-	ImageTaskData::ImageTaskData(const ProcessingUnitNode& targetProcessor,const Allocator& allocator, Size width, Size height, unsigned int channels, unsigned int bytesPerChannel)
-		: RawTaskData(targetProcessor, allocator), _width(width), _height(height), _channels(channels), _bytesPerChannel(bytesPerChannel)
+	ImageTaskData::ImageTaskData(SharedPtr<Allocator> allocator, Size width, Size height, unsigned int channels, unsigned int bytesPerChannel)
+		: RawTaskData(std::move(allocator)), _width(width), _height(height), _channels(channels), _bytesPerChannel(bytesPerChannel)
 	{
 		RawTaskData::Allocate(_width * _height * _channels * _bytesPerChannel);
 	}

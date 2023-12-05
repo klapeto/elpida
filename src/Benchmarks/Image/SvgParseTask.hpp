@@ -11,7 +11,6 @@
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 #include "Xml/XmlElement.hpp"
 #include "nanosvg.h"
-#include "AllocatorData.hpp"
 
 namespace Elpida
 {
@@ -34,7 +33,6 @@ namespace Elpida
 		NSVGimage* _image{nullptr};
 		UniquePtr<AbstractTaskData> _outputData;
 		UniquePtr<AbstractTaskData> _inputData;
-		AllocatorData allocatorData;
 		XmlElement _element;
 	};
 

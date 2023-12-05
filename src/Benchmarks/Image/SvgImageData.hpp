@@ -5,7 +5,8 @@
 #ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_SVGIMAGEDATA_HPP
 #define ELPIDA_SRC_BENCHMARKS_IMAGE_SVGIMAGEDATA_HPP
 
-#include "AllocatorData.hpp"
+#include <utility>
+
 #include "Elpida/Core/SimpleTaskData.hpp"
 
 #include "nanosvg.h"
@@ -16,31 +17,30 @@ namespace Elpida
 	class SvgImageData final : public SimpleTaskData<NSVGimage*>
 	{
 	public:
-		SvgImageData(NSVGimage* image, const ProcessingUnitNode& targetProcessor, const Allocator& allocator)
-			: SimpleTaskData<NSVGimage*>(image, targetProcessor, allocator)
+		SvgImageData(NSVGimage* image, SharedPtr<Allocator> allocator)
+			: SimpleTaskData<NSVGimage*>(image, std::move(allocator))
 		{
-			allocatorData.targetProcessor = &targetProcessor;
-			allocatorData.allocator = &allocator;
+//			allocatorData.targetProcessor = &targetProcessor;
+//			allocatorData.allocator = &allocator;
 		}
 
 		SvgImageData(const SvgImageData&) = delete;
 		SvgImageData& operator=(const SvgImageData&) = delete;
 		SvgImageData(SvgImageData&& other) noexcept
-			: SimpleTaskData<NSVGimage*>(other._data, other._targetProcessor, other._allocator)
+			: SimpleTaskData<NSVGimage*>(other._data, other._allocator)
 		{
 			other._data = nullptr;
 
-			allocatorData.targetProcessor = &other._targetProcessor.get();
-			allocatorData.allocator = &other._allocator.get();
+//			allocatorData.targetProcessor = &other._targetProcessor.get();
+//			allocatorData.allocator = &other._allocator.get();
 		}
 
 		SvgImageData& operator=(SvgImageData&& other) noexcept
 		{
-			_targetProcessor = other._targetProcessor;
 			_allocator = other._allocator;
 
-			allocatorData.targetProcessor = &_targetProcessor.get();
-			allocatorData.allocator = &_allocator.get();
+//			allocatorData.targetProcessor = &_targetProcessor.get();
+//			allocatorData.allocator = &_allocator.get();
 			_data = other._data;
 			other._data = nullptr;
 			return *this;
@@ -50,12 +50,9 @@ namespace Elpida
 		{
 			if (_data)
 			{
-				nsvgDelete(_data, &N_Deallocate, &allocatorData);
+				//nsvgDelete(_data, &N_Deallocate, &allocatorData);
 			}
 		}
-
-	private:
-		AllocatorData allocatorData;
 	};
 
 } // Elpida

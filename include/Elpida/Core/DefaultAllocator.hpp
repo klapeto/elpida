@@ -6,6 +6,7 @@
 #define ELPIDA_DEFAULTALLOCATOR_HPP_
 
 #include "Elpida/Core/Allocator.hpp"
+#include "Elpida/Core/Duration.hpp"
 
 namespace Elpida
 {
@@ -13,9 +14,9 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		void* Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const final;
-		void Deallocate(void* ptr, Size size) const final;
-
+		void* Allocate(Size size) final;
+		void Deallocate(void* ptr, Size size) noexcept final;
+		void* Reallocate(void* ptr, Size oldSize, Size newSize) override;
 		DefaultAllocator() = default;
 		~DefaultAllocator() final = default;
 	};

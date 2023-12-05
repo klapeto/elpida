@@ -33,6 +33,7 @@
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Platform/BenchmarkGroupModule.hpp"
+#include "Elpida/Platform/NumaAllocatorFactory.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
 #include "Elpida/Platform/NumaAllocator.hpp"
 
@@ -125,7 +126,7 @@ int main(int argC, char** argV)
 				NanoSeconds(helper.GetVCallOverhead()),
 				Seconds(0),
 				0),
-			std::make_unique<NumaAllocator>());
+			std::make_unique<NumaAllocatorFactory>());
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
 

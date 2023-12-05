@@ -20,6 +20,7 @@ namespace Elpida
 {
 	void* NumaAllocator::Allocate(const ProcessingUnitNode& targetProcessingUnit, Size size) const
 	{
+		auto a = Timer::now();
 		auto numaNodeId = targetProcessingUnit.GetNumaNode().GetOsIndex().value();
 #if _WIN32_WINNT >= 0x0600
 		void* ptr = (void*)VirtualAllocExNuma(
@@ -46,12 +47,19 @@ namespace Elpida
 			throw ElpidaException("Failed to allocate NUMA memory of size: ", size, " on numa node: ", numaNodeId, ": ", OsUtilities::GetLastErrorString());
 		}
 
+		auto b = Timer::now();
+		_totalTime += b - a;
+
 		return ptr;
 	}
 
 	void NumaAllocator::Deallocate(void* ptr, Size size) const
 	{
+		auto a = Timer::now();
 		VirtualFree(ptr, 0, MEM_RELEASE);
+
+		auto b = Timer::now();
+		_totalTime += b - a;
 	}
 
 } // Elpida

@@ -6,6 +6,7 @@
 #define ELPIDA_DATAUTILITIES_HPP_
 
 #include "Elpida/Core/AbstractTaskData.hpp"
+#include "Elpida/Core/SharedPtr.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/Ref.hpp"
 #include "Elpida/Core/Size.hpp"
@@ -33,9 +34,9 @@ namespace Elpida
 	 public:
 		template<typename T, typename TReturn = T, typename TConstructor>
 		static Vector<UniquePtr<TReturn>> SplitChunksToChunks(const Vector<Ref<const AbstractTaskData>>& input,
-			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			const Vector<SharedPtr<Allocator>>& targetAllocators,
 			Size chunkDivisibleBy, TConstructor constructor){
-			auto targetChunksCount = targetProcessors.size();
+			auto targetChunksCount = targetAllocators.size();
 			auto& outputChunks = input;
 
 			auto outputTotalSize = GetAccumulatedSizeOfChunks(input);
@@ -68,7 +69,7 @@ namespace Elpida
 						currentChunkSize = std::min(targetChunkSize, outputTotalSize - totalDataCopied);
 
 						// create new chunk with the defined target size
-						auto chunk = constructor(targetProcessors[currentChunkIndex], currentChunkSize);
+						auto chunk = constructor(targetAllocators[currentChunkIndex], currentChunkSize);
 						//chunk->Allocate(currentChunkSize);
 						targetChunksVec.push_back(std::move(chunk));
 

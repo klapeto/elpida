@@ -7,6 +7,8 @@
 
 #include "Elpida/Core/AbstractTaskData.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
+#include "Elpida/Core/SharedPtr.hpp"
+#include <utility>
 #include <vector>
 
 namespace Elpida
@@ -20,12 +22,6 @@ namespace Elpida
 		unsigned char* GetData() const override
 		{
 			return reinterpret_cast<unsigned char*>(&_data);
-		}
-
-		[[nodiscard]]
-		const ProcessingUnitNode& GetTargetProcessor() const override
-		{
-			return _targetProcessor;
 		}
 
 		[[nodiscard]]
@@ -54,27 +50,27 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const Allocator& GetAllocator() const override
+		SharedPtr<Allocator> GetAllocator() const override
 		{
 			return _allocator;
 		}
 
 		[[nodiscard]]
 		Vector<UniquePtr<AbstractTaskData>>
-		Split(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors) const override
+		Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const override
 		{
 			Vector<UniquePtr<AbstractTaskData>> returnVector;
-			returnVector.reserve(targetProcessors.size());
-			for (auto& processor: targetProcessors)
+			returnVector.reserve(targetAllocators.size());
+			for (auto& allocator: targetAllocators)
 			{
-				returnVector.push_back(std::make_unique<SimpleTaskData<T>>(_data, processor, _allocator));
+				returnVector.push_back(std::make_unique<SimpleTaskData<T>>(_data, allocator));
 			}
 
 			return returnVector;
 		}
 
-		SimpleTaskData(T data, const ProcessingUnitNode& targetProcessor, const Allocator& allocator)
-			: _data(data), _targetProcessor(targetProcessor), _allocator(allocator)
+		SimpleTaskData(T data, SharedPtr<Allocator> allocator)
+			: _data(data), _allocator(std::move(allocator))
 		{
 
 		}
@@ -83,8 +79,7 @@ namespace Elpida
 	protected:
 		mutable T _data;
 
-		Ref<const ProcessingUnitNode> _targetProcessor;
-		Ref<const Allocator> _allocator;
+		SharedPtr<Allocator> _allocator;
 	};
 
 } // Elpida

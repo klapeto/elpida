@@ -5,22 +5,40 @@
 #ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_XML_XMLELEMENT_HPP
 #define ELPIDA_SRC_BENCHMARKS_IMAGE_XML_XMLELEMENT_HPP
 
+#include "Elpida/Core/StlAllocator.hpp"
+#include <functional>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace Elpida
 {
 
+
+
 	class XmlElement final
 	{
 	public:
 
+		using Children = std::vector<XmlElement, StlAllocator<XmlElement>>;
+		using String = std::basic_string<char, std::char_traits<char>, StlAllocator<char>>;
+		struct Hash
+		{
+			size_t
+			operator()(const String& __s) const noexcept
+			{
+				return std::_Hash_impl::hash(__s.data(), __s.length());
+			}
+		};
+		using Attributes = std::unordered_map<String, String, Hash, std::equal_to<>, StlAllocator<std::pair<const String, String>>>;
+
+
 		XmlElement() = default;
-		XmlElement(std::string&& name,
-			std::unordered_map<std::string, std::string>&& attributes,
-			std::string&& content,
-			std::vector<XmlElement>&& children)
+		XmlElement(String&& name,
+			Attributes && attributes,
+			String&& content,
+			Children&& children)
 			: _name(std::move(name)), _attributes(std::move(attributes)), _content(std::move(content)),
 			  _children(std::move(children))
 		{
@@ -32,10 +50,10 @@ namespace Elpida
 		XmlElement& operator =(const XmlElement&) = default;
 		~XmlElement() = default;
 	private:
-		std::string _name;
-		std::unordered_map<std::string, std::string> _attributes;
-		std::string _content;
-		std::vector<XmlElement> _children;
+		String _name;
+		Attributes _attributes;
+		String _content;
+		Children _children;
 	};
 
 } // Elpida

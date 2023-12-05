@@ -23,7 +23,7 @@ namespace Elpida
 
 		_inputData = std::move(inputData);
 
-		_outputData = std::make_unique<ImageTaskData>(ptr->GetTargetProcessor(),
+		_outputData = std::make_unique<ImageTaskData>(
 			ptr->GetAllocator(),
 			ptr->GetWidth(),
 			ptr->GetHeight(),
@@ -57,7 +57,7 @@ namespace Elpida
 	}
 
 	ConvertToUInt8Task::ConvertToUInt8Task()
-		: _inPtr(nullptr), _outPtr(nullptr), _sizeInChannels(0), _channels(0)
+		: _outPtr(nullptr), _inPtr(nullptr), _sizeInChannels(0), _channels(0)
 	{
 
 	}

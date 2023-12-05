@@ -30,8 +30,8 @@ namespace Elpida
 
 		Vector<TaskResult> taskResults;
 
-		UniquePtr<AbstractTaskData>
-			data = std::make_unique<RawTaskData>(targetProcessors.front(), environmentInfo.GetAllocator());
+		auto allocators = environmentInfo.GetAllocatorFactory().Create({targetProcessors});
+		UniquePtr<AbstractTaskData> data = std::make_unique<RawTaskData>(allocators.front());
 		for (auto& task : tasks)
 		{
 			task->SetEnvironmentInfo(environmentInfo);
@@ -39,7 +39,7 @@ namespace Elpida
 			Size processedDataSize = 0;
 			if (task->CanBeMultiThreaded())
 			{
-				duration = ExecuteMultiThread(data, std::move(task), targetProcessors, processedDataSize);
+				duration = ExecuteMultiThread(data, std::move(task), allocators, targetProcessors, processedDataSize);
 			}
 			else
 			{
@@ -64,6 +64,7 @@ namespace Elpida
 	{
 		ThreadTask threadTask(std::move(task), targetProcessor);
 
+		data->GetAllocator()->ResetTime();
 		threadTask.Prepare(std::move(data));
 
 		auto duration = threadTask.Run();
@@ -72,25 +73,30 @@ namespace Elpida
 
 		data = threadTask.Finalize();
 
+		duration -= data->GetAllocator()->GetTotalTime();
+
 		return duration;
 	}
 
 	Duration
 	Benchmark::ExecuteMultiThread(UniquePtr<AbstractTaskData>& data,
 		UniquePtr<Task> task,
+		const Vector<SharedPtr<Allocator>>& allocators,
 		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
 		Size& processedDataSize)
 	{
-		auto chunks = data->Split(targetProcessors);
+		auto chunks = data->Split(allocators);
 
 		data->Deallocate();    // Reduce memory footprint
 
 		Vector<UniquePtr<ThreadTask>> threadTasks;
-		for (auto& chunk : chunks)
-		{
-			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), chunk->GetTargetProcessor());
 
-			threadTask->Prepare(std::move(chunk));
+		for (std::size_t i = 0; i < chunks.size(); ++i)
+		{
+			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), targetProcessors[i]);
+
+			chunks[i]->GetAllocator()->ResetTime();
+			threadTask->Prepare(std::move(chunks[i]));
 
 			threadTasks.push_back(std::move(threadTask));
 		}
@@ -104,6 +110,11 @@ namespace Elpida
 		for (auto& thread : threadTasks)
 		{
 			totalDuration += thread->Run();
+		}
+
+		for (auto& allocator : allocators)
+		{
+			totalDuration -= allocator->GetTotalTime();
 		}
 
 		chunks.clear();

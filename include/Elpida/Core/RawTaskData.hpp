@@ -5,6 +5,9 @@
 #ifndef ELPIDA_RAWTASKDATA_HPP_
 #define ELPIDA_RAWTASKDATA_HPP_
 
+#include <utility>
+
+#include "Elpida/Core/SharedPtr.hpp"
 #include "Elpida/Core/Size.hpp"
 #include "Elpida/Core/Map.hpp"
 #include "Elpida/Core/String.hpp"
@@ -13,7 +16,6 @@
 #include "Elpida/Core/Ref.hpp"
 #include "Elpida/Core/AbstractTaskData.hpp"
 #include "Elpida/Core/Allocator.hpp"
-#include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 
 namespace Elpida
 {
@@ -28,10 +30,7 @@ namespace Elpida
 		unsigned char* GetData() const final;
 
 		[[nodiscard]]
-		const ProcessingUnitNode& GetTargetProcessor() const final;
-
-		[[nodiscard]]
-		const Allocator& GetAllocator() const final;
+		SharedPtr<Allocator> GetAllocator() const final;
 
 		void Allocate(Size size) final;
 		void Deallocate() final;
@@ -40,10 +39,10 @@ namespace Elpida
 
 		[[nodiscard]]
 		Vector<UniquePtr<AbstractTaskData>>
-		Split(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors) const override;
+		Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const override;
 
-		explicit RawTaskData(const ProcessingUnitNode& targetProcessor, const Allocator& allocator);
-		RawTaskData(const ProcessingUnitNode& targetProcessor, Size size, const Allocator& allocator);
+		explicit RawTaskData(SharedPtr<Allocator> allocator);
+		RawTaskData(Size size, SharedPtr<Allocator> allocator);
 		RawTaskData(const RawTaskData&) = delete;
 		RawTaskData(RawTaskData&& other) noexcept;
 		RawTaskData& operator=(const RawTaskData&) = delete;
@@ -55,23 +54,22 @@ namespace Elpida
 		 public:
 			void operator()(unsigned char* ptr)
 			{
-				_allocator.get().Deallocate(ptr, _size);
+				_allocator->Deallocate(ptr, _size);
 			}
 
-			Deleter(Ref<const Allocator> allocator, Size size)
-				: _allocator(allocator), _size(size)
+			Deleter(SharedPtr<Allocator> allocator, Size size)
+				: _allocator(std::move(allocator)), _size(size)
 			{
 
 			}
 			~Deleter() = default;
 		 private:
-			Ref<const Allocator> _allocator;
+			SharedPtr<Allocator> _allocator;
 			Size _size;
 		};
 
 		UniquePtr<unsigned char, Deleter> _data;
-		Ref<const ProcessingUnitNode> _targetProcessor;
-		Ref<const Allocator> _allocator;
+		SharedPtr<Allocator> _allocator;
 		Size _size;
 	};
 

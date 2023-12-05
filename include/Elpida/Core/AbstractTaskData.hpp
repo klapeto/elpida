@@ -6,6 +6,7 @@
 #define ELPIDA_TOPOLOGY_ABSTRACTTASKDATA_HPP_
 
 #include "Elpida/Core/UniquePtr.hpp"
+#include "Elpida/Core/SharedPtr.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/Ref.hpp"
 #include "Elpida/Core/Size.hpp"
@@ -22,9 +23,6 @@ namespace Elpida
 		virtual unsigned char* GetData() const = 0;
 
 		[[nodiscard]]
-		virtual const ProcessingUnitNode& GetTargetProcessor() const = 0;
-
-		[[nodiscard]]
 		virtual Size GetSize() const = 0;
 
 		virtual void Merge(const Vector<UniquePtr<AbstractTaskData>>& data) = 0;
@@ -32,11 +30,11 @@ namespace Elpida
 		virtual void Deallocate() = 0;
 
 		[[nodiscard]]
-		virtual const Allocator& GetAllocator() const = 0;
+		virtual SharedPtr<Allocator> GetAllocator() const = 0;
 
 		[[nodiscard]]
 		virtual Vector<UniquePtr<AbstractTaskData>>
-		Split(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors) const = 0;
+		Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const = 0;
 
 		virtual ~AbstractTaskData() = default;
 	};
