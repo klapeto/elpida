@@ -64,16 +64,15 @@ namespace Elpida
 	{
 		ThreadTask threadTask(std::move(task), targetProcessor);
 
-		data->GetAllocator()->ResetTime();
+		auto allocator = data->GetAllocator();
 		threadTask.Prepare(std::move(data));
 
+		allocator->ResetStatistics();
 		auto duration = threadTask.Run();
 
 		processedDataSize = threadTask.GetProcessedDataSize();
 
 		data = threadTask.Finalize();
-
-		duration -= data->GetAllocator()->GetTotalTime();
 
 		return duration;
 	}
@@ -95,9 +94,10 @@ namespace Elpida
 		{
 			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), targetProcessors[i]);
 
-			chunks[i]->GetAllocator()->ResetTime();
+			auto  allocator = chunks[i]->GetAllocator();
 			threadTask->Prepare(std::move(chunks[i]));
 
+			allocator->ResetStatistics();
 			threadTasks.push_back(std::move(threadTask));
 		}
 
@@ -110,11 +110,6 @@ namespace Elpida
 		for (auto& thread : threadTasks)
 		{
 			totalDuration += thread->Run();
-		}
-
-		for (auto& allocator : allocators)
-		{
-			totalDuration -= allocator->GetTotalTime();
 		}
 
 		chunks.clear();

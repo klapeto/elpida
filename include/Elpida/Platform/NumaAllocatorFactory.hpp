@@ -9,10 +9,14 @@
 namespace Elpida
 {
 
-	class NumaAllocatorFactory: public AllocatorFactory
+	class NumaAllocatorFactory : public AllocatorFactory
 	{
 	public:
+		[[nodiscard]]
 		Vector<SharedPtr<Allocator>> Create(const Vector<Ref<const ProcessingUnitNode>>& processors) const override;
+
+		NumaAllocatorFactory() = default;
+		~NumaAllocatorFactory() override = default;
 	};
 
 } // Elpida

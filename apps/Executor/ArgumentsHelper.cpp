@@ -94,6 +94,8 @@ namespace Elpida
 		accumulator << R"("           The loop overhead in nanoseconds)" << std::endl;
 		accumulator << R"("       --virtual-nanoseconds=NANOSECONDS)" << std::endl;
 		accumulator << R"("           The virtual call overhead in nanoseconds)" << std::endl;
+		accumulator << R"("       --numa-aware)" << std::endl;
+		accumulator << R"("           Enable numa aware allocations)" << std::endl;
 
 		return accumulator.str();
 	}
@@ -169,7 +171,8 @@ namespace Elpida
 			Config,
 			NowOverhead,
 			LoopOverhead,
-			VirtualOverhead
+			VirtualOverhead,
+			NumaAware
 		};
 
 		struct option options[] = {
@@ -183,6 +186,7 @@ namespace Elpida
 			{ "now-nanoseconds", required_argument, nullptr, NowOverhead },
 			{ "loop-nanoseconds", required_argument, nullptr, LoopOverhead },
 			{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
+			{ "numa-aware", no_argument, nullptr, NumaAware },
 			{ nullptr, 0, nullptr, 0 }
 		};
 
@@ -223,6 +227,9 @@ namespace Elpida
 				break;
 			case VirtualOverhead:
 				_vCallOverhead = ParseTime(GetValueOrDefault(optarg), "virtual-overhead");
+				break;
+			case NumaAware:
+				_numaAware = true;
 				break;
 			case '?':
 				returnText = "Unknown option: " + std::string(GetValueOrDefault(optarg));
@@ -329,8 +336,12 @@ namespace Elpida
 	}
 
 	ArgumentsHelper::ArgumentsHelper()
-		: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0)
+		: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0), _numaAware(false)
 	{
 
+	}
+	bool ArgumentsHelper::GetNumaAware() const
+	{
+		return _numaAware;
 	}
 } // Elpida

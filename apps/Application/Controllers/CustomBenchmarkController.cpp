@@ -11,6 +11,7 @@
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/SystemInfo/TimingModel.hpp"
 #include "Models/Custom/CustomBenchmarkResultsModel.hpp"
+#include "Models/BenchmarkRunConfigurationModel.hpp"
 
 #include "Core/BenchmarkExecutionService.hpp"
 
@@ -23,10 +24,15 @@ namespace Elpida::Application
 		TopologyModel& topologyModel,
 		TimingModel& overheadsModel,
 		CustomBenchmarkResultsModel& benchmarkResultsModel,
+		BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 		BenchmarkExecutionService& benchmarkExecutionService)
-		: Controller<CustomBenchmarkModel>(model), _topologyModel(topologyModel), _overheadsModel(overheadsModel),
+		: Controller<CustomBenchmarkModel>(model),
+		  _topologyModel(topologyModel),
+		  _overheadsModel(overheadsModel),
 		  _benchmarkResultsModel(benchmarkResultsModel),
-		  _benchmarkExecutionService(benchmarkExecutionService), _cancelling(false)
+		  _benchmarkRunConfigurationModel(benchmarkRunConfigurationModel),
+		  _benchmarkExecutionService(benchmarkExecutionService),
+		  _cancelling(false)
 	{
 
 	}
@@ -62,14 +68,15 @@ namespace Elpida::Application
 			}
 
 			_benchmarkResultsModel.Add(_benchmarkExecutionService.Execute(
-					*selectedBenchmark,
-					affinity,
-					std::chrono::duration_cast<NanoSeconds>(
-							_overheadsModel.GetNowOverhead()).count(),
-					std::chrono::duration_cast<NanoSeconds>(
-							_overheadsModel.GetLoopOverhead()).count(),
-					std::chrono::duration_cast<NanoSeconds>(
-							_overheadsModel.GetVirtualCallOverhead()).count()));
+				*selectedBenchmark,
+				affinity,
+				std::chrono::duration_cast<NanoSeconds>(
+					_overheadsModel.GetNowOverhead()).count(),
+				std::chrono::duration_cast<NanoSeconds>(
+					_overheadsModel.GetLoopOverhead()).count(),
+				std::chrono::duration_cast<NanoSeconds>(
+					_overheadsModel.GetVirtualCallOverhead()).count(),
+				_benchmarkRunConfigurationModel.IsNumaAware()));
 		}
 		catch (const ElpidaException& ex)
 		{

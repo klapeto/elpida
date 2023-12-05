@@ -22,7 +22,8 @@ namespace Elpida::Application
 				const std::vector<std::size_t>& affinity,
 				double nowOverheadNanoseconds,
 				double loopOverheadNanoseconds,
-				double virtualCallOverheadNanoseconds);
+				double virtualCallOverheadNanoseconds,
+				bool numaAware);
 
 		void StopCurrentExecution();
 

@@ -14,8 +14,9 @@ namespace Elpida
 	class XmlParser
 	{
 	public:
-		explicit XmlParser(SharedPtr<Allocator> allocator);
 		XmlElement Parse(const char* data, std::size_t size);
+		XmlParser() = default;
+		explicit XmlParser(SharedPtr<Allocator> allocator);
 	private:
 		SharedPtr<Allocator> _allocator;
 	};

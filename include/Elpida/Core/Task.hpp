@@ -50,6 +50,9 @@ namespace Elpida
 		virtual void DoRun() = 0;
 
 		[[nodiscard]]
+		virtual Duration PostProcessDuration(const Duration& duration) const;
+
+		[[nodiscard]]
 		virtual UniquePtr<Task> DoDuplicate() const = 0;
 	};
 

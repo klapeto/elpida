@@ -13,7 +13,7 @@ namespace Elpida::Application
 	class QtSettingsService final: public SettingsService
 	{
 	public:
-		void Set(const std::string& name, std::string& value) override;
+		void Set(const std::string& name, const std::string& value) override;
 		std::string Get(const std::string& name) override;
 
 		QtSettingsService() = default;

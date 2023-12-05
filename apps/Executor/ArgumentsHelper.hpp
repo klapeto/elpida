@@ -45,6 +45,9 @@ namespace Elpida
 		[[nodiscard]]
 		double GetVCallOverhead() const;
 
+		[[nodiscard]]
+		bool GetNumaAware() const;
+
 		bool ParseAndGetExitText(int argC, char* argV[], std::string& returnText);
 
 		ArgumentsHelper();
@@ -58,6 +61,7 @@ namespace Elpida
 		double _nowOverhead;
 		double _loopOverhead;
 		double _vCallOverhead;
+		bool _numaAware;
 
 		void ParseAffinity(const String& value);
 		void ParseFormat(const String& value);

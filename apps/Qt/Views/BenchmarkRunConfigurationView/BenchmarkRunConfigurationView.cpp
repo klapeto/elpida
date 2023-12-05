@@ -15,6 +15,7 @@ namespace Elpida::Application
 			_uiUpdating(false)
 	{
 		_ui->setupUi(this);
+		UpdateUi();
 		_modelChangedSubscription = _model.DataChanged().Subscribe([this]()
 		{
 			UpdateUi();
@@ -50,8 +51,15 @@ namespace Elpida::Application
 		_uiUpdating = true;
 		_ui->chkUpload->setChecked(_model.IsUploadResults());
 		_ui->chkOpenResult->setChecked(_model.IsOpenResult());
+		_ui->chkNumaAware->setChecked(_model.IsNumaAware());
 		_ui->chkOpenResult->setEnabled(_model.IsUploadResults());
 		_ui->spnTimes->setValue(_model.GetIterationsToRun());
 		_uiUpdating = false;
+	}
+
+	void BenchmarkRunConfigurationView::on_chkNumaAware_stateChanged(int state)
+	{
+		if (_uiUpdating) return;
+		_controller.SetNumaAware(state == Qt::Checked);
 	}
 }

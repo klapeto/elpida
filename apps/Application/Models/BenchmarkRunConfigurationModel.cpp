@@ -7,7 +7,7 @@
 namespace Elpida::Application
 {
 	BenchmarkRunConfigurationModel::BenchmarkRunConfigurationModel()
-			: _iterationsToRun(1), _uploadResults(true), _openResult(false)
+			: _iterationsToRun(1), _uploadResults(true), _openResult(false), _numaAware(false)
 	{
 
 	}
@@ -43,5 +43,15 @@ namespace Elpida::Application
 	{
 		_openResult = openResult;
 		OnDataChanged();
+	}
+
+	bool BenchmarkRunConfigurationModel::IsNumaAware() const
+	{
+		return _numaAware;
+	}
+
+	void BenchmarkRunConfigurationModel::SetNumaAware(bool numaAware)
+	{
+		_numaAware = numaAware;
 	}
 } // Elpida

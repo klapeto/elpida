@@ -25,16 +25,23 @@ namespace Elpida
 		{
 			return _totalTime;
 		}
-		void ResetTime()
+
+		[[nodiscard]]
+		Size GetAllocations() const
+		{
+			return _totalAllocations;
+		}
+		void ResetStatistics()
 		{
 			_totalTime = Seconds(0);
+			_totalAllocations = 0;
 		}
 
 		Allocator() = default;
 		virtual ~Allocator() = default;
-
 	protected:
-		Duration _totalTime{};
+		Duration _totalTime{0};
+		Size _totalAllocations{0};
 	};
 
 } // Elpida

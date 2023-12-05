@@ -20,6 +20,8 @@ namespace Elpida::Application
 
 		void SetOpenResult(bool openResult);
 
+		void SetNumaAware(bool numaAware);
+
 		[[nodiscard]]
 		std::size_t GetIterationsToRun() const;
 
@@ -29,6 +31,9 @@ namespace Elpida::Application
 		[[nodiscard]]
 		bool IsOpenResult() const;
 
+		[[nodiscard]]
+		bool IsNumaAware() const;
+
 		BenchmarkRunConfigurationModel();
 
 		~BenchmarkRunConfigurationModel() override = default;
@@ -36,6 +41,7 @@ namespace Elpida::Application
 		std::size_t _iterationsToRun;
 		bool _uploadResults;
 		bool _openResult;
+		bool _numaAware;
 	};
 
 } // Elpida

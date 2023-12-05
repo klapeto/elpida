@@ -12,7 +12,7 @@ namespace Elpida::Application
 	class SettingsService
 	{
 	public:
-		virtual void Set(const std::string& name, std::string& value) = 0;
+		virtual void Set(const std::string& name, const std::string& value) = 0;
 		virtual std::string Get(const std::string& name) = 0;
 	};
 

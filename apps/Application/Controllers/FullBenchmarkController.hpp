@@ -14,6 +14,7 @@ namespace Elpida::Application
 {
 	class TopologyModel;
 	class BenchmarkExecutionService;
+	class BenchmarkRunConfigurationModel;
 	class TimingModel;
 
 	class FullBenchmarkController : public Controller<FullBenchmarkModel>
@@ -24,6 +25,7 @@ namespace Elpida::Application
 		FullBenchmarkController(FullBenchmarkModel& model,
 				const TopologyModel& topologyModel,
 				const TimingModel& overheadsModel,
+				const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService,
 				const std::vector<BenchmarkGroupModel>& benchmarkGroups);
 
@@ -31,6 +33,7 @@ namespace Elpida::Application
 	private:
 		const TopologyModel& _topologyModel;
 		const TimingModel& _overheadsModel;
+		const BenchmarkRunConfigurationModel& _benchmarkRunConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 
 		const BenchmarkModel* _memoryLatency;

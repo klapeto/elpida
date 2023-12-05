@@ -6,7 +6,7 @@
 
 namespace Elpida::Application
 {
-	void QtSettingsService::Set(const std::string& name, std::string& value)
+	void QtSettingsService::Set(const std::string& name, const std::string& value)
 	{
 		settings.setValue(QString::fromStdString(name), QString::fromStdString(value));
 	}

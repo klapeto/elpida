@@ -13,6 +13,7 @@
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 
 #include <numa.h>
+#include <cstring>
 
 namespace Elpida
 {
@@ -43,6 +44,10 @@ namespace Elpida
 				std::to_string(numaAvailable),
 				")");
 		}
+
+		std::memset(ptr, 0 , size);	// commit immediately
+
+		_totalAllocations++;
 
 		auto b = Timer::now();
 		_totalTime += b - a;
@@ -77,6 +82,11 @@ namespace Elpida
 		else
 		{
 			newPtr =  numa_realloc(ptr, oldSize, newSize);
+		}
+
+		if (newSize > oldSize)
+		{
+			std::memset(((char*) ptr) + oldSize, 0 , newSize - oldSize);	// commit immediately
 		}
 
 		auto b = Timer::now();

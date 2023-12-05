@@ -12,6 +12,7 @@ namespace Elpida
 	{
 		auto a = Timer::now();
 		auto ptr = malloc(size);
+		_totalAllocations++;
 		auto b = Timer::now();
 		_totalTime += b - a;
 		return ptr;

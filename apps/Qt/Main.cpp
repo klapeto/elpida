@@ -377,18 +377,18 @@ int main(int argc, char* argv[])
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;
 
+	BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
+	BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel, settingsService);
+
 	CustomBenchmarkResultsModel customBenchmarkResultsModel;
 	CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
 	CustomBenchmarkController
-			benchmarksController(customBenchmarkModel, topologyModel, timingModel, customBenchmarkResultsModel, executionService);
+			benchmarksController(customBenchmarkModel, topologyModel, timingModel, customBenchmarkResultsModel,benchmarkRunConfigurationModel, executionService);
 
 	ConfigurationViewPool configurationViewPool(settingsService);
 
-	BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
-	BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel);
-
 	FullBenchmarkModel fullBenchmarkModel;
-	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel, topologyModel, timingModel, executionService, benchmarkGroups);
+	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel, topologyModel, timingModel, benchmarkRunConfigurationModel, executionService, benchmarkGroups);
 
 	MainWindow mainWindow(osInfoModel,
 			memoryInfoModel,

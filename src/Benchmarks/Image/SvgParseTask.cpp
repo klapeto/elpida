@@ -31,32 +31,23 @@ namespace Elpida
 			inputData->GetSize() + 1,
 			inputData->GetAllocator());
 		std::memcpy(_inputData->GetData(), inputData->GetData(), inputData->GetSize());
-		//_inputData->GetData()[inputData->GetSize()] = 0;
 
 		_outputData = std::make_unique<SvgImageData>(nullptr,_inputData->GetAllocator());
 
-		_inputData->GetAllocator()->ResetTime();
-//		allocatorData.allocator = &_inputData->GetAllocator();
-//		allocatorData.targetProcessor = &_inputData->GetTargetProcessor();
+		_allocator = _inputData->GetAllocator();
+		_parser = XmlParser(_allocator);
 	}
 
-	void SvgParseTask::DoRun()
+	void SvgParseTask::DoRun(Iterations iterations)
 	{
-		XmlParser parser(_inputData->GetAllocator());
-		_element = parser.Parse(reinterpret_cast<const char*>(_inputData->GetData()), _inputData->GetSize());
-		//_image = nsvgParse(reinterpret_cast<char*>(_inputData->GetData()), "px", 96.0f, &N_Allocate, &N_Deallocate, &N_Reallocate, &this->allocatorData);
+		while (iterations-- > 0)
+		{
+			_element = _parser.Parse(reinterpret_cast<const char*>(_inputData->GetData()), _inputData->GetSize());
+		}
 	}
 
 	UniquePtr<AbstractTaskData> SvgParseTask::Finalize()
 	{
-//		if (_image == nullptr)
-//		{
-//			throw ElpidaException("Failed to parse the SVG Image");
-//		}
-//
-//		auto ptr = reinterpret_cast<NSVGimage**>(_outputData->GetData());
-//		*ptr = _image;
-//		_image = nullptr;
 		return std::move(_outputData);
 	}
 
@@ -82,5 +73,25 @@ namespace Elpida
 	Size SvgParseTask::GetProcessedDataSize() const
 	{
 		return _inputData->GetSize();
+	}
+
+	Size SvgParseTask::GetOperationsPerformedPerRun()
+	{
+		return 1;
+	}
+
+	Duration SvgParseTask::GetExecutionMinimumDuration()
+	{
+		return Elpida::Seconds(5);
+	}
+
+	Duration SvgParseTask::PostProcessDuration(const Duration& duration) const
+	{
+		return duration - _allocator->GetTotalTime();
+	}
+
+	void SvgParseTask::OnBeforeRun()
+	{
+		_allocator->ResetStatistics();
 	}
 } // Elpida

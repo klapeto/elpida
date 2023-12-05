@@ -15,6 +15,7 @@ namespace Elpida::Application
 	class TopologyModel;
 	class MessageService;
 	class BenchmarkExecutionService;
+	class BenchmarkRunConfigurationModel;
 	class TimingModel;
 	class CustomBenchmarkResultsModel;
 
@@ -31,12 +32,14 @@ namespace Elpida::Application
 				TopologyModel& topologyModel,
 				TimingModel& overheadsModel,
 				CustomBenchmarkResultsModel& benchmarkResultsModel,
+				BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService);
 		~CustomBenchmarkController() override = default;
 	 private:
 		TopologyModel& _topologyModel;
 		TimingModel& _overheadsModel;
 		CustomBenchmarkResultsModel& _benchmarkResultsModel;
+		BenchmarkRunConfigurationModel& _benchmarkRunConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		bool _cancelling;
 	};

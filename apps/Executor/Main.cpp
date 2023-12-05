@@ -26,9 +26,12 @@
 #include <iostream>
 
 #include "Benchmarks/Image/Xml/XmlParser.hpp"
+#include "Elpida/Core/AllocatorFactory.hpp"
 #include "Elpida/Core/Config.hpp"
+#include "Elpida/Core/DefaultAllocatorFactory.hpp"
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
+#include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
@@ -126,7 +129,9 @@ int main(int argC, char** argV)
 				NanoSeconds(helper.GetVCallOverhead()),
 				Seconds(0),
 				0),
-			std::make_unique<NumaAllocatorFactory>());
+			helper.GetNumaAware()
+			? UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
+			: UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()));
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
 

@@ -16,8 +16,11 @@ namespace Elpida
 	class AllocatorFactory
 	{
 	public:
-		[[nodiscard]] 
+		[[nodiscard]]
 		virtual Vector<SharedPtr<Allocator>> Create(const Vector<Ref<const ProcessingUnitNode>>& processors) const = 0;
+
+		AllocatorFactory() = default;
+		virtual ~AllocatorFactory() = default;
 	};
 
 } // Elpida

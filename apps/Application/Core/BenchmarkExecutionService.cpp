@@ -31,7 +31,8 @@ namespace Elpida::Application
 		const std::vector<std::size_t>& affinity,
 		double nowOverheadNanoseconds,
 		double loopOverheadNanoseconds,
-		double virtualCallOverheadNanoseconds)
+		double virtualCallOverheadNanoseconds,
+		bool numaAware)
 	{
 
 		std::vector<std::string> configuration;
@@ -68,6 +69,11 @@ namespace Elpida::Application
 			arguments.push_back(std::string("--config=\"").append(value).append("\""));
 		}
 
+		if (numaAware)
+		{
+			arguments.emplace_back("--numa-aware");
+		}
+
 		std::locale::global(std::locale(""));
 		_currentProcess = Process(ExecutablePath, arguments, true, true);
 
@@ -101,8 +107,8 @@ namespace Elpida::Application
 		for (auto& taskJ : taskResultsJ)
 		{
 			taskResults.emplace_back(
-					NanoSeconds(taskJ["durationNanoseconds"].template get<double>()),
-					taskJ["dataSize"].get<std::size_t>()
+				NanoSeconds(taskJ["durationNanoseconds"].template get<double>()),
+				taskJ["dataSize"].get<std::size_t>()
 			);
 		}
 		return BenchmarkResultModel(benchmarkModel, score, std::move(taskResults));

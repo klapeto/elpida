@@ -17,7 +17,7 @@ namespace Elpida
 
 		auto b = Timer::now();
 
-		return b - a - _environmentInfo->get().GetOverheadsInfo().GetNowOverhead();
+		return PostProcessDuration(b - a - _environmentInfo->get().GetOverheadsInfo().GetNowOverhead());
 	}
 
 	UniquePtr<Task> Task::Duplicate() const
@@ -30,5 +30,10 @@ namespace Elpida
 	void Task::SetEnvironmentInfo(const EnvironmentInfo& environmentInfo)
 	{
 		_environmentInfo = environmentInfo;
+	}
+
+	Duration Task::PostProcessDuration(const Duration& duration) const
+	{
+		return duration;
 	}
 } // Elpida

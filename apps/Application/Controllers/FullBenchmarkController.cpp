@@ -6,6 +6,7 @@
 
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/SystemInfo/TimingModel.hpp"
+#include "Models/BenchmarkRunConfigurationModel.hpp"
 
 #include "Core/BenchmarkExecutionService.hpp"
 
@@ -16,11 +17,13 @@ namespace Elpida::Application
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TopologyModel& topologyModel,
 			const TimingModel& overheadsModel,
+			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			BenchmarkExecutionService& benchmarkExecutionService,
 			const std::vector<BenchmarkGroupModel>& benchmarkGroups) :
 			Controller(model),
 			_topologyModel(topologyModel),
 			_overheadsModel(overheadsModel),
+			_benchmarkRunConfigurationModel(benchmarkRunConfigurationModel),
 			_benchmarkExecutionService(benchmarkExecutionService),
 			_memoryLatency(nullptr),
 			_memoryReadBandwidth(nullptr),
@@ -92,7 +95,8 @@ namespace Elpida::Application
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetVirtualCallOverhead()).count());
+								_overheadsModel.GetVirtualCallOverhead()).count(),
+								_benchmarkRunConfigurationModel.IsNumaAware());
 			});
 
 			auto& taskResults = pngResult.GetTaskResults();
@@ -128,7 +132,8 @@ namespace Elpida::Application
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetVirtualCallOverhead()).count());
+								_overheadsModel.GetVirtualCallOverhead()).count(),
+					_benchmarkRunConfigurationModel.IsNumaAware());
 			});
 
 			auto& taskResults = latencyResult.GetTaskResults();
@@ -158,7 +163,8 @@ namespace Elpida::Application
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetVirtualCallOverhead()).count());
+								_overheadsModel.GetVirtualCallOverhead()).count(),
+					_benchmarkRunConfigurationModel.IsNumaAware());
 			});
 
 

@@ -17,20 +17,33 @@ namespace Elpida
 		Duration nowOverhead = _environmentInfo->get().GetOverheadsInfo().GetNowOverhead();
 		Duration loopOverhead = _environmentInfo->get().GetOverheadsInfo().GetLoopOverhead();
 
-		Size iterations = TimingUtilities::GetIterationsNeededForExecutionTime(minimumDuration, nowOverhead, loopOverhead,[this](Size iterations){DoRun(iterations);});
+		Size iterations = TimingUtilities::GetMinimumIterationsNeededForExecutionTime(
+			minimumDuration,
+			nowOverhead,
+			loopOverhead,
+			[this](){OnBeforeRun();},
+			[this](auto duration){return PostProcessDuration(duration);},
+			[this](Size iterations){DoRun(iterations);});
 
 		// Consider the previous run as 'warmups'
 		// now the real deal
+		OnBeforeRun();
 		auto start = Timer::now();
 		DoRun(iterations);
 		auto end = Timer::now();
 
 		auto currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
 
+		currentDuration = PostProcessDuration(currentDuration);
 		return currentDuration / static_cast<double>(iterations) / static_cast<double>(GetOperationsPerformedPerRun());
 	}
 
 	void MicroTask::DoRun()
+	{
+
+	}
+
+	void MicroTask::OnBeforeRun()
 	{
 
 	}
