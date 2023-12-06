@@ -9,10 +9,6 @@
 #include "Elpida/Core/RawTaskData.hpp"
 
 #include "SvgImageData.hpp"
-#include "Xml/XmlParser.hpp"
-
-#define NANOSVG_IMPLEMENTATION
-#include "nanosvg.h"
 
 #include <cstring>
 #include <iostream>
@@ -33,9 +29,6 @@ namespace Elpida
 		std::memcpy(_inputData->GetData(), inputData->GetData(), inputData->GetSize());
 
 		_outputData = std::make_unique<SvgImageData>(nullptr,_inputData->GetAllocator());
-
-		_allocator = _inputData->GetAllocator();
-		_parser = XmlParser(_allocator);
 	}
 
 	void SvgParseTask::DoRun(Iterations iterations)
@@ -85,13 +78,4 @@ namespace Elpida
 		return Elpida::Seconds(5);
 	}
 
-	Duration SvgParseTask::PostProcessDuration(const Duration& duration) const
-	{
-		return duration - _allocator->GetTotalTime();
-	}
-
-	void SvgParseTask::OnBeforeRun()
-	{
-		_allocator->ResetStatistics();
-	}
 } // Elpida

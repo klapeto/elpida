@@ -21,17 +21,9 @@ namespace Elpida
 	{
 	public:
 
-		using Children = std::vector<XmlElement, StlAllocator<XmlElement>>;
-		using String = std::basic_string<char, std::char_traits<char>, StlAllocator<char>>;
-		struct Hash
-		{
-			size_t
-			operator()(const String& __s) const noexcept
-			{
-				return std::_Hash_impl::hash(__s.data(), __s.length());
-			}
-		};
-		using Attributes = std::unordered_map<String, String, Hash, std::equal_to<>, StlAllocator<std::pair<const String, String>>>;
+		using Children = std::vector<XmlElement>;
+		using String = std::string;
+		using Attributes = std::unordered_map<String, String>;
 
 
 		XmlElement() = default;

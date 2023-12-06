@@ -4,10 +4,7 @@
 
 #include "XmlParser.hpp"
 #include "CharacterStream.hpp"
-#include "Elpida/Core/Allocator.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
-#include "Elpida/Core/SharedPtr.hpp"
-#include "Elpida/Core/StlAllocator.hpp"
 #include "XmlElement.hpp"
 #include <string>
 #include <unordered_map>
@@ -101,9 +98,9 @@ namespace Elpida
 		return NextNode::Content;
 	}
 
-	static XmlElement::Attributes ParseAttributes(CharacterStream& stream, bool& inlineElement, const SharedPtr<Allocator>& allocator)
+	static XmlElement::Attributes ParseAttributes(CharacterStream& stream, bool& inlineElement)
 	{
-		XmlElement::Attributes returnAttributes((StlAllocator<std::pair<const XmlElement::String, XmlElement::String>>(allocator)));
+		XmlElement::Attributes returnAttributes;
 
 		while (!stream.Eof())
 		{
@@ -149,39 +146,39 @@ namespace Elpida
 
 			auto value = stream.GetStringViewWhile([quote](auto c) { return c != quote; });
 
-			returnAttributes.insert({ XmlElement::String(name, StlAllocator<char>(allocator)), XmlElement::String(value, StlAllocator<char>(allocator)) });
+			returnAttributes.insert({ XmlElement::String(name), XmlElement::String(value) });
 			stream.Next();
 		}
 
 		return returnAttributes;
 	}
 
-	static XmlElement::String ParseName(CharacterStream& stream, const SharedPtr<Allocator>& allocator)
+	static XmlElement::String ParseName(CharacterStream& stream)
 	{
 		if (CharacterStream::isspace(stream.Current()))
 		{
 			throw ElpidaException("Unexpected space after '<'");
 		}
-		return XmlElement::String(stream.GetStringViewWhile([](auto c) { return !CharacterStream::isspace(c) && c != '>'; }), StlAllocator<char>(allocator));
+		return XmlElement::String(stream.GetStringViewWhile([](auto c) { return !CharacterStream::isspace(c) && c != '>'; }));
 	}
 
-	static XmlElement ParseElement(CharacterStream& stream, const SharedPtr<Allocator>& allocator)
+	static XmlElement ParseElement(CharacterStream& stream)
 	{
 		if (stream.Eof())
 		{
 			throw ElpidaException("Unexpected end of file. Expected <element>");
 		}
-		auto name = ParseName(stream, allocator);
+		auto name = ParseName(stream);
 
 		bool inlineElement;
-		auto attributes = ParseAttributes(stream, inlineElement, allocator);
+		auto attributes = ParseAttributes(stream, inlineElement);
 
 		if (inlineElement)
 		{
 			return {std::move(name), std::move(attributes), {}, {}};
 		}
 
-		XmlElement::Children children((StlAllocator<XmlElement>(allocator)));
+		XmlElement::Children children;
 
 		while (!stream.Eof())
 		{
@@ -198,7 +195,7 @@ namespace Elpida
 					}
 					break;
 				}
-				children.push_back(ParseElement(stream, allocator));
+				children.push_back(ParseElement(stream));
 			}
 			else if (type == NextNode::Cdata)
 			{
@@ -209,7 +206,7 @@ namespace Elpida
 					throw ElpidaException("Unexpected end of file: expected ']]'");
 				}
 
-				auto content = XmlElement::String(stream.GetStringView(firstCharacter, stream.Index() - 2), StlAllocator<char>(allocator));
+				auto content = XmlElement::String(stream.GetStringView(firstCharacter, stream.Index() - 2));
 				children.push_back(XmlElement("", {}, std::move(content), {}));
 			}
 			else
@@ -228,7 +225,7 @@ namespace Elpida
 					}
 					stream.Next();
 				}
-				auto content = XmlElement::String(stream.GetStringView(firstCharacter, lastCharacter + 1), StlAllocator<char>(allocator));
+				auto content = XmlElement::String(stream.GetStringView(firstCharacter, lastCharacter + 1));
 				children.push_back(XmlElement("", {}, std::move(content), {}));
 			}
 		}
@@ -244,11 +241,7 @@ namespace Elpida
 		{
 			throw ElpidaException("Unexpected end of file: expected at least one <element>");
 		}
-		return ParseElement(stream, _allocator);
+		return ParseElement(stream);
 	}
 
-	XmlParser::XmlParser(SharedPtr<Allocator> allocator)
-	 : _allocator(std::move(allocator))
-	{
-	}
 } // Elpida

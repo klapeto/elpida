@@ -12,7 +12,6 @@
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 #include "Xml/XmlElement.hpp"
 #include "Xml/XmlParser.hpp"
-#include "nanosvg.h"
 
 namespace Elpida
 {
@@ -25,23 +24,16 @@ namespace Elpida
 		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 		Size GetProcessedDataSize() const override;
-	protected:
-		Size GetOperationsPerformedPerRun() override;
-		Duration GetExecutionMinimumDuration() override;
-		Duration PostProcessDuration(const Duration& duration) const override;
-		void OnBeforeRun() override;
-	public:
-
 		SvgParseTask() = default;
 		~SvgParseTask() override = default;
 	protected:
 		void DoRun(Iterations iterations) override;
 		UniquePtr<Task> DoDuplicate() const override;
+		Size GetOperationsPerformedPerRun() override;
+		Duration GetExecutionMinimumDuration() override;
 	private:
-		NSVGimage* _image{nullptr};
 		UniquePtr<AbstractTaskData> _outputData;
 		UniquePtr<AbstractTaskData> _inputData;
-		SharedPtr<Allocator> _allocator;
 		XmlParser _parser;
 		XmlElement _element;
 	};
