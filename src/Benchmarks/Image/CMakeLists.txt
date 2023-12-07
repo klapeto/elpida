@@ -16,7 +16,22 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         SvgBenchmark.cpp
         nanosvg.c
         nanosvgrast.c
-        Plugin.cpp Xml/XmlParser.cpp Xml/XmlParser.hpp Xml/XmlElement.cpp Xml/XmlElement.hpp Xml/CharacterStream.cpp Xml/CharacterStream.hpp)
+        Plugin.cpp
+
+        Xml/XmlParser.cpp
+        Xml/XmlElement.cpp
+        Xml/CharacterStream.cpp
+
+        Svg/SvgBounds.cpp
+        Svg/SvgColor.cpp
+        Svg/SvgDocument.cpp
+        Svg/SvgGradient.cpp
+        Svg/SvgGradientStop.cpp
+        Svg/SvgPaint.cpp
+        Svg/SvgPath.cpp
+        Svg/SvgShape.cpp
+        Svg/SvgTransform.cpp
+        )
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
 
