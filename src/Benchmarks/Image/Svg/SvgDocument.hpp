@@ -7,17 +7,19 @@
 
 #include "Benchmarks/Image/Xml/XmlElement.hpp"
 #include "SvgShape.hpp"
+
 namespace Elpida
 {
+	class XmlElement;
 
 	class SvgDocument
 	{
 	public:
-		SvgDocument(const XmlElement& element);
+		explicit SvgDocument(const XmlElement& element);
 	private:
 		std::vector<SvgShape> _shapes;
-		float _width;
-		float _height;
+		double _width;
+		double _height;
 	};
 
 } // Elpida

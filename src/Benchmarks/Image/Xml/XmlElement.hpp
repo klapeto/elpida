@@ -25,6 +25,22 @@ namespace Elpida
 		using String = std::string;
 		using Attributes = std::unordered_map<String, String>;
 
+		const String& GetName() const
+		{
+			return _name;
+		}
+		const Attributes& GetAttributes() const
+		{
+			return _attributes;
+		}
+		const String& GetContent() const
+		{
+			return _content;
+		}
+		const Children& GetChildren() const
+		{
+			return _children;
+		}
 
 		XmlElement() = default;
 		XmlElement(String&& name,

@@ -21,10 +21,14 @@
 // Created by klapeto on 10/12/2022.
 //
 
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <math.h>
+#include <string_view>
 
+#include "Benchmarks/Image/Svg/SvgDocument.hpp"
 #include "Benchmarks/Image/Xml/XmlParser.hpp"
 #include "Elpida/Core/AllocatorFactory.hpp"
 #include "Elpida/Core/Config.hpp"
@@ -44,6 +48,7 @@
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
+#include "Benchmarks/Image/Xml/CharacterStream.hpp"
 
 using namespace Elpida;
 
@@ -93,8 +98,68 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	}
 }
 
+
 int main(int argC, char** argV)
 {
+	std::string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+					  "<!-- Created with Inkscape (http://www.inkscape.org/) -->\n"
+					  "\n"
+					  "<svg\n"
+					  "   width=\"74\"\n"
+					  "   height=\"74\"\n"
+					  "   viewBox=\"0 0 74 74\"\n"
+					  "   version=\"1.1\"\n"
+					  "   id=\"svg5\"\n"
+					  "   inkscape:version=\"1.1.2 (0a00cf5339, 2022-02-04)\"\n"
+					  "   sodipodi:docname=\"drawing.svg\"\n"
+					  "   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"\n"
+					  "   xmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\"\n"
+					  "   xmlns=\"http://www.w3.org/2000/svg\"\n"
+					  "   xmlns:svg=\"http://www.w3.org/2000/svg\">\n"
+					  "  <sodipodi:namedview\n"
+					  "     id=\"namedview7\"\n"
+					  "     pagecolor=\"#ffffff\"\n"
+					  "     bordercolor=\"#666666\"\n"
+					  "     borderopacity=\"1.0\"\n"
+					  "     inkscape:pageshadow=\"2\"\n"
+					  "     inkscape:pageopacity=\"0.0\"\n"
+					  "     inkscape:pagecheckerboard=\"0\"\n"
+					  "     inkscape:document-units=\"px\"\n"
+					  "     showgrid=\"false\"\n"
+					  "     units=\"px\"\n"
+					  "     scale-x=\"1\"\n"
+					  "     fit-margin-top=\"5\"\n"
+					  "     fit-margin-left=\"5\"\n"
+					  "     fit-margin-right=\"5\"\n"
+					  "     fit-margin-bottom=\"5\"\n"
+					  "     inkscape:zoom=\"9.0420721\"\n"
+					  "     inkscape:cx=\"59.665527\"\n"
+					  "     inkscape:cy=\"64.752857\"\n"
+					  "     inkscape:window-width=\"3840\"\n"
+					  "     inkscape:window-height=\"2056\"\n"
+					  "     inkscape:window-x=\"3840\"\n"
+					  "     inkscape:window-y=\"0\"\n"
+					  "     inkscape:window-maximized=\"1\"\n"
+					  "     inkscape:current-layer=\"layer1\" />\n"
+					  "  <defs\n"
+					  "     id=\"defs2\" />\n"
+					  "  <g\n"
+					  "     inkscape:label=\"Layer 1\"\n"
+					  "     inkscape:groupmode=\"layer\"\n"
+					  "     id=\"layer1\"\n"
+					  "     transform=\"translate(-51.583763,-70.752197)\">\n"
+					  "    <circle\n"
+					  "       style=\"fill:#b0aff2;fill-rule:evenodd;stroke-width:0.529167;stroke-linecap:round;stop-color:#000000;fill-opacity:1\"\n"
+					  "       id=\"path846\"\n"
+					  "       cx=\"88.583763\"\n"
+					  "       cy=\"107.7522\"\n"
+					  "       r=\"32\" />\n"
+					  "  </g>\n"
+					  "</svg>";
+	XmlParser parser;
+	auto element = parser.Parse(xml.c_str(), xml.size());
+	SvgDocument document(element);
+	return 0;
 	try
 	{
 		ArgumentsHelper helper;

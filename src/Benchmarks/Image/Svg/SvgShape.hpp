@@ -42,6 +42,7 @@ namespace Elpida
 
 	class SvgShape
 	{
+	public:
 
 	private:
 		std::string _id;

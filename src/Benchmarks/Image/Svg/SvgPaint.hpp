@@ -25,11 +25,10 @@ namespace Elpida
 
 	private:
 		SvgPaintType _type;
-		union
-		{
+
 			SvgColor _color;
 			std::shared_ptr<SvgGradient> _gradient;
-		};
+
 	};
 
 } // Elpida

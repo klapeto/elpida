@@ -111,11 +111,17 @@ namespace Elpida
 
 		bool Eof() const
 		{
-			return _index == _maxIndex;
+			return _index > _maxIndex;
 		}
 
 		CharacterStream(const char* data, std::size_t size)
 			: _data(data), _maxIndex(size - 1), _index(0)
+		{
+
+		}
+
+		explicit CharacterStream(const std::string_view& view)
+			: CharacterStream(view.data(), view.size())
 		{
 
 		}
