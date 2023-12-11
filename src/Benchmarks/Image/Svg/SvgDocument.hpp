@@ -5,8 +5,10 @@
 #ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGDOCUMENT_HPP
 #define ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGDOCUMENT_HPP
 
+#include "Benchmarks/Image/Svg/SvgViewBox.hpp"
 #include "Benchmarks/Image/Xml/XmlElement.hpp"
 #include "SvgShape.hpp"
+#include "SvgPreserveAspectRatio.hpp"
 
 namespace Elpida
 {
@@ -18,6 +20,8 @@ namespace Elpida
 		explicit SvgDocument(const XmlElement& element);
 	private:
 		std::vector<SvgShape> _shapes;
+		SvgViewBox _viewBox;
+		SvgPreserveAspectRatio _preserveAspectRatio;
 		double _width;
 		double _height;
 	};

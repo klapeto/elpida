@@ -8,6 +8,8 @@
 #include "Benchmarks/Image/Xml/XmlElement.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "SvgCoordinate.hpp"
+#include "SvgPreserveAspectRatio.hpp"
+#include "SvgViewBox.hpp"
 #include <string>
 #include <string_view>
 
@@ -113,9 +115,11 @@ namespace Elpida
 
 	static SvgUnits ParseUnits(CharacterStream& stream)
 	{
+		stream.SkipSpace();
 		if (stream.Eof()) return SvgUnits::Px;
 
-		auto callback = [&stream](char c, SvgUnits units){
+		auto callback = [&stream](char c, SvgUnits units)
+		{
 		  if (!stream.Next())
 		  {
 			  throw ElpidaException("Unexpected EOF. Expected letter after");
@@ -180,11 +184,135 @@ namespace Elpida
 
 	static SvgCoordinate ParseCoordinate(std::string_view view)
 	{
-		if (view.empty()) return {};
+		if (view.empty()) return SvgCoordinate{ 0, SvgUnits::Px };
 
 		CharacterStream stream(view);
 
-		return SvgCoordinate{ ParseNumber(stream), ParseUnits(stream)};
+		return SvgCoordinate{ ParseNumber(stream), ParseUnits(stream) };
+	}
+
+	static SvgViewBox ParseViewBox(std::string_view view)
+	{
+		if (view.empty()) return SvgViewBox{ 0, 0, 0, 0 };
+
+		CharacterStream stream(view);
+
+		auto callback = [](auto c) { return CharacterStream::isspace(c) || c == ',' || c == '%'; };
+
+		auto minX = ParseNumber(stream);
+		stream.Skip(callback);
+
+		auto minY = ParseNumber(stream);
+		stream.Skip(callback);
+
+		auto width = ParseNumber(stream);
+		stream.Skip(callback);
+
+		auto height = ParseNumber(stream);
+		stream.Skip(callback);
+
+		return SvgViewBox{ minX, minY, width, height };
+	}
+
+	static SvgPreserveAspectRatio ParsePreserveAspectRatio(std::string_view view)
+	{
+		if (view.empty()) return {};
+
+		CharacterStream stream(view);
+		stream.SkipSpace();
+
+		SvgAlignType type = SvgAlignType::Meet;
+		SvgAxisAlignType xAlign = SvgAxisAlignType::Mid;
+		SvgAxisAlignType yAlign = SvgAxisAlignType::Mid;
+
+		if (stream.Current() == 'n')
+		{
+			if (!stream.NextCharsAre("none"))
+			{
+				throw ElpidaException("Unexpected character: expected 'none'");
+			}
+			return {};
+		}
+
+		if (!stream.NextCharsAre("xM"))
+		{
+			throw ElpidaException("Unexpected character: expected 'xMin' or 'xMax' or 'xMid'");
+		}
+
+		auto callback = [&stream](SvgAxisAlignType& align)
+		{
+		  switch (stream.Current())
+		  {
+		  case 'i':
+			  if (!stream.Next())
+			  {
+				  throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
+			  }
+			  switch (stream.Current())
+			  {
+			  case 'd':
+				  align = SvgAxisAlignType::Mid;
+				  break;
+			  case 'n':
+				  align = SvgAxisAlignType::Min;
+				  break;
+			  }
+			  stream.Next();
+			  break;
+		  case 'a':
+			  if (!stream.Next())
+			  {
+				  throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
+			  }
+			  if (stream.Current() != 'x')
+			  {
+				  throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
+			  }
+			  align = SvgAxisAlignType::Max;
+			  stream.Next();
+			  break;
+		  default:
+			  throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
+		  }
+		};
+
+		callback(xAlign);
+
+		if (!stream.NextCharsAre("YM"))
+		{
+			throw ElpidaException("Unexpected character: expected 'YMin' or 'YMax' or 'YMid'");
+		}
+
+		callback(yAlign);
+
+		stream.SkipSpace();
+		if (!stream.Eof())
+		{
+			if (stream.Current() == 'm')
+			{
+				stream.Next();
+				if (!stream.NextCharsAre("eet"))
+				{
+					throw ElpidaException("Unexpected character: expected 'meet'");
+				}
+				type = SvgAlignType::Meet;
+			}
+			else if (stream.Current() == 's')
+			{
+				stream.Next();
+				if (!stream.NextCharsAre("lice"))
+				{
+					throw ElpidaException("Unexpected character: expected 'meet'");
+				}
+				type = SvgAlignType::Slice;
+			}
+			else
+			{
+				throw ElpidaException("Unexpected character: expected 'meet' or 'slice'");
+			}
+		}
+
+		return SvgPreserveAspectRatio{ type, xAlign, yAlign };
 	}
 
 	SvgDocument::SvgDocument(const XmlElement& element)
@@ -196,6 +324,7 @@ namespace Elpida
 		}
 		_width = ParseCoordinate(GetAttributeValue(element, "width")).CalculatePixels(0, 0, 0, 0);
 		_height = ParseCoordinate(GetAttributeValue(element, "height")).CalculatePixels(0, 0, 0, 0);
-
+		_viewBox = ParseViewBox(GetAttributeValue(element, "viewBox"));
+		_preserveAspectRatio = ParsePreserveAspectRatio(GetAttributeValue(element, "preserveAspectRatio"));
 	}
 } // Elpida

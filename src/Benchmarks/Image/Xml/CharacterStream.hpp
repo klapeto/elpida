@@ -70,6 +70,7 @@ namespace Elpida
 				{
 					if (++i == N - 1)
 					{
+						Next();
 						return true;
 					}
 				}

@@ -107,6 +107,7 @@ int main(int argC, char** argV)
 					  "<svg\n"
 					  "   width=\"74\"\n"
 					  "   height=\"74\"\n"
+					  "   preserveAspectRatio=\"xMidYMid slice\"\n"
 					  "   viewBox=\"0 0 74 74\"\n"
 					  "   version=\"1.1\"\n"
 					  "   id=\"svg5\"\n"
