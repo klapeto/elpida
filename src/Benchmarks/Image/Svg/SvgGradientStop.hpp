@@ -14,7 +14,7 @@ namespace Elpida
 
 	private:
 		SvgColor _color;
-		float _offset;
+		double _offset;
 	};
 
 } // Elpida

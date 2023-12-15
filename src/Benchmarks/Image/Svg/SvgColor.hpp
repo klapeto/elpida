@@ -10,7 +10,6 @@ namespace Elpida
 
 	class SvgColor
 	{
-
 	private:
 		unsigned int _value;
 	};

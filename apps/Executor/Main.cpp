@@ -98,7 +98,6 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	}
 }
 
-
 int main(int argC, char** argV)
 {
 	std::string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
@@ -143,7 +142,19 @@ int main(int argC, char** argV)
 					  "     inkscape:window-maximized=\"1\"\n"
 					  "     inkscape:current-layer=\"layer1\" />\n"
 					  "  <defs\n"
-					  "     id=\"defs2\" />\n"
+					  "     id=\"defs2\" >\n"
+					  "    <linearGradient\n"
+					  "       inkscape:collect=\"always\"\n"
+					  "       xlink:href=\"#linearGradient1148\"\n"
+					  "       id=\"linearGradient19685\"\n"
+					  "       gradientUnits=\"userSpaceOnUse\"\n"
+					  "       x1=\"318.09229\"\n"
+					  "       y1=\"274.77167\"\n"
+					  "       x2=\"319.75272\"\n"
+					  "       y2=\"282.52206\"\n"
+					  "       spreadMethod=\"pad\"\n"
+					  "       gradientTransform=\"translate(523.9711,-70.819879)\" />"
+					  "  </defs>"
 					  "  <g\n"
 					  "     inkscape:label=\"Layer 1\"\n"
 					  "     inkscape:groupmode=\"layer\"\n"
@@ -157,6 +168,7 @@ int main(int argC, char** argV)
 					  "       r=\"32\" />\n"
 					  "  </g>\n"
 					  "</svg>";
+
 	XmlParser parser;
 	auto element = parser.Parse(xml.c_str(), xml.size());
 	SvgDocument document(element);
