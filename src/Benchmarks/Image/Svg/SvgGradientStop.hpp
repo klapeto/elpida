@@ -11,10 +11,22 @@ namespace Elpida
 
 	class SvgGradientStop
 	{
+	public:
+		const SvgColor& GetColor() const
+		{
+			return _color;
+		}
+
+		double GetOffset() const
+		{
+			return _offset;
+		}
 
 	private:
 		SvgColor _color;
 		double _offset;
+		double _opacity;
+		bool _percent;
 	};
 
 } // Elpida

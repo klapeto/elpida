@@ -18,7 +18,7 @@ namespace Elpida
 
 		static inline int isspace(int c)
 		{
-			return c == ' ' || (unsigned)c-'\t' < 5;
+			return c == ' ' || (unsigned)c - '\t' < 5;
 		}
 
 		template<typename TPredicate>
@@ -31,7 +31,8 @@ namespace Elpida
 
 		bool SkipSpace()
 		{
-			return Skip([](auto c) { return isspace(c); });
+			return Skip([](auto c)
+			{ return isspace(c); });
 		}
 
 		char Current() const
@@ -61,7 +62,7 @@ namespace Elpida
 		}
 
 		template<std::size_t N>
-		bool NextCharsAre(const char (&str)[N])
+		bool NextCharsAre(const char (& str)[N])
 		{
 			std::size_t i = 0;
 			while (!Eof())
@@ -84,7 +85,7 @@ namespace Elpida
 		}
 
 		template<std::size_t N>
-		bool SkipUntilString(const char (&str)[N])
+		bool SkipUntilString(const char (& str)[N])
 		{
 			std::size_t i = 0;
 			while (!Eof())
@@ -115,17 +116,23 @@ namespace Elpida
 			return _index > _maxIndex;
 		}
 
+		std::size_t AvailableCharacters() const
+		{
+			return _maxIndex - _index;
+		}
+
 		CharacterStream(const char* data, std::size_t size)
-			: _data(data), _maxIndex(size - 1), _index(0)
+				: _data(data), _maxIndex(size - 1), _index(0)
 		{
 
 		}
 
 		explicit CharacterStream(const std::string_view& view)
-			: CharacterStream(view.data(), view.size())
+				: CharacterStream(view.data(), view.size())
 		{
 
 		}
+
 	private:
 		const char* _data;
 		std::size_t _maxIndex;

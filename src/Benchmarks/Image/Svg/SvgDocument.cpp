@@ -50,6 +50,34 @@ namespace Elpida
 		return value;
 	}
 
+	static unsigned long StrTol16(const std::string_view& view)
+	{
+		unsigned long value = 0;
+		const std::size_t size = view.length();
+		for (std::size_t i = 0, v = 1; i < size; ++i, v *= 16)
+		{
+			auto c = view[size - i - 1];
+
+			if (c >= '0' && c <= '9')
+			{
+				value += (c - '0') * v;
+			}
+			else if (c >= 'A' && c <= 'F')
+			{
+				value += (c - 'A' + 10) * v;
+			}
+			else if (c >= 'a' && c <= 'f')
+			{
+				value += (c - 'a' + 10) * v;
+			}
+			else
+			{
+				throw ElpidaException("Unexpected value");
+			}
+		}
+		return value;
+	}
+
 	static double ParseNumber(CharacterStream& stream)
 	{
 		stream.SkipSpace();
@@ -76,14 +104,16 @@ namespace Elpida
 			break;
 		}
 
-		auto integerPart = stream.GetStringViewWhile([](auto c) { return IsNumber(c); });
+		auto integerPart = stream.GetStringViewWhile([](auto c)
+		{ return IsNumber(c); });
 
 		if (stream.Current() == '.')
 		{
 			stream.Next();
 		}
 
-		auto floatPart = stream.GetStringViewWhile([](auto c) { return IsNumber(c); });
+		auto floatPart = stream.GetStringViewWhile([](auto c)
+		{ return IsNumber(c); });
 
 		double expSign;
 
@@ -101,7 +131,8 @@ namespace Elpida
 					throw ElpidaException("Unexpected EOF. Expected exp number");
 				}
 
-				expPart = stream.GetStringViewWhile([](auto c) { return IsNumber(c); });
+				expPart = stream.GetStringViewWhile([](auto c)
+				{ return IsNumber(c); });
 			}
 		}
 
@@ -125,16 +156,16 @@ namespace Elpida
 
 		auto callback = [&stream](char c, SvgUnits units)
 		{
-		  if (!stream.Next())
-		  {
-			  throw ElpidaException("Unexpected EOF. Expected letter after");
-		  }
-		  if (stream.Current() != c)
-		  {
-			  throw ElpidaException("Unexpected character: expected '" + std::string() + c);
-		  }
-		  stream.Next();
-		  return units;
+			if (!stream.Next())
+			{
+				throw ElpidaException("Unexpected EOF. Expected letter after");
+			}
+			if (stream.Current() != c)
+			{
+				throw ElpidaException("Unexpected character: expected '" + std::string() + c);
+			}
+			stream.Next();
+			return units;
 		};
 		switch (stream.Current())
 		{
@@ -201,7 +232,8 @@ namespace Elpida
 
 		CharacterStream stream(view);
 
-		auto callback = [](auto c) { return CharacterStream::isspace(c) || c == ',' || c == '%'; };
+		auto callback = [](auto c)
+		{ return CharacterStream::isspace(c) || c == ',' || c == '%'; };
 
 		auto minX = ParseNumber(stream);
 		stream.Skip(callback);
@@ -245,39 +277,39 @@ namespace Elpida
 
 		auto callback = [&stream](SvgAxisAlignType& align)
 		{
-		  switch (stream.Current())
-		  {
-		  case 'i':
-			  if (!stream.Next())
-			  {
-				  throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
-			  }
-			  switch (stream.Current())
-			  {
-			  case 'd':
-				  align = SvgAxisAlignType::Mid;
-				  break;
-			  case 'n':
-				  align = SvgAxisAlignType::Min;
-				  break;
-			  }
-			  stream.Next();
-			  break;
-		  case 'a':
-			  if (!stream.Next())
-			  {
-				  throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
-			  }
-			  if (stream.Current() != 'x')
-			  {
-				  throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
-			  }
-			  align = SvgAxisAlignType::Max;
-			  stream.Next();
-			  break;
-		  default:
-			  throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
-		  }
+			switch (stream.Current())
+			{
+			case 'i':
+				if (!stream.Next())
+				{
+					throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
+				}
+				switch (stream.Current())
+				{
+				case 'd':
+					align = SvgAxisAlignType::Mid;
+					break;
+				case 'n':
+					align = SvgAxisAlignType::Min;
+					break;
+				}
+				stream.Next();
+				break;
+			case 'a':
+				if (!stream.Next())
+				{
+					throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
+				}
+				if (stream.Current() != 'x')
+				{
+					throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
+				}
+				align = SvgAxisAlignType::Max;
+				stream.Next();
+				break;
+			default:
+				throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
+			}
 		};
 
 		callback(xAlign);
@@ -440,15 +472,53 @@ namespace Elpida
 		while (!stream.Eof())
 		{
 			stream.SkipSpace();
+			auto name = stream.GetStringViewWhile([](auto c)
+			{ return c != ':'; });
 
 		}
 
 		return ret;
 	}
 
+	static SvgColor ParseColor(const std::string& value)
+	{
+		CharacterStream stream(value);
+
+		auto valueParser = [&](){
+			std::string v;
+			stream.Next();
+			v += stream.Current();
+			stream.Next();
+			v += stream.Current();
+			return StrTol16(v);
+		};
+
+
+		stream.SkipSpace();
+		switch (stream.Current())
+		{
+		case '#':
+		{
+			auto available = stream.AvailableCharacters();
+			auto r = valueParser();
+			auto g = valueParser();
+			auto b = valueParser();
+		}
+			break;
+		}
+
+	}
+
 	static SvgGradientStop ParseStop(const XmlElement& element)
 	{
+		auto& attributes = element.GetAttributes();
 
+		SvgColor color;
+		auto& value = GetAttributeValue(element, "stop-color");
+		if (!value.empty())
+		{
+
+		}
 	}
 
 	struct BasicGradientData
@@ -457,8 +527,8 @@ namespace Elpida
 		std::string href;
 		std::vector<SvgGradientStop> stops;
 		SvgTransform transform;
-		SvgSpreadType spreadType;
-		SvgGradientUnits units;
+		SvgSpreadType spreadType = SvgSpreadType::Pad;
+		SvgGradientUnits units = SvgGradientUnits::Object;
 	};
 
 	static BasicGradientData ParseBasicGradient(const XmlElement& element)
@@ -470,14 +540,6 @@ namespace Elpida
 			if (!value.empty())
 			{
 				basicData.units = value == "objectBoundingBox" ? SvgGradientUnits::Object : SvgGradientUnits::User;
-			}
-		}
-
-		{
-			auto& value = GetAttributeValue(element, "gradientTransform");
-			if (!value.empty())
-			{
-				basicData.transform = ParseTransform(value);
 			}
 		}
 
@@ -513,13 +575,15 @@ namespace Elpida
 		}
 
 		basicData.stops.reserve(element.GetChildren().size());
-		for (auto& child : element.GetChildren())
+		for (auto& child: element.GetChildren())
 		{
 			if (child.GetName() == "stop")
 			{
-
+				basicData.stops.push_back(ParseStop(child));
 			}
 		}
+		std::sort(basicData.stops.begin(), basicData.stops.end(), [](SvgGradientStop& a, SvgGradientStop& b)
+		{ return a.GetOffset() > b.GetOffset(); });
 		basicData.stops.shrink_to_fit();
 
 		basicData.id = GetAttributeValue(element, "id");
@@ -570,20 +634,20 @@ namespace Elpida
 		auto data = ParseBasicGradient(element);
 
 		return SvgGradient(std::move(data.id),
-			std::move(data.href),
-			std::move(data.stops),
-			data.transform,
-			data.spreadType,
-			data.units,
-			x1,
-			y1,
-			x2,
-			y2);
+				std::move(data.href),
+				std::move(data.stops),
+				data.transform,
+				data.spreadType,
+				data.units,
+				x1,
+				y1,
+				x2,
+				y2);
 	}
 
 	static void ParseDefs(const XmlElement& element, std::vector<SvgGradient>& gradients)
 	{
-		for (auto& child : element.GetChildren())
+		for (auto& child: element.GetChildren())
 		{
 			if (child.GetName() == "linearGradient")
 			{
@@ -593,7 +657,7 @@ namespace Elpida
 	}
 
 	SvgDocument::SvgDocument(const XmlElement& element)
-		: _width(0), _height(0)
+			: _width(0), _height(0)
 	{
 		if (element.GetName() != "svg")
 		{
@@ -604,7 +668,7 @@ namespace Elpida
 		_viewBox = ParseViewBox(GetAttributeValue(element, "viewBox"));
 		_preserveAspectRatio = ParsePreserveAspectRatio(GetAttributeValue(element, "preserveAspectRatio"));
 
-		for (auto& child : element.GetChildren())
+		for (auto& child: element.GetChildren())
 		{
 			if (child.GetName() == "defs")
 			{

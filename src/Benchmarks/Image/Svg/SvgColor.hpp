@@ -10,6 +10,16 @@ namespace Elpida
 
 	class SvgColor
 	{
+	public:
+		unsigned int GetValue() const
+		{
+			return _value;
+		}
+
+		SvgColor() : _value(0)
+		{
+
+		}
 	private:
 		unsigned int _value;
 	};

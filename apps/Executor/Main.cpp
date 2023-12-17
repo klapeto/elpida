@@ -59,10 +59,10 @@ ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const Topolo
 	returnVector.reserve(affinity.size());
 
 	auto& processors = topologyInfo.GetAllProcessingUnits();
-	for (auto index : affinity)
+	for (auto index: affinity)
 	{
 		bool found = false;
-		for (auto& processor : processors)
+		for (auto& processor: processors)
 		{
 			if (processor.get().GetOsIndex().value() == index)
 			{
@@ -87,9 +87,9 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	if (configurationValues.size() != taskConfigurations.size())
 	{
 		throw ElpidaException("benchmark required ",
-			taskConfigurations.size(),
-			" configurations but were provided ",
-			configurationValues.size());
+				taskConfigurations.size(),
+				" configurations but were provided ",
+				configurationValues.size());
 	}
 
 	for (Size i = 0; i < taskConfigurations.size(); ++i)
@@ -153,7 +153,16 @@ int main(int argC, char** argV)
 					  "       x2=\"319.75272\"\n"
 					  "       y2=\"282.52206\"\n"
 					  "       spreadMethod=\"pad\"\n"
-					  "       gradientTransform=\"translate(523.9711,-70.819879)\" />"
+					  "       gradientTransform=\"translate(523.9711,-70.819879)\" >"
+					  "        <stop\n"
+					  "         id=\"stop16172\"\n"
+					  "         offset=\"0\"\n"
+					  "         style=\"stop-color:#363765;stop-opacity:1;opacity:1\" />"
+					  "        <stop\n"
+					  "         id=\"stop16175\"\n"
+					  "         offset=\"1\"\n"
+					  "         style=\"stop-color:#9a9eef;stop-opacity:1;opacity:1\" />"
+					  "      </linearGradient>"
 					  "  </defs>"
 					  "  <g\n"
 					  "     inkscape:label=\"Layer 1\"\n"
@@ -169,6 +178,10 @@ int main(int argC, char** argV)
 					  "  </g>\n"
 					  "</svg>";
 
+
+	auto x = "Ff";
+
+	auto value = StrTol16(x);
 	XmlParser parser;
 	auto element = parser.Parse(xml.c_str(), xml.size());
 	SvgDocument document(element);
@@ -190,34 +203,34 @@ int main(int argC, char** argV)
 		BenchmarkGroupModule module(helper.GetModulePath());
 
 		auto& benchmark = module
-		.GetBenchmarkGroup()
-			.GetBenchmarks()
-			.at(helper.GetBenchmarkIndex());
+				.GetBenchmarkGroup()
+				.GetBenchmarks()
+				.at(helper.GetBenchmarkIndex());
 
 		auto config = benchmark->GetRequiredConfiguration();
 		ValidateAndAssignConfiguration(helper.GetConfigurationValues(), config);
 
 		EnvironmentInfo environmentInfo(
-			CpuInfoLoader::Load(),
-			MemoryInfoLoader::Load(),
-			OsInfoLoader::Load(),
-			TopologyLoader::LoadTopology(),
-			TimingInfo(NanoSeconds(helper.GetNowOverhead()),
-				NanoSeconds(helper.GetLoopOverhead()),
-				NanoSeconds(helper.GetVCallOverhead()),
-				Seconds(0),
-				0),
-			helper.GetNumaAware()
-			? UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
-			: UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()));
+				CpuInfoLoader::Load(),
+				MemoryInfoLoader::Load(),
+				OsInfoLoader::Load(),
+				TopologyLoader::LoadTopology(),
+				TimingInfo(NanoSeconds(helper.GetNowOverhead()),
+						NanoSeconds(helper.GetLoopOverhead()),
+						NanoSeconds(helper.GetVCallOverhead()),
+						Seconds(0),
+						0),
+				helper.GetNumaAware()
+				? UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
+				: UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()));
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
 
 		auto result = benchmark->Run(targetProcessors, config, environmentInfo);
 
 		std::cout
-			<< helper.GetResultFormatter().ConvertToString(result, *benchmark.get())
-			<< std::endl;
+				<< helper.GetResultFormatter().ConvertToString(result, *benchmark.get())
+				<< std::endl;
 	}
 	catch (const std::exception& ex)
 	{
