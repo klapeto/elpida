@@ -13,6 +13,11 @@
 
 namespace Elpida
 {
+	class XmlElement;
+}
+
+namespace Elpida
+{
 
 	enum class SvgSpreadType
 	{
@@ -112,6 +117,8 @@ namespace Elpida
 			radial.fx = fx;
 			radial.fy = fy;
 		}
+
+		explicit SvgGradient(const XmlElement& element);
 	private:
 		std::string _id;
 		std::string _href;

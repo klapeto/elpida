@@ -68,7 +68,7 @@ static constexpr unsigned int RgbToInt(const unsigned char r, const unsigned cha
 
 TEST(SvgColorTests, NamedColor_Success)
 {
-    static std::unordered_map<std::string_view, unsigned int> map
+    const std::unordered_map<std::string_view, unsigned int> map
             {
                 {"red", RgbToInt(255, 0, 0)},
                 {"green", RgbToInt(0, 128, 0)},

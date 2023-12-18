@@ -6,6 +6,7 @@
 #define ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGTRANSFORM_HPP
 
 #include <cmath>
+#include <string_view>
 
 namespace Elpida
 {
@@ -13,6 +14,12 @@ namespace Elpida
 	class SvgTransform final
 	{
 	public:
+
+		double operator[](const std::size_t i) const
+		{
+			return t[i];
+		}
+
 		void AsIdentity()
 		{
 			t[0] = 1.0f;
@@ -23,7 +30,7 @@ namespace Elpida
 			t[5] = 0.0f;
 		}
 
-		void SetTranslation(double tx, double ty)
+		void SetTranslation(const double tx, const double ty)
 		{
 			t[0] = 1.0f;
 			t[1] = 0.0f;
@@ -33,7 +40,7 @@ namespace Elpida
 			t[5] = ty;
 		}
 
-		void SetScale(double sx, double sy)
+		void SetScale(const double sx, const double sy)
 		{
 			t[0] = sx;
 			t[1] = 0.0f;
@@ -43,7 +50,7 @@ namespace Elpida
 			t[5] = 0.0f;
 		}
 
-		void SetSkewX(double a)
+		void SetSkewX(const double a)
 		{
 			t[0] = 1.0f;
 			t[1] = 0.0f;
@@ -53,7 +60,7 @@ namespace Elpida
 			t[5] = 0.0f;
 		}
 
-		void SetSkewY(double a)
+		void SetSkewY(const double a)
 		{
 			t[0] = 1.0f;
 			t[1] = tan(a);
@@ -63,10 +70,10 @@ namespace Elpida
 			t[5] = 0.0f;
 		}
 
-		void SetRotation(double a)
+		void SetRotation(const double a)
 		{
-			double cs = cos(a);
-			double sn = sin(a);
+			const double cs = cos(a);
+			const double sn = sin(a);
 			t[0] = cs;
 			t[1] = sn;
 			t[2] = -sn;
@@ -77,9 +84,9 @@ namespace Elpida
 
 		void Multiply(const SvgTransform& other)
 		{
-			double t0 = t[0] * other.t[0] + t[1] * other.t[2];
-			double t2 = t[2] * other.t[0] + t[3] * other.t[2];
-			double t4 = t[4] * other.t[0] + t[5] * other.t[2] + other.t[4];
+			const double t0 = t[0] * other.t[0] + t[1] * other.t[2];
+			const double t2 = t[2] * other.t[0] + t[3] * other.t[2];
+			const double t4 = t[4] * other.t[0] + t[5] * other.t[2] + other.t[4];
 			t[1] = t[0] * other.t[1] + t[1] * other.t[3];
 			t[3] = t[2] * other.t[1] + t[3] * other.t[3];
 			t[5] = t[4] * other.t[1] + t[5] * other.t[3] + other.t[5];
@@ -90,19 +97,19 @@ namespace Elpida
 
 		void Inverse(SvgTransform& other)
 		{
-			double invdet, det = (double)t[0] * t[3] - (double)t[2] * t[1];
+			const double det = t[0] * t[3] - t[2] * t[1];
 			if (det > -1e-6 && det < 1e-6)
 			{
 				AsIdentity();
 				return;
 			}
-			invdet = 1.0 / det;
-			other.t[0] = (double)(t[3] * invdet);
-			other.t[2] = (double)(-t[2] * invdet);
-			other.t[4] = (double)(((double)t[2] * t[5] - (double)t[3] * t[4]) * invdet);
-			other.t[1] = (double)(-t[1] * invdet);
-			other.t[3] = (double)(t[0] * invdet);
-			other.t[5] = (double)(((double)t[1] * t[4] - (double)t[0] * t[5]) * invdet);
+			const double invdet = 1.0 / det;
+			other.t[0] = t[3] * invdet;
+			other.t[2] = -t[2] * invdet;
+			other.t[4] = (t[2] * t[5] - t[3] * t[4]) * invdet;
+			other.t[1] = -t[1] * invdet;
+			other.t[3] = t[0] * invdet;
+			other.t[5] = (t[1] * t[4] - t[0] * t[5]) * invdet;
 		}
 
 		void PreMultiply(const SvgTransform& other)
@@ -123,6 +130,8 @@ namespace Elpida
 		{
 
 		}
+
+		explicit SvgTransform(std::string_view view);
 
 		SvgTransform(const SvgTransform&) = default;
 		SvgTransform& operator=(const SvgTransform&) = default;

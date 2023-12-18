@@ -2,7 +2,6 @@
 // Created by klapeto on 18/12/2023.
 //
 
-
 #include <Elpida/Core/ElpidaException.hpp>
 #include <Xml/CharacterStream.hpp>
 

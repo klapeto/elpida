@@ -6,4 +6,7 @@
 
 namespace Elpida
 {
+	SvgGradient::SvgGradient(const XmlElement& element)
+	{
+	}
 } // Elpida

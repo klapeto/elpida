@@ -4,6 +4,7 @@
 
 #ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGPRESERVEASPECTRATIO_HPP
 #define ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGPRESERVEASPECTRATIO_HPP
+#include <string_view>
 
 namespace Elpida
 {
@@ -47,6 +48,8 @@ namespace Elpida
 			: _type(type), _alignX(alignX), _alignY(alignY)
 		{
 		}
+
+		explicit SvgPreserveAspectRatio(std::string_view view);
 	private:
 		SvgAlignType _type;
 		SvgAxisAlignType _alignX;

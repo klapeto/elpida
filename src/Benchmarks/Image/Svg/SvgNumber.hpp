@@ -99,6 +99,11 @@ namespace Elpida
 
 			const auto floatPart = stream.GetStringViewWhile([](auto c) { return IsNumber(c); });
 
+			if (integerPart.empty() && floatPart.empty())
+			{
+				throw ElpidaException("No integer or float parts");
+			}
+
 			double expSign;
 
 			std::string_view expPart;

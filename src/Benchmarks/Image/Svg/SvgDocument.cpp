@@ -189,129 +189,13 @@ namespace Elpida
 		return SvgCoordinate{ ParseNumber(stream), ParseUnits(stream) };
 	}
 
-	static SvgViewBox ParseViewBox(std::string_view view)
+	template<typename T>
+	static void ConditionallyAssign(T& value, std::string_view view)
 	{
-		if (view.empty()) return SvgViewBox{ 0, 0, 0, 0 };
-
-		CharacterStream stream(view);
-
-		auto callback = [](auto c)
-		{ return CharacterStream::IsSpace(c) || c == ',' || c == '%'; };
-
-		auto minX = ParseNumber(stream);
-		stream.Skip(callback);
-
-		auto minY = ParseNumber(stream);
-		stream.Skip(callback);
-
-		auto width = ParseNumber(stream);
-		stream.Skip(callback);
-
-		auto height = ParseNumber(stream);
-		stream.Skip(callback);
-
-		return SvgViewBox{ minX, minY, width, height };
-	}
-
-	static SvgPreserveAspectRatio ParsePreserveAspectRatio(std::string_view view)
-	{
-		if (view.empty()) return {};
-
-		CharacterStream stream(view);
-		stream.SkipSpace();
-
-		SvgAlignType type = SvgAlignType::Meet;
-		SvgAxisAlignType xAlign = SvgAxisAlignType::Mid;
-		SvgAxisAlignType yAlign = SvgAxisAlignType::Mid;
-
-		if (stream.Current() == 'n')
+		if (!view.empty())
 		{
-			if (!stream.ConsumeNextChars("none"))
-			{
-				throw ElpidaException("Unexpected character: expected 'none'");
-			}
-			return {};
+			value = T(view);
 		}
-
-		if (!stream.ConsumeNextChars("xM"))
-		{
-			throw ElpidaException("Unexpected character: expected 'xMin' or 'xMax' or 'xMid'");
-		}
-
-		auto callback = [&stream](SvgAxisAlignType& align)
-		{
-			switch (stream.Current())
-			{
-			case 'i':
-				if (!stream.Next())
-				{
-					throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
-				}
-				switch (stream.Current())
-				{
-				case 'd':
-					align = SvgAxisAlignType::Mid;
-					break;
-				case 'n':
-					align = SvgAxisAlignType::Min;
-					break;
-				}
-				stream.Next();
-				break;
-			case 'a':
-				if (!stream.Next())
-				{
-					throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
-				}
-				if (stream.Current() != 'x')
-				{
-					throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
-				}
-				align = SvgAxisAlignType::Max;
-				stream.Next();
-				break;
-			default:
-				throw ElpidaException("Unexpected EOF: expected 'xMin' or 'xMax' or 'xMid'");
-			}
-		};
-
-		callback(xAlign);
-
-		if (!stream.ConsumeNextChars("YM"))
-		{
-			throw ElpidaException("Unexpected character: expected 'YMin' or 'YMax' or 'YMid'");
-		}
-
-		callback(yAlign);
-
-		stream.SkipSpace();
-		if (!stream.Eof())
-		{
-			if (stream.Current() == 'm')
-			{
-				stream.Next();
-				if (!stream.ConsumeNextChars("eet"))
-				{
-					throw ElpidaException("Unexpected character: expected 'meet'");
-				}
-				type = SvgAlignType::Meet;
-			}
-			else if (stream.Current() == 's')
-			{
-				stream.Next();
-				if (!stream.ConsumeNextChars("lice"))
-				{
-					throw ElpidaException("Unexpected character: expected 'meet'");
-				}
-				type = SvgAlignType::Slice;
-			}
-			else
-			{
-				throw ElpidaException("Unexpected character: expected 'meet' or 'slice'");
-			}
-		}
-
-		return SvgPreserveAspectRatio{ type, xAlign, yAlign };
 	}
 
 	template<std::size_t N>
@@ -423,23 +307,6 @@ namespace Elpida
 		}
 
 		ret.PreMultiply(transform);
-		return ret;
-	}
-
-	static std::unordered_map<std::string, std::string> ParseStyle(const std::string& value)
-	{
-		std::unordered_map<std::string, std::string> ret;
-
-		CharacterStream stream(value);
-
-		while (!stream.Eof())
-		{
-			stream.SkipSpace();
-			auto name = stream.GetStringViewWhile([](auto c)
-			{ return c != ':'; });
-
-		}
-
 		return ret;
 	}
 
@@ -597,10 +464,11 @@ namespace Elpida
 		{
 			throw ElpidaException("Element has invalid tag. It expected '<svg>' and got " + element.GetName());
 		}
-		_width = ParseCoordinate(GetAttributeValue(element, "width")).CalculatePixels(0, 0, 0, 0);
-		_height = ParseCoordinate(GetAttributeValue(element, "height")).CalculatePixels(0, 0, 0, 0);
-		_viewBox = ParseViewBox(GetAttributeValue(element, "viewBox"));
-		_preserveAspectRatio = ParsePreserveAspectRatio(GetAttributeValue(element, "preserveAspectRatio"));
+
+		_width = SvgCoordinate(GetAttributeValue(element, "width")).CalculatePixels(0, 0, 0, 0);
+		_height = SvgCoordinate(GetAttributeValue(element, "height")).CalculatePixels(0, 0, 0, 0);
+		ConditionallyAssign(_viewBox, GetAttributeValue(element, "viewBox"));
+		ConditionallyAssign(_preserveAspectRatio, GetAttributeValue(element, "preserveAspectRatio"));
 
 		for (auto& child: element.GetChildren())
 		{
