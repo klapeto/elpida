@@ -4,6 +4,7 @@
 
 #ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGCOLOR_HPP
 #define ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGCOLOR_HPP
+#include <string_view>
 
 namespace Elpida
 {
@@ -16,10 +17,12 @@ namespace Elpida
 			return _value;
 		}
 
-		SvgColor() : _value(0)
+		SvgColor()
+			: _value(0)
 		{
 
 		}
+		explicit SvgColor(std::string_view view);
 	private:
 		unsigned int _value;
 	};

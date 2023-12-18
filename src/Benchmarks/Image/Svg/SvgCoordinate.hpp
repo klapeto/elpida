@@ -4,6 +4,7 @@
 
 #ifndef ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGCOORDINATE_HPP
 #define ELPIDA_SRC_BENCHMARKS_IMAGE_SVG_SVGCOORDINATE_HPP
+#include <string_view>
 
 namespace Elpida
 {
@@ -72,6 +73,8 @@ namespace Elpida
 			: _value(value), _units(units)
 		{
 		}
+
+		explicit SvgCoordinate(std::string_view view);
 
 		~SvgCoordinate() = default;
 	private:

@@ -1,46 +1,74 @@
 //
-// Created by klapeto on 7/12/2023.
+// Created by klapeto on 17/12/2023.
 //
 
-#include "SvgColor.hpp"
-
-#include <unordered_map>
-#include <Benchmarks/Image/Xml/CharacterStream.hpp>
 #include <Elpida/Core/ElpidaException.hpp>
 
-#include "SvgNumber.hpp"
+#include "gtest/gtest.h"
+#include "../../src/Benchmarks/Image/Svg/SvgColor.hpp"
 
-namespace Elpida
+using namespace Elpida;
+
+TEST(SvgColorTests, HashParse_Success)
 {
-    static constexpr unsigned int RgbToInt(const unsigned char r, const unsigned char g, const unsigned char b)
-    {
-        return r << 16 | g << 8 | b;
-    }
+    const SvgColor color("#A19C86");
 
-    SvgColor::SvgColor(const std::string_view view)
-    {
-        CharacterStream stream(view);
-        auto valueParser = [&]
-        {
-            std::string v;
-            stream.Next();
-            v += stream.Current();
-            return SvgNumber::StrTol16(v);
-        };
+    EXPECT_EQ((color.GetValue() >> 16) & 0xFF, 0xA1);
+    EXPECT_EQ((color.GetValue() >> 8) & 0xFF, 0x9C);
+    EXPECT_EQ((color.GetValue()) & 0xFF, 0x86);
+}
 
-        auto valueParser2 = [&]
-        {
-            std::string v;
-            stream.Next();
-            v += stream.Current();
-            stream.Next();
-            v += stream.Current();
-            return SvgNumber::StrTol16(v);
-        };
+TEST(SvgColorTests, HashParse3Digits_Success)
+{
+    const SvgColor color("#fff");
 
-        auto nameParse = [](const std::string_view& name) -> unsigned
-        {
-            static std::unordered_map<std::string_view, unsigned int> map
+    EXPECT_EQ((color.GetValue() >> 16) & 0xFF, 0xFF);
+    EXPECT_EQ((color.GetValue() >> 8) & 0xFF, 0xFF);
+    EXPECT_EQ((color.GetValue()) & 0xFF, 0xFF);
+}
+
+
+TEST(SvgColorTests, HashParse_Fail_SetsZero)
+{
+    const SvgColor color("#5645");
+
+    EXPECT_EQ(color.GetValue(), 0);
+}
+
+TEST(SvgColorTests, HashParse_Fail_SetsZero2)
+{
+    const SvgColor color("#&*^(&^$#@$");
+
+    EXPECT_EQ(color.GetValue(), 0);
+}
+
+TEST(SvgColorTests, Rgb_Success)
+{
+    const SvgColor color("rgb(64,5,255)");
+
+    EXPECT_EQ((color.GetValue() >> 16) & 0xFF, 64);
+    EXPECT_EQ((color.GetValue() >> 8) & 0xFF, 5);
+    EXPECT_EQ((color.GetValue()) & 0xFF, 255);
+}
+
+TEST(SvgColorTests, Rgb_Fail_Throws)
+{
+    EXPECT_THROW(SvgColor("rgb(64,)"), ElpidaException);
+    EXPECT_THROW(SvgColor("rgb(64)"), ElpidaException);
+    EXPECT_THROW(SvgColor("rgb(,,)"), ElpidaException);
+    EXPECT_THROW(SvgColor("rgb(,)"), ElpidaException);
+    EXPECT_THROW(SvgColor("rgb("), ElpidaException);
+    EXPECT_THROW(SvgColor("rgb()"), ElpidaException);
+}
+
+static constexpr unsigned int RgbToInt(const unsigned char r, const unsigned char g, const unsigned char b)
+{
+    return r << 16 | g << 8 | b;
+}
+
+TEST(SvgColorTests, NamedColor_Success)
+{
+    static std::unordered_map<std::string_view, unsigned int> map
             {
                 {"red", RgbToInt(255, 0, 0)},
                 {"green", RgbToInt(0, 128, 0)},
@@ -189,77 +217,11 @@ namespace Elpida
                 {"wheat", RgbToInt(245, 222, 179)},
                 {"whitesmoke", RgbToInt(245, 245, 245)},
                 {"yellowgreen", RgbToInt(154, 205, 50)},
+                {"Hahhashasahsalol", RgbToInt(0, 0, 0)},
             };
 
-            const auto itr = map.find(name);
-            if (itr != map.end())
-            {
-                return itr->second;
-            }
-            return 0;
-        };
-
-        unsigned long r = 0;
-        unsigned long g = 0;
-        unsigned long b = 0;
-
-        stream.SkipSpace();
-        switch (stream.Current())
-        {
-        case '#':
-            {
-                switch (stream.AvailableCharacters())
-                {
-                case 3:
-                    r = valueParser() *17;
-                    g = valueParser() *17;
-                    b = valueParser() *17;
-                    break;
-                case 6:
-                    r = valueParser2();
-                    g = valueParser2();
-                    b = valueParser2();
-                default:
-                    break;
-                }
-            }
-            break;
-        case 'r':
-            stream.Next();
-            if (stream.ConsumeNextCharsCond("gb("))
-            {
-                auto value = stream.GetStringViewWhile([](auto c) { return c != ','; });
-                if (value.empty())
-                {
-                    throw ElpidaException("Unexpected character: expected digit");
-                }
-                r = SvgNumber::StrTol(value);
-                stream.Next();
-                value = stream.GetStringViewWhile([](auto c) { return c != ','; });
-                if (value.empty())
-                {
-                    throw ElpidaException("Unexpected character: expected digit");
-                }
-                g = SvgNumber::StrTol(value);
-                stream.Next();
-                value = stream.GetStringViewWhile([](auto c) { return c != ')'; });
-                if (value.empty())
-                {
-                    throw ElpidaException("Unexpected character: expected digit");
-                }
-                b = SvgNumber::StrTol(value);
-            }
-            else
-            {
-                _value = nameParse(view);
-                return;
-            }
-            break;
-        default:
-            _value = nameParse(view);
-            return;
-        }
-
-        _value = RgbToInt(r, g, b);
+    for (auto& [name, value]: map)
+    {
+        EXPECT_EQ(SvgColor(name).GetValue(), value);
     }
-} // Elpida
+}

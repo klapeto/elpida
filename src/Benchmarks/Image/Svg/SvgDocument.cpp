@@ -18,6 +18,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "SvgNumber.hpp"
+
 namespace Elpida
 {
 	static const std::string Empty;
@@ -37,45 +39,6 @@ namespace Elpida
 	static bool IsNumber(const char c)
 	{
 		return (unsigned char)(c - '0') < 10;
-	}
-
-	static unsigned long StrTol(const std::string_view& view)
-	{
-		unsigned long value = 0;
-		const std::size_t size = view.length();
-		for (std::size_t i = 0, v = 1; i < size; ++i, v *= 10)
-		{
-			value += (view[size - i - 1] - '0') * v;
-		}
-		return value;
-	}
-
-	static unsigned long StrTol16(const std::string_view& view)
-	{
-		unsigned long value = 0;
-		const std::size_t size = view.length();
-		for (std::size_t i = 0, v = 1; i < size; ++i, v *= 16)
-		{
-			auto c = view[size - i - 1];
-
-			if (c >= '0' && c <= '9')
-			{
-				value += (c - '0') * v;
-			}
-			else if (c >= 'A' && c <= 'F')
-			{
-				value += (c - 'A' + 10) * v;
-			}
-			else if (c >= 'a' && c <= 'f')
-			{
-				value += (c - 'a' + 10) * v;
-			}
-			else
-			{
-				throw ElpidaException("Unexpected value");
-			}
-		}
-		return value;
 	}
 
 	static double ParseNumber(CharacterStream& stream)
@@ -136,13 +99,13 @@ namespace Elpida
 			}
 		}
 
-		double value = StrTol(integerPart);
+		double value = SvgNumber::StrTol(integerPart);
 
-		value += (double)(StrTol(floatPart)) / pow(10.0, floatPart.length());
+		value += (double)(SvgNumber::StrTol(floatPart)) / pow(10.0, floatPart.length());
 
 		if (!expPart.empty())
 		{
-			double expValue = StrTol(expPart);
+			double expValue = SvgNumber::StrTol(expPart);
 			value *= pow(10.0, expValue * expSign);
 		}
 
@@ -233,7 +196,7 @@ namespace Elpida
 		CharacterStream stream(view);
 
 		auto callback = [](auto c)
-		{ return CharacterStream::isspace(c) || c == ',' || c == '%'; };
+		{ return CharacterStream::IsSpace(c) || c == ',' || c == '%'; };
 
 		auto minX = ParseNumber(stream);
 		stream.Skip(callback);
@@ -263,14 +226,14 @@ namespace Elpida
 
 		if (stream.Current() == 'n')
 		{
-			if (!stream.NextCharsAre("none"))
+			if (!stream.ConsumeNextChars("none"))
 			{
 				throw ElpidaException("Unexpected character: expected 'none'");
 			}
 			return {};
 		}
 
-		if (!stream.NextCharsAre("xM"))
+		if (!stream.ConsumeNextChars("xM"))
 		{
 			throw ElpidaException("Unexpected character: expected 'xMin' or 'xMax' or 'xMid'");
 		}
@@ -314,7 +277,7 @@ namespace Elpida
 
 		callback(xAlign);
 
-		if (!stream.NextCharsAre("YM"))
+		if (!stream.ConsumeNextChars("YM"))
 		{
 			throw ElpidaException("Unexpected character: expected 'YMin' or 'YMax' or 'YMid'");
 		}
@@ -327,7 +290,7 @@ namespace Elpida
 			if (stream.Current() == 'm')
 			{
 				stream.Next();
-				if (!stream.NextCharsAre("eet"))
+				if (!stream.ConsumeNextChars("eet"))
 				{
 					throw ElpidaException("Unexpected character: expected 'meet'");
 				}
@@ -336,7 +299,7 @@ namespace Elpida
 			else if (stream.Current() == 's')
 			{
 				stream.Next();
-				if (!stream.NextCharsAre("lice"))
+				if (!stream.ConsumeNextChars("lice"))
 				{
 					throw ElpidaException("Unexpected character: expected 'meet'");
 				}
@@ -392,7 +355,7 @@ namespace Elpida
 		switch (stream.Current())
 		{
 		case 'm':
-			if (!stream.NextCharsAre("matrix"))
+			if (!stream.ConsumeNextChars("matrix"))
 			{
 				throw ElpidaException("Unexpected character: expected 'matrix'");
 			}
@@ -403,7 +366,7 @@ namespace Elpida
 			}
 			break;
 		case 't':
-			if (!stream.NextCharsAre("translate"))
+			if (!stream.ConsumeNextChars("translate"))
 			{
 				throw ElpidaException("Unexpected character: expected 'translate'");
 			}
@@ -420,7 +383,7 @@ namespace Elpida
 			}
 			if (stream.Current() == 'c')
 			{
-				if (!stream.NextCharsAre("cale"))
+				if (!stream.ConsumeNextChars("cale"))
 				{
 					throw ElpidaException("Unexpected character: expected 'scale'");
 				}
@@ -431,7 +394,7 @@ namespace Elpida
 			}
 			else if (stream.Current() == 'k')
 			{
-				if (!stream.NextCharsAre("kew"))
+				if (!stream.ConsumeNextChars("kew"))
 				{
 					throw ElpidaException("Unexpected character: expected 'skewX' or 'skewY'");
 				}
@@ -478,35 +441,6 @@ namespace Elpida
 		}
 
 		return ret;
-	}
-
-	static SvgColor ParseColor(const std::string& value)
-	{
-		CharacterStream stream(value);
-
-		auto valueParser = [&](){
-			std::string v;
-			stream.Next();
-			v += stream.Current();
-			stream.Next();
-			v += stream.Current();
-			return StrTol16(v);
-		};
-
-
-		stream.SkipSpace();
-		switch (stream.Current())
-		{
-		case '#':
-		{
-			auto available = stream.AvailableCharacters();
-			auto r = valueParser();
-			auto g = valueParser();
-			auto b = valueParser();
-		}
-			break;
-		}
-
 	}
 
 	static SvgGradientStop ParseStop(const XmlElement& element)

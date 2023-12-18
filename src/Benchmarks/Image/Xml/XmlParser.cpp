@@ -62,7 +62,7 @@ namespace Elpida
 						}
 						else if (stream.Current() == '[')
 						{
-							if (!stream.NextCharsAre("[CDATA["))
+							if (!stream.ConsumeNextChars("[CDATA["))
 							{
 								throw ElpidaException("Unexpected character: expected '[CDATA['");
 							}
@@ -114,7 +114,6 @@ namespace Elpida
 				if (stream.Current() == '>')
 				{
 					inlineElement = true;
-					stream.Next();
 					break;
 				}
 
@@ -123,20 +122,17 @@ namespace Elpida
 			if (stream.Current() == '>')
 			{
 				inlineElement = false;
-				stream.Next();
 				break;
 			}
 
-			auto name = stream.GetStringViewWhile([](auto c) { return c != '='; });
-			if (!stream.Next())
-			{
-				throw ElpidaException("Unexpected end of file. Expected attribute='value'");
-			}
+			auto name = stream.GetStringViewWhile([](auto c) { return !CharacterStream::IsSpace(c) && c != '='; });
+
+			stream.Skip([](auto c) { return CharacterStream::IsSpace(c) || c == '='; });
 
 			auto quote = stream.Current();
 			if (quote != '\"' && quote != '\'')
 			{
-				throw ElpidaException("Unexpected character after =. Expected quote ' or \"");
+				throw ElpidaException(std::string("Unexpected character after = (") + quote + "). Expected quote ' or \"");
 			}
 
 			if (!stream.Next())
@@ -146,8 +142,13 @@ namespace Elpida
 
 			auto value = stream.GetStringViewWhile([quote](auto c) { return c != quote; });
 
-			returnAttributes.insert({ XmlElement::String(name), XmlElement::String(value) });
+			returnAttributes.insert({XmlElement::String(name), XmlElement::String(value)});
 			stream.Next();
+		}
+
+		if (stream.Current() != '>')
+		{
+			throw ElpidaException("Unexpected character. Expected end of element '>");
 		}
 
 		return returnAttributes;
@@ -155,11 +156,14 @@ namespace Elpida
 
 	static XmlElement::String ParseName(CharacterStream& stream)
 	{
-		if (CharacterStream::isspace(stream.Current()))
+		if (CharacterStream::IsSpace(stream.Current()))
 		{
 			throw ElpidaException("Unexpected space after '<'");
 		}
-		return XmlElement::String(stream.GetStringViewWhile([](auto c) { return !CharacterStream::isspace(c) && c != '>'; }));
+		return XmlElement::String(stream.GetStringViewWhile([](auto c)
+		{
+			return !CharacterStream::IsSpace(c) && c != '>';
+		}));
 	}
 
 	static XmlElement ParseElement(CharacterStream& stream)
@@ -170,6 +174,10 @@ namespace Elpida
 		}
 		auto name = ParseName(stream);
 
+		if (name.empty())
+		{
+			throw ElpidaException("Unexpected empty name of element. Expected <element>");
+		}
 		bool inlineElement;
 		auto attributes = ParseAttributes(stream, inlineElement);
 
@@ -182,55 +190,81 @@ namespace Elpida
 
 		while (!stream.Eof())
 		{
-			auto type = SkipUnusableAndGetNextNodeType(stream);
-			if (type == NextNode::Element)
+			if (auto type = SkipUnusableAndGetNextNodeType(stream); type == NextNode::Element)
 			{
 				if (stream.Current() == '/')
 				{
 					stream.Next();
-					auto currentName = stream.GetStringViewWhile([](auto c) { return c != '>'; });
-					if (currentName != name)
+					if (stream.GetStringViewWhile([](auto c) { return c != '>'; }) != name)
 					{
 						throw ElpidaException("Unexpected end of element name");
 					}
-					break;
+					return {std::move(name), std::move(attributes), {}, std::move(children)};
 				}
 				children.push_back(ParseElement(stream));
 			}
 			else if (type == NextNode::Cdata)
 			{
-				auto firstCharacter = stream.Index();
-
-				if (!stream.SkipUntilString("]]>"))
-				{
-					throw ElpidaException("Unexpected end of file: expected ']]'");
-				}
-
-				auto content = XmlElement::String(stream.GetStringView(firstCharacter, stream.Index() - 2));
-				children.push_back(XmlElement("", {}, std::move(content), {}));
-			}
-			else
-			{
-				auto firstCharacter = stream.Index();
-				auto lastCharacter = firstCharacter;
+				std::ostringstream buffer;
+				bool spaceNeeded = false;
+				stream.SkipSpace();
 				while (!stream.Eof())
 				{
-					if (stream.Current() == '<')
+					if (const auto c = stream.Current(); c == ']')
 					{
-						break;
+						if (stream.ConsumeNextCharsCond("]]>"))
+						{
+							break;
+						}
 					}
-					if (!CharacterStream::isspace(stream.Current()))
+					else if (CharacterStream::IsSpace(c))
 					{
-						lastCharacter = stream.Index();
+						spaceNeeded = true;
+					}
+					else
+					{
+						if (spaceNeeded)
+						{
+							buffer << ' ';
+							spaceNeeded = false;
+						}
+						buffer << c;
 					}
 					stream.Next();
 				}
-				auto content = XmlElement::String(stream.GetStringView(firstCharacter, lastCharacter + 1));
-				children.push_back(XmlElement("", {}, std::move(content), {}));
+				children.push_back(XmlElement("", {}, buffer.str(), {}));
+			}
+			else
+			{
+				std::ostringstream buffer;
+				bool spaceNeeded = false;
+				stream.SkipSpace();
+				while (!stream.Eof())
+				{
+					if (const auto c = stream.Current(); c == '<')
+					{
+						break;
+					}
+					else if (CharacterStream::IsSpace(c))
+					{
+						spaceNeeded = true;
+					}
+					else
+					{
+						if (spaceNeeded)
+						{
+							buffer << ' ';
+							spaceNeeded = false;
+						}
+						buffer << c;
+					}
+					stream.Next();
+				}
+				children.push_back(XmlElement("", {}, buffer.str(), {}));
 			}
 		}
 
-		return {std::move(name), std::move(attributes), {}, std::move(children)};
+		throw ElpidaException("Unexpected end of element name");
 	}
 
 	XmlElement XmlParser::Parse(const char* data, std::size_t size)
@@ -243,5 +277,4 @@ namespace Elpida
 		}
 		return ParseElement(stream);
 	}
-
 } // Elpida

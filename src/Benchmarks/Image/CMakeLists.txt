@@ -28,13 +28,14 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         Svg/SvgDocument.cpp
         Svg/SvgGradient.cpp
         Svg/SvgGradientStop.cpp
+        Svg/SvgNumber.cpp
         Svg/SvgPaint.cpp
         Svg/SvgPath.cpp
         Svg/SvgPreserveAspectRatio.cpp
         Svg/SvgShape.cpp
         Svg/SvgTransform.cpp
         Svg/SvgViewBox.cpp
-        )
+)
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
 
