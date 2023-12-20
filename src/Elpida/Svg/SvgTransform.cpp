@@ -27,6 +27,7 @@ namespace Elpida
 			{
 				stream.Next();
 			}
+			stream.SkipSpace();
 
 			if (i == N) throw ParseException("Transforms must have max 6 comma separated numbers");
 			values[i++] = SvgNumber::ParseNumber(stream);

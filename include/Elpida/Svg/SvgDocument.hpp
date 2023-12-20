@@ -17,7 +17,7 @@ namespace Elpida
 	class SvgDocument
 	{
 	public:
-		explicit SvgDocument(const XmlElement& element);
+		explicit SvgDocument(const XmlElement& element, double dpi = 96.0);
 	private:
 		std::vector<SvgShape> _shapes;
 		std::vector<SvgGradient> _gradients;

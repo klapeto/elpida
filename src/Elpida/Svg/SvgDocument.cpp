@@ -4,7 +4,6 @@
 
 #include "Elpida/Svg/SvgDocument.hpp"
 
-#include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Svg/SvgCoordinate.hpp"
 #include "Elpida/Svg/SvgGradient.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
@@ -13,6 +12,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+#include <Elpida/Xml/ParseException.hpp>
 
 namespace Elpida
 {
@@ -50,16 +50,16 @@ namespace Elpida
 		}
 	}
 
-	SvgDocument::SvgDocument(const XmlElement& element)
+	SvgDocument::SvgDocument(const XmlElement& element, double dpi)
 			: _width(0), _height(0)
 	{
 		if (element.GetName() != "svg")
 		{
-			throw ElpidaException("Element has invalid tag. It expected '<svg>' and got " + element.GetName());
+			throw ParseException("Element has invalid tag. It expected '<svg>' and got " + element.GetName());
 		}
 
-		_width = SvgCoordinate(GetAttributeValue(element, "width")).CalculatePixels(0, 0, 0, 0);
-		_height = SvgCoordinate(GetAttributeValue(element, "height")).CalculatePixels(0, 0, 0, 0);
+		_width = SvgCoordinate(GetAttributeValue(element, "width")).CalculatePixels(0, 0, 0, dpi);
+		_height = SvgCoordinate(GetAttributeValue(element, "height")).CalculatePixels(0, 0, 0, dpi);
 		ConditionallyAssign(_viewBox, GetAttributeValue(element, "viewBox"));
 		ConditionallyAssign(_preserveAspectRatio, GetAttributeValue(element, "preserveAspectRatio"));
 
