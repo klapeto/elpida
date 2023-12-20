@@ -6,31 +6,16 @@
 
 #include "Elpida/Svg/SvgCoordinate.hpp"
 #include "Elpida/Svg/SvgGradient.hpp"
+#include "Elpida/Xml/ParseException.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
 
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
-#include <Elpida/Xml/ParseException.hpp>
 
 namespace Elpida
 {
-	static const std::string Empty;
-
-	static const std::string& GetAttributeValue(const XmlElement& element, const char* name)
-	{
-		auto& attributes = element.GetAttributes();
-		auto itr = attributes.find(name);
-		if (itr != attributes.end())
-		{
-			return itr->second;
-		}
-
-		return Empty;
-	}
-
-	template<typename T>
+	template <typename T>
 	static void ConditionallyAssign(T& value, std::string_view view)
 	{
 		if (!view.empty())
@@ -41,7 +26,7 @@ namespace Elpida
 
 	static void ParseDefs(const XmlElement& element, std::vector<SvgGradient>& gradients)
 	{
-		for (auto& child: element.GetChildren())
+		for (auto& child : element.GetChildren())
 		{
 			if (child.GetName() == "linearGradient" || child.GetName() == "radialGradient")
 			{
@@ -50,20 +35,24 @@ namespace Elpida
 		}
 	}
 
-	SvgDocument::SvgDocument(const XmlElement& element, double dpi)
-			: _width(0), _height(0)
+	SvgDocument::SvgDocument(const XmlElement& element)
 	{
 		if (element.GetName() != "svg")
 		{
 			throw ParseException("Element has invalid tag. It expected '<svg>' and got " + element.GetName());
 		}
 
-		_width = SvgCoordinate(GetAttributeValue(element, "width")).CalculatePixels(0, 0, 0, dpi);
-		_height = SvgCoordinate(GetAttributeValue(element, "height")).CalculatePixels(0, 0, 0, dpi);
-		ConditionallyAssign(_viewBox, GetAttributeValue(element, "viewBox"));
-		ConditionallyAssign(_preserveAspectRatio, GetAttributeValue(element, "preserveAspectRatio"));
+		if (element.GetAttributeValue("version") != "1.1")
+		{
+			throw ParseException("Only SVG ver 1.1 is supported");
+		}
 
-		for (auto& child: element.GetChildren())
+		_width = SvgCoordinate(element.GetAttributeValue("width"));
+		_height = SvgCoordinate(element.GetAttributeValue("height"));
+		ConditionallyAssign(_viewBox, element.GetAttributeValue("viewBox"));
+		ConditionallyAssign(_preserveAspectRatio, element.GetAttributeValue("preserveAspectRatio"));
+
+		for (auto& child : element.GetChildren())
 		{
 			if (child.GetName() == "defs")
 			{

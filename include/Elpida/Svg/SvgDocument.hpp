@@ -17,14 +17,14 @@ namespace Elpida
 	class SvgDocument
 	{
 	public:
-		explicit SvgDocument(const XmlElement& element, double dpi = 96.0);
+		explicit SvgDocument(const XmlElement& element);
 	private:
 		std::vector<SvgShape> _shapes;
 		std::vector<SvgGradient> _gradients;
 		SvgViewBox _viewBox;
 		SvgPreserveAspectRatio _preserveAspectRatio;
-		double _width;
-		double _height;
+		SvgCoordinate _width;
+		SvgCoordinate _height;
 	};
 
 } // Elpida

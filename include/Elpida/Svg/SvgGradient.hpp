@@ -65,57 +65,6 @@ namespace Elpida
 			return _units;
 		}
 
-		SvgGradient(std::string&& id,
-			std::string&& href,
-			std::vector<SvgGradientStop>&& stops,
-			const SvgTransform& transform,
-			SvgSpreadType spreadType,
-			SvgGradientUnits units,
-			const SvgCoordinate& x1,
-			const SvgCoordinate& y1,
-			const SvgCoordinate& x2,
-			const SvgCoordinate& y2)
-			: _id(std::move(id)),
-			  _href(std::move(href)),
-			  _stops(std::move(stops)),
-			  _transform(transform),
-			  _spreadType(spreadType),
-			  _type(SvgGradientType::Linear),
-			  _units(units)
-		{
-			linear.x1 = x1;
-			linear.y1 = y1;
-			linear.x2 = x2;
-			linear.y2 = y2;
-		}
-
-		SvgGradient(std::string&& id,
-			std::string&& href,
-			std::vector<SvgGradientStop>&& stops,
-			const SvgTransform& transform,
-			SvgSpreadType spreadType,
-			SvgGradientUnits units,
-			const SvgCoordinate& cx,
-			const SvgCoordinate& cy,
-			const SvgCoordinate& r,
-			const SvgCoordinate& fx,
-			const SvgCoordinate& fy
-		)
-			: _id(std::move(id)),
-			_href(std::move(href)),
-			  _stops(std::move(stops)),
-			  _transform(transform),
-			  _spreadType(spreadType),
-			  _type(SvgGradientType::Radial),
-			  _units(units)
-		{
-			radial.cx = cx;
-			radial.cy = cy;
-			radial.r = r;
-			radial.fx = fx;
-			radial.fy = fy;
-		}
-
 		explicit SvgGradient(const XmlElement& element);
 	private:
 		std::string _id;

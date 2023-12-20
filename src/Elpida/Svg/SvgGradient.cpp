@@ -190,7 +190,7 @@ namespace Elpida
 		}
 		std::sort(_stops.begin(), _stops.end(), [](const SvgGradientStop& a, const SvgGradientStop& b)
 		{
-			return a.GetOffset().GetValue() > b.GetOffset().GetValue();
+			return a.GetOffset().GetValue() < b.GetOffset().GetValue();
 		});
 		_stops.shrink_to_fit();
 

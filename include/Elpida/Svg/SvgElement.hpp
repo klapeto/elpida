@@ -5,8 +5,8 @@
 #ifndef ELPIDA_SVG_SVGELEMENT_HPP
 #define ELPIDA_SVG_SVGELEMENT_HPP
 
-#include "Elpida/Xml/XmlElement.hpp"
 #include "SvgStyle.hpp"
+#include "Elpida/Xml/XmlElement.hpp"
 
 namespace Elpida
 {
@@ -14,13 +14,17 @@ namespace Elpida
 	{
 	public:
 		template<typename T>
-		static T GetFromAttributeOrStyle(const XmlElement& element, const SvgStyle& style, const std::string& name)
+		static void GetFromAttributeOrStyle(const XmlElement& element, const SvgStyle& style, const std::string& name, T& targetValue)
 		{
 			if (auto& value = element.GetAttributeValue(name); !value.empty())
 			{
-				return T(value);
+				targetValue = T(value);
 			}
-			return style.As<T>(name);
+			auto& rules = style.GetRules();
+			if (const auto itr = rules.find(name); itr != rules.end())
+			{
+				targetValue = T(itr->second);
+			}
 		}
 	};
 } // Elpida
