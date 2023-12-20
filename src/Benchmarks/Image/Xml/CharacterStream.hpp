@@ -64,7 +64,7 @@ namespace Elpida
 		{
 			if (begin < _maxIndex && end <= _maxIndex)
 			{
-				return {_data + begin, end - begin};
+				return {_data + begin, _data + end + 1};
 			}
 			return {};
 		}

@@ -89,6 +89,18 @@ TEST(SvgTransformTests, Matrix_Valid_Success)
 	EXPECT_EQ(transform[5], calculated[5]);
 }
 
+TEST(SvgTransformTests, Matrix_ValidWithSpaces_Success)
+{
+	double values[] = {5.35,813.4,-91.2,466.1,-13.2, -0.05};
+	SvgTransform calculated(values);
+	const SvgTransform transform("  matrix  (5.35   813.4   -91.2 , 466.1   -13.2,   -0.05  )  ");
+	EXPECT_EQ(transform[0], calculated[0]);
+	EXPECT_EQ(transform[1], calculated[1]);
+	EXPECT_EQ(transform[2], calculated[2]);
+	EXPECT_EQ(transform[3], calculated[3]);
+	EXPECT_EQ(transform[4], calculated[4]);
+	EXPECT_EQ(transform[5], calculated[5]);
+}
 
 TEST(SvgTransformTests, Multiple_Valid_Success)
 {

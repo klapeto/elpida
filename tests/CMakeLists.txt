@@ -10,7 +10,8 @@ add_executable(elpida-tests
         Svg/SvgCordinate.Test.cpp
         Svg/SvgViewBox.Test.cpp
         Svg/SvgPreserveAspectRatio.Test.cpp
-        Svg/SvgTransform.Test.cpp)
+        Svg/SvgTransform.Test.cpp
+        Svg/SvgStyle.Test.cpp)
 
 target_include_directories(elpida-tests PUBLIC ${ELPIDA_ROOT_DIRECTORY}/src/Benchmarks/Image)
 target_link_libraries(elpida-tests gtest gtest_main elpida-image-benchmarks)

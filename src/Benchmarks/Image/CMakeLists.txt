@@ -35,6 +35,10 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         Svg/SvgShape.cpp
         Svg/SvgTransform.cpp
         Svg/SvgViewBox.cpp
+        Svg/SvgStyle.cpp
+        Svg/SvgStyle.hpp
+        Xml/ParseException.cpp
+        Xml/ParseException.hpp
 )
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})

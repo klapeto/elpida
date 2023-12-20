@@ -165,15 +165,21 @@ TEST(CharacterStreamTests, GetStringView_ValidRange_ReturnsString)
 {
 	CharacterStream stream("ABCDEF");
 
-	const auto view = stream.GetStringView(1 , 3);
+	auto view = stream.GetStringView(1, 2);
 	EXPECT_EQ(view, "BC");
+
+	view = stream.GetStringView(4, 4);
+	EXPECT_EQ(view, "E");
+
+	view = stream.GetStringView(4, 5);
+	EXPECT_EQ(view, "EF");
 }
 
 TEST(CharacterStreamTests, GetStringView_InvalidRange_ReturnsEmptyString)
 {
 	CharacterStream stream("ABCDEF");
 
-	const auto view = stream.GetStringView(876 , 1234);
+	const auto view = stream.GetStringView(876, 1234);
 	EXPECT_EQ(view, "");
 }
 

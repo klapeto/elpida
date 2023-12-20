@@ -18,20 +18,20 @@ namespace Elpida
 		while (!stream.Eof())
 		{
 			stream.SkipSpace();
-			switch (stream.Current())
+			auto c = stream.Current();
+
+			if (c ==')')
 			{
-			case ')':
 				return;
-			case '(':
-			case ',':
-				if (i == N)throw ElpidaException("Transforms must have max 6 comma separated numbers");
-				stream.Next();
-				values[i++] = SvgNumber::ParseNumber(stream);
-				continue;
-			default:
-				stream.Next();
-				break;
 			}
+
+			if ( c == '(' || c == ',')
+			{
+				stream.Next();
+			}
+
+			if (i == N) throw ElpidaException("Transforms must have max 6 comma separated numbers");
+			values[i++] = SvgNumber::ParseNumber(stream);
 		}
 		if (i != N - 1)
 		{
@@ -110,6 +110,7 @@ namespace Elpida
 					{
 					case 'X':
 						{
+							stream.Next();
 							double t[1];
 							ParseTransformationValues(stream, t);
 							transform.SetSkewX(t[0]);
@@ -117,6 +118,7 @@ namespace Elpida
 						break;
 					case 'Y':
 						{
+							stream.Next();
 							double t[1];
 							ParseTransformationValues(stream, t);
 							transform.SetSkewY(t[0]);
