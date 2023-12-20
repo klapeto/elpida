@@ -17,28 +17,6 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         nanosvg.c
         nanosvgrast.c
         Plugin.cpp
-
-        Xml/XmlParser.cpp
-        Xml/XmlElement.cpp
-        Xml/CharacterStream.cpp
-
-        Svg/SvgBounds.cpp
-        Svg/SvgColor.cpp
-        Svg/SvgCoordinate.cpp
-        Svg/SvgDocument.cpp
-        Svg/SvgGradient.cpp
-        Svg/SvgGradientStop.cpp
-        Svg/SvgNumber.cpp
-        Svg/SvgPaint.cpp
-        Svg/SvgPath.cpp
-        Svg/SvgPreserveAspectRatio.cpp
-        Svg/SvgShape.cpp
-        Svg/SvgTransform.cpp
-        Svg/SvgViewBox.cpp
-        Svg/SvgStyle.cpp
-        Svg/SvgStyle.hpp
-        Xml/ParseException.cpp
-        Xml/ParseException.hpp
 )
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})

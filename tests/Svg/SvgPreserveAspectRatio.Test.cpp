@@ -2,8 +2,9 @@
 // Created by klapeto on 18/12/2023.
 //
 
-#include <Elpida/Core/ElpidaException.hpp>
-#include <Svg/SvgPreserveAspectRatio.hpp>
+
+#include <Elpida/Svg/SvgPreserveAspectRatio.hpp>
+#include <Elpida/Xml/ParseException.hpp>
 
 #include "gtest/gtest.h"
 
@@ -63,20 +64,20 @@ TEST(SvgPreserveAspectRatioTests, Valid_Success)
 
 TEST(SvgPreserveAspectRatioTests, Invalid_Throws)
 {
-	EXPECT_THROW(SvgPreserveAspectRatio("afadsf"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMin LOL"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("LOLOL LOL"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xLl"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMidYLOL"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMid moot"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMid sco"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMixYMid"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMadYMid"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMi"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMa"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xM"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("x"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("n"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio("na"), ElpidaException);
-	EXPECT_THROW(SvgPreserveAspectRatio(""), ElpidaException);
+	EXPECT_THROW(SvgPreserveAspectRatio("afadsf"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMin LOL"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("LOLOL LOL"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xLl"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xMidYLOL"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMid moot"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMid sco"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xMixYMid"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xMadYMid"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xMi"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xMa"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("xM"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("x"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("n"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio("na"), ParseException);
+	EXPECT_THROW(SvgPreserveAspectRatio(""), ParseException);
 }

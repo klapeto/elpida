@@ -2,8 +2,7 @@
 // Created by klapeto on 19/12/2023.
 //
 
-#include <Elpida/Core/ElpidaException.hpp>
-#include <Svg/SvgTransform.hpp>
+#include <Elpida/Svg/SvgTransform.hpp>
 
 #include "gtest/gtest.h"
 

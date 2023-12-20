@@ -2,8 +2,8 @@
 // Created by klapeto on 18/12/2023.
 //
 
-#include <Elpida/Core/ElpidaException.hpp>
-#include <Svg/SvgViewBox.hpp>
+#include <Elpida/Svg/SvgViewBox.hpp>
+#include <Elpida/Xml/ParseException.hpp>
 
 #include "gtest/gtest.h"
 
@@ -40,10 +40,10 @@ TEST(SvgViewBoxTests, Value_Valid_Sets)
 
 TEST(SvgViewBoxTests, Value_Invalid_Throws)
 {
-	EXPECT_THROW(SvgViewBox("1 "), ElpidaException);
-	EXPECT_THROW(SvgViewBox("1 2"), ElpidaException);
-	EXPECT_THROW(SvgViewBox("1 2 3"), ElpidaException);
-	EXPECT_THROW(SvgViewBox("1 a 3"), ElpidaException);
-	EXPECT_THROW(SvgViewBox("1akgjajd"), ElpidaException);
-	EXPECT_THROW(SvgViewBox("    "), ElpidaException);
+	EXPECT_THROW(SvgViewBox("1 "), ParseException);
+	EXPECT_THROW(SvgViewBox("1 2"), ParseException);
+	EXPECT_THROW(SvgViewBox("1 2 3"), ParseException);
+	EXPECT_THROW(SvgViewBox("1 a 3"), ParseException);
+	EXPECT_THROW(SvgViewBox("1akgjajd"), ParseException);
+	EXPECT_THROW(SvgViewBox("    "), ParseException);
 }

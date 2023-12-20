@@ -37,7 +37,8 @@ set(ELPIDA_CORE_SOURCES
         Topology/ProcessingUnitNode.cpp
         Topology/NumaNode.cpp
         Topology/MemoryPageType.cpp
-        AllocatorFactory.cpp ../../../include/Elpida/Core/AllocatorFactory.hpp DefaultAllocatorFactory.cpp ../../../include/Elpida/Core/DefaultAllocatorFactory.hpp ../../../include/Elpida/Core/SharedPtr.hpp)
+        AllocatorFactory.cpp
+        DefaultAllocatorFactory.cpp)
 
 configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
 

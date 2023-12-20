@@ -2,8 +2,9 @@
 // Created by klapeto on 18/12/2023.
 //
 
-#include <Elpida/Core/ElpidaException.hpp>
-#include <Xml/XmlParser.hpp>
+
+#include <Elpida/Xml/ParseException.hpp>
+#include <Elpida/Xml/XmlParser.hpp>
 
 #include "gtest/gtest.h"
 
@@ -91,7 +92,7 @@ TEST(XmlParserTests, Parse_NoElement_Error)
 	const std::string xml = R"(<?xml version="1.0" encoding="UTF-8" standalone="no"?>)";
 	XmlParser parser;
 
-	EXPECT_THROW(parser.Parse(xml.c_str(), xml.size()), ElpidaException);
+	EXPECT_THROW(parser.Parse(xml.c_str(), xml.size()), ParseException);
 }
 
 TEST(XmlParserTests, Parse_InvalidSyntax_Error)
@@ -100,12 +101,12 @@ TEST(XmlParserTests, Parse_InvalidSyntax_Error)
 
 	XmlParser parser;
 
-	EXPECT_THROW(parser.Parse(STRS(R"(<)")), ElpidaException);
-	EXPECT_THROW(parser.Parse(STRS(R"(<>)")), ElpidaException);
-	EXPECT_THROW(parser.Parse(STRS(R"(<a><)")), ElpidaException);
-	EXPECT_THROW(parser.Parse(STRS(R"(<a b=/>)")), ElpidaException);
-	EXPECT_THROW(parser.Parse(STRS(R"(<a b="v/>)")), ElpidaException);
-	EXPECT_THROW(parser.Parse(STRS(R"(<a><b)")), ElpidaException);
-	EXPECT_THROW(parser.Parse(STRS(R"(<a><b></a>)")), ElpidaException);
-	EXPECT_THROW(parser.Parse(STRS(R"(<a><b>/a>)")), ElpidaException);
+	EXPECT_THROW(parser.Parse(STRS(R"(<)")), ParseException);
+	EXPECT_THROW(parser.Parse(STRS(R"(<>)")), ParseException);
+	EXPECT_THROW(parser.Parse(STRS(R"(<a><)")), ParseException);
+	EXPECT_THROW(parser.Parse(STRS(R"(<a b=/>)")), ParseException);
+	EXPECT_THROW(parser.Parse(STRS(R"(<a b="v/>)")), ParseException);
+	EXPECT_THROW(parser.Parse(STRS(R"(<a><b)")), ParseException);
+	EXPECT_THROW(parser.Parse(STRS(R"(<a><b></a>)")), ParseException);
+	EXPECT_THROW(parser.Parse(STRS(R"(<a><b>/a>)")), ParseException);
 }

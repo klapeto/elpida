@@ -2,8 +2,8 @@
 // Created by klapeto on 18/12/2023.
 //
 
-#include <Elpida/Core/ElpidaException.hpp>
-#include <Svg/SvgCoordinate.hpp>
+#include <Elpida/Svg/SvgCoordinate.hpp>
+#include <Elpida/Xml/ParseException.hpp>
 
 #include "gtest/gtest.h"
 
@@ -80,17 +80,17 @@ TEST(SvgCordinateTests, Parse_Valid_Sucess)
 
 TEST(SvgCordinateTests, Parse_Invalid_Sucess)
 {
-	EXPECT_THROW(SvgCoordinate("1jksfdjh"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("13321el"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1eo"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1po"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1io"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1mo"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1co"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1m"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1i"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1p"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1e"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1c"), ElpidaException);
-	EXPECT_THROW(SvgCoordinate("1.0.0.0"), ElpidaException);
+	EXPECT_THROW(SvgCoordinate("1jksfdjh"), ParseException);
+	EXPECT_THROW(SvgCoordinate("13321el"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1eo"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1po"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1io"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1mo"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1co"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1m"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1i"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1p"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1e"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1c"), ParseException);
+	EXPECT_THROW(SvgCoordinate("1.0.0.0"), ParseException);
 }

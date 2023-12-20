@@ -2,30 +2,30 @@
 // Created by klapeto on 20/12/2023.
 //
 
-#include <Svg/SvgStyle.hpp>
+#include <Elpida/Svg/SvgStyle.hpp>
+#include <Elpida/Xml/ParseException.hpp>
 
 #include "gtest/gtest.h"
-#include "Xml/ParseException.hpp"
 
 using namespace Elpida;
 
 TEST(SvgStyleTests, Empty_Valid_Success)
 {
 	const SvgStyle style("");
-	EXPECT_EQ(style.Rules().size(), 0);
+	EXPECT_EQ(style.GetRules().size(), 0);
 }
 
 TEST(SvgStyleTests, Single_Valid_Success)
 {
 	const SvgStyle style("test: lol");
-	auto& rules = style.Rules();
+	auto& rules = style.GetRules();
 	EXPECT_EQ(rules.at("test"), "lol");
 }
 
 TEST(SvgStyleTests, Multiple_Valid_Success)
 {
 	const SvgStyle style("test: lol; haha: omg   ; kjsdhk-345g   :  test; abc: rule(-561,  13013.13)");
-	auto& rules = style.Rules();
+	auto& rules = style.GetRules();
 	EXPECT_EQ(rules.at("test"), "lol");
 	EXPECT_EQ(rules.at("haha"), "omg");
 	EXPECT_EQ(rules.at("kjsdhk-345g"), "test");

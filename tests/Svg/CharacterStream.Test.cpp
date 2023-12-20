@@ -3,7 +3,7 @@
 //
 
 #include <Elpida/Core/ElpidaException.hpp>
-#include <Xml/CharacterStream.hpp>
+#include <Elpida/Xml/CharacterStream.hpp>
 
 #include "gtest/gtest.h"
 
