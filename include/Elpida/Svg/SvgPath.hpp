@@ -5,17 +5,18 @@
 #ifndef ELPIDA_SVG_SVGPATH_HPP
 #define ELPIDA_SVG_SVGPATH_HPP
 
-#include "SvgBounds.hpp"
-#include <vector>
+#include "SvgPathCommand.hpp"
+#include "SvgShape.hpp"
+
 namespace Elpida
 {
 
-	class SvgPath
+	class SvgPath : public SvgShape
 	{
-
+	public:
+		explicit SvgPath(const XmlElement& element, SvgDefs& defs);
 	private:
-		std::vector<float> _points;
-		SvgBounds _bounds;
+		std::vector<SvgPathCommand> _commands;
 		bool _closed;
 	};
 

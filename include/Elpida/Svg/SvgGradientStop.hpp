@@ -7,12 +7,13 @@
 
 #include "SvgColor.hpp"
 #include "SvgCoordinate.hpp"
+#include "SvgElement.hpp"
 
 namespace Elpida
 {
 	class XmlElement;
 
-	class SvgGradientStop
+	class SvgGradientStop : public SvgElement
 	{
 	public:
 		[[nodiscard]]
@@ -33,7 +34,7 @@ namespace Elpida
 			return _opacity;
 		}
 
-		explicit SvgGradientStop(const XmlElement& element);
+		explicit SvgGradientStop(const XmlElement& element, SvgDefs& defs);
 	private:
 		SvgColor _color;
 		SvgCoordinate _offset;

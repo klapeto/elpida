@@ -5,17 +5,26 @@ add_library(elpida-svg
         SvgColor.cpp
         SvgCoordinate.cpp
         SvgDocument.cpp
-        SvgGradient.cpp
         SvgGradientStop.cpp
         SvgNumber.cpp
         SvgPaint.cpp
         SvgPath.cpp
         SvgPreserveAspectRatio.cpp
-        SvgShape.cpp
         SvgTransform.cpp
         SvgViewBox.cpp
         SvgStyle.cpp
         SvgElement.cpp
+        SvgFill.cpp
+        SvgStroke.cpp
+        SvgVisibility.cpp
+        SvgShape.cpp
+        SvgElementFactory.cpp
+        SvgRadialGradient.cpp
+        SvgGradient.cpp
+        SvgLinearGradient.cpp
+        SvgDefs.cpp
+        SvgSvgElement.cpp
+        SvgPathCommand.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

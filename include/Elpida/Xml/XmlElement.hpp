@@ -7,69 +7,64 @@
 
 #include <functional>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
+
+#include "XmlMap.hpp"
 
 namespace Elpida
 {
 	class XmlElement final
 	{
 	public:
-
-		using Children = std::vector<XmlElement>;
-		using String = std::string;
-		using Attributes = std::unordered_map<String, String>;
-
-		const String& GetName() const
+		const std::string& GetName() const
 		{
 			return _name;
 		}
-		const Attributes& GetAttributes() const
+
+		const XmlMap& GetAttributes() const
 		{
 			return _attributes;
 		}
-		const String& GetContent() const
+
+		const std::string& GetContent() const
 		{
 			return _content;
 		}
-		const Children& GetChildren() const
+
+		const std::vector<XmlElement>& GetChildren() const
 		{
 			return _children;
 		}
 
-		const std::string& GetAttributeValue(const std::string& name) const
+		const std::string& GetAttributeValue(const std::string_view name) const
 		{
-			if (const auto itr = _attributes.find(name); itr!= _attributes.end())
-			{
-				return itr->second;
-			}
-			return Empty;
+			return _attributes.GetValue(name);
 		}
 
 		XmlElement() = default;
-		XmlElement(String&& name,
-			Attributes && attributes,
-			String&& content,
-			Children&& children)
+
+		XmlElement(std::string&& name,
+		           XmlMap&& attributes,
+		           std::string&& content,
+		           std::vector<XmlElement>&& children)
 			: _name(std::move(name)), _attributes(std::move(attributes)), _content(std::move(content)),
 			  _children(std::move(children))
 		{
-
 		}
+
 		XmlElement(const XmlElement&) = default;
 		XmlElement(XmlElement&&) noexcept = default;
 		XmlElement& operator =(XmlElement&&) noexcept = default;
 		XmlElement& operator =(const XmlElement&) = default;
 		~XmlElement() = default;
-	private:
-		String _name;
-		Attributes _attributes;
-		String _content;
-		Children _children;
-		static inline std::string Empty;
-	};
 
+	private:
+		std::string _name;
+		XmlMap _attributes;
+		std::string _content;
+		std::vector<XmlElement> _children;
+	};
 } // Elpida
 
 #endif //ELPIDA_XML_XMLELEMENT_HPP

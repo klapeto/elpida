@@ -12,6 +12,7 @@ add_executable(elpida-tests
         Svg/SvgPreserveAspectRatio.Test.cpp
         Svg/SvgTransform.Test.cpp
         Svg/SvgStyle.Test.cpp
-        Svg/SvgDocument.Test.cpp)
+        Svg/SvgDocument.Test.cpp
+        Svg/SvgPath.Test.cpp)
 
 target_link_libraries(elpida-tests gtest gtest_main elpida-svg)

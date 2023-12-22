@@ -5,30 +5,15 @@
 #ifndef ELPIDA_SVG_SVGPAINT_HPP
 #define ELPIDA_SVG_SVGPAINT_HPP
 
-#include "SvgColor.hpp"
-#include "SvgGradient.hpp"
-#include <memory>
+#include "Elpida/Svg/SvgColor.hpp"
+
 namespace Elpida
 {
-
-	enum class SvgPaintType
-	{
-		Undefined = -1,
-		None = 0,
-		Color = 1,
-		LinearGradient = 2,
-		RadialGradient = 3
-	};
+	class SvgGradient;
 
 	class SvgPaint
 	{
-
 	private:
-		SvgPaintType _type;
-
-			SvgColor _color;
-			std::shared_ptr<SvgGradient> _gradient;
-
 	};
 
 } // Elpida

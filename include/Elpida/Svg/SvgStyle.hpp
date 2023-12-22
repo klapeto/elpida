@@ -6,7 +6,7 @@
 #define ELPIDA_SVG_SVGSTYLE_HPP
 
 #include <string>
-#include <unordered_map>
+#include <Elpida/Xml/XmlMap.hpp>
 
 namespace Elpida
 {
@@ -14,25 +14,21 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		const std::unordered_map<std::string, std::string>& GetRules() const
+		XmlMap& GetRules()
 		{
 			return _rules;
 		}
 
-		template<typename T>
-		T As(const std::string& name) const
+		[[nodiscard]]
+		const XmlMap& GetRules() const
 		{
-			if (const auto itr = _rules.find(name); itr != _rules.end())
-			{
-				return T(itr->second);
-			}
-			return T();
+			return _rules;
 		}
 
 		SvgStyle() = default;
 		explicit SvgStyle(std::string_view view);
 	private:
-		std::unordered_map<std::string, std::string> _rules;
+		XmlMap _rules;
 	};
 } // Elpida
 

@@ -101,9 +101,9 @@ namespace Elpida
 		return NextNode::Content;
 	}
 
-	static XmlElement::Attributes ParseAttributes(CharacterStream& stream, bool& inlineElement)
+	static XmlMap ParseAttributes(CharacterStream& stream, bool& inlineElement)
 	{
-		XmlElement::Attributes returnAttributes;
+		XmlMap returnAttributes;
 
 		while (!stream.Eof())
 		{
@@ -145,7 +145,7 @@ namespace Elpida
 
 			auto value = stream.GetStringViewWhile([quote](auto c) { return c != quote; });
 
-			returnAttributes.insert({XmlElement::String(name), XmlElement::String(value)});
+			returnAttributes.Set(name, std::string(value));
 			stream.Next();
 		}
 
@@ -157,13 +157,13 @@ namespace Elpida
 		return returnAttributes;
 	}
 
-	static XmlElement::String ParseName(CharacterStream& stream)
+	static std::string ParseName(CharacterStream& stream)
 	{
 		if (CharacterStream::IsSpace(stream.Current()))
 		{
 			throw ParseException("Unexpected space after '<'");
 		}
-		return XmlElement::String(stream.GetStringViewWhile([](auto c)
+		return std::string(stream.GetStringViewWhile([](auto c)
 		{
 			return !CharacterStream::IsSpace(c) && c != '>';
 		}));
@@ -189,7 +189,7 @@ namespace Elpida
 			return {std::move(name), std::move(attributes), {}, {}};
 		}
 
-		XmlElement::Children children;
+		std::vector<XmlElement> children;
 
 		while (!stream.Eof())
 		{

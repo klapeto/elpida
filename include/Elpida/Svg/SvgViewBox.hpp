@@ -5,7 +5,8 @@
 #ifndef ELPIDA_SVG_SVGVIEWBOX_HPP
 #define ELPIDA_SVG_SVGVIEWBOX_HPP
 
-#include "SvgCoordinate.hpp"
+#include <string_view>
+
 namespace Elpida
 {
 

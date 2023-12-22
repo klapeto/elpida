@@ -1,70 +1,28 @@
 //
-// Created by klapeto on 7/12/2023.
+// Created by klapeto on 21/12/2023.
 //
 
 #ifndef ELPIDA_SVG_SVGSHAPE_HPP
 #define ELPIDA_SVG_SVGSHAPE_HPP
 
-#include "SvgBounds.hpp"
-#include "SvgPaint.hpp"
-#include "SvgPath.hpp"
-#include "SvgTransform.hpp"
-#include <string>
-#include <vector>
+#include <optional>
+
+#include "SvgElement.hpp"
+#include "SvgFill.hpp"
+#include "SvgStroke.hpp"
 
 namespace Elpida
 {
-
-	enum class SvgLikeJoin
-	{
-		Miter = 0,
-		Round = 1,
-		Bevel = 2
-	};
-
-	enum class SvgLineCap
-	{
-		Butt = 0,
-		Round = 1,
-		Square = 2
-	};
-
-	enum class SvgFillRule
-	{
-		NonZero = 0,
-		EvenOdd = 1
-	};
-
-	enum class SvgFlags
-	{
-		Visible = 1
-	};
-
-	class SvgShape
+	class SvgShape : public SvgElement
 	{
 	public:
-
+		explicit SvgShape(const XmlElement& element, SvgDefs& defs);
 	private:
-		std::string _id;
-		SvgPaint _fill;
-		SvgPaint _stroke;
-		float _opacity;
-		float _strokeWidth;
-		float _strokeDashOffset;
-		float _strokeDashArray[8];
-		char _strokeDashCount;
-		SvgLikeJoin _strokeLikeJoin;
-		SvgLineCap _strokeLineCap;
-		float _miterLimit;
-		SvgFillRule _fillRule;
-		SvgFlags _flags;
-		SvgBounds _bounds;
-		std::string _fillGradientId;
-		std::string _strokeGradientId;
-		SvgTransform _transform;
-		std::vector<SvgPath> _paths;
+		std::optional<SvgFill> _fill;
+		std::optional<SvgStroke> _stroke;
+		double _opacity;
+		bool _visible;
 	};
-
 } // Elpida
 
 #endif //ELPIDA_SVG_SVGSHAPE_HPP

@@ -5,26 +5,47 @@
 #ifndef ELPIDA_SVG_SVGELEMENT_HPP
 #define ELPIDA_SVG_SVGELEMENT_HPP
 
-#include "SvgStyle.hpp"
+#include <memory>
+
+#include "Elpida/Svg/SvgTransform.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
 
 namespace Elpida
 {
+	class SvgDefs;
+
 	class SvgElement
 	{
 	public:
-		template<typename T>
-		static void GetFromAttributeOrStyle(const XmlElement& element, const SvgStyle& style, const std::string& name, T& targetValue)
+		explicit SvgElement(const XmlElement& element, SvgDefs& defs);
+		SvgElement(const SvgElement&) = delete;
+		SvgElement(SvgElement&&) = default;
+		virtual ~SvgElement() = default;
+	private:
+		std::string _id;
+		SvgTransform _transform;
+		XmlMap _properties;
+		std::vector<std::unique_ptr<SvgElement>> _children;
+	protected:
+
+		template<typename T, typename TConverter>
+		void ConditionallyAssignProperty(const std::string& name, T& targetValue, TConverter converter)
 		{
-			if (auto& value = element.GetAttributeValue(name); !value.empty())
+			if (auto& value = _properties.GetValue(name); !value.empty())
 			{
-				targetValue = T(value);
+				targetValue = std::move(converter(value));
 			}
-			auto& rules = style.GetRules();
-			if (const auto itr = rules.find(name); itr != rules.end())
-			{
-				targetValue = T(itr->second);
-			}
+		}
+
+		template<typename T>
+		void ConditionallyAssignProperty(const std::string& name, T& targetValue)
+		{
+			ConditionallyAssignProperty<T>(name, targetValue, [](const auto& s){return T(s);});
+		}
+
+		const XmlMap& GetProperties() const
+		{
+			return _properties;
 		}
 	};
 } // Elpida

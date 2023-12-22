@@ -37,14 +37,12 @@ namespace Elpida
 		}
 	}
 
-	SvgGradientStop::SvgGradientStop(const XmlElement& element)
-		:_opacity(1.0, SvgUnits::Px)
+	SvgGradientStop::SvgGradientStop(const XmlElement& element, SvgDefs& defs)
+		: SvgElement(element, defs),_opacity(1.0, SvgUnits::Px)
 	{
-		const SvgStyle style(element.GetAttributeValue("style"));
-
-		_offset = SvgCoordinate(element.GetAttributeValue("offset"));
-		SvgElement::GetFromAttributeOrStyle<SvgColor>(element, style, "stop-color", _color);
-		SvgElement::GetFromAttributeOrStyle<SvgCoordinate>(element, style, "stop-opacity", _opacity);
+		ConditionallyAssignProperty("stop-color", _color);
+		ConditionallyAssignProperty("stop-opacity", _opacity);
+		ConditionallyAssignProperty("offset", _opacity);
 
 		SanitizeCoordinate(_offset);
 		SanitizeCoordinate(_opacity);

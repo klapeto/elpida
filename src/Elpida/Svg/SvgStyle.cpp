@@ -57,7 +57,7 @@ namespace Elpida
 			{
 				throw ParseException(stream.Current(), "css rule value");
 			}
-			_rules.emplace(name, value);
+			_rules.Set(name, std::string(value));
 			stream.SkipSpace();
 			if (stream.Current() == ';')
 			{
