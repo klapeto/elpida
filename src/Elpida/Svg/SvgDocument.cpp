@@ -14,7 +14,7 @@
 namespace Elpida
 {
 	SvgDocument::SvgDocument(const XmlElement& element)
-		: SvgSvgElement(element, _defs)
+		: SvgSvgElement(element, new SvgDefs())
 	{
 	}
 } // Elpida

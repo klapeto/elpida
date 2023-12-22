@@ -10,16 +10,27 @@
 
 namespace Elpida
 {
-
 	class SvgPath : public SvgShape
 	{
 	public:
+		[[nodiscard]]
+		const std::vector<SvgPathCommand>& GetCommands() const
+		{
+			return _commands;
+		}
+
+		[[nodiscard]]
+		bool IsClosed() const
+		{
+			return _closed;
+		}
+
 		explicit SvgPath(const XmlElement& element, SvgDefs& defs);
+
 	private:
 		std::vector<SvgPathCommand> _commands;
 		bool _closed;
 	};
-
 } // Elpida
 
 #endif //ELPIDA_SVG_SVGPATH_HPP

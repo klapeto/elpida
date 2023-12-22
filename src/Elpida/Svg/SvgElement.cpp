@@ -43,4 +43,9 @@ namespace Elpida
 			}
 		}
 	}
+
+	SvgElement::~SvgElement()
+	{
+		delete _defs;
+	}
 } // Elpida

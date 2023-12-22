@@ -94,6 +94,24 @@ namespace Elpida
 			} arcData;
 		};
 
+		[[nodiscard]]
+		const std::vector<CommandData>& GetData() const
+		{
+			return _data;
+		}
+
+		[[nodiscard]]
+		SvgPathCommandType GetType() const
+		{
+			return _type;
+		}
+
+		[[nodiscard]]
+		bool IsAbsolute() const
+		{
+			return _absolute;
+		}
+
 		SvgPathCommand(const SvgPathCommandType type, std::vector<CommandData>&& data, const bool absolute)
 			: _data(std::move(data)), _type(type), _absolute(absolute)
 		{

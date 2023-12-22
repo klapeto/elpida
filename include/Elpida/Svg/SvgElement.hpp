@@ -13,20 +13,26 @@
 namespace Elpida
 {
 	class SvgDefs;
-
 	class SvgElement
 	{
 	public:
 		explicit SvgElement(const XmlElement& element, SvgDefs& defs);
 		SvgElement(const SvgElement&) = delete;
 		SvgElement(SvgElement&&) = default;
-		virtual ~SvgElement() = default;
+		virtual ~SvgElement();
 	private:
 		std::string _id;
 		SvgTransform _transform;
 		XmlMap _properties;
 		std::vector<std::unique_ptr<SvgElement>> _children;
+		SvgDefs* _defs = nullptr;
 	protected:
+
+		explicit SvgElement(const XmlElement& element, SvgDefs* defs)
+			:SvgElement(element, *defs)
+		{
+			_defs = defs;
+		}
 
 		template<typename T, typename TConverter>
 		void ConditionallyAssignProperty(const std::string& name, T& targetValue, TConverter converter)

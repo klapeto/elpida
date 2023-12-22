@@ -16,8 +16,6 @@ namespace Elpida
 	{
 	public:
 		explicit SvgDocument(const XmlElement& element);
-	private:
-		SvgDefs _defs;
 	};
 
 } // Elpida

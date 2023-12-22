@@ -11,7 +11,7 @@
 
 using namespace Elpida;
 
-TEST(SvgDocumentTets, Success)
+TEST(SvgDocumentTests, Success)
 {
 	std::string data = R"--(<?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
