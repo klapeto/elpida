@@ -117,9 +117,9 @@ namespace Elpida
 					}
 
 					SvgPathCommand::CommandData data{};
-					for (std::size_t i = 0; i < currentNumbers.size(); i++)
+					for (double currentNumber : currentNumbers)
 					{
-						data.horizontalLineToData.x = currentNumbers[i];
+						data.horizontalLineToData.x = currentNumber;
 						currentCommandData.push_back(data);
 					}
 					_commands.emplace_back(SvgPathCommandType::HorizontalLineTo, std::move(currentCommandData),
@@ -139,9 +139,9 @@ namespace Elpida
 					}
 
 					SvgPathCommand::CommandData data{};
-					for (std::size_t i = 0; i < currentNumbers.size(); i++)
+					for (double currentNumber : currentNumbers)
 					{
-						data.verticalLineToData.y = currentNumbers[i];
+						data.verticalLineToData.y = currentNumber;
 						currentCommandData.push_back(data);
 					}
 					_commands.emplace_back(SvgPathCommandType::VerticalLineTo, std::move(currentCommandData), absolute);
