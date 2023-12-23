@@ -16,11 +16,12 @@ namespace Elpida
 	{
 	public:
 		SvgSvgElement(const XmlElement& element, SvgDefs& defs);
-		SvgSvgElement(const XmlElement& element, SvgDefs* defs)
-			:SvgElement(element, defs)
-		{
 
+		SvgSvgElement(const XmlElement& element, SvgDefs* defs)
+			: SvgElement(element, defs)
+		{
 		}
+
 	private:
 		SvgViewBox _viewBox;
 		SvgPreserveAspectRatio _preserveAspectRatio;

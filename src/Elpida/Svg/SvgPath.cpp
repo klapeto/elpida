@@ -67,7 +67,7 @@ namespace Elpida
 			case 'M':
 				{
 					ParseAllNumbers(stream, currentNumbers);
-					if (currentNumbers.size() % 2 != 0)
+					if (currentNumbers.empty() || currentNumbers.size() % 2 != 0)
 					{
 						throw ParseException("moveTo command requires x,y");
 					}
@@ -89,7 +89,7 @@ namespace Elpida
 			case 'L':
 				{
 					ParseAllNumbers(stream, currentNumbers);
-					if (currentNumbers.size() % 2 != 0)
+					if (currentNumbers.empty() || currentNumbers.size() % 2 != 0)
 					{
 						throw ParseException("lineTo command requires x,y");
 					}
@@ -111,6 +111,11 @@ namespace Elpida
 				{
 					ParseAllNumbers(stream, currentNumbers);
 
+					if (currentNumbers.empty())
+					{
+						throw ParseException("horizontalLineTo command requires x");
+					}
+
 					SvgPathCommand::CommandData data{};
 					for (std::size_t i = 0; i < currentNumbers.size(); i++)
 					{
@@ -128,6 +133,11 @@ namespace Elpida
 				{
 					ParseAllNumbers(stream, currentNumbers);
 
+					if (currentNumbers.empty())
+					{
+						throw ParseException("verticallLineTo command requires x");
+					}
+
 					SvgPathCommand::CommandData data{};
 					for (std::size_t i = 0; i < currentNumbers.size(); i++)
 					{
@@ -144,7 +154,7 @@ namespace Elpida
 				{
 					ParseAllNumbers(stream, currentNumbers);
 
-					if (currentNumbers.size() % 6 != 0)
+					if (currentNumbers.empty() || currentNumbers.size() % 6 != 0)
 					{
 						throw ParseException("curveTo command requires x1 y1 x2 y2 x y");
 					}
@@ -170,7 +180,7 @@ namespace Elpida
 				{
 					ParseAllNumbers(stream, currentNumbers);
 
-					if (currentNumbers.size() % 4 != 0)
+					if (currentNumbers.empty() || currentNumbers.size() % 4 != 0)
 					{
 						throw ParseException("smoothCurveTo command requires x2 y2 x y");
 					}
@@ -194,7 +204,7 @@ namespace Elpida
 				{
 					ParseAllNumbers(stream, currentNumbers);
 
-					if (currentNumbers.size() % 4 != 0)
+					if (currentNumbers.empty() || currentNumbers.size() % 4 != 0)
 					{
 						throw ParseException("quadricCurveTo command requires x2 y2 x y");
 					}
@@ -218,7 +228,7 @@ namespace Elpida
 			case 'T':
 				{
 					ParseAllNumbers(stream, currentNumbers);
-					if (currentNumbers.size() % 2 != 0)
+					if (currentNumbers.empty() || currentNumbers.size() % 2 != 0)
 					{
 						throw ParseException("smoothQuadricCurveTo command requires x y");
 					}
@@ -241,7 +251,7 @@ namespace Elpida
 				{
 					ParseAllNumbers(stream, currentNumbers);
 
-					if (currentNumbers.size() % 7 != 0)
+					if (currentNumbers.empty() || currentNumbers.size() % 7 != 0)
 					{
 						throw ParseException(
 							"arc command requires rx ry x-axis-rotation large-arc-flag sweep-flag x y");
@@ -268,12 +278,12 @@ namespace Elpida
 				_closed = true;
 				_commands.emplace_back(SvgPathCommandType::ClosePath, std::vector<SvgPathCommand::CommandData>(),
 				                       false);
+				stream.Next();
 				break;
 			default:
 				throw ParseException(c, "m,M,");
 			}
 
-			stream.Next();
 		}
 	}
 } // Elpida
