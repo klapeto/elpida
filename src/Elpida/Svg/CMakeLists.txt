@@ -3,7 +3,7 @@ project("Elpida Svg")
 add_library(elpida-svg
         SvgBounds.cpp
         SvgColor.cpp
-        SvgCoordinate.cpp
+        SvgLength.cpp
         SvgDocument.cpp
         SvgGradientStop.cpp
         SvgNumber.cpp
@@ -25,6 +25,7 @@ add_library(elpida-svg
         SvgDefs.cpp
         SvgSvgElement.cpp
         SvgPathCommand.cpp
+        SvgRect.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

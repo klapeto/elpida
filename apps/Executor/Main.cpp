@@ -21,17 +21,15 @@
 // Created by klapeto on 10/12/2022.
 //
 
+#include <stdexcept>
+
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <math.h>
-#include <string_view>
 
-#include "Benchmarks/Image/Svg/SvgDocument.hpp"
-#include "Benchmarks/Image/Xml/XmlParser.hpp"
 #include "Elpida/Core/AllocatorFactory.hpp"
-#include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/DefaultAllocatorFactory.hpp"
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
@@ -42,13 +40,11 @@
 #include "Elpida/Platform/BenchmarkGroupModule.hpp"
 #include "Elpida/Platform/NumaAllocatorFactory.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
-#include "Elpida/Platform/NumaAllocator.hpp"
 
 #include "ArgumentsHelper.hpp"
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
-#include "Benchmarks/Image/Xml/CharacterStream.hpp"
 
 using namespace Elpida;
 
@@ -59,10 +55,10 @@ ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const Topolo
 	returnVector.reserve(affinity.size());
 
 	auto& processors = topologyInfo.GetAllProcessingUnits();
-	for (auto index: affinity)
+	for (auto index : affinity)
 	{
 		bool found = false;
-		for (auto& processor: processors)
+		for (auto& processor : processors)
 		{
 			if (processor.get().GetOsIndex().value() == index)
 			{
@@ -87,9 +83,9 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	if (configurationValues.size() != taskConfigurations.size())
 	{
 		throw ElpidaException("benchmark required ",
-				taskConfigurations.size(),
-				" configurations but were provided ",
-				configurationValues.size());
+		                      taskConfigurations.size(),
+		                      " configurations but were provided ",
+		                      configurationValues.size());
 	}
 
 	for (Size i = 0; i < taskConfigurations.size(); ++i)
@@ -117,24 +113,24 @@ int main(int argC, char** argV)
 		BenchmarkGroupModule module(helper.GetModulePath());
 
 		auto& benchmark = module
-				.GetBenchmarkGroup()
-				.GetBenchmarks()
-				.at(helper.GetBenchmarkIndex());
+		                  .GetBenchmarkGroup()
+		                  .GetBenchmarks()
+		                  .at(helper.GetBenchmarkIndex());
 
 		auto config = benchmark->GetRequiredConfiguration();
 		ValidateAndAssignConfiguration(helper.GetConfigurationValues(), config);
 
 		EnvironmentInfo environmentInfo(
-				CpuInfoLoader::Load(),
-				MemoryInfoLoader::Load(),
-				OsInfoLoader::Load(),
-				TopologyLoader::LoadTopology(),
-				TimingInfo(NanoSeconds(helper.GetNowOverhead()),
-						NanoSeconds(helper.GetLoopOverhead()),
-						NanoSeconds(helper.GetVCallOverhead()),
-						Seconds(0),
-						0),
-				helper.GetNumaAware()
+			CpuInfoLoader::Load(),
+			MemoryInfoLoader::Load(),
+			OsInfoLoader::Load(),
+			TopologyLoader::LoadTopology(),
+			TimingInfo(NanoSeconds(helper.GetNowOverhead()),
+			           NanoSeconds(helper.GetLoopOverhead()),
+			           NanoSeconds(helper.GetVCallOverhead()),
+			           Seconds(0),
+			           0),
+			helper.GetNumaAware()
 				? UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
 				: UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()));
 
@@ -143,8 +139,8 @@ int main(int argC, char** argV)
 		auto result = benchmark->Run(targetProcessors, config, environmentInfo);
 
 		std::cout
-				<< helper.GetResultFormatter().ConvertToString(result, *benchmark.get())
-				<< std::endl;
+			<< helper.GetResultFormatter().ConvertToString(result, *benchmark.get())
+			<< std::endl;
 	}
 	catch (const std::exception& ex)
 	{

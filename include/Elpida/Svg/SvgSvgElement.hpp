@@ -5,7 +5,7 @@
 #ifndef ELPIDA_SVG_SVGSVGELEMENT_HPP
 #define ELPIDA_SVG_SVGSVGELEMENT_HPP
 
-#include "SvgCoordinate.hpp"
+#include "SvgLength.hpp"
 #include "SvgElement.hpp"
 #include "SvgPreserveAspectRatio.hpp"
 #include "SvgViewBox.hpp"
@@ -25,8 +25,8 @@ namespace Elpida
 	private:
 		SvgViewBox _viewBox;
 		SvgPreserveAspectRatio _preserveAspectRatio;
-		SvgCoordinate _width;
-		SvgCoordinate _height;
+		SvgLength _width;
+		SvgLength _height;
 	};
 } // Elpida
 

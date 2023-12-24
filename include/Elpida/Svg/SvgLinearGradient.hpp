@@ -5,7 +5,7 @@
 #ifndef ELPIDA_SVG_SVGLINEARGRADIENT_HPP
 #define ELPIDA_SVG_SVGLINEARGRADIENT_HPP
 
-#include "SvgCoordinate.hpp"
+#include "SvgLength.hpp"
 #include "SvgGradient.hpp"
 
 namespace Elpida
@@ -15,10 +15,10 @@ namespace Elpida
 	public:
 		explicit SvgLinearGradient(const XmlElement& element, SvgDefs& defs);
 	private:
-		SvgCoordinate _x1;
-		SvgCoordinate _y1;
-		SvgCoordinate _x2;
-		SvgCoordinate _y2;
+		SvgLength _x1;
+		SvgLength _y1;
+		SvgLength _x2;
+		SvgLength _y2;
 	};
 
 } // Elpida

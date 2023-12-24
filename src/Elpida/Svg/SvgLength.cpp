@@ -2,7 +2,7 @@
 // Created by klapeto on 7/12/2023.
 //
 
-#include "Elpida/Svg/SvgCoordinate.hpp"
+#include "Elpida/Svg/SvgLength.hpp"
 
 #include "Elpida/Svg/SvgNumber.hpp"
 #include "Elpida/Xml/CharacterStream.hpp"
@@ -78,10 +78,22 @@ namespace Elpida
 		}
 	}
 
-	SvgCoordinate::SvgCoordinate(const std::string_view view)
+	SvgLength::SvgLength(const std::string_view view, bool ignoreErrors)
 	{
-		CharacterStream stream(view);
-		_value = SvgNumber::ParseNumber(stream);
-		_units = ParseUnits(stream);
+		try
+		{
+			CharacterStream stream(view);
+			_value = SvgNumber::ParseNumber(stream);
+			_units = ParseUnits(stream);
+		}
+		catch (const ParseException&)
+		{
+			if (!ignoreErrors)
+			{
+				throw;
+			}
+			_value = 0;
+			_units = SvgUnits::Px;
+		}
 	}
 } // Elpida

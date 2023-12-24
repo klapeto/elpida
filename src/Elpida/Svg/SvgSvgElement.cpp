@@ -9,8 +9,8 @@ namespace Elpida
 	SvgSvgElement::SvgSvgElement(const XmlElement& element, SvgDefs& defs)
 		: SvgElement(element, defs)
 	{
-		_width = SvgCoordinate(element.GetAttributeValue("width"));
-		_height = SvgCoordinate(element.GetAttributeValue("height"));
+		_width = SvgLength(element.GetAttributeValue("width"));
+		_height = SvgLength(element.GetAttributeValue("height"));
 		ConditionallyAssignProperty("viewBox", _viewBox);
 		ConditionallyAssignProperty("preserveAspectRatio", _preserveAspectRatio);
 	}

@@ -25,7 +25,7 @@ namespace Elpida
 			auto& value = GetProperties().GetValue("fx");
 			if (!value.empty())
 			{
-				_fx = SvgCoordinate(value);
+				_fx = SvgLength(value);
 			}
 			else
 			{
@@ -37,7 +37,7 @@ namespace Elpida
 			auto& value = GetProperties().GetValue("fy");
 			if (!value.empty())
 			{
-				_fy = SvgCoordinate(value);
+				_fy = SvgLength(value);
 			}
 			else
 			{

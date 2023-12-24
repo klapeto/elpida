@@ -22,7 +22,7 @@ namespace Elpida
 		Ex
 	};
 
-	class SvgCoordinate final
+	class SvgLength final
 	{
 	public:
 
@@ -66,18 +66,18 @@ namespace Elpida
 			}
 		}
 
-		constexpr SvgCoordinate()
+		constexpr SvgLength()
 			: _value(0), _units(SvgUnits::Px)
 		{
 		}
-		constexpr explicit SvgCoordinate(double value, SvgUnits units)
+		constexpr explicit SvgLength(double value, SvgUnits units)
 			: _value(value), _units(units)
 		{
 		}
 
-		explicit SvgCoordinate(std::string_view view);
+		explicit SvgLength(std::string_view view, bool ignoreErrors = true);
 
-		~SvgCoordinate() = default;
+		~SvgLength() = default;
 	private:
 		double _value;
 		SvgUnits _units;

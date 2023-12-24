@@ -14,11 +14,11 @@ namespace Elpida
 	public:
 		explicit SvgRadialGradient(const XmlElement& element, SvgDefs& defs);
 	private:
-		SvgCoordinate _cx;
-		SvgCoordinate _cy;
-		SvgCoordinate _r;
-		SvgCoordinate _fx;
-		SvgCoordinate _fy;
+		SvgLength _cx;
+		SvgLength _cy;
+		SvgLength _r;
+		SvgLength _fx;
+		SvgLength _fy;
 	};
 } // Elpida
 

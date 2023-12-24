@@ -6,7 +6,7 @@
 #define ELPIDA_SVG_SVGGRADIENTSTOP_HPP
 
 #include "SvgColor.hpp"
-#include "SvgCoordinate.hpp"
+#include "SvgLength.hpp"
 #include "SvgElement.hpp"
 
 namespace Elpida
@@ -23,13 +23,13 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const SvgCoordinate& GetOffset() const
+		const SvgLength& GetOffset() const
 		{
 			return _offset;
 		}
 
 		[[nodiscard]]
-		const SvgCoordinate& GetOpacity() const
+		const SvgLength& GetOpacity() const
 		{
 			return _opacity;
 		}
@@ -37,8 +37,8 @@ namespace Elpida
 		explicit SvgGradientStop(const XmlElement& element, SvgDefs& defs);
 	private:
 		SvgColor _color;
-		SvgCoordinate _offset;
-		SvgCoordinate _opacity;
+		SvgLength _offset;
+		SvgLength _opacity;
 	};
 
 } // Elpida

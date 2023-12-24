@@ -12,20 +12,20 @@
 namespace Elpida
 {
 
-	static void SanitizeCoordinate(SvgCoordinate& coordinate)
+	static void SanitizeCoordinate(SvgLength& coordinate)
 	{
 		switch (coordinate.GetUnits())
 		{
 		case SvgUnits::Percent:
 			if (coordinate.GetValue() > 100.0)
 			{
-				coordinate = SvgCoordinate(100.0, SvgUnits::Percent);
+				coordinate = SvgLength(100.0, SvgUnits::Percent);
 			}
 			break;
 		case SvgUnits::Px:
 			if (coordinate.GetValue() > 1.0)
 			{
-				coordinate = SvgCoordinate(1.0, SvgUnits::Px);
+				coordinate = SvgLength(1.0, SvgUnits::Px);
 			}
 			break;
 		default: throw ParseException("stop units", "raw or percent");
@@ -33,7 +33,7 @@ namespace Elpida
 
 		if (coordinate.GetValue() < 0.0)
 		{
-			coordinate = SvgCoordinate(0.0, coordinate.GetUnits());
+			coordinate = SvgLength(0.0, coordinate.GetUnits());
 		}
 	}
 
