@@ -7,7 +7,6 @@ add_library(elpida-svg
         SvgDocument.cpp
         SvgGradientStop.cpp
         SvgNumber.cpp
-        SvgPaint.cpp
         SvgPath.cpp
         SvgPreserveAspectRatio.cpp
         SvgTransform.cpp

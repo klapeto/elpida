@@ -34,7 +34,7 @@ namespace Elpida
 			return _opacity;
 		}
 
-		explicit SvgGradientStop(const XmlElement& element, SvgDefs& defs);
+		explicit SvgGradientStop(const XmlElement& element, SvgDocument& document);
 	private:
 		SvgColor _color;
 		SvgLength _offset;

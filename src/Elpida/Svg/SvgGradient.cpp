@@ -9,8 +9,8 @@
 
 namespace Elpida
 {
-	SvgGradient::SvgGradient(const XmlElement& element, SvgDefs& defs)
-		: SvgElement(element, defs)
+	SvgGradient::SvgGradient(const XmlElement& element, SvgDocument& document)
+		: SvgElement(element, document)
 	{
 		{
 			auto& value = element.GetAttributeValue("gradientUnits");
@@ -24,7 +24,7 @@ namespace Elpida
 			auto& value = element.GetAttributeValue("gradientTransform");
 			if (!value.empty())
 			{
-				_transform = SvgTransform(value);
+				_gradientTransform = SvgTransform(value);
 			}
 		}
 
@@ -44,10 +44,10 @@ namespace Elpida
 				{
 					_spreadType = SvgSpreadType::Repeat;
 				}
-				else
-				{
-					throw ParseException(value, "either 'pad' or 'reflect' or 'repeat'");
-				}
+				// else
+				// {
+				// 	throw ParseException(value, "either 'pad' or 'reflect' or 'repeat'");
+				// }
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace Elpida
 		{
 			if (child.GetName() == "stop")
 			{
-				_stops.emplace_back(child, defs);
+				_stops.emplace_back(child, document);
 			}
 		}
 		_stops.shrink_to_fit();

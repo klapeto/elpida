@@ -6,8 +6,8 @@
 
 namespace Elpida
 {
-	SvgLinearGradient::SvgLinearGradient(const XmlElement& element, SvgDefs& defs)
-		: SvgGradient(element, defs), _x1(0.0, SvgUnits::Percent), _y1(0.0, SvgUnits::Percent), _x2(100.0, SvgUnits::Percent),
+	SvgLinearGradient::SvgLinearGradient(const XmlElement& element, SvgDocument& document)
+		: SvgGradient(element, document), _x1(0.0, SvgUnits::Percent), _y1(0.0, SvgUnits::Percent), _x2(100.0, SvgUnits::Percent),
 		  _y2(100.0, SvgUnits::Percent)
 	{
 		ConditionallyAssignProperty("x1", _x1);

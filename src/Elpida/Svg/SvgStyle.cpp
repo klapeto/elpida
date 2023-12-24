@@ -15,7 +15,7 @@ namespace Elpida
 		while (!stream.Eof())
 		{
 			stream.SkipSpace();
-			auto name = stream.GetStringViewWhile([](auto c){return !CharacterStream::IsSpace(c) && c != ':';});
+			const auto name = stream.GetStringViewWhile([](auto c){return !CharacterStream::IsSpace(c) && c != ':';});
 			stream.SkipSpace();
 			if (stream.Current() != ':')
 			{

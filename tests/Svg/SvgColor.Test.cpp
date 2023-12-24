@@ -52,14 +52,14 @@ TEST(SvgColorTests, Rgb_Success)
     EXPECT_EQ((color.GetValue()) & 0xFF, 255);
 }
 
-TEST(SvgColorTests, Rgb_Fail_Throws)
+TEST(SvgColorTests, Rgb_Fail_ResetsToBlack)
 {
-    EXPECT_THROW(SvgColor("rgb(64,)"), ParseException);
-    EXPECT_THROW(SvgColor("rgb(64)"), ParseException);
-    EXPECT_THROW(SvgColor("rgb(,,)"), ParseException);
-    EXPECT_THROW(SvgColor("rgb(,)"), ParseException);
-    EXPECT_THROW(SvgColor("rgb("), ParseException);
-    EXPECT_THROW(SvgColor("rgb()"), ParseException);
+    EXPECT_EQ(SvgColor("rgb(64,)").GetValue(), 0);
+    EXPECT_EQ(SvgColor("rgb(64)").GetValue(), 0);
+    EXPECT_EQ(SvgColor("rgb(,,)").GetValue(), 0);
+    EXPECT_EQ(SvgColor("rgb(,)").GetValue(), 0);
+    EXPECT_EQ(SvgColor("rgb(").GetValue(), 0);
+    EXPECT_EQ(SvgColor("rgb()").GetValue(), 0);
 }
 
 static constexpr unsigned int RgbToInt(const unsigned char r, const unsigned char g, const unsigned char b)

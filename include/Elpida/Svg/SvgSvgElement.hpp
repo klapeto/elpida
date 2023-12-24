@@ -15,13 +15,8 @@ namespace Elpida
 	class SvgSvgElement : public SvgElement
 	{
 	public:
-		SvgSvgElement(const XmlElement& element, SvgDefs& defs);
-
-		SvgSvgElement(const XmlElement& element, SvgDefs* defs)
-			: SvgElement(element, defs)
-		{
-		}
-
+		SvgSvgElement() = default;
+		SvgSvgElement(const XmlElement& element, SvgDocument& document);
 	private:
 		SvgViewBox _viewBox;
 		SvgPreserveAspectRatio _preserveAspectRatio;

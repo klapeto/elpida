@@ -28,7 +28,9 @@ namespace Elpida
 				coordinate = SvgLength(1.0, SvgUnits::Px);
 			}
 			break;
-		default: throw ParseException("stop units", "raw or percent");
+		default:
+			coordinate = SvgLength(100.0, SvgUnits::Percent);
+			break;
 		}
 
 		if (coordinate.GetValue() < 0.0)
@@ -37,8 +39,8 @@ namespace Elpida
 		}
 	}
 
-	SvgGradientStop::SvgGradientStop(const XmlElement& element, SvgDefs& defs)
-		: SvgElement(element, defs),_opacity(1.0, SvgUnits::Px)
+	SvgGradientStop::SvgGradientStop(const XmlElement& element, SvgDocument& document)
+		: SvgElement(element, document),_opacity(1.0, SvgUnits::Px)
 	{
 		ConditionallyAssignProperty("stop-color", _color);
 		ConditionallyAssignProperty("stop-opacity", _opacity);

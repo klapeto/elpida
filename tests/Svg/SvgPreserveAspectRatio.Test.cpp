@@ -62,22 +62,54 @@ TEST(SvgPreserveAspectRatioTests, Valid_Success)
 	}
 }
 
-TEST(SvgPreserveAspectRatioTests, Invalid_Throws)
+TEST(SvgPreserveAspectRatioTests, Invalid_Resets)
 {
-	EXPECT_THROW(SvgPreserveAspectRatio("afadsf"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMin LOL"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("LOLOL LOL"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xLl"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMidYLOL"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMid moot"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMidYMid sco"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMixYMid"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMadYMid"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMi"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xMa"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("xM"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("x"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("n"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio("na"), ParseException);
-	EXPECT_THROW(SvgPreserveAspectRatio(""), ParseException);
+	EXPECT_EQ(SvgPreserveAspectRatio("afadsf").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("afadsf").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("afadsf").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMin LOL").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMin LOL").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMin LOL").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("LOLOL LOL").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("LOLOL LOL").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("LOLOL LOL").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xLl").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xLl").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xLl").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYLOL").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYLOL").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYLOL").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMid moot").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMid moot").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMid moot").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMid sco").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMid sco").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMidYMid sco").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMixYMid").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMixYMid").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMixYMid").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMadYMid").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMadYMid").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMadYMid").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMi").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMi").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMi").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMa").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMa").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xMa").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xM").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("xM").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("xM").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("x").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("x").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("x").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("n").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("n").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("n").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("na").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("na").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("na").GetAlignY(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("").GetType(), SvgAlignType::Meet);
+	EXPECT_EQ(SvgPreserveAspectRatio("").GetAlignX(), SvgAxisAlignType::Mid);
+	EXPECT_EQ(SvgPreserveAspectRatio("").GetAlignY(), SvgAxisAlignType::Mid);
 }

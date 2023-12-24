@@ -9,10 +9,14 @@
 
 namespace Elpida
 {
-	SvgShape::SvgShape(const XmlElement& element, SvgDefs& defs)
-		: SvgElement(element, defs)
+	SvgShape::SvgShape(const XmlElement& element, SvgDocument& document)
+		: SvgElement(element, document)
 	{
-		ConditionallyAssignProperty<>("opacity", _opacity, [](const auto& s) { return SvgNumber::ParseNumber(s); });
+		ConditionallyAssignProperty<>("opacity", _opacity, [](const auto& s)
+		{
+			double v;
+			return SvgNumber::TryParseNumber(s, v) ? v : 1.0;
+		});
 		ConditionallyAssignProperty<>("display", _visible, [](const auto& s)
 		{
 			return static_cast<bool>(SvgVisibility(s));

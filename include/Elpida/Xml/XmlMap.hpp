@@ -27,11 +27,9 @@ namespace Elpida
 			this->operator[](key) = std::move(value);
 		}
 
-		XmlMap() = default;
-
 	private:
 		static inline const std::string Empty;
 	};
 } // Elpida
 
-#endif //ELPIDA_XML_MAP_HPP
+#endif //ELPIDA_XML_XMLMAP_HPP

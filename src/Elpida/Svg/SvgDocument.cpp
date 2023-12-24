@@ -9,7 +9,7 @@
 namespace Elpida
 {
 	SvgDocument::SvgDocument(const XmlElement& element)
-		: SvgSvgElement(element)
 	{
+		_element = SvgSvgElement(element, *this);
 	}
 } // Elpida

@@ -8,8 +8,8 @@
 
 namespace Elpida
 {
-	SvgRadialGradient::SvgRadialGradient(const XmlElement& element, SvgDefs& defs)
-		: SvgGradient(element, defs), _cx(50.0, SvgUnits::Percent), _cy(50.0, SvgUnits::Percent), _r(50.0, SvgUnits::Percent),
+	SvgRadialGradient::SvgRadialGradient(const XmlElement& element, SvgDocument& document)
+		: SvgGradient(element, document), _cx(50.0, SvgUnits::Percent), _cy(50.0, SvgUnits::Percent), _r(50.0, SvgUnits::Percent),
 		  _fx(0.0, SvgUnits::Percent), _fy(0.0, SvgUnits::Percent)
 	{
 		ConditionallyAssignProperty("cx", _cx);
@@ -18,7 +18,8 @@ namespace Elpida
 
 		if (_r.GetValue() < 0.0)
 		{
-			throw ParseException("negative radial gradient radius", "positive radius");
+			_r = SvgLength(-_r.GetValue(), _r.GetUnits());
+			//throw ParseException("negative radial gradient radius", "positive radius");
 		}
 
 		{

@@ -4,6 +4,8 @@
 
 #include "Elpida/Svg/SvgElement.hpp"
 
+#include <Elpida/Svg/SvgDocument.hpp>
+
 #include "Elpida/Svg/SvgDefs.hpp"
 #include "Elpida/Svg/SvgElementFactory.hpp"
 #include "Elpida/Svg/SvgNumber.hpp"
@@ -11,7 +13,7 @@
 
 namespace Elpida
 {
-	SvgElement::SvgElement(const XmlElement& element, SvgDefs& defs)
+	SvgElement::SvgElement(const XmlElement& element, SvgDocument& document)
 	{
 		_properties = element.GetAttributes();
 
@@ -22,6 +24,7 @@ namespace Elpida
 		ConditionallyAssignProperty<>("id", _id);
 		ConditionallyAssignProperty<>("transform", _transform);
 
+		auto& defs = document._defs;
 		for (auto& child : element.GetChildren())
 		{
 			if (child.GetName() == "defs")
@@ -30,22 +33,17 @@ namespace Elpida
 				{
 					auto& id = def.GetAttributeValue("id");
 					if (id.empty()) continue;
-					if (auto defElement = SvgElementFactory::CreateFromXmlElement(def, defs))
+					if (auto defElement = SvgElementFactory::CreateFromXmlElement(def, document))
 					{
 						defs.insert({id, std::move(defElement)});
 					}
 				}
 				continue;
 			}
-			if (auto childElement = SvgElementFactory::CreateFromXmlElement(child, defs))
+			if (auto childElement = SvgElementFactory::CreateFromXmlElement(child, document))
 			{
 				_children.push_back(std::move(childElement));
 			}
 		}
-	}
-
-	SvgElement::~SvgElement()
-	{
-		delete _defs;
 	}
 } // Elpida

@@ -34,9 +34,9 @@ namespace Elpida
 			return _stops;
 		}
 
-		const SvgTransform& GetTransform() const
+		const SvgTransform& GetGradientTransform() const
 		{
-			return _transform;
+			return _gradientTransform;
 		}
 
 		SvgSpreadType GetSpreadType() const
@@ -49,12 +49,12 @@ namespace Elpida
 			return _units;
 		}
 
-		explicit SvgGradient(const XmlElement& element, SvgDefs& defs);
+		explicit SvgGradient(const XmlElement& element, SvgDocument& document);
 
 	protected:
 		std::string _href;
 		std::vector<SvgGradientStop> _stops;
-		SvgTransform _transform;
+		SvgTransform _gradientTransform;
 		SvgSpreadType _spreadType;
 		SvgGradientUnits _units;
 	};

@@ -31,6 +31,15 @@ namespace Elpida
 		}
 
 		SvgViewBox() = default;
+
+		SvgViewBox(const double minX, const double minY, const double width, const double height)
+			: _minX(minX),
+			  _minY(minY),
+			  _width(width),
+			  _height(height)
+		{
+		}
+
 		explicit SvgViewBox(std::string_view view);
 	private:
 		double _minX;

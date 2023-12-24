@@ -78,7 +78,7 @@ namespace Elpida
 		}
 	}
 
-	SvgLength::SvgLength(const std::string_view view, bool ignoreErrors)
+	SvgLength::SvgLength(const std::string_view view)
 	{
 		try
 		{
@@ -88,10 +88,6 @@ namespace Elpida
 		}
 		catch (const ParseException&)
 		{
-			if (!ignoreErrors)
-			{
-				throw;
-			}
 			_value = 0;
 			_units = SvgUnits::Px;
 		}

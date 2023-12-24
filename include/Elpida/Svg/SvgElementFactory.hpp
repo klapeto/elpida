@@ -13,7 +13,7 @@ namespace Elpida
 	class SvgElementFactory
 	{
 	public:
-		static std::unique_ptr<SvgElement> CreateFromXmlElement(const XmlElement& element, SvgDefs& defs);
+		static std::unique_ptr<SvgElement> CreateFromXmlElement(const XmlElement& element, SvgDocument& document);
 	};
 } // Elpida
 

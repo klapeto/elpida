@@ -75,7 +75,7 @@ namespace Elpida
 		{
 		}
 
-		explicit SvgLength(std::string_view view, bool ignoreErrors = true);
+		explicit SvgLength(std::string_view view);
 
 		~SvgLength() = default;
 	private:

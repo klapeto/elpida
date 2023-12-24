@@ -13,7 +13,7 @@ namespace Elpida
 	class SvgRect : public SvgShape
 	{
 	public:
-		SvgRect(const XmlElement& element, SvgDefs& defs);
+		SvgRect(const XmlElement& element, SvgDocument& document);
 	private:
 		SvgLength _x;
 		SvgLength _y;

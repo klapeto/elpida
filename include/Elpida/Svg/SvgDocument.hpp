@@ -12,10 +12,32 @@ namespace Elpida
 {
 	class XmlElement;
 
-	class SvgDocument: public SvgSvgElement
+	class SvgDocument
 	{
 	public:
+		[[nodiscard]]
+		const SvgDefs& GetDefs() const
+		{
+			return _defs;
+		}
+
+		[[nodiscard]]
+		const SvgSvgElement& GetElement() const
+		{
+			return _element;
+		}
+
 		explicit SvgDocument(const XmlElement& element);
+		SvgDocument(SvgDocument&& other) noexcept
+		{
+			_element = std::move(other._element);
+			_defs = std::move(other._defs);
+		}
+	private:
+		SvgDefs _defs;
+		SvgSvgElement _element;
+
+		friend class SvgElement;
 	};
 
 } // Elpida

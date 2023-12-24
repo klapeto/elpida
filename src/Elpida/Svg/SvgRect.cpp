@@ -8,8 +8,8 @@
 
 namespace Elpida
 {
-	SvgRect::SvgRect(const XmlElement& element, SvgDefs& defs)
-		: SvgShape(element, defs)
+	SvgRect::SvgRect(const XmlElement& element, SvgDocument& document)
+		: SvgShape(element, document)
 	{
 		auto& properties = GetProperties();
 		_x = SvgLength(properties.GetValue("x"));

@@ -16,7 +16,7 @@ namespace Elpida
 	class SvgShape : public SvgElement
 	{
 	public:
-		explicit SvgShape(const XmlElement& element, SvgDefs& defs);
+		explicit SvgShape(const XmlElement& element, SvgDocument& document);
 	private:
 		std::optional<SvgFill> _fill;
 		std::optional<SvgStroke> _stroke;

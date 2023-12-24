@@ -147,6 +147,20 @@ namespace Elpida
 			return ParseNumber(stream);
 		}
 
+		static bool TryParseNumber(const std::string_view& view, double& value)
+		{
+			try
+			{
+				CharacterStream stream(view);
+				value = ParseNumber(stream);
+				return true;
+			}
+			catch (const ParseException&)
+			{
+				return false;
+			}
+		}
+
 		operator double() const
 		{
 			return _value;
@@ -156,6 +170,7 @@ namespace Elpida
 		{
 			_value = ParseNumber(view);
 		}
+
 	private:
 		double _value;
 	};

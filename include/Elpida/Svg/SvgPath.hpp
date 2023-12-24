@@ -25,7 +25,7 @@ namespace Elpida
 			return _closed;
 		}
 
-		explicit SvgPath(const XmlElement& element, SvgDefs& defs);
+		explicit SvgPath(const XmlElement& element, SvgDocument& document);
 
 	private:
 		std::vector<SvgPathCommand> _commands;

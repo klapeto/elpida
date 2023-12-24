@@ -12,29 +12,48 @@
 
 namespace Elpida
 {
-	class SvgDefs;
+	class SvgDocument;
+
 	class SvgElement
 	{
 	public:
-		explicit SvgElement(const XmlElement& element, SvgDefs& defs);
+		[[nodiscard]]
+		const std::string& GetId() const
+		{
+			return _id;
+		}
+
+		[[nodiscard]]
+		const SvgTransform& GetTransform() const
+		{
+			return _transform;
+		}
+
+		[[nodiscard]] const XmlMap& GetProperties1() const
+		{
+			return _properties;
+		}
+
+		[[nodiscard]] const std::vector<std::unique_ptr<SvgElement>>& GetChildren() const
+		{
+			return _children;
+		}
+
+		SvgElement() = default;
+		explicit SvgElement(const XmlElement& element, SvgDocument& document);
 		SvgElement(const SvgElement&) = delete;
-		SvgElement(SvgElement&&) = default;
-		virtual ~SvgElement();
+		SvgElement(SvgElement&& other) noexcept = default;
+		SvgElement& operator=(SvgElement&&) noexcept = default;
+		virtual ~SvgElement() = default;
+
 	private:
 		std::string _id;
 		SvgTransform _transform;
 		XmlMap _properties;
 		std::vector<std::unique_ptr<SvgElement>> _children;
-		SvgDefs* _defs = nullptr;
+
 	protected:
-
-		explicit SvgElement(const XmlElement& element, SvgDefs* defs)
-			:SvgElement(element, *defs)
-		{
-			_defs = defs;
-		}
-
-		template<typename T, typename TConverter>
+		template <typename T, typename TConverter>
 		void ConditionallyAssignProperty(const std::string& name, T& targetValue, TConverter converter)
 		{
 			if (auto& value = _properties.GetValue(name); !value.empty())
@@ -43,10 +62,10 @@ namespace Elpida
 			}
 		}
 
-		template<typename T>
+		template <typename T>
 		void ConditionallyAssignProperty(const std::string& name, T& targetValue)
 		{
-			ConditionallyAssignProperty<T>(name, targetValue, [](const auto& s){return T(s);});
+			ConditionallyAssignProperty<T>(name, targetValue, [](const auto& s) { return T(s); });
 		}
 
 		const XmlMap& GetProperties() const

@@ -13,7 +13,7 @@ namespace Elpida
 	class SvgLinearGradient: public SvgGradient
 	{
 	public:
-		explicit SvgLinearGradient(const XmlElement& element, SvgDefs& defs);
+		explicit SvgLinearGradient(const XmlElement& element, SvgDocument& document);
 	private:
 		SvgLength _x1;
 		SvgLength _y1;

@@ -14,9 +14,6 @@ namespace Elpida
 {
 	class SvgDefs : public std::unordered_map<std::string, std::unique_ptr<SvgElement>>
 	{
-	public:
-		SvgDefs() = default;
-		~SvgDefs() = default;
 	};
 } // Elpida
 

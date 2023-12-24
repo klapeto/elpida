@@ -77,20 +77,3 @@ TEST(SvgCordinateTests, Parse_Valid_Sucess)
 		EXPECT_EQ(cordinate.GetUnits(), SvgUnits::Ex);
 	}
 }
-
-TEST(SvgCordinateTests, Parse_Invalid_Sucess)
-{
-	EXPECT_THROW(SvgLength("1jksfdjh"), ParseException);
-	EXPECT_THROW(SvgLength("13321el"), ParseException);
-	EXPECT_THROW(SvgLength("1eo"), ParseException);
-	EXPECT_THROW(SvgLength("1po"), ParseException);
-	EXPECT_THROW(SvgLength("1io"), ParseException);
-	EXPECT_THROW(SvgLength("1mo"), ParseException);
-	EXPECT_THROW(SvgLength("1co"), ParseException);
-	EXPECT_THROW(SvgLength("1m"), ParseException);
-	EXPECT_THROW(SvgLength("1i"), ParseException);
-	EXPECT_THROW(SvgLength("1p"), ParseException);
-	EXPECT_THROW(SvgLength("1e"), ParseException);
-	EXPECT_THROW(SvgLength("1c"), ParseException);
-	EXPECT_THROW(SvgLength("1.0.0.0"), ParseException);
-}
