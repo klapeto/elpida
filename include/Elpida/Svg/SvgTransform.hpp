@@ -119,6 +119,18 @@ namespace Elpida
 			*this = copy;
 		}
 
+		void ApplyToPoint(double& dx, double& dy, const double x, const double y) const
+		{
+			dx = x * t[0] + y * t[2] + t[4];
+			dy = x * t[1] + y * t[3] + t[5];
+		}
+
+		void ApplyToVector(double& dx, double& dy, const double x, const double y) const
+		{
+			dx = x * t[0] + y * t[2];
+			dy = x * t[1] + y * t[3];
+		}
+
 		SvgTransform()
 			: t{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 }
 		{
@@ -129,6 +141,12 @@ namespace Elpida
 			: t{ values[0], values[1], values[2], values[3], values[4], values[5] }
 		{
 
+		}
+
+		explicit SvgTransform(const double a, const double b, const double c, const double d, const double e,
+		                      const double f)
+			: t{a, b, c, d, e, f}
+		{
 		}
 
 		explicit SvgTransform(std::string_view view);

@@ -10,9 +10,54 @@
 
 namespace Elpida
 {
+	constexpr double Pi = 3.14159265358979323846264338327;
+
+	static double Square(const double x)
+	{
+		return x * x;
+	}
+
 	static bool IsNumberic(const char c)
 	{
 		return SvgNumber::IsNumber(c) || c == '+' || c == '-';
+	}
+
+	static double VectorMagnitude(const double x, const double y)
+	{
+		return sqrt(x * x + y * y);
+	}
+
+	static double VectorDotProduct(const double x1, const double y1, const double x2, const double y2)
+	{
+		return x1 * x2 + y1 * y2;
+	}
+
+	static double VectorCosTheta(const double x1, const double y1, const double x2, const double y2)
+	{
+		return VectorDotProduct(x1, y2, x2, y2) / (VectorMagnitude(x1, y1) * VectorMagnitude(x2, y2));
+	}
+
+	static double VectorAngle(const double x1, const double y1, const double x2, const double y2)
+	{
+		double res = VectorCosTheta(x1, y1, x2, y2);
+		if (res < -1.0f) res = -1.0f;
+		if (res > 1.0f) res = 1.0f;
+		return (x1 * y2 < y1 * x2 ? -1.0f : 1.0f) * acos(res);
+	}
+
+	static void MoveTo(double x, double y, const bool relative)
+	{
+		if (relative)
+		{
+			cpx += x;
+			cpy += y;
+		}
+		else
+		{
+			cpx = x;
+			cpy = y;
+		}
+		LineTo(cpx, cpy);
 	}
 
 	static void ParseAllNumbers(CharacterStream& stream, std::vector<double>& currentNumbers)
@@ -45,24 +90,344 @@ namespace Elpida
 	SvgPath::SvgPath(const XmlElement& element, SvgDocument& document)
 		: SvgShape(element, document)
 	{
-		auto& d = GetProperties().GetValue("d");
+		auto& dData = GetProperties().GetValue("d");
 
-		CharacterStream stream(d);
+		if (dData.empty()) return;
+		CharacterStream stream(dData);
 
 		try
 		{
 			std::vector<double> currentNumbers;
 			currentNumbers.reserve(8);
-			std::vector<SvgPathCommand::CommandData> currentCommandData;
+
+			double cpx = 0;
+			double cpy = 0;
+			double cpx2 = 0;
+			double cpy2 = 0;
+
+			auto moveTo = [&](auto x, auto y, const bool relative)
+			{
+				if (relative)
+				{
+					cpx += x;
+					cpy += y;
+				}
+				else
+				{
+					cpx = x;
+					cpy = y;
+				}
+				MoveTo(cpx, cpy);
+			};
+
+			auto lineTo = [&](const auto x, const auto y, const bool relative)
+			{
+				if (relative)
+				{
+					cpx += x;
+					cpy += y;
+				}
+				else
+				{
+					cpx = x;
+					cpy = y;
+				}
+				LineTo(cpx, cpy);
+			};
+
+			auto horizontalLineTo = [&](const auto x, const bool relative)
+			{
+				if (relative)
+				{
+					cpx += x;
+				}
+				else
+				{
+					cpx = x;
+				}
+				LineTo(cpx, cpy);
+			};
+
+			auto verticalLineTo = [&](const auto y, const bool relative)
+			{
+				if (relative)
+				{
+					cpy += y;
+				}
+				else
+				{
+					cpy = y;
+				}
+				LineTo(cpx, cpy);
+			};
+
+			auto cubicBeizerTo = [&](auto _x1, auto _y1, auto _x2, auto _y2, auto _x, auto _y, const bool relative)
+			{
+				double x2, y2, cx1, cy1, cx2, cy2;
+
+				if (relative)
+				{
+					cx1 = cpx + _x1;
+					cy1 = cpy + _y1;
+					cx2 = cpx + _x2;
+					cy2 = cpy + _y2;
+					x2 = cpx + _x;
+					y2 = cpy + _y;
+				}
+				else
+				{
+					cx1 = _x1;
+					cy1 = _y1;
+					cx2 = _x2;
+					cy2 = _y2;
+					x2 = _x;
+					y2 = _y;
+				}
+
+				CubicBeizerTo(cx1, cy1, cx2, cy2, x2, y2);
+
+				cpx2 = cx2;
+				cpy2 = cy2;
+				cpx = x2;
+				cpy = y2;
+			};
+
+			auto smoothCubicBeizerTo = [&](auto _x2, auto _y2, auto _x, auto _y, const bool relative)
+			{
+				double x2, y2, cx2, cy2;
+
+				const double x1 = cpx;
+				const double y1 = cpy;
+				if (relative)
+				{
+					cx2 = cpx + _x2;
+					cy2 = cpy + _y2;
+					x2 = cpx + _x;
+					y2 = cpy + _y;
+				}
+				else
+				{
+					cx2 = _x2;
+					cy2 = _y2;
+					x2 = _x;
+					y2 = _y;
+				}
+
+				const double cx1 = 2 * x1 - cpx2;
+				const double cy1 = 2 * y1 - cpy2;
+
+				CubicBeizerTo(cx1, cy1, cx2, cy2, x2, y2);
+
+				cpx2 = cx2;
+				cpy2 = cy2;
+				cpx = x2;
+				cpy = y2;
+			};
+
+
+			auto quadBeizerTo = [&](auto _x2, auto _y2, auto _x, auto _y, const bool relative)
+			{
+				double x1, y1, x2, y2, cx, cy;
+				double cx1, cy1, cx2, cy2;
+
+				x1 = cpx;
+				y1 = cpy;
+				if (relative)
+				{
+					cx = cpx + _x2;
+					cy = cpy + _y2;
+					x2 = cpx + _x;
+					y2 = cpy + _y;
+				}
+				else
+				{
+					cx = _x2;
+					cy = _y2;
+					x2 = _x;
+					y2 = _y;
+				}
+
+				cx1 = x1 + 2.0f / 3.0f * (cx - x1);
+				cy1 = y1 + 2.0f / 3.0f * (cy - y1);
+				cx2 = x2 + 2.0f / 3.0f * (cx - x2);
+				cy2 = y2 + 2.0f / 3.0f * (cy - y2);
+
+				CubicBeizerTo(cx1, cy1, cx2, cy2, x2, y2);
+
+				cpx2 = cx;
+				cpy2 = cy;
+				cpx = x2;
+				cpy = y2;
+			};
+
+			auto smoothQuadBeizerTo = [&](auto _x, auto _y, const bool relative)
+			{
+				float x1, y1, x2, y2, cx, cy;
+				float cx1, cy1, cx2, cy2;
+
+				x1 = cpx;
+				y1 = cpy;
+				if (relative)
+				{
+					x2 = cpx + _x;
+					y2 = cpy + _y;
+				}
+				else
+				{
+					x2 = _x;
+					y2 = _y;
+				}
+
+				cx = 2 * x1 - cpx2;
+				cy = 2 * y1 - cpy2;
+
+				// Convert to cubix bezier
+				cx1 = x1 + 2.0f / 3.0f * (cx - x1);
+				cy1 = y1 + 2.0f / 3.0f * (cy - y1);
+				cx2 = x2 + 2.0f / 3.0f * (cx - x2);
+				cy2 = y2 + 2.0f / 3.0f * (cy - y2);
+
+				CubicBeizerTo(cx1, cy1, cx2, cy2, x2, y2);
+
+				cpx2 = cx;
+				cpy2 = cy;
+				cpx = x2;
+				cpy = y2;
+			};
+
+			auto arcTo = [&](auto _rx, auto _ry, auto _xRotation, bool _largeArc, bool _sweep, auto _x, auto _y,
+			                 const bool relative)
+			{
+				// Ported from canvg (https://code.google.com/p/canvg/)
+				double rx, ry, rotx;
+				double x1, y1, x2, y2, cx, cy, dx, dy, d;
+				double x1p, y1p, cxp, cyp, s, sa, sb;
+				double ux, uy, vx, vy, a1, da;
+				double x, y, tanx, tany, a, px = 0, py = 0, ptanx = 0, ptany = 0;
+				double sinrx, cosrx;
+				int i, ndivs;
+				double hda, kappa;
+
+				rx = fabsf(_rx); // y radius
+				ry = fabsf(_ry); // x radius
+				rotx = _xRotation / 180.0 * Pi; // x rotation angle
+				x1 = cpx; // start point
+				y1 = cpy;
+				if (relative)
+				{
+					// end point
+					x2 = cpx + _x;
+					y2 = cpy + _y;
+				}
+				else
+				{
+					x2 = _x;
+					y2 = _y;
+				}
+
+				dx = x1 - x2;
+				dy = y1 - y2;
+				d = sqrt(dx * dx + dy * dy);
+				if (d < 1e-6 || rx < 1e-6 || ry < 1e-6)
+				{
+					// The arc degenerates to a line
+					LineTo(x2, y2);
+					cpx = x2;
+					cpy = y2;
+					return;
+				}
+
+				sinrx = sin(rotx);
+				cosrx = cos(rotx);
+
+				// Convert to center point parameterization.
+				// http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+				// 1) Compute x1', y1'
+				x1p = cosrx * dx / 2.0 + sinrx * dy / 2.0;
+				y1p = -sinrx * dx / 2.0 + cosrx * dy / 2.0;
+				d = Square(x1p) / Square(rx) + Square(y1p) / Square(ry);
+				if (d > 1)
+				{
+					d = sqrt(d);
+					rx *= d;
+					ry *= d;
+				}
+				// 2) Compute cx', cy'
+				s = 0.0;
+				sa = Square(rx) * Square(ry) - Square(rx) * Square(y1p) - Square(ry) * Square(x1p);
+				sb = Square(rx) * Square(y1p) + Square(ry) * Square(x1p);
+				if (sa < 0.0) sa = 0.0;
+				if (sb > 0.0)
+					s = sqrt(sa / sb);
+				if (_largeArc == _sweep)
+					s = -s;
+				cxp = s * rx * y1p / ry;
+				cyp = s * -ry * x1p / rx;
+
+				// 3) Compute cx,cy from cx',cy'
+				cx = (x1 + x2) / 2.0 + cosrx * cxp - sinrx * cyp;
+				cy = (y1 + y2) / 2.0 + sinrx * cxp + cosrx * cyp;
+
+				// 4) Calculate theta1, and delta theta.
+				ux = (x1p - cxp) / rx;
+				uy = (y1p - cyp) / ry;
+				vx = (-x1p - cxp) / rx;
+				vy = (-y1p - cyp) / ry;
+				a1 = VectorAngle(1.0, 0.0, ux, uy); // Initial angle
+				da = VectorAngle(ux, uy, vx, vy); // Delta angle
+
+				//	if (vecrat(ux,uy,vx,vy) <= -1.0f) da = NSVG_PI;
+				//	if (vecrat(ux,uy,vx,vy) >= 1.0f) da = 0;
+
+				if (!_sweep && da > 0)
+					da -= 2 * Pi;
+				else if (_sweep && da < 0)
+					da += 2 * Pi;
+
+				// Approximate the arc using cubic spline segments.
+
+				SvgTransform transform(cosrx, sinrx, -sinrx, cosrx, cx, cy);
+
+				// Split arc into max 90 degree segments.
+				// The loop assumes an iteration per end point (including start and end), this +1.
+				ndivs = (int)(fabs(da) / (Pi * 0.5) + 1.0);
+				hda = (da / (double)ndivs) / 2.0;
+				// Fix for ticket #179: division by 0: avoid cotangens around 0 (infinite)
+				if ((hda < 1e-3) && (hda > -1e-3))
+					hda *= 0.5;
+				else
+					hda = (1.0 - cos(hda)) / sin(hda);
+				kappa = fabs(4.0 / 3.0 * hda);
+				if (da < 0.0)
+					kappa = -kappa;
+
+				for (i = 0; i <= ndivs; i++)
+				{
+					a = a1 + da * ((double)i / (double)ndivs);
+					dx = cos(a);
+					dy = sin(a);
+					transform.ApplyToPoint(x,y, dx * rx, dy * ry);
+					transform.ApplyToVector(tanx, tany, -dy * rx * kappa, dx * ry * kappa);
+					if (i > 0)
+						CubicBeizerTo( px + ptanx, py + ptany, x - tanx, y - tany, x, y);
+					px = x;
+					py = y;
+					ptanx = tanx;
+					ptany = tany;
+				}
+
+				cpx = x2;
+				cpy = y2;
+			};
+
 			while (!stream.Eof())
 			{
-				currentCommandData.clear();
 				stream.SkipSpace();
-				bool absolute = true;
+				bool relative = false;
 				switch (auto c = stream.Current())
 				{
 				case 'm':
-					absolute = false;
+					relative = true;
 					[[fallthrough]];
 				case 'M':
 					{
@@ -72,19 +437,17 @@ namespace Elpida
 							throw ParseException("moveTo command requires x,y");
 						}
 
-						SvgPathCommand::CommandData data{};
-						for (std::size_t i = 0; i < currentNumbers.size(); i += 2)
+						moveTo(currentNumbers[0], currentNumbers[1], relative);
+
+						for (std::size_t i = 2; i < currentNumbers.size(); i += 2)
 						{
-							data.moveToData.x = currentNumbers[i];
-							data.moveToData.y = currentNumbers[i + 1];
-							currentCommandData.push_back(data);
+							lineTo(currentNumbers[i], currentNumbers[i + 1], relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::MoveTo, std::move(currentCommandData), absolute);
 					}
 
 					break;
 				case 'l':
-					absolute = false;
+					relative = true;
 					[[fallthrough]];
 				case 'L':
 					{
@@ -94,18 +457,16 @@ namespace Elpida
 							throw ParseException("lineTo command requires x,y");
 						}
 
-						SvgPathCommand::CommandData data{};
 						for (std::size_t i = 0; i < currentNumbers.size(); i += 2)
 						{
-							data.lineToData.x = currentNumbers[i];
-							data.lineToData.y = currentNumbers[i + 1];
-							currentCommandData.push_back(data);
+							lineTo(currentNumbers[i], currentNumbers[i + 1], relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::LineTo, std::move(currentCommandData), absolute);
+						cpx2 = cpx;
+						cpy2 = cpy;
 					}
 					break;
 				case 'h':
-					absolute = false;
+					relative = false;
 					[[fallthrough]];
 				case 'H':
 					{
@@ -116,18 +477,16 @@ namespace Elpida
 							throw ParseException("horizontalLineTo command requires x");
 						}
 
-						SvgPathCommand::CommandData data{};
-						for (double currentNumber : currentNumbers)
+						for (std::size_t i = 0; i < currentNumbers.size(); i++)
 						{
-							data.horizontalLineToData.x = currentNumber;
-							currentCommandData.push_back(data);
+							horizontalLineTo(currentNumbers[i], relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::HorizontalLineTo, std::move(currentCommandData),
-						                       absolute);
+						cpx2 = cpx;
+						cpy2 = cpy;
 					}
 					break;
 				case 'v':
-					absolute = false;
+					relative = false;
 					[[fallthrough]];
 				case 'V':
 					{
@@ -138,18 +497,16 @@ namespace Elpida
 							throw ParseException("verticallLineTo command requires x");
 						}
 
-						SvgPathCommand::CommandData data{};
-						for (double currentNumber : currentNumbers)
+						for (std::size_t i = 0; i < currentNumbers.size(); i++)
 						{
-							data.verticalLineToData.y = currentNumber;
-							currentCommandData.push_back(data);
+							verticalLineTo(currentNumbers[i], relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::VerticalLineTo, std::move(currentCommandData),
-						                       absolute);
+						cpx2 = cpx;
+						cpy2 = cpy;
 					}
 					break;
 				case 'c':
-					absolute = false;
+					relative = false;
 					[[fallthrough]];
 				case 'C':
 					{
@@ -160,22 +517,16 @@ namespace Elpida
 							throw ParseException("curveTo command requires x1 y1 x2 y2 x y");
 						}
 
-						SvgPathCommand::CommandData data{};
 						for (std::size_t i = 0; i < currentNumbers.size(); i += 6)
 						{
-							data.curveToData.x1 = currentNumbers[i];
-							data.curveToData.y1 = currentNumbers[i + 1];
-							data.curveToData.x2 = currentNumbers[i + 2];
-							data.curveToData.y2 = currentNumbers[i + 3];
-							data.curveToData.x = currentNumbers[i + 4];
-							data.curveToData.y = currentNumbers[i + 5];
-							currentCommandData.push_back(data);
+							cubicBeizerTo(currentNumbers[i], currentNumbers[i + 1], currentNumbers[i + 2],
+							              currentNumbers[i + 3], currentNumbers[i + 4], currentNumbers[i + 5],
+							              relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::CurveTo, std::move(currentCommandData), absolute);
 					}
 					break;
 				case 's':
-					absolute = false;
+					relative = false;
 					[[fallthrough]];
 				case 'S':
 					{
@@ -186,21 +537,15 @@ namespace Elpida
 							throw ParseException("smoothCurveTo command requires x2 y2 x y");
 						}
 
-						SvgPathCommand::CommandData data{};
 						for (std::size_t i = 0; i < currentNumbers.size(); i += 4)
 						{
-							data.smoothCurveToData.x2 = currentNumbers[i];
-							data.smoothCurveToData.y2 = currentNumbers[i + 1];
-							data.smoothCurveToData.x = currentNumbers[i + 2];
-							data.smoothCurveToData.y = currentNumbers[i + 3];
-							currentCommandData.push_back(data);
+							smoothCubicBeizerTo(currentNumbers[i], currentNumbers[i + 1], currentNumbers[i + 2],
+							                    currentNumbers[i + 3], relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::SmoothCurveTo, std::move(currentCommandData),
-						                       absolute);
 					}
 					break;
 				case 'q':
-					absolute = false;
+					relative = false;
 					[[fallthrough]];
 				case 'Q':
 					{
@@ -211,21 +556,15 @@ namespace Elpida
 							throw ParseException("quadricCurveTo command requires x2 y2 x y");
 						}
 
-						SvgPathCommand::CommandData data{};
 						for (std::size_t i = 0; i < currentNumbers.size(); i += 4)
 						{
-							data.quadraticCurveToData.x1 = currentNumbers[i];
-							data.quadraticCurveToData.y1 = currentNumbers[i + 1];
-							data.quadraticCurveToData.x = currentNumbers[i + 2];
-							data.quadraticCurveToData.y = currentNumbers[i + 3];
-							currentCommandData.push_back(data);
+							quadBeizerTo(currentNumbers[i], currentNumbers[i + 1], currentNumbers[i + 2],
+							             currentNumbers[i + 3], relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::QuadraticCurveTo, std::move(currentCommandData),
-						                       absolute);
 					}
 					break;
 				case 't':
-					absolute = false;
+					relative = false;
 					[[fallthrough]];
 				case 'T':
 					{
@@ -235,20 +574,14 @@ namespace Elpida
 							throw ParseException("smoothQuadricCurveTo command requires x y");
 						}
 
-						SvgPathCommand::CommandData data{};
 						for (std::size_t i = 0; i < currentNumbers.size(); i += 2)
 						{
-							data.smoothQuadraticCurveToData.x = currentNumbers[i];
-							data.smoothQuadraticCurveToData.y = currentNumbers[i + 1];
-							currentCommandData.push_back(data);
+							smoothQuadBeizerTo(currentNumbers[i], currentNumbers[i + 1], relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::SmoothQuadraticCurveTo,
-						                       std::move(currentCommandData),
-						                       absolute);
 					}
 					break;
 				case 'a':
-					absolute = false;
+					relative = false;
 					[[fallthrough]];
 				case 'A':
 					{
@@ -260,27 +593,25 @@ namespace Elpida
 								"arc command requires rx ry x-axis-rotation large-arc-flag sweep-flag x y");
 						}
 
-						SvgPathCommand::CommandData data{};
 						for (std::size_t i = 0; i < currentNumbers.size(); i += 7)
 						{
-							data.arcData.rX = currentNumbers[i];
-							data.arcData.rY = currentNumbers[i + 1];
-							data.arcData.xRotation = currentNumbers[i + 2];
-							data.arcData.largeArc = currentNumbers[i + 3] == 1;
-							data.arcData.sweep = currentNumbers[i + 4] == 1;
-							data.arcData.x = currentNumbers[i + 5];
-							data.arcData.y = currentNumbers[i + 6];
-							currentCommandData.push_back(data);
+							arcTo(currentNumbers[i],
+							      currentNumbers[i + 1],
+							      currentNumbers[i + 2],
+							      currentNumbers[i + 3] == 1,
+							      currentNumbers[i + 4] == 1,
+							      currentNumbers[i + 5],
+							      currentNumbers[i + 6],
+							      relative);
 						}
-						_commands.emplace_back(SvgPathCommandType::Arc, std::move(currentCommandData), absolute);
+						cpx2 = cpx;
+						cpy2 = cpy;
 					}
 					break;
 				case 'Z':
 					[[fallthrough]];
 				case 'z':
 					_closed = true;
-					_commands.emplace_back(SvgPathCommandType::ClosePath, std::vector<SvgPathCommand::CommandData>(),
-					                       false);
 					stream.Next();
 					break;
 				default:
@@ -290,7 +621,55 @@ namespace Elpida
 		}
 		catch (const ParseException&)
 		{
-			_commands.clear();
+			_points.clear();
+		}
+	}
+
+	void SvgPath::AddPoint(double x, double y)
+	{
+		_points.emplace_back(x, y);
+	}
+
+	void SvgPath::MoveTo(const double x, const double y)
+	{
+		if (!_points.empty())
+		{
+			_points.back() = SvgPathPoint(x, y);
+		}
+		else
+		{
+			AddPoint(x, y);
+		}
+	}
+
+	void SvgPath::LineTo(const double x, const double y)
+	{
+		if (!_points.empty())
+		{
+			const auto& last = _points.back();
+
+			const auto dx = x - last.GetX();
+			const auto dy = y - last.GetY();
+
+			// We create a line with 4 points
+			AddPoint(last.GetX() + dx / 3.0, last.GetY() + dy / 3.0);
+			AddPoint(x - dx / 3.0, y - dy / 3.0);
+			AddPoint(x, y);
+		}
+	}
+
+	void SvgPath::CubicBeizerTo(const double x1,
+	                            const double y1,
+	                            const double x2,
+	                            const double y2,
+	                            const double x,
+	                            const double y)
+	{
+		if (!_points.empty())
+		{
+			AddPoint(x1, y1);
+			AddPoint(x2, y2);
+			AddPoint(x, y);
 		}
 	}
 } // Elpida

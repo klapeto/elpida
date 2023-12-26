@@ -17,7 +17,7 @@ namespace Elpida
 	{
 		_properties = element.GetAttributes();
 
-		for (SvgStyle style(element.GetAttributeValue("style")); auto& [key, value] : style.GetRules())
+		for (auto& [key, value] : SvgStyle(element.GetAttributeValue("style")).GetRules())
 		{
 			_properties.Set(key, std::move(value));
 		}

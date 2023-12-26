@@ -6,21 +6,22 @@
 #define ELPIDA_SVG_SVGRECT_HPP
 
 #include "SvgLength.hpp"
+#include "SvgPath.hpp"
 #include "SvgShape.hpp"
 
 namespace Elpida
 {
-	class SvgRect : public SvgShape
+	class SvgRect : public SvgPath
 	{
 	public:
 		SvgRect(const XmlElement& element, SvgDocument& document);
 	private:
-		SvgLength _x;
-		SvgLength _y;
-		SvgLength _width;
-		SvgLength _height;
-		SvgLength _rX;
-		SvgLength _rY;
+		double _x;
+		double _y;
+		double _width;
+		double _height;
+		double _rX;
+		double _rY;
 	};
 } // Elpida
 

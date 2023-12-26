@@ -29,12 +29,14 @@ namespace Elpida
 			return _transform;
 		}
 
-		[[nodiscard]] const XmlMap& GetProperties1() const
+		[[nodiscard]]
+		const XmlMap& GetProperties() const
 		{
 			return _properties;
 		}
 
-		[[nodiscard]] const std::vector<std::unique_ptr<SvgElement>>& GetChildren() const
+		[[nodiscard]]
+		const std::vector<std::unique_ptr<SvgElement>>& GetChildren() const
 		{
 			return _children;
 		}
@@ -51,7 +53,6 @@ namespace Elpida
 		SvgTransform _transform;
 		XmlMap _properties;
 		std::vector<std::unique_ptr<SvgElement>> _children;
-
 	protected:
 		template <typename T, typename TConverter>
 		void ConditionallyAssignProperty(const std::string& name, T& targetValue, TConverter converter)
@@ -66,11 +67,6 @@ namespace Elpida
 		void ConditionallyAssignProperty(const std::string& name, T& targetValue)
 		{
 			ConditionallyAssignProperty<T>(name, targetValue, [](const auto& s) { return T(s); });
-		}
-
-		const XmlMap& GetProperties() const
-		{
-			return _properties;
 		}
 	};
 } // Elpida

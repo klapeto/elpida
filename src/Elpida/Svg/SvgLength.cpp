@@ -89,7 +89,7 @@ namespace Elpida
 		catch (const ParseException&)
 		{
 			_value = 0;
-			_units = SvgUnits::Px;
+			_units = SvgUnits::Raw;
 		}
 	}
 } // Elpida

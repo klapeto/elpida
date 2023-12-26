@@ -11,6 +11,7 @@ namespace Elpida
 {
 	enum class SvgUnits
 	{
+		Raw,
 		Px,
 		Pt,
 		Pc,
@@ -39,10 +40,11 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		constexpr double CalculatePixels(double orig, double length, double fontSize, double dpi) const
+		constexpr double CalculateActualValue(const double orig, const double length, const double fontSize, const double dpi) const
 		{
 			switch (_units)
 			{
+			case SvgUnits::Raw:
 			case SvgUnits::Px:
 				return _value;
 			case SvgUnits::Pt:
@@ -67,7 +69,7 @@ namespace Elpida
 		}
 
 		constexpr SvgLength()
-			: _value(0), _units(SvgUnits::Px)
+			: _value(0), _units(SvgUnits::Raw)
 		{
 		}
 		constexpr explicit SvgLength(double value, SvgUnits units)

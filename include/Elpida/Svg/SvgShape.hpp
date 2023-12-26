@@ -16,6 +16,26 @@ namespace Elpida
 	class SvgShape : public SvgElement
 	{
 	public:
+		[[nodiscard]] const std::optional<SvgFill>& GetFill() const
+		{
+			return _fill;
+		}
+
+		[[nodiscard]] const std::optional<SvgStroke>& GetStroke() const
+		{
+			return _stroke;
+		}
+
+		[[nodiscard]] double GetOpacity() const
+		{
+			return _opacity;
+		}
+
+		[[nodiscard]] bool IsVisible() const
+		{
+			return _visible;
+		}
+
 		explicit SvgShape(const XmlElement& element, SvgDocument& document);
 	private:
 		std::optional<SvgFill> _fill;

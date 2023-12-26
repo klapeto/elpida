@@ -27,15 +27,23 @@ namespace Elpida
 			return _element;
 		}
 
-		explicit SvgDocument(const XmlElement& element);
-		SvgDocument(SvgDocument&& other) noexcept
+		constexpr double GetDpi() const
 		{
-			_element = std::move(other._element);
-			_defs = std::move(other._defs);
+			return _dpi;
 		}
+
+		constexpr double GetFontSize() const
+		{
+			return _fontSize;
+		}
+
+		explicit SvgDocument(const XmlElement& element);
+		SvgDocument(SvgDocument&& other) noexcept = default;
 	private:
 		SvgDefs _defs;
 		SvgSvgElement _element;
+		double _dpi = 96.0;
+		double _fontSize = 1.0;
 
 		friend class SvgElement;
 	};

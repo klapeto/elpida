@@ -11,10 +11,10 @@ namespace Elpida
 	{
 
 	private:
-		float _minX;
-		float _minY;
-		float _maxX;
-		float _maxY;
+		double _minX;
+		double _minY;
+		double _maxX;
+		double _maxY;
 	};
 
 } // Elpida

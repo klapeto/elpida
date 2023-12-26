@@ -15,6 +15,12 @@ namespace Elpida
 	class SvgSvgElement : public SvgElement
 	{
 	public:
+		[[nodiscard]]
+		const SvgViewBox& GetViewBox() const
+		{
+			return _viewBox;
+		}
+
 		SvgSvgElement() = default;
 		SvgSvgElement(const XmlElement& element, SvgDocument& document);
 	private:
