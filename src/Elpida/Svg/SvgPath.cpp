@@ -45,20 +45,402 @@ namespace Elpida
 		return (x1 * y2 < y1 * x2 ? -1.0f : 1.0f) * acos(res);
 	}
 
-	static void MoveTo(double x, double y, const bool relative)
+	static void MoveTo(const double x, const double y, std::vector<SvgPathPoint>& points)
 	{
-		if (relative)
+		if (!points.empty())
 		{
-			cpx += x;
-			cpy += y;
+			points.back() = SvgPathPoint(x, y);
 		}
 		else
 		{
-			cpx = x;
-			cpy = y;
+			points.emplace_back(x, y);
 		}
-		LineTo(cpx, cpy);
 	}
+
+	static void MoveTo(double& cpx, double& cpy, const std::vector<double>& args, const bool relative, std::vector<SvgPathPoint>& points)
+	{
+		if (relative)
+		{
+			cpx += args[0];
+			cpy += args[1];
+		}
+		else
+		{
+			cpx = args[0];
+			cpy = args[1];
+		}
+		MoveTo(cpx, cpy, points);
+	}
+
+
+	static void LineTo(const double x, const double y, std::vector<SvgPathPoint>& points)
+	{
+		if (!points.empty())
+		{
+			const auto& last = points.back();
+			const double px = last.GetX();
+			const double py = last.GetY();
+			const double dx = x - px;
+			const double dy = y - py;
+			points.emplace_back(px + dx / 3.0f, py + dy / 3.0f);
+			points.emplace_back(x - dx / 3.0f, y - dy / 3.0f);
+			points.emplace_back(x, y);
+		}
+	}
+
+	static void LineTo(double& cpx, double& cpy, const std::vector<double>& args, const bool relative, std::vector<SvgPathPoint>& points)
+	{
+		if (relative) {
+			cpx += args[0];
+			cpy += args[1];
+		} else {
+			cpx = args[0];
+			cpy = args[1];
+		}
+		LineTo(cpx, cpy, points);
+	}
+
+	static void CubicBezTo(double cpx1, double cpy1, double cpx2, double cpy2, double x, double y,
+	                       std::vector<SvgPathPoint>& points)
+	{
+		if (!points.empty())
+		{
+			points.emplace_back(cpx1, cpy1);
+			points.emplace_back(cpx2, cpy2);
+			points.emplace_back(x, y);
+		}
+	}
+
+	static void CubicBezTo(double& cpx, double& cpy,
+	                       double& cpx2, double& cpy2,
+	                       const std::vector<double>& args,
+	                       const bool relative,
+	                       std::vector<SvgPathPoint>& points)
+	{
+		double x2, y2, cx1, cy1, cx2, cy2;
+
+		if (relative)
+		{
+			cx1 = cpx + args[0];
+			cy1 = cpy + args[1];
+			cx2 = cpx + args[2];
+			cy2 = cpy + args[3];
+			x2 = cpx + args[4];
+			y2 = cpy + args[5];
+		}
+		else
+		{
+			cx1 = args[0];
+			cy1 = args[1];
+			cx2 = args[2];
+			cy2 = args[3];
+			x2 = args[4];
+			y2 = args[5];
+		}
+
+		CubicBezTo(cx1, cy1, cx2, cy2, x2, y2, points);
+
+		cpx2 = cx2;
+		cpy2 = cy2;
+		cpx = x2;
+		cpy = y2;
+	}
+
+	static void CubicBezShortTo(double& cpx, double& cpy,
+	                            double& cpx2, double& cpy2,
+	                            const std::vector<double>& args,
+	                            const bool relative,
+	                            std::vector<SvgPathPoint>& points)
+	{
+		double x2, y2, cx2, cy2;
+
+		const double x1 = cpx;
+		const double y1 = cpy;
+
+		if (relative)
+		{
+			cx2 = cpx + args[0];
+			cy2 = cpy + args[1];
+			x2 = cpx + args[2];
+			y2 = cpy + args[3];
+		}
+		else
+		{
+			cx2 = args[0];
+			cy2 = args[1];
+			x2 = args[2];
+			y2 = args[3];
+		}
+
+		const double cx1 = 2 * x1 - cpx2;
+		const double cy1 = 2 * y1 - cpy2;
+
+		CubicBezTo(cx1, cy1, cx2, cy2, x2, y2, points);
+
+		cpx2 = cx2;
+		cpy2 = cy2;
+		cpx = x2;
+		cpy = y2;
+	}
+
+	static void QuadBezTo(double& cpx, double& cpy,
+	                      double& cpx2, double& cpy2,
+	                      const std::vector<double>& args,
+	                      const bool relative,
+	                      std::vector<SvgPathPoint>& points)
+	{
+		double x2, y2, cx, cy;
+
+		const double x1 = cpx;
+		const double y1 = cpy;
+
+		if (relative)
+		{
+			cx = cpx + args[0];
+			cy = cpy + args[1];
+			x2 = cpx + args[2];
+			y2 = cpy + args[3];
+		}
+		else
+		{
+			cx = args[0];
+			cy = args[1];
+			x2 = args[2];
+			y2 = args[3];
+		}
+
+		// Convert to cubic bezier
+		const double cx1 = x1 + 2.0f / 3.0f * (cx - x1);
+		const double cy1 = y1 + 2.0f / 3.0f * (cy - y1);
+		const double cx2 = x2 + 2.0f / 3.0f * (cx - x2);
+		const double cy2 = y2 + 2.0f / 3.0f * (cy - y2);
+
+		CubicBezTo(cx1, cy1, cx2, cy2, x2, y2, points);
+
+		cpx2 = cx;
+		cpy2 = cy;
+		cpx = x2;
+		cpy = y2;
+	}
+
+
+	static void QuadBezShortTo(double& cpx, double& cpy,
+	                           double& cpx2, double& cpy2,
+	                           const std::vector<double>& args,
+	                           const bool relative,
+	                           std::vector<SvgPathPoint>& points)
+	{
+		double x2, y2;
+
+		const double x1 = cpx;
+		const double y1 = cpy;
+
+		if (relative)
+		{
+			x2 = cpx + args[0];
+			y2 = cpy + args[1];
+		}
+		else
+		{
+			x2 = args[0];
+			y2 = args[1];
+		}
+
+		const double cx = 2 * x1 - cpx2;
+		const double cy = 2 * y1 - cpy2;
+
+		// Convert to cubix bezier
+		const double cx1 = x1 + 2.0f / 3.0f * (cx - x1);
+		const double cy1 = y1 + 2.0f / 3.0f * (cy - y1);
+		const double cx2 = x2 + 2.0f / 3.0f * (cx - x2);
+		const double cy2 = y2 + 2.0f / 3.0f * (cy - y2);
+
+		CubicBezTo( cx1,cy1, cx2,cy2, x2,y2, points);
+
+		cpx2 = cx;
+		cpy2 = cy;
+		cpx = x2;
+		cpy = y2;
+	}
+
+	static void ArcTo(double& cpx, double& cpy,
+	                  const std::vector<double>& args,
+	                  const bool relative,
+	                  std::vector<SvgPathPoint>& points)
+	{
+		// Ported from canvg (https://code.google.com/p/canvg/)
+		double x2, y2;
+		double x, y, tanx, tany, px = 0, py = 0, ptanx = 0, ptany = 0;
+
+		auto rx = fabs(args[0]); // y radius
+		auto ry = fabs(args[1]); // x radius
+		const auto rotx = args[2] / 180.0 * Pi; // x rotation angle
+		const auto fa = fabs(args[3]) > 1e-6; // Large arc
+		const auto fs = fabs(args[4]) > 1e-6; // Sweep direction
+		const auto x1 = cpx; // start point
+		const auto y1 = cpy;
+		if (relative)
+		{
+			// end point
+			x2 = cpx + args[5];
+			y2 = cpy + args[6];
+		}
+		else
+		{
+			x2 = args[5];
+			y2 = args[6];
+		}
+
+		double dx = x1 - x2;
+		double dy = y1 - y2;
+		double d = sqrt(dx * dx + dy * dy);
+		if (d < 1e-6 || rx < 1e-6 || ry < 1e-6)
+		{
+			// The arc degenerates to a line
+			LineTo(x2, y2, points);
+			cpx = x2;
+			cpy = y2;
+			return;
+		}
+
+		const auto sinrx = sin(rotx);
+		const auto cosrx = cos(rotx);
+
+		// Convert to center point parameterization.
+		// http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+		// 1) Compute x1', y1'
+		const double x1p = cosrx * dx / 2.0 + sinrx * dy / 2.0;
+		const double y1p = -sinrx * dx / 2.0 + cosrx * dy / 2.0;
+		d = Square(x1p) / Square(rx) + Square(y1p) / Square(ry);
+		if (d > 1)
+		{
+			d = sqrt(d);
+			rx *= d;
+			ry *= d;
+		}
+
+		// 2) Compute cx', cy'
+		double s = 0.0;
+		double sa = Square(rx) * Square(ry) - Square(rx) * Square(y1p) - Square(ry) * Square(x1p);
+		double sb = Square(rx) * Square(y1p) + Square(ry) * Square(x1p);
+		if (sa < 0.0)
+		{
+			sa = 0.0;
+		}
+
+		if (sb > 0.0)
+		{
+			s = sqrt(sa / sb);
+		}
+
+		if (fa == fs)
+		{
+			s = -s;
+		}
+
+		const double cxp = s * rx * y1p / ry;
+		const double cyp = s * -ry * x1p / rx;
+
+		// 3) Compute cx,cy from cx',cy'
+		const double cx = (x1 + x2) / 2.0 + cosrx * cxp - sinrx * cyp;
+		const double cy = (y1 + y2) / 2.0 + sinrx * cxp + cosrx * cyp;
+
+		// 4) Calculate theta1, and delta theta.
+		const double ux = (x1p - cxp) / rx;
+		const double uy = (y1p - cyp) / ry;
+		const double vx = (-x1p - cxp) / rx;
+		const double vy = (-y1p - cyp) / ry;
+		const double a1 = VectorAngle(1.0, 0.0, ux, uy); // Initial angle
+		double da = VectorAngle(ux, uy, vx, vy); // Delta angle
+
+		//	if (vecrat(ux,uy,vx,vy) <= -1.0f) da = NSVG_PI;
+		//	if (vecrat(ux,uy,vx,vy) >= 1.0f) da = 0;
+
+		if (fs == 0 && da > 0)
+		{
+			da -= 2 * Pi;
+		}
+		else if (fs == 1 && da < 0)
+		{
+			da += 2 * Pi;
+		}
+
+		const SvgTransform transform(cosrx, sinrx, -sinrx, cosrx, cx, cy);
+		// Approximate the arc using cubic spline segments.
+
+		// Split arc into max 90 degree segments.
+		// The loop assumes an iteration per end point (including start and end), this +1.
+		const auto ndivs = static_cast<std::size_t>(fabs(da) / (Pi * 0.5) + 1.0);
+		auto hda = (da / static_cast<double>(ndivs)) / 2.0;
+
+		// Fix for ticket #179: division by 0: avoid cotangens around 0 (infinite)
+		if (hda < 1e-3 && hda > -1e-3)
+		{
+			hda *= 0.5;
+		}
+		else
+		{
+			hda = (1.0 - cos(hda)) / sin(hda);
+		}
+
+		double kappa = fabs(4.0 / 3.0 * hda);
+
+		if (da < 0.0)
+		{
+			kappa = -kappa;
+		}
+
+		for (std::size_t i = 0; i <= ndivs; i++)
+		{
+			const double a = a1 + da * (static_cast<double>(i) / static_cast<double>(ndivs));
+
+			dx = cos(a);
+			dy = sin(a);
+
+			transform.ApplyToPoint(x,y, dx * rx, dy * ry); // position
+			transform.ApplyToVector(tanx, tany,-dy * rx * kappa, dx * ry * kappa); // tangent
+
+			if (i > 0)
+			{
+				CubicBezTo(px + ptanx, py + ptany, x - tanx, y - tany, x, y, points);
+			}
+
+			px = x;
+			py = y;
+			ptanx = tanx;
+			ptany = tany;
+		}
+
+		cpx = x2;
+		cpy = y2;
+	}
+
+	static void HorizontalLineTo(double& cpx, const double& cpy, const std::vector<double>& args, const bool relative, std::vector<SvgPathPoint>& points)
+	{
+		if (relative)
+		{
+			cpx += args[0];
+		}
+		else
+		{
+			cpx = args[0];
+		}
+		LineTo(cpx, cpy, points);
+	}
+
+	static void VerticalLineTo(const double& cpx, double& cpy, const std::vector<double>& args, const bool relative, std::vector<SvgPathPoint>& points)
+	{
+		if (relative)
+		{
+			cpy += args[0];
+		}
+		else
+		{
+			cpy = args[0];
+		}
+		LineTo(cpx, cpy, points);
+	}
+
 
 	static void ParseAllNumbers(CharacterStream& stream, std::vector<double>& currentNumbers)
 	{
@@ -406,10 +788,10 @@ namespace Elpida
 					a = a1 + da * ((double)i / (double)ndivs);
 					dx = cos(a);
 					dy = sin(a);
-					transform.ApplyToPoint(x,y, dx * rx, dy * ry);
+					transform.ApplyToPoint(x, y, dx * rx, dy * ry);
 					transform.ApplyToVector(tanx, tany, -dy * rx * kappa, dx * ry * kappa);
 					if (i > 0)
-						CubicBeizerTo( px + ptanx, py + ptany, x - tanx, y - tany, x, y);
+						CubicBeizerTo(px + ptanx, py + ptany, x - tanx, y - tany, x, y);
 					px = x;
 					py = y;
 					ptanx = tanx;

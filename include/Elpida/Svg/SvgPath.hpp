@@ -54,7 +54,7 @@ namespace Elpida
 		explicit SvgPath(const XmlElement& element, SvgDocument& document);
 
 	protected:
-		std::vector<SvgPathPoint> _points;
+		std::vector<SvgPathInstance> _instances;
 	};
 } // Elpida
 
