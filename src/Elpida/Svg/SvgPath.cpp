@@ -40,16 +40,16 @@ namespace Elpida
 	static double VectorAngle(const double x1, const double y1, const double x2, const double y2)
 	{
 		double res = VectorCosTheta(x1, y1, x2, y2);
-		if (res < -1.0f) res = -1.0f;
-		if (res > 1.0f) res = 1.0f;
-		return (x1 * y2 < y1 * x2 ? -1.0f : 1.0f) * acos(res);
+		if (res < -1.0) res = -1.0;
+		if (res > 1.0) res = 1.0;
+		return (x1 * y2 < y1 * x2 ? -1.0 : 1.0) * acos(res);
 	}
 
-	static void MoveTo(const double x, const double y, std::vector<SvgPathPoint>& points)
+	void SvgPath::MoveTo(const double x, const double y, std::vector<SvgPoint>& points)
 	{
 		if (!points.empty())
 		{
-			points.back() = SvgPathPoint(x, y);
+			points.back() = SvgPoint(x, y);
 		}
 		else
 		{
@@ -57,10 +57,10 @@ namespace Elpida
 		}
 	}
 
-	static void MoveTo(double& cpx, double& cpy,
+	void SvgPath::MoveTo(double& cpx, double& cpy,
 	                   const double a, const double b,
 	                   const bool relative,
-	                   std::vector<SvgPathPoint>& points)
+	                   std::vector<SvgPoint>& points)
 	{
 		if (relative)
 		{
@@ -76,7 +76,7 @@ namespace Elpida
 	}
 
 
-	static void LineTo(const double x, const double y, std::vector<SvgPathPoint>& points)
+	void SvgPath::LineTo(const double x, const double y, std::vector<SvgPoint>& points)
 	{
 		if (!points.empty())
 		{
@@ -91,12 +91,12 @@ namespace Elpida
 		}
 	}
 
-	static void LineTo(
+	void SvgPath::LineTo(
 		double& cpx,
 		double& cpy,
 		const double a, const double b,
 		const bool relative,
-		std::vector<SvgPathPoint>& points)
+		std::vector<SvgPoint>& points)
 	{
 		if (relative)
 		{
@@ -111,8 +111,8 @@ namespace Elpida
 		LineTo(cpx, cpy, points);
 	}
 
-	static void CubicBezTo(double cpx1, double cpy1, double cpx2, double cpy2, double x, double y,
-	                       std::vector<SvgPathPoint>& points)
+	void SvgPath::CubicBezTo(double cpx1, double cpy1, double cpx2, double cpy2, double x, double y,
+	                       std::vector<SvgPoint>& points)
 	{
 		if (!points.empty())
 		{
@@ -122,12 +122,12 @@ namespace Elpida
 		}
 	}
 
-	static void CubicBezTo(double& cpx, double& cpy,
+	void SvgPath::CubicBezTo(double& cpx, double& cpy,
 	                       double& cpx2, double& cpy2,
 	                       const double a, const double b, const double c, const double d, const double e,
 	                       const double f,
 	                       const bool relative,
-	                       std::vector<SvgPathPoint>& points)
+	                       std::vector<SvgPoint>& points)
 	{
 		double x2, y2, cx1, cy1, cx2, cy2;
 
@@ -158,11 +158,11 @@ namespace Elpida
 		cpy = y2;
 	}
 
-	static void CubicBezShortTo(double& cpx, double& cpy,
+	void SvgPath::CubicBezShortTo(double& cpx, double& cpy,
 	                            double& cpx2, double& cpy2,
 	                            const double a, const double b, const double c, const double d,
 	                            const bool relative,
-	                            std::vector<SvgPathPoint>& points)
+	                            std::vector<SvgPoint>& points)
 	{
 		double x2, y2, cx2, cy2;
 
@@ -195,11 +195,11 @@ namespace Elpida
 		cpy = y2;
 	}
 
-	static void QuadBezTo(double& cpx, double& cpy,
+	void SvgPath::QuadBezTo(double& cpx, double& cpy,
 	                      double& cpx2, double& cpy2,
 	                      const double a, const double b, const double c, const double d,
 	                      const bool relative,
-	                      std::vector<SvgPathPoint>& points)
+	                      std::vector<SvgPoint>& points)
 	{
 		double x2, y2, cx, cy;
 
@@ -236,11 +236,11 @@ namespace Elpida
 	}
 
 
-	static void QuadBezShortTo(double& cpx, double& cpy,
+	void SvgPath::QuadBezShortTo(double& cpx, double& cpy,
 	                           double& cpx2, double& cpy2,
 	                           const double a, const double b,
 	                           const bool relative,
-	                           std::vector<SvgPathPoint>& points)
+	                           std::vector<SvgPoint>& points)
 	{
 		double x2, y2;
 
@@ -275,11 +275,11 @@ namespace Elpida
 		cpy = y2;
 	}
 
-	static void ArcTo(double& cpx, double& cpy,
-	                  const double a, const double b, const double c, const double d, const double e, const double f,
-	                  const double g,
+	void SvgPath::ArcTo(double& cpx, double& cpy,
+	                  const double aA, const double aB, const double aC, const double aD, const double aE, const double aF,
+	                  const double aG,
 	                  const bool relative,
-	                  std::vector<SvgPathPoint>& points)
+	                  std::vector<SvgPoint>& points)
 	{
 		double x2;
 		double y2;
@@ -290,23 +290,23 @@ namespace Elpida
 		double ptanx = 0;
 		double ptany = 0;
 
-		auto rx = fabs(a); // y radius
-		auto ry = fabs(b); // x radius
-		const auto rotx = c / 180.0 * Pi; // x rotation angle
-		const auto fa = fabs(d) > 1e-6; // Large arc
-		const auto fs = fabs(e) > 1e-6; // Sweep direction
+		auto rx = fabs(aA); // y radius
+		auto ry = fabs(aB); // x radius
+		const auto rotx = aC / 180.0 * Pi; // x rotation angle
+		const auto fa = fabs(aD) > 1e-6; // Large arc
+		const auto fs = fabs(aE) > 1e-6; // Sweep direction
 		const auto x1 = cpx; // start point
 		const auto y1 = cpy;
 		if (relative)
 		{
 			// end point
-			x2 = cpx + f;
-			y2 = cpy + g;
+			x2 = cpx + aF;
+			y2 = cpy + aG;
 		}
 		else
 		{
-			x2 = f;
-			y2 = g;
+			x2 = aF;
+			y2 = aG;
 		}
 
 		double dx = x1 - x2;
@@ -435,10 +435,10 @@ namespace Elpida
 		cpy = y2;
 	}
 
-	static void HorizontalLineTo(double& cpx, const double& cpy,
+	void SvgPath::HorizontalLineTo(double& cpx, const double& cpy,
 	                             const double a,
 	                             const bool relative,
-	                             std::vector<SvgPathPoint>& points)
+	                             std::vector<SvgPoint>& points)
 	{
 		if (relative)
 		{
@@ -451,10 +451,10 @@ namespace Elpida
 		LineTo(cpx, cpy, points);
 	}
 
-	static void VerticalLineTo(const double& cpx, double& cpy,
+	void SvgPath::VerticalLineTo(const double& cpx, double& cpy,
 	                           const double a,
 	                           const bool relative,
-	                           std::vector<SvgPathPoint>& points)
+	                           std::vector<SvgPoint>& points)
 	{
 		if (relative)
 		{
@@ -508,7 +508,7 @@ namespace Elpida
 			std::vector<double> currentArguments;
 			currentArguments.reserve(8);
 
-			std::vector<SvgPathPoint> currentPoints;
+			std::vector<SvgPoint> currentPoints;
 			currentPoints.reserve(8);
 
 			double cpx = 0;
@@ -516,6 +516,7 @@ namespace Elpida
 			double cpx2 = 0;
 			double cpy2 = 0;
 
+			bool closed = false;
 			while (!stream.Eof())
 			{
 				stream.SkipSpace();
@@ -527,6 +528,8 @@ namespace Elpida
 					[[fallthrough]];
 				case 'M':
 					{
+						CommitPath(currentPoints, closed);
+						closed = false;
 						ParseAllNumbers(stream, currentArguments);
 						if (currentArguments.empty() || currentArguments.size() % 2 != 0)
 						{
@@ -731,65 +734,63 @@ namespace Elpida
 				case 'Z':
 					[[fallthrough]];
 				case 'z':
-					_closed = true;
+					closed = true;
+					if (!currentPoints.empty())
+					{
+						auto& firstPoint = currentPoints.front();
+						cpx = firstPoint.GetX();
+						cpy = firstPoint.GetY();
+						cpx2 = cpx;
+						cpy2 = cpy;
+						CommitPath(currentPoints, closed);
+					}
+					closed = false;
+					MoveTo(cpx, cpy, currentPoints);
 					stream.Next();
 					break;
 				default:
 					throw ParseException(c, "m,M,");
 				}
 			}
+			CommitPath(currentPoints, closed);
 		}
 		catch (const ParseException&)
 		{
-			_points.clear();
+			_instances.clear();
 		}
 	}
 
-	void SvgPath::AddPoint(double x, double y)
+	void SvgPath::CommitPath(std::vector<SvgPoint>& points, bool closed)
 	{
-		_points.emplace_back(x, y);
+		if (points.size() < 4)
+		{
+			return;
+		}
+
+		if (closed)
+		{
+			const auto& firstPoint = points.front();
+			LineTo(firstPoint.GetX(), firstPoint.GetY(), points);
+		}
+
+		// Expect 1 + N*3 points (N = number of cubic bezier segments).
+		if (points.size() % 3 != 1)
+		{
+			return;
+		}
+
+		for (auto& point : points)
+		{
+			point.ApplyTransform(GetTransform());
+		}
+
+		SvgBounds bounds(points[0], points[1], points[2], points[3]);
+		for (std::size_t i = 3; i < points.size() - 1; i += 3)
+		{
+			bounds.Merge(SvgBounds(points[i], points[i + 1], points[i + 2], points[i + 3]));
+		}
+
+		_instances.emplace_back(std::move(points), bounds, closed);
 	}
 
-	void SvgPath::MoveTo(const double x, const double y)
-	{
-		if (!_points.empty())
-		{
-			_points.back() = SvgPathPoint(x, y);
-		}
-		else
-		{
-			AddPoint(x, y);
-		}
-	}
-
-	void SvgPath::LineTo(const double x, const double y)
-	{
-		if (!_points.empty())
-		{
-			const auto& last = _points.back();
-
-			const auto dx = x - last.GetX();
-			const auto dy = y - last.GetY();
-
-			// We create a line with 4 points
-			AddPoint(last.GetX() + dx / 3.0, last.GetY() + dy / 3.0);
-			AddPoint(x - dx / 3.0, y - dy / 3.0);
-			AddPoint(x, y);
-		}
-	}
-
-	void SvgPath::CubicBeizerTo(const double x1,
-	                            const double y1,
-	                            const double x2,
-	                            const double y2,
-	                            const double x,
-	                            const double y)
-	{
-		if (!_points.empty())
-		{
-			AddPoint(x1, y1);
-			AddPoint(x2, y2);
-			AddPoint(x, y);
-		}
-	}
 } // Elpida

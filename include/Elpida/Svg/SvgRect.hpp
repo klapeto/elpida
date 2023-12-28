@@ -15,13 +15,6 @@ namespace Elpida
 	{
 	public:
 		SvgRect(const XmlElement& element, SvgDocument& document);
-	private:
-		double _x;
-		double _y;
-		double _width;
-		double _height;
-		double _rX;
-		double _rY;
 	};
 } // Elpida
 

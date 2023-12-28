@@ -14,143 +14,85 @@ namespace Elpida
 	{
 		auto& properties = GetProperties();
 		auto& viewBox = document.GetElement().GetViewBox();
-		_x = SvgLength(properties.GetValue("x")).CalculateActualValue(viewBox.GetMinX(), viewBox.GetWidth(),
-		                                                              document.GetFontSize(), document.GetDpi());
-		_y = SvgLength(properties.GetValue("y")).CalculateActualValue(viewBox.GetMinY(), viewBox.GetHeight(),
-		                                                              document.GetFontSize(), document.GetDpi());
+		const auto x = SvgLength(properties.GetValue("x")).CalculateActualValue(viewBox.GetMinX(), viewBox.GetWidth(),
+		                                                                        document.GetFontSize(), document.GetDpi());
+		const auto y = SvgLength(properties.GetValue("y")).CalculateActualValue(viewBox.GetMinY(), viewBox.GetHeight(),
+		                                                                        document.GetFontSize(), document.GetDpi());
 
-		_width = SvgLength(properties.GetValue("width")).CalculateActualValue(
+		auto width = SvgLength(properties.GetValue("width")).CalculateActualValue(
 			0, viewBox.GetWidth(), document.GetFontSize(), document.GetDpi());
-		if (_width < 0.0)
+		if (width < 0.0)
 		{
-			_width = 0.0;
+			width = 0.0;
 		}
 
-		_height = SvgLength(properties.GetValue("height")).CalculateActualValue(
+		auto height = SvgLength(properties.GetValue("height")).CalculateActualValue(
 			0, viewBox.GetHeight(), document.GetFontSize(), document.GetDpi());
-		if (_height < 0.0)
+		if (height < 0.0)
 		{
-			_height = 0.0;
+			height = 0.0;
 		}
 
-		auto& rx = properties.GetValue("rx");
-		auto& ry = properties.GetValue("ry");
 
-		_rX = SvgLength(rx).CalculateActualValue(0, viewBox.GetWidth(), document.GetFontSize(), document.GetDpi());;
-		_rY = SvgLength(ry).CalculateActualValue(0, viewBox.GetHeight(), document.GetFontSize(), document.GetDpi());;
+		double rx = -1.0f; // marks not set
+		double ry = -1.0f;
 
-		if (!rx.empty() && ry.empty())
 		{
-			_rY = _rX;
+			auto& rxStr = properties.GetValue("rx");
+			if (!rxStr.empty())
+			{
+				rx = fabs(SvgLength(rxStr).CalculateActualValue(0, viewBox.GetWidth(), document.GetFontSize(),
+				                                                document.GetDpi()));
+			}
 		}
 
-		if (rx.empty() && !ry.empty())
 		{
-			_rX = _rY;
+			auto& ryStr = properties.GetValue("ry");
+			if (!ryStr.empty())
+			{
+				ry = fabs(SvgLength(ryStr).CalculateActualValue(0, viewBox.GetHeight(), document.GetFontSize(),
+				                                                document.GetDpi()));
+			}
 		}
 
-		if (_rX > _width / 2.0f) _rX = _width / 2.0f;
-		if (_rY > _height / 2.0f) _rY = _height / 2.0f;
 
-		if (_width > 0 && _height > 0)
+		if (rx < 0.0 && ry > 0.0) rx = ry;
+		if (ry < 0.0 && rx > 0.0) ry = rx;
+		if (rx < 0.0) rx = 0.0;
+		if (ry < 0.0) ry = 0.0;
+		if (rx > width / 2.0) rx = width / 2.0;
+		if (ry > height / 2.0) ry = height / 2.0;
+
+		if (width != 0.0f && height != 0.0f)
 		{
-			_commands.push_back(SvgPathCommand(SvgPathCommandType::MoveTo,
-			                                   {
-				                                   SvgPathCommand::CommandData{.moveToData{.x = _x + _rX, .y = _y}}
-			                                   }, true));
+			std::vector<SvgPoint> points;
 
-			_commands.push_back(SvgPathCommand(SvgPathCommandType::HorizontalLineTo, {
-				                                   SvgPathCommand::CommandData{
-					                                   .horizontalLineToData = {.x = _x + _width - _rX}
-				                                   }
-			                                   }, true));
-			if (_rX > 0 && _rY > 0)
+			if (rx < 0.00001 || ry < 0.0001)
 			{
-				_commands.push_back(SvgPathCommand(SvgPathCommandType::Arc, {
-									   SvgPathCommand::CommandData{
-										   .arcData = {
-										   	.x = _x + _width,
-										   	.y = _y + _rY,
-										   	.rX = _rX,
-										   	.rY = _rY,
-										   	.xRotation = 0,
-										   	.largeArc = false,
-										   	.sweep = true
-										   }
-									   }
-								   }, true));
+				points.reserve(4);
+				MoveTo(x, y, points);
+				MoveTo(x + width, y, points);
+				MoveTo(x + width, y + height, points);
+				MoveTo(x, y + height, points);
+			}
+			else
+			{
+				points.reserve(1 + 8 * 3);
+				// Rounded rectangle
+				MoveTo(x + rx, y, points);
+				LineTo(x + width - rx, y, points);
+				CubicBezTo(x + width - rx * (1 - Kappa), y, x + width, y + ry * (1 - Kappa), x + width, y + ry, points);
+				LineTo(x + width, y + height - ry, points);
+				CubicBezTo(x + width, y + height - ry * (1 - Kappa), x + width - rx * (1 - Kappa), y + height,
+				           x + width - rx, y + height, points);
+				LineTo(x + rx, y + height, points);
+				CubicBezTo(x + rx * (1 - Kappa), y + height, x, y + height - ry * (1 - Kappa), x, y + height - ry,
+				           points);
+				LineTo(x, y + ry, points);
+				CubicBezTo(x, y + ry * (1 - Kappa), x + rx * (1 - Kappa), y, x + rx, y, points);
 			}
 
-			_commands.push_back(SvgPathCommand(SvgPathCommandType::VerticalLineTo, {
-									   SvgPathCommand::CommandData{
-										   .verticalLineToData = {.y = _y + _height - _rY}
-									   }
-								   }, true));
-
-			if (_rX > 0 && _rY > 0)
-			{
-				_commands.push_back(SvgPathCommand(SvgPathCommandType::Arc, {
-									   SvgPathCommand::CommandData{
-										   .arcData = {
-											   .x = _x + _width - _rX,
-											   .y = _y + _height,
-											   .rX = _rX,
-											   .rY = _rY,
-											   .xRotation = 0,
-											   .largeArc = false,
-											   .sweep = true
-										   }
-									   }
-								   }, true));
-			}
-
-			_commands.push_back(SvgPathCommand(SvgPathCommandType::HorizontalLineTo, {
-									   SvgPathCommand::CommandData{
-										   .horizontalLineToData = {.x = _x + _rX}
-									   }
-								   }, true));
-
-			if (_rX > 0 && _rY > 0)
-			{
-				_commands.push_back(SvgPathCommand(SvgPathCommandType::Arc, {
-									   SvgPathCommand::CommandData{
-										   .arcData = {
-											   .x = _x,
-											   .y = _y + _height - _rY,
-											   .rX = _rX,
-											   .rY = _rY,
-											   .xRotation = 0,
-											   .largeArc = false,
-											   .sweep = true
-										   }
-									   }
-								   }, true));
-			}
-
-			_commands.push_back(SvgPathCommand(SvgPathCommandType::VerticalLineTo, {
-									   SvgPathCommand::CommandData{
-										   .verticalLineToData = {.y = _y + _rY}
-									   }
-								   }, true));
-
-			if (_rX > 0 && _rY > 0)
-			{
-				_commands.push_back(SvgPathCommand(SvgPathCommandType::Arc, {
-									   SvgPathCommand::CommandData{
-										   .arcData = {
-											   .x = _x,
-											   .y = _y + _height - _rY,
-											   .rX = _rX,
-											   .rY = _rY,
-											   .xRotation = 0,
-											   .largeArc = false,
-											   .sweep = true
-										   }
-									   }
-								   }, true));
-			}
-
-			_closed = true;
+			CommitPath(points, true);
 		}
 	}
 } // Elpida

@@ -53,6 +53,7 @@ namespace Elpida
 		SvgTransform _transform;
 		XmlMap _properties;
 		std::vector<std::unique_ptr<SvgElement>> _children;
+
 	protected:
 		template <typename T, typename TConverter>
 		void ConditionallyAssignProperty(const std::string& name, T& targetValue, TConverter converter)

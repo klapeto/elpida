@@ -26,9 +26,8 @@ add_library(elpida-svg
         SvgPathCommand.cpp
         SvgRect.cpp
         SvgFontSize.cpp
-        ../../../include/Elpida/Svg/SvgFontSize.hpp
         SvgRasterizer.cpp
-        ../../../include/Elpida/Svg/SvgRasterizer.hpp
+        SvgPoint.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)
