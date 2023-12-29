@@ -14,6 +14,24 @@ namespace Elpida
 	class SvgPathInstance
 	{
 	public:
+		[[nodiscard]]
+		const std::vector<SvgPoint>& GetPoints() const
+		{
+			return _points;
+		}
+
+		[[nodiscard]]
+		const SvgBounds& GetBounds() const
+		{
+			return _bounds;
+		}
+
+		[[nodiscard]]
+		bool IsClosed() const
+		{
+			return _closed;
+		}
+
 		SvgPathInstance(std::vector<SvgPoint>&& points, const SvgBounds& bounds, const bool closed)
 			: _points(std::move(points)),
 			  _bounds(bounds),
@@ -30,6 +48,12 @@ namespace Elpida
 	class SvgPath : public SvgShape
 	{
 	public:
+		[[nodiscard]]
+		const std::vector<SvgPathInstance>& GetInstances() const
+		{
+			return _instances;
+		}
+
 		explicit SvgPath(const XmlElement& element, SvgDocument& document);
 	protected:
 		void CommitPath(std::vector<SvgPoint>& points, bool closed);

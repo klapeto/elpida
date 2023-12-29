@@ -21,6 +21,24 @@ namespace Elpida
 			return _viewBox;
 		}
 
+		[[nodiscard]]
+		const SvgPreserveAspectRatio& GetPreserveAspectRatio() const
+		{
+			return _preserveAspectRatio;
+		}
+
+		[[nodiscard]]
+		const SvgLength& GetWidth() const
+		{
+			return _width;
+		}
+
+		[[nodiscard]]
+		const SvgLength& GetHeight() const
+		{
+			return _height;
+		}
+
 		SvgSvgElement() = default;
 		SvgSvgElement(const XmlElement& element, SvgDocument& document);
 	private:

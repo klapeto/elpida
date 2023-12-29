@@ -5,9 +5,7 @@
 #ifndef ELPIDA_SVG_SVGFILL_HPP
 #define ELPIDA_SVG_SVGFILL_HPP
 
-#include <string>
-
-#include "Elpida/Svg/SvgColor.hpp"
+#include "SvgPaint.hpp"
 
 namespace Elpida
 {
@@ -17,18 +15,15 @@ namespace Elpida
 		EvenOdd = 1
 	};
 
-	class SvgFill
+	class SvgFill : public SvgPaint
 	{
 	public:
+		SvgFill(const XmlMap& properties);
 		SvgFill()
-			: _opacity(1.0), _fillRule(SvgFillRule::NonZero)
+			: SvgPaint(), _fillRule(SvgFillRule::NonZero)
 		{
 		}
-
 	private:
-		std::string _gradientId;
-		SvgColor _color;
-		double _opacity;
 		SvgFillRule _fillRule;
 	};
 } // Elpida

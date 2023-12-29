@@ -16,11 +16,13 @@ namespace Elpida
 	public:
 		void Rasterize(const SvgDocument& document,
 			unsigned char* outputBuffer,
-			std::size_t bufferSize,
 			std::size_t width,
 			std::size_t height,
 			std::size_t stride,
+			double tx = 0.0, double ty = 0.0,
 			double scale = 1.0);
+	private:
+		constexpr int SubSamples = 5;
 	};
 } // Elpida
 

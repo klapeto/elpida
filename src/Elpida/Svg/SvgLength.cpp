@@ -5,6 +5,7 @@
 #include "Elpida/Svg/SvgLength.hpp"
 
 #include "Elpida/Svg/SvgNumber.hpp"
+#include "Elpida/Svg/SvgDocument.hpp"
 #include "Elpida/Xml/CharacterStream.hpp"
 
 namespace Elpida
@@ -75,6 +76,34 @@ namespace Elpida
 			}
 		default:
 			throw ParseException("Unexpected character: expected unit");
+		}
+	}
+
+	double SvgLength::CalculateActualValue(const SvgDocument& document, const double orig, const double length) const
+	{
+		switch (_units)
+		{
+		case SvgUnits::Raw:
+		case SvgUnits::Px:
+			return _value;
+		case SvgUnits::Pt:
+			return _value / 72.0f * document.GetDpi();
+		case SvgUnits::Pc:
+			return _value / 6.0f * document.GetDpi();
+		case SvgUnits::Mm:
+			return _value / 25.4f * document.GetDpi();
+		case SvgUnits::Cm:
+			return _value / 2.54f * document.GetDpi();
+		case SvgUnits::In:
+			return _value * document.GetDpi();
+		case SvgUnits::Percent:
+			return orig + (_value / 100.0f * length);
+		case SvgUnits::Em:
+			return _value * document.GetFontSize();
+		case SvgUnits::Ex:
+			return _value * document.GetFontSize() * 0.52f;
+		default:
+			return _value;
 		}
 	}
 

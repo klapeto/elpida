@@ -24,6 +24,18 @@ namespace Elpida
 		ConditionallyAssignProperty<>("id", _id);
 		ConditionallyAssignProperty<>("transform", _transform);
 
+		auto& fontSize = _properties.GetValue("font-size");
+		bool fontSet = false;
+		if (!fontSize.empty())
+		{
+			const auto value = SvgLength(fontSize).CalculateActualValue(document, 0, document.GetActualLength());
+			fontSet = value > 0.0;
+			if (fontSet)
+			{
+				document._fontSizes.push(value);
+			}
+		}
+
 		auto& defs = document._defs;
 		for (auto& child : element.GetChildren())
 		{
@@ -44,6 +56,12 @@ namespace Elpida
 			{
 				_children.push_back(std::move(childElement));
 			}
+		}
+
+
+		if (fontSet)
+		{
+			document._fontSizes.pop();
 		}
 	}
 } // Elpida
