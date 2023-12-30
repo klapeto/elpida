@@ -51,7 +51,7 @@ namespace Elpida
 
 	struct ActiveEdge
 	{
-		int x,dx;
+		int x, dx;
 		double ey;
 		int dir;
 
@@ -145,8 +145,10 @@ namespace Elpida
 	}
 
 	static void FlattenCubicBez(std::vector<RasterizerPoint>& points,
-	                            const double x1, const double y1, const double x2, const double y2,
-	                            const double x3, const double y3, const double x4, const double y4,
+	                            const double x1, const double y1,
+	                            const double x2, const double y2,
+	                            const double x3, const double y3,
+	                            const double x4, const double y4,
 	                            const int level, const int type)
 	{
 		if (level > 10) return;
@@ -162,8 +164,8 @@ namespace Elpida
 
 		const double dx = x4 - x1;
 		const double dy = y4 - y1;
-		const double d2 = AbsF(((x2 - x4) * dy - (y2 - y4) * dx));
-		const double d3 = AbsF(((x3 - x4) * dy - (y3 - y4) * dx));
+		const double d2 = AbsF(((x2 - x4) * dy) - ((y2 - y4) * dx));
+		const double d3 = AbsF(((x3 - x4) * dy) - ((y3 - y4) * dx));
 
 		if ((d2 + d3) * (d2 + d3) < tessTol * (dx * dx + dy * dy))
 		{
@@ -210,17 +212,79 @@ namespace Elpida
 		}
 	}
 
-	static void FlatenShape(const SvgPath& path, std::vector<Edge>& edges,
-	                        std::vector<RasterizerPoint>& points,
+	static void UnpremultiplyAlpha(unsigned char* image, int w, int h, int stride)
+	{
+		int x,y;
+
+		// Unpremultiply
+		for (y = 0; y < h; y++) {
+			unsigned char *row = &image[y*stride];
+			for (x = 0; x < w; x++) {
+				int r = row[0], g = row[1], b = row[2], a = row[3];
+				if (a != 0) {
+					row[0] = (unsigned char)(r*255/a);
+					row[1] = (unsigned char)(g*255/a);
+					row[2] = (unsigned char)(b*255/a);
+				}
+				row += 4;
+			}
+		}
+
+		// Defringe
+		for (y = 0; y < h; y++) {
+			unsigned char *row = &image[y*stride];
+			for (x = 0; x < w; x++) {
+				int r = 0, g = 0, b = 0, a = row[3], n = 0;
+				if (a == 0) {
+					if (x-1 > 0 && row[-1] != 0) {
+						r += row[-4];
+						g += row[-3];
+						b += row[-2];
+						n++;
+					}
+					if (x+1 < w && row[7] != 0) {
+						r += row[4];
+						g += row[5];
+						b += row[6];
+						n++;
+					}
+					if (y-1 > 0 && row[-stride+3] != 0) {
+						r += row[-stride];
+						g += row[-stride+1];
+						b += row[-stride+2];
+						n++;
+					}
+					if (y+1 < h && row[stride+3] != 0) {
+						r += row[stride];
+						g += row[stride+1];
+						b += row[stride+2];
+						n++;
+					}
+					if (n > 0) {
+						row[0] = (unsigned char)(r/n);
+						row[1] = (unsigned char)(g/n);
+						row[2] = (unsigned char)(b/n);
+					}
+				}
+				row += 4;
+			}
+		}
+	}
+
+	static void FlatenShape(const SvgPath& path,
+	                        std::vector<Edge>& edges,
 	                        const double scale)
 	{
+		std::vector<RasterizerPoint> points;
 		for (auto& pathInstance : path.GetInstances())
 		{
+			points.clear();
 			auto& pathPoints = pathInstance.GetPoints();
 			auto& firstPoint = pathPoints.front();
 
 			// Flatten path
 			AddPoint(points, firstPoint.GetX() * scale, firstPoint.GetY() * scale, 0);
+
 			for (std::size_t i = 0; i < pathPoints.size() - 1; i += 3)
 			{
 				auto& a = pathPoints[i];
@@ -420,6 +484,9 @@ namespace Elpida
 					scanline[i] = static_cast<unsigned char>(scanline[i] + maxWeight);
 				}
 			}
+		} else
+		{
+			int x= 5;
 		}
 	}
 
@@ -446,7 +513,7 @@ namespace Elpida
 				}
 				else
 				{
-					int x1 = iterator->x;
+					const int x1 = iterator->x;
 					w += iterator->dir;
 					// if we went to zero, we need to draw
 					if (w == 0)
@@ -616,60 +683,58 @@ namespace Elpida
 
 
 	static void RasterizeSortedEdges(unsigned char* scanline,
-		unsigned char* bitmap,
-		std::size_t width,
-		std::size_t stride,
-		const std::size_t height,
-		double tx,
-		double ty,
-		double scale,
-		const std::vector<Edge>& edges,
-		const Paint& paint,
-		SvgFillRule fillRule,
-		std::size_t subSamples)
+	                                 unsigned char* bitmap,
+	                                 const std::size_t width,
+	                                 const std::size_t stride,
+	                                 const std::size_t height,
+	                                 const double tx,
+	                                 const double ty,
+	                                 const double scale,
+	                                 const std::vector<Edge>& edges,
+	                                 const Paint& paint,
+	                                 const SvgFillRule fillRule,
+	                                 const std::size_t subSamples)
 	{
-		std::size_t e = 0;
-		std::size_t maxWeight = 255 / subSamples;  // weight per vertical scanline
-		int xmin, xmax;
+		std::size_t edgeIndex = 0;
+		const std::size_t maxWeight = 255 / subSamples;  // weight per vertical scanline
 
 		std::list<ActiveEdge> activeEdges;
-
 		std::list<ActiveEdge>::iterator active;
 
-		for (std::size_t y = 0; y <height; y++)
+		for (std::size_t y = 0; y < height; y++)
 		{
 			std::memset(scanline, 0, width);
-			xmin = width;
-			xmax = 0;
-			for (std::size_t s = 0; s < subSamples; ++s)
+			int xMin = width;
+			int xMax = 0;
+			for (std::size_t sample = 0; sample < subSamples; ++sample)
 			{
 				// find center of pixel for this scanline
-				double scany = static_cast<double>(y * subSamples + s) + 0.5;
-				//std::list<ActiveEdge>::iterator step = active;
+				const auto scanY = static_cast<double>(y * subSamples + sample) + 0.5;
+				auto step = active;
 
 				// update all active edges;
 				// remove all active edges that terminate before the center of this scanline
 
-				for (auto itr = activeEdges.begin(); itr != activeEdges.end(); ++itr)
+				while (step != std::list<ActiveEdge>::iterator() && step != activeEdges.end())
 				{
-					if (itr->ey <= scany)
+					if (step->ey <= scanY)
 					{
-						//*step = &*activeEdges.erase(itr); // delete from list
-						itr = activeEdges.erase(itr); // delete from list
-						active = itr;
+						step = activeEdges.erase(step); // delete from list
+						active = step;
 					}
 					else
 					{
-						itr->x += itr->dx; // advance to position for current scanline
+						step->x += step->dx; // advance to position for current scanline
+						++step;
 					}
 				}
 				activeEdges.sort();
 				// insert all edges that start before the center of this scanline -- omit ones that also end on this scanline
-				while (e < edges.size() && edges[e].y0 <= scany)
+				while (edgeIndex < edges.size() && edges[edgeIndex].y0 <= scanY)
 				{
-					if (edges[e].y1 > scany)
+					if (edges[edgeIndex].y1 > scanY)
 					{
-						auto activeEdge = CreateActive(edges[e], scany);
+						auto activeEdge = CreateActive(edges[edgeIndex], scanY);
 
 						// find insertion point
 						if (active == std::list<ActiveEdge>::iterator())
@@ -685,7 +750,7 @@ namespace Elpida
 						{
 							// find thing to insert AFTER
 							auto itr = active;
-							for (; itr != activeEdges.end(); ++itr)
+							for (++itr; itr != activeEdges.end(); ++itr)
 							{
 								if (itr->x >= activeEdge.x)
 								{
@@ -694,25 +759,25 @@ namespace Elpida
 							}
 
 							// at this point, p->next->x is NOT < z->x
-							activeEdges.insert(++itr, activeEdge);
+							activeEdges.insert(itr, activeEdge);
 						}
 					}
-					e++;
+					edgeIndex++;
 				}
 
 				// now process all active edges in non-zero fashion
 				if (active != std::list<ActiveEdge>::iterator())
 				{
-					FillActiveEdges(scanline, width, activeEdges, active, maxWeight, xmin, xmax, fillRule);
+					FillActiveEdges(scanline, width, activeEdges, active, maxWeight, xMin, xMax, fillRule);
 				}
 			}
 
 			//Blit
-			if (xmin < 0) xmin = 0;
-			if (xmax > width - 1) xmax = width - 1;
-			if (xmin <= xmax)
+			if (xMin < 0) xMin = 0;
+			if (xMax > width - 1) xMax = width - 1;
+			if (xMin <= xMax)
 			{
-				ScanlineSolid(&bitmap[y * stride] + xmin * 4, xmax - xmin + 1, &scanline[xmin], xmin, y, tx, ty, scale,
+				ScanlineSolid(&bitmap[y * stride] + xMin * 4, xMax - xMin + 1, &scanline[xMin], xMin, y, tx, ty, scale,
 				              paint);
 			}
 		}
@@ -731,8 +796,9 @@ namespace Elpida
 		auto& defs = document.GetDefs();
 
 		std::vector<Edge> edges;
-		std::vector<RasterizerPoint> points;
 		edges.reserve(document.GetElement().GetChildren().size() * 4);
+
+		std::memset(outputBuffer, 0, width * 4);
 
 		std::unique_ptr<unsigned char[]> scanLine(new unsigned char[width]);
 		for (auto& element : document.GetElement().GetChildren())
@@ -742,7 +808,7 @@ namespace Elpida
 				if (!shape->IsVisible()) continue;
 				if (shape->GetFill().has_value())
 				{
-					FlatenShape(*shape, edges, points, scale);
+					FlatenShape(*shape, edges, scale);
 
 					// Scale and translate edges
 					for (auto& edge : edges)
@@ -755,10 +821,7 @@ namespace Elpida
 
 					std::ranges::sort(edges, [](const Edge& a, const Edge& b)
 					{
-						if (a.y0 < b.y0) return -1;
-
-						if (a.y0 > b.y0) return 1;
-						return 0;
+						return a.y0 < b.y0;
 					});
 
 					// now, traverse the scanlines and find the intersections on each scanline, use non-zero rule
@@ -773,5 +836,7 @@ namespace Elpida
 				}
 			}
 		}
+
+		UnpremultiplyAlpha(outputBuffer, width, height, stride);
 	}
 } // Elpida
