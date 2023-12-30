@@ -13,7 +13,7 @@ namespace Elpida
 {
 	static constexpr unsigned int RgbToInt(const unsigned char r, const unsigned char g, const unsigned char b)
 	{
-		return r << 16 | g << 8 | b;
+		return 255 << 24 | b << 16 | g << 8 | r;
 	}
 
 	SvgColor::SvgColor(const std::string_view view)

@@ -14,11 +14,10 @@ namespace Elpida
 	class SvgFontSize
 	{
 	public:
-
 		[[nodiscard]]
-		double CalculateActualValue(const double parentFontSize) const
+		const SvgLength& GetLength() const
 		{
-			return _length.CalculateActualValue(0.0, parentFontSize, parentFontSize, 0.0);
+			return _length;
 		}
 
 		SvgFontSize() = default;

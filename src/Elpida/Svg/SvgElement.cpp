@@ -13,28 +13,24 @@
 
 namespace Elpida
 {
+
+
 	SvgElement::SvgElement(const XmlElement& element, SvgDocument& document)
 	{
 		_properties = element.GetAttributes();
 
-		for (auto& [key, value] : SvgStyle(element.GetAttributeValue("style")).GetRules())
+		SvgStyle style(element.GetAttributeValue("style"));
+		for (auto& [key, value] : style.GetRules())
 		{
 			_properties.Set(key, std::move(value));
 		}
 		ConditionallyAssignProperty<>("id", _id);
 		ConditionallyAssignProperty<>("transform", _transform);
 
-		auto& fontSize = _properties.GetValue("font-size");
-		bool fontSet = false;
-		if (!fontSize.empty())
+		StackedValue fontSize(document._fontSizes, "font-size", [&](auto& s) -> std::optional<double>
 		{
-			const auto value = SvgLength(fontSize).CalculateActualValue(document, 0, document.GetActualLength());
-			fontSet = value > 0.0;
-			if (fontSet)
-			{
-				document._fontSizes.push(value);
-			}
-		}
+			return {SvgLength(s).CalculateActualValue(document, 0, document.GetActualLength())};
+		});
 
 		auto& defs = document._defs;
 		for (auto& child : element.GetChildren())
@@ -56,12 +52,6 @@ namespace Elpida
 			{
 				_children.push_back(std::move(childElement));
 			}
-		}
-
-
-		if (fontSet)
-		{
-			document._fontSizes.pop();
 		}
 	}
 } // Elpida

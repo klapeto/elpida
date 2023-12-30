@@ -22,7 +22,7 @@ namespace Elpida
 			double tx = 0.0, double ty = 0.0,
 			double scale = 1.0);
 	private:
-		constexpr int SubSamples = 5;
+		static constexpr std::size_t SubSamples = 5;
 	};
 } // Elpida
 

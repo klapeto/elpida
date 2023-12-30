@@ -6,25 +6,21 @@
 #define ELPIDA_SVG_SVGFILL_HPP
 
 #include "SvgPaint.hpp"
+#include "SvgFillRule.hpp"
 
 namespace Elpida
 {
-	enum class SvgFillRule
-	{
-		NonZero = 0,
-		EvenOdd = 1
-	};
-
 	class SvgFill : public SvgPaint
 	{
 	public:
-		SvgFill(const XmlMap& properties);
+		explicit SvgFill(const XmlMap& properties);
 		SvgFill()
 			: SvgPaint(), _fillRule(SvgFillRule::NonZero)
 		{
 		}
 	private:
 		SvgFillRule _fillRule;
+		void ParseFillRule(const std::string& value);
 	};
 } // Elpida
 

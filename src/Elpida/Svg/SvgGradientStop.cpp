@@ -40,13 +40,27 @@ namespace Elpida
 	}
 
 	SvgGradientStop::SvgGradientStop(const XmlElement& element, SvgDocument& document)
-		: SvgElement(element, document),_opacity(1.0, SvgUnits::Px)
+		: SvgElement(element, document), _opacity(1.0)
 	{
 		ConditionallyAssignProperty("stop-color", _color);
-		ConditionallyAssignProperty("stop-opacity", _opacity);
-		ConditionallyAssignProperty("offset", _opacity);
 
-		SanitizeCoordinate(_offset);
-		SanitizeCoordinate(_opacity);
+		SvgLength opacity(1.0, SvgUnits::Raw);
+		if (auto& value = GetProperties().GetValue("stop-opacity"); !value.empty())
+		{
+			opacity = SvgLength(value);
+		}
+
+		SvgLength offset(0.0, SvgUnits::Raw);
+		if (auto& value = GetProperties().GetValue("offset"); !value.empty())
+		{
+			offset = SvgLength(value);
+		}
+
+		SanitizeCoordinate(offset);
+		SanitizeCoordinate(opacity);
+
+		_offset = offset.CalculateActualValue(document, 0, 1.0);
+		_opacity = opacity.CalculateActualValue(document, 0, 1.0);
+
 	}
 } // Elpida

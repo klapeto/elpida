@@ -67,7 +67,7 @@ namespace Elpida
 
 		std::string_view GetStringView(const std::size_t begin, const std::size_t end)
 		{
-			if (begin < _maxIndex && end <= _maxIndex)
+			if (begin <= _maxIndex && end <= _maxIndex)
 			{
 				return {_data + begin, _data + end + 1};
 			}

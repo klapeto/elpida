@@ -16,9 +16,26 @@ namespace Elpida
 	class SvgPaint
 	{
 	public:
+		[[nodiscard]]
+		const std::string& GetGradientId() const
+		{
+			return _gradientId;
+		}
+
+		[[nodiscard]]
+		const SvgColor& GetColor() const
+		{
+			return _color;
+		}
+
+		[[nodiscard]]
+		double GetOpacity() const
+		{
+			return _opacity;
+		}
 
 		SvgPaint()
-			: _opacity(1.0), _set(false)
+			: _opacity(1.0)
 		{
 		}
 
@@ -26,6 +43,7 @@ namespace Elpida
 		std::string _gradientId;
 		SvgColor _color;
 		double _opacity;
+
 		bool _set;
 
 		void ParseColor(const std::string& value);

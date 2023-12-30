@@ -6,6 +6,8 @@
 #define ELPIDA_SVG_SVGELEMENT_HPP
 
 #include <memory>
+#include <optional>
+#include <stack>
 
 #include "Elpida/Svg/SvgTransform.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
@@ -53,6 +55,33 @@ namespace Elpida
 		SvgTransform _transform;
 		XmlMap _properties;
 		std::vector<std::unique_ptr<SvgElement>> _children;
+
+		template <typename T>
+		class StackedValue
+		{
+		public:
+			template<typename TCallable>
+			explicit StackedValue(std::stack<T>& stack, const std::string& propertyName, TCallable callable)
+				: _stack(stack), _pushed(false)
+			{
+				if (propertyName.empty()) return;
+				if (std::optional<T> value = callable(propertyName); value.has_value())
+				{
+					_stack.push(value.value());
+					_pushed = true;
+				}
+			}
+			~StackedValue()
+			{
+				if (_pushed)
+				{
+					_stack.pop();
+				}
+			}
+		private:
+			std::stack<T>& _stack;
+			bool _pushed;
+		};
 
 	protected:
 		template <typename T, typename TConverter>

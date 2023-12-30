@@ -23,13 +23,13 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const SvgLength& GetOffset() const
+		double GetOffset() const
 		{
 			return _offset;
 		}
 
 		[[nodiscard]]
-		const SvgLength& GetOpacity() const
+		double GetOpacity() const
 		{
 			return _opacity;
 		}
@@ -37,8 +37,8 @@ namespace Elpida
 		explicit SvgGradientStop(const XmlElement& element, SvgDocument& document);
 	private:
 		SvgColor _color;
-		SvgLength _offset;
-		SvgLength _opacity;
+		double _offset;
+		double _opacity;
 	};
 
 } // Elpida

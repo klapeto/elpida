@@ -7,32 +7,21 @@
 
 #include <vector>
 
+#include "SvgLineJoin.hpp"
+#include "SvgLineCap.hpp"
 #include "SvgPaint.hpp"
 
 namespace Elpida
 {
 	class SvgDocument;
 
-	enum class SvgLineJoin
-	{
-		Miter = 0,
-		Round = 1,
-		Bevel = 2
-	};
-
-	enum class SvgLineCap
-	{
-		Butt = 0,
-		Round = 1,
-		Square = 2
-	};
-
 	class SvgStroke : public SvgPaint
 	{
 	public:
+		void ParseDashOffset(const SvgDocument& document, const std::string& dashOffset);
 		SvgStroke(const XmlMap& properties, const SvgDocument& document);
 		SvgStroke()
-			: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _dashOffset(0), _width(1.0)
+			: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _dashOffset(0), _width(1.0), _miterLimit(0.0)
 		{
 		}
 	private:
@@ -41,8 +30,13 @@ namespace Elpida
 		SvgLineCap _lineCap;
 		double _dashOffset;
 		double _width;
+		double _miterLimit;
 
 		void ParseDashArray(const std::string& value, const SvgDocument& document);
+		void ParseWidth(const std::string& value, const SvgDocument& document);
+		void ParseLineCap(const std::string& value);
+		void ParseLineJoin(const std::string& value);
+		void ParseMiterLimit(const std::string& value);
 	};
 } // Elpida
 

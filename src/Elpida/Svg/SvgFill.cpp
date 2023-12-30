@@ -10,14 +10,39 @@
 namespace Elpida
 {
 	SvgFill::SvgFill(const XmlMap& properties)
+		: _fillRule(SvgFillRule::NonZero)
 	{
 		ParseColor(properties.GetValue("fill"));
 		ParseOpacity(properties.GetValue("fill-opacity"));
+		ParseFillRule(properties.GetValue("fill-rule"));
+	}
 
-		auto& fillRuleStr = properties.GetValue("fill-rule");
-		if (!fillRuleStr.empty())
+	void SvgFill::ParseFillRule(const std::string& value)
+	{
+		if (value.empty()) return;
+		CharacterStream stream(value);
+
+		stream.SkipSpace();
+
+		switch (stream.Current())
 		{
-			_fillRule = fillRuleStr == "evenodd" ? SvgFillRule::EvenOdd : SvgFillRule::NonZero;
+		case 'e':
+			stream.Next();
+			if (stream.ConsumeNextChars("evenodd"))
+			{
+				_fillRule = SvgFillRule::EvenOdd;
+			}
+			break;
+		case 'n':
+			stream.Next();
+			if (stream.ConsumeNextChars("onzero"))
+			{
+				_fillRule = SvgFillRule::NonZero;
+			}
+			break;
+		default:
+			_fillRule = SvgFillRule::NonZero;
+			break;
 		}
 	}
 } // Elpida

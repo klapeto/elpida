@@ -47,9 +47,12 @@ namespace Elpida
 				}
 				stream.Next();
 			}
-			if (lastChar - firstChar <= 0)
+			if (lastChar == firstChar)
 			{
-				throw ParseException("Eof", "css rule value but got empty");
+				if (const auto c = stream.Char(lastChar); c == ';' || c == ':' || CharacterStream::IsSpace(c))
+				{
+					throw ParseException("Eof", "css rule value but got empty");
+				}
 			}
 			auto value = stream.GetStringView(firstChar, lastChar);
 			stream.SkipSpace();

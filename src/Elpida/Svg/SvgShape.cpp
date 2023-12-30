@@ -22,43 +22,7 @@ namespace Elpida
 			return static_cast<bool>(SvgVisibility(s));
 		});
 
-		ConditionallyAssignProperty<>("fill", _fill, [this](const auto& s)
-		{
-			CharacterStream stream(s);
-
-			SvgColor color;
-			std::string gradientId;
-
-			stream.SkipSpace();
-			switch (stream.Current())
-			{
-			case 'u':
-				if (stream.ConsumeNextCharsCond("url("))
-				{
-					gradientId = stream.GetStringViewWhile([](auto c) { return c != ')'; });
-				}
-				else
-				{
-					color = SvgColor(stream.GetStringView());
-				}
-				break;
-			case 'n':
-				if (stream.ConsumeNextCharsCond("none"))
-				{
-					return std::nullopt;
-				}
-				else
-				{
-					color = SvgColor(stream.GetStringView());
-				}
-				break;
-			default:
-				color = SvgColor(stream.GetStringView());
-				break;
-			}
-
-			std::string fillOpacity;
-			ConditionallyAssignProperty<>("fill-opacity", fillOpacity);
-		});
+		_fill = SvgFill(GetProperties());
+		_stroke = SvgStroke(GetProperties(), document);
 	}
 } // Elpida

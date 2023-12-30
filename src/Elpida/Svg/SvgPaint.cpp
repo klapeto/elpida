@@ -41,8 +41,6 @@ namespace Elpida
 			_color = SvgColor(stream.GetStringView());
 			break;
 		}
-
-		_set = true;
 	}
 
 	void SvgPaint::ParseOpacity(const std::string& value)

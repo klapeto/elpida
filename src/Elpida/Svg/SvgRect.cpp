@@ -14,20 +14,16 @@ namespace Elpida
 	{
 		auto& properties = GetProperties();
 		auto& viewBox = document.GetElement().GetViewBox();
-		const auto x = SvgLength(properties.GetValue("x")).CalculateActualValue(viewBox.GetMinX(), viewBox.GetWidth(),
-		                                                                        document.GetFontSize(), document.GetDpi());
-		const auto y = SvgLength(properties.GetValue("y")).CalculateActualValue(viewBox.GetMinY(), viewBox.GetHeight(),
-		                                                                        document.GetFontSize(), document.GetDpi());
+		const auto x = SvgLength(properties.GetValue("x")).CalculateActualValue(document, viewBox.GetMinX(), viewBox.GetWidth());
+		const auto y = SvgLength(properties.GetValue("y")).CalculateActualValue(document, viewBox.GetMinY(), viewBox.GetHeight());
 
-		auto width = SvgLength(properties.GetValue("width")).CalculateActualValue(
-			0, viewBox.GetWidth(), document.GetFontSize(), document.GetDpi());
+		auto width = SvgLength(properties.GetValue("width")).CalculateActualValue(document,0, viewBox.GetWidth());
 		if (width < 0.0)
 		{
 			width = 0.0;
 		}
 
-		auto height = SvgLength(properties.GetValue("height")).CalculateActualValue(
-			0, viewBox.GetHeight(), document.GetFontSize(), document.GetDpi());
+		auto height = SvgLength(properties.GetValue("height")).CalculateActualValue(document,0, viewBox.GetHeight());
 		if (height < 0.0)
 		{
 			height = 0.0;
@@ -41,8 +37,7 @@ namespace Elpida
 			auto& rxStr = properties.GetValue("rx");
 			if (!rxStr.empty())
 			{
-				rx = fabs(SvgLength(rxStr).CalculateActualValue(0, viewBox.GetWidth(), document.GetFontSize(),
-				                                                document.GetDpi()));
+				rx = fabs(SvgLength(rxStr).CalculateActualValue(document,0, viewBox.GetWidth()));
 			}
 		}
 
@@ -50,8 +45,7 @@ namespace Elpida
 			auto& ryStr = properties.GetValue("ry");
 			if (!ryStr.empty())
 			{
-				ry = fabs(SvgLength(ryStr).CalculateActualValue(0, viewBox.GetHeight(), document.GetFontSize(),
-				                                                document.GetDpi()));
+				ry = fabs(SvgLength(ryStr).CalculateActualValue(document,0, viewBox.GetHeight()));
 			}
 		}
 

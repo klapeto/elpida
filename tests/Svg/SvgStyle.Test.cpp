@@ -24,12 +24,13 @@ TEST(SvgStyleTests, Single_Valid_Success)
 
 TEST(SvgStyleTests, Multiple_Valid_Success)
 {
-	const SvgStyle style("test: lol; haha: omg   ; kjsdhk-345g   :  test; abc: rule(-561,  13013.13)");
+	const SvgStyle style("test: lol; haha: omg   ; kjsdhk-345g   :  test; abc: rule(-561,  13013.13);urks:1");
 	auto& rules = style.GetRules();
 	EXPECT_EQ(rules.at("test"), "lol");
 	EXPECT_EQ(rules.at("haha"), "omg");
 	EXPECT_EQ(rules.at("kjsdhk-345g"), "test");
 	EXPECT_EQ(rules.at("abc"), "rule(-561,  13013.13)");
+	EXPECT_EQ(rules.at("urks"), "1");
 }
 
 TEST(SvgStyleTests, Invalid_ThrowsException)

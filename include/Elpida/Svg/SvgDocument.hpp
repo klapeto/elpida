@@ -8,7 +8,10 @@
 #include <stack>
 
 #include "SvgDefs.hpp"
+#include "SvgFillRule.hpp"
 #include "SvgSvgElement.hpp"
+#include "SvgLineJoin.hpp"
+#include "SvgLineCap.hpp"
 
 namespace Elpida
 {
@@ -34,7 +37,7 @@ namespace Elpida
 			return _dpi;
 		}
 
-		constexpr double GetFontSize() const
+		double GetFontSize() const
 		{
 			return _fontSizes.top();
 		}
@@ -64,6 +67,9 @@ namespace Elpida
 		SvgSvgElement _element;
 		double _dpi = 96.0;
 		std::stack<double> _fontSizes;
+		// std::stack<SvgLineCap> _lineCaps;	// for inheritance
+		// std::stack<SvgLineJoin> _lineJoins;
+		// std::stack<SvgFillRule> _fillRules;
 
 		static constexpr double Sqrt(const double x)
 		{
