@@ -5,6 +5,7 @@
 #include "Elpida/Svg/SvgRasterizer.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <Elpida/Svg/SvgDocument.hpp>
 #include <Elpida/Svg/SvgGradient.hpp>
 #include <Elpida/Svg/SvgPath.hpp>
@@ -484,9 +485,6 @@ namespace Elpida
 					scanline[i] = static_cast<unsigned char>(scanline[i] + maxWeight);
 				}
 			}
-		} else
-		{
-			int x= 5;
 		}
 	}
 
@@ -525,7 +523,7 @@ namespace Elpida
 		else if (fillRule == SvgFillRule::EvenOdd)
 		{
 			// Even-odd
-			while (iterator != list.end())
+			for (; iterator != list.end(); ++iterator)
 			{
 				if (w == 0)
 				{
@@ -535,11 +533,9 @@ namespace Elpida
 				}
 				else
 				{
-					const int x1 = iterator->x;
 					w = 0;
-					FillScanline(scanline, len, x0, x1, maxWeight, xmin, xmax);
+					FillScanline(scanline, len, x0, iterator->x, maxWeight, xmin, xmax);
 				}
-				iterator = ++iterator;
 			}
 		}
 	}
@@ -716,8 +712,12 @@ namespace Elpida
 				{
 					if (step->ey <= scanY)
 					{
+						const bool updateActive = step == active;
 						step = activeEdges.erase(step); // delete from list
-						active = step;
+						if (updateActive)
+						{
+							active = step;
+						}
 					}
 					else
 					{
@@ -737,9 +737,14 @@ namespace Elpida
 
 						if (step->x > next->x)
 						{
+							const bool updateActive = step == active;
 							auto nextEdge = *next;
 							activeEdges.erase(next);
 							step = activeEdges.insert(step, nextEdge);
+							if (updateActive)
+							{
+								active = step;
+							}
 							changed = true;
 						}
 					}
@@ -784,6 +789,13 @@ namespace Elpida
 				// now process all active edges in non-zero fashion
 				if (active != activeEdges.end())
 				{
+					// std::cout << "DUMP===========================\n";
+					// for (auto itr = active; itr != activeEdges.end(); ++itr)
+					// {
+					// 	std::cout << itr->x << " | " << (int)itr->ey << " | " << itr->dx << " | " << itr->dir <<
+					// 		std::endl;
+					// }
+
 					FillActiveEdges(scanline, width, activeEdges, active, maxWeight, xMin, xMax, fillRule);
 				}
 			}
@@ -811,8 +823,6 @@ namespace Elpida
 		auto& viewBox = document.GetElement().GetViewBox();
 		auto& defs = document.GetDefs();
 
-		std::vector<Edge> edges;
-		edges.reserve(document.GetElement().GetChildren().size() * 4);
 
 		std::memset(outputBuffer, 0, width * 4);
 
@@ -824,6 +834,8 @@ namespace Elpida
 				if (!shape->IsVisible()) continue;
 				if (shape->GetFill().has_value())
 				{
+					std::vector<Edge> edges;
+
 					FlatenShape(*shape, edges, scale);
 
 					// Scale and translate edges
@@ -844,7 +856,7 @@ namespace Elpida
 
 					auto paint = GetPaint(defs, shape->GetFill().value(), shape->GetOpacity());
 
-					RasterizeSortedEdges(scanLine.get(), outputBuffer, width, stride, height, tx, ty, scale, edges, paint, SvgFillRule::NonZero, 5);
+					RasterizeSortedEdges(scanLine.get(), outputBuffer, width, stride, height, tx, ty, scale, edges, paint, shape->GetFill().value().GetFillRule(), 5);
 				}
 
 				if (shape->GetStroke().has_value())
