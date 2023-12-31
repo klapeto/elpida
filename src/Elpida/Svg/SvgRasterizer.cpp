@@ -275,10 +275,10 @@ namespace Elpida
 	                        std::vector<Edge>& edges,
 	                        const double scale)
 	{
-		std::vector<RasterizerPoint> points;
 		for (auto& pathInstance : path.GetInstances())
 		{
-			points.clear();
+			std::vector<RasterizerPoint> points;
+
 			auto& pathPoints = pathInstance.GetPoints();
 			auto& firstPoint = pathPoints.front();
 
@@ -513,12 +513,11 @@ namespace Elpida
 				}
 				else
 				{
-					const int x1 = iterator->x;
 					w += iterator->dir;
 					// if we went to zero, we need to draw
 					if (w == 0)
 					{
-						FillScanline(scanline, len, x0, x1, maxWeight, xmin, xmax);
+						FillScanline(scanline, len, x0, iterator->x, maxWeight, xmin, xmax);
 					}
 				}
 			}
@@ -699,7 +698,7 @@ namespace Elpida
 		const std::size_t maxWeight = 255 / subSamples;  // weight per vertical scanline
 
 		std::list<ActiveEdge> activeEdges;
-		std::list<ActiveEdge>::iterator active;
+		auto active = activeEdges.end();
 
 		for (std::size_t y = 0; y < height; y++)
 		{
@@ -710,12 +709,10 @@ namespace Elpida
 			{
 				// find center of pixel for this scanline
 				const auto scanY = static_cast<double>(y * subSamples + sample) + 0.5;
-				auto step = active;
 
 				// update all active edges;
 				// remove all active edges that terminate before the center of this scanline
-
-				while (step != std::list<ActiveEdge>::iterator() && step != activeEdges.end())
+				for (auto step = active; step != activeEdges.end();)
 				{
 					if (step->ey <= scanY)
 					{
@@ -725,10 +722,31 @@ namespace Elpida
 					else
 					{
 						step->x += step->dx; // advance to position for current scanline
-						++step;
+						++step; // advance through list
 					}
 				}
-				activeEdges.sort();
+
+				while (true)
+				{
+					bool changed = false;
+
+					for (auto step = active; step != activeEdges.end(); ++step)
+					{
+						auto next = step;
+						if (++next == activeEdges.end()) break;
+
+						if (step->x > next->x)
+						{
+							auto nextEdge = *next;
+							activeEdges.erase(next);
+							step = activeEdges.insert(step, nextEdge);
+							changed = true;
+						}
+					}
+
+					if (!changed) break;
+				}
+
 				// insert all edges that start before the center of this scanline -- omit ones that also end on this scanline
 				while (edgeIndex < edges.size() && edges[edgeIndex].y0 <= scanY)
 				{
@@ -737,9 +755,9 @@ namespace Elpida
 						auto activeEdge = CreateActive(edges[edgeIndex], scanY);
 
 						// find insertion point
-						if (active == std::list<ActiveEdge>::iterator())
+						if (active == activeEdges.end())
 						{
-							active = activeEdges.insert(activeEdges.end(), activeEdge);
+							active = activeEdges.insert(activeEdges.begin(), activeEdge);
 						}
 						else if (activeEdge.x < active->x)
 						{
@@ -750,15 +768,13 @@ namespace Elpida
 						{
 							// find thing to insert AFTER
 							auto itr = active;
-							for (++itr; itr != activeEdges.end(); ++itr)
+							for (; itr != activeEdges.end(); ++itr)
 							{
 								if (itr->x >= activeEdge.x)
 								{
 									break;
 								}
 							}
-
-							// at this point, p->next->x is NOT < z->x
 							activeEdges.insert(itr, activeEdge);
 						}
 					}
@@ -766,7 +782,7 @@ namespace Elpida
 				}
 
 				// now process all active edges in non-zero fashion
-				if (active != std::list<ActiveEdge>::iterator())
+				if (active != activeEdges.end())
 				{
 					FillActiveEdges(scanline, width, activeEdges, active, maxWeight, xMin, xMax, fillRule);
 				}
