@@ -803,7 +803,7 @@ namespace Elpida
 		std::unique_ptr<unsigned char[]> scanLine(new unsigned char[width]);
 		for (auto& element : document.GetElement().GetChildren())
 		{
-			if (auto shape = dynamic_cast<SvgPath*>(element.get()))
+			if (const auto shape = dynamic_cast<SvgPath*>(element.get()))
 			{
 				if (!shape->IsVisible()) continue;
 				if (shape->GetFill().has_value())

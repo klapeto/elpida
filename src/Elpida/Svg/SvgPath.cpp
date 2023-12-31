@@ -567,7 +567,7 @@ namespace Elpida
 					}
 					break;
 				case 'h':
-					relative = false;
+					relative = true;
 					[[fallthrough]];
 				case 'H':
 					{
@@ -587,7 +587,7 @@ namespace Elpida
 					}
 					break;
 				case 'v':
-					relative = false;
+					relative = true;
 					[[fallthrough]];
 				case 'V':
 					{
@@ -607,7 +607,7 @@ namespace Elpida
 					}
 					break;
 				case 'c':
-					relative = false;
+					relative = true;
 					[[fallthrough]];
 				case 'C':
 					{
@@ -633,7 +633,7 @@ namespace Elpida
 					}
 					break;
 				case 's':
-					relative = false;
+					relative = true;
 					[[fallthrough]];
 				case 'S':
 					{
@@ -657,7 +657,7 @@ namespace Elpida
 					}
 					break;
 				case 'q':
-					relative = false;
+					relative = true;
 					[[fallthrough]];
 				case 'Q':
 					{
@@ -681,7 +681,7 @@ namespace Elpida
 					}
 					break;
 				case 't':
-					relative = false;
+					relative = true;
 					[[fallthrough]];
 				case 'T':
 					{
@@ -702,7 +702,7 @@ namespace Elpida
 					}
 					break;
 				case 'a':
-					relative = false;
+					relative = true;
 					[[fallthrough]];
 				case 'A':
 					{
