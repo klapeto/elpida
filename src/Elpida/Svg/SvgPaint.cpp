@@ -12,34 +12,43 @@ namespace Elpida
 	void SvgPaint::ParseColor(const std::string& value)
 	{
 		if (value.empty()) return;
-		CharacterStream stream(value);
 
-		stream.SkipSpace();
-		switch (stream.Current())
+		try
 		{
-		case 'u':
-			if (stream.ConsumeNextCharsCond("url("))
+			CharacterStream stream(value);
+
+			stream.SkipSpace();
+			switch (stream.Current())
 			{
-				_gradientId = stream.GetStringViewWhile([](auto c) { return c != ')'; });
-			}
-			else
-			{
+			case 'u':
+				if (stream.ConsumeNextCharsCond("url("))
+				{
+					_gradientId = stream.GetStringViewWhile([](auto c) { return c != ')'; });
+				}
+				else
+				{
+					_color = SvgColor(stream.GetStringView());
+				}
+				break;
+			case 'n':
+				if (stream.ConsumeNextCharsCond("none"))
+				{
+					_set = false;
+					return;
+				}
+				else
+				{
+					_color = SvgColor(stream.GetStringView());
+				}
+				break;
+			default:
 				_color = SvgColor(stream.GetStringView());
+				break;
 			}
-			break;
-		case 'n':
-			if (stream.ConsumeNextCharsCond("none"))
-			{
-				return;
-			}
-			else
-			{
-				_color = SvgColor(stream.GetStringView());
-			}
-			break;
-		default:
-			_color = SvgColor(stream.GetStringView());
-			break;
+			_set = true;
+		} catch (const ParseException&)
+		{
+			_set = false;
 		}
 	}
 

@@ -4,8 +4,8 @@
 
 #ifndef ELPIDA_SVG_SVGRASTERIZER_HPP
 #define ELPIDA_SVG_SVGRASTERIZER_HPP
-#include <cstddef>
 
+#include <cstddef>
 
 namespace Elpida
 {

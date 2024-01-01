@@ -18,7 +18,42 @@ namespace Elpida
 	class SvgStroke : public SvgPaint
 	{
 	public:
-		void ParseDashOffset(const SvgDocument& document, const std::string& dashOffset);
+		[[nodiscard]]
+		const std::vector<double>& GetDashes() const
+		{
+			return _dashes;
+		}
+
+		[[nodiscard]]
+		SvgLineJoin GetLineJoin() const
+		{
+			return _lineJoin;
+		}
+
+		[[nodiscard]]
+		SvgLineCap GetLineCap() const
+		{
+			return _lineCap;
+		}
+
+		[[nodiscard]]
+		double GetDashOffset() const
+		{
+			return _dashOffset;
+		}
+
+		[[nodiscard]]
+		double GetWidth() const
+		{
+			return _width;
+		}
+
+		[[nodiscard]]
+		double GetMiterLimit() const
+		{
+			return _miterLimit;
+		}
+
 		SvgStroke(const XmlMap& properties, const SvgDocument& document);
 		SvgStroke()
 			: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _dashOffset(0), _width(1.0), _miterLimit(0.0)
@@ -37,6 +72,7 @@ namespace Elpida
 		void ParseLineCap(const std::string& value);
 		void ParseLineJoin(const std::string& value);
 		void ParseMiterLimit(const std::string& value);
+		void ParseDashOffset(const SvgDocument& document, const std::string& dashOffset);
 	};
 } // Elpida
 

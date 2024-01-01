@@ -13,6 +13,12 @@ namespace Elpida
 	class SvgFill : public SvgPaint
 	{
 	public:
+		[[nodiscard]]
+		SvgFillRule GetFillRule() const
+		{
+			return _fillRule;
+		}
+
 		explicit SvgFill(const XmlMap& properties);
 		SvgFill()
 			: SvgPaint(), _fillRule(SvgFillRule::NonZero)

@@ -17,6 +17,12 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
+		bool IsSet() const
+		{
+			return _set;
+		}
+
+		[[nodiscard]]
 		const std::string& GetGradientId() const
 		{
 			return _gradientId;
@@ -35,7 +41,7 @@ namespace Elpida
 		}
 
 		SvgPaint()
-			: _opacity(1.0)
+			: _opacity(1.0), _set(false)
 		{
 		}
 
