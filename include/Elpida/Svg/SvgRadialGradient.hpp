@@ -12,6 +12,31 @@ namespace Elpida
 	class SvgRadialGradient: public SvgGradient
 	{
 	public:
+		[[nodiscard]] const SvgLength& GetCx() const
+		{
+			return _cx;
+		}
+
+		[[nodiscard]] const SvgLength& GetCy() const
+		{
+			return _cy;
+		}
+
+		[[nodiscard]] const SvgLength& GetR() const
+		{
+			return _r;
+		}
+
+		[[nodiscard]] const SvgLength& GetFx() const
+		{
+			return _fx;
+		}
+
+		[[nodiscard]] const SvgLength& GetFy() const
+		{
+			return _fy;
+		}
+
 		explicit SvgRadialGradient(const XmlElement& element, SvgDocument& document);
 	private:
 		SvgLength _cx;

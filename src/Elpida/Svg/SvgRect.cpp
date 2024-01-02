@@ -65,9 +65,9 @@ namespace Elpida
 			{
 				points.reserve(4);
 				MoveTo(x, y, points);
-				MoveTo(x + width, y, points);
-				MoveTo(x + width, y + height, points);
-				MoveTo(x, y + height, points);
+				LineTo(x + width, y, points);
+				LineTo(x + width, y + height, points);
+				LineTo(x, y + height, points);
 			}
 			else
 			{

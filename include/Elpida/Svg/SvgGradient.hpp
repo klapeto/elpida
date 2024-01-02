@@ -29,6 +29,12 @@ namespace Elpida
 	class SvgGradient : public SvgElement
 	{
 	public:
+		[[nodiscard]]
+		const std::string& GetHref() const
+		{
+			return _href;
+		}
+
 		const std::vector<SvgGradientStop>& GetStops() const
 		{
 			return _stops;

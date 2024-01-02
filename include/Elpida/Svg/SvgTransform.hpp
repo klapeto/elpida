@@ -95,21 +95,21 @@ namespace Elpida
 			t[4] = t4;
 		}
 
-		void Inverse(SvgTransform& other)
+		void Inverse(const SvgTransform& other)
 		{
-			const double det = t[0] * t[3] - t[2] * t[1];
+			const double det = other.t[0] * other.t[3] - other.t[2] * other.t[1];
 			if (det > -1e-6 && det < 1e-6)
 			{
 				AsIdentity();
 				return;
 			}
 			const double invdet = 1.0 / det;
-			other.t[0] = t[3] * invdet;
-			other.t[2] = -t[2] * invdet;
-			other.t[4] = (t[2] * t[5] - t[3] * t[4]) * invdet;
-			other.t[1] = -t[1] * invdet;
-			other.t[3] = t[0] * invdet;
-			other.t[5] = (t[1] * t[4] - t[0] * t[5]) * invdet;
+			t[0] = other.t[3] * invdet;
+			t[2] = -other.t[2] * invdet;
+			t[4] = (other.t[2] * other.t[5] - other.t[3] * other.t[4]) * invdet;
+			t[1] = -other.t[1] * invdet;
+			t[3] = other.t[0] * invdet;
+			t[5] = (other.t[1] * other.t[4] - other.t[0] * other.t[5]) * invdet;
 		}
 
 		void PreMultiply(const SvgTransform& other)

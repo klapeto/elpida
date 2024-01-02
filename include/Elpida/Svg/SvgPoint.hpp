@@ -24,11 +24,24 @@ namespace Elpida
 			return _y;
 		}
 
+		[[nodiscard]]
+		double& GetRefX()
+		{
+			return _x;
+		}
+
+		[[nodiscard]]
+		double& GetRefY()
+		{
+			return _y;
+		}
+
 		void ApplyTransform(const SvgTransform& transform)
 		{
 			transform.ApplyToPoint(_x, _y, _x, _y);
 		}
 
+		SvgPoint():_x(0.0), _y(0.0){}
 		SvgPoint(const double x, const double y)
 			: _x(x),
 			  _y(y)

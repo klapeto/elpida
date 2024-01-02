@@ -15,6 +15,7 @@
 
 #include <cstring>
 #include <list>
+#include <Elpida/Svg/SvgLinearGradient.hpp>
 
 namespace Elpida
 {
@@ -97,12 +98,12 @@ namespace Elpida
 		return ((x + 1) * 257) >> 16;
 	}
 
-	static double Clamp(const double a, const double mn, const double mx)
+	static double Clamp(const double value, const double min, const double max)
 	{
-		return a < mn ? mn : (a > mx ? mx : a);
+		return value < min ? min : (value > max ? max : value);
 	}
 
-	static unsigned int RGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+	static unsigned int RGBA(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 	{
 		return static_cast<unsigned int>(r)
 			| (static_cast<unsigned int>(g) << 8)
@@ -110,23 +111,27 @@ namespace Elpida
 			| (static_cast<unsigned int>(a) << 24);
 	}
 
-	static unsigned int LerpRGBA(unsigned int c0, unsigned int c1, double u)
-	{
-		int iu = (int)(Clamp(u, 0.0f, 1.0f) * 256.0f);
-		int r = (((c0) & 0xff) * (256 - iu) + (((c1) & 0xff) * iu)) >> 8;
-		int g = (((c0 >> 8) & 0xff) * (256 - iu) + (((c1 >> 8) & 0xff) * iu)) >> 8;
-		int b = (((c0 >> 16) & 0xff) * (256 - iu) + (((c1 >> 16) & 0xff) * iu)) >> 8;
-		int a = (((c0 >> 24) & 0xff) * (256 - iu) + (((c1 >> 24) & 0xff) * iu)) >> 8;
-		return RGBA((unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a);
-	}
-
-	static unsigned int ApplyOpacity(unsigned int c, double u)
+	static unsigned int ShiftColorToColor(const unsigned int colorA, const unsigned int colorB, const double u)
 	{
 		const int iu = static_cast<int>(Clamp(u, 0.0, 1.0) * 256.0);
-		const int r = (c) & 0xff;
-		const int g = (c >> 8) & 0xff;
-		const int b = (c >> 16) & 0xff;
-		const int a = (((c >> 24) & 0xff) * iu) >> 8;
+		const int r = (((colorA) & 0xff) * (256 - iu) + (((colorB) & 0xff) * iu)) >> 8;
+		const int g = (((colorA >> 8) & 0xff) * (256 - iu) + (((colorB >> 8) & 0xff) * iu)) >> 8;
+		const int b = (((colorA >> 16) & 0xff) * (256 - iu) + (((colorB >> 16) & 0xff) * iu)) >> 8;
+		const int a = (((colorA >> 24) & 0xff) * (256 - iu) + (((colorB >> 24) & 0xff) * iu)) >> 8;
+		return RGBA(
+			static_cast<unsigned char>(r),
+			static_cast<unsigned char>(g),
+			static_cast<unsigned char>(b),
+			static_cast<unsigned char>(a));
+	}
+
+	static unsigned int ApplyOpacity(const unsigned int color, const double opacity)
+	{
+		const int iu = static_cast<int>(Clamp(opacity, 0.0, 1.0) * 256.0);
+		const int r = (color) & 0xff;
+		const int g = (color >> 8) & 0xff;
+		const int b = (color >> 16) & 0xff;
+		const int a = (((color >> 24) & 0xff) * iu) >> 8;
 		return RGBA(
 			static_cast<unsigned char>(r),
 			static_cast<unsigned char>(g),
@@ -229,7 +234,6 @@ namespace Elpida
 
 	static void UnpremultiplyAlpha(unsigned char* image, std::size_t w, std::size_t h, std::size_t stride)
 	{
-
 		// Unpremultiply
 		for (std::size_t y = 0; y < h; y++)
 		{
@@ -353,100 +357,6 @@ namespace Elpida
 		return returnPaint;
 	}
 
-	static Paint GetPaint(const SvgDefs& defs, const SvgPaint& paint, double opacity)
-	{
-		Paint returnPaint{};
-		if (paint.GetGradientId().empty())
-		{
-			return GetColorPaint(paint, opacity);
-		}
-		else
-		{
-			auto gradientItr = defs.find(paint.GetGradientId());
-			if (gradientItr != defs.end())
-			{
-				auto gradient = dynamic_cast<SvgGradient*>(gradientItr->second.get());
-				if (gradient == nullptr) return GetColorPaint(paint, opacity);
-
-				auto radialGradient = dynamic_cast<SvgRadialGradient*>(gradient);
-				returnPaint.type = radialGradient != nullptr ? PAINT_RADIAL_GRADIENT : PAINT_LINEAR_GRADIENT;
-				returnPaint.transform = gradient->GetGradientTransform();
-
-				auto& stops = gradient->GetStops();
-				if (stops.empty())
-				{
-					for (unsigned int& color : returnPaint.colors)
-					{
-						color = 0;
-					}
-				}
-				else if (stops.size() == 1)
-				{
-					const auto cachedColor = ApplyOpacity(stops.front().GetColor().GetValue(), opacity);
-					for (unsigned int& color : returnPaint.colors)
-					{
-						color = cachedColor;
-					}
-				}
-				else
-				{
-					unsigned int cb = 0;
-
-					auto& firstStop = stops.front();
-					unsigned int ca = ApplyOpacity(firstStop.GetColor().GetValue(), opacity);
-
-					double ua = Clamp(firstStop.GetOffset(), 0, 1);
-					double ub = Clamp(stops.back().GetOffset(), ua, 1);
-
-					auto ia = static_cast<std::size_t>(ua * 255.0);
-					auto ib = static_cast<std::size_t>(ub * 255.0);
-
-					for (std::size_t i = 0; i < ia; i++)
-					{
-						returnPaint.colors[i] = ca;
-					}
-
-					for (std::size_t i = 0; i < stops.size() - 1; i++)
-					{
-						auto& a = stops[i];
-						auto& b = stops[i + 1];
-
-						ca = ApplyOpacity(a.GetColor().GetValue(), opacity);
-						cb = ApplyOpacity(b.GetColor().GetValue(), opacity);
-
-						ua = Clamp(a.GetOffset(), 0, 1);
-						ub = Clamp(b.GetOffset(), 0, 1);
-
-						ia = static_cast<std::size_t>(ua * 255.0);
-						ib = static_cast<int>(ub * 255.0);
-
-						if (ib - ia <= 0) continue;
-						const std::size_t count = ib - ia;
-
-						const double du = 1.0f / static_cast<double>(count);
-						double u = 0;
-						for (std::size_t j = 0; j < static_cast<std::size_t>(count); j++)
-						{
-							returnPaint.colors[ia + j] = LerpRGBA(ca, cb, u);
-							u += du;
-						}
-					}
-
-					for (std::size_t i = ib; i < 256; i++)
-					{
-						returnPaint.colors[i] = cb;
-					}
-				}
-			}
-			else
-			{
-				return GetColorPaint(paint, opacity);
-			}
-		}
-
-		return returnPaint;
-	}
-
 	static ActiveEdge CreateActive(const Edge& edge, const double startPoint)
 	{
 		ActiveEdge returnEdge{};
@@ -531,13 +441,13 @@ namespace Elpida
 	// wouldn't happen, but it could happen if the truetype glyph bounding boxes
 	// are wrong, or if the user supplies a too-small bitmap
 	static void FillActiveEdges(unsigned char* scanline,
-		const int len,
-		const std::list<ActiveEdge>& list,
-		std::list<ActiveEdge>::iterator iterator,
-		const int maxWeight,
-		int& xmin,
-		int& xmax,
-		const SvgFillRule fillRule)
+	                            const int len,
+	                            const std::list<ActiveEdge>& list,
+	                            std::list<ActiveEdge>::iterator iterator,
+	                            const int maxWeight,
+	                            int& xmin,
+	                            int& xmax,
+	                            const SvgFillRule fillRule)
 	{
 		// non-zero winding fill
 		int x0 = 0, w = 0;
@@ -589,22 +499,20 @@ namespace Elpida
 	{
 		if (cache.type == PAINT_COLOR)
 		{
-			int cr, cg, cb, ca;
-			cr = cache.colors[0] & 0xff;
-			cg = (cache.colors[0] >> 8) & 0xff;
-			cb = (cache.colors[0] >> 16) & 0xff;
-			ca = (cache.colors[0] >> 24) & 0xff;
+			const int cr = cache.colors[0] & 0xff;
+			const int cg = (cache.colors[0] >> 8) & 0xff;
+			const int cb = (cache.colors[0] >> 16) & 0xff;
+			const int ca = (cache.colors[0] >> 24) & 0xff;
 
 			for (std::size_t i = 0; i < count; i++)
 			{
-				int r, g, b;
 				int a = Div255(static_cast<int>(cover[0]) * ca);
-				int ia = 255 - a;
+				const int ia = 255 - a;
 
 				// Premultiply
-				r = Div255(cr * a);
-				g = Div255(cg * a);
-				b = Div255(cb * a);
+				int r = Div255(cr * a);
+				int g = Div255(cg * a);
+				int b = Div255(cb * a);
 
 				// Blend over
 				r += Div255(ia * static_cast<int>(dst[0]));
@@ -625,32 +533,28 @@ namespace Elpida
 		{
 			// TODO: spread modes.
 			// TODO: plenty of opportunities to optimize.
-			double fx, fy, dx, gy;
 			auto& t = cache.transform;
-			int cr, cg, cb, ca;
-			unsigned int c;
 
-			fx = (static_cast<double>(x) - tx) / scale;
-			fy = (static_cast<double>(y) - ty) / scale;
-			dx = 1.0f / scale;
+			double fx = (static_cast<double>(x) - tx) / scale;
+			const double fy = (static_cast<double>(y) - ty) / scale;
+			const double dx = 1.0 / scale;
 
 			for (std::size_t i = 0; i < count; i++)
 			{
-				int r, g, b, a, ia;
-				gy = fx * t[1] + fy * t[3] + t[5];
-				c = cache.colors[static_cast<int>(Clamp(gy * 255.0, 0, 255.0))];
-				cr = (c) & 0xff;
-				cg = (c >> 8) & 0xff;
-				cb = (c >> 16) & 0xff;
-				ca = (c >> 24) & 0xff;
+				const double gy = fx * t[1] + fy * t[3] + t[5];
+				const auto color = cache.colors[static_cast<int>(Clamp(gy * 255.0, 0, 255.0))];
+				const auto cr = (color) & 0xff;
+				const auto cg = (color >> 8) & 0xff;
+				const auto cb = (color >> 16) & 0xff;
+				const auto ca = (color >> 24) & 0xff;
 
-				a = Div255(static_cast<int>(cover[0]) * ca);
-				ia = 255 - a;
+				auto a = Div255(static_cast<int>(cover[0]) * ca);
+				const auto ia = 255 - a;
 
 				// Premultiply
-				r = Div255(cr * a);
-				g = Div255(cg * a);
-				b = Div255(cb * a);
+				auto r = Div255(cr * a);
+				auto g = Div255(cg * a);
+				auto b = Div255(cb * a);
 
 				// Blend over
 				r += Div255(ia * static_cast<int>(dst[0]));
@@ -673,34 +577,30 @@ namespace Elpida
 			// TODO: spread modes.
 			// TODO: plenty of opportunities to optimize.
 			// TODO: focus (fx,fy)
-			double fx, fy, dx, gx, gy, gd;
 			auto& t = cache.transform;
-			int cr, cg, cb, ca;
-			unsigned int c;
 
-			fx = (static_cast<double>(x) - tx) / scale;
-			fy = (static_cast<double>(y) - ty) / scale;
-			dx = 1.0f / scale;
+			auto fx = (static_cast<double>(x) - tx) / scale;
+			const auto fy = (static_cast<double>(y) - ty) / scale;
+			const auto dx = 1.0 / scale;
 
 			for (std::size_t i = 0; i < count; i++)
 			{
-				int r, g, b, a, ia;
-				gx = fx * t[0] + fy * t[2] + t[4];
-				gy = fx * t[1] + fy * t[3] + t[5];
-				gd = sqrt(gx * gx + gy * gy);
-				c = cache.colors[static_cast<int>(Clamp(gd * 255.0f, 0, 255.0f))];
-				cr = (c) & 0xff;
-				cg = (c >> 8) & 0xff;
-				cb = (c >> 16) & 0xff;
-				ca = (c >> 24) & 0xff;
+				const auto gx = fx * t[0] + fy * t[2] + t[4];
+				const auto gy = fx * t[1] + fy * t[3] + t[5];
+				const auto gd = sqrt(gx * gx + gy * gy);
+				const auto color = cache.colors[static_cast<int>(Clamp(gd * 255.0, 0, 255.0))];
+				const auto cr = (color) & 0xff;
+				const auto cg = (color >> 8) & 0xff;
+				const auto cb = (color >> 16) & 0xff;
+				const auto ca = (color >> 24) & 0xff;
 
-				a = Div255(static_cast<int>(cover[0]) * ca);
-				ia = 255 - a;
+				auto a = Div255(static_cast<int>(cover[0]) * ca);
+				const auto ia = 255 - a;
 
 				// Premultiply
-				r = Div255(cr * a);
-				g = Div255(cg * a);
-				b = Div255(cb * a);
+				auto r = Div255(cr * a);
+				auto g = Div255(cg * a);
+				auto b = Div255(cb * a);
 
 				// Blend over
 				r += Div255(ia * static_cast<int>(dst[0]));
@@ -833,13 +733,6 @@ namespace Elpida
 				// now process all active edges in non-zero fashion
 				if (active != activeEdges.end())
 				{
-					// std::cout << "DUMP===========================\n";
-					// for (auto itr = active; itr != activeEdges.end(); ++itr)
-					// {
-					// 	std::cout << itr->x << " | " << (int)itr->ey << " | " << itr->dx << " | " << itr->dir <<
-					// 		std::endl;
-					// }
-
 					FillActiveEdges(scanline, width, activeEdges, active, maxWeight, xMin, xMax, fillRule);
 				}
 			}
@@ -1496,6 +1389,217 @@ namespace Elpida
 		}
 	}
 
+	static SvgBounds GetLocalBounds(const SvgPath& shape, const SvgTransform& transform)
+	{
+		SvgBounds returnBounds;
+
+		bool first = true;
+		for (auto& path : shape.GetInstances())
+		{
+			SvgPoint curve[4];
+
+			auto& a = curve[0];
+			auto& pathPoints = path.GetPoints();
+			auto& firstPathPoint = pathPoints.front();
+
+			transform.ApplyToPoint(a.GetRefX(), a.GetRefY(), firstPathPoint.GetX(), firstPathPoint.GetY());
+
+			for (std::size_t i = 0; i < pathPoints.size() - 1; i += 3)
+			{
+				auto& b = curve[1];
+				auto& c = curve[2];
+				auto& d = curve[3];
+
+				auto& pB = pathPoints[i + 1];
+				auto& pC = pathPoints[i + 2];
+				auto& pD = pathPoints[i + 3];
+
+				transform.ApplyToPoint(b.GetRefX(), b.GetRefY(), pB.GetX(), pB.GetY());
+				transform.ApplyToPoint(c.GetRefX(), c.GetRefY(), pC.GetX(), pC.GetY());
+				transform.ApplyToPoint(d.GetRefX(), d.GetRefY(), pD.GetX(), pD.GetY());
+
+				if (first)
+				{
+					returnBounds = SvgBounds(a, b, c, d);
+					first = false;
+				}
+				else
+				{
+					returnBounds.Merge(SvgBounds(a, b, c, d));
+				}
+				curve[0].GetRefX() = curve[3].GetX();
+				curve[0].GetRefY() = curve[3].GetY();
+			}
+		}
+
+		return returnBounds;
+	}
+
+	static Paint CalculateGradient(const SvgDocument& document, const SvgPath& shape, const SvgPaint& paint, double opacity)
+	{
+		Paint returnPaint{};
+
+		const auto gradientId = paint.GetGradientId().substr(1); //ignore the '#'
+		const auto gradientItr = document.GetDefs().find(gradientId);
+		if (gradientItr != document.GetDefs().end())
+		{
+			const auto gradient = dynamic_cast<SvgGradient*>(gradientItr->second.get());
+			if (gradient == nullptr) return GetColorPaint(paint, opacity);
+
+			const auto radialGradient = dynamic_cast<SvgRadialGradient*>(gradient);
+			const auto linear = dynamic_cast<SvgLinearGradient*>(gradient);
+			returnPaint.type = radialGradient != nullptr ? PAINT_RADIAL_GRADIENT : PAINT_LINEAR_GRADIENT;
+			returnPaint.transform = gradient->GetGradientTransform();
+
+			auto gradientStops = gradientItr;
+			if (gradient->GetStops().empty())
+			{
+				auto& ref = gradient->GetHref();
+				if (!ref.empty())
+				{
+					gradientStops = document.GetDefs().find(ref.substr(1));
+				}
+			}
+
+			auto& stops = dynamic_cast<SvgGradient*>(gradientStops->second.get())->GetStops();
+
+			returnPaint.transform.Inverse(shape.GetTransform());
+			const auto bounds = GetLocalBounds(shape, returnPaint.transform);
+
+			double ox, oy, sw, sh;
+			if (gradient->GetUnits() == SvgGradientUnits::Object)
+			{
+				ox = bounds.GetMinX();
+				oy = bounds.GetMinY();
+				sw = bounds.GetMaxX() - bounds.GetMinX();
+				sh = bounds.GetMaxY()- bounds.GetMinY();
+			}
+			else
+			{
+				ox = document.GetElement().GetViewBox().GetMinX();
+				oy = document.GetElement().GetViewBox().GetMinY();
+				sw = document.GetElement().GetViewBox().GetWidth();
+				sh = document.GetElement().GetViewBox().GetHeight();
+			}
+
+			const auto sl = sqrt(sw*sw + sh*sh) / sqrt(2.0);
+
+			if (radialGradient == nullptr)
+			{
+				const double x1 = linear->GetX1().CalculateActualValue(document, ox, sw);
+				const double y1 = linear->GetY1().CalculateActualValue(document, oy, sh);
+				const double x2 = linear->GetX2().CalculateActualValue(document, ox, sw);
+				const double y2 = linear->GetY2().CalculateActualValue(document, oy, sh);
+
+				// Calculate transform aligned to the line
+				const double dx = x2 - x1;
+				const double dy = y2 - y1;
+
+				returnPaint.transform = SvgTransform(dy, -dx, dx,dy,x1,y1);
+			}
+			else
+			{
+				const double cx = radialGradient->GetCx().CalculateActualValue(document, ox, sw);
+				const double cy = radialGradient->GetCy().CalculateActualValue(document, oy, sh);
+				double fx = radialGradient->GetFx().CalculateActualValue(document, ox, sw);
+				double fy = radialGradient->GetFy().CalculateActualValue(document, oy, sh);
+				const double r = radialGradient->GetR().CalculateActualValue(document, 0, sl);
+
+				returnPaint.transform = SvgTransform(r, 0, 0,r,cx,cy);
+			}
+
+			if (stops.empty())
+			{
+				for (unsigned int& color : returnPaint.colors)
+				{
+					color = 0;
+				}
+			}
+			else if (stops.size() == 1)
+			{
+				const auto cachedColor = ApplyOpacity(stops.front().GetColor().GetValue(), opacity);
+				for (unsigned int& color : returnPaint.colors)
+				{
+					color = cachedColor;
+				}
+			}
+			else
+			{
+				unsigned int cb = 0;
+
+				auto& firstStop = stops.front();
+
+				unsigned int ca = ApplyOpacity(firstStop.GetColor().GetValue(), opacity * firstStop.GetOpacity());
+
+				double ua = Clamp(firstStop.GetOffset(), 0, 1);
+				double ub = Clamp(stops.back().GetOffset(), ua, 1);
+
+				auto ia = static_cast<std::size_t>(ua * 255.0);
+				auto ib = static_cast<std::size_t>(ub * 255.0);
+
+				for (std::size_t i = 0; i < ia; i++)
+				{
+					returnPaint.colors[i] = ca;
+				}
+
+				for (std::size_t i = 0; i < stops.size() - 1; i++)
+				{
+					auto& a = stops[i];
+					auto& b = stops[i + 1];
+
+					ca = ApplyOpacity(a.GetColor().GetValue(), opacity * a.GetOpacity());
+					cb = ApplyOpacity(b.GetColor().GetValue(), opacity * b.GetOpacity());
+
+					ua = Clamp(a.GetOffset(), 0, 1);
+					ub = Clamp(b.GetOffset(), 0, 1);
+
+					ia = static_cast<std::size_t>(ua * 255.0);
+					ib = static_cast<std::size_t>(ub * 255.0);
+
+					if (ib - ia <= 0) continue;
+					const std::size_t count = ib - ia;
+
+					const double du = 1.0 / static_cast<double>(count);
+					double u = 0;
+					for (std::size_t j = 0; j < static_cast<std::size_t>(count); j++)
+					{
+						returnPaint.colors[ia + j] = ShiftColorToColor(ca, cb, u);
+						u += du;
+					}
+				}
+
+				for (std::size_t i = ib; i < 256; i++)
+				{
+					returnPaint.colors[i] = cb;
+				}
+			}
+		}
+		else
+		{
+			return GetColorPaint(paint, opacity);
+		}
+
+
+		return returnPaint;
+	}
+
+	static Paint GetPaint( const SvgDocument& document, const SvgPath& shape, const SvgPaint& paint, double opacity)
+	{
+		Paint returnPaint{};
+		if (paint.GetGradientId().empty())
+		{
+			return GetColorPaint(paint, opacity);
+		}
+		else
+		{
+			return CalculateGradient(document, shape, paint, opacity);
+
+		}
+
+		return returnPaint;
+	}
+
+
 
 	void SvgRasterizer::Rasterize(const SvgDocument& document,
 	                              unsigned char* outputBuffer,
@@ -1505,10 +1609,6 @@ namespace Elpida
 	                              double tx, double ty,
 	                              double scale)
 	{
-		auto& viewBox = document.GetElement().GetViewBox();
-		auto& defs = document.GetDefs();
-
-
 		std::memset(outputBuffer, 0, width * 4);
 
 		std::unique_ptr<unsigned char[]> scanLine(new unsigned char[width]);
@@ -1539,7 +1639,7 @@ namespace Elpida
 
 					// now, traverse the scanlines and find the intersections on each scanline, use non-zero rule
 
-					auto paint = GetPaint(defs, shape->GetFill(), shape->GetOpacity());
+					auto paint = GetPaint(document, *shape, shape->GetFill(), shape->GetOpacity());
 
 					RasterizeSortedEdges(scanLine.get(), outputBuffer, width, stride, height, tx, ty, scale, edges,
 					                     paint, shape->GetFill().GetFillRule(), SubSamples);
@@ -1566,10 +1666,10 @@ namespace Elpida
 						return a.y0 < b.y0;
 					});
 
-					auto paint = GetPaint(defs, shape->GetStroke(), shape->GetOpacity());
+					auto paint = GetPaint(document, *shape, shape->GetStroke(), shape->GetOpacity());
 
 					RasterizeSortedEdges(scanLine.get(), outputBuffer, width, stride, height, tx, ty, scale, edges,
-										 paint, SvgFillRule::NonZero, SubSamples);
+					                     paint, SvgFillRule::NonZero, SubSamples);
 				}
 			}
 		}

@@ -4,6 +4,8 @@
 
 #include "Elpida/Svg/SvgGradient.hpp"
 
+#include <Elpida/Svg/SvgDocument.hpp>
+
 #include "Elpida/Xml/ParseException.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
 

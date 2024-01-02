@@ -9,6 +9,7 @@
 #include <Elpida/Svg/SvgLinearGradient.hpp>
 #include <Elpida/Svg/SvgPath.hpp>
 #include <Elpida/Svg/SvgRadialGradient.hpp>
+#include <Elpida/Svg/SvgRect.hpp>
 
 namespace Elpida
 {
@@ -22,6 +23,7 @@ namespace Elpida
 				{"radialGradient", [](const auto& e, auto& d) { return std::make_unique<SvgRadialGradient>(e, d); }},
 				{"svg", [](const auto& e, auto& d) { return std::make_unique<SvgSvgElement>(e, d); }},
 				{"g", [](const auto& e, auto& d) { return std::make_unique<SvgElement>(e, d); }},
+				{"rect", [](const auto& e, auto& d) { return std::make_unique<SvgRect>(e, d); }},
 				{"path", [](const auto& e, auto& d) { return std::make_unique<SvgPath>(e, d); }},
 			};
 
