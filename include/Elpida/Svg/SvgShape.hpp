@@ -16,22 +16,26 @@ namespace Elpida
 	class SvgShape : public SvgElement
 	{
 	public:
-		[[nodiscard]] const SvgFill& GetFill() const
+		[[nodiscard]]
+		const SvgFill& GetFill() const
 		{
 			return _fill;
 		}
 
-		[[nodiscard]] const SvgStroke& GetStroke() const
+		[[nodiscard]]
+		const SvgStroke& GetStroke() const
 		{
 			return _stroke;
 		}
 
-		[[nodiscard]] double GetOpacity() const
+		[[nodiscard]]
+		double GetOpacity() const
 		{
 			return _opacity;
 		}
 
-		[[nodiscard]] bool IsVisible() const
+		[[nodiscard]]
+		bool IsVisible() const
 		{
 			return _visible;
 		}
