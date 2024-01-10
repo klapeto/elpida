@@ -100,7 +100,7 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 #include <fstream>
 #include <png.h>
 
-#define OLD false
+#define OLD true
 #if OLD
 #define NANOSVG_IMPLEMENTATION
 #define NANOSVGRAST_IMPLEMENTATION

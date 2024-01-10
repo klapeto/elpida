@@ -798,7 +798,7 @@ namespace Elpida
 			p1->flags = static_cast<PointFlags>(p1->flags & PointFlags::CORNER ? PointFlags::CORNER : 0);
 
 			// Keep track of left turns.
-			auto cross = p1->dx * p0->dy - p0->dx * p1->dy;
+			const auto cross = p1->dx * p0->dy - p0->dx * p1->dy;
 			if (cross > 0.0)
 			{
 				p1->flags = static_cast<PointFlags>(p1->flags | PointFlags::LEFT);
@@ -1133,7 +1133,7 @@ namespace Elpida
 	static void ExpandStroke(std::vector<Edge>& edges, std::vector<RasterizerPoint>& points, bool closed,
 	                         const SvgLineJoin lineJoin, const SvgLineCap lineCap, double lineWidth)
 	{
-		auto ncap = CurveDivs(lineWidth * 0.5, std::numbers::pi);
+		const auto ncap = CurveDivs(lineWidth * 0.5, std::numbers::pi);
 		RasterizerPoint left{}, right{}, firstLeft{}, firstRight{};
 
 		std::vector<RasterizerPoint>::iterator p0;
@@ -1166,8 +1166,9 @@ namespace Elpida
 		else
 		{
 			// Add cap
-			const double dx = p1->x - p0->x;
-			const double dy = p1->y - p0->y;
+			double dx = p1->x - p0->x;
+			double dy = p1->y - p0->y;
+			Normalize(dx, dy);
 			switch (lineCap)
 			{
 			case SvgLineCap::Butt:
@@ -1228,7 +1229,7 @@ namespace Elpida
 			}
 			else if (lineCap == SvgLineCap::Round)
 			{
-				RoundCap(edges, right, left, *p1, -dx, -dy, lineWidth, ncap, 1);
+				RoundCap(edges, right, left, *p1, -dx, -dy, lineWidth, ncap, true);
 			}
 		}
 	}

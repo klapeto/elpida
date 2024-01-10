@@ -55,6 +55,7 @@ namespace Elpida
 			})).CalculateActualValue(document, 0, document.GetActualLength());
 			sum += dashLength;
 			_dashes.push_back(fabs(dashLength));
+			stream.Next();
 		}
 
 		if (sum <= 1e-6)
