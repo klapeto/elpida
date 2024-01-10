@@ -36,9 +36,33 @@ namespace Elpida
 			return _y;
 		}
 
+		void operator+=(const SvgPoint& other)
+		{
+			_x += other._x;
+			_y += other._y;
+		}
+
+		SvgPoint operator*(const double value) const
+		{
+			return SvgPoint(_x * value, _y * value);
+		}
+
+		SvgPoint operator+(const SvgPoint& other) const
+		{
+			return SvgPoint(_x + other._x, _y + other._y);
+		}
+
 		void ApplyTransform(const SvgTransform& transform)
 		{
 			transform.ApplyToPoint(_x, _y, _x, _y);
+		}
+
+		[[nodiscard]]
+		double GetDistance(const SvgPoint& other) const
+		{
+			const double dx = _x - other._x;
+			const double dy = _y - other._y;
+			return  sqrt(dx * dx + dy * dy);
 		}
 
 		SvgPoint():_x(0.0), _y(0.0){}

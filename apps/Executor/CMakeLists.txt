@@ -8,11 +8,10 @@ set(ELPIDA_EXECUTOR_SOURCES
         ArgumentsHelper.cpp
         ResultFormatter.cpp
         DefaultFormatter.cpp
-        JsonFormatter.cpp
-        nanosvg.hpp)
+        JsonFormatter.cpp)
 
 
 add_executable(elpida-executor ${ELPIDA_EXECUTOR_SOURCES})
-target_link_libraries(elpida-executor elpida-core elpida-platform elpida-svg)
+target_link_libraries(elpida-executor elpida-core elpida-platform elpida-svg png)
 
 install(TARGETS elpida-executor RUNTIME)

@@ -28,6 +28,9 @@
 #include <cstring>
 #include <iostream>
 #include <math.h>
+#include <Elpida/Svg/SvgDocument.hpp>
+#include <Elpida/Svg/SvgRasterizer.hpp>
+#include <Elpida/Xml/XmlParser.hpp>
 
 #include "Elpida/Core/AllocatorFactory.hpp"
 #include "Elpida/Core/DefaultAllocatorFactory.hpp"
@@ -94,8 +97,96 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	}
 }
 
+#include <fstream>
+#include <png.h>
+
+#define OLD false
+#if OLD
+#define NANOSVG_IMPLEMENTATION
+#define NANOSVGRAST_IMPLEMENTATION
+#include "nanosvg.h"
+#include "nanosvgrast.h"
+#endif
+
+
 int main(int argC, char** argV)
 {
+
+	std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
+
+
+	file.seekg(0,std::ifstream::end);
+	auto  size = file.tellg();
+	file.seekg(0, std::ifstream::beg);
+
+	auto inputData = std::unique_ptr<char[]>(new char[size]);
+
+	file.read(inputData.get(), size);
+
+#if OLD
+	auto svg = nsvgParse(inputData.get(), "px", 96.0);
+	auto pixels = static_cast<std::size_t>(svg->height * svg->width * 4);
+	auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[pixels]);
+
+	auto rasterizer = nsvgCreateRasterizer();
+	nsvgRasterize(rasterizer, svg, 0,0 ,1.0,bitmapData.get(), svg->width, svg->height, svg->width*4);
+
+	std::size_t width = svg->width;
+	std::size_t height = svg->height;
+#else
+
+	auto element = XmlParser::Parse(inputData.get(), size);
+
+	SvgDocument svgDocument(element);
+	std::size_t pixels = svgDocument.GetActualHeight() * svgDocument.GetActualWidth() * 4;
+	auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[pixels]);
+
+	std::size_t width = svgDocument.GetActualWidth();
+	std::size_t height = svgDocument.GetActualHeight();
+
+	SvgRasterizer rasterizer;
+	rasterizer.Rasterize(svgDocument, bitmapData.get(), svgDocument.GetActualWidth(), svgDocument.GetActualHeight(), svgDocument.GetActualWidth() * 4);
+#endif
+	{
+		png_image image{};
+		image.version = PNG_IMAGE_VERSION;
+
+		std::size_t outputSize;
+
+		image.width = width;
+		image.height = height;
+		image.format = PNG_FORMAT_RGBA;
+
+		if (png_image_write_to_memory(&image, nullptr, &outputSize, 0, bitmapData.get(), 0, nullptr))
+		{
+			auto outputData = std::unique_ptr<char[]>(new char[outputSize]);
+
+			if (!png_image_write_to_memory(&image,
+						outputData.get(),
+						&outputSize,
+						0,
+						bitmapData.get(),
+						0,
+						nullptr))
+			{
+				throw ElpidaException("Failed to encode image: ", image.message);
+			}
+
+			std::ofstream outputFile("/home/klapeto/σχεδίαση.out.png", std::ofstream::binary | std::ofstream::out | std::ofstream::trunc);
+
+			outputFile.write(outputData.get(), outputSize);
+		}
+		else
+		{
+			throw ElpidaException("Failed to encode image: ", image.message);
+		}
+	}
+
+
+
+	return 0;
+
+
 	try
 	{
 		ArgumentsHelper helper;

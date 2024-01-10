@@ -59,34 +59,36 @@ namespace Elpida
 
 		if (width != 0.0f && height != 0.0f)
 		{
-			std::vector<SvgPoint> points;
+			std::vector<SvgCubicBezierCurve> curves;
 
+			SvgPoint startPoint;
 			if (rx < 0.00001 || ry < 0.0001)
 			{
-				points.reserve(4);
-				MoveTo(x, y, points);
-				LineTo(x + width, y, points);
-				LineTo(x + width, y + height, points);
-				LineTo(x, y + height, points);
+				curves.reserve(3);
+				startPoint =  SvgPoint(x, y);
+				LineTo(startPoint, SvgPoint(x + width, y), curves);
+				LineTo(SvgPoint(x + width, y + height), curves);
+				LineTo(SvgPoint(x, y + height), curves);
 			}
 			else
 			{
-				points.reserve(1 + 8 * 3);
+				curves.reserve(8 * 3);
 				// Rounded rectangle
-				MoveTo(x + rx, y, points);
-				LineTo(x + width - rx, y, points);
-				CubicBezTo(x + width - rx * (1 - Kappa), y, x + width, y + ry * (1 - Kappa), x + width, y + ry, points);
-				LineTo(x + width, y + height - ry, points);
-				CubicBezTo(x + width, y + height - ry * (1 - Kappa), x + width - rx * (1 - Kappa), y + height,
-				           x + width - rx, y + height, points);
-				LineTo(x + rx, y + height, points);
-				CubicBezTo(x + rx * (1 - Kappa), y + height, x, y + height - ry * (1 - Kappa), x, y + height - ry,
-				           points);
-				LineTo(x, y + ry, points);
-				CubicBezTo(x, y + ry * (1 - Kappa), x + rx * (1 - Kappa), y, x + rx, y, points);
+
+				startPoint = SvgPoint(x + rx, y);
+				LineTo(startPoint, SvgPoint(x + width - rx, y), curves);
+				CubicBezTo(SvgPoint(x + width - rx * (1 - Kappa), y),SvgPoint( x + width, y + ry * (1 - Kappa)), SvgPoint(x + width, y + ry), curves);
+				LineTo(SvgPoint(x + width, y + height - ry), curves);
+				CubicBezTo(SvgPoint(x + width, y + height - ry * (1 - Kappa)), SvgPoint(x + width - rx * (1 - Kappa), y + height),
+				          SvgPoint( x + width - rx, y + height), curves);
+				LineTo(SvgPoint(x + rx, y + height), curves);
+				CubicBezTo(SvgPoint(x + rx * (1 - Kappa), y + height), SvgPoint(x, y + height - ry * (1 - Kappa)), SvgPoint(x, y + height - ry),
+				           curves);
+				LineTo(SvgPoint(x, y + ry), curves);
+				CubicBezTo(SvgPoint(x, y + ry * (1 - Kappa)), SvgPoint(x + rx * (1 - Kappa), y), SvgPoint(x + rx, y), curves);
 			}
 
-			CommitPath(points, true);
+			CommitPath(startPoint, curves, true);
 		}
 	}
 } // Elpida

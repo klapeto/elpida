@@ -8,6 +8,7 @@
 #include "SvgPathInstance.hpp"
 #include "SvgPoint.hpp"
 #include "SvgShape.hpp"
+#include "Shapes/SvgCubicBezierCurve.hpp"
 
 namespace Elpida
 {
@@ -22,31 +23,30 @@ namespace Elpida
 
 		explicit SvgPath(const XmlElement& element, SvgDocument& document);
 	protected:
-		void CommitPath(std::vector<SvgPoint>& points, bool closed);
-		static void LineTo(double x, double y, std::vector<SvgPoint>& points);
-		static void MoveTo(double x, double y, std::vector<SvgPoint>& points);
-		static void CubicBezTo(double cpx1, double cpy1, double cpx2, double cpy2, double x, double y,
-		                       std::vector<SvgPoint>& points);
+		void CommitPath(const SvgPoint& moveToPoint, std::vector<SvgCubicBezierCurve>& curves, bool closed);
+		static void LineTo(const SvgPoint& startPoint, const SvgPoint& point, std::vector<SvgCubicBezierCurve>& curves);
+		static void CubicBezTo(const SvgPoint& controlPointA, const SvgPoint& controlPointB, const SvgPoint& end, std::vector<SvgCubicBezierCurve>& curves);
+
+		static void LineTo(const SvgPoint& point, std::vector<SvgCubicBezierCurve>& curves);
 
 		static constexpr double Kappa = 0.5522847493;
 	private:
 		std::vector<SvgPathInstance> _instances;
-		static void MoveTo(double& cpx, double& cpy, double a, double b, bool relative, std::vector<SvgPoint>& points);
-		static void LineTo(double& cpx, double& cpy, double a, double b, bool relative, std::vector<SvgPoint>& points);
-		static void HorizontalLineTo(double& cpx, const double& cpy, double a, bool relative,
-		                             std::vector<SvgPoint>& points);
-		static void VerticalLineTo(const double& cpx, double& cpy, double a, bool relative,
-		                           std::vector<SvgPoint>& points);
-		static void CubicBezTo(double& cpx, double& cpy, double& cpx2, double& cpy2, double a, double b, double c,
-		                       double d, double e, double f, bool relative, std::vector<SvgPoint>& points);
-		static void CubicBezShortTo(double& cpx, double& cpy, double& cpx2, double& cpy2, double a, double b, double c,
-		                            double d, bool relative, std::vector<SvgPoint>& points);
-		static void QuadBezTo(double& cpx, double& cpy, double& cpx2, double& cpy2, double a, double b, double c,
-		                      double d, bool relative, std::vector<SvgPoint>& points);
-		static void QuadBezShortTo(double& cpx, double& cpy, double& cpx2, double& cpy2, double a, double b,
-		                           bool relative, std::vector<SvgPoint>& points);
-		static void ArcTo(double& cpx, double& cpy, double aA, double aB, double aC, double aD, double aE, double aF,
-		                  double aG, bool relative, std::vector<SvgPoint>& points);
+
+		static void MoveTo(SvgPoint& startPoint, double a, double b, bool relative);
+		static void LineTo(SvgPoint& startPoint, double a, double b, bool relative, std::vector<SvgCubicBezierCurve>& curves);
+		static void HorizontalLineTo(SvgPoint& startPoint, double a, bool relative, std::vector<SvgCubicBezierCurve>& curves);
+		static void VerticalLineTo(SvgPoint& startPoint, double a, bool relative, std::vector<SvgCubicBezierCurve>& curves);
+		static void CubicBezTo(SvgPoint& startPoint, SvgPoint& previousControlPointB, double a, double b, double c,
+		                       double d, double e, double f, bool relative, std::vector<SvgCubicBezierCurve>& curves);
+		static void CubicBezShortTo(SvgPoint& startPoint, SvgPoint& previousControlPointB, double a, double b, double c,
+		                            double d, bool relative, std::vector<SvgCubicBezierCurve>& curves);
+		static void QuadBezTo(SvgPoint& startPoint, SvgPoint& previousControlPointB, double a, double b, double c,
+		                      double d, bool relative, std::vector<SvgCubicBezierCurve>& curves);
+		static void QuadBezShortTo(SvgPoint& startPoint, SvgPoint& previousControlPointB, double a, double b,
+		                           bool relative, std::vector<SvgCubicBezierCurve>& curves);
+		static void ArcTo(SvgPoint& startPoint, double aA, double aB, double aC, double aD, double aE, double aF,
+		                  double aG, bool relative, std::vector<SvgCubicBezierCurve>& curves);
 	};
 } // Elpida
 

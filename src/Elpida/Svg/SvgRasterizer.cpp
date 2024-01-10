@@ -139,12 +139,12 @@ namespace Elpida
 			static_cast<unsigned char>(a));
 	}
 
-	static void AddPoint(std::vector<RasterizerPoint>& points, const double x, const double y, PointFlags flags)
+	static void AddPoint(std::vector<RasterizerPoint>& points, const SvgPoint& point, PointFlags flags)
 	{
 		if (!points.empty())
 		{
 			auto& lastPoint = points.back();
-			if (PointEquals(lastPoint.x, lastPoint.y, x, y))
+			if (PointEquals(lastPoint.x, lastPoint.y, point.GetX(), point.GetY()))
 			{
 				lastPoint.flags = static_cast<PointFlags>(static_cast<unsigned int>(lastPoint.flags) | static_cast<
 					unsigned int>(flags));
@@ -153,8 +153,8 @@ namespace Elpida
 		}
 
 		points.push_back({
-			.x = x,
-			.y = y,
+			.x = point.GetX(),
+			.y = point.GetY(),
 			.dx = 0,
 			.dy = 0,
 			.len = 0,
@@ -165,41 +165,35 @@ namespace Elpida
 	}
 
 	static void FlattenCubicBez(std::vector<RasterizerPoint>& points,
-	                            const double x1, const double y1,
-	                            const double x2, const double y2,
-	                            const double x3, const double y3,
-	                            const double x4, const double y4,
-	                            const int level, PointFlags type)
+	                            const SvgPoint& p1,
+	                            const SvgPoint& p2,
+	                            const SvgPoint& p3,
+	                            const SvgPoint& p4,
+	                            const int level,
+	                            const PointFlags type)
 	{
 		if (level > 10) return;
 
-		const double x12 = (x1 + x2) * 0.5;
-		const double y12 = (y1 + y2) * 0.5;
-		const double x23 = (x2 + x3) * 0.5;
-		const double y23 = (y2 + y3) * 0.5;
-		const double x34 = (x3 + x4) * 0.5;
-		const double y34 = (y3 + y4) * 0.5;
-		const double x123 = (x12 + x23) * 0.5;
-		const double y123 = (y12 + y23) * 0.5;
-
-		const double dx = x4 - x1;
-		const double dy = y4 - y1;
-		const double d2 = AbsF(((x2 - x4) * dy) - ((y2 - y4) * dx));
-		const double d3 = AbsF(((x3 - x4) * dy) - ((y3 - y4) * dx));
+		const double dx = p4.GetX() - p1.GetX();
+		const double dy = p4.GetY() - p1.GetY();
+		const double d2 = AbsF(((p2.GetX() - p4.GetX()) * dy) - ((p2.GetY() - p4.GetY()) * dx));
+		const double d3 = AbsF(((p3.GetX() - p4.GetX()) * dy) - ((p3.GetY() - p4.GetY()) * dx));
 
 		if ((d2 + d3) * (d2 + d3) < tessTol * (dx * dx + dy * dy))
 		{
-			AddPoint(points, x4, y4, type);
+			AddPoint(points, p4, type);
 			return;
 		}
 
-		const double x234 = (x23 + x34) * 0.5;
-		const double y234 = (y23 + y34) * 0.5;
-		const double x1234 = (x123 + x234) * 0.5;
-		const double y1234 = (y123 + y234) * 0.5;
+		const auto p1p2 = (p1 + p2) * 0.5;
+		const auto p2p3 = (p2 + p3) * 0.5;
+		const auto p3p4 = (p3 + p4) * 0.5;
+		const auto p1p2p3 = (p1p2 + p2p3) * 0.5;
+		const auto p2p3p4 = (p2p3 + p3p4) * 0.5;
+		const auto p1p2p3p4 = (p1p2p3 + p2p3p4) * 0.5;
 
-		FlattenCubicBez(points, x1, y1, x12, y12, x123, y123, x1234, y1234, level + 1, PointFlags::NONE);
-		FlattenCubicBez(points, x1234, y1234, x234, y234, x34, y34, x4, y4, level + 1, type);
+		FlattenCubicBez(points, p1, p1p2, p1p2p3, p1p2p3p4, level + 1, PointFlags::NONE);
+		FlattenCubicBez(points, p1p2p3p4, p2p3p4, p3p4, p4, level + 1, type);
 	}
 
 	static void AddEdge(std::vector<Edge>& edges, const double x0, const double y0, const double x1, const double y1)
@@ -315,29 +309,25 @@ namespace Elpida
 		{
 			std::vector<RasterizerPoint> points;
 
-			auto& pathPoints = pathInstance.GetPoints();
-			auto& firstPoint = pathPoints.front();
-
+			auto& curves = pathInstance.GetCurves();
+			auto startPoint = pathInstance.GetStartPoint() * scale;
 			// Flatten path
-			AddPoint(points, firstPoint.GetX() * scale, firstPoint.GetY() * scale, PointFlags::NONE);
+			AddPoint(points, startPoint, PointFlags::NONE);
 
-			for (std::size_t i = 0; i < pathPoints.size() - 1; i += 3)
+			for (auto& curve : curves)
 			{
-				auto& a = pathPoints[i];
-				auto& b = pathPoints[i + 1];
-				auto& c = pathPoints[i + 2];
-				auto& d = pathPoints[i + 3];
-
+					auto endPoint = curve.GetEnd() * scale;
 				FlattenCubicBez(points,
-				                a.GetX() * scale, a.GetY() * scale,
-				                b.GetX() * scale, b.GetY() * scale,
-				                c.GetX() * scale, c.GetY() * scale,
-				                d.GetX() * scale, d.GetY() * scale,
+				               startPoint,
+				                curve.GetStartControl() * scale,
+				                curve.GetEndControl() * scale,
+				                endPoint,
 				                0, PointFlags::NONE);
+				startPoint = endPoint;
 			}
 
 			// Close path
-			AddPoint(points, firstPoint.GetX() * scale, firstPoint.GetY() * scale, PointFlags::NONE);
+			AddPoint(points, startPoint, PointFlags::NONE);
 
 			// Build edges
 			for (std::size_t i = 0, j = points.size() - 1; i < points.size(); j = i++)
@@ -1251,27 +1241,25 @@ namespace Elpida
 		const double lineWidth = stroke.GetWidth() * scale;
 		for (auto& path : paths)
 		{
-			auto& pathPoints = path.GetPoints();
-			if (pathPoints.empty()) continue;
+			auto& curves = path.GetCurves();
+			if (curves.empty()) continue;
 
 			std::vector<RasterizerPoint> points;
 
-			auto& firstPoint = pathPoints.front();
-			AddPoint(points, firstPoint.GetX() * scale, firstPoint.GetY() * scale, PointFlags::CORNER);
+			auto startPoint = path.GetStartPoint() * scale;
+			AddPoint(points, startPoint, PointFlags::CORNER);
 
-			for (std::size_t i = 0; i < pathPoints.size() - 1; i += 3)
+			for (const auto& curve : curves)
 			{
-				auto& a = pathPoints[i];
-				auto& b = pathPoints[i + 1];
-				auto& c = pathPoints[i + 2];
-				auto& d = pathPoints[i + 3];
-
+				auto endPoint = curve.GetEnd() * scale;
 				FlattenCubicBez(points,
-				                a.GetX() * scale, a.GetY() * scale,
-				                b.GetX() * scale, b.GetY() * scale,
-				                c.GetX() * scale, c.GetY() * scale,
-				                d.GetX() * scale, d.GetY() * scale,
+				                startPoint,
+				                curve.GetStartControl() * scale,
+				                curve.GetEndControl() * scale,
+				                endPoint,
 				                0, PointFlags::CORNER);
+
+				startPoint = endPoint;
 			}
 
 			if (points.size() < 2)
@@ -1346,7 +1334,7 @@ namespace Elpida
 						const double x = current->x + dx * d;
 						const double y = current->y + dy * d;
 
-						AddPoint(points, x, y, PointFlags::CORNER);
+						AddPoint(points, SvgPoint(x, y), PointFlags::CORNER);
 
 						// Stroke
 						if (points.size() > 1 && dashState)
@@ -1399,20 +1387,20 @@ namespace Elpida
 			SvgPoint curve[4];
 
 			auto& a = curve[0];
-			auto& pathPoints = path.GetPoints();
-			auto& firstPathPoint = pathPoints.front();
+			auto& curves = path.GetCurves();
+			auto startPoint = path.GetStartPoint();
 
-			transform.ApplyToPoint(a.GetRefX(), a.GetRefY(), firstPathPoint.GetX(), firstPathPoint.GetY());
+			transform.ApplyToPoint(a.GetRefX(), a.GetRefY(), startPoint.GetX(), startPoint.GetY());
 
-			for (std::size_t i = 0; i < pathPoints.size() - 1; i += 3)
+			for (const auto& currentCurve : curves)
 			{
 				auto& b = curve[1];
 				auto& c = curve[2];
 				auto& d = curve[3];
 
-				auto& pB = pathPoints[i + 1];
-				auto& pC = pathPoints[i + 2];
-				auto& pD = pathPoints[i + 3];
+				auto& pB = currentCurve.GetStartControl();
+				auto& pC = currentCurve.GetEndControl();
+				auto& pD = currentCurve.GetEnd();
 
 				transform.ApplyToPoint(b.GetRefX(), b.GetRefY(), pB.GetX(), pB.GetY());
 				transform.ApplyToPoint(c.GetRefX(), c.GetRefY(), pC.GetX(), pC.GetY());

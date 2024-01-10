@@ -12,7 +12,7 @@ namespace Elpida
 	class XmlParser
 	{
 	public:
-		XmlElement Parse(const char* data, std::size_t size);
+		static XmlElement Parse(const char* data, std::size_t size);
 		XmlParser() = default;
 	};
 

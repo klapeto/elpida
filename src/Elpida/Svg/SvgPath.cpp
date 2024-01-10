@@ -5,13 +5,12 @@
 #include "Elpida/Svg/SvgPath.hpp"
 
 #include <Elpida/Svg/SvgNumber.hpp>
+#include <Elpida/Svg/Shapes/SvgCubicBezierCurve.hpp>
 #include <Elpida/Xml/CharacterStream.hpp>
 #include <Elpida/Xml/ParseException.hpp>
 
 namespace Elpida
 {
-	constexpr double Pi = 3.14159265358979323846264338327;
-
 	static double Square(const double x)
 	{
 		return x * x;
@@ -45,279 +44,206 @@ namespace Elpida
 		return (x1 * y2 < y1 * x2 ? -1.0 : 1.0) * acos(res);
 	}
 
-	void SvgPath::MoveTo(const double x, const double y, std::vector<SvgPoint>& points)
-	{
-		if (!points.empty())
-		{
-			points.back() = SvgPoint(x, y);
-		}
-		else
-		{
-			points.emplace_back(x, y);
-		}
-	}
-
-	void SvgPath::MoveTo(double& cpx, double& cpy,
-	                   const double a, const double b,
-	                   const bool relative,
-	                   std::vector<SvgPoint>& points)
+	void SvgPath::MoveTo(
+		SvgPoint& startPoint,
+		const double a, const double b,
+		const bool relative)
 	{
 		if (relative)
 		{
-			cpx += a;
-			cpy += b;
+			startPoint += SvgPoint(a, b);
 		}
 		else
 		{
-			cpx = a;
-			cpy = b;
+			startPoint = SvgPoint(a, b);
 		}
-		MoveTo(cpx, cpy, points);
 	}
 
 
-	void SvgPath::LineTo(const double x, const double y, std::vector<SvgPoint>& points)
+	void SvgPath::LineTo(const SvgPoint& startPoint, const SvgPoint& point, std::vector<SvgCubicBezierCurve>& curves)
 	{
-		if (!points.empty())
-		{
-			const auto& last = points.back();
-			const double px = last.GetX();
-			const double py = last.GetY();
-			const double dx = x - px;
-			const double dy = y - py;
-			points.emplace_back(px + dx / 3.0f, py + dy / 3.0f);
-			points.emplace_back(x - dx / 3.0f, y - dy / 3.0f);
-			points.emplace_back(x, y);
-		}
+		const double px = startPoint.GetX();
+		const double py = startPoint.GetY();
+		const double x = point.GetX();
+		const double y = point.GetY();
+		const double dx = x - px;
+		const double dy = y - py;
+		curves.emplace_back(SvgPoint(px + dx / 3.0, py + dy / 3.0),
+		                    SvgPoint(x - dx / 3.0, y - dy / 3.0),
+		                    point);
 	}
 
 	void SvgPath::LineTo(
-		double& cpx,
-		double& cpy,
+		SvgPoint& startPoint,
 		const double a, const double b,
 		const bool relative,
-		std::vector<SvgPoint>& points)
+		std::vector<SvgCubicBezierCurve>& curves)
 	{
-		if (relative)
-		{
-			cpx += a;
-			cpy += b;
-		}
-		else
-		{
-			cpx = a;
-			cpy = b;
-		}
-		LineTo(cpx, cpy, points);
-	}
-
-	void SvgPath::CubicBezTo(double cpx1, double cpy1, double cpx2, double cpy2, double x, double y,
-	                       std::vector<SvgPoint>& points)
-	{
-		if (!points.empty())
-		{
-			points.emplace_back(cpx1, cpy1);
-			points.emplace_back(cpx2, cpy2);
-			points.emplace_back(x, y);
-		}
-	}
-
-	void SvgPath::CubicBezTo(double& cpx, double& cpy,
-	                       double& cpx2, double& cpy2,
-	                       const double a, const double b, const double c, const double d, const double e,
-	                       const double f,
-	                       const bool relative,
-	                       std::vector<SvgPoint>& points)
-	{
-		double x2, y2, cx1, cy1, cx2, cy2;
+		const auto initialStartPoint = startPoint;
 
 		if (relative)
 		{
-			cx1 = cpx + a;
-			cy1 = cpy + b;
-			cx2 = cpx + c;
-			cy2 = cpy + d;
-			x2 = cpx + e;
-			y2 = cpy + f;
+			startPoint += SvgPoint(a, b);
 		}
 		else
 		{
-			cx1 = a;
-			cy1 = b;
-			cx2 = c;
-			cy2 = d;
-			x2 = e;
-			y2 = f;
+			startPoint = SvgPoint(a, b);
 		}
 
-		CubicBezTo(cx1, cy1, cx2, cy2, x2, y2, points);
-
-		cpx2 = cx2;
-		cpy2 = cy2;
-		cpx = x2;
-		cpy = y2;
+		LineTo(initialStartPoint, startPoint, curves);
 	}
 
-	void SvgPath::CubicBezShortTo(double& cpx, double& cpy,
-	                            double& cpx2, double& cpy2,
+	void SvgPath::CubicBezTo(const SvgPoint& controlPointA, const SvgPoint& controlPointB, const SvgPoint& end,
+	                         std::vector<SvgCubicBezierCurve>& curves)
+	{
+		curves.emplace_back(controlPointA, controlPointB, end);
+	}
+
+	void SvgPath::LineTo(const SvgPoint& point, std::vector<SvgCubicBezierCurve>& curves)
+	{
+		if (!curves.empty())
+		{
+			LineTo(curves.back().GetEnd(), point, curves);
+		}
+	}
+
+	void SvgPath::CubicBezTo(SvgPoint& startPoint,
+	                         SvgPoint& previousControlPointB,
+	                         const double a, const double b, const double c, const double d, const double e,
+	                         const double f,
+	                         const bool relative,
+	                         std::vector<SvgCubicBezierCurve>& curves)
+	{
+		SvgPoint controlPointA(a, b);
+		SvgPoint controlPointB(c, d);
+		SvgPoint endPoint(e, f);
+
+		if (relative)
+		{
+			controlPointA += startPoint;
+			controlPointB += startPoint;
+			endPoint += startPoint;
+		}
+
+		CubicBezTo(controlPointA, controlPointB, endPoint, curves);
+
+		previousControlPointB = controlPointB;
+		startPoint = endPoint;
+	}
+
+	void SvgPath::CubicBezShortTo(SvgPoint& startPoint, SvgPoint& previousControlPointB,
 	                            const double a, const double b, const double c, const double d,
 	                            const bool relative,
-	                            std::vector<SvgPoint>& points)
+	                            std::vector<SvgCubicBezierCurve>& curves)
 	{
-		double x2, y2, cx2, cy2;
-
-		const double x1 = cpx;
-		const double y1 = cpy;
+		SvgPoint controlPointB(a,b);
+		SvgPoint endPoint(c, d);
 
 		if (relative)
 		{
-			cx2 = cpx + a;
-			cy2 = cpy + b;
-			x2 = cpx + c;
-			y2 = cpy + d;
-		}
-		else
-		{
-			cx2 = a;
-			cy2 = b;
-			x2 = c;
-			y2 = d;
+			controlPointB += startPoint;
+			endPoint += startPoint;
 		}
 
-		const double cx1 = 2 * x1 - cpx2;
-		const double cy1 = 2 * y1 - cpy2;
+		const SvgPoint controlPointA(2 * startPoint.GetX() - controlPointB.GetX(), 2 * startPoint.GetY() - controlPointB.GetY());
 
-		CubicBezTo(cx1, cy1, cx2, cy2, x2, y2, points);
+		CubicBezTo(controlPointA, controlPointB, endPoint, curves);
 
-		cpx2 = cx2;
-		cpy2 = cy2;
-		cpx = x2;
-		cpy = y2;
+		previousControlPointB = controlPointB;
+		startPoint = endPoint;
 	}
 
-	void SvgPath::QuadBezTo(double& cpx, double& cpy,
-	                      double& cpx2, double& cpy2,
+	void SvgPath::QuadBezTo(SvgPoint& startPoint, SvgPoint& previousControlPointB,
 	                      const double a, const double b, const double c, const double d,
 	                      const bool relative,
-	                      std::vector<SvgPoint>& points)
+	                      std::vector<SvgCubicBezierCurve>& curves)
 	{
-		double x2, y2, cx, cy;
-
-		const double x1 = cpx;
-		const double y1 = cpy;
+		SvgPoint controlPoint(a, b);
+		SvgPoint endPoint(c, d);
 
 		if (relative)
 		{
-			cx = cpx + a;
-			cy = cpy + b;
-			x2 = cpx + c;
-			y2 = cpy + d;
-		}
-		else
-		{
-			cx = a;
-			cy = b;
-			x2 = c;
-			y2 = d;
+			controlPoint += startPoint;
+			endPoint += startPoint;
 		}
 
 		// Convert to cubic bezier
-		const double cx1 = x1 + 2.0f / 3.0f * (cx - x1);
-		const double cy1 = y1 + 2.0f / 3.0f * (cy - y1);
-		const double cx2 = x2 + 2.0f / 3.0f * (cx - x2);
-		const double cy2 = y2 + 2.0f / 3.0f * (cy - y2);
+		const SvgPoint controlPointA(
+			startPoint.GetX() + 2.0 / 3.0 * (controlPoint.GetX() - startPoint.GetX()),
+			startPoint.GetY() + 2.0 / 3.0 * (controlPoint.GetY() - startPoint.GetY()));
 
-		CubicBezTo(cx1, cy1, cx2, cy2, x2, y2, points);
 
-		cpx2 = cx;
-		cpy2 = cy;
-		cpx = x2;
-		cpy = y2;
+		const SvgPoint controlPointB(
+			endPoint.GetX() + 2.0 / 3.0 * (controlPoint.GetX() - endPoint.GetX()),
+			endPoint.GetY() + 2.0 / 3.0 * (controlPoint.GetY() - endPoint.GetY()));
+
+		CubicBezTo(controlPointA, controlPointB, endPoint, curves);
+
+		previousControlPointB = controlPointB;
+		startPoint = endPoint;
 	}
 
 
-	void SvgPath::QuadBezShortTo(double& cpx, double& cpy,
-	                           double& cpx2, double& cpy2,
+	void SvgPath::QuadBezShortTo(SvgPoint& startPoint, SvgPoint& previousControlPointB,
 	                           const double a, const double b,
 	                           const bool relative,
-	                           std::vector<SvgPoint>& points)
+	                           std::vector<SvgCubicBezierCurve>& curves)
 	{
-		double x2, y2;
-
-		const double x1 = cpx;
-		const double y1 = cpy;
+		SvgPoint endPoint(a,b);
 
 		if (relative)
 		{
-			x2 = cpx + a;
-			y2 = cpy + b;
-		}
-		else
-		{
-			x2 = a;
-			y2 = b;
+			endPoint += startPoint;
 		}
 
-		const double cx = 2 * x1 - cpx2;
-		const double cy = 2 * y1 - cpy2;
+		const double cx = 2 * startPoint.GetX() - previousControlPointB.GetX();
+		const double cy = 2 * startPoint.GetY() - previousControlPointB.GetY();
 
-		// Convert to cubix bezier
-		const double cx1 = x1 + 2.0f / 3.0f * (cx - x1);
-		const double cy1 = y1 + 2.0f / 3.0f * (cy - y1);
-		const double cx2 = x2 + 2.0f / 3.0f * (cx - x2);
-		const double cy2 = y2 + 2.0f / 3.0f * (cy - y2);
+		const SvgPoint controlPointA(
+			startPoint.GetX() + 2.0 / 3.0 * (cx - startPoint.GetX()),
+			startPoint.GetY() + 2.0 / 3.0 * (cy - startPoint.GetY())
+		);
 
-		CubicBezTo(cx1, cy1, cx2, cy2, x2, y2, points);
+		const SvgPoint controlPointB(
+			endPoint.GetX() + 2.0 / 3.0 * (cx - endPoint.GetX()),
+			endPoint.GetY() + 2.0 / 3.0 * (cy - endPoint.GetY())
+		);
 
-		cpx2 = cx;
-		cpy2 = cy;
-		cpx = x2;
-		cpy = y2;
+
+		CubicBezTo(controlPointA, controlPointB, endPoint, curves);
+
+		previousControlPointB = controlPointB;
+		startPoint = endPoint;
 	}
 
-	void SvgPath::ArcTo(double& cpx, double& cpy,
+	void SvgPath::ArcTo(SvgPoint& startPoint,
 	                  const double aA, const double aB, const double aC, const double aD, const double aE, const double aF,
 	                  const double aG,
 	                  const bool relative,
-	                  std::vector<SvgPoint>& points)
+	                  std::vector<SvgCubicBezierCurve>& curves)
 	{
-		double x2;
-		double y2;
-		double x;
-		double y;
-		double px = 0;
-		double py = 0;
-		double ptanx = 0;
-		double ptany = 0;
 
 		auto rx = fabs(aA); // y radius
 		auto ry = fabs(aB); // x radius
-		const auto rotx = aC / 180.0 * Pi; // x rotation angle
+		const auto rotx = aC / 180.0 * std::numbers::pi; // x rotation angle
 		const auto fa = fabs(aD) > 1e-6; // Large arc
 		const auto fs = fabs(aE) > 1e-6; // Sweep direction
-		const auto x1 = cpx; // start point
-		const auto y1 = cpy;
+
+		SvgPoint endpoint(aF, aG);
+
 		if (relative)
 		{
-			// end point
-			x2 = cpx + aF;
-			y2 = cpy + aG;
-		}
-		else
-		{
-			x2 = aF;
-			y2 = aG;
+			endpoint += startPoint;
 		}
 
-		double dx = x1 - x2;
-		double dy = y1 - y2;
-		double d = sqrt(dx * dx + dy * dy);
-		if (d < 1e-6 || rx < 1e-6 || ry < 1e-6)
+		double dx = startPoint.GetX() - endpoint.GetX();
+		double dy = startPoint.GetY() - endpoint.GetY();
+		double distance = sqrt(dx * dx + dy * dy);
+		if (distance < 1e-6 || rx < 1e-6 || ry < 1e-6)
 		{
 			// The arc degenerates to a line
-			LineTo(x2, y2, points);
-			cpx = x2;
-			cpy = y2;
+			LineTo(startPoint, endpoint, curves);
+			startPoint = endpoint;
 			return;
 		}
 
@@ -329,12 +255,12 @@ namespace Elpida
 		// 1) Compute x1', y1'
 		const double x1p = cosrx * dx / 2.0 + sinrx * dy / 2.0;
 		const double y1p = -sinrx * dx / 2.0 + cosrx * dy / 2.0;
-		d = Square(x1p) / Square(rx) + Square(y1p) / Square(ry);
-		if (d > 1)
+		distance = Square(x1p) / Square(rx) + Square(y1p) / Square(ry);
+		if (distance > 1)
 		{
-			d = sqrt(d);
-			rx *= d;
-			ry *= d;
+			distance = sqrt(distance);
+			rx *= distance;
+			ry *= distance;
 		}
 
 		// 2) Compute cx', cy'
@@ -360,8 +286,8 @@ namespace Elpida
 		const double cyp = s * -ry * x1p / rx;
 
 		// 3) Compute cx,cy from cx',cy'
-		const double cx = (x1 + x2) / 2.0 + cosrx * cxp - sinrx * cyp;
-		const double cy = (y1 + y2) / 2.0 + sinrx * cxp + cosrx * cyp;
+		const double cx = (startPoint.GetX() + endpoint.GetX()) / 2.0 + cosrx * cxp - sinrx * cyp;
+		const double cy = (startPoint.GetY() + endpoint.GetY()) / 2.0 + sinrx * cxp + cosrx * cyp;
 
 		// 4) Calculate theta1, and delta theta.
 		const double ux = (x1p - cxp) / rx;
@@ -376,11 +302,11 @@ namespace Elpida
 
 		if (fs == 0 && da > 0)
 		{
-			da -= 2 * Pi;
+			da -= 2 * std::numbers::pi;
 		}
 		else if (fs == 1 && da < 0)
 		{
-			da += 2 * Pi;
+			da += 2 * std::numbers::pi;
 		}
 
 		const SvgTransform transform(cosrx, sinrx, -sinrx, cosrx, cx, cy);
@@ -388,7 +314,7 @@ namespace Elpida
 
 		// Split arc into max 90 degree segments.
 		// The loop assumes an iteration per end point (including start and end), this +1.
-		const auto ndivs = static_cast<std::size_t>(fabs(da) / (Pi * 0.5) + 1.0);
+		const auto ndivs = static_cast<std::size_t>(fabs(da) / (std::numbers::pi * 0.5) + 1.0);
 		auto hda = (da / static_cast<double>(ndivs)) / 2.0;
 
 		// Fix for ticket #179: division by 0: avoid cotangens around 0 (infinite)
@@ -410,6 +336,12 @@ namespace Elpida
 
 		double tanx;
 		double tany;
+		double x;
+		double y;
+		double px = 0;
+		double py = 0;
+		double ptanx = 0;
+		double ptany = 0;
 		for (std::size_t i = 0; i <= ndivs; i++)
 		{
 			const double a = a1 + da * (static_cast<double>(i) / static_cast<double>(ndivs));
@@ -422,7 +354,7 @@ namespace Elpida
 
 			if (i > 0)
 			{
-				CubicBezTo(px + ptanx, py + ptany, x - tanx, y - tany, x, y, points);
+				CubicBezTo(SvgPoint(px + ptanx, py + ptany), SvgPoint(x - tanx, y - tany), SvgPoint(x, y), curves);
 			}
 
 			px = x;
@@ -431,40 +363,41 @@ namespace Elpida
 			ptany = tany;
 		}
 
-		cpx = x2;
-		cpy = y2;
+		startPoint = endpoint;
 	}
 
-	void SvgPath::HorizontalLineTo(double& cpx, const double& cpy,
+	void SvgPath::HorizontalLineTo(SvgPoint& startPoint,
 	                             const double a,
 	                             const bool relative,
-	                             std::vector<SvgPoint>& points)
+	                             std::vector<SvgCubicBezierCurve>& curves)
 	{
+		const auto initialStartPoint = startPoint;
 		if (relative)
 		{
-			cpx += a;
+			startPoint.GetRefX() += a;
 		}
 		else
 		{
-			cpx = a;
+			startPoint.GetRefX() = a;
 		}
-		LineTo(cpx, cpy, points);
+		LineTo(initialStartPoint, startPoint, curves);
 	}
 
-	void SvgPath::VerticalLineTo(const double& cpx, double& cpy,
+	void SvgPath::VerticalLineTo(SvgPoint& startPoint,
 	                           const double a,
 	                           const bool relative,
-	                           std::vector<SvgPoint>& points)
+	                           std::vector<SvgCubicBezierCurve>& curves)
 	{
+		const auto initialStartPoint = startPoint;
 		if (relative)
 		{
-			cpy += a;
+			startPoint.GetRefY() += a;
 		}
 		else
 		{
-			cpy = a;
+			startPoint.GetRefY() = a;
 		}
-		LineTo(cpx, cpy, points);
+		LineTo(initialStartPoint, startPoint, curves);
 	}
 
 
@@ -508,27 +441,26 @@ namespace Elpida
 			std::vector<double> currentArguments;
 			currentArguments.reserve(8);
 
-			std::vector<SvgPoint> currentPoints;
-			currentPoints.reserve(8);
+			std::vector<SvgCubicBezierCurve> currentCurves;
+			currentCurves.reserve(8);
 
-			double cpx = 0;
-			double cpy = 0;
-			double cpx2 = 0;
-			double cpy2 = 0;
+			SvgPoint moveToPoint;
+			SvgPoint startPoint;
+			SvgPoint previousControlPointB;
 
 			bool closed = false;
 			while (!stream.Eof())
 			{
 				stream.SkipSpace();
 				bool relative = false;
-				switch (auto c = stream.Current())
+				switch (const auto c = stream.Current())
 				{
 				case 'm':
 					relative = true;
 					[[fallthrough]];
 				case 'M':
 					{
-						CommitPath(currentPoints, closed);
+						CommitPath(moveToPoint, currentCurves, closed);
 						closed = false;
 						ParseAllNumbers(stream, currentArguments);
 						if (currentArguments.empty() || currentArguments.size() % 2 != 0)
@@ -536,14 +468,14 @@ namespace Elpida
 							throw ParseException("moveTo command requires x,y");
 						}
 
-						MoveTo(cpx, cpy, currentArguments[0], currentArguments[1], relative, currentPoints);
+						MoveTo(moveToPoint, currentArguments[0], currentArguments[1], relative);
 
+						startPoint = moveToPoint;
 						for (std::size_t i = 2; i < currentArguments.size(); i += 2)
 						{
-							LineTo(cpx, cpy, currentArguments[i], currentArguments[i + 1], relative, currentPoints);
+							LineTo(startPoint, currentArguments[i], currentArguments[i + 1], relative, currentCurves);
 						}
-						cpx2 = cpx;
-						cpy2 = cpy;
+						previousControlPointB = startPoint;
 					}
 
 					break;
@@ -560,10 +492,9 @@ namespace Elpida
 
 						for (std::size_t i = 0; i < currentArguments.size(); i += 2)
 						{
-							LineTo(cpx, cpy, currentArguments[i], currentArguments[i + 1], relative, currentPoints);
+							LineTo(startPoint, currentArguments[i], currentArguments[i + 1], relative, currentCurves);
 						}
-						cpx2 = cpx;
-						cpy2 = cpy;
+						previousControlPointB = startPoint;
 					}
 					break;
 				case 'h':
@@ -580,10 +511,9 @@ namespace Elpida
 
 						for (std::size_t i = 0; i < currentArguments.size(); i++)
 						{
-							HorizontalLineTo(cpx, cpy, currentArguments[i], relative, currentPoints);
+							HorizontalLineTo(startPoint, currentArguments[i], relative, currentCurves);
 						}
-						cpx2 = cpx;
-						cpy2 = cpy;
+						previousControlPointB = startPoint;
 					}
 					break;
 				case 'v':
@@ -600,10 +530,9 @@ namespace Elpida
 
 						for (std::size_t i = 0; i < currentArguments.size(); i++)
 						{
-							VerticalLineTo(cpx, cpy, currentArguments[i], relative, currentPoints);
+							VerticalLineTo(startPoint, currentArguments[i], relative, currentCurves);
 						}
-						cpx2 = cpx;
-						cpy2 = cpy;
+						previousControlPointB = startPoint;
 					}
 					break;
 				case 'c':
@@ -620,7 +549,7 @@ namespace Elpida
 
 						for (std::size_t i = 0; i < currentArguments.size(); i += 6)
 						{
-							CubicBezTo(cpx, cpy, cpx2, cpy2,
+							CubicBezTo(startPoint, previousControlPointB,
 							           currentArguments[i],
 							           currentArguments[i + 1],
 							           currentArguments[i + 2],
@@ -628,7 +557,7 @@ namespace Elpida
 							           currentArguments[i + 4],
 							           currentArguments[i + 5],
 							           relative,
-							           currentPoints);
+							           currentCurves);
 						}
 					}
 					break;
@@ -646,13 +575,13 @@ namespace Elpida
 
 						for (std::size_t i = 0; i < currentArguments.size(); i += 4)
 						{
-							CubicBezShortTo(cpx, cpy, cpx2, cpy2,
+							CubicBezShortTo(startPoint, previousControlPointB,
 							                currentArguments[i],
 							                currentArguments[i + 1],
 							                currentArguments[i + 2],
 							                currentArguments[i + 3],
 							                relative,
-							                currentPoints);
+							                currentCurves);
 						}
 					}
 					break;
@@ -670,13 +599,13 @@ namespace Elpida
 
 						for (std::size_t i = 0; i < currentArguments.size(); i += 4)
 						{
-							QuadBezTo(cpx, cpy, cpx2, cpy2,
+							QuadBezTo(startPoint, previousControlPointB,
 							          currentArguments[i],
 							          currentArguments[i + 1],
 							          currentArguments[i + 2],
 							          currentArguments[i + 3],
 							          relative,
-							          currentPoints);
+							          currentCurves);
 						}
 					}
 					break;
@@ -693,11 +622,11 @@ namespace Elpida
 
 						for (std::size_t i = 0; i < currentArguments.size(); i += 2)
 						{
-							QuadBezShortTo(cpx, cpy, cpx2, cpy2,
+							QuadBezShortTo(startPoint, previousControlPointB,
 							               currentArguments[i],
 							               currentArguments[i + 1],
 							               relative,
-							               currentPoints);
+							               currentCurves);
 						}
 					}
 					break;
@@ -716,7 +645,7 @@ namespace Elpida
 
 						for (std::size_t i = 0; i < currentArguments.size(); i += 7)
 						{
-							ArcTo(cpx, cpy,
+							ArcTo(startPoint,
 							      currentArguments[i],
 							      currentArguments[i + 1],
 							      currentArguments[i + 2],
@@ -725,34 +654,30 @@ namespace Elpida
 							      currentArguments[i + 5],
 							      currentArguments[i + 6],
 							      relative,
-							      currentPoints);
+							      currentCurves);
 						}
-						cpx2 = cpx;
-						cpy2 = cpy;
+						previousControlPointB = startPoint;
 					}
 					break;
 				case 'Z':
 					[[fallthrough]];
 				case 'z':
 					closed = true;
-					if (!currentPoints.empty())
+					if (!currentCurves.empty())
 					{
-						auto& firstPoint = currentPoints.front();
-						cpx = firstPoint.GetX();
-						cpy = firstPoint.GetY();
-						cpx2 = cpx;
-						cpy2 = cpy;
-						CommitPath(currentPoints, closed);
+						startPoint = moveToPoint;
+						previousControlPointB = startPoint;
+						CommitPath(moveToPoint, currentCurves, closed);
 					}
 					closed = false;
-					MoveTo(cpx, cpy, currentPoints);
+					moveToPoint = startPoint;
 					stream.Next();
 					break;
 				default:
 					throw ParseException(c, "m,M,");
 				}
 			}
-			CommitPath(currentPoints, closed);
+			CommitPath(moveToPoint, currentCurves, closed);
 		}
 		catch (const ParseException&)
 		{
@@ -760,37 +685,40 @@ namespace Elpida
 		}
 	}
 
-	void SvgPath::CommitPath(std::vector<SvgPoint>& points, bool closed)
+	void SvgPath::CommitPath(const SvgPoint& moveToPoint, std::vector<SvgCubicBezierCurve>& curves, bool closed)
 	{
-		if (points.size() < 4)
+		if (curves.empty())
 		{
 			return;
 		}
 
 		if (closed)
 		{
-			const auto& firstPoint = points.front();
-			LineTo(firstPoint.GetX(), firstPoint.GetY(), points);
+			const auto& lastCurve = curves.back();
+			LineTo(lastCurve.GetEnd(), moveToPoint, curves);
 		}
 
-		// Expect 1 + N*3 points (N = number of cubic bezier segments).
-		if (points.size() % 3 != 1)
+		auto& transform = GetTransform();
+
+		auto start = moveToPoint;
+		start.ApplyTransform(transform);
+
+		for (auto& curve : curves)
 		{
-			return;
+			curve.ApplyTransform(transform);
 		}
 
-		for (auto& point : points)
+		const auto* currentCurve = &curves.front();
+
+		SvgBounds bounds(start, currentCurve->GetStartControl(), currentCurve->GetEndControl(), currentCurve->GetEnd());
+		for (std::size_t i = 1; i < curves.size() - 1; ++i)
 		{
-			point.ApplyTransform(GetTransform());
+			auto& curve = curves[i];
+			bounds.Merge(SvgBounds(currentCurve->GetEnd(), curve.GetStartControl(), curve.GetEndControl(), curve.GetEnd()));
+			currentCurve = &curve;
 		}
 
-		SvgBounds bounds(points[0], points[1], points[2], points[3]);
-		for (std::size_t i = 3; i < points.size() - 1; i += 3)
-		{
-			bounds.Merge(SvgBounds(points[i], points[i + 1], points[i + 2], points[i + 3]));
-		}
-
-		_instances.emplace_back(std::move(points), bounds, closed);
+		_instances.emplace_back(start, std::move(curves), bounds, closed);
 	}
 
 } // Elpida

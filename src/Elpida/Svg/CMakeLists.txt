@@ -27,9 +27,10 @@ add_library(elpida-svg
         SvgRect.cpp
         SvgFontSize.cpp
         SvgRasterizer.cpp
+        SvgPathInstance.cpp
         SvgPoint.cpp
         SvgPaint.cpp
-        ../../../include/Elpida/Svg/SvgPaint.hpp
+        Shapes/SvgCubicBezierCurve.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

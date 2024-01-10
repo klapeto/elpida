@@ -9,6 +9,7 @@
 
 #include "SvgBounds.hpp"
 #include "SvgPoint.hpp"
+#include "Shapes/SvgCubicBezierCurve.hpp"
 
 namespace Elpida {
 
@@ -16,9 +17,9 @@ namespace Elpida {
 	{
 	public:
 		[[nodiscard]]
-		const std::vector<SvgPoint>& GetPoints() const
+		const std::vector<SvgCubicBezierCurve>& GetCurves() const
 		{
-			return _points;
+			return _curves;
 		}
 
 		[[nodiscard]]
@@ -33,15 +34,24 @@ namespace Elpida {
 			return _closed;
 		}
 
-		SvgPathInstance(std::vector<SvgPoint>&& points, const SvgBounds& bounds, const bool closed)
-			: _points(std::move(points)),
+		[[nodiscard]]
+		const SvgPoint& GetStartPoint() const
+		{
+			return _startPoint;
+		}
+
+		SvgPathInstance(const SvgPoint& startPoint, std::vector<SvgCubicBezierCurve>&& curves, const SvgBounds& bounds,
+		                const bool closed)
+			: _startPoint(startPoint),
+			  _curves(std::move(curves)),
 			  _bounds(bounds),
 			  _closed(closed)
 		{
 		}
 
 	private:
-		std::vector<SvgPoint> _points;
+		SvgPoint _startPoint;
+		std::vector<SvgCubicBezierCurve> _curves;
 		SvgBounds _bounds;
 		bool _closed;
 	};
