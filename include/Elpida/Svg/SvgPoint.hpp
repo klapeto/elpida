@@ -57,6 +57,14 @@ namespace Elpida
 			transform.ApplyToPoint(_x, _y, _x, _y);
 		}
 
+		bool operator==(const SvgPoint& other) const
+		{
+			constexpr double tolerance = 0.01;
+			const double dx = _x - other._x;
+			const double dy = _y - other._y;
+			return dx * dx + dy * dy < tolerance * tolerance;
+		}
+
 		[[nodiscard]]
 		double GetDistance(const SvgPoint& other) const
 		{

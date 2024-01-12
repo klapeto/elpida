@@ -19,6 +19,174 @@
 
 namespace Elpida
 {
+	enum PointFlags
+	{
+		NONE = 0,
+		CORNER = 0x01,
+		BEVEL = 0x02,
+		LEFT = 0x04
+	};
+
+	class SvgRasterizerPoint : public SvgPoint
+	{
+	public:
+
+		[[nodiscard]]
+		double GetDx() const
+		{
+			return _dx;
+		}
+
+		[[nodiscard]]
+		double GetDy() const
+		{
+			return _dy;
+		}
+
+		[[nodiscard]]
+		double GetDmx() const
+		{
+			return _dmx;
+		}
+
+		[[nodiscard]]
+		double GetDmy() const
+		{
+			return _dmy;
+		}
+
+		[[nodiscard]]
+		double& GetDx()
+		{
+			return _dx;
+		}
+
+		[[nodiscard]]
+		double& GetDy()
+		{
+			return _dy;
+		}
+
+		[[nodiscard]]
+		double& GetDmx()
+		{
+			return _dmx;
+		}
+
+		[[nodiscard]]
+		double& GetDmy()
+		{
+			return _dmy;
+		}
+
+		[[nodiscard]]
+		PointFlags GetFlags() const
+		{
+			return _flags;
+		}
+
+		void AppendFlag(const PointFlags flag)
+		{
+			_flags = static_cast<PointFlags>(_flags | flag);
+		}
+
+		bool HasFlag(const PointFlags flag) const
+		{
+			return _flags & flag;
+		}
+
+		void SetFlag(const PointFlags flag)
+		{
+			_flags = flag;
+		}
+		SvgRasterizerPoint()
+			: SvgPoint(), _dx(0.0), _dy(0.0), _dmx(0.0), _dmy(0.0), _flags(NONE)
+		{
+		}
+
+
+		SvgRasterizerPoint(const double x, const double y)
+			: SvgPoint(x, y), _dx(0.0), _dy(0.0), _dmx(0.0), _dmy(0.0), _flags(NONE)
+		{
+		}
+
+		explicit SvgRasterizerPoint(const SvgPoint& point)
+			: SvgPoint(point), _dx(0.0), _dy(0.0), _dmx(0.0), _dmy(0.0), _flags(NONE)
+		{
+		}
+
+		SvgRasterizerPoint(const double x, const double y, const double dx, const double dy, const double dmx,
+		                   const double dmy, const PointFlags flags)
+			: SvgPoint(x, y),
+			  _dx(dx),
+			  _dy(dy),
+			  _dmx(dmx),
+			  _dmy(dmy),
+			  _flags(flags)
+		{
+		}
+
+		SvgRasterizerPoint(const SvgRasterizerPoint&) = default;
+		SvgRasterizerPoint& operator=(const SvgRasterizerPoint&) = default;
+		SvgRasterizerPoint(SvgRasterizerPoint&&) noexcept = default;
+		SvgRasterizerPoint& operator=(SvgRasterizerPoint&&) noexcept = default;
+
+	private:
+		double _dx;
+		double _dy;
+		double _dmx;
+		double _dmy;
+		PointFlags _flags;
+	};
+
+	class SvgRasterizerEdge
+	{
+	public:
+		[[nodiscard]]
+		SvgPoint& GetA()
+		{
+			return _a;
+		}
+
+		[[nodiscard]]
+		SvgPoint& GetB()
+		{
+			return _b;
+		}
+
+		[[nodiscard]]
+		const SvgPoint& GetA() const
+		{
+			return _a;
+		}
+
+		[[nodiscard]]
+		const SvgPoint& GetB() const
+		{
+			return _b;
+		}
+
+		[[nodiscard]]
+		int GetDirection() const
+		{
+			return _direction;
+		}
+
+		SvgRasterizerEdge(): _direction(0)
+		{
+		}
+
+		SvgRasterizerEdge(const SvgPoint& a, const SvgPoint& b, int direction)
+			: _a(a), _b(b), _direction(direction)
+		{
+		}
+
+	private:
+		SvgPoint _a;
+		SvgPoint _b;
+		int _direction;
+	};
+
 	struct Edge
 	{
 		double x0, y0, x1, y1;
@@ -34,14 +202,6 @@ namespace Elpida
 		PAINT_RADIAL_GRADIENT = 3
 	};
 
-	enum PointFlags
-	{
-		NONE = 0,
-		CORNER = 0x01,
-		BEVEL = 0x02,
-		LEFT = 0x04
-	};
-
 	struct Paint
 	{
 		PaintType type;
@@ -54,7 +214,6 @@ namespace Elpida
 	{
 		double x, y;
 		double dx, dy;
-		double len;
 		double dmx, dmy;
 		PointFlags flags;
 	};
@@ -139,32 +298,23 @@ namespace Elpida
 			static_cast<unsigned char>(a));
 	}
 
-	static void AddPoint(std::vector<RasterizerPoint>& points, const SvgPoint& point, PointFlags flags)
+
+	static void AddPoint(std::vector<SvgRasterizerPoint>& points, const SvgPoint& point, const PointFlags flags)
 	{
 		if (!points.empty())
 		{
 			auto& lastPoint = points.back();
-			if (PointEquals(lastPoint.x, lastPoint.y, point.GetX(), point.GetY()))
+			if (lastPoint == point)
 			{
-				lastPoint.flags = static_cast<PointFlags>(static_cast<unsigned int>(lastPoint.flags) | static_cast<
-					unsigned int>(flags));
+				lastPoint.AppendFlag(flags);
 				return;
 			}
 		}
 
-		points.push_back({
-			.x = point.GetX(),
-			.y = point.GetY(),
-			.dx = 0,
-			.dy = 0,
-			.len = 0,
-			.dmx = 0,
-			.dmy = 0,
-			.flags = PointFlags::NONE
-		});
+		points.emplace_back(point);
 	}
 
-	static void FlattenCubicBez(std::vector<RasterizerPoint>& points,
+	static void FlattenCubicBez(std::vector<SvgRasterizerPoint>& points,
 	                            const SvgPoint& p1,
 	                            const SvgPoint& p2,
 	                            const SvgPoint& p3,
@@ -196,33 +346,21 @@ namespace Elpida
 		FlattenCubicBez(points, p1p2p3p4, p2p3p4, p3p4, p4, level + 1, type);
 	}
 
-	static void AddEdge(std::vector<Edge>& edges, const double x0, const double y0, const double x1, const double y1)
+	static void AddEdge(std::vector<SvgRasterizerEdge>& edges, const SvgPoint& a, const SvgPoint& b)
 	{
 		// Skip horizontal edges
-		if (y0 == y1)
+		if (a.GetY() == b.GetY())
 		{
 			return;
 		}
 
-		if (y0 < y1)
+		if (a.GetY() < b.GetY())
 		{
-			edges.push_back({
-				.x0 = x0,
-				.y0 = y0,
-				.x1 = x1,
-				.y1 = y1,
-				.direction = 1,
-			});
+			edges.emplace_back(a, b, 1);
 		}
 		else
 		{
-			edges.push_back({
-				.x0 = x1,
-				.y0 = y1,
-				.x1 = x0,
-				.y1 = y0,
-				.direction = -1
-			});
+			edges.emplace_back(b, a, -1);
 		}
 	}
 
@@ -302,12 +440,12 @@ namespace Elpida
 	}
 
 	static void FlatenShape(const SvgPath& path,
-	                        std::vector<Edge>& edges,
+	                        std::vector<SvgRasterizerEdge>& edges,
 	                        const double scale)
 	{
 		for (auto& pathInstance : path.GetInstances())
 		{
-			std::vector<RasterizerPoint> points;
+			std::vector<SvgRasterizerPoint> points;
 
 			auto& curves = pathInstance.GetCurves();
 			auto startPoint = pathInstance.GetStartPoint() * scale;
@@ -316,9 +454,9 @@ namespace Elpida
 
 			for (auto& curve : curves)
 			{
-					auto endPoint = curve.GetEnd() * scale;
+				auto endPoint = curve.GetEnd() * scale;
 				FlattenCubicBez(points,
-				               startPoint,
+				                startPoint,
 				                curve.GetStartControl() * scale,
 				                curve.GetEndControl() * scale,
 				                endPoint,
@@ -334,7 +472,7 @@ namespace Elpida
 			{
 				const auto& a = points[j];
 				const auto& b = points[i];
-				AddEdge(edges, a.x, a.y, b.x, b.y);
+				AddEdge(edges, a, b);
 			}
 		}
 	}
@@ -347,11 +485,13 @@ namespace Elpida
 		return returnPaint;
 	}
 
-	static ActiveEdge CreateActive(const Edge& edge, const double startPoint)
+	static ActiveEdge CreateActive(const SvgRasterizerEdge& edge, const double startPoint)
 	{
 		ActiveEdge returnEdge{};
 
-		const double dxdy = (edge.x1 - edge.x0) / (edge.y1 - edge.y0);
+		auto& a = edge.GetA();
+		auto& b = edge.GetB();
+		const double dxdy = (b.GetX() - a.GetX()) / (b.GetY() - a.GetY());
 		//	STBTT_assert(e->y0 <= start_point);
 		// round dx down to avoid going too far
 		if (dxdy < 0)
@@ -363,10 +503,10 @@ namespace Elpida
 			returnEdge.dx = static_cast<int>(RoundF(Fix * dxdy));
 		}
 
-		returnEdge.x = static_cast<int>(RoundF(Fix * (edge.x0 + dxdy * (startPoint - edge.y0))));
+		returnEdge.x = static_cast<int>(RoundF(Fix * (a.GetX() + dxdy * (startPoint - a.GetY()))));
 		//	z->x -= off_x * FIX;
-		returnEdge.ey = edge.y1;
-		returnEdge.dir = edge.direction;
+		returnEdge.ey = b.GetY();
+		returnEdge.dir = edge.GetDirection();
 
 		return returnEdge;
 	}
@@ -619,7 +759,7 @@ namespace Elpida
 	                                 const double tx,
 	                                 const double ty,
 	                                 const double scale,
-	                                 const std::vector<Edge>& edges,
+	                                 const std::vector<SvgRasterizerEdge>& edges,
 	                                 const Paint& paint,
 	                                 const SvgFillRule fillRule,
 	                                 const std::size_t subSamples)
@@ -687,9 +827,9 @@ namespace Elpida
 				}
 
 				// insert all edges that start before the center of this scanline -- omit ones that also end on this scanline
-				while (edgeIndex < edges.size() && edges[edgeIndex].y0 <= scanY)
+				while (edgeIndex < edges.size() && edges[edgeIndex].GetA().GetY() <= scanY)
 				{
-					if (edges[edgeIndex].y1 > scanY)
+					if (edges[edgeIndex].GetB().GetY() > scanY)
 					{
 						auto activeEdge = CreateActive(edges[edgeIndex], scanY);
 
@@ -750,7 +890,7 @@ namespace Elpida
 		return d;
 	}
 
-	static void PrepareStroke(std::vector<RasterizerPoint>& points, const double miterLimit, const SvgLineJoin lineJoin)
+	static void PrepareStroke(std::vector<SvgRasterizerPoint>& points, const double miterLimit, const SvgLineJoin lineJoin)
 	{
 		// TODO: index based
 		auto p0 = --points.end();
@@ -759,9 +899,9 @@ namespace Elpida
 		for (std::size_t i = 0; i < points.size(); ++i)
 		{
 			// Calculate segment direction and length
-			p0->dx = p1->x - p0->x;
-			p0->dy = p1->y - p0->y;
-			p0->len = Normalize(p0->dx, p0->dy);
+			p0->GetDx() = p1->GetX() - p0->GetX() ;
+			p0->GetDy() = p1->GetX() - p0->GetX() ;
+			Normalize(p0->GetDx(), p0->GetDy());
 
 			// Advance
 			p0 = p1++;
@@ -773,16 +913,16 @@ namespace Elpida
 
 		for (std::size_t i = 0; i < points.size(); ++i)
 		{
-			const double dlx0 = p0->dy;
-			const double dly0 = -p0->dx;
-			const double dlx1 = p1->dy;
-			const double dly1 = -p1->dx;
+			const double dlx0 = p0->GetDy();
+			const double dly0 = -p0->GetDx();
+			const double dlx1 = p1->GetDy();
+			const double dly1 = -p1->GetDx();
 
 			// Calculate extrusions
-			p1->dmx = (dlx0 + dlx1) * 0.5;
-			p1->dmy = (dly0 + dly1) * 0.5;
+			p1->GetDmx() = (dlx0 + dlx1) * 0.5;
+			p1->GetDmy() = (dly0 + dly1) * 0.5;
 
-			const double dmr2 = p1->dmx * p1->dmx + p1->dmy * p1->dmy;
+			const double dmr2 = p1->GetDmx() * p1->GetDmx() + p1->GetDmy() * p1->GetDmy();
 			if (dmr2 > 0.000001)
 			{
 				double s2 = 1.0 / dmr2;
@@ -790,28 +930,34 @@ namespace Elpida
 				{
 					s2 = 600.0;
 				}
-				p1->dmx *= s2;
-				p1->dmy *= s2;
+				p1->GetDmx() *= s2;
+				p1->GetDmy() *= s2;
 			}
 
 			// Clear flags, but keep the corner.
-			p1->flags = static_cast<PointFlags>(p1->flags & PointFlags::CORNER ? PointFlags::CORNER : 0);
-
+			if (p1->HasFlag(PointFlags::CORNER))
+			{
+				p1->SetFlag(PointFlags::CORNER);
+			}
+			else
+			{
+				p1->SetFlag(NONE);
+			}
 			// Keep track of left turns.
-			const auto cross = p1->dx * p0->dy - p0->dx * p1->dy;
+			const auto cross = p1->GetDx() * p0->GetDy() - p0->GetDx() * p1->GetDy();
 			if (cross > 0.0)
 			{
-				p1->flags = static_cast<PointFlags>(p1->flags | PointFlags::LEFT);
+				p1->AppendFlag(LEFT);
 			}
 
 			// Check to see if the corner needs to be beveled.
-			if (p1->flags & PointFlags::CORNER)
+			if (p1->HasFlag(CORNER))
 			{
 				if ((dmr2 * miterLimit * miterLimit) < 1.0
 					|| lineJoin == SvgLineJoin::Bevel
 					|| lineJoin == SvgLineJoin::Round)
 				{
-					p1->flags = static_cast<PointFlags>(p1->flags | PointFlags::BEVEL);
+					p1->AppendFlag(BEVEL);
 				}
 			}
 
@@ -827,98 +973,89 @@ namespace Elpida
 		return divs;
 	}
 
-	static void InitClosed(RasterizerPoint& left,
-	                       RasterizerPoint& right,
-	                       const RasterizerPoint& p0,
-	                       const RasterizerPoint& p1,
+	static void InitClosed(SvgPoint& left,
+	                       SvgPoint& right,
+	                       const SvgPoint& p0,
+	                       const SvgPoint& p1,
 	                       const double lineWidth)
 	{
 		const double w = lineWidth * 0.5;
-		double dx = p1.x - p0.x;
-		double dy = p1.y - p0.y;
+
+		double dx = p1.GetX() - p0.GetX();
+		double dy = p1.GetY() - p0.GetY();
+
 		const double len = Normalize(dx, dy);
-		const double px = p0.x + dx * len * 0.5;
-		const double py = p0.y + dy * len * 0.5;
+
+		const double px = p0.GetX() + dx * len * 0.5;
+		const double py = p0.GetY() + dy * len * 0.5;
+
 		const double dlx = dy;
 		const double dly = -dx;
-		const double lx = px - dlx * w;
-		const double ly = py - dly * w;
-		const double rx = px + dlx * w;
-		const double ry = py + dly * w;
-		left.x = lx;
-		left.y = ly;
-		right.x = rx;
-		right.y = ry;
+
+		left = SvgPoint(px - dlx * w, py - dly * w);
+		right = SvgPoint(px + dlx * w, py + dly * w);
 	}
 
-	static void ButtCap(std::vector<Edge>& edges,
-	                    RasterizerPoint& left,
-	                    RasterizerPoint& right,
-	                    RasterizerPoint& p,
+	static void ButtCap(std::vector<SvgRasterizerEdge>& edges,
+	                    SvgPoint& left,
+	                    SvgPoint& right,
+	                    const SvgPoint& p,
 	                    const double dx,
 	                    const double dy,
 	                    const double lineWidth,
 	                    const bool connect)
 	{
 		const double w = lineWidth * 0.5;
-		const double px = p.x;
-		const double py = p.y;
 		const double dlx = dy;
 		const double dly = -dx;
-		const double lx = px - dlx * w;
-		const double ly = py - dly * w;
-		const double rx = px + dlx * w;
-		const double ry = py + dly * w;
 
-		AddEdge(edges, lx, ly, rx, ry);
+		const SvgPoint thisLeft(p.GetX() - dlx * w, p.GetY() - dly * w);
+		const SvgPoint thisRight(p.GetX() + dlx * w, p.GetY() + dly * w);
+
+		AddEdge(edges, thisLeft, thisRight);
 
 		if (connect)
 		{
-			AddEdge(edges, left.x, left.y, lx, ly);
-			AddEdge(edges, rx, ry, right.x, right.y);
+			AddEdge(edges, left, thisLeft);
+			AddEdge(edges, thisRight, right);
 		}
-		left.x = lx;
-		left.y = ly;
-		right.x = rx;
-		right.y = ry;
+		left = thisLeft;
+		right = thisRight;
 	}
 
-	static void SquareCap(std::vector<Edge>& edges,
-	                      RasterizerPoint& left,
-	                      RasterizerPoint& right,
-	                      RasterizerPoint& p,
+	static void SquareCap(std::vector<SvgRasterizerEdge>& edges,
+	                      SvgPoint& left,
+	                      SvgPoint& right,
+	                      const SvgPoint& p,
 	                      const double dx,
 	                      const double dy,
 	                      const double lineWidth,
 	                      const bool connect)
 	{
 		const double w = lineWidth * 0.5f;
-		const double px = p.x - dx * w;
-		const double py = p.y - dy * w;
+		const double px = p.GetX() - dx * w;
+		const double py = p.GetY() - dy * w;
 		const double dlx = dy;
 		const double dly = -dx;
-		const double lx = px - dlx * w;
-		const double ly = py - dly * w;
-		const double rx = px + dlx * w;
-		const double ry = py + dly * w;
 
-		AddEdge(edges, lx, ly, rx, ry);
+		const SvgPoint thisLeft(px - dlx * w, py - dly * w);
+		const SvgPoint thisRight(px + dlx * w, py + dly * w);
+
+		AddEdge(edges, thisLeft, thisRight);
 
 		if (connect)
 		{
-			AddEdge(edges, left.x, left.y, lx, ly);
-			AddEdge(edges, rx, ry, right.x, right.y);
+			AddEdge(edges, left, thisLeft);
+			AddEdge(edges, thisRight, right);
 		}
-		left.x = lx;
-		left.y = ly;
-		right.x = rx;
-		right.y = ry;
+		left = thisLeft;
+		right = thisRight;
 	}
 
-	static void RoundCap(std::vector<Edge>& edges,
-	                     RasterizerPoint& left,
-	                     RasterizerPoint& right,
-	                     RasterizerPoint& p,
+	static void RoundCap(std::vector<SvgRasterizerEdge>& edges,
+	                     SvgPoint& left,
+	                     SvgPoint& right,
+	                     const SvgPoint& p,
 	                     const double dx,
 	                     const double dy,
 	                     const double lineWidth,
@@ -926,146 +1063,137 @@ namespace Elpida
 	                     const bool connect)
 	{
 		const double w = lineWidth * 0.5f;
-		const double px = p.x;
-		const double py = p.y;
+		const double px = p.GetX();
+		const double py = p.GetY();
 		const double dlx = dy;
 		const double dly = -dx;
-		double lx = 0, ly = 0, rx = 0, ry = 0, prevx = 0, prevy = 0;
+
+		SvgPoint thisLeft;
+		SvgPoint thisRight;
+		SvgPoint previousPoint;
 
 		for (std::size_t i = 0; i < ncap; i++)
 		{
 			const double a = static_cast<double>(i) / static_cast<double>(ncap - 1) * std::numbers::pi;
 			const double ax = cos(a) * w;
 			const double ay = sin(a) * w;
-			const double x = px - dlx * ax - dx * ay;
-			const double y = py - dly * ax - dy * ay;
+
+			SvgPoint currentPoint(px - dlx * ax - dx * ay, py - dly * ax - dy * ay);
 
 			if (i > 0)
 			{
-				AddEdge(edges, prevx, prevy, x, y);
+				AddEdge(edges, previousPoint, currentPoint);
 			}
 
-			prevx = x;
-			prevy = y;
+			previousPoint = currentPoint;
 
 			if (i == 0)
 			{
-				lx = x;
-				ly = y;
+				thisLeft = currentPoint;
 			}
 			else if (i == ncap - 1)
 			{
-				rx = x;
-				ry = y;
+				thisRight = currentPoint;
 			}
 		}
 
 		if (connect)
 		{
-			AddEdge(edges, left.x, left.y, lx, ly);
-			AddEdge(edges, rx, ry, right.x, right.y);
+			AddEdge(edges, left, thisLeft);
+			AddEdge(edges, thisRight, right);
 		}
 
-		left.x = lx;
-		left.y = ly;
-		right.x = rx;
-		right.y = ry;
+		left = thisLeft;
+		right = thisRight;
 	}
 
-	static void BevelJoin(std::vector<Edge>& edges,
-	                      RasterizerPoint& left,
-	                      RasterizerPoint& right,
-	                      const RasterizerPoint& p0,
-	                      const RasterizerPoint& p1,
+	static void BevelJoin(std::vector<SvgRasterizerEdge>& edges,
+	                      SvgPoint& left,
+	                      SvgPoint& right,
+	                      const SvgRasterizerPoint& p0,
+	                      const SvgRasterizerPoint& p1,
 	                      const double lineWidth)
 	{
 		const double w = lineWidth * 0.5;
-		const double dlx0 = p0.dy;
-		const double dly0 = -p0.dx;
-		const double dlx1 = p1.dy;
-		const double dly1 = -p1.dx;
-		const double lx0 = p1.x - (dlx0 * w);
-		const double ly0 = p1.y - (dly0 * w);
-		const double rx0 = p1.x + (dlx0 * w);
-		const double ry0 = p1.y + (dly0 * w);
-		const double lx1 = p1.x - (dlx1 * w);
-		const double ly1 = p1.y - (dly1 * w);
-		const double rx1 = p1.x + (dlx1 * w);
-		const double ry1 = p1.y + (dly1 * w);
+		const double dlx0 = p0.GetDy();
+		const double dly0 = -p0.GetDx();
+		const double dlx1 = p1.GetDy();
+		const double dly1 = -p1.GetDx();
 
-		AddEdge(edges, lx0, ly0, left.x, left.y);
-		AddEdge(edges, lx1, ly1, lx0, ly0);
+		const SvgPoint leftA(p1.GetX() - (dlx0 * w), p1.GetY() - (dly0 * w));
+		const SvgPoint rightA(p1.GetX() + (dlx0 * w), p1.GetY() + (dly0 * w));
 
-		AddEdge(edges, right.x, right.y, rx0, ry0);
-		AddEdge(edges, rx0, ry0, rx1, ry1);
+		const SvgPoint leftB(p1.GetX() - (dlx1 * w), p1.GetY() - (dly1 * w));
+		const SvgPoint rightB(p1.GetX() + (dlx1 * w), p1.GetY() + (dly1 * w));
 
-		left.x = lx1;
-		left.y = ly1;
-		right.x = rx1;
-		right.y = ry1;
+		AddEdge(edges, leftA, left);
+		AddEdge(edges, leftB, leftA);
+
+		AddEdge(edges, right, rightA);
+		AddEdge(edges, rightA, rightB);
+
+		left = leftB;
+		right = rightB;
 	}
 
-	static void MiterJoin(std::vector<Edge>& edges,
-	                      RasterizerPoint& left,
-	                      RasterizerPoint& right,
-	                      const RasterizerPoint& p0,
-	                      const RasterizerPoint& p1,
+	static void MiterJoin(std::vector<SvgRasterizerEdge>& edges,
+	                      SvgPoint& left,
+	                      SvgPoint& right,
+	                      const SvgRasterizerPoint& p0,
+	                      const SvgRasterizerPoint& p1,
 	                      const double lineWidth)
 	{
 		const double w = lineWidth * 0.5f;
-		const double dlx0 = p0.dy;
-		const double dly0 = -p0.dx;
-		const double dlx1 = p1.dy;
-		const double dly1 = -p1.dx;
-		double lx0, rx0, lx1, rx1;
-		double ly0, ry0, ly1, ry1;
 
-		if (p1.flags & PointFlags::LEFT)
+		const double dlx0 = p0.GetDy();
+		const double dly0 = -p0.GetDx();
+		const double dlx1 = p1.GetDy();
+		const double dly1 = -p1.GetDx();
+
+		SvgPoint left1;
+		SvgPoint right1;
+
+		if (p1.HasFlag(PointFlags::LEFT))
 		{
-			lx0 = lx1 = p1.x - p1.dmx * w;
-			ly0 = ly1 = p1.y - p1.dmy * w;
-			AddEdge(edges, lx1, ly1, left.x, left.y);
+			left1 = SvgPoint(p1.GetX() - p1.GetDmx() * w, p1.GetY() - p1.GetDmy() * w);
 
-			rx0 = p1.x + (dlx0 * w);
-			ry0 = p1.y + (dly0 * w);
-			rx1 = p1.x + (dlx1 * w);
-			ry1 = p1.y + (dly1 * w);
-			AddEdge(edges, right.x, right.y, rx0, ry0);
-			AddEdge(edges, rx0, ry0, rx1, ry1);
+			AddEdge(edges, left1, left);
+
+			const SvgPoint right0(p1.GetX() + (dlx0 * w), p1.GetY() + (dly0 * w));
+			right1 = SvgPoint(p1.GetX() + (dlx1 * w), p1.GetY() + (dly1 * w));
+
+			AddEdge(edges, right, right0);
+			AddEdge(edges, right0, right1);
 		}
 		else
 		{
-			lx0 = p1.x - (dlx0 * w);
-			ly0 = p1.y - (dly0 * w);
-			lx1 = p1.x - (dlx1 * w);
-			ly1 = p1.y - (dly1 * w);
-			AddEdge(edges, lx0, ly0, left.x, left.y);
-			AddEdge(edges, lx1, ly1, lx0, ly0);
+			const SvgPoint left0(p1.GetX() - (dlx0 * w), p1.GetY() - (dly0 * w));
 
-			rx0 = rx1 = p1.x + p1.dmx * w;
-			ry0 = ry1 = p1.y + p1.dmy * w;
-			AddEdge(edges, right.x, right.y, rx1, ry1);
+			left1 = SvgPoint(p1.GetX() - (dlx1 * w), p1.GetY() - (dly1 * w));
+			AddEdge(edges, left0, left);
+			AddEdge(edges, left1, left0);
+
+			right1 = SvgPoint(p1.GetX() + p1.GetDmx() * w, p1.GetY() + p1.GetDmy() * w);
+			AddEdge(edges, right, right1);
 		}
 
-		left.x = lx1;
-		left.y = ly1;
-		right.x = rx1;
-		right.y = ry1;
+		left = left1;
+		right = right1;
 	}
 
-	static void RoundJoin(std::vector<Edge>& edges,
-	                      RasterizerPoint& left,
-	                      RasterizerPoint& right,
-	                      const RasterizerPoint& p0,
-	                      const RasterizerPoint& p1,
+	static void RoundJoin(std::vector<SvgRasterizerEdge>& edges,
+	                      SvgPoint& left,
+	                      SvgPoint& right,
+	                      const SvgRasterizerPoint& p0,
+	                      const SvgRasterizerPoint& p1,
 	                      const double lineWidth,
 	                      const std::size_t ncap)
 	{
 		const double w = lineWidth * 0.5;
-		const double dlx0 = p0.dy;
-		const double dly0 = -p0.dx;
-		const double dlx1 = p1.dy;
-		const double dly1 = -p1.dx;
+		const double dlx0 = p0.GetDy();
+		const double dly0 = -p0.GetDx();
+		const double dlx1 = p1.GetDy();
+		const double dly1 = -p1.GetDx();
 		const double a0 = atan2(dly0, dlx0);
 		const double a1 = atan2(dly1, dlx1);
 		double da = a1 - a0;
@@ -1075,13 +1203,13 @@ namespace Elpida
 
 		auto nV = static_cast<int>(ceil((AbsF(da) / std::numbers::pi) * static_cast<double>(ncap)));
 		if (nV < 2) nV = 2;
+
 		std::size_t n = nV;
 		if (n > ncap) n = ncap;
 
-		double lx = left.x;
-		double ly = left.y;
-		double rx = right.x;
-		double ry = right.y;
+
+		SvgPoint left0 = left;
+		SvgPoint right0 = right;
 
 		for (std::size_t i = 0; i < n; i++)
 		{
@@ -1089,55 +1217,46 @@ namespace Elpida
 			const double a = a0 + u * da;
 			const double ax = cos(a) * w;
 			const double ay = sin(a) * w;
-			const double lx1 = p1.x - ax;
-			const double ly1 = p1.y - ay;
-			const double rx1 = p1.x + ax;
-			const double ry1 = p1.y + ay;
 
-			AddEdge(edges, lx1, ly1, lx, ly);
-			AddEdge(edges, rx, ry, rx1, ry1);
+			SvgPoint left1(p1.GetX() - ax, p1.GetY() - ay);
+			SvgPoint right1(p1.GetX() + ax, p1.GetY() + ay);
 
-			lx = lx1;
-			ly = ly1;
-			rx = rx1;
-			ry = ry1;
+			AddEdge(edges, left1, left0);
+			AddEdge(edges, right0, right1);
+
+			left0 = left1;
+			right0 = right1;
 		}
 
-		left.x = lx;
-		left.y = ly;
-		right.x = rx;
-		right.y = ry;
+		left = left0;
+		right = right0;
 	}
 
-	static void StraightJoin(std::vector<Edge>& edges,
-	                         RasterizerPoint& left,
-	                         RasterizerPoint& right,
-	                         const RasterizerPoint& p1,
+	static void StraightJoin(std::vector<SvgRasterizerEdge>& edges,
+	                         SvgPoint& left,
+	                         SvgPoint& right,
+	                         const SvgRasterizerPoint& p1,
 	                         const double lineWidth)
 	{
 		const double w = lineWidth * 0.5;
-		const double lx = p1.x - (p1.dmx * w);
-		const double ly = p1.y - (p1.dmy * w);
-		const double rx = p1.x + (p1.dmx * w);
-		const double ry = p1.y + (p1.dmy * w);
+		const SvgPoint left0(p1.GetX() - (p1.GetDmx() * w), p1.GetY() - (p1.GetDmy() * w));
+		const SvgPoint right0(p1.GetX()  + (p1.GetDmx()  * w), p1.GetY() + (p1.GetDmy() * w));
 
-		AddEdge(edges, lx, ly, left.x, left.y);
-		AddEdge(edges, right.x, right.y, rx, ry);
+		AddEdge(edges, left0, left);
+		AddEdge(edges, right, right0);
 
-		left.x = lx;
-		left.y = ly;
-		right.x = rx;
-		right.y = ry;
+		left = left0;
+		right = right0;
 	}
 
-	static void ExpandStroke(std::vector<Edge>& edges, std::vector<RasterizerPoint>& points, bool closed,
+	static void ExpandStroke(std::vector<SvgRasterizerEdge>& edges, std::vector<SvgRasterizerPoint>& points, bool closed,
 	                         const SvgLineJoin lineJoin, const SvgLineCap lineCap, double lineWidth)
 	{
 		const auto ncap = CurveDivs(lineWidth * 0.5, std::numbers::pi);
-		RasterizerPoint left{}, right{}, firstLeft{}, firstRight{};
+		SvgRasterizerPoint left, right, firstLeft, firstRight;
 
-		std::vector<RasterizerPoint>::iterator p0;
-		std::vector<RasterizerPoint>::iterator p1;
+		std::vector<SvgRasterizerPoint>::iterator p0;
+		std::vector<SvgRasterizerPoint>::iterator p1;
 
 		std::size_t s, e;
 
@@ -1166,8 +1285,8 @@ namespace Elpida
 		else
 		{
 			// Add cap
-			double dx = p1->x - p0->x;
-			double dy = p1->y - p0->y;
+			double dx = p1->GetX() - p0->GetX();
+			double dy = p1->GetY() - p0->GetY();
 			Normalize(dx, dy);
 			switch (lineCap)
 			{
@@ -1185,13 +1304,13 @@ namespace Elpida
 
 		for (std::size_t i = s; i < e; ++i)
 		{
-			if (p1->flags & PointFlags::CORNER)
+			if (p1->HasFlag(PointFlags::CORNER))
 			{
 				if (lineJoin == SvgLineJoin::Round)
 				{
 					RoundJoin(edges, left, right, *p0, *p1, lineWidth, ncap);
 				}
-				else if (lineJoin == SvgLineJoin::Bevel || (p1->flags & PointFlags::BEVEL))
+				else if (lineJoin == SvgLineJoin::Bevel || (p1->HasFlag(PointFlags::BEVEL)))
 				{
 					BevelJoin(edges, left, right, *p0, *p1, lineWidth);
 				}
@@ -1210,14 +1329,14 @@ namespace Elpida
 		if (closed)
 		{
 			// Loop it
-			AddEdge(edges, firstLeft.x, firstLeft.y, left.x, left.y);
-			AddEdge(edges, right.x, right.y, firstRight.x, firstRight.y);
+			AddEdge(edges, firstLeft, left);
+			AddEdge(edges, right, firstRight);
 		}
 		else
 		{
 			// Add cap
-			double dx = p1->x - p0->x;
-			double dy = p1->y - p0->y;
+			double dx = p1->GetX() - p0->GetX();
+			double dy = p1->GetY() - p0->GetX();
 			Normalize(dx, dy);
 			if (lineCap == SvgLineCap::Butt)
 			{
@@ -1236,7 +1355,7 @@ namespace Elpida
 
 	static void FlattenShapeStroke(const SvgStroke& stroke,
 	                               const std::vector<SvgPathInstance>& paths,
-	                               std::vector<Edge>& edges,
+	                               std::vector<SvgRasterizerEdge>& edges,
 	                               const double scale)
 	{
 		const double lineWidth = stroke.GetWidth() * scale;
@@ -1245,7 +1364,7 @@ namespace Elpida
 			auto& curves = path.GetCurves();
 			if (curves.empty()) continue;
 
-			std::vector<RasterizerPoint> points;
+			std::vector<SvgRasterizerPoint> points;
 
 			auto startPoint = path.GetStartPoint() * scale;
 			AddPoint(points, startPoint, PointFlags::CORNER);
@@ -1271,7 +1390,7 @@ namespace Elpida
 			bool closed = path.IsClosed();
 
 			// If the first and last points are the same, remove the last, mark as closed path.
-			if (PointEquals(points.front(), points.back()))
+			if (points.front() == points.back())
 			{
 				points.pop_back();
 				closed = true;
@@ -1324,16 +1443,16 @@ namespace Elpida
 				double totalDistance = 0.0;
 				for (std::size_t j = 1; j < points2.size();)
 				{
-					const double dx = points2[j].x - current->x;
-					const double dy = points2[j].y - current->y;
+					const double dx = points2[j].GetX() - current->GetX();
+					const double dy = points2[j].GetY() - current->GetY();
 					const double distance = sqrt((dx * dx) + (dy * dy));
 
 					if (totalDistance + distance > dashLength)
 					{
 						// Calculate intermediate point
 						const double d = (dashLength - totalDistance) / distance;
-						const double x = current->x + dx * d;
-						const double y = current->y + dy * d;
+						const double x = current->GetX() + dx * d;
+						const double y = current->GetY() + dy * d;
 
 						AddPoint(points, SvgPoint(x, y), PointFlags::CORNER);
 
@@ -1350,9 +1469,9 @@ namespace Elpida
 						dashLength = dashesArray[dashIndex] * scale;
 
 						// Restart
-						current->x = x;
-						current->y = y;
-						current->flags = PointFlags::CORNER;
+						current->GetRefX() = x;
+						current->GetRefY() = y;
+						current->SetFlag(CORNER);
 						totalDistance = 0.0;
 						points.clear();
 						points.push_back(*current);
@@ -1424,7 +1543,8 @@ namespace Elpida
 		return returnBounds;
 	}
 
-	static Paint CalculateGradient(const SvgDocument& document, const SvgPath& shape, const SvgPaint& paint, double opacity)
+	static Paint CalculateGradient(const SvgDocument& document, const SvgPath& shape, const SvgPaint& paint,
+	                               double opacity)
 	{
 		Paint returnPaint{};
 
@@ -1461,7 +1581,7 @@ namespace Elpida
 				ox = bounds.GetMinX();
 				oy = bounds.GetMinY();
 				sw = bounds.GetMaxX() - bounds.GetMinX();
-				sh = bounds.GetMaxY()- bounds.GetMinY();
+				sh = bounds.GetMaxY() - bounds.GetMinY();
 			}
 			else
 			{
@@ -1471,7 +1591,7 @@ namespace Elpida
 				sh = document.GetElement().GetViewBox().GetHeight();
 			}
 
-			const auto sl = sqrt(sw*sw + sh*sh) / sqrt(2.0);
+			const auto sl = sqrt(sw * sw + sh * sh) / sqrt(2.0);
 
 			if (radialGradient == nullptr)
 			{
@@ -1484,7 +1604,7 @@ namespace Elpida
 				const double dx = x2 - x1;
 				const double dy = y2 - y1;
 
-				returnPaint.transform = SvgTransform(dy, -dx, dx,dy,x1,y1);
+				returnPaint.transform = SvgTransform(dy, -dx, dx, dy, x1, y1);
 			}
 			else
 			{
@@ -1494,7 +1614,7 @@ namespace Elpida
 				double fy = radialGradient->GetFy().CalculateActualValue(document, oy, sh);
 				const double r = radialGradient->GetR().CalculateActualValue(document, 0, sl);
 
-				returnPaint.transform = SvgTransform(r, 0, 0,r,cx,cy);
+				returnPaint.transform = SvgTransform(r, 0, 0, r, cx, cy);
 			}
 
 			if (stops.empty())
@@ -1572,7 +1692,7 @@ namespace Elpida
 		return returnPaint;
 	}
 
-	static Paint GetPaint( const SvgDocument& document, const SvgPath& shape, const SvgPaint& paint, double opacity)
+	static Paint GetPaint(const SvgDocument& document, const SvgPath& shape, const SvgPaint& paint, double opacity)
 	{
 		Paint returnPaint{};
 		if (paint.GetGradientId().empty())
@@ -1582,12 +1702,10 @@ namespace Elpida
 		else
 		{
 			return CalculateGradient(document, shape, paint, opacity);
-
 		}
 
 		return returnPaint;
 	}
-
 
 
 	void SvgRasterizer::Rasterize(const SvgDocument& document,
@@ -1608,22 +1726,20 @@ namespace Elpida
 				if (!shape->IsVisible()) continue;
 				if (shape->GetFill().IsSet())
 				{
-					std::vector<Edge> edges;
+					std::vector<SvgRasterizerEdge> edges;
 
 					FlatenShape(*shape, edges, scale);
 
 					// Scale and translate edges
 					for (auto& edge : edges)
 					{
-						edge.x0 = tx + edge.x0;
-						edge.y0 = (ty + edge.y0) * SubSamples;
-						edge.x1 = tx + edge.x1;
-						edge.y1 = (ty + edge.y1) * SubSamples;
+						edge.GetA() = SvgPoint(tx + edge.GetA().GetX(), (ty + edge.GetA().GetY()) * SubSamples);
+						edge.GetB() = SvgPoint(tx + edge.GetB().GetX(), (ty + edge.GetB().GetY()) * SubSamples);
 					}
 
-					std::ranges::sort(edges, [](const Edge& a, const Edge& b)
+					std::ranges::sort(edges, [](const SvgRasterizerEdge& a, const SvgRasterizerEdge& b)
 					{
-						return a.y0 < b.y0;
+						return a.GetA().GetY() < b.GetA().GetY();
 					});
 
 					// now, traverse the scanlines and find the intersections on each scanline, use non-zero rule
@@ -1636,7 +1752,7 @@ namespace Elpida
 
 				if (shape->GetStroke().IsSet())
 				{
-					std::vector<Edge> edges;
+					std::vector<SvgRasterizerEdge> edges;
 
 					FlattenShapeStroke(shape->GetStroke(), shape->GetInstances(), edges, scale);
 
@@ -1644,15 +1760,13 @@ namespace Elpida
 					// Scale and translate edges
 					for (auto& edge : edges)
 					{
-						edge.x0 = tx + edge.x0;
-						edge.y0 = (ty + edge.y0) * SubSamples;
-						edge.x1 = tx + edge.x1;
-						edge.y1 = (ty + edge.y1) * SubSamples;
+						edge.GetA() = SvgPoint(tx + edge.GetA().GetX(), (ty + edge.GetA().GetY()) * SubSamples);
+						edge.GetB() = SvgPoint(tx + edge.GetB().GetX(), (ty + edge.GetB().GetY()) * SubSamples);
 					}
 
-					std::ranges::sort(edges, [](const Edge& a, const Edge& b)
+					std::ranges::sort(edges, [](const SvgRasterizerEdge& a, const SvgRasterizerEdge& b)
 					{
-						return a.y0 < b.y0;
+						return a.GetA().GetY() < b.GetA().GetY();
 					});
 
 					auto paint = GetPaint(document, *shape, shape->GetStroke(), shape->GetOpacity());
