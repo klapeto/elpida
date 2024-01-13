@@ -315,35 +315,38 @@ namespace Elpida
 	}
 
 	static void FlattenCubicBez(std::vector<SvgRasterizerPoint>& points,
-	                            const SvgPoint& p1,
-	                            const SvgPoint& p2,
-	                            const SvgPoint& p3,
-	                            const SvgPoint& p4,
+	                            const SvgPoint& start,
+	                            const SvgPoint& controlA,
+	                            const SvgPoint& controlB,
+	                            const SvgPoint& end,
 	                            const int level,
 	                            const PointFlags type)
 	{
-		if (level > 10) return;
-
-		const double dx = p4.GetX() - p1.GetX();
-		const double dy = p4.GetY() - p1.GetY();
-		const double d2 = AbsF(((p2.GetX() - p4.GetX()) * dy) - ((p2.GetY() - p4.GetY()) * dx));
-		const double d3 = AbsF(((p3.GetX() - p4.GetX()) * dy) - ((p3.GetY() - p4.GetY()) * dx));
-
-		if ((d2 + d3) * (d2 + d3) < tessTol * (dx * dx + dy * dy))
+		if (level > 10)
 		{
-			AddPoint(points, p4, type);
 			return;
 		}
 
-		const auto p1p2 = (p1 + p2) * 0.5;
-		const auto p2p3 = (p2 + p3) * 0.5;
-		const auto p3p4 = (p3 + p4) * 0.5;
+		const double dx = end.GetX() - start.GetX();
+		const double dy = end.GetY() - start.GetY();
+		const double d2 = AbsF(((controlA.GetX() - end.GetX()) * dy) - ((controlA.GetY() - end.GetY()) * dx));
+		const double d3 = AbsF(((controlB.GetX() - end.GetX()) * dy) - ((controlB.GetY() - end.GetY()) * dx));
+
+		if ((d2 + d3) * (d2 + d3) < tessTol * (dx * dx + dy * dy))
+		{
+			AddPoint(points, end, type);
+			return;
+		}
+
+		const auto p1p2 = (start + controlA) * 0.5;
+		const auto p2p3 = (controlA + controlB) * 0.5;
+		const auto p3p4 = (controlB + end) * 0.5;
 		const auto p1p2p3 = (p1p2 + p2p3) * 0.5;
 		const auto p2p3p4 = (p2p3 + p3p4) * 0.5;
 		const auto p1p2p3p4 = (p1p2p3 + p2p3p4) * 0.5;
 
-		FlattenCubicBez(points, p1, p1p2, p1p2p3, p1p2p3p4, level + 1, PointFlags::NONE);
-		FlattenCubicBez(points, p1p2p3p4, p2p3p4, p3p4, p4, level + 1, type);
+		FlattenCubicBez(points, start, p1p2, p1p2p3, p1p2p3p4, level + 1, PointFlags::NONE);
+		FlattenCubicBez(points, p1p2p3p4, p2p3p4, p3p4, end, level + 1, type);
 	}
 
 	static void AddEdge(std::vector<SvgRasterizerEdge>& edges, const SvgPoint& a, const SvgPoint& b)
@@ -1062,7 +1065,7 @@ namespace Elpida
 	                     const std::size_t ncap,
 	                     const bool connect)
 	{
-		const double w = lineWidth * 0.5f;
+		const double w = lineWidth * 0.5;
 		const double px = p.GetX();
 		const double py = p.GetY();
 		const double dlx = dy;
