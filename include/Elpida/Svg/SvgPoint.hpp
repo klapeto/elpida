@@ -44,22 +44,29 @@ namespace Elpida
 
 		SvgPoint operator*(const double value) const
 		{
-			return SvgPoint(_x * value, _y * value);
+			return {_x * value, _y * value};
 		}
 
 		SvgPoint operator+(const SvgPoint& other) const
 		{
-			return SvgPoint(_x + other._x, _y + other._y);
+			return {_x + other._x, _y + other._y};
 		}
 
 		SvgPoint operator-(const SvgPoint& other) const
 		{
-			return SvgPoint(_x - other._x, _y - other._y);
+			return {_x - other._x, _y - other._y};
+		}
+
+		SvgPoint& operator*=(const double value)
+		{
+			_x *= value;
+			_y *= value;
+			return *this;
 		}
 
 		SvgPoint operator-() const
 		{
-			return SvgPoint(-_x, -_y);
+			return {-_x, -_y};
 		}
 
 		void ApplyTransform(const SvgTransform& transform)
@@ -67,15 +74,31 @@ namespace Elpida
 			transform.ApplyToPoint(_x, _y, _x, _y);
 		}
 
-		void Normalize()
+		double Product() const
 		{
-			const double distance = sqrt(_x * _x + _y * _y);
-			if (distance > 1e-6)
+			return _x * _x + _y * _y;
+		}
+
+		double Length() const
+		{
+			return sqrt(Product());
+		}
+
+		SvgPoint GetInverse() const
+		{
+			return {_y, -_x};
+		}
+
+		double Normalize()
+		{
+			const double length = Length();
+			if (length > 1e-6)
 			{
-				const double id = 1.0 / distance;
+				const double id = 1.0 / length;
 				_x *= id;
 				_y *= id;
 			}
+			return length;
 		}
 
 		bool operator==(const SvgPoint& other) const

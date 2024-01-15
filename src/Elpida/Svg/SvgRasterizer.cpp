@@ -31,52 +31,29 @@ namespace Elpida
 	{
 	public:
 
-		[[nodiscard]]
-		double GetDx() const
+		const SvgPoint& GetDirection()const
 		{
-			return _dx;
+			return _direction;
 		}
 
-		[[nodiscard]]
-		double GetDy() const
+		const SvgPoint& GetExtrusion() const
 		{
-			return _dy;
+			return _extrusion;
 		}
 
-		[[nodiscard]]
-		double GetDmx() const
+		SvgPoint& GetExtrusion()
 		{
-			return _dmx;
+			return _extrusion;
 		}
 
-		[[nodiscard]]
-		double GetDmy() const
+		void SetDirection(const SvgPoint& direction)
 		{
-			return _dmy;
+			_direction = direction;
 		}
 
-		[[nodiscard]]
-		double& GetDx()
+		void SetExtrusion(const SvgPoint& extrusion)
 		{
-			return _dx;
-		}
-
-		[[nodiscard]]
-		double& GetDy()
-		{
-			return _dy;
-		}
-
-		[[nodiscard]]
-		double& GetDmx()
-		{
-			return _dmx;
-		}
-
-		[[nodiscard]]
-		double& GetDmy()
-		{
-			return _dmy;
+			_extrusion = extrusion;
 		}
 
 		[[nodiscard]]
@@ -101,28 +78,32 @@ namespace Elpida
 		}
 
 		SvgRasterizerPoint()
-			: SvgPoint(), _dx(0.0), _dy(0.0), _dmx(0.0), _dmy(0.0), _flags(NONE)
+			: SvgPoint(), _flags(NONE)
 		{
 		}
 
 
 		SvgRasterizerPoint(const double x, const double y)
-			: SvgPoint(x, y), _dx(0.0), _dy(0.0), _dmx(0.0), _dmy(0.0), _flags(NONE)
+			: SvgPoint(x, y), _flags(NONE)
 		{
 		}
 
+		SvgRasterizerPoint(const SvgPoint& point, const PointFlags flags)
+				: SvgPoint(point), _flags(flags)
+		{
+		}
+
+
 		explicit SvgRasterizerPoint(const SvgPoint& point)
-			: SvgPoint(point), _dx(0.0), _dy(0.0), _dmx(0.0), _dmy(0.0), _flags(NONE)
+			: SvgPoint(point), _flags(NONE)
 		{
 		}
 
 		SvgRasterizerPoint(const double x, const double y, const double dx, const double dy, const double dmx,
 		                   const double dmy, const PointFlags flags)
 			: SvgPoint(x, y),
-			  _dx(dx),
-			  _dy(dy),
-			  _dmx(dmx),
-			  _dmy(dmy),
+				_direction(dx, dy),
+		_extrusion(dmx, dmy),
 			  _flags(flags)
 		{
 		}
@@ -133,10 +114,8 @@ namespace Elpida
 		SvgRasterizerPoint& operator=(SvgRasterizerPoint&&) noexcept = default;
 
 	private:
-		double _dx;
-		double _dy;
-		double _dmx;
-		double _dmy;
+		SvgPoint _direction;
+		SvgPoint _extrusion;
 		PointFlags _flags;
 	};
 
@@ -299,7 +278,7 @@ namespace Elpida
 			}
 		}
 
-		points.emplace_back(point);
+		points.emplace_back(point, flags);
 	}
 
 	static void FlattenCubicBez(std::vector<SvgRasterizerPoint>& points,
@@ -462,9 +441,7 @@ namespace Elpida
 			// Build edges
 			for (std::size_t i = 0, j = points.size() - 1; i < points.size(); j = i++)
 			{
-				const auto& a = points[j];
-				const auto& b = points[i];
-				AddEdge(edges, a, b);
+				AddEdge(edges, points[j], points[i]);
 			}
 		}
 	}
@@ -870,18 +847,6 @@ namespace Elpida
 		}
 	}
 
-	static double Normalize(double& x, double& y)
-	{
-		const double d = sqrt(x * x + y * y);
-		if (d > 1e-6)
-		{
-			const double id = 1.0 / d;
-			x *= id;
-			y *= id;
-		}
-		return d;
-	}
-
 	static void PrepareStroke(std::vector<SvgRasterizerPoint>& points, const double miterLimit, const SvgLineJoin lineJoin)
 	{
 		// TODO: index based
@@ -891,9 +856,9 @@ namespace Elpida
 		for (std::size_t i = 0; i < points.size(); ++i)
 		{
 			// Calculate segment direction and length
-			p0->GetDx() = p1->GetX() - p0->GetX();
-			p0->GetDy() = p1->GetY() - p0->GetY();
-			Normalize(p0->GetDx(), p0->GetDy());
+			SvgPoint direction = *p1 - *p0;
+			direction.Normalize();
+			p0->SetDirection(direction);
 
 			// Advance
 			p0 = p1++;
@@ -905,16 +870,13 @@ namespace Elpida
 
 		for (std::size_t i = 0; i < points.size(); ++i)
 		{
-			const double dlx0 = p0->GetDy();
-			const double dly0 = -p0->GetDx();
-			const double dlx1 = p1->GetDy();
-			const double dly1 = -p1->GetDx();
+			auto dl0 = p0->GetDirection().GetInverse();
+			auto dl1 = p1->GetDirection().GetInverse();
 
 			// Calculate extrusions
-			p1->GetDmx() = (dlx0 + dlx1) * 0.5;
-			p1->GetDmy() = (dly0 + dly1) * 0.5;
+			p1->SetExtrusion((dl0 + dl1) * 0.5);
 
-			const double dmr2 = p1->GetDmx() * p1->GetDmx() + p1->GetDmy() * p1->GetDmy();
+			const double dmr2 = p1->GetExtrusion().Product();
 			if (dmr2 > 0.000001)
 			{
 				double s2 = 1.0 / dmr2;
@@ -922,8 +884,7 @@ namespace Elpida
 				{
 					s2 = 600.0;
 				}
-				p1->GetDmx() *= s2;
-				p1->GetDmy() *= s2;
+				p1->GetExtrusion() *= s2;
 			}
 
 			// Clear flags, but keep the corner.
@@ -935,8 +896,10 @@ namespace Elpida
 			{
 				p1->SetFlag(NONE);
 			}
+
 			// Keep track of left turns.
-			const auto cross = p1->GetDx() * p0->GetDy() - p0->GetDx() * p1->GetDy();
+			const auto cross =
+				p1->GetDirection().GetX() * p0->GetDirection().GetY() - p0->GetDirection().GetX() * p1->GetDirection().GetY();
 			if (cross > 0.0)
 			{
 				p1->AppendFlag(LEFT);
@@ -973,19 +936,15 @@ namespace Elpida
 	{
 		const double w = lineWidth * 0.5;
 
-		double dx = p1.GetX() - p0.GetX();
-		double dy = p1.GetY() - p0.GetY();
+		auto delta = p1 - p0;
+		const auto length = delta.Normalize();
 
-		const double len = Normalize(dx, dy);
+		const auto p = p0 + (delta * (length * 0.5));
 
-		const double px = p0.GetX() + dx * len * 0.5;
-		const double py = p0.GetY() + dy * len * 0.5;
+		const auto inverseDelta = delta.GetInverse();
 
-		const double dlx = dy;
-		const double dly = -dx;
-
-		left = SvgPoint(px - dlx * w, py - dly * w);
-		right = SvgPoint(px + dlx * w, py + dly * w);
+		left = p - (inverseDelta * w);
+		right = p + (inverseDelta * w);
 	}
 
 	static void ButtCap(std::vector<SvgRasterizerEdge>& edges,
@@ -998,10 +957,10 @@ namespace Elpida
 	{
 		const double w = lineWidth * 0.5;
 
-		const SvgPoint inverseDelta(delta.GetY(), -delta.GetX());
+		const auto inverseDelta = delta.GetInverse();
 
 		const SvgPoint thisLeft = (p - inverseDelta) * w;
-		const SvgPoint thisRight= (p + inverseDelta) * w;
+		const SvgPoint thisRight = (p + inverseDelta) * w;
 
 		AddEdge(edges, thisLeft, thisRight);
 
@@ -1026,7 +985,7 @@ namespace Elpida
 
 		const auto newPoint = p - delta * w;
 
-		const SvgPoint inverseDelta(delta.GetY(), -delta.GetX());
+		const auto inverseDelta = delta.GetInverse();
 
 		const SvgPoint thisLeft = (newPoint - inverseDelta) * w;
 		const SvgPoint thisRight = (newPoint + inverseDelta) * w;
@@ -1052,10 +1011,8 @@ namespace Elpida
 	                     const bool connect)
 	{
 		const double w = lineWidth * 0.5;
-		const double px = p.GetX();
-		const double py = p.GetY();
-		const double dlx = delta.GetY();
-		const double dly = -delta.GetX();
+
+		const auto inverseDelta = delta.GetInverse();
 
 		SvgPoint thisLeft;
 		SvgPoint thisRight;
@@ -1067,7 +1024,7 @@ namespace Elpida
 			const double ax = cos(a) * w;
 			const double ay = sin(a) * w;
 
-			SvgPoint currentPoint(px - dlx * ax - delta.GetX() * ay, py - dly * ax - delta.GetY() * ay);
+			auto currentPoint = p - (inverseDelta * ax) - (delta * ay);
 
 			if (i > 0)
 			{
@@ -1104,16 +1061,14 @@ namespace Elpida
 	                      const double lineWidth)
 	{
 		const double w = lineWidth * 0.5;
-		const double dlx0 = p0.GetDy();
-		const double dly0 = -p0.GetDx();
-		const double dlx1 = p1.GetDy();
-		const double dly1 = -p1.GetDx();
+		const auto dl0 = p0.GetDirection().GetInverse();
+		const auto dl1 = p1.GetDirection().GetInverse();
 
-		const SvgPoint leftA(p1.GetX() - (dlx0 * w), p1.GetY() - (dly0 * w));
-		const SvgPoint rightA(p1.GetX() + (dlx0 * w), p1.GetY() + (dly0 * w));
+		const auto leftA = p1 - (dl0 * w);
+		const auto rightA = p1 + (dl0 * w);
 
-		const SvgPoint leftB(p1.GetX() - (dlx1 * w), p1.GetY() - (dly1 * w));
-		const SvgPoint rightB(p1.GetX() + (dlx1 * w), p1.GetY() + (dly1 * w));
+		const auto leftB = p1 - (dl1 * w);
+		const auto rightB = p1 + (dl1 * w);
 
 		AddEdge(edges, leftA, left);
 		AddEdge(edges, leftB, leftA);
@@ -1134,35 +1089,33 @@ namespace Elpida
 	{
 		const double w = lineWidth * 0.5f;
 
-		const double dlx0 = p0.GetDy();
-		const double dly0 = -p0.GetDx();
-		const double dlx1 = p1.GetDy();
-		const double dly1 = -p1.GetDx();
+		const auto dl0 = p0.GetDirection().GetInverse();
+		const auto dl1 = p1.GetDirection().GetInverse();
 
 		SvgPoint left1;
 		SvgPoint right1;
 
 		if (p1.HasFlag(PointFlags::LEFT))
 		{
-			left1 = SvgPoint(p1.GetX() - p1.GetDmx() * w, p1.GetY() - p1.GetDmy() * w);
+			left1 = p1 - (p1.GetExtrusion() * w);
 
 			AddEdge(edges, left1, left);
 
-			const SvgPoint right0(p1.GetX() + (dlx0 * w), p1.GetY() + (dly0 * w));
-			right1 = SvgPoint(p1.GetX() + (dlx1 * w), p1.GetY() + (dly1 * w));
+			const auto right0 = p1 + (dl0 * w);
+			right1 = p1 + (dl1 * w);
 
 			AddEdge(edges, right, right0);
 			AddEdge(edges, right0, right1);
 		}
 		else
 		{
-			const SvgPoint left0(p1.GetX() - (dlx0 * w), p1.GetY() - (dly0 * w));
+			const auto left0 = p1 - (dl0 * w);
+			left1 = p1 - (dl1 * w);
 
-			left1 = SvgPoint(p1.GetX() - (dlx1 * w), p1.GetY() - (dly1 * w));
 			AddEdge(edges, left0, left);
 			AddEdge(edges, left1, left0);
 
-			right1 = SvgPoint(p1.GetX() + p1.GetDmx() * w, p1.GetY() + p1.GetDmy() * w);
+			right1 = p1 + (p1.GetExtrusion() * w);
 			AddEdge(edges, right, right1);
 		}
 
@@ -1179,12 +1132,10 @@ namespace Elpida
 	                      const std::size_t ncap)
 	{
 		const double w = lineWidth * 0.5;
-		const double dlx0 = p0.GetDy();
-		const double dly0 = -p0.GetDx();
-		const double dlx1 = p1.GetDy();
-		const double dly1 = -p1.GetDx();
-		const double a0 = atan2(dly0, dlx0);
-		const double a1 = atan2(dly1, dlx1);
+		const auto dl0 = p0.GetDirection().GetInverse();
+		const auto dl1 = p1.GetDirection().GetInverse();
+		const double a0 = atan2(dl0.GetY(), dl0.GetX());
+		const double a1 = atan2(dl1.GetY(), dl1.GetX());
 		double da = a1 - a0;
 
 		if (da < std::numbers::pi) da += std::numbers::pi * 2;
@@ -1204,11 +1155,10 @@ namespace Elpida
 		{
 			const double u = static_cast<double>(i) / static_cast<double>(n - 1);
 			const double a = a0 + u * da;
-			const double ax = cos(a) * w;
-			const double ay = sin(a) * w;
+			SvgPoint angle(cos(a) * w, sin(a) * w);
 
-			SvgPoint left1(p1.GetX() - ax, p1.GetY() - ay);
-			SvgPoint right1(p1.GetX() + ax, p1.GetY() + ay);
+			auto left1 = p1 - angle;
+			auto right1 = p1 + angle;
 
 			AddEdge(edges, left1, left0);
 			AddEdge(edges, right0, right1);
@@ -1228,8 +1178,8 @@ namespace Elpida
 	                         const double lineWidth)
 	{
 		const double w = lineWidth * 0.5;
-		const SvgPoint left0(p1.GetX() - (p1.GetDmx() * w), p1.GetY() - (p1.GetDmy() * w));
-		const SvgPoint right0(p1.GetX()  + (p1.GetDmx()  * w), p1.GetY() + (p1.GetDmy() * w));
+		const auto left0 = p1 - (p1.GetExtrusion() * w);
+		const auto right0 = p1 + (p1.GetExtrusion() * w);
 
 		AddEdge(edges, left0, left);
 		AddEdge(edges, right, right0);
