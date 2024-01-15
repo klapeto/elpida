@@ -99,6 +99,7 @@ namespace Elpida
 		{
 			_flags = flag;
 		}
+
 		SvgRasterizerPoint()
 			: SvgPoint(), _dx(0.0), _dy(0.0), _dmx(0.0), _dmy(0.0), _flags(NONE)
 		{
@@ -231,7 +232,6 @@ namespace Elpida
 	};
 
 	static constexpr double tessTol = 0.25;
-	static constexpr double distTol = 0.01;
 
 	static constexpr int FixShift = 10;
 	static constexpr int Fix = 1 << FixShift;
@@ -239,18 +239,6 @@ namespace Elpida
 
 	static double AbsF(const double x) { return x < 0 ? -x : x; }
 	static double RoundF(const double x) { return (x >= 0) ? floor(x + 0.5) : ceil(x - 0.5); }
-
-	static int PointEquals(const double x1, const double y1, const double x2, const double y2)
-	{
-		const double dx = x2 - x1;
-		const double dy = y2 - y1;
-		return dx * dx + dy * dy < distTol * distTol;
-	}
-
-	static int PointEquals(const RasterizerPoint& a, const RasterizerPoint& b)
-	{
-		return PointEquals(a.x, a.y, b.x, b.y);
-	}
 
 	static int Div255(const int x)
 	{
@@ -338,12 +326,13 @@ namespace Elpida
 			return;
 		}
 
+		// We split the curve into 2
 		const auto p1p2 = (start + controlA) * 0.5;
 		const auto p2p3 = (controlA + controlB) * 0.5;
 		const auto p3p4 = (controlB + end) * 0.5;
 		const auto p1p2p3 = (p1p2 + p2p3) * 0.5;
 		const auto p2p3p4 = (p2p3 + p3p4) * 0.5;
-		const auto p1p2p3p4 = (p1p2p3 + p2p3p4) * 0.5;
+		const auto p1p2p3p4 = (p1p2p3 + p2p3p4) * 0.5;	// Midpoint
 
 		FlattenCubicBez(points, start, p1p2, p1p2p3, p1p2p3p4, level + 1, PointFlags::NONE);
 		FlattenCubicBez(points, p1p2p3p4, p2p3p4, p3p4, end, level + 1, type);
@@ -902,8 +891,8 @@ namespace Elpida
 		for (std::size_t i = 0; i < points.size(); ++i)
 		{
 			// Calculate segment direction and length
-			p0->GetDx() = p1->GetX() - p0->GetX() ;
-			p0->GetDy() = p1->GetX() - p0->GetX() ;
+			p0->GetDx() = p1->GetX() - p0->GetX();
+			p0->GetDy() = p1->GetY() - p0->GetY();
 			Normalize(p0->GetDx(), p0->GetDy());
 
 			// Advance
@@ -1003,17 +992,16 @@ namespace Elpida
 	                    SvgPoint& left,
 	                    SvgPoint& right,
 	                    const SvgPoint& p,
-	                    const double dx,
-	                    const double dy,
+	                    const SvgPoint& delta,
 	                    const double lineWidth,
 	                    const bool connect)
 	{
 		const double w = lineWidth * 0.5;
-		const double dlx = dy;
-		const double dly = -dx;
 
-		const SvgPoint thisLeft(p.GetX() - dlx * w, p.GetY() - dly * w);
-		const SvgPoint thisRight(p.GetX() + dlx * w, p.GetY() + dly * w);
+		const SvgPoint inverseDelta(delta.GetY(), -delta.GetX());
+
+		const SvgPoint thisLeft = (p - inverseDelta) * w;
+		const SvgPoint thisRight= (p + inverseDelta) * w;
 
 		AddEdge(edges, thisLeft, thisRight);
 
@@ -1030,19 +1018,18 @@ namespace Elpida
 	                      SvgPoint& left,
 	                      SvgPoint& right,
 	                      const SvgPoint& p,
-	                      const double dx,
-	                      const double dy,
+	                      const SvgPoint& delta,
 	                      const double lineWidth,
 	                      const bool connect)
 	{
 		const double w = lineWidth * 0.5f;
-		const double px = p.GetX() - dx * w;
-		const double py = p.GetY() - dy * w;
-		const double dlx = dy;
-		const double dly = -dx;
 
-		const SvgPoint thisLeft(px - dlx * w, py - dly * w);
-		const SvgPoint thisRight(px + dlx * w, py + dly * w);
+		const auto newPoint = p - delta * w;
+
+		const SvgPoint inverseDelta(delta.GetY(), -delta.GetX());
+
+		const SvgPoint thisLeft = (newPoint - inverseDelta) * w;
+		const SvgPoint thisRight = (newPoint + inverseDelta) * w;
 
 		AddEdge(edges, thisLeft, thisRight);
 
@@ -1059,8 +1046,7 @@ namespace Elpida
 	                     SvgPoint& left,
 	                     SvgPoint& right,
 	                     const SvgPoint& p,
-	                     const double dx,
-	                     const double dy,
+	                     const SvgPoint& delta,
 	                     const double lineWidth,
 	                     const std::size_t ncap,
 	                     const bool connect)
@@ -1068,8 +1054,8 @@ namespace Elpida
 		const double w = lineWidth * 0.5;
 		const double px = p.GetX();
 		const double py = p.GetY();
-		const double dlx = dy;
-		const double dly = -dx;
+		const double dlx = delta.GetY();
+		const double dly = -delta.GetX();
 
 		SvgPoint thisLeft;
 		SvgPoint thisRight;
@@ -1081,7 +1067,7 @@ namespace Elpida
 			const double ax = cos(a) * w;
 			const double ay = sin(a) * w;
 
-			SvgPoint currentPoint(px - dlx * ax - dx * ay, py - dly * ax - dy * ay);
+			SvgPoint currentPoint(px - dlx * ax - delta.GetX() * ay, py - dly * ax - delta.GetY() * ay);
 
 			if (i > 0)
 			{
@@ -1288,19 +1274,18 @@ namespace Elpida
 		else
 		{
 			// Add cap
-			double dx = p1->GetX() - p0->GetX();
-			double dy = p1->GetY() - p0->GetY();
-			Normalize(dx, dy);
+			auto delta = *p1 - *p0;
+			delta.Normalize();
 			switch (lineCap)
 			{
 			case SvgLineCap::Butt:
-				ButtCap(edges, left, right, *p0, dx, dy, lineWidth, false);
+				ButtCap(edges, left, right, *p0, delta, lineWidth, false);
 				break;
 			case SvgLineCap::Round:
-				RoundCap(edges, left, right, *p0, dx, dy, lineWidth, ncap, false);
+				RoundCap(edges, left, right, *p0, delta, lineWidth, ncap, false);
 				break;
 			case SvgLineCap::Square:
-				SquareCap(edges, left, right, *p0, dx, dy, lineWidth, false);
+				SquareCap(edges, left, right, *p0, delta, lineWidth, false);
 				break;
 			}
 		}
@@ -1338,20 +1323,20 @@ namespace Elpida
 		else
 		{
 			// Add cap
-			double dx = p1->GetX() - p0->GetX();
-			double dy = p1->GetY() - p0->GetX();
-			Normalize(dx, dy);
+			auto delta = *p1 - *p0;
+			delta.Normalize();
+
 			if (lineCap == SvgLineCap::Butt)
 			{
-				ButtCap(edges, right, left, *p1, -dx, -dy, lineWidth, true);
+				ButtCap(edges, right, left, *p1, -delta, lineWidth, true);
 			}
 			else if (lineCap == SvgLineCap::Square)
 			{
-				SquareCap(edges, right, left, *p1, -dx, -dy, lineWidth, true);
+				SquareCap(edges, right, left, *p1, -delta, lineWidth, true);
 			}
 			else if (lineCap == SvgLineCap::Round)
 			{
-				RoundCap(edges, right, left, *p1, -dx, -dy, lineWidth, ncap, true);
+				RoundCap(edges, right, left, *p1, -delta, lineWidth, ncap, true);
 			}
 		}
 	}
@@ -1780,6 +1765,6 @@ namespace Elpida
 			}
 		}
 
-		UnpremultiplyAlpha(outputBuffer, width, height, stride);
+		//UnpremultiplyAlpha(outputBuffer, width, height, stride);
 	}
 } // Elpida

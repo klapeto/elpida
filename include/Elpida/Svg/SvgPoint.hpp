@@ -52,9 +52,30 @@ namespace Elpida
 			return SvgPoint(_x + other._x, _y + other._y);
 		}
 
+		SvgPoint operator-(const SvgPoint& other) const
+		{
+			return SvgPoint(_x - other._x, _y - other._y);
+		}
+
+		SvgPoint operator-() const
+		{
+			return SvgPoint(-_x, -_y);
+		}
+
 		void ApplyTransform(const SvgTransform& transform)
 		{
 			transform.ApplyToPoint(_x, _y, _x, _y);
+		}
+
+		void Normalize()
+		{
+			const double distance = sqrt(_x * _x + _y * _y);
+			if (distance > 1e-6)
+			{
+				const double id = 1.0 / distance;
+				_x *= id;
+				_y *= id;
+			}
 		}
 
 		bool operator==(const SvgPoint& other) const
@@ -70,7 +91,7 @@ namespace Elpida
 		{
 			const double dx = _x - other._x;
 			const double dy = _y - other._y;
-			return  sqrt(dx * dx + dy * dy);
+			return sqrt(dx * dx + dy * dy);
 		}
 
 		SvgPoint():_x(0.0), _y(0.0){}
