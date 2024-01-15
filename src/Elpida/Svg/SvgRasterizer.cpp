@@ -1337,7 +1337,7 @@ namespace Elpida
 			auto& dashesArray = stroke.GetDashes();
 			if (!dashesArray.empty())
 			{
-				bool dashState = false;
+				bool dashState = true;
 				if (closed)
 				{
 					points.push_back(points.front());
@@ -1348,8 +1348,8 @@ namespace Elpida
 
 				points.clear();
 
-				auto* current = &points2.front();
-				points.push_back(*current);
+				auto current = points2.front();
+				points.push_back(current);
 
 				// Figure out dash offset.
 				double allDashLength = 0.0;
@@ -1381,18 +1381,17 @@ namespace Elpida
 				double totalDistance = 0.0;
 				for (std::size_t j = 1; j < points2.size();)
 				{
-					const double dx = points2[j].GetX() - current->GetX();
-					const double dy = points2[j].GetY() - current->GetY();
-					const double distance = sqrt((dx * dx) + (dy * dy));
+					auto delta = points2[j] - current;
+					const double distance = sqrt((delta.GetX() * delta.GetX()) + (delta.GetY() * delta.GetY()));
 
-					if (totalDistance + distance > dashLength)
+					if ((totalDistance + distance) > dashLength)
 					{
 						// Calculate intermediate point
 						const double d = (dashLength - totalDistance) / distance;
-						const double x = current->GetX() + dx * d;
-						const double y = current->GetY() + dy * d;
 
-						AddPoint(points, SvgPoint(x, y), PointFlags::CORNER);
+						auto point = current + (delta * d);
+
+						AddPoint(points, point, PointFlags::CORNER);
 
 						// Stroke
 						if (points.size() > 1 && dashState)
@@ -1407,21 +1406,21 @@ namespace Elpida
 						dashLength = dashesArray[dashIndex] * scale;
 
 						// Restart
-						current->GetRefX() = x;
-						current->GetRefY() = y;
-						current->SetFlag(CORNER);
+						current = SvgRasterizerPoint(point, CORNER);
 						totalDistance = 0.0;
 						points.clear();
-						points.push_back(*current);
+						points.push_back(current);
 					}
 					else
 					{
 						totalDistance += distance;
-						current = &points2[j];
-						points.push_back(*current);
+						current = points2[j];
+						points.push_back(current);
 						j++;
 					}
 				}
+
+				// Stroke any leftover path
 				if (points.size() > 1 && dashState)
 				{
 					ExpandStroke(edges, points, false, stroke.GetLineJoin(), stroke.GetLineCap(), lineWidth);
