@@ -959,8 +959,8 @@ namespace Elpida
 
 		const auto inverseDelta = delta.GetInverse();
 
-		const SvgPoint thisLeft = (p - inverseDelta) * w;
-		const SvgPoint thisRight = (p + inverseDelta) * w;
+		const SvgPoint thisLeft = p - (inverseDelta * w);
+		const SvgPoint thisRight = p + (inverseDelta * w);
 
 		AddEdge(edges, thisLeft, thisRight);
 
@@ -987,8 +987,8 @@ namespace Elpida
 
 		const auto inverseDelta = delta.GetInverse();
 
-		const SvgPoint thisLeft = (newPoint - inverseDelta) * w;
-		const SvgPoint thisRight = (newPoint + inverseDelta) * w;
+		const SvgPoint thisLeft = newPoint - (inverseDelta * w);
+		const SvgPoint thisRight = newPoint + (inverseDelta * w);
 
 		AddEdge(edges, thisLeft, thisRight);
 
