@@ -1495,7 +1495,6 @@ namespace Elpida
 			const auto radialGradient = dynamic_cast<SvgRadialGradient*>(gradient);
 			const auto linear = dynamic_cast<SvgLinearGradient*>(gradient);
 			returnPaint.type = radialGradient != nullptr ? PAINT_RADIAL_GRADIENT : PAINT_LINEAR_GRADIENT;
-			returnPaint.transform = gradient->GetGradientTransform();
 
 			auto gradientStops = gradientItr;
 			if (gradient->GetStops().empty())
@@ -1509,8 +1508,9 @@ namespace Elpida
 
 			auto& stops = dynamic_cast<SvgGradient*>(gradientStops->second.get())->GetStops();
 
-			returnPaint.transform.Inverse(shape.GetTransform());
-			const auto bounds = GetLocalBounds(shape, returnPaint.transform);
+			SvgTransform tr;
+			tr.Inverse(shape.GetTransform());
+			const auto bounds = GetLocalBounds(shape, tr);
 
 			double ox, oy, sw, sh;
 			if (gradient->GetUnits() == SvgGradientUnits::Object)
@@ -1553,6 +1553,10 @@ namespace Elpida
 
 				returnPaint.transform = SvgTransform(r, 0, 0, r, cx, cy);
 			}
+
+			returnPaint.transform.Multiply(gradient->GetTransform());
+			returnPaint.transform.Multiply(shape.GetTransform());
+			returnPaint.spread = gradient->GetSpreadType();
 
 			if (stops.empty())
 			{
