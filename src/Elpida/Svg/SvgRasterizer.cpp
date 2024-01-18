@@ -1554,6 +1554,7 @@ namespace Elpida
 				returnPaint.transform = SvgTransform(r, 0, 0, r, cx, cy);
 			}
 
+			returnPaint.transform.Inverse(returnPaint.transform);
 			returnPaint.transform.Multiply(gradient->GetTransform());
 			returnPaint.transform.Multiply(shape.GetTransform());
 			returnPaint.spread = gradient->GetSpreadType();
