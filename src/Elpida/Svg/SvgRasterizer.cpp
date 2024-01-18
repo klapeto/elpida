@@ -1719,6 +1719,6 @@ namespace Elpida
 			}
 		}
 
-		//UnpremultiplyAlpha(outputBuffer, width, height, stride);
+		UnpremultiplyAlpha(outputBuffer, width, height, stride);
 	}
 } // Elpida
