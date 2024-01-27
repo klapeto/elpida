@@ -5,10 +5,9 @@
 #ifndef ELPIDA_SVG_SVGELEMENT_HPP
 #define ELPIDA_SVG_SVGELEMENT_HPP
 
-#include <memory>
-#include <optional>
-#include <stack>
-
+#include "SvgFill.hpp"
+#include "SvgPathInstance.hpp"
+#include "SvgStroke.hpp"
 #include "Elpida/Svg/SvgTransform.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
 
@@ -38,9 +37,38 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const std::vector<std::unique_ptr<SvgElement>>& GetChildren() const
+		const std::vector<SvgElement>& GetChildren() const
 		{
 			return _children;
+		}
+
+		[[nodiscard]]
+		const SvgFill& GetFill() const
+		{
+			return _fill;
+		}
+
+		[[nodiscard]]
+		const SvgStroke& GetStroke() const
+		{
+			return _stroke;
+		}
+
+		[[nodiscard]]
+		double GetOpacity() const
+		{
+			return _opacity;
+		}
+
+		[[nodiscard]]
+		bool IsVisible() const
+		{
+			return _visible;
+		}
+
+		const std::vector<SvgPathInstance>& GetPaths() const
+		{
+			return _paths;
 		}
 
 		SvgElement() = default;
@@ -54,38 +82,21 @@ namespace Elpida
 		std::string _id;
 		SvgTransform _transform;
 		XmlMap _properties;
-		std::vector<std::unique_ptr<SvgElement>> _children;
+		std::vector<SvgPathInstance> _paths;
+		std::vector<SvgElement> _children;
+		SvgFill _fill;
+		SvgStroke _stroke;
+		double _opacity;
+		bool _visible;
 
-		template <typename T>
-		class StackedValue
-		{
-		public:
-			template<typename TCallable>
-			explicit StackedValue(std::stack<T>& stack, const std::string& propertyName, TCallable callable)
-				: _stack(stack), _pushed(false)
-			{
-				if (propertyName.empty()) return;
-				if (std::optional<T> value = callable(propertyName); value.has_value())
-				{
-					_stack.push(value.value());
-					_pushed = true;
-				}
-			}
-			~StackedValue()
-			{
-				if (_pushed)
-				{
-					_stack.pop();
-				}
-			}
-		private:
-			std::stack<T>& _stack;
-			bool _pushed;
-		};
+		static constexpr double Kappa = 0.5522847493;
+		void ParseAsRectangle(const SvgDocument& document);
+		void ParseAsPath();
 
 	protected:
-		template <typename T, typename TConverter>
-		void ConditionallyAssignProperty(const std::string& name, T& targetValue, TConverter converter)
+		template<typename T, typename TConverter> void ConditionallyAssignProperty(const std::string& name,
+			T& targetValue,
+			TConverter converter)
 		{
 			if (auto& value = _properties.GetValue(name); !value.empty())
 			{
@@ -93,11 +104,12 @@ namespace Elpida
 			}
 		}
 
-		template <typename T>
-		void ConditionallyAssignProperty(const std::string& name, T& targetValue)
+		template<typename T> void ConditionallyAssignProperty(const std::string& name, T& targetValue)
 		{
 			ConditionallyAssignProperty<T>(name, targetValue, [](const auto& s) { return T(s); });
 		}
+
+
 	};
 } // Elpida
 

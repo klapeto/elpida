@@ -26,9 +26,35 @@ namespace Elpida
 		User
 	};
 
+	enum class SvgGradientType
+	{
+		Linear,
+		Radial
+	};
+
 	class SvgGradient : public SvgElement
 	{
 	public:
+		union GradientData
+		{
+			struct
+			{
+				SvgLength x1;
+				SvgLength y1;
+				SvgLength x2;
+				SvgLength y2;
+			} linear;
+			struct
+			{
+				SvgLength cx;
+				SvgLength cy;
+				SvgLength r;
+				SvgLength fx;
+				SvgLength fy;
+			} radial;
+			GradientData(){}
+		};
+
 		[[nodiscard]]
 		const std::string& GetHref() const
 		{
@@ -55,6 +81,18 @@ namespace Elpida
 			return _units;
 		}
 
+		[[nodiscard]]
+		SvgGradientType GetType() const
+		{
+			return _type;
+		}
+
+		[[nodiscard]]
+		const GradientData& GetData() const
+		{
+			return _data;
+		}
+
 		explicit SvgGradient(const XmlElement& element, SvgDocument& document);
 
 	protected:
@@ -63,6 +101,11 @@ namespace Elpida
 		SvgTransform _gradientTransform;
 		SvgSpreadType _spreadType;
 		SvgGradientUnits _units;
+		SvgGradientType _type;
+		GradientData _data;
+
+		void ParseAsRadial();
+		void ParseAsLinear();
 	};
 } // Elpida
 

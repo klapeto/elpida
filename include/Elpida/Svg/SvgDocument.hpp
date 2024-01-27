@@ -8,10 +8,7 @@
 #include <stack>
 
 #include "SvgDefs.hpp"
-#include "SvgFillRule.hpp"
 #include "SvgSvgElement.hpp"
-#include "SvgLineJoin.hpp"
-#include "SvgLineCap.hpp"
 
 namespace Elpida
 {
