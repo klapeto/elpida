@@ -23,10 +23,11 @@ add_library(elpida-svg
         SvgPathInstance.cpp
         SvgPoint.cpp
         SvgPaint.cpp
-        Shapes/SvgCubicBezierCurve.cpp
+        SvgCubicBezierCurve.cpp
         SvgRasterizerEdge.cpp
         SvgRasterizerShape.cpp
         SvgPathGenerator.cpp
+        SvgRasterizerPaint.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

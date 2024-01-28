@@ -4,6 +4,7 @@
 
 #ifndef ELPIDA_SVG_SVGRASTERIZERSHAPE_HPP
 #define ELPIDA_SVG_SVGRASTERIZERSHAPE_HPP
+
 #include <vector>
 
 #include "SvgRasterizerEdge.hpp"

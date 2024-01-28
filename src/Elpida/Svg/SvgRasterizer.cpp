@@ -1455,7 +1455,9 @@ namespace Elpida
 		{
 			const auto& gradient = gradientItr->second;
 
-			returnPaint.type = gradient.GetType() == SvgGradientType::Radial ? PAINT_RADIAL_GRADIENT : PAINT_LINEAR_GRADIENT;
+			returnPaint.type = gradient.GetType() == SvgGradientType::Radial
+				                   ? PAINT_RADIAL_GRADIENT
+				                   : PAINT_LINEAR_GRADIENT;
 
 			auto gradientStops = gradientItr;
 			if (gradient.GetStops().empty())
@@ -1509,7 +1511,7 @@ namespace Elpida
 			{
 				const double cx = data.radial.cx.CalculateActualValue(document, ox, sw);
 				const double cy = data.radial.cy.CalculateActualValue(document, oy, sh);
-				double fx =data.radial.fx.CalculateActualValue(document, ox, sw);
+				double fx = data.radial.fx.CalculateActualValue(document, ox, sw);
 				double fy = data.radial.fy.CalculateActualValue(document, oy, sh);
 				const double r = data.radial.r.CalculateActualValue(document, 0, sl);
 
@@ -1613,10 +1615,10 @@ namespace Elpida
 	static bool IsPointInsideEvenOdd(const SvgPoint& point, const std::vector<SvgRasterizerEdge>& edges)
 	{
 		bool inside = false;
-		for (std::size_t i = 0; i < edges.size(); ++i)
+		for (const auto& edge : edges)
 		{
-			auto& a = edges[i].GetA();
-			auto& b = edges[i].GetB();
+			auto& a = edge.GetA();
+			auto& b = edge.GetB();
 
 			if (point == a || point == b)
 			{
@@ -1627,7 +1629,8 @@ namespace Elpida
 
 			if (a.GetY() > point.GetY() != b.GetY() > point.GetY())
 			{
-				const auto determinant = (point.GetX() - a.GetX()) * (b.GetY() - a.GetY()) - (b.GetX() - a.GetX()) * (point.GetY() - a.GetY());
+				const auto determinant = (point.GetX() - a.GetX()) * (b.GetY() - a.GetY()) - (b.GetX() - a.GetX()) * (
+					point.GetY() - a.GetY());
 				if (determinant == 0)
 				{
 					// Is directly at line
@@ -1661,7 +1664,8 @@ namespace Elpida
 
 			if (a.GetY() > point.GetY() != b.GetY() > point.GetY())
 			{
-				const auto determinant = (point.GetX() - a.GetX()) * (b.GetY() - a.GetY()) - (b.GetX() - a.GetX()) * (point.GetY() - a.GetY());
+				const auto determinant = (point.GetX() - a.GetX()) * (b.GetY() - a.GetY()) - (b.GetX() - a.GetX()) * (
+					point.GetY() - a.GetY());
 				if (determinant == 0)
 				{
 					// Is directly at line
@@ -1689,42 +1693,39 @@ namespace Elpida
 	{
 		std::memset(outputBuffer, 0, width * 4);
 
-		std::unique_ptr<unsigned char[]> scanLine(new unsigned char[width]);
 		for (auto& element : document.GetElement().GetChildren())
 		{
+			if (!element.IsVisible()) continue;
+			if (element.GetFill().IsSet())
+			{
+				std::vector<SvgRasterizerEdge> edges;
 
-				if (!element.IsVisible()) continue;
-				if (element.GetFill().IsSet())
+				FlatenShape(element, edges, scale);
+
+				auto paint = GetPaint(document, element, element.GetFill(), element.GetOpacity());
+				for (std::size_t y = 0; y < height; ++y)
 				{
-					std::vector<SvgRasterizerEdge> edges;
-
-					FlatenShape(element, edges, scale);
-
-					auto paint = GetPaint(document, element, element.GetFill(), element.GetOpacity());
-					for (std::size_t y = 0; y < height; ++y)
+					for (std::size_t x = 0; x < width; ++x)
 					{
-						for (std::size_t x = 0; x < width; ++x)
+						if (IsPointInsideEvenOdd(SvgPoint(x, y), edges))
 						{
-							if (IsPointInsideEvenOdd(SvgPoint(x, y), edges))
-							{
-								outputBuffer[(y * width * 4 + x * 4)] = paint.colors[0];
-								outputBuffer[(y * width * 4 + x * 4) + 1] = paint.colors[0] >> 8;
-								outputBuffer[(y * width * 4 + x * 4) + 2] = paint.colors[0] >> 16;
-								outputBuffer[(y * width * 4 + x * 4) + 3] = paint.colors[0] >> 24;
-							}
+							outputBuffer[(y * width * 4 + x * 4)] = paint.colors[0];
+							outputBuffer[(y * width * 4 + x * 4) + 1] = paint.colors[0] >> 8;
+							outputBuffer[(y * width * 4 + x * 4) + 2] = paint.colors[0] >> 16;
+							outputBuffer[(y * width * 4 + x * 4) + 3] = paint.colors[0] >> 24;
 						}
 					}
 				}
+			}
 
-				if (element.GetStroke().IsSet())
-				{
-					std::vector<SvgRasterizerEdge> edges;
+			if (element.GetStroke().IsSet())
+			{
+				std::vector<SvgRasterizerEdge> edges;
 
-					FlattenShapeStroke(element.GetStroke(), element.GetPaths(), edges, scale);
+				FlattenShapeStroke(element.GetStroke(), element.GetPaths(), edges, scale);
 
-					auto paint = GetPaint(document, element, element.GetStroke(), element.GetOpacity());
-				}
-
+				auto paint = GetPaint(document, element, element.GetStroke(), element.GetOpacity());
+			}
 		}
 
 		//UnpremultiplyAlpha(outputBuffer, width, height, stride);
