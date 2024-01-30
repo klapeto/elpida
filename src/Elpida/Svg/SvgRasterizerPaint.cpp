@@ -39,6 +39,8 @@ namespace Elpida
 
 			const SvgGradientStop* stopA = nullptr;
 			const SvgGradientStop* stopB = nullptr;
+			SvgPoint pointA = a;
+			SvgPoint pointB = b;
 			for (auto& stop : _stopsGradient->GetStops())
 			{
 				if (stopA == nullptr)
@@ -48,27 +50,21 @@ namespace Elpida
 					continue;
 				}
 
-				if (point.GetX() < a.GetX())
-				{
-					break;
-				}
-
-				auto x = x1 + x1 * stop.GetOffset();
+				auto x = x1 + (x1 * stop.GetOffset());
 				auto y = equation.CalculateY(x);
 
-				b = SvgPoint(x, y);
-				if (point.GetX() > a.GetX() && point.GetX() < b.GetX())
+				pointB = SvgPoint(x, y);
+				SvgLinearEquation thisEquation(pointA, pointB);
+
+				if (!thisEquation.GetANormal().IsLeftOf(point) && thisEquation.GetBNormal().IsLeftOf(point))
 				{
 					stopA = stopB;
 					stopB = &stop;
 					break;
 				}
-				else
-				{
-					a = b;
-					stopA = stopB;
-					stopB = &stop;
-				}
+				pointA = pointB;
+				stopA = stopB;
+				stopB = &stop;
 			}
 
 			if (stopB == nullptr)
