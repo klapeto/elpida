@@ -9,7 +9,7 @@
 
 #include "SvgBounds.hpp"
 #include "SvgPoint.hpp"
-#include "Shapes/SvgCubicBezierCurve.hpp"
+#include "SvgCubicBezierCurve.hpp"
 
 namespace Elpida {
 

@@ -9,11 +9,6 @@
 
 namespace Elpida
 {
-	class SvgDocument;
-}
-
-namespace Elpida
-{
 	enum class SvgUnits
 	{
 		Raw,
@@ -27,6 +22,8 @@ namespace Elpida
 		Em,
 		Ex
 	};
+
+	class SvgDocument;
 
 	class SvgLength final
 	{

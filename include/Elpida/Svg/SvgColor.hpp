@@ -9,25 +9,54 @@
 
 namespace Elpida
 {
-
 	class SvgColor
 	{
 	public:
-		unsigned int GetValue() const
+		[[nodiscard]]
+		unsigned char R() const
 		{
-			return _value;
+			return _r;
+		}
+
+		[[nodiscard]]
+		unsigned char G() const
+		{
+			return _g;
+		}
+
+		[[nodiscard]]
+		unsigned char B() const
+		{
+			return _b;
+		}
+
+		[[nodiscard]]
+		unsigned char A() const
+		{
+			return _a;
 		}
 
 		SvgColor()
-			: _value(0)
+			: _r(0), _g(0), _b(0), _a(255)
 		{
-
 		}
-		explicit SvgColor(std::string_view view);
-	private:
-		unsigned int _value;
-	};
 
+		SvgColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
+			: _r(r),
+			  _g(g),
+			  _b(b),
+			  _a(a)
+		{
+		}
+
+		explicit SvgColor(std::string_view view);
+
+	private:
+		unsigned char _r;
+		unsigned char _g;
+		unsigned char _b;
+		unsigned char _a;
+	};
 } // Elpida
 
 #endif //ELPIDA_SVG_SVGCOLOR_HPP

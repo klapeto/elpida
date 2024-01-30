@@ -28,6 +28,8 @@ add_library(elpida-svg
         SvgRasterizerShape.cpp
         SvgPathGenerator.cpp
         SvgRasterizerPaint.cpp
+        SvgLinearEquation.cpp
+        ../../../include/Elpida/Svg/SvgLinearEquation.hpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

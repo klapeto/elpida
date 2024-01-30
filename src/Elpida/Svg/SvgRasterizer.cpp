@@ -14,6 +14,7 @@
 #include <cstring>
 #include <list>
 #include <memory>
+#include <Elpida/Svg/SvgRasterizerPaint.hpp>
 
 namespace Elpida
 {
@@ -195,18 +196,14 @@ namespace Elpida
 			static_cast<unsigned char>(a));
 	}
 
-	static unsigned int ApplyOpacity(const unsigned int color, const double opacity)
+	static unsigned int ApplyOpacity(const SvgColor& color, const double opacity)
 	{
 		const int iu = static_cast<int>(Clamp(opacity, 0.0, 1.0) * 256.0);
-		const int r = (color) & 0xff;
-		const int g = (color >> 8) & 0xff;
-		const int b = (color >> 16) & 0xff;
-		const int a = (((color >> 24) & 0xff) * iu) >> 8;
 		return RGBA(
-			static_cast<unsigned char>(r),
-			static_cast<unsigned char>(g),
-			static_cast<unsigned char>(b),
-			static_cast<unsigned char>(a));
+			static_cast<unsigned char>(color.R()),
+			static_cast<unsigned char>(color.G()),
+			static_cast<unsigned char>(color.B()),
+			static_cast<unsigned char>(color.A()*iu));
 	}
 
 	static void AddPoint(std::vector<SvgRasterizerPoint>& points, const SvgPoint& point, const PointFlags flags)
@@ -394,7 +391,7 @@ namespace Elpida
 	{
 		Paint returnPaint{};
 		returnPaint.type = PAINT_COLOR;
-		returnPaint.colors[0] = ApplyOpacity(paint.GetColor().GetValue(), opacity);
+		returnPaint.colors[0] = ApplyOpacity(paint.GetColor(), opacity);
 		return returnPaint;
 	}
 
@@ -1532,7 +1529,7 @@ namespace Elpida
 			}
 			else if (stops.size() == 1)
 			{
-				const auto cachedColor = ApplyOpacity(stops.front().GetColor().GetValue(), opacity);
+				const auto cachedColor = ApplyOpacity(stops.front().GetColor(), opacity);
 				for (unsigned int& color : returnPaint.colors)
 				{
 					color = cachedColor;
@@ -1544,7 +1541,7 @@ namespace Elpida
 
 				auto& firstStop = stops.front();
 
-				unsigned int ca = ApplyOpacity(firstStop.GetColor().GetValue(), opacity * firstStop.GetOpacity());
+				unsigned int ca = ApplyOpacity(firstStop.GetColor(), opacity * firstStop.GetOpacity());
 
 				double ua = Clamp(firstStop.GetOffset(), 0, 1);
 				double ub = Clamp(stops.back().GetOffset(), ua, 1);
@@ -1562,8 +1559,8 @@ namespace Elpida
 					auto& a = stops[i];
 					auto& b = stops[i + 1];
 
-					ca = ApplyOpacity(a.GetColor().GetValue(), opacity * a.GetOpacity());
-					cb = ApplyOpacity(b.GetColor().GetValue(), opacity * b.GetOpacity());
+					ca = ApplyOpacity(a.GetColor(), opacity * a.GetOpacity());
+					cb = ApplyOpacity(b.GetColor(), opacity * b.GetOpacity());
 
 					ua = Clamp(a.GetOffset(), 0, 1);
 					ub = Clamp(b.GetOffset(), 0, 1);
@@ -1702,17 +1699,20 @@ namespace Elpida
 
 				FlatenShape(element, edges, scale);
 
-				auto paint = GetPaint(document, element, element.GetFill(), element.GetOpacity());
+				auto paint = SvgRasterizerPaint(element.GetFill(), document);
+				//auto paint = GetPaint(document, element, element.GetFill(), element.GetOpacity());
 				for (std::size_t y = 0; y < height; ++y)
 				{
 					for (std::size_t x = 0; x < width; ++x)
 					{
-						if (IsPointInsideEvenOdd(SvgPoint(x, y), edges))
+						SvgPoint point(x, y);
+						if (IsPointInsideEvenOdd(point, edges))
 						{
-							outputBuffer[(y * width * 4 + x * 4)] = paint.colors[0];
-							outputBuffer[(y * width * 4 + x * 4) + 1] = paint.colors[0] >> 8;
-							outputBuffer[(y * width * 4 + x * 4) + 2] = paint.colors[0] >> 16;
-							outputBuffer[(y * width * 4 + x * 4) + 3] = paint.colors[0] >> 24;
+							auto color = paint.CalculateColor(point, document);
+							outputBuffer[(y * width * 4 + x * 4)] = color.R();
+							outputBuffer[(y * width * 4 + x * 4) + 1] = color.G();
+							outputBuffer[(y * width * 4 + x * 4) + 2] = color.B();
+							outputBuffer[(y * width * 4 + x * 4) + 3] = color.A();
 						}
 					}
 				}

@@ -15,7 +15,7 @@ namespace Elpida
 	class SvgRasterizerPaint
 	{
 	public:
-		SvgColor CalculateColor(const SvgPoint& point) const;
+		SvgColor CalculateColor(const SvgPoint& point, const SvgDocument& document) const;
 
 		explicit SvgRasterizerPaint(const SvgPaint& paint, const SvgDocument& document);
 	private:

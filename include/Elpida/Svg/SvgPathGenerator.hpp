@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "SvgPathInstance.hpp"
-#include "Shapes/SvgCubicBezierCurve.hpp"
+#include "SvgCubicBezierCurve.hpp"
 
 namespace Elpida
 {

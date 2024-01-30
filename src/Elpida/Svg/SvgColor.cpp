@@ -11,12 +11,13 @@
 
 namespace Elpida
 {
-	static constexpr unsigned int RgbToInt(const unsigned char r, const unsigned char g, const unsigned char b)
+	static constexpr std::tuple<unsigned char, unsigned char, unsigned char> RgbToInt(const unsigned char r, const unsigned char g, const unsigned char b)
 	{
-		return 255 << 24 | b << 16 | g << 8 | r;
+		return {r, g ,b};
 	}
 
 	SvgColor::SvgColor(const std::string_view view)
+	: _r(0), _g(0), _b(0), _a(255)
 	{
 		CharacterStream stream(view);
 		try
@@ -39,9 +40,9 @@ namespace Elpida
 				return SvgNumber::StrTol16(v);
 			};
 
-			auto nameParse = [](const std::string_view& name) -> unsigned
+			auto nameParse = [](const std::string_view& name) -> const std::tuple<unsigned char, unsigned char, unsigned char>&
 			{
-				static std::unordered_map<std::string_view, unsigned int> map
+				static std::unordered_map<std::string_view, std::tuple<unsigned char, unsigned char, unsigned char>> map
 				{
 					{"red", RgbToInt(255, 0, 0)},
 					{"green", RgbToInt(0, 128, 0)},
@@ -197,12 +198,8 @@ namespace Elpida
 				{
 					return itr->second;
 				}
-				return 0;
+				return {0,0,0};
 			};
-
-			unsigned long r = 0;
-			unsigned long g = 0;
-			unsigned long b = 0;
 
 			stream.SkipSpace();
 			switch (stream.Current())
@@ -212,14 +209,14 @@ namespace Elpida
 					switch (stream.AvailableCharacters())
 					{
 					case 3:
-						r = valueParser() * 17;
-						g = valueParser() * 17;
-						b = valueParser() * 17;
+						_r = valueParser() * 17;
+						_g = valueParser() * 17;
+						_b = valueParser() * 17;
 						break;
 					case 6:
-						r = valueParser2();
-						g = valueParser2();
-						b = valueParser2();
+						_r = valueParser2();
+						_g = valueParser2();
+						_b = valueParser2();
 					default:
 						break;
 					}
@@ -234,38 +231,42 @@ namespace Elpida
 					{
 						throw ParseException("Unexpected character: expected digit");
 					}
-					r = SvgNumber::StrTol(value);
+					_r = SvgNumber::StrTol(value);
 					stream.Next();
 					value = stream.GetStringViewWhile([](auto c) { return c != ','; });
 					if (value.empty())
 					{
 						throw ParseException("Unexpected character: expected digit");
 					}
-					g = SvgNumber::StrTol(value);
+					_g = SvgNumber::StrTol(value);
 					stream.Next();
 					value = stream.GetStringViewWhile([](auto c) { return c != ')'; });
 					if (value.empty())
 					{
 						throw ParseException("Unexpected character: expected digit");
 					}
-					b = SvgNumber::StrTol(value);
+					_b = SvgNumber::StrTol(value);
 				}
 				else
 				{
-					_value = nameParse(view);
+					auto& value = nameParse(view);
+					_r = std::get<0>(value);
+					_g = std::get<1>(value);
+					_b = std::get<2>(value);
 					return;
 				}
 				break;
 			default:
-				_value = nameParse(view);
+				auto& value = nameParse(view);
+				_r = std::get<0>(value);
+				_g = std::get<1>(value);
+				_b = std::get<2>(value);
 				return;
 			}
-
-			_value = RgbToInt(r, g, b);
 		}
 		catch (const ParseException&)
 		{
-			_value = 0;
+			// ignored
 		}
 	}
 } // Elpida
