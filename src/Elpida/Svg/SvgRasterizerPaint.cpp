@@ -19,6 +19,9 @@ namespace Elpida
 
 		if (_gradient->GetType() == SvgGradientType::Linear)
 		{
+
+			if (_stopsGradient->GetStops().empty()) return {};
+
 			auto& data = _gradient->GetData().linear;
 
 			auto x1 = data.x1.CalculateActualValue(document, 0.0, 1.0);
@@ -37,31 +40,27 @@ namespace Elpida
 
 			auto distance = a.GetDistance(b);
 
-			const SvgGradientStop* stopA = nullptr;
-			const SvgGradientStop* stopB = nullptr;
+			const SvgGradientStop* stopA = &_stopsGradient->GetStops().front();
+			const SvgGradientStop* stopB = &_stopsGradient->GetStops().front();
 			SvgPoint pointA = a;
-			SvgPoint pointB = b;
 			for (auto& stop : _stopsGradient->GetStops())
 			{
-				if (stopA == nullptr)
-				{
-					stopA = &stop;
-					stopB = &stop;
-					continue;
-				}
-
 				auto x = x1 + (x1 * stop.GetOffset());
 				auto y = equation.CalculateY(x);
 
-				pointB = SvgPoint(x, y);
+				auto pointB = SvgPoint(x, y);
 				SvgLinearEquation thisEquation(pointA, pointB);
+				if (thisEquation.GetANormal().IsLeftOf(point))
+				{
+					break;
+				}
 
 				if (!thisEquation.GetANormal().IsLeftOf(point) && thisEquation.GetBNormal().IsLeftOf(point))
 				{
-					stopA = stopB;
 					stopB = &stop;
 					break;
 				}
+
 				pointA = pointB;
 				stopA = stopB;
 				stopB = &stop;

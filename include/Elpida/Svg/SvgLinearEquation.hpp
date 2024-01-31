@@ -54,8 +54,7 @@ namespace Elpida
 		[[nodiscard]]
 		bool IsLeftOf(const SvgPoint& point) const
 		{
-			return (_p2.GetX() - _p1.GetX()) * (point.GetY() - _p1.GetY()) - (_p2.GetY() - _p1.GetY()) * (point.GetX() -
-				_p1.GetX()) > 0;
+			return point.GetX() * _a + _b < point.GetY();
 		}
 
 		SvgLinearEquation(const SvgPoint& a, const SvgPoint& b)
