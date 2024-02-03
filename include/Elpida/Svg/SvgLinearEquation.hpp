@@ -11,6 +11,13 @@ namespace Elpida
 	class SvgLinearEquation
 	{
 	public:
+		void Translate(const SvgTransform& transform)
+		{
+			_p1.ApplyTransform(transform);
+			_p2.ApplyTransform(transform);
+			Recalculate();
+		}
+
 		[[nodiscard]]
 		double CalculateY(const double x) const
 		{
@@ -20,49 +27,82 @@ namespace Elpida
 		[[nodiscard]]
 		double GetDistanceFromPoint(const SvgPoint& point) const
 		{
-			auto dx = _p2.GetX() - _p1.GetX();
-			auto dy = _p2.GetY() - _p1.GetY();
-			return std::abs(dx * (_p1.GetY() - point.GetY()) - (_p1.GetX() - point.GetX())  * dy) / sqrt(dx * dx + dy*dy);
+			const auto dx = _p2.GetX() - _p1.GetX();
+			const auto dy = _p2.GetY() - _p1.GetY();
+			return std::abs(dx * (_p1.GetY() - point.GetY()) - (_p1.GetX() - point.GetX()) * dy) / sqrt(
+				dx * dx + dy * dy);
+		}
+
+		[[nodiscard]]
+		SvgLinearEquation GetPerpendicularEquationFromPoint(const SvgPoint& point) const
+		{
+			// See https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+			const auto a = -_a;
+			constexpr auto b = 1.0;
+			const auto c = -_b;
+			const auto x0 = point.GetX();
+			const auto y0 = point.GetY();
+
+			const auto x = (b * (b * x0 - a * y0) - a * c) / (a * a + b * b);
+			const auto y = (a * (-b * x0 + a * y0) - b * c) / (a * a + b * b);
+			return SvgLinearEquation(point, SvgPoint(x, y));
 		}
 
 		[[nodiscard]]
 		SvgLinearEquation GetANormal() const
 		{
 			const auto delta = _p2 - _p1;
-			auto a = SvgPoint(-delta.GetY(), delta.GetX());
-			auto b = SvgPoint(delta.GetY(), -delta.GetX());
+			const auto a = SvgPoint(-delta.GetY(), delta.GetX());
+			const auto b = SvgPoint(delta.GetY(), -delta.GetX());
 
-			auto dx =  _p1.GetX() - a.GetX();
-			auto dy = _p1.GetY() - a.GetY();
+			const auto dx = _p1.GetX() - a.GetX();
+			const auto dy = _p1.GetY() - a.GetY();
 
-			return SvgLinearEquation(SvgPoint(a.GetX() + dx, a.GetY() + dy),SvgPoint(b.GetX() + dx, b.GetY() + dy));
+			return {
+				SvgPoint(a.GetX() + dx, a.GetY() + dy),
+				SvgPoint(b.GetX() + dx, b.GetY() + dy)
+			};
 		}
 
 		[[nodiscard]]
 		SvgLinearEquation GetBNormal() const
 		{
 			const auto delta = _p2 - _p1;
-			auto a = SvgPoint(-delta.GetY(), delta.GetX());
-			auto b = SvgPoint(delta.GetY(), -delta.GetX());
+			const auto a = SvgPoint(-delta.GetY(), delta.GetX());
+			const auto b = SvgPoint(delta.GetY(), -delta.GetX());
 
-			auto dx = _p2.GetX() - a.GetX();
-			auto dy = _p2.GetY() - a.GetY();
+			const auto dx = _p2.GetX() - a.GetX();
+			const auto dy = _p2.GetY() - a.GetY();
 
-			return SvgLinearEquation(SvgPoint(a.GetX() + dx, a.GetY() + dy), SvgPoint(b.GetX() + dx, b.GetY() + dy));
+			return {
+				SvgPoint(a.GetX() + dx, a.GetY() + dy),
+				SvgPoint(b.GetX() + dx, b.GetY() + dy)
+			};
 		}
 
 		[[nodiscard]]
-		bool IsLeftOf(const SvgPoint& point) const
+		bool IsPointLeftOf(const SvgPoint& point) const
 		{
 			return point.GetX() * _a + _b < point.GetY();
+		}
+
+		[[nodiscard]]
+		const SvgPoint& GetP1() const
+		{
+			return _p1;
+		}
+
+		[[nodiscard]]
+		const SvgPoint& GetP2() const
+		{
+			return _p2;
 		}
 
 		SvgLinearEquation(const SvgPoint& a, const SvgPoint& b)
 		{
 			_p1 = a;
 			_p2 = b;
-			_a = (b.GetY() - a.GetY()) / (b.GetX() - a.GetX());
-			_b = a.GetY() - _a * a.GetX();
+			Recalculate();
 		}
 
 		SvgLinearEquation(const double a, const double b)
@@ -76,6 +116,12 @@ namespace Elpida
 		SvgPoint _p2;
 		double _a;
 		double _b;
+
+		void Recalculate()
+		{
+			_a = (_p2.GetY() - _p1.GetY()) / (_p2.GetX() - _p1.GetX());
+			_b = _p1.GetY() - _a * _p1.GetX();
+		}
 	};
 } // Elpida
 

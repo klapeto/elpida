@@ -36,6 +36,15 @@ namespace Elpida
 			return _a;
 		}
 
+		[[nodiscard]]
+		SvgColor WithMultipliedAplha(const double alpha) const
+		{
+			double a = _a * alpha;
+			a = std::max(0.0, std::min(255.0, a));
+
+			return SvgColor(_r, _g, _b, a);
+		}
+
 		SvgColor()
 			: _r(0), _g(0), _b(0), _a(255)
 		{

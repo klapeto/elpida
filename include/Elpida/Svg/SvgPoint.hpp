@@ -64,12 +64,24 @@ namespace Elpida
 			return *this;
 		}
 
+		SvgPoint& operator/=(const double value)
+		{
+			_x /= value;
+			_y /= value;
+			return *this;
+		}
+
 		SvgPoint operator-() const
 		{
 			return {-_x, -_y};
 		}
 
 		void ApplyTransform(const SvgTransform& transform)
+		{
+			transform.ApplyToPoint(_x, _y, _x, _y);
+		}
+
+		void Transform(const SvgTransform& transform)
 		{
 			transform.ApplyToPoint(_x, _y, _x, _y);
 		}
@@ -117,7 +129,18 @@ namespace Elpida
 			return sqrt(dx * dx + dy * dy);
 		}
 
-		SvgPoint():_x(0.0), _y(0.0){}
+		[[nodiscard]]
+		double GetDirection(const SvgPoint& to) const
+		{
+			const double dx = to._x - _x;
+			const double dy = to._y - _y;
+			return dy / dx;
+		}
+
+		SvgPoint(): _x(0.0), _y(0.0)
+		{
+		}
+
 		SvgPoint(const double x, const double y)
 			: _x(x),
 			  _y(y)
