@@ -48,7 +48,6 @@ namespace Elpida
 
 	SvgRasterizerPaint::~SvgRasterizerPaint()
 	{
-
 	}
 
 	void SvgRasterizerPaint::AsGradient(const SvgPaint& paint, const SvgDocument& document)
@@ -94,7 +93,7 @@ namespace Elpida
 				b.ApplyTransform(_gradient->GetGradientTransform());
 
 				_gradientCache = LinearCache{
-					SvgLinearEquation(a,b),
+					SvgLinearEquation(a, b),
 					std::vector<SvgLinearEquation>()
 				};
 				auto& linear = std::get<LinearCache>(_gradientCache);
@@ -105,22 +104,26 @@ namespace Elpida
 
 				stopNormals.push_back(equation.GetANormal());
 
-				auto x1 = a.GetX();
+				const auto x1 = a.GetX();
+				const auto length = a.GetDistance(b);
+
+				const auto gradientDy = a.GetY() - b.GetY();
+				const auto horizontalLength = sqrt(length * length - gradientDy * gradientDy);
 
 				for (std::size_t i = 1; i < stops.size() - 1; ++i)
 				{
 					auto& stop = stops[i];
-					const auto x = x1 + (x1 * stop.GetOffset());
+					const auto x = x1 + (horizontalLength * stop.GetOffset());
 					const auto y = equation.CalculateY(x);
 
-					stopNormals.push_back(SvgLinearEquation(a, SvgPoint(x,y)).GetBNormal());
+					stopNormals.push_back(SvgLinearEquation(a, SvgPoint(x, y)).GetBNormal());
 				}
 
 				stopNormals.push_back(equation.GetBNormal());
 			}
 			else
 			{
-
+				// Radial
 			}
 		}
 	}
