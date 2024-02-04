@@ -32,6 +32,7 @@ namespace Elpida
 		{
 			SvgLinearEquation equation;
 			std::vector<SvgLinearEquation> stopNormals;
+			SvgPoint direction;
 		};
 		std::variant<std::monostate, LinearCache> _gradientCache;
 

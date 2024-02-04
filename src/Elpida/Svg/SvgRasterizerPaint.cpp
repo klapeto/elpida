@@ -109,11 +109,12 @@ namespace Elpida
 
 				const auto gradientDy = a.GetY() - b.GetY();
 				const auto horizontalLength = sqrt(length * length - gradientDy * gradientDy);
+				const auto direction = b.GetX() - a.GetX() > 0.0 ? 1.0 : -1.0;
 
 				for (std::size_t i = 1; i < stops.size() - 1; ++i)
 				{
 					auto& stop = stops[i];
-					const auto x = x1 + (horizontalLength * stop.GetOffset());
+					const auto x = x1 + (horizontalLength * stop.GetOffset()) * direction;
 					const auto y = equation.CalculateY(x);
 
 					stopNormals.push_back(SvgLinearEquation(a, SvgPoint(x, y)).GetBNormal());
@@ -152,18 +153,31 @@ namespace Elpida
 			normalA = &stopNormals[i];
 			normalB = &stopNormals[i + 1];
 
-			if (normalA->IsPointLeftOf(point))
+			if (normalA->IsPointBehindLine(point))
 			{
 				break;
 			}
 
 			stopA = &stops[i];
 
-			if (normalB->IsPointLeftOf(point))
+			if (normalB->IsPointBehindLine(point))
 			{
 				stopB = &stops[i + 1];
 				break;
 			}
+
+			// if (normalA->IsPointLeftOf(point))
+			// {
+			// 	break;
+			// }
+			//
+			// stopA = &stops[i];
+			//
+			// if (normalB->IsPointLeftOf(point))
+			// {
+			// 	stopB = &stops[i + 1];
+			// 	break;
+			// }
 		}
 
 		// the point is not before any stop
@@ -184,7 +198,7 @@ namespace Elpida
 
 		const auto distanceFromB = normalB->GetP1().GetDistance(perpedicularEquation.GetP2());
 		const auto stopDistance = normalB->GetP1().GetDistance(normalA->GetP1());
-		const auto ratio = distanceFromB / stopDistance;
+		const auto ratio = distanceFromB > stopDistance ? stopDistance / distanceFromB : distanceFromB / stopDistance;
 
 		auto tR = stopA->GetColor().R() * ratio;
 		auto tG = stopA->GetColor().G() * ratio;
