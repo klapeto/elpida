@@ -81,9 +81,14 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		bool IsPointLeftOf(const SvgPoint& point) const
+		bool IsPointBehindLine(const SvgPoint& point) const
 		{
-			return point.GetX() * _a + _b < point.GetY();
+			const auto a = _a;
+			const auto c = _b;
+
+			auto sign = a * point.GetX() - point.GetY() + c < 0.0 ? -1 : 1;
+			return sign == _direction;
+			//return a * point.GetX() - point.GetY() + c < 0.0;
 		}
 
 		[[nodiscard]]
@@ -98,6 +103,18 @@ namespace Elpida
 			return _p2;
 		}
 
+		// [[nodiscard]]
+		// const SvgPoint& GetDirection() const
+		// {
+		// 	return _direction;
+		// }
+
+		[[nodiscard]]
+		double GetDirectionFromPoint(const SvgPoint& point) const
+		{
+			return point.GetY() - (point.GetX() * _a + _b) > 0.0 ? 1.0 : -1.0;
+		}
+
 		SvgLinearEquation(const SvgPoint& a, const SvgPoint& b)
 		{
 			_p1 = a;
@@ -107,7 +124,8 @@ namespace Elpida
 
 		SvgLinearEquation(const double a, const double b)
 			: _a(a),
-			  _b(b)
+			  _b(b),
+		_direction(1.0)
 		{
 		}
 
@@ -116,11 +134,13 @@ namespace Elpida
 		SvgPoint _p2;
 		double _a;
 		double _b;
+		int _direction;
 
 		void Recalculate()
 		{
 			_a = (_p2.GetY() - _p1.GetY()) / (_p2.GetX() - _p1.GetX());
 			_b = _p1.GetY() - _a * _p1.GetX();
+			_direction = (_p2 - _p1).GetX() > 0.0 ? 1 : -1;
 		}
 	};
 } // Elpida
