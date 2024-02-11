@@ -36,6 +36,18 @@ namespace Elpida
 		[[nodiscard]]
 		SvgLinearEquation GetPerpendicularEquationFromPoint(const SvgPoint& point) const
 		{
+			if (_direction.GetX() == 0.0)
+			{
+				// vertical line
+				return SvgLinearEquation(point, SvgPoint(_p1.GetX(), point.GetY()));
+			}
+
+			if (_direction.GetY() == 0.0)
+			{
+				// horizontal line
+				return SvgLinearEquation(point, SvgPoint(point.GetX(), _p1.GetY()));
+			}
+
 			// See https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 			const auto a = -_a;
 			constexpr auto b = 1.0;
@@ -81,14 +93,25 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		bool IsPointBehindLine(const SvgPoint& point) const
+		bool IsPointBehindLine(const SvgPoint& point, const SvgPoint& direction) const
 		{
 			const auto a = _a;
 			const auto c = _b;
 
-			auto sign = a * point.GetX() - point.GetY() + c < 0.0 ? -1 : 1;
-			return sign == _direction;
-			//return a * point.GetX() - point.GetY() + c < 0.0;
+			if (_direction.GetX() == 0.0)
+			{
+				// vertical line
+				return GetDirection(point.GetX() - _p1.GetX()) != GetDirection(direction.GetX());
+			}
+
+			if (_direction.GetY() == 0.0)
+			{
+				// horzizontal line
+
+				return GetDirection(point.GetY() - _p1.GetY()) != GetDirection(direction.GetY());
+			}
+
+			return GetDirection(a * point.GetX() - point.GetY() + c) == GetDirection(direction.GetY());
 		}
 
 		[[nodiscard]]
@@ -103,16 +126,15 @@ namespace Elpida
 			return _p2;
 		}
 
-		// [[nodiscard]]
-		// const SvgPoint& GetDirection() const
-		// {
-		// 	return _direction;
-		// }
-
 		[[nodiscard]]
-		double GetDirectionFromPoint(const SvgPoint& point) const
+		SvgPoint GetDirectionFromPoint(const SvgPoint& point) const
 		{
-			return point.GetY() - (point.GetX() * _a + _b) > 0.0 ? 1.0 : -1.0;
+			return point - _p2;
+		}
+
+		const SvgPoint& GetDirection() const
+		{
+			return _direction;
 		}
 
 		SvgLinearEquation(const SvgPoint& a, const SvgPoint& b)
@@ -124,8 +146,7 @@ namespace Elpida
 
 		SvgLinearEquation(const double a, const double b)
 			: _a(a),
-			  _b(b),
-		_direction(1.0)
+			  _b(b)
 		{
 		}
 
@@ -134,13 +155,19 @@ namespace Elpida
 		SvgPoint _p2;
 		double _a;
 		double _b;
-		int _direction;
+		SvgPoint _direction;
 
 		void Recalculate()
 		{
-			_a = (_p2.GetY() - _p1.GetY()) / (_p2.GetX() - _p1.GetX());
+			_direction = _p2 - _p1;
+			_a = _direction.GetX() != 0.0 ? (_direction.GetY()) / (_direction.GetX()) : 0.0;
 			_b = _p1.GetY() - _a * _p1.GetX();
-			_direction = (_p2 - _p1).GetX() > 0.0 ? 1 : -1;
+		}
+
+		static int GetDirection(const double v)
+		{
+			if (v == 0.0) return 0;
+			return v < 0.0 ? -1 : 1;
 		}
 	};
 } // Elpida

@@ -105,17 +105,21 @@ namespace Elpida
 				stopNormals.push_back(equation.GetANormal());
 
 				const auto x1 = a.GetX();
+				const auto y1 = a.GetY();
 				const auto length = a.GetDistance(b);
 
+				const auto gradientDx = a.GetX() - b.GetX();
 				const auto gradientDy = a.GetY() - b.GetY();
 				const auto horizontalLength = sqrt(length * length - gradientDy * gradientDy);
-				const auto direction = b.GetX() - a.GetX() > 0.0 ? 1.0 : -1.0;
+				const auto verticalLength = sqrt(length * length - gradientDx * gradientDx);
+				const auto directionX = b.GetX() - a.GetX() > 0.0 ? 1.0 : -1.0;
+				const auto directionY = b.GetY() - a.GetY() > 0.0 ? 1.0 : -1.0;
 
 				for (std::size_t i = 1; i < stops.size() - 1; ++i)
 				{
 					auto& stop = stops[i];
-					const auto x = x1 + (horizontalLength * stop.GetOffset()) * direction;
-					const auto y = equation.CalculateY(x);
+					const auto x = x1 + (horizontalLength * stop.GetOffset()) * directionX;
+					const auto y = y1 + (verticalLength * stop.GetOffset()) * directionY;
 
 					stopNormals.push_back(SvgLinearEquation(a, SvgPoint(x, y)).GetBNormal());
 				}
@@ -153,31 +157,18 @@ namespace Elpida
 			normalA = &stopNormals[i];
 			normalB = &stopNormals[i + 1];
 
-			if (normalA->IsPointBehindLine(point))
+			if (normalA->IsPointBehindLine(point, linear.equation.GetDirection()))
 			{
 				break;
 			}
 
 			stopA = &stops[i];
 
-			if (normalB->IsPointBehindLine(point))
+			if (normalB->IsPointBehindLine(point, linear.equation.GetDirection()))
 			{
 				stopB = &stops[i + 1];
 				break;
 			}
-
-			// if (normalA->IsPointLeftOf(point))
-			// {
-			// 	break;
-			// }
-			//
-			// stopA = &stops[i];
-			//
-			// if (normalB->IsPointLeftOf(point))
-			// {
-			// 	stopB = &stops[i + 1];
-			// 	break;
-			// }
 		}
 
 		// the point is not before any stop
