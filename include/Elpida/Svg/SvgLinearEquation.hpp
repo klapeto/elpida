@@ -95,23 +95,26 @@ namespace Elpida
 		[[nodiscard]]
 		bool IsPointBehindLine(const SvgPoint& point, const SvgPoint& direction) const
 		{
-			const auto a = _a;
-			const auto c = _b;
-
 			if (_direction.GetX() == 0.0)
 			{
 				// vertical line
-				return GetDirection(point.GetX() - _p1.GetX()) != GetDirection(direction.GetX());
+				const auto sign = GetSign(point.GetX() - _p1.GetX());
+				if (sign == 0) return false;
+				return sign != GetSign(direction.GetX());
 			}
 
 			if (_direction.GetY() == 0.0)
 			{
 				// horzizontal line
-
-				return GetDirection(point.GetY() - _p1.GetY()) != GetDirection(direction.GetY());
+				const auto sign = GetSign(point.GetY() - _p1.GetY());
+				if (sign == 0) return false;
+				return sign != GetSign(direction.GetY());
 			}
 
-			return GetDirection(a * point.GetX() - point.GetY() + c) == GetDirection(direction.GetY());
+			const auto a = _a;
+			const auto c = _b;
+
+			return GetSign(a * point.GetX() - point.GetY() + c) == GetSign(direction.GetY());
 		}
 
 		[[nodiscard]]
@@ -164,7 +167,7 @@ namespace Elpida
 			_b = _p1.GetY() - _a * _p1.GetX();
 		}
 
-		static int GetDirection(const double v)
+		static int GetSign(const double v)
 		{
 			if (v == 0.0) return 0;
 			return v < 0.0 ? -1 : 1;
