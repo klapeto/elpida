@@ -211,31 +211,31 @@ namespace Elpida
 		if (stops.size() == 1) return stops.front().GetColor();
 
 		auto& linear = std::get<LinearCache>(_gradientCache);
-		auto stopNormals = linear.stopNormals;
+		auto stopNormals = linear.stopNormals;		// copy
 
 		const SvgGradientStop* stopA = nullptr;
 		const SvgGradientStop* stopB = nullptr;
-		SvgLinearEquation* normalA = nullptr;
-		SvgLinearEquation* normalB = nullptr;
+		const SvgLinearEquation* normalA = nullptr;
+		const SvgLinearEquation* normalB = nullptr;
 
 		SvgTransform transform;
-		auto distanceA = stopNormals.front().GetDistanceFromPoint(point);
-		auto distanceB = stopNormals.back().GetDistanceFromPoint(point);
 
+		const auto distanceA = stopNormals.front().GetDistanceFromPoint(point);
+		const auto distanceB = stopNormals.back().GetDistanceFromPoint(point);
 		auto distance = linear.equation.GetP1().GetDistance(linear.equation.GetP2());
 
 		if (distanceA > distance || distanceB > distance)
 		{
 			if (distanceA < distanceB)
 			{
-				int ratio = 1 + distanceA / distance;
-				auto delta = linear.equation.GetP2() - linear.equation.GetP1();
+				const int ratio = 1 + distanceA / distance;
+				const auto delta = linear.equation.GetP2() - linear.equation.GetP1();
 				transform.SetTranslation(-(delta.GetX() * ratio), -(delta.GetY() * ratio));
 			}
 			else
 			{
-				int ratio = 1 + distanceB / distance;
-				auto delta = linear.equation.GetP2() - linear.equation.GetP1();
+				const int ratio = 1 + distanceB / distance;
+				const auto delta = linear.equation.GetP2() - linear.equation.GetP1();
 				transform.SetTranslation(delta.GetX() * ratio, delta.GetY() * ratio);
 			}
 		}
@@ -245,15 +245,10 @@ namespace Elpida
 			normal.Translate(transform);
 		}
 
-		for (std::size_t i = 0; i < stops.size(); i++)
+		for (std::size_t i = 0; i < stops.size() - 1; i++)
 		{
 			normalA = &stopNormals[i];
 			normalB = &stopNormals[i + 1];
-
-			if (normalA->IsPointBehindLine(point, linear.equation.GetDirection()))
-			{
-				break;
-			}
 
 			stopA = &stops[i];
 

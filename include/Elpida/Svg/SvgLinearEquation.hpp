@@ -99,7 +99,7 @@ namespace Elpida
 			{
 				// vertical line
 				const auto sign = GetSign(point.GetX() - _p1.GetX());
-				if (sign == 0) return false;
+				if (sign == 0) return true;
 				return sign != GetSign(direction.GetX());
 			}
 
@@ -107,14 +107,14 @@ namespace Elpida
 			{
 				// horzizontal line
 				const auto sign = GetSign(point.GetY() - _p1.GetY());
-				if (sign == 0) return false;
+				if (sign == 0) return true;
 				return sign != GetSign(direction.GetY());
 			}
 
-			const auto a = _a;
-			const auto c = _b;
-
-			return GetSign(a * point.GetX() - point.GetY() + c) == GetSign(direction.GetY());
+			const auto sign = GetSign(_a * point.GetX() - point.GetY() + _b);
+			//const auto sign = GetSign(CalculateY(point.GetX()));
+			if (sign == 0) return true;
+			return sign == GetSign(direction.GetY());
 		}
 
 		[[nodiscard]]
@@ -160,6 +160,8 @@ namespace Elpida
 		double _b;
 		SvgPoint _direction;
 
+		constexpr static double Tolerance = 0.000001;
+
 		void Recalculate()
 		{
 			_direction = _p2 - _p1;
@@ -169,6 +171,7 @@ namespace Elpida
 
 		static int GetSign(const double v)
 		{
+			if (std::abs(v) < Tolerance) return 0;
 			if (v == 0.0) return 0;
 			return v < 0.0 ? -1 : 1;
 		}
