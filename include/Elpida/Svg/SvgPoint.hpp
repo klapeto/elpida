@@ -78,7 +78,7 @@ namespace Elpida
 
 		void ApplyTransform(const SvgTransform& transform)
 		{
-			transform.ApplyToPoint(_x, _y, _x, _y);
+			transform.ApplyToPoint2(_x, _y);
 		}
 
 		void Transform(const SvgTransform& transform)
