@@ -116,8 +116,8 @@ namespace Elpida
 					data.y2.CalculateActualValue(document, 0.0, 1.0)
 				);
 
-				gradientPointA.ApplyTransform(_gradient->GetGradientTransform());
-				grandientPointB.ApplyTransform(_gradient->GetGradientTransform());
+				gradientPointA.Transform(_gradient->GetGradientTransform());
+				grandientPointB.Transform(_gradient->GetGradientTransform());
 
 				_gradientCache = LinearCache{
 					SvgLinearEquation(gradientPointA, grandientPointB),
@@ -302,6 +302,7 @@ namespace Elpida
 			}
 		}
 
+		auto direction = equation.GetDirection();
 		if (inverse)
 		{
 			SvgTransform flip;
@@ -311,10 +312,11 @@ namespace Elpida
 			// we need to move the gradient bound box to the center of the axis system
 			// before rotate and move it back
 			flip.Translate(dx, dy)
-				.Rotate(std::numbers::pi)
+				.RotateDegrees(180)
 				.Translate(-dx, -dy);
 
-			equation.Transform(flip);
+			//equation.Transform(flip);
+			direction = -direction;
 			transform.Multiply(flip);
 		}
 
@@ -328,44 +330,23 @@ namespace Elpida
 		const SvgLinearEquation* normalA = nullptr;
 		const SvgLinearEquation* normalB = nullptr;
 
-		if (false)
+		for (std::size_t i = 0; i < stops.size() - 1; i++)
 		{
-			for (std::size_t i = stops.size() - 1; i > 0; i--)
+			normalA = &stopNormals[i];
+			normalB = &stopNormals[i + 1];
+
+			stopA = &stops[i];
+
+			if (normalB->IsPointBehindLine(point, direction))
 			{
-				normalA = &stopNormals[i];
-				normalB = &stopNormals[i - 1];
-
-				stopA = &stops[i];
-
-				if (normalB->IsPointBehindLine(point, equation.GetDirection()))
-				{
-					stopB = &stops[i - 1];
-					break;
-				}
-			}
-		}
-		else
-		{
-			for (std::size_t i = 0; i < stops.size() - 1; i++)
-			{
-				normalA = &stopNormals[i];
-				normalB = &stopNormals[i + 1];
-
-				stopA = &stops[i];
-
-				if (normalB->IsPointBehindLine(point, equation.GetDirection()))
-				{
-					stopB = &stops[i + 1];
-					break;
-				}
+				stopB = &stops[i + 1];
+				break;
 			}
 		}
 
 		assert(stopA != nullptr);
 		assert(stopB != nullptr);
 		return CalculateColorFromStops(point, equation, *stopA, *normalA, *stopB, *normalB);
-
-		return {};
 	}
 
 } // Elpida

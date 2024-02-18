@@ -32,9 +32,9 @@ namespace Elpida
 
 		void ApplyTransform(const SvgTransform& transform)
 		{
-			_startControl.ApplyTransform(transform);
-			_endControl.ApplyTransform(transform);
-			_end.ApplyTransform(transform);
+			_startControl.Transform(transform);
+			_endControl.Transform(transform);
+			_end.Transform(transform);
 		}
 
 		SvgCubicBezierCurve(const SvgPoint& startControl, const SvgPoint& endControl, const SvgPoint& end)

@@ -13,8 +13,8 @@ namespace Elpida
 	public:
 		void Transform(const SvgTransform& transform)
 		{
-			_p1.ApplyTransform(transform);
-			_p2.ApplyTransform(transform);
+			_p1.Transform(transform);
+			_p2.Transform(transform);
 			Recalculate();
 		}
 

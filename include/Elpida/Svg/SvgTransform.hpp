@@ -6,6 +6,7 @@
 #define ELPIDA_SVG_SVGTRANSFORM_HPP
 
 #include <cmath>
+#include <numbers>
 #include <string_view>
 
 namespace Elpida
@@ -36,12 +37,17 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform& Rotate(const double angle)
+		SvgTransform& RotateRadians(const double radians)
 		{
 			SvgTransform transform;
-			transform.SetRotation(angle);
+			transform.SetRotation(radians);
 			PreMultiply(transform);
 			return *this;
+		}
+
+		SvgTransform& RotateDegrees(const double degrees)
+		{
+			return RotateRadians( degrees / 180 * std::numbers::pi);
 		}
 
 		SvgTransform& SkewX(const double angle)
@@ -171,18 +177,18 @@ namespace Elpida
 			t[5] = (other.t[1] * other.t[4] - other.t[0] * other.t[5]) * invdet;
 		}
 
-		void ApplyToPoint(double& dx, double& dy, const double x, const double y) const
-		{
-			dx = x * t[0] + y * t[2] + t[4];
-			dy = x * t[1] + y * t[3] + t[5];
-		}
-
-		void ApplyToPoint2(double& x, double& y) const
+		void ApplyToPoint(double& x, double& y) const
 		{
 			const auto tx = t[A] * x + t[C] * y + t[E];
 			const auto ty = t[B] * x + t[D] * y + t[F];
 			x = tx;
 			y = ty;
+		}
+
+		void ApplyToPoint(double& dx, double& dy, const double x, const double y) const
+		{
+			dx = x * t[0] + y * t[2] + t[4];
+			dy = x * t[1] + y * t[3] + t[5];
 		}
 
 		void ApplyToVector(double& dx, double& dy, const double x, const double y) const
