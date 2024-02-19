@@ -1699,8 +1699,7 @@ namespace Elpida
 
 				FlatenShape(element, edges, scale);
 
-				auto paint = SvgRasterizerPaint(element.GetFill(), document);
-				//auto paint = GetPaint(document, element, element.GetFill(), element.GetOpacity());
+				auto paint = SvgRasterizerPaint(element.GetFill(), element, document);
 				for (std::size_t y = 0; y < height; ++y)
 				{
 					for (std::size_t x = 0; x < width; ++x)

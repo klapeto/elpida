@@ -39,6 +39,18 @@ namespace Elpida
 			return _maxY;
 		}
 
+		[[nodiscard]]
+		double GetWidth() const
+		{
+			return _maxX - _minX;
+		}
+
+		[[nodiscard]]
+		double GetHeight() const
+		{
+			return _maxY - _minY;
+		}
+
 		void Merge(const SvgBounds& other);
 
 		SvgBounds() : _minX(0.0),

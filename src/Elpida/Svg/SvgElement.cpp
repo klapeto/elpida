@@ -73,6 +73,8 @@ namespace Elpida
 
 			_children.emplace_back(child, document);
 		}
+
+		CalculateBounds();
 	}
 
 	void SvgElement::ParseAsRectangle(const SvgDocument& document)
@@ -167,5 +169,33 @@ namespace Elpida
 		SvgPathGenerator generator;
 		generator.ParsePathData(_properties.GetValue("d"));
 		_paths = std::move(generator.GetPaths());
+	}
+
+	void SvgElement::CalculateBounds()
+	{
+		if (_paths.empty() && _children.empty()) return;
+		double minX = std::numeric_limits<double>::max();
+		double minY = std::numeric_limits<double>::max();
+		double maxX = std::numeric_limits<double>::min();
+		double maxY = std::numeric_limits<double>::min();
+
+		for (auto& path: _paths)
+		{
+			auto& bounds = path.GetBounds();
+			minX = std::min(minX, bounds.GetMinX());
+			minY = std::min(minY, bounds.GetMinY());
+			maxX = std::max(maxX, bounds.GetMaxX());
+			maxY = std::max(maxY, bounds.GetMaxY());
+		}
+
+		for (auto& child: _children)
+		{
+			auto& bounds = child.GetBounds();
+			minX = std::min(minX, bounds.GetMinX());
+			minY = std::min(minY, bounds.GetMinY());
+			maxX = std::max(maxX, bounds.GetMaxX());
+			maxY = std::max(maxY, bounds.GetMaxY());
+		}
+		_bounds = SvgBounds(minX, minY, maxX, maxY);
 	}
 } // Elpida

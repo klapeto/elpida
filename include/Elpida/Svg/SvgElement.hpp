@@ -71,6 +71,12 @@ namespace Elpida
 			return _paths;
 		}
 
+		[[nodiscard]]
+		const SvgBounds& GetBounds() const
+		{
+			return _bounds;
+		}
+
 		SvgElement() = default;
 		explicit SvgElement(const XmlElement& element, SvgDocument& document);
 		SvgElement(const SvgElement&) = delete;
@@ -86,6 +92,7 @@ namespace Elpida
 		std::vector<SvgElement> _children;
 		SvgFill _fill;
 		SvgStroke _stroke;
+		SvgBounds _bounds;
 		double _opacity;
 		bool _visible;
 
@@ -110,6 +117,7 @@ namespace Elpida
 		}
 
 
+		void CalculateBounds();
 	};
 } // Elpida
 

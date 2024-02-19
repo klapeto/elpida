@@ -21,7 +21,7 @@ namespace Elpida
 		[[nodiscard]]
 		SvgColor CalculateColor(const SvgPoint& point, const SvgDocument& document) const;
 
-		explicit SvgRasterizerPaint(const SvgPaint& paint, const SvgDocument& document);
+		explicit SvgRasterizerPaint(const SvgPaint& paint, const SvgElement& element, const SvgDocument& document);
 		~SvgRasterizerPaint();
 	private:
 		SvgColor _color;
@@ -36,7 +36,7 @@ namespace Elpida
 		};
 		std::variant<std::monostate, LinearCache> _gradientCache;
 
-		void AsGradient(const SvgPaint& paint, const SvgDocument& document);
+		void AsGradient(const SvgPaint& paint, const SvgElement& element, const SvgDocument& document);
 		void AsColor(const SvgPaint& paint);
 
 		[[nodiscard]]
@@ -45,6 +45,15 @@ namespace Elpida
 		SvgColor CalculateLinearGradientRepeat(const SvgPoint& point, const SvgDocument& document) const;
 		[[nodiscard]]
 		SvgColor CalculateLinearGradientReflect(const SvgPoint& point, const SvgDocument& document) const;
+
+		[[nodiscard]]
+		SvgColor CalculateRadialGradientPad(const SvgPoint& point, const SvgDocument& document) const;
+
+		[[nodiscard]]
+		SvgColor CalculateRadialGradientRepeat(const SvgPoint& point, const SvgDocument& document) const;
+
+		[[nodiscard]]
+		SvgColor CalculateRadialGradientReflect(const SvgPoint& point, const SvgDocument& document) const;
 	};
 } // Elpida
 
