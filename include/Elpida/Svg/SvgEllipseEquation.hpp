@@ -12,25 +12,37 @@ namespace Elpida
 	class SvgEllipseEquation
 	{
 	public:
+
+		void Transform(const SvgTransform& transform)
+		{
+			_focusA.Transform(transform);
+			_focusB.Transform(transform);
+			_topPoint.Transform(transform);
+			_constantDistance = _focusA.GetDistance(_topPoint) + _focusB.GetDistance(_topPoint);
+		}
+
 		[[nodiscard]]
 		bool IsPointInside(const SvgPoint& point) const
 		{
-			const auto dx = point.GetX() - _center.GetX();
-			const auto dy = point.GetY() - _center.GetY();
+			auto distance = _focusA.GetDistance(point) + _focusB.GetDistance(point);
 
-			const auto value = ((dx * dx) / (_radius.GetX() * _radius.GetX()))
-					+ ((dy * dy) / (_radius.GetY() * _radius.GetY()));
-			return value <= 1.0;
+			return distance <= _constantDistance;
 		}
 
 		SvgEllipseEquation(const SvgPoint& center, const double rX, const double rY)
-			: _center(center), _radius(rX, rY)
 		{
+			auto focus = sqrt(rX * rX - rY * rY);
+			_focusA = SvgPoint(center.GetX() + focus, center.GetY());
+			_focusB = SvgPoint(center.GetX() - focus, center.GetY());
+			_constantDistance = rX * 2;
+			_topPoint = SvgPoint(center.GetX(), center.GetY() - rY);
 		}
 
 	private:
-		SvgPoint _center;
-		SvgPoint _radius;
+		SvgPoint _topPoint;
+		SvgPoint _focusA;
+		SvgPoint _focusB;
+		double _constantDistance;
 	};
 } // Elpida
 

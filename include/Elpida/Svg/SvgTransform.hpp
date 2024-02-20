@@ -47,7 +47,7 @@ namespace Elpida
 
 		SvgTransform& RotateDegrees(const double degrees)
 		{
-			return RotateRadians( degrees / 180 * std::numbers::pi);
+			return RotateRadians(degrees / 180 * std::numbers::pi);
 		}
 
 		SvgTransform& SkewX(const double angle)
