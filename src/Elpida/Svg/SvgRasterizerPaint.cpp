@@ -164,8 +164,39 @@ namespace Elpida
 			}
 			else
 			{
+				const auto elementBounds = _gradient->GetUnits() == SvgGradientUnits::User ? SvgBounds(0.0,0.0,1.0,1.0) : element.GetBounds();
+				auto& data = _gradient->GetData().radial;
 
-				// Radial
+				auto radius = data.r.CalculateActualValue(document, 0.0, elementBounds.GetWidth());
+				auto cX = data.cx.CalculateActualValue(document,0.0, elementBounds.GetWidth());
+				auto cY = data.cy.CalculateActualValue(document,0.0, elementBounds.GetHeight());
+				SvgEllipseEquation equation(
+					cX,
+					cY,
+					radius,
+					radius);
+
+				//equation.Transform(_gradient->GetGradientTransform());
+
+				_gradientCache = RadialCache{
+					std::vector<SvgEllipseEquation>()
+				};
+
+				auto& radial = std::get<RadialCache>(_gradientCache);
+				auto& stopEllipses = radial.stopEllipses;
+
+				for (std::size_t i = 0; i < stops.size(); ++i)
+				{
+					auto& stop = stops[i];
+
+					// calculate the linear interpolation (where x,y exactly lies between the points)
+					const auto thisRadius = std::lerp(0, radius, stop.GetOffset());
+
+					stopEllipses.emplace_back(cX, cY, thisRadius, thisRadius).Transform(_gradient->GetGradientTransform());
+				}
+
+				//equation.Transform()
+
 			}
 		}
 	}
@@ -365,8 +396,58 @@ namespace Elpida
 	{
 		auto& stops = _stopsGradient->GetStops();
 
+		auto& radial = std::get<RadialCache>(_gradientCache);
+		auto& stopEquations = radial.stopEllipses;
 
-		return {};
+		const SvgGradientStop* stopA = nullptr;
+		const SvgGradientStop* stopB = nullptr;
+
+		const SvgEllipseEquation* equationA = nullptr;
+		const SvgEllipseEquation* equationB= nullptr;
+
+		for (std::size_t i = 0; i < stops.size() - 1; i++)
+		{
+			stopA = &stops[i];
+			equationA = &stopEquations[i];
+			equationB = &stopEquations[i + 1];
+
+			if (stopEquations[i + 1].IsPointInside(point))
+			{
+				stopB = &stops[i+1];
+				break;
+			}
+		}
+
+		if (stopA == nullptr)
+		{
+			auto& firstStop = stops.front();
+			return firstStop.GetColor().WithMultipliedAplha(firstStop.GetOpacity());
+		}
+
+		// the point is beyond all stops
+		if (stopB == nullptr)
+		{
+			auto& lastStop = stops.back();
+			return lastStop.GetColor().WithMultipliedAplha(lastStop.GetOpacity());
+		}
+
+		auto distanceFromA = equationA->GetFocusA().GetDistance(point) + equationA->GetFocusB().GetDistance(point);
+		auto stopDistance = equationB->GetConstantDistance() - equationA->GetConstantDistance();
+
+		const auto ratio = (equationB->GetConstantDistance() - distanceFromA) / stopDistance;
+
+		auto tR = stopA->GetColor().R() * ratio;
+		auto tG = stopA->GetColor().G() * ratio;
+		auto tB = stopA->GetColor().B() * ratio;
+		auto tA = (stopA->GetColor().A() * stopA->GetOpacity()) * ratio;
+
+		tR += stopB->GetColor().R() * (1.0 - ratio);
+		tG += stopB->GetColor().G() * (1.0 - ratio);
+		tB += stopB->GetColor().B() * (1.0 - ratio);
+		tA += (stopB->GetColor().A() * stopB->GetOpacity()) * (1.0 - ratio);
+
+		return SvgColor(tR, tG, tB, tA);
+
 	}
 
 	SvgColor SvgRasterizerPaint::CalculateRadialGradientRepeat(const SvgPoint& point, const SvgDocument& document) const

@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "SvgColor.hpp"
+#include "SvgEllipseEquation.hpp"
 #include "SvgGradient.hpp"
 #include "SvgLinearEquation.hpp"
 
@@ -34,7 +35,12 @@ namespace Elpida
 			std::vector<SvgLinearEquation> stopNormals;
 			double length;
 		};
-		std::variant<std::monostate, LinearCache> _gradientCache;
+
+		struct RadialCache
+		{
+			std::vector<SvgEllipseEquation> stopEllipses;
+		};
+		std::variant<std::monostate, LinearCache, RadialCache> _gradientCache;
 
 		void AsGradient(const SvgPaint& paint, const SvgElement& element, const SvgDocument& document);
 		void AsColor(const SvgPaint& paint);

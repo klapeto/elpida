@@ -112,40 +112,40 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 
 int main(int argC, char** argV)
 {
-	auto width = 100;
-	auto height = 100;
-	auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[width*height * 4]);
-	SvgTransform transform;
-	transform.RotateDegrees(36.108952);
-	SvgEllipseEquation equation(SvgPoint(73.287651, 16.315485), 48.594913, 8.9711752);
-
-	equation.Transform(transform);
-
-	for (auto i = 0; i < height; ++i)
-	{
-		for (auto j = 0; j < width; ++j)
-		{
-			auto x = (double)j;
-			auto y = (double)i;
-			if (equation.IsPointInside(SvgPoint(x, y)))
-			{
-				bitmapData[i * width * 4 + (j * 4)] = 0;
-				bitmapData[i * width * 4 + (j * 4) + 1] = 0;
-				bitmapData[i * width * 4 + (j * 4) + 2] = 0;
-				bitmapData[i * width * 4 + (j * 4) + 3] = 255;
-			}
-			else
-			{
-				bitmapData[i * width * 4 + (j * 4)] = 0;
-				bitmapData[i * width * 4 + (j * 4) + 1] = 0;
-				bitmapData[i * width * 4 + (j * 4) + 2] = 0;
-				bitmapData[i * width * 4 + (j * 4) + 3] = 0;
-			}
-		}
-		//std::cout << std::endl;
-	}
-
-	//return 0;
+	// auto width = 100;
+	// auto height = 100;
+	// auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[width*height * 4]);
+	// SvgTransform transform;
+	// transform.RotateDegrees(-33.214053);
+	// SvgEllipseEquation equation(2.8886154, 13.843985, 10, 5);
+	//
+	// equation.Transform(transform);
+	//
+	// for (auto i = 0; i < height; ++i)
+	// {
+	// 	for (auto j = 0; j < width; ++j)
+	// 	{
+	// 		auto x = (double)j;
+	// 		auto y = (double)i;
+	// 		if (equation.IsPointInside(SvgPoint(x, y)))
+	// 		{
+	// 			bitmapData[i * width * 4 + (j * 4)] = 0;
+	// 			bitmapData[i * width * 4 + (j * 4) + 1] = 0;
+	// 			bitmapData[i * width * 4 + (j * 4) + 2] = 0;
+	// 			bitmapData[i * width * 4 + (j * 4) + 3] = 255;
+	// 		}
+	// 		else
+	// 		{
+	// 			bitmapData[i * width * 4 + (j * 4)] = 0;
+	// 			bitmapData[i * width * 4 + (j * 4) + 1] = 0;
+	// 			bitmapData[i * width * 4 + (j * 4) + 2] = 0;
+	// 			bitmapData[i * width * 4 + (j * 4) + 3] = 0;
+	// 		}
+	// 	}
+	// 	//std::cout << std::endl;
+	// }
+	//
+	// //return 0;
 
 	std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
 
@@ -170,17 +170,17 @@ int main(int argC, char** argV)
 	std::size_t height = svg->height;
 #else
 
-	// auto element = XmlParser::Parse(inputData.get(), size);
-	//
-	// SvgDocument svgDocument(element);
-	// std::size_t pixels = svgDocument.GetActualHeight() * svgDocument.GetActualWidth() * 4;
-	// auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[pixels]);
-	//
-	// std::size_t width = svgDocument.GetActualWidth();
-	// std::size_t height = svgDocument.GetActualHeight();
-	//
-	// SvgRasterizer rasterizer;
-	// rasterizer.Rasterize(svgDocument, bitmapData.get(), svgDocument.GetActualWidth(), svgDocument.GetActualHeight(), svgDocument.GetActualWidth() * 4);
+	auto element = XmlParser::Parse(inputData.get(), size);
+
+	SvgDocument svgDocument(element);
+	std::size_t pixels = svgDocument.GetActualHeight() * svgDocument.GetActualWidth() * 4;
+	auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[pixels]);
+
+	std::size_t width = svgDocument.GetActualWidth();
+	std::size_t height = svgDocument.GetActualHeight();
+
+	SvgRasterizer rasterizer;
+	rasterizer.Rasterize(svgDocument, bitmapData.get(), svgDocument.GetActualWidth(), svgDocument.GetActualHeight(), svgDocument.GetActualWidth() * 4);
 #endif
 	{
 		png_image image{};
