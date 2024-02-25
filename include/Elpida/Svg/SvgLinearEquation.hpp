@@ -19,6 +19,18 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
+		double GetA() const
+		{
+			return _a;
+		}
+
+		[[nodiscard]]
+		double GetB() const
+		{
+			return _b;
+		}
+
+		[[nodiscard]]
 		double CalculateY(const double x) const
 		{
 			return _a * x + _b;
@@ -74,6 +86,12 @@ namespace Elpida
 				SvgPoint(a.GetX() + dx, a.GetY() + dy),
 				SvgPoint(b.GetX() + dx, b.GetY() + dy)
 			};
+		}
+
+		[[nodiscard]]
+		double CalculateAngle() const
+		{
+			return atan2(_direction.GetY(), _direction.GetX());
 		}
 
 		[[nodiscard]]

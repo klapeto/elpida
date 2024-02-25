@@ -115,11 +115,11 @@ int main(int argC, char** argV)
 	// auto width = 100;
 	// auto height = 100;
 	// auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[width*height * 4]);
-	// SvgTransform transform;
+	// SvgTransform transform(1.524824,-0.58741282,0.15663534,0.40659879,-14.483342,34.141931);
 	// transform.RotateDegrees(-33.214053);
-	// SvgEllipseEquation equation(2.8886154, 13.843985, 10, 5);
+	// SvgEllipseEquation equation(14.796171, 42.889145, 44.07317, 44.07317);
 	//
-	// equation.Transform(transform);
+	// //equation.Transform(transform);
 	//
 	// for (auto i = 0; i < height; ++i)
 	// {
@@ -144,8 +144,8 @@ int main(int argC, char** argV)
 	// 	}
 	// 	//std::cout << std::endl;
 	// }
-	//
-	// //return 0;
+
+	//return 0;
 
 	std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
 

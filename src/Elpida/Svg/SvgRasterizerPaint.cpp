@@ -431,11 +431,23 @@ namespace Elpida
 			return lastStop.GetColor().WithMultipliedAplha(lastStop.GetOpacity());
 		}
 
-		auto distanceFromA = equationA->GetFocusA().GetDistance(point) + equationA->GetFocusB().GetDistance(point);
-		auto stopDistance = equationB->GetConstantDistance() - equationA->GetConstantDistance();
+		auto distanceFromA = equationA->GetDistance(point);
+		auto distanceFromB = equationB->GetDistance(point);
 
-		const auto ratio = (equationB->GetConstantDistance() - distanceFromA) / stopDistance;
+		auto stopDistance = distanceFromA + distanceFromB;
+		auto sizeRatio = equationB->GetConstantDistance() / equationA->GetConstantDistance();
 
+		SvgPoint interA, interB;
+		auto exists = equationB->GetIntersectionPoints(point, interA, interB);
+
+		//const auto ratio = distanceFromA / distanceFromB;
+		//const auto ratio = 1.0 -(distanceFromB /equationB->GetConstantDistance()) / (distanceFromA / equationA->GetConstantDistance());
+		auto ratio = distanceFromA > stopDistance ? stopDistance / distanceFromA : distanceFromA / stopDistance;
+
+		//ratio = 1.0 - ratio;
+		// auto x = stopA;
+		// stopA = stopB;
+		// stopB = x;
 		auto tR = stopA->GetColor().R() * ratio;
 		auto tG = stopA->GetColor().G() * ratio;
 		auto tB = stopA->GetColor().B() * ratio;

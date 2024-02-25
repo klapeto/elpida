@@ -76,6 +76,11 @@ namespace Elpida
 			return {-_x, -_y};
 		}
 
+		SvgPoint operator/( const double x) const
+		{
+			return {_x / x, _y / x};
+		}
+
 		void Transform(const SvgTransform& transform)
 		{
 			transform.ApplyToPoint(_x, _y);
