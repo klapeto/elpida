@@ -437,17 +437,31 @@ namespace Elpida
 		auto stopDistance = distanceFromA + distanceFromB;
 		auto sizeRatio = equationB->GetConstantDistance() / equationA->GetConstantDistance();
 
-		SvgPoint interA, interB;
-		auto exists = equationB->GetIntersectionPoints(point, interA, interB);
+		SvgPoint interAA, interAB;
+		SvgPoint interBA, interBB;
+		auto intersectionExistsA = equationA->CalculateIntersectionPoints(point, interAA, interAB);
+		auto intersectionExistsB = equationB->CalculateIntersectionPoints(point, interBA, interBB);
 
-		//const auto ratio = distanceFromA / distanceFromB;
-		//const auto ratio = 1.0 -(distanceFromB /equationB->GetConstantDistance()) / (distanceFromA / equationA->GetConstantDistance());
-		auto ratio = distanceFromA > stopDistance ? stopDistance / distanceFromA : distanceFromA / stopDistance;
+		if (interBA.GetDistance(point) < interBB.GetDistance(point))
+		{
+			distanceFromB = interBA.GetDistance(point);
+		}
+		else
+		{
+			distanceFromB = interBB.GetDistance(point);
+		}
 
-		//ratio = 1.0 - ratio;
-		// auto x = stopA;
-		// stopA = stopB;
-		// stopB = x;
+		if (!intersectionExistsA)
+		{
+			stopDistance = interBA.GetDistance(equationB->GetCenter());
+		}
+		else
+		{
+			stopDistance = interAB.GetDistance(interBB);
+		}
+
+		auto ratio = distanceFromB / stopDistance;
+
 		auto tR = stopA->GetColor().R() * ratio;
 		auto tG = stopA->GetColor().G() * ratio;
 		auto tB = stopA->GetColor().B() * ratio;
