@@ -35,11 +35,10 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		bool CalculateIntersectionPoints(const SvgPoint& point, SvgPoint& intersectionA, SvgPoint& intersectionB) const
+		SvgPoint CalculateClosestPoint(const SvgPoint& point) const
 		{
 			// See http://quickcalcbasic.com/ellipse%20line%20intersection.pdf
 			SvgLinearEquation equation(_center, point);
-
 
 			auto n2 = _b * _b;
 			auto h2 = _a * _a;
@@ -52,37 +51,12 @@ namespace Elpida
 
 			if (equation.GetDirection().GetX() == 0)
 			{
-				auto x = point.GetX() - _center.GetX();
-				auto a = n2 * sinA2 + h2 * cosA2;
-				auto b = 2 * x * cosA * sinA * (n2 - h2);
-				auto c = x * x * (n2 * cosA2 + h2 * sinA2) - h2 * n2;
+				return CalculateClosestPointVertical(point, n2, h2, cosA, sinA, cosA2, sinA2);
+			}
 
-				if (a == 0.0)
-				{
-					return false;
-				}
-
-				// Solve the quadratic equation
-				auto delta = b * b - 4 * a * c;
-
-				// no real solutions
-				if (delta < 0.0)
-				{
-					return false;
-				}
-
-				auto sqr = sqrt(delta);
-				auto y1 = (-b + sqr) / (2 * a);
-				auto y2 = (-b - sqr) / (2 * a);
-
-				// revert translating
-				y1 += _center.GetY();
-				y2 += _center.GetY();
-
-				intersectionA = SvgPoint(point.GetX(), y1);
-				intersectionB = SvgPoint(point.GetX(), y2);
-
-				return true;
+			if (equation.GetDirection().GetY() == 0)
+			{
+				return CalculateClosestPointHorizontal(point, n2, h2, cosA, sinA, cosA2, sinA2);
 			}
 
 			auto m = equation.GetA();
@@ -96,40 +70,22 @@ namespace Elpida
 			auto b = (2 * n2 * b1) * (cosA * sinA + m * sinA2) + 2 * h2 * b1 * (m * cosA2 - cosA * sinA);
 			auto c = b12 * (n2 * sinA2 + h2 * cosA2) - (h2 * n2);
 
-			// no solutions
+			// Is directly at the elipsis
 			if (a == 0.0)
 			{
-				return false;
+				return point;
 			}
 
-			// Solve the quadratic equation
-			auto delta = b * b - 4 * a * c;
+			double x1, x2;
+			CalculateRoots(a,b,c, x1,x2);
 
-			// no real solutions
-			if (delta < 0.0)
-			{
-				return false;
-			}
-
-			auto sqr = sqrt(delta);
-			auto x1 = (-b + sqr) / (2 * a);
-			auto x2 = (-b - sqr) / (2 * a);
-
-			// revert translatin
+			// revert translating
 			x1 += _center.GetX();
 			x2 += _center.GetX();
 			auto y1 = equation.CalculateY(x1);
 			auto y2 = equation.CalculateY(x2);
 
-			intersectionA = SvgPoint(x1, y1);
-			intersectionB = SvgPoint(x2, y2);
-
-			return true;
-		}
-
-		bool CalculateClosestPoint(const SvgPoint& point, SvgPoint& closestPoint) const
-		{
-			//if (!ca)
+			return std::abs(point.GetX() - x1) > std::abs(point.GetX() - x2) ? SvgPoint(x2, y2) : SvgPoint(x1, y1);
 		}
 
 		void Transform(const SvgTransform& transform)
@@ -139,21 +95,6 @@ namespace Elpida
 			_center.Transform(transform);
 
 			Recalculate();
-		}
-
-		[[nodiscard]]
-		SvgPoint GetIntersectionWithLine(const SvgPoint& point) const
-		{
-			auto nominator = _a * _b;
-			auto a2 = _a * _a;
-			auto b2 = _b * _b;
-			auto x = point.GetX() * cos(_angle);
-			auto y = point.GetY() * sin(_angle);
-			auto x2 = x * x;
-			auto y2 = y*y;
-			auto den = sqrt(a2*y2 + b2*x2);
-
-			return {((nominator / den)*x) , ((nominator / den)*y)};
 		}
 
 		[[nodiscard]]
@@ -189,6 +130,71 @@ namespace Elpida
 		double _angle;
 		double _a;
 		double _b;
+
+		[[nodiscard]]
+		SvgPoint CalculateClosestPointVertical(const SvgPoint& point, double n2, double h2, double cosA, double sinA,
+		                                       double cosA2, double sinA2) const
+		{
+			auto x = point.GetX() - _center.GetX();
+
+			auto a = n2 * sinA2 + h2 * cosA2;
+			auto b = 2 * x * cosA * sinA * (n2 - h2);
+			auto c = x * x * (n2 * cosA2 + h2 * sinA2) - h2 * n2;
+
+			double y1, y2;
+			CalculateRoots(a, b, c, y1, y2);
+
+			// revert translating
+			y1 += _center.GetY();
+			y2 += _center.GetY();
+
+			return std::abs(point.GetY() - y1) > std::abs(point.GetY() - y2)
+				       ? SvgPoint(point.GetX(), y2)
+				       : SvgPoint(point.GetX(), y1);
+		}
+
+		[[nodiscard]]
+		SvgPoint CalculateClosestPointHorizontal(const SvgPoint& point, double n2, double h2, double cosA, double sinA,
+		                                         double cosA2, double sinA2) const
+		{
+			auto y = point.GetY() - _center.GetY();
+			auto a = n2 * cosA2 + h2 * sinA2;
+			auto b = 2 * y * cosA * sinA * (n2 - h2);
+			auto c = y * y * (n2 * sinA2 + h2 * cosA2) - h2 * n2;
+
+			double x1, x2;
+			CalculateRoots(a, b, c, x1, x2);
+
+			x1 += _center.GetY();
+			x2 += _center.GetY();
+
+			return std::abs(point.GetX() - x1) > std::abs(point.GetX() - x2)
+				       ? SvgPoint(x2, point.GetY())
+				       : SvgPoint(x1, point.GetY());
+		}
+
+		static void CalculateRoots(const double a, const double b, const double c, double& r1, double& r2)
+		{
+			if (a == 0.0)
+			{
+				// first class?
+				if (b == 0.0)
+				{
+					// not even first class
+					r1 = c;
+					r2 = c;
+					return;
+				}
+				r1 = -c / b;
+				r2 = r1;
+				return;
+			}
+			auto delta = b * b - 4 * a * c;
+
+			auto sqr = sqrt(delta);
+			r1 = (-b + sqr) / (2 * a);
+			r2 = (-b - sqr) / (2 * a);
+		}
 
 		void Recalculate()
 		{

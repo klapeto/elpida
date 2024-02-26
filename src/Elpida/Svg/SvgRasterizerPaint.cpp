@@ -429,31 +429,14 @@ namespace Elpida
 			return lastStop.GetColor().WithMultipliedAplha(lastStop.GetOpacity());
 		}
 
-		SvgPoint interAA, interAB;
-		SvgPoint interBA, interBB;
-		auto intersectionExistsA = equationA->CalculateIntersectionPoints(point, interAA, interAB);
-		auto intersectionExistsB = equationB->CalculateIntersectionPoints(point, interBA, interBB);
+		auto closestPointToA = equationA->CalculateClosestPoint(point);
+		auto closestPointToB = equationB->CalculateClosestPoint(point);
 
-		double distanceFromB;
+		double distanceFromB = closestPointToB.GetDistance(point);
 
-		if (interBA.GetDistance(point) < interBB.GetDistance(point))
-		{
-			distanceFromB = interBA.GetDistance(point);
-		}
-		else
-		{
-			distanceFromB = interBB.GetDistance(point);
-		}
-
-		double stopDistance;
-		if (!intersectionExistsA)
-		{
-			stopDistance = interBA.GetDistance(equationB->GetCenter());
-		}
-		else
-		{
-			stopDistance = interAB.GetDistance(interBB);
-		}
+		double stopDistance = closestPointToA == point
+			                      ? equationA->GetCenter().GetDistance(closestPointToB)
+			                      : closestPointToA.GetDistance(closestPointToB);
 
 		auto ratio = distanceFromB / stopDistance;
 
