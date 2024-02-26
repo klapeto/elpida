@@ -60,6 +60,18 @@ namespace Elpida
 
 		[[nodiscard]]
 		SvgColor CalculateRadialGradientReflect(const SvgPoint& point, const SvgDocument& document) const;
+
+
+		[[nodiscard]]
+		static SvgColor CalculateColorForLinear(const SvgPoint& point,
+		                                        const SvgLinearEquation& gradientEquation,
+		                                        const SvgGradientStop& stopA,
+		                                        const SvgLinearEquation& normalA,
+		                                        const SvgGradientStop& stopB,
+		                                        const SvgLinearEquation& normalB);
+
+		[[nodiscard]]
+		static SvgColor InterpolateColor(const SvgGradientStop& stopA, const SvgGradientStop& stopB, double ratio);
 	};
 } // Elpida
 
