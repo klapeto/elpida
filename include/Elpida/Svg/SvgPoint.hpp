@@ -42,6 +42,12 @@ namespace Elpida
 			_y += other._y;
 		}
 
+		void operator-=(const SvgPoint& other)
+		{
+			_x -= other._x;
+			_y -= other._y;
+		}
+
 		SvgPoint operator*(const double value) const
 		{
 			return {_x * value, _y * value};

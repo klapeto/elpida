@@ -33,7 +33,8 @@ namespace Elpida
 			case SvgSpreadType::Reflect:
 				return CalculateLinearGradientReflect(point, document);
 			}
-		} else
+		}
+		else
 		{
 			switch (_gradient->GetSpreadType())
 			{
@@ -50,11 +51,11 @@ namespace Elpida
 	}
 
 	SvgColor SvgRasterizerPaint::CalculateColorForLinear(const SvgPoint& point,
-		const SvgLinearEquation& gradientEquation,
-		const SvgGradientStop& stopA,
-		const SvgLinearEquation& normalA,
-		const SvgGradientStop& stopB,
-		const SvgLinearEquation& normalB)
+	                                                     const SvgLinearEquation& gradientEquation,
+	                                                     const SvgGradientStop& stopA,
+	                                                     const SvgLinearEquation& normalA,
+	                                                     const SvgGradientStop& stopB,
+	                                                     const SvgLinearEquation& normalB)
 	{
 		const auto perpedicularEquation = gradientEquation.GetPerpendicularEquationFromPoint(point);
 
@@ -65,7 +66,8 @@ namespace Elpida
 		return InterpolateColor(stopA, stopB, ratio);
 	}
 
-	SvgRasterizerPaint::SvgRasterizerPaint(const SvgPaint& paint, const SvgElement& element, const SvgDocument& document)
+	SvgRasterizerPaint::SvgRasterizerPaint(const SvgPaint& paint, const SvgElement& element,
+	                                       const SvgDocument& document)
 		: _gradient(nullptr), _stopsGradient(nullptr)
 	{
 		if (paint.GetGradientId().empty())
@@ -111,7 +113,9 @@ namespace Elpida
 			auto& stops = _stopsGradient->GetStops();
 			if (_gradient->GetType() == SvgGradientType::Linear)
 			{
-				const auto elementBounds = _gradient->GetUnits() == SvgGradientUnits::User ? SvgBounds(0.0,0.0,1.0,1.0) : element.GetBounds();
+				const auto elementBounds = _gradient->GetUnits() == SvgGradientUnits::User
+					                           ? SvgBounds(0.0, 0.0, 1.0, 1.0)
+					                           : element.GetBounds();
 				auto& data = _gradient->GetData().linear;
 				auto gradientPointA = SvgPoint(
 					data.x1.CalculateActualValue(document, 0.0, elementBounds.GetWidth()),
@@ -154,12 +158,14 @@ namespace Elpida
 			}
 			else
 			{
-				const auto elementBounds = _gradient->GetUnits() == SvgGradientUnits::User ? SvgBounds(0.0,0.0,1.0,1.0) : element.GetBounds();
+				const auto elementBounds = _gradient->GetUnits() == SvgGradientUnits::User
+					                           ? SvgBounds(0.0, 0.0, 1.0, 1.0)
+					                           : element.GetBounds();
 				auto& data = _gradient->GetData().radial;
 
 				const auto actualRadius = data.r.CalculateActualValue(document, 0.0, elementBounds.GetWidth());
-				auto actualCX = data.cx.CalculateActualValue(document,0.0, elementBounds.GetWidth());
-				auto actualCY = data.cy.CalculateActualValue(document,0.0, elementBounds.GetHeight());
+				auto actualCX = data.cx.CalculateActualValue(document, 0.0, elementBounds.GetWidth());
+				auto actualCY = data.cy.CalculateActualValue(document, 0.0, elementBounds.GetHeight());
 
 				_gradientCache = RadialCache{
 					std::vector<SvgEllipseEquation>()
@@ -170,13 +176,13 @@ namespace Elpida
 
 				stopEllipses.reserve(stops.size());
 
-				for (const auto & stop : stops)
+				for (const auto& stop : stops)
 				{
 					// calculate the linear interpolation of the radius
 					const auto thisRadius = std::lerp(0, actualRadius, stop.GetOffset());
 
 					stopEllipses.emplace_back(actualCX, actualCY, thisRadius, thisRadius)
-						.Transform(_gradient->GetGradientTransform());
+					            .Transform(_gradient->GetGradientTransform());
 				}
 			}
 		}
@@ -240,7 +246,7 @@ namespace Elpida
 		auto& stops = _stopsGradient->GetStops();
 
 		auto& linear = std::get<LinearCache>(_gradientCache);
-		auto stopNormals = linear.stopNormals;		// copy
+		auto stopNormals = linear.stopNormals; // copy
 
 		SvgTransform transform;
 
@@ -264,7 +270,7 @@ namespace Elpida
 			}
 		}
 
-		for (auto& normal: stopNormals)
+		for (auto& normal : stopNormals)
 		{
 			normal.Transform(transform);
 		}
@@ -301,7 +307,7 @@ namespace Elpida
 
 		auto& linear = std::get<LinearCache>(_gradientCache);
 		auto equation = linear.equation;
-		auto stopNormals = linear.stopNormals;		// copy
+		auto stopNormals = linear.stopNormals; // copy
 
 		SvgTransform transform;
 
@@ -332,21 +338,23 @@ namespace Elpida
 		if (inverse)
 		{
 			SvgTransform flip;
-			auto dx = -std::min(equation.GetP1().GetX(), equation.GetP2().GetX()) - std::abs(equation.GetP1().GetX() - equation.GetP2().GetX()) / 2.0;
-			auto dy = -std::min(equation.GetP1().GetY(), equation.GetP2().GetY()) - std::abs(equation.GetP1().GetY() - equation.GetP2().GetY()) / 2.0;
+			auto dx = -std::min(equation.GetP1().GetX(), equation.GetP2().GetX()) - std::abs(
+				equation.GetP1().GetX() - equation.GetP2().GetX()) / 2.0;
+			auto dy = -std::min(equation.GetP1().GetY(), equation.GetP2().GetY()) - std::abs(
+				equation.GetP1().GetY() - equation.GetP2().GetY()) / 2.0;
 
 			// we need to move the gradient bound box to the center of the axis system
 			// before rotate and move it back
 			flip.Translate(dx, dy)
-				.RotateDegrees(180)
-				.Translate(-dx, -dy);
+			    .RotateDegrees(180)
+			    .Translate(-dx, -dy);
 
 			//equation.Transform(flip);
 			direction = -direction;
 			transform.Multiply(flip);
 		}
 
-		for (auto& normal: stopNormals)
+		for (auto& normal : stopNormals)
 		{
 			normal.Transform(transform);
 		}
@@ -375,7 +383,8 @@ namespace Elpida
 		return CalculateColorForLinear(point, equation, *stopA, *normalA, *stopB, *normalB);
 	}
 
-	SvgColor SvgRasterizerPaint::InterpolateColor(const SvgGradientStop& stopA, const SvgGradientStop& stopB, double ratio)
+	SvgColor SvgRasterizerPaint::InterpolateColor(const SvgGradientStop& stopA, const SvgGradientStop& stopB,
+	                                              double ratio)
 	{
 		auto tR = stopA.GetColor().R() * ratio;
 		auto tG = stopA.GetColor().G() * ratio;
@@ -401,7 +410,7 @@ namespace Elpida
 		const SvgGradientStop* stopB = nullptr;
 
 		const SvgEllipseEquation* equationA = nullptr;
-		const SvgEllipseEquation* equationB= nullptr;
+		const SvgEllipseEquation* equationB = nullptr;
 
 		for (std::size_t i = 0; i < stops.size() - 1; i++)
 		{
@@ -411,7 +420,7 @@ namespace Elpida
 
 			if (stopEquations[i + 1].IsPointInside(point))
 			{
-				stopB = &stops[i+1];
+				stopB = &stops[i + 1];
 				break;
 			}
 		}
@@ -448,46 +457,74 @@ namespace Elpida
 		auto& stops = _stopsGradient->GetStops();
 
 		auto& radial = std::get<RadialCache>(_gradientCache);
-		auto& stopEquations = radial.stopEllipses;
+		auto stopEquations = radial.stopEllipses; // Copy
 
-		SvgTransform transform;
+		const auto& lastStopEquation = stopEquations.back();
+		const auto closePointToGradient = lastStopEquation.CalculateClosestPoint(point);
+		const auto pointDistanceFromCenter = lastStopEquation.GetCenter().GetDistance(point);
+		const auto ellipsePointDistanceFromCenter = lastStopEquation.GetCenter().GetDistance(closePointToGradient);
 
-		// const auto distanceFromA = stopNormals.front().GetDistanceFromPoint(point);
-		// const auto distanceFromB = stopNormals.back().GetDistanceFromPoint(point);
-		// const auto stopDistance = linear.length;
-		//
-		// if (distanceFromA > stopDistance || distanceFromB > stopDistance)
-		// {
-		// 	if (distanceFromA < distanceFromB)
-		// 	{
-		// 		const int ratio = 1 + distanceFromA / stopDistance;
-		// 		const auto delta = linear.equation.GetP2() - linear.equation.GetP1();
-		// 		transform.SetTranslation(-(delta.GetX() * ratio), -(delta.GetY() * ratio));
-		// 	}
-		// 	else
-		// 	{
-		// 		const int ratio = 1 + distanceFromB / stopDistance;
-		// 		const auto delta = linear.equation.GetP2() - linear.equation.GetP1();
-		// 		transform.SetTranslation(delta.GetX() * ratio, delta.GetY() * ratio);
-		// 	}
-		// }
-		//
-		// for (auto& normal: stopNormals)
-		// {
-		// 	normal.Transform(transform);
-		// }
+		if (pointDistanceFromCenter > ellipsePointDistanceFromCenter)
+		{
+			const auto distanceFromB = closePointToGradient.GetDistance(point);
+			const int ratio = (1 + (distanceFromB / ellipsePointDistanceFromCenter));
+			const auto rXToAdd = lastStopEquation.GetA() * ratio;
+			const auto ryToAdd = lastStopEquation.GetB() * ratio;
+
+			for (auto& stopEquation : stopEquations)
+			{
+				stopEquation.Expand(rXToAdd, ryToAdd, lastStopEquation.GetAngle());
+			}
+		}
 
 		const SvgGradientStop* stopA = nullptr;
 		const SvgGradientStop* stopB = nullptr;
 
 		const SvgEllipseEquation* equationA = nullptr;
-		const SvgEllipseEquation* equationB= nullptr;
+		const SvgEllipseEquation* equationB = nullptr;
 
+		for (std::size_t i = 0; i < stops.size() - 1; i++)
+		{
+			stopA = &stops[i];
+			equationA = &stopEquations[i];
+			equationB = &stopEquations[i + 1];
 
+			if (stopEquations[i + 1].IsPointInside(point))
+			{
+				stopB = &stops[i + 1];
+				break;
+			}
+		}
+
+		if (stopA == nullptr)
+		{
+			auto& firstStop = stops.front();
+			return firstStop.GetColor().WithMultipliedAplha(firstStop.GetOpacity());
+		}
+
+		// the point is beyond all stops
+		if (stopB == nullptr)
+		{
+			auto& lastStop = stops.back();
+			return lastStop.GetColor().WithMultipliedAplha(lastStop.GetOpacity());
+		}
+
+		auto closestPointToA = equationA->CalculateClosestPoint(point);
+		auto closestPointToB = equationB->CalculateClosestPoint(point);
+
+		double distanceFromB = closestPointToB.GetDistance(point);
+
+		double stopDistance = closestPointToA == point
+			                      ? equationA->GetCenter().GetDistance(closestPointToB)
+			                      : closestPointToA.GetDistance(closestPointToB);
+
+		auto ratio = distanceFromB / stopDistance;
+
+		return InterpolateColor(*stopA, *stopB, ratio);
 	}
 
 	SvgColor SvgRasterizerPaint::CalculateRadialGradientReflect(const SvgPoint& point,
-		const SvgDocument& document) const
+	                                                            const SvgDocument& document) const
 	{
 	}
 } // Elpida

@@ -33,7 +33,7 @@ namespace Elpida
 		{
 			SvgTransform transform;
 			transform.SetScale(sx, sy);
-			Multiply(transform);
+			PreMultiply(transform);
 			return *this;
 		}
 
@@ -54,7 +54,7 @@ namespace Elpida
 		{
 			SvgTransform transform;
 			transform.SetSkewX(angle);
-			Multiply(transform);
+			PreMultiply(transform);
 			return *this;
 		}
 
@@ -62,7 +62,7 @@ namespace Elpida
 		{
 			SvgTransform transform;
 			transform.SetSkewY(angle);
-			Multiply(transform);
+			PreMultiply(transform);
 			return *this;
 		}
 

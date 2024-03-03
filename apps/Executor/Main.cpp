@@ -115,11 +115,25 @@ int main(int argC, char** argV)
 	// auto width = 100;
 	// auto height = 100;
 	// auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[width*height * 4]);
-	// SvgTransform transform(1.524824,-0.58741282,0.15663534,0.40659879,-14.483342,34.141931);
-	// transform.RotateDegrees(-33.214053);
-	// SvgEllipseEquation equation(14.796171, 42.889145, 44.07317, 44.07317);
+	// SvgTransform transform;
 	//
-	// //equation.Transform(transform);
+	//  //transform.Scale(4,4);
+	// SvgEllipseEquation equation(20, 20, 8, 3);
+	//
+	// auto center = equation.GetCenter();
+	//
+	//
+	// transform.Translate(-center.GetX(),-center.GetY());
+	// SvgTransform transform2;
+	// transform2.Scale(4,4);
+	// transform.PreMultiply(transform2);
+	// transform.Translate(center.GetX(),center.GetY());
+	//
+	// equation.Transform(transform);
+	// //
+	// // transform.SetTranslation(center.GetX() - equation.GetCenter().GetX(), center.GetY() - equation.GetCenter().GetY());
+	// //
+	// // equation.Transform(transform);
 	//
 	// for (auto i = 0; i < height; ++i)
 	// {

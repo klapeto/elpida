@@ -34,6 +34,34 @@ namespace Elpida
 			return _rightPoint;
 		}
 
+		void Expand(const double rX, const double rY, double angle)
+		{
+			SvgLinearEquation rightEquation(_center, _rightPoint);
+			SvgLinearEquation topEquation(_center, _topPoint);
+
+			_topPoint += SvgPoint(rY * cos(angle + std::numbers::pi /2.0), rY * sin(angle + std::numbers::pi /2.0));
+			_rightPoint -= SvgPoint(rX * cos(angle), rX * sin(angle));
+			Recalculate();
+		}
+
+		[[nodiscard]]
+		double GetAngle() const
+		{
+			return _angle;
+		}
+
+		[[nodiscard]]
+		double GetA() const
+		{
+			return _a;
+		}
+
+		[[nodiscard]]
+		double GetB() const
+		{
+			return _b;
+		}
+
 		[[nodiscard]]
 		SvgPoint CalculateClosestPoint(const SvgPoint& point) const
 		{
@@ -100,7 +128,13 @@ namespace Elpida
 		[[nodiscard]]
 		bool IsPointInside(const SvgPoint& point) const
 		{
-			if (_b == 0.0 || _a == 0.0) return false;
+			return CalculateNormalDistance(point) <= 1.0;
+		}
+
+		[[nodiscard]]
+		double CalculateNormalDistance(const SvgPoint& point) const
+		{
+			if (_b == 0.0 || _a == 0.0) return point.GetDistance(_center);
 			auto delta = point - _center;
 
 			auto d1 = delta.GetX() * cos(_angle) + delta.GetY() * sin(_angle);
@@ -109,10 +143,7 @@ namespace Elpida
 			auto d2 = delta.GetX() * sin(_angle) - delta.GetY() * cos(_angle);
 			d2 = d2 * d2;
 
-			return (d1 / (_a * _a)) + (d2 / (_b * _b)) <= 1.0;
-			// const auto distance = _focusPointA.GetDistance(point) + _focusPointB.GetDistance(point);
-			//
-			// return distance <= _constantDistance;
+			return (d1 / (_a * _a)) + (d2 / (_b * _b));
 		}
 
 		SvgEllipseEquation(const double cX, const double cY, const double rX, const double rY)
