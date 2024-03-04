@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <Elpida/Svg/SvgDocument.hpp>
+#include <ranges>
 
 #include "Elpida/Svg/SvgLinearEquation.hpp"
 
@@ -454,6 +455,7 @@ namespace Elpida
 
 	SvgColor SvgRasterizerPaint::CalculateRadialGradientRepeat(const SvgPoint& point, const SvgDocument& document) const
 	{
+
 		auto& stops = _stopsGradient->GetStops();
 
 		auto& radial = std::get<RadialCache>(_gradientCache);
@@ -526,5 +528,136 @@ namespace Elpida
 	SvgColor SvgRasterizerPaint::CalculateRadialGradientReflect(const SvgPoint& point,
 	                                                            const SvgDocument& document) const
 	{
+		auto& radial = std::get<RadialCache>(_gradientCache);
+
+		auto& originalStops = _stopsGradient->GetStops();
+		auto& originalEquations = radial.stopEllipses;
+
+		std::vector<SvgEllipseEquation> stopEquations;
+		std::vector<std::reference_wrapper<const SvgGradientStop>> stops;
+
+		stops.reserve(originalEquations.size());
+		stopEquations.reserve(originalEquations.size());
+
+		const auto& lastStopEquation = originalEquations.back();
+		const auto closePointToGradient = lastStopEquation.CalculateClosestPoint(point);
+		const auto pointDistanceFromCenter = lastStopEquation.GetCenter().GetDistance(point);
+		const auto ellipsePointDistanceFromCenter = lastStopEquation.GetCenter().GetDistance(closePointToGradient);
+
+		if (pointDistanceFromCenter > ellipsePointDistanceFromCenter)
+		{
+			const auto distanceFromB = closePointToGradient.GetDistance(point);
+			const int ratio = (1 + (distanceFromB / ellipsePointDistanceFromCenter));
+			const auto rXToAdd = lastStopEquation.GetA() * ratio;
+			const auto ryToAdd = lastStopEquation.GetB() * ratio;
+
+			auto inverted = ratio % 2 != 0;
+			if (inverted)
+			{
+				auto size = originalEquations.size();
+
+				for (std::size_t i = 0; i < size; ++i)
+				{
+					stopEquations.push_back(originalEquations[size - i - 1]);
+					stopEquations.back().Expand(rXToAdd, ryToAdd, lastStopEquation.GetAngle());
+					stops.push_back(originalStops[size - i - 1]);
+				}
+
+				SvgBounds topBounds(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+				SvgBounds rightBounds(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+
+				for (auto& equation : stopEquations)
+				{
+					rightBounds.Merge(SvgBounds(equation.GetRightPoint()));
+					topBounds.Merge(SvgBounds(equation.GetTopPoint()));
+				}
+
+				auto topTranslateX = topBounds.GetMinX() + (topBounds.GetWidth() / 2.0);
+				auto topTranslateY = topBounds.GetMinY() + (topBounds.GetHeight() / 2.0);
+				SvgTransform topTransform;
+				topTransform.Translate( -topTranslateX, -topTranslateY)
+					.RotateDegrees(180)
+					.Translate(topTranslateX, topTranslateY);
+
+				auto rightTranslateX = rightBounds.GetMinX() + (rightBounds.GetWidth() / 2.0);
+				auto rightTranslateY = rightBounds.GetMinY() + (rightBounds.GetHeight() / 2.0);
+				SvgTransform rightTransform;
+				rightTransform.Translate( -rightTranslateX, -rightTranslateY)
+					.RotateDegrees(180)
+					.Translate(rightTranslateX, rightTranslateY);
+
+				for (std::size_t i = 0; i < stopEquations.size(); ++i)
+				{
+					auto& equation = stopEquations[i];
+					auto right = equation.GetRightPoint();
+					auto top = equation.GetTopPoint();
+					right.Transform(rightTransform);
+					top.Transform(topTransform);
+					stopEquations[i] = SvgEllipseEquation(equation.GetCenter(), top, right);
+				}
+			}
+			else
+			{
+				for (std::size_t i = 0; i < originalEquations.size(); ++i)
+				{
+					stopEquations.push_back(originalEquations[i]);
+					stopEquations.back().Expand(rXToAdd, ryToAdd, lastStopEquation.GetAngle());
+					stops.push_back(originalStops[i]);
+				}
+			}
+		}
+		else
+		{
+			for (std::size_t i = 0; i < originalEquations.size(); ++i)
+			{
+				stopEquations.push_back(originalEquations[i]);
+				stops.push_back(originalStops[i]);
+			}
+		}
+
+		const SvgGradientStop* stopA = nullptr;
+		const SvgGradientStop* stopB = nullptr;
+
+		const SvgEllipseEquation* equationA = nullptr;
+		const SvgEllipseEquation* equationB = nullptr;
+
+		for (std::size_t i = 0; i < stops.size() - 1; i++)
+		{
+			stopA = &stops[i].get();
+			equationA = &stopEquations[i];
+			equationB = &stopEquations[i + 1];
+
+			if (stopEquations[i + 1].IsPointInside(point))
+			{
+				stopB = &stops[i + 1].get();
+				break;
+			}
+		}
+
+		if (stopA == nullptr)
+		{
+			auto& firstStop = stops.front();
+			return firstStop.get().GetColor().WithMultipliedAplha(firstStop.get().GetOpacity());
+		}
+
+		// the point is beyond all stops
+		if (stopB == nullptr)
+		{
+			auto& lastStop = stops.back();
+			return lastStop.get().GetColor().WithMultipliedAplha(lastStop.get().GetOpacity());
+		}
+
+		auto closestPointToA = equationA->CalculateClosestPoint(point);
+		auto closestPointToB = equationB->CalculateClosestPoint(point);
+
+		double distanceFromB = closestPointToB.GetDistance(point);
+
+		double stopDistance = closestPointToA == point && closestPointToA != equationA->GetCenter()
+			                      ? distanceFromB
+			                      : closestPointToA.GetDistance(closestPointToB);
+
+		auto ratio = distanceFromB / stopDistance;
+
+		return InterpolateColor(*stopA, *stopB, ratio);
 	}
 } // Elpida

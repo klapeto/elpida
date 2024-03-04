@@ -178,7 +178,6 @@ namespace Elpida
 		double _b;
 		SvgPoint _direction;
 
-		constexpr static double Tolerance = 0.000001;
 
 		void Recalculate()
 		{
@@ -189,7 +188,7 @@ namespace Elpida
 
 		static int GetSign(const double v)
 		{
-			if (std::abs(v) < Tolerance) return 0;
+			if (std::abs(v) < SvgPoint::Tolerance) return 0;
 			if (v == 0.0) return 0;
 			return v < 0.0 ? -1 : 1;
 		}

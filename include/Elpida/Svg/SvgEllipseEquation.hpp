@@ -15,7 +15,6 @@ namespace Elpida
 	class SvgEllipseEquation
 	{
 	public:
-
 		[[nodiscard]]
 		const SvgPoint& GetCenter() const
 		{
@@ -36,10 +35,8 @@ namespace Elpida
 
 		void Expand(const double rX, const double rY, double angle)
 		{
-			SvgLinearEquation rightEquation(_center, _rightPoint);
-			SvgLinearEquation topEquation(_center, _topPoint);
-
-			_topPoint += SvgPoint(rY * cos(angle + std::numbers::pi /2.0), rY * sin(angle + std::numbers::pi /2.0));
+			// the angle of the top point is the angle of the right point + 90 degrees
+			_topPoint += SvgPoint(rY * cos(angle + std::numbers::pi / 2.0), rY * sin(angle + std::numbers::pi / 2.0));
 			_rightPoint -= SvgPoint(rX * cos(angle), rX * sin(angle));
 			Recalculate();
 		}
@@ -68,6 +65,12 @@ namespace Elpida
 			// See http://quickcalcbasic.com/ellipse%20line%20intersection.pdf
 			SvgLinearEquation equation(_center, point);
 
+
+			if (_a == 0|| _b == 0)
+			{
+				return _center;
+			}
+
 			auto n2 = _b * _b;
 			auto h2 = _a * _a;
 
@@ -88,13 +91,14 @@ namespace Elpida
 			}
 
 			auto m = equation.GetA();
-			auto m2 = m*m;
+			auto m2 = m * m;
 
 			// translafe b1 to the off centered ellipse
 			auto b1 = equation.GetB() + equation.GetA() * _center.GetX() - _center.GetY();
 			auto b12 = b1 * b1;
 
-			auto a = n2 * (cosA2 + (2 * m * cosA * sinA) + m2 * sinA2) + h2 * (m2 * cosA2 - (2 * m * cosA * sinA) + sinA2);
+			auto a = n2 * (cosA2 + (2 * m * cosA * sinA) + m2 * sinA2) + h2 * (m2 * cosA2 - (2 * m * cosA * sinA) +
+				sinA2);
 			auto b = (2 * n2 * b1) * (cosA * sinA + m * sinA2) + 2 * h2 * b1 * (m * cosA2 - cosA * sinA);
 			auto c = b12 * (n2 * sinA2 + h2 * cosA2) - (h2 * n2);
 
@@ -105,7 +109,7 @@ namespace Elpida
 			}
 
 			double x1, x2;
-			CalculateRoots(a,b,c, x1,x2);
+			CalculateRoots(a, b, c, x1, x2);
 
 			// revert translating
 			x1 += _center.GetX();
@@ -151,6 +155,14 @@ namespace Elpida
 			_center = SvgPoint(cX, cY);
 			_rightPoint = SvgPoint(cX + rX, cY);
 			_topPoint = SvgPoint(cX, cY - rY);
+			Recalculate();
+		}
+
+		SvgEllipseEquation(const SvgPoint& center, const SvgPoint& top, const SvgPoint& right)
+		{
+			_center = center;
+			_rightPoint = right;
+			_topPoint = top;
 			Recalculate();
 		}
 

@@ -12,6 +12,9 @@ namespace Elpida
 	class SvgPoint
 	{
 	public:
+
+		constexpr static double Tolerance = 0.000001;
+
 		[[nodiscard]]
 		double GetX() const
 		{
@@ -110,7 +113,7 @@ namespace Elpida
 		double Normalize()
 		{
 			const double length = Length();
-			if (length > 1e-6)
+			if (length > Tolerance)
 			{
 				const double id = 1.0 / length;
 				_x *= id;
@@ -121,10 +124,9 @@ namespace Elpida
 
 		bool operator==(const SvgPoint& other) const
 		{
-			constexpr double tolerance = 0.01;
 			const double dx = _x - other._x;
 			const double dy = _y - other._y;
-			return dx * dx + dy * dy < tolerance * tolerance;
+			return dx * dx + dy * dy < Tolerance * Tolerance;
 		}
 
 		[[nodiscard]]

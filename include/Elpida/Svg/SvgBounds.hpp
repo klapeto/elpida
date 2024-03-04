@@ -60,6 +60,7 @@ namespace Elpida
 		{
 		}
 
+		SvgBounds(const SvgPoint& a);
 		SvgBounds(const SvgPoint& a, const SvgPoint& b, const SvgPoint& c, const SvgPoint& d);
 
 		SvgBounds(const double minX, const double minY, const double maxX, const double maxY)
