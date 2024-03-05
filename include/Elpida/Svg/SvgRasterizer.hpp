@@ -19,8 +19,10 @@ namespace Elpida
 			std::size_t width,
 			std::size_t height,
 			std::size_t stride,
-			double tx = 0.0, double ty = 0.0,
-			double scale = 1.0);
+			double tx = 0.0,
+			double ty = 0.0,
+			double scale = 1.0,
+			std::size_t subSamples = 16);
 	private:
 		static constexpr std::size_t SubSamples = 5;
 	};
