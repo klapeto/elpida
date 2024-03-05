@@ -63,13 +63,13 @@ namespace Elpida
 		SvgPoint CalculateClosestPoint(const SvgPoint& point) const
 		{
 			// See http://quickcalcbasic.com/ellipse%20line%20intersection.pdf
-			SvgLinearEquation equation(_center, point);
 
-
-			if (_a == 0|| _b == 0)
+			if (_a == 0 || _b == 0)
 			{
 				return _center;
 			}
+
+			SvgLinearEquation equation(_center, point);
 
 			auto n2 = _b * _b;
 			auto h2 = _a * _a;

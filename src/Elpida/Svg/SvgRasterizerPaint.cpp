@@ -444,18 +444,15 @@ namespace Elpida
 
 		double distanceFromB = closestPointToB.GetDistance(point);
 
-		double stopDistance = closestPointToA == point
-			                      ? equationA->GetCenter().GetDistance(closestPointToB)
-			                      : closestPointToA.GetDistance(closestPointToB);
-
-		auto ratio = distanceFromB / stopDistance;
+		auto ratio = closestPointToA == point && closestPointToA != equationA->GetCenter()
+			             ? 1.0
+			             : distanceFromB / closestPointToA.GetDistance(closestPointToB);
 
 		return InterpolateColor(*stopA, *stopB, ratio);
 	}
 
 	SvgColor SvgRasterizerPaint::CalculateRadialGradientRepeat(const SvgPoint& point, const SvgDocument& document) const
 	{
-
 		auto& stops = _stopsGradient->GetStops();
 
 		auto& radial = std::get<RadialCache>(_gradientCache);
@@ -516,11 +513,9 @@ namespace Elpida
 
 		double distanceFromB = closestPointToB.GetDistance(point);
 
-		double stopDistance = closestPointToA == point
-			                      ? equationA->GetCenter().GetDistance(closestPointToB)
-			                      : closestPointToA.GetDistance(closestPointToB);
-
-		auto ratio = distanceFromB / stopDistance;
+		auto ratio = closestPointToA == point && closestPointToA != equationA->GetCenter()
+			             ? 1.0
+			             : distanceFromB / closestPointToA.GetDistance(closestPointToB);
 
 		return InterpolateColor(*stopA, *stopB, ratio);
 	}
@@ -563,8 +558,10 @@ namespace Elpida
 					stops.push_back(originalStops[size - i - 1]);
 				}
 
-				SvgBounds topBounds(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
-				SvgBounds rightBounds(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+				SvgBounds topBounds(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+				                    std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+				SvgBounds rightBounds(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+				                      std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
 
 				for (auto& equation : stopEquations)
 				{
@@ -575,25 +572,25 @@ namespace Elpida
 				auto topTranslateX = topBounds.GetMinX() + (topBounds.GetWidth() / 2.0);
 				auto topTranslateY = topBounds.GetMinY() + (topBounds.GetHeight() / 2.0);
 				SvgTransform topTransform;
-				topTransform.Translate( -topTranslateX, -topTranslateY)
-					.RotateDegrees(180)
-					.Translate(topTranslateX, topTranslateY);
+				topTransform.Translate(-topTranslateX, -topTranslateY)
+				            .RotateDegrees(180)
+				            .Translate(topTranslateX, topTranslateY);
 
 				auto rightTranslateX = rightBounds.GetMinX() + (rightBounds.GetWidth() / 2.0);
 				auto rightTranslateY = rightBounds.GetMinY() + (rightBounds.GetHeight() / 2.0);
 				SvgTransform rightTransform;
-				rightTransform.Translate( -rightTranslateX, -rightTranslateY)
-					.RotateDegrees(180)
-					.Translate(rightTranslateX, rightTranslateY);
+				rightTransform.Translate(-rightTranslateX, -rightTranslateY)
+				              .RotateDegrees(180)
+				              .Translate(rightTranslateX, rightTranslateY);
 
-				for (std::size_t i = 0; i < stopEquations.size(); ++i)
+				for (auto& stopEquation : stopEquations)
 				{
-					auto& equation = stopEquations[i];
+					auto& equation = stopEquation;
 					auto right = equation.GetRightPoint();
 					auto top = equation.GetTopPoint();
 					right.Transform(rightTransform);
 					top.Transform(topTransform);
-					stopEquations[i] = SvgEllipseEquation(equation.GetCenter(), top, right);
+					stopEquation = SvgEllipseEquation(equation.GetCenter(), top, right);
 				}
 			}
 			else
@@ -602,7 +599,7 @@ namespace Elpida
 				{
 					stopEquations.push_back(originalEquations[i]);
 					stopEquations.back().Expand(rXToAdd, ryToAdd, lastStopEquation.GetAngle());
-					stops.push_back(originalStops[i]);
+					stops.emplace_back(originalStops[i]);
 				}
 			}
 		}
@@ -611,7 +608,7 @@ namespace Elpida
 			for (std::size_t i = 0; i < originalEquations.size(); ++i)
 			{
 				stopEquations.push_back(originalEquations[i]);
-				stops.push_back(originalStops[i]);
+				stops.emplace_back(originalStops[i]);
 			}
 		}
 
@@ -652,11 +649,9 @@ namespace Elpida
 
 		double distanceFromB = closestPointToB.GetDistance(point);
 
-		double stopDistance = closestPointToA == point && closestPointToA != equationA->GetCenter()
-			                      ? distanceFromB
-			                      : closestPointToA.GetDistance(closestPointToB);
-
-		auto ratio = distanceFromB / stopDistance;
+		auto ratio = closestPointToA == point && closestPointToA != equationA->GetCenter()
+			             ? 1.0
+			             : distanceFromB / closestPointToA.GetDistance(closestPointToB);
 
 		return InterpolateColor(*stopA, *stopB, ratio);
 	}

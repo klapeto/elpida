@@ -1690,6 +1690,11 @@ namespace Elpida
 	{
 		std::memset(outputBuffer, 0, width * 4);
 
+		auto subSamples = 32;
+		int subSamplesPerDimension = std::floor(sqrt(subSamples));
+		auto actualSubSamples = subSamplesPerDimension * subSamplesPerDimension;
+		double subSampleStep = 1.0 / subSamplesPerDimension;
+		auto sideHalf = 1.0 / 2.0;
 		for (auto& element : document.GetElement().GetChildren())
 		{
 			if (!element.IsVisible()) continue;
@@ -1704,15 +1709,36 @@ namespace Elpida
 				{
 					for (std::size_t x = 0; x < width; ++x)
 					{
-						SvgPoint point(x, y);
-						if (IsPointInsideEvenOdd(point, edges))
+						double r = 0.0;
+						double g = 0.0;
+						double b = 0.0;
+						double a = 0.0;
+
+						auto sampleX = x - sideHalf;
+						auto sampleY = y - sideHalf;
+						for (std::size_t i = 0; i < subSamplesPerDimension; ++i)
 						{
-							auto color = paint.CalculateColor(point, document);
-							outputBuffer[(y * width * 4 + x * 4)] = color.R();
-							outputBuffer[(y * width * 4 + x * 4) + 1] = color.G();
-							outputBuffer[(y * width * 4 + x * 4) + 2] = color.B();
-							outputBuffer[(y * width * 4 + x * 4) + 3] = color.A();
+							for (std::size_t j = 0; j < subSamplesPerDimension; ++j)
+							{
+								SvgPoint point(sampleX, sampleY);
+								if (IsPointInsideEvenOdd(point, edges))
+								{
+									auto color = paint.CalculateColor(point, document);
+									r += color.R();
+									g += color.G();
+									b += color.B();
+									a += color.A();
+								}
+								sampleX += subSampleStep;
+							}
+							sampleX = x - sideHalf;
+							sampleY += subSampleStep;
 						}
+
+						outputBuffer[(y * width * 4 + x * 4)] = r / actualSubSamples;
+						outputBuffer[(y * width * 4 + x * 4) + 1] = g / actualSubSamples;
+						outputBuffer[(y * width * 4 + x * 4) + 2] = b / actualSubSamples;
+						outputBuffer[(y * width * 4 + x * 4) + 3] = a / actualSubSamples;
 					}
 				}
 			}
