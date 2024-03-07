@@ -31,6 +31,13 @@ add_library(elpida-svg
         SvgEllipseEquation.cpp
         SvgShapePolygonizer.cpp
         SvgPolygon.cpp
+        SvgBackDrop.cpp
+        SvgBlender.cpp
+        ../../../include/Elpida/Svg/SvgBlender.hpp
+        SvgCompositor.cpp
+        ../../../include/Elpida/Svg/SvgCompositor.hpp
+        SvgColorConverter.cpp
+        ../../../include/Elpida/Svg/SvgColorConverter.hpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

@@ -12,7 +12,7 @@
 
 namespace Elpida
 {
-	SvgColor SvgRasterizerPaint::CalculateColor(const SvgPoint& point, const SvgDocument& document) const
+	SvgColor SvgRasterizerPaint::CalculateColor(const SvgPoint& point) const
 	{
 		if (_gradient == nullptr || _stopsGradient == nullptr)
 		{
@@ -28,11 +28,11 @@ namespace Elpida
 			switch (_gradient->GetSpreadType())
 			{
 			case SvgSpreadType::Pad:
-				return CalculateLinearGradientPad(point, document);
+				return CalculateLinearGradientPad(point);
 			case SvgSpreadType::Repeat:
-				return CalculateLinearGradientRepeat(point, document);
+				return CalculateLinearGradientRepeat(point);
 			case SvgSpreadType::Reflect:
-				return CalculateLinearGradientReflect(point, document);
+				return CalculateLinearGradientReflect(point);
 			}
 		}
 		else
@@ -40,11 +40,11 @@ namespace Elpida
 			switch (_gradient->GetSpreadType())
 			{
 			case SvgSpreadType::Pad:
-				return CalculateRadialGradientPad(point, document);
+				return CalculateRadialGradientPad(point);
 			case SvgSpreadType::Repeat:
-				return CalculateRadialGradientRepeat(point, document);
+				return CalculateRadialGradientRepeat(point);
 			case SvgSpreadType::Reflect:
-				return CalculateRadialGradientReflect(point, document);
+				return CalculateRadialGradientReflect(point);
 			}
 		}
 
@@ -79,10 +79,6 @@ namespace Elpida
 		{
 			AsGradient(paint, element, document);
 		}
-	}
-
-	SvgRasterizerPaint::~SvgRasterizerPaint()
-	{
 	}
 
 	void SvgRasterizerPaint::AsGradient(const SvgPaint& paint, const SvgElement& element, const SvgDocument& document)
@@ -194,7 +190,7 @@ namespace Elpida
 		_color = paint.GetColor();
 	}
 
-	SvgColor SvgRasterizerPaint::CalculateLinearGradientPad(const SvgPoint& point, const SvgDocument& document) const
+	SvgColor SvgRasterizerPaint::CalculateLinearGradientPad(const SvgPoint& point) const
 	{
 		auto& stops = _stopsGradient->GetStops();
 
@@ -242,7 +238,7 @@ namespace Elpida
 		return CalculateColorForLinear(point, linear.equation, *stopA, *normalA, *stopB, *normalB);
 	}
 
-	SvgColor SvgRasterizerPaint::CalculateLinearGradientRepeat(const SvgPoint& point, const SvgDocument& document) const
+	SvgColor SvgRasterizerPaint::CalculateLinearGradientRepeat(const SvgPoint& point) const
 	{
 		auto& stops = _stopsGradient->GetStops();
 
@@ -301,8 +297,7 @@ namespace Elpida
 		return CalculateColorForLinear(point, linear.equation, *stopA, *normalA, *stopB, *normalB);
 	}
 
-	SvgColor SvgRasterizerPaint::CalculateLinearGradientReflect(const SvgPoint& point,
-	                                                            const SvgDocument& document) const
+	SvgColor SvgRasterizerPaint::CalculateLinearGradientReflect(const SvgPoint& point) const
 	{
 		auto& stops = _stopsGradient->GetStops();
 
@@ -400,7 +395,7 @@ namespace Elpida
 		return SvgColor(tR, tG, tB, tA);
 	}
 
-	SvgColor SvgRasterizerPaint::CalculateRadialGradientPad(const SvgPoint& point, const SvgDocument& document) const
+	SvgColor SvgRasterizerPaint::CalculateRadialGradientPad(const SvgPoint& point) const
 	{
 		auto& stops = _stopsGradient->GetStops();
 
@@ -451,7 +446,7 @@ namespace Elpida
 		return InterpolateColor(*stopA, *stopB, ratio);
 	}
 
-	SvgColor SvgRasterizerPaint::CalculateRadialGradientRepeat(const SvgPoint& point, const SvgDocument& document) const
+	SvgColor SvgRasterizerPaint::CalculateRadialGradientRepeat(const SvgPoint& point) const
 	{
 		auto& stops = _stopsGradient->GetStops();
 
@@ -520,8 +515,7 @@ namespace Elpida
 		return InterpolateColor(*stopA, *stopB, ratio);
 	}
 
-	SvgColor SvgRasterizerPaint::CalculateRadialGradientReflect(const SvgPoint& point,
-	                                                            const SvgDocument& document) const
+	SvgColor SvgRasterizerPaint::CalculateRadialGradientReflect(const SvgPoint& point) const
 	{
 		auto& radial = std::get<RadialCache>(_gradientCache);
 

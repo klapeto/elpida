@@ -20,10 +20,10 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		SvgColor CalculateColor(const SvgPoint& point, const SvgDocument& document) const;
+		SvgColor CalculateColor(const SvgPoint& point) const;
 
 		explicit SvgRasterizerPaint(const SvgPaint& paint, const SvgElement& element, const SvgDocument& document);
-		~SvgRasterizerPaint();
+		~SvgRasterizerPaint() = default;
 	private:
 		SvgColor _color;
 		const SvgGradient* _gradient;
@@ -46,20 +46,18 @@ namespace Elpida
 		void AsColor(const SvgPaint& paint);
 
 		[[nodiscard]]
-		SvgColor CalculateLinearGradientPad(const SvgPoint& point, const SvgDocument& document) const;
+		SvgColor CalculateLinearGradientPad(const SvgPoint& point) const;
 		[[nodiscard]]
-		SvgColor CalculateLinearGradientRepeat(const SvgPoint& point, const SvgDocument& document) const;
+		SvgColor CalculateLinearGradientRepeat(const SvgPoint& point) const;
 		[[nodiscard]]
-		SvgColor CalculateLinearGradientReflect(const SvgPoint& point, const SvgDocument& document) const;
+		SvgColor CalculateLinearGradientReflect(const SvgPoint& point) const;
 
 		[[nodiscard]]
-		SvgColor CalculateRadialGradientPad(const SvgPoint& point, const SvgDocument& document) const;
-
+		SvgColor CalculateRadialGradientPad(const SvgPoint& point) const;
 		[[nodiscard]]
-		SvgColor CalculateRadialGradientRepeat(const SvgPoint& point, const SvgDocument& document) const;
-
+		SvgColor CalculateRadialGradientRepeat(const SvgPoint& point) const;
 		[[nodiscard]]
-		SvgColor CalculateRadialGradientReflect(const SvgPoint& point, const SvgDocument& document) const;
+		SvgColor CalculateRadialGradientReflect(const SvgPoint& point) const;
 
 
 		[[nodiscard]]

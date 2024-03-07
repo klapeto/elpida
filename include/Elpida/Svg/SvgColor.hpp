@@ -12,26 +12,32 @@ namespace Elpida
 	class SvgColor
 	{
 	public:
+
+		static constexpr double MaxValue = 1.0;
+		static constexpr double HalfValue = MaxValue / 2.0;
+		static constexpr double QuarterValue = HalfValue / 2.0;
+		static constexpr double MinValue = 0.0;
+
 		[[nodiscard]]
-		unsigned char R() const
+		double R() const
 		{
 			return _r;
 		}
 
 		[[nodiscard]]
-		unsigned char G() const
+		double G() const
 		{
 			return _g;
 		}
 
 		[[nodiscard]]
-		unsigned char B() const
+		double B() const
 		{
 			return _b;
 		}
 
 		[[nodiscard]]
-		unsigned char A() const
+		double A() const
 		{
 			return _a;
 		}
@@ -40,17 +46,18 @@ namespace Elpida
 		SvgColor WithMultipliedAplha(const double alpha) const
 		{
 			double a = _a * alpha;
-			a = std::max(0.0, std::min(255.0, a));
+			a = std::max(MinValue, std::min(MaxValue, a));
 
 			return SvgColor(_r, _g, _b, a);
 		}
 
 		SvgColor()
-			: _r(0), _g(0), _b(0), _a(255)
+			: _r(MinValue), _g(MinValue), _b(MinValue), _a(MinValue)
 		{
+
 		}
 
-		SvgColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
+		SvgColor(const double r, const double g, const double b, const double a)
 			: _r(r),
 			  _g(g),
 			  _b(b),
@@ -61,10 +68,10 @@ namespace Elpida
 		explicit SvgColor(std::string_view view);
 
 	private:
-		unsigned char _r;
-		unsigned char _g;
-		unsigned char _b;
-		unsigned char _a;
+		double _r;
+		double _g;
+		double _b;
+		double _a;
 	};
 } // Elpida
 

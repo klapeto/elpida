@@ -101,66 +101,11 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 #include <fstream>
 #include <png.h>
 
-#define OLD false
-#if OLD
-#define NANOSVG_IMPLEMENTATION
-#define NANOSVGRAST_IMPLEMENTATION
-#include "nanosvg.h"
-#include "nanosvgrast.h"
-#endif
+#include "Elpida/Svg/SvgColorConverter.hpp"
 
 
 int main(int argC, char** argV)
 {
-	// auto width = 100;
-	// auto height = 100;
-	// auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[width*height * 4]);
-	// SvgTransform transform;
-	//
-	//  //transform.Scale(4,4);
-	// SvgEllipseEquation equation(20, 20, 8, 3);
-	//
-	// auto center = equation.GetCenter();
-	//
-	//
-	// transform.Translate(-center.GetX(),-center.GetY());
-	// SvgTransform transform2;
-	// transform2.Scale(4,4);
-	// transform.PreMultiply(transform2);
-	// transform.Translate(center.GetX(),center.GetY());
-	//
-	// equation.Transform(transform);
-	// //
-	// // transform.SetTranslation(center.GetX() - equation.GetCenter().GetX(), center.GetY() - equation.GetCenter().GetY());
-	// //
-	// // equation.Transform(transform);
-	//
-	// for (auto i = 0; i < height; ++i)
-	// {
-	// 	for (auto j = 0; j < width; ++j)
-	// 	{
-	// 		auto x = (double)j;
-	// 		auto y = (double)i;
-	// 		if (equation.IsPointInside(SvgPoint(x, y)))
-	// 		{
-	// 			bitmapData[i * width * 4 + (j * 4)] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 1] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 2] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 3] = 255;
-	// 		}
-	// 		else
-	// 		{
-	// 			bitmapData[i * width * 4 + (j * 4)] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 1] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 2] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 3] = 0;
-	// 		}
-	// 	}
-	// 	//std::cout << std::endl;
-	// }
-
-	//return 0;
-
 	std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
 
 
@@ -172,30 +117,18 @@ int main(int argC, char** argV)
 
 	file.read(inputData.get(), size);
 
-#if OLD
-	auto svg = nsvgParse(inputData.get(), "px", 96.0);
-	auto pixels = static_cast<std::size_t>(svg->height * svg->width * 4);
-	auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[pixels]);
-
-	auto rasterizer = nsvgCreateRasterizer();
-	nsvgRasterize(rasterizer, svg, 0,0 ,1.0,bitmapData.get(), svg->width, svg->height, svg->width*4);
-
-	std::size_t width = svg->width;
-	std::size_t height = svg->height;
-#else
 
 	auto element = XmlParser::Parse(inputData.get(), size);
 
 	SvgDocument svgDocument(element);
-	std::size_t pixels = svgDocument.GetActualHeight() * svgDocument.GetActualWidth() * 4;
-	auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[pixels]);
 
 	std::size_t width = svgDocument.GetActualWidth();
 	std::size_t height = svgDocument.GetActualHeight();
 
 	SvgRasterizer rasterizer;
-	rasterizer.Rasterize(svgDocument, bitmapData.get(), svgDocument.GetActualWidth(), svgDocument.GetActualHeight(), svgDocument.GetActualWidth() * 4);
-#endif
+	auto backDrop = rasterizer.Rasterize(svgDocument);
+
+	auto imageData = SvgColorConverter::Convert<unsigned char>(backDrop.GetColorData());
 	{
 		png_image image{};
 		image.version = PNG_IMAGE_VERSION;
@@ -206,7 +139,7 @@ int main(int argC, char** argV)
 		image.height = height;
 		image.format = PNG_FORMAT_RGBA;
 
-		if (png_image_write_to_memory(&image, nullptr, &outputSize, 0, bitmapData.get(), 0, nullptr))
+		if (png_image_write_to_memory(&image, nullptr, &outputSize, 0, imageData.get(), 0, nullptr))
 		{
 			auto outputData = std::unique_ptr<char[]>(new char[outputSize]);
 
@@ -214,7 +147,7 @@ int main(int argC, char** argV)
 						outputData.get(),
 						&outputSize,
 						0,
-						bitmapData.get(),
+					imageData.get(),
 						0,
 						nullptr))
 			{

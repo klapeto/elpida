@@ -5,6 +5,9 @@
 #ifndef ELPIDA_SVG_SVGBOUNDS_HPP
 #define ELPIDA_SVG_SVGBOUNDS_HPP
 
+
+#include <limits>
+
 namespace Elpida
 {
 	class SvgPoint;
@@ -53,6 +56,12 @@ namespace Elpida
 
 		void Merge(const SvgBounds& other);
 
+		static SvgBounds CreateMinimum()
+		{
+			return SvgBounds(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+			                 std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+		}
+
 		SvgBounds() : _minX(0.0),
 		              _minY(0.0),
 		              _maxX(0.0),
@@ -60,7 +69,10 @@ namespace Elpida
 		{
 		}
 
-		SvgBounds(const SvgPoint& a);
+		explicit SvgBounds(const SvgPoint& a);
+		SvgBounds(const SvgPoint& a, const SvgPoint& b);
+
+		/// This needs separation
 		SvgBounds(const SvgPoint& a, const SvgPoint& b, const SvgPoint& c, const SvgPoint& d);
 
 		SvgBounds(const double minX, const double minY, const double maxX, const double maxY)

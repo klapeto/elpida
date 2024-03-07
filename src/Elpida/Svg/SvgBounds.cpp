@@ -88,6 +88,14 @@ namespace Elpida
 	{
 	}
 
+	SvgBounds::SvgBounds(const SvgPoint& a, const SvgPoint& b)
+	{
+		_minX = Min(a.GetX(), b.GetX());
+		_minY = Min(a.GetY(), b.GetY());
+		_maxX = Max(a.GetX(), b.GetX());
+		_maxY = Max(a.GetY(), b.GetY());
+	}
+
 	SvgBounds::SvgBounds(const SvgPoint& a, const SvgPoint& b, const SvgPoint& c, const SvgPoint& d)
 	{
 		// Start the bounding box by end points

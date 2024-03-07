@@ -4,12 +4,15 @@
 
 #ifndef ELPIDA_SVG_SVGPOLYGON_HPP
 #define ELPIDA_SVG_SVGPOLYGON_HPP
+
 #include <vector>
 
+#include "SvgBounds.hpp"
 #include "SvgEdge.hpp"
 
 namespace Elpida
 {
+
 	class SvgPolygon
 	{
 	public:
@@ -25,13 +28,14 @@ namespace Elpida
 		[[nodiscard]]
 		bool IsPointInsideNonZero(const SvgPoint& point) const;
 
-		explicit SvgPolygon(std::vector<SvgEdge>&& edges)
-			: _edges(std::move(edges))
+		explicit SvgPolygon(std::vector<SvgEdge>&& edges, const SvgBounds& bounds)
+			: _edges(std::move(edges)), _bounds(bounds)
 		{
 
 		}
 	private:
 		std::vector<SvgEdge> _edges;
+		SvgBounds _bounds;
 	};
 } // Elpida
 

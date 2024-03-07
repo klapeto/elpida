@@ -453,7 +453,7 @@ namespace Elpida
 		FlattenCubicBez(points, p1p2p3p4, p2p3p4, p3p4, end, level + 1, type);
 	}
 
-		static void ExpandStroke(std::vector<SvgEdge>& edges,
+	static void ExpandStroke(std::vector<SvgEdge>& edges,
 		std::vector<SvgRasterizerPoint>& points,
 		bool closed,
 		const SvgLineJoin lineJoin,
@@ -640,6 +640,7 @@ namespace Elpida
 	{
 		std::vector<SvgEdge> edges;
 
+
 		for (auto& pathInstance : paths)
 		{
 			std::vector<SvgRasterizerPoint> points;
@@ -672,7 +673,13 @@ namespace Elpida
 			}
 		}
 
-		return SvgPolygon(std::move(edges));
+		SvgBounds bounds = SvgBounds::CreateMinimum();
+		for (auto edge : edges)
+		{
+			bounds.Merge(SvgBounds(edge.GetA(), edge.GetB()));
+		}
+
+		return SvgPolygon(std::move(edges), bounds);
 	}
 
 	SvgPolygon SvgShapePolygonizer::PolygonizeStroke(const std::vector<SvgPathInstance>& paths, const SvgStroke& stroke, double scale)
@@ -816,6 +823,14 @@ namespace Elpida
 				ExpandStroke(edges, points, closed, stroke.GetLineJoin(), stroke.GetLineCap(), lineWidth);
 			}
 		}
-		return SvgPolygon(std::move(edges));
+
+		// this can be optimized inside the actual procedure
+		SvgBounds bounds = SvgBounds::CreateMinimum();
+		for (auto edge : edges)
+		{
+			bounds.Merge(SvgBounds(edge.GetA(), edge.GetB()));
+		}
+
+		return SvgPolygon(std::move(edges), bounds);
 	}
 } // Elpida
