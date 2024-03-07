@@ -28,7 +28,7 @@ namespace Elpida
 		{
 		case 'e':
 			stream.Next();
-			if (stream.ConsumeNextChars("evenodd"))
+			if (stream.ConsumeNextChars("venodd"))
 			{
 				_fillRule = SvgFillRule::EvenOdd;
 			}

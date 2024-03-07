@@ -640,7 +640,6 @@ namespace Elpida
 	{
 		std::vector<SvgEdge> edges;
 
-
 		for (auto& pathInstance : paths)
 		{
 			std::vector<SvgRasterizerPoint> points;

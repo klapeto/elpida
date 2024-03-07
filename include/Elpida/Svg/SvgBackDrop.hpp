@@ -9,8 +9,9 @@
 #include <memory>
 #include <vector>
 
-#include "Elpida/Svg/SvgBlendMode.hpp"
+#include "SvgBlendMode.hpp"
 #include "SvgColor.hpp"
+#include "SvgFillRule.hpp"
 #include "SvgCompositingMode.hpp"
 
 namespace Elpida
@@ -29,10 +30,12 @@ namespace Elpida
 			return _colorData;
 		}
 
-		void Draw(const SvgPolygon& polygon, const SvgRasterizerPaint& paint,
+		void Draw(const SvgPolygon& polygon,
+				const SvgRasterizerPaint& paint,
+				SvgFillRule fillRule = SvgFillRule::NonZero,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
-				std::size_t subSamples = 1);
+				std::size_t subSamples = 32);
 
 		SvgBackDrop(std::size_t width, std::size_t height);
 		SvgBackDrop(const SvgBackDrop&) = delete;

@@ -20,7 +20,9 @@ namespace Elpida
 		return (1.0 - ab) * Cs + ab * blender.Blend(Cb, Cs);
 	}
 
-	void SvgBackDrop::Draw(const SvgPolygon& polygon, const SvgRasterizerPaint& paint,
+	void SvgBackDrop::Draw(const SvgPolygon& polygon,
+			const SvgRasterizerPaint& paint,
+			SvgFillRule fillRule,
 			SvgBlendMode blendMode,
 			SvgCompositingMode compositingMode,
 			const std::size_t subSamples)
@@ -53,7 +55,10 @@ namespace Elpida
 					for (std::size_t j = 0; j < subSamplesPerDimension; ++j)
 					{
 						SvgPoint point(sampleX, sampleY);
-						if (polygon.IsPointInsideEvenOdd(point))
+
+						// TODO: Optimize with lambda. Measure impact of the removal of branch
+						bool inside = fillRule == SvgFillRule::NonZero ? polygon.IsPointInsideNonZero(point) : polygon.IsPointInsideEvenOdd(point);
+						if (inside)
 						{
 							auto color = paint.CalculateColor(point);
 							r += color.R();
@@ -66,13 +71,13 @@ namespace Elpida
 					sampleX = x - sideHalf;
 					sampleY += subSampleStep;
 				}
-
-
+				
 				r /= actualSubSamples;
 				g /= actualSubSamples;
 				b /= actualSubSamples;
 				a /= actualSubSamples;
 
+				// See https://www.w3.org/TR/2015/CR-compositing-1-20150113/#generalformula
 				auto& backdropColor = _colorData[y * _width + x];
 				auto as = a;
 				auto ab = backdropColor.A();

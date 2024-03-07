@@ -31,7 +31,7 @@ namespace Elpida
 				auto polygon = SvgShapePolygonizer::Polygonize(element.GetPaths(), scale);
 
 				auto paint = SvgRasterizerPaint(element.GetFill(), element, document);
-				backDrop.Draw(polygon, paint);
+				backDrop.Draw(polygon, paint, element.GetFill().GetFillRule());
 			}
 
 			if (element.GetStroke().IsSet())
@@ -39,7 +39,7 @@ namespace Elpida
 				auto polygon = SvgShapePolygonizer::PolygonizeStroke(element.GetPaths(),element.GetStroke(), scale);
 
 				auto paint = SvgRasterizerPaint(element.GetStroke(), element, document);
-
+				backDrop.Draw(polygon, paint);
 			}
 		}
 
