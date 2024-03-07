@@ -23,16 +23,23 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
+		const SvgBounds& GetBounds() const
+		{
+			return _bounds;
+		}
+
+		[[nodiscard]]
 		bool IsPointInsideEvenOdd(const SvgPoint& point) const;
 
 		[[nodiscard]]
 		bool IsPointInsideNonZero(const SvgPoint& point) const;
 
 		explicit SvgPolygon(std::vector<SvgEdge>&& edges, const SvgBounds& bounds)
-			: _edges(std::move(edges)), _bounds(bounds)
+				:_edges(std::move(edges)), _bounds(bounds)
 		{
 
 		}
+
 	private:
 		std::vector<SvgEdge> _edges;
 		SvgBounds _bounds;

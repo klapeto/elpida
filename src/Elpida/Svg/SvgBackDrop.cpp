@@ -34,9 +34,15 @@ namespace Elpida
 
 		SvgBlender blender(blendMode);
 		SvgCompositor compositor(compositingMode);
-		for (std::size_t y = 0; y < _height; ++y)
+		auto& bounds = polygon.GetBounds();
+		std::size_t startY = std::floor(std::max(0.0, bounds.GetMinY()));
+		std::size_t startX = std::floor(std::max(0.0, bounds.GetMinX()));
+		std::size_t width = std::ceil(std::min((double)_width, bounds.GetWidth() + startX));
+		std::size_t height = std::ceil(std::min((double)_height, bounds.GetHeight() + startY));
+
+		for (std::size_t y = startY; y < height; ++y)
 		{
-			for (std::size_t x = 0; x < _width; ++x)
+			for (std::size_t x = startX; x < width; ++x)
 			{
 				double r = 0.0;
 				double g = 0.0;
