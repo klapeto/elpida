@@ -77,6 +77,8 @@ namespace Elpida
 			return _bounds;
 		}
 
+
+
 		SvgElement() = default;
 		explicit SvgElement(const XmlElement& element, SvgDocument& document);
 		SvgElement(const SvgElement&) = delete;

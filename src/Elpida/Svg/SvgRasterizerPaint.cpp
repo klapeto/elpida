@@ -129,7 +129,8 @@ namespace Elpida
 
 				_gradientCache = LinearCache{
 					SvgLinearEquation(gradientPointA, grandientPointB),
-					std::vector<SvgLinearEquation>()
+					std::vector<SvgLinearEquation>(),
+					gradientPointA.GetDistance(grandientPointB)
 				};
 				auto& linear = std::get<LinearCache>(_gradientCache);
 
@@ -138,7 +139,6 @@ namespace Elpida
 				stopNormals.reserve(stops.size());
 
 				stopNormals.push_back(equation.GetANormal());
-				linear.length = gradientPointA.GetDistance(grandientPointB);
 
 				for (std::size_t i = 1; i < stops.size() - 1; ++i)
 				{

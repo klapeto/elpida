@@ -53,17 +53,17 @@ namespace Elpida
 
 		SvgPoint operator*(const double value) const
 		{
-			return {_x * value, _y * value};
+			return { _x * value, _y * value };
 		}
 
 		SvgPoint operator+(const SvgPoint& other) const
 		{
-			return {_x + other._x, _y + other._y};
+			return { _x + other._x, _y + other._y };
 		}
 
 		SvgPoint operator-(const SvgPoint& other) const
 		{
-			return {_x - other._x, _y - other._y};
+			return { _x - other._x, _y - other._y };
 		}
 
 		SvgPoint& operator*=(const double value)
@@ -82,12 +82,12 @@ namespace Elpida
 
 		SvgPoint operator-() const
 		{
-			return {-_x, -_y};
+			return { -_x, -_y };
 		}
 
-		SvgPoint operator/( const double x) const
+		SvgPoint operator/(const double x) const
 		{
-			return {_x / x, _y / x};
+			return { _x / x, _y / x };
 		}
 
 		void Transform(const SvgTransform& transform)
@@ -95,19 +95,34 @@ namespace Elpida
 			transform.ApplyToPoint(_x, _y);
 		}
 
+		void ToMin(const SvgPoint& point)
+		{
+			_x = std::min(_x, point._x);
+			_y = std::min(_y, point._y);
+		}
+
+		void ToMax(const SvgPoint& point)
+		{
+			_x = std::max(_x, point._x);
+			_y = std::max(_y, point._y);
+		}
+
+		[[nodiscard]]
 		double Product() const
 		{
 			return _x * _x + _y * _y;
 		}
 
+		[[nodiscard]]
 		double Length() const
 		{
 			return sqrt(Product());
 		}
 
+		[[nodiscard]]
 		SvgPoint GetInverse() const
 		{
-			return {_y, -_x};
+			return { _y, -_x };
 		}
 
 		double Normalize()
@@ -134,27 +149,33 @@ namespace Elpida
 		{
 			const double dx = _x - other._x;
 			const double dy = _y - other._y;
-			return sqrt(dx * dx + dy * dy);
+			return std::sqrt(dx * dx + dy * dy);
 		}
 
 		[[nodiscard]]
-		double GetDirection(const SvgPoint& to) const
+		double GetSlope(const SvgPoint& to) const
 		{
 			const double dx = to._x - _x;
 			const double dy = to._y - _y;
 			return dy / dx;
 		}
 
-		SvgPoint(): _x(0.0), _y(0.0)
+		SvgPoint()
+				:_x(0.0), _y(0.0)
 		{
 		}
 
 		SvgPoint(const double x, const double y)
-			: _x(x),
-			  _y(y)
+				:_x(x),
+				 _y(y)
 		{
 		}
 
+		SvgPoint(const SvgPoint&) = default;
+		SvgPoint(SvgPoint&&) noexcept = default;
+		SvgPoint& operator=(const SvgPoint&) = default;
+		SvgPoint& operator=(SvgPoint&&) noexcept = default;
+		~SvgPoint() = default;
 	private:
 		double _x;
 		double _y;

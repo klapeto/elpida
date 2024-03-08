@@ -31,6 +31,7 @@ namespace Elpida
 		// of the pixel and take samples and advance by a step at a time
 		// (eg next sample will be (subSampleStep, 0), next (2 * subSampleStep, 0) etc).
 		// in the end we average the total channels we have got.
+		// TODO: Better pattern. eg on 1 Sample we take the top left sample which is not optimal
 		auto sampleX = x - sideHalf;
 		auto sampleY = y - sideHalf;
 		for (std::size_t i = 0; i < _subSamplesPerDimension; ++i)

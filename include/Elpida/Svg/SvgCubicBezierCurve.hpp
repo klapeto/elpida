@@ -30,7 +30,7 @@ namespace Elpida
 			return _end;
 		}
 
-		void ApplyTransform(const SvgTransform& transform)
+		void Transform(const SvgTransform& transform)
 		{
 			_startControl.Transform(transform);
 			_endControl.Transform(transform);
