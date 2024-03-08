@@ -74,8 +74,8 @@ namespace Elpida
 			auto n2 = _b * _b;
 			auto h2 = _a * _a;
 
-			auto cosA = cos(_angle);
-			auto sinA = sin(_angle);
+			auto cosA = _cosA;
+			auto sinA = _sinA;
 
 			auto cosA2 = cosA * cosA;
 			auto sinA2 = sinA * sinA;
@@ -141,10 +141,10 @@ namespace Elpida
 			if (_b == 0.0 || _a == 0.0) return point.GetDistance(_center);
 			auto delta = point - _center;
 
-			auto d1 = delta.GetX() * cos(_angle) + delta.GetY() * sin(_angle);
+			auto d1 = delta.GetX() * _cosA + delta.GetY() * _sinA;
 			d1 = d1 * d1;
 
-			auto d2 = delta.GetX() * sin(_angle) - delta.GetY() * cos(_angle);
+			auto d2 = delta.GetX() * _sinA - delta.GetY() * _cosA;
 			d2 = d2 * d2;
 
 			return (d1 / (_a * _a)) + (d2 / (_b * _b));
@@ -173,6 +173,8 @@ namespace Elpida
 		double _angle;
 		double _a;
 		double _b;
+		double _sinA;
+		double _cosA;
 
 		[[nodiscard]]
 		SvgPoint CalculateClosestPointVertical(const SvgPoint& point, double n2, double h2, double cosA, double sinA,
@@ -246,6 +248,8 @@ namespace Elpida
 
 			auto delta = _center - _rightPoint;
 			_angle = atan2(delta.GetY(), delta.GetX());
+			_sinA = std::sin(_angle);
+			_cosA = std::cos(_angle);
 		}
 	};
 } // Elpida

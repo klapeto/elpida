@@ -19,6 +19,12 @@ namespace Elpida
 			return _blender(Cb, Cs);
 		}
 
+		[[nodiscard]]
+		double Blend(double Cs, double Cb, double ab) const
+		{
+			return (1.0 - ab) * Cs + ab * Blend(Cb, Cs);
+		}
+
 		explicit SvgBlender(SvgBlendMode mode);
 
 	private:
