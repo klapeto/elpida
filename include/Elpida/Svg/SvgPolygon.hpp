@@ -13,6 +13,8 @@
 namespace Elpida
 {
 
+	class SvgTransform;
+
 	class SvgPolygon
 	{
 	public:
@@ -34,15 +36,19 @@ namespace Elpida
 		[[nodiscard]]
 		bool IsPointInsideNonZero(const SvgPoint& point) const;
 
-		explicit SvgPolygon(std::vector<SvgEdge>&& edges, const SvgBounds& bounds)
-				:_edges(std::move(edges)), _bounds(bounds)
-		{
+		void Transform(const SvgTransform& transform);
 
+		explicit SvgPolygon(std::vector<SvgEdge>&& edges)
+				:_edges(std::move(edges))
+		{
+			CalculateBounds();
 		}
 
 	private:
 		std::vector<SvgEdge> _edges;
 		SvgBounds _bounds;
+
+		void CalculateBounds();
 	};
 } // Elpida
 

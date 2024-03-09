@@ -11,8 +11,8 @@ namespace Elpida
 {
 	static double ClampColor(double color)
 	{
-		if (color > SvgColor::MaxValue) color = SvgColor::MaxValue;
-		if (color < SvgColor::MinValue) color = SvgColor::MinValue;
+		if (color > 1.0) color = 1.0;
+		if (color < 0.0) color = 0.0;
 		return color;
 	}
 
@@ -26,7 +26,6 @@ namespace Elpida
 		return ClampColor(Cb * Cs);
 	}
 
-
 	static double Screen(double Cb, double Cs)
 	{
 		return ClampColor(Cb + Cs - (Cb * Cs));
@@ -34,13 +33,13 @@ namespace Elpida
 
 	static double HardLight(double Cb, double Cs)
 	{
-		if (Cs <= SvgColor::HalfValue)
+		if (Cs <= 0.5)
 		{
 			return Multiply(Cb, 2 * Cs);
 		}
 		else
 		{
-			return Screen(Cb, (2 * Cs) - SvgColor::MaxValue);
+			return Screen(Cb, (2 * Cs) - 1.0);
 		}
 	}
 
@@ -61,33 +60,33 @@ namespace Elpida
 
 	static double ColorDodge(double Cb, double Cs)
 	{
-		if (Cb == SvgColor::MinValue)
+		if (Cb == 0.0)
 		{
-			return SvgColor::MinValue;
+			return 0.0;
 		}
-		else if (Cs == SvgColor::MaxValue)
+		else if (Cs == 1.0)
 		{
-			return SvgColor::MaxValue;
+			return 1.0;
 		}
 		else
 		{
-			return ClampColor(std::min(SvgColor::MaxValue, Cb / (SvgColor::MaxValue - Cs)));
+			return ClampColor(std::min(1.0, Cb / (1.0 - Cs)));
 		}
 	}
 
 	static double ColorBurn(double Cb, double Cs)
 	{
-		if (Cb == SvgColor::MaxValue)
+		if (Cb == 1.0)
 		{
-			return SvgColor::MaxValue;
+			return 1.0;
 		}
-		else if (Cs == SvgColor::MinValue)
+		else if (Cs == 0.0)
 		{
-			return SvgColor::MinValue;
+			return 0.0;
 		}
 		else
 		{
-			return ClampColor(SvgColor::MaxValue - std::min(SvgColor::MaxValue, (SvgColor::MaxValue - Cb) / Cs));
+			return ClampColor(1.0 - std::min(1.0, (1.0 - Cb) / Cs));
 		}
 	}
 
@@ -95,7 +94,7 @@ namespace Elpida
 	{
 		auto d = [](double c)
 		{
-		  if (c <= SvgColor::QuarterValue)
+		  if (c <= 0.25)
 		  {
 			  return ((16 * c - 12) * c + 4) * c;
 		  }
@@ -105,26 +104,25 @@ namespace Elpida
 		  }
 		};
 
-		if (Cs <= SvgColor::HalfValue)
+		if (Cs <= 0.5)
 		{
-			return ClampColor(Cb - (SvgColor::MaxValue - (2 * Cs) * Cb * (SvgColor::MaxValue - Cb)));
+			return ClampColor(Cb - (1.0 - (2 * Cs) * Cb * (1.0 - Cb)));
 		}
 		else
 		{
-			return ClampColor(Cb + (2 * Cs - SvgColor::MaxValue) * (d(Cb) - Cb));
+			return ClampColor(Cb + (2 * Cs - 1.0) * (d(Cb) - Cb));
 		}
 	}
 
 	static double Difference(double Cb, double Cs)
 	{
-		return ClampColor(std::abs(Cb -  Cs));
+		return ClampColor(std::abs(Cb - Cs));
 	}
 
 	static double Exclusion(double Cb, double Cs)
 	{
 		return ClampColor(Cb + Cs - 2 * Cb * Cs);
 	}
-
 
 	SvgBlender::SvgBlender(SvgBlendMode mode)
 	{

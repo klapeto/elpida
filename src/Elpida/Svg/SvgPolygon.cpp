@@ -24,7 +24,7 @@ namespace Elpida
 			if (a.GetY() > point.GetY() != b.GetY() > point.GetY())
 			{
 				const auto determinant = (point.GetX() - a.GetX()) * (b.GetY() - a.GetY()) - (b.GetX() - a.GetX()) * (
-					point.GetY() - a.GetY());
+						point.GetY() - a.GetY());
 				if (determinant == 0)
 				{
 					// Is directly at line
@@ -59,7 +59,7 @@ namespace Elpida
 			if (a.GetY() > point.GetY() != b.GetY() > point.GetY())
 			{
 				const auto determinant = (point.GetX() - a.GetX()) * (b.GetY() - a.GetY()) - (b.GetX() - a.GetX()) * (
-					point.GetY() - a.GetY());
+						point.GetY() - a.GetY());
 				if (determinant == 0)
 				{
 					// Is directly at line
@@ -74,5 +74,25 @@ namespace Elpida
 			}
 		}
 		return inside != 0;
+	}
+
+	void SvgPolygon::CalculateBounds()
+	{
+		_bounds = SvgBounds::CreateMinimum();
+		for (auto edge : _edges)
+		{
+			_bounds.Merge(SvgBounds(edge.GetA(), edge.GetB()));
+		}
+	}
+
+	void SvgPolygon::Transform(const SvgTransform& transform)
+	{
+		for (auto& edge : _edges)
+		{
+			edge.Transform(transform);
+		}
+
+		CalculateBounds();
+
 	}
 } // Elpida

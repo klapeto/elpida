@@ -10,7 +10,6 @@ namespace Elpida
 {
 	SvgDocument::SvgDocument(const XmlElement& element)
 	{
-		_fontSizes.push(1.0);
 		_element = SvgSvgElement(element, *this);
 	}
 } // Elpida

@@ -7,45 +7,60 @@
 
 #include <string_view>
 
+#include "Elpida/Svg/SvgPoint.hpp"
+
 namespace Elpida
 {
-
 	class SvgViewBox
 	{
 	public:
+
+		[[nodiscard]]
+		const SvgPoint& GetMin() const
+		{
+			return _min;
+		}
+
+		[[nodiscard]]
 		double GetMinX() const
 		{
-			return _minX;
+			return _min.GetX();
 		}
+
+		[[nodiscard]]
 		double GetMinY() const
 		{
-			return _minY;
+			return _min.GetY();
 		}
+
+		[[nodiscard]]
 		double GetWidth() const
 		{
 			return _width;
 		}
+
+		[[nodiscard]]
 		double GetHeight() const
 		{
 			return _height;
 		}
 
-		SvgViewBox() = default;
-
-		SvgViewBox(const double minX, const double minY, const double width, const double height)
-			: _minX(minX),
-			  _minY(minY),
-			  _width(width),
-			  _height(height)
+		[[nodiscard]]
+		double GetLength() const
 		{
+			return _length;
 		}
 
+		SvgViewBox();
+		SvgViewBox(double minX, double minY, double width, double height);
 		explicit SvgViewBox(std::string_view view);
 	private:
-		double _minX;
-		double _minY;
+		SvgPoint _min;
 		double _width;
 		double _height;
+		double _length;
+
+		void CalculateLength();
 	};
 
 } // Elpida

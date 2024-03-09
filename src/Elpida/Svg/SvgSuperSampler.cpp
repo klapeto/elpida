@@ -5,7 +5,7 @@
 #include <cmath>
 #include "Elpida/Svg/SvgSuperSampler.hpp"
 #include "Elpida/Svg/SvgPolygon.hpp"
-#include "Elpida/Svg/SvgRasterizerPaint.hpp"
+#include "Elpida/Svg/SvgCalculatedPaint.hpp"
 #include "Elpida/Svg/SvgPoint.hpp"
 
 namespace Elpida
@@ -19,7 +19,7 @@ namespace Elpida
 	}
 
 	SvgColor SvgSuperSampler::CalculatePixelColor(const SvgPolygon& polygon, std::size_t x, std::size_t y,
-			const SvgRasterizerPaint& paint, SvgFillRule fillRule) const
+			const SvgCalculatedPaint& paint, SvgFillRule fillRule) const
 	{
 		double r = 0.0;
 		double g = 0.0;

@@ -23,7 +23,8 @@ namespace Elpida
 			case 'u':
 				if (stream.ConsumeNextCharsCond("url("))
 				{
-					_gradientId = stream.GetStringViewWhile([](auto c) { return c != ')'; });
+					_gradientId = stream.GetStringViewWhile([](auto c)
+					{ return c != ')'; });
 				}
 				else
 				{
@@ -46,7 +47,8 @@ namespace Elpida
 				break;
 			}
 			_set = true;
-		} catch (const ParseException&)
+		}
+		catch (const ParseException&)
 		{
 			_set = false;
 		}

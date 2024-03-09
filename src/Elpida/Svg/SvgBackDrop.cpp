@@ -11,13 +11,13 @@
 #include <cstring>
 #include <Elpida/Svg/SvgPoint.hpp>
 #include <Elpida/Svg/SvgPolygon.hpp>
-#include <Elpida/Svg/SvgRasterizerPaint.hpp>
+#include <Elpida/Svg/SvgCalculatedPaint.hpp>
 
 namespace Elpida
 {
 
 	void SvgBackDrop::Draw(const SvgPolygon& polygon,
-			const SvgRasterizerPaint& paint,
+			const SvgCalculatedPaint& paint,
 			SvgFillRule fillRule,
 			SvgBlendMode blendMode,
 			SvgCompositingMode compositingMode,

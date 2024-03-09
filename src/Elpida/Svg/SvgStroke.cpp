@@ -13,27 +13,27 @@
 namespace Elpida
 {
 
-	SvgStroke::SvgStroke(const XmlMap& properties, const SvgDocument& document)
-		: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _dashOffset(0), _width(1.0), _miterLimit(0.0)
+	SvgStroke::SvgStroke(const XmlMap& properties)
+		: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _miterLimit(0.0)
 	{
 		ParseColor(properties.GetValue("stroke"));
 		ParseOpacity(properties.GetValue("stroke-opacity"));
-		ParseWidth(properties.GetValue("stroke-width"), document);
-		ParseDashArray(properties.GetValue("stroke-dasharray"), document);
-		ParseDashOffset(document, properties.GetValue("stroke-dashoffset"));
+		ParseWidth(properties.GetValue("stroke-width"));
+		ParseDashArray(properties.GetValue("stroke-dasharray"));
+		ParseDashOffset(properties.GetValue("stroke-dashoffset"));
 		ParseLineCap(properties.GetValue("stroke-linecap"));
 		ParseLineJoin(properties.GetValue("stroke-linejoin"));
 		ParseMiterLimit(properties.GetValue("stroke-miterlimit"));
 	}
 
-	void SvgStroke::ParseWidth(const std::string& value, const SvgDocument& document)
+	void SvgStroke::ParseWidth(const std::string& value)
 	{
 		if (value.empty()) return;
 
-		_width = SvgLength(value).CalculateActualValue(document, 0, document.GetActualLength());
+		_width = SvgLength(value);
 	}
 
-	void SvgStroke::ParseDashArray(const std::string& value, const SvgDocument& document)
+	void SvgStroke::ParseDashArray(const std::string& value)
 	{
 		if (value.empty()) return;
 
@@ -46,28 +46,20 @@ namespace Elpida
 			return;
 		}
 
-		double sum = 0.0;
 		while (!stream.Eof())
 		{
-			const auto dashLength = SvgLength(stream.GetStringViewWhile([](auto c)
+			_dashes.push_back(SvgLength(stream.GetStringViewWhile([](auto c)
 			{
-				return !CharacterStream::IsSpace(c) && c != ',';
-			})).CalculateActualValue(document, 0, document.GetActualLength());
-			sum += dashLength;
-			_dashes.push_back(fabs(dashLength));
+			  return !CharacterStream::IsSpace(c) && c != ',';
+			})));
 			stream.Next();
-		}
-
-		if (sum <= 1e-6)
-		{
-			_dashes.clear();
 		}
 	}
 
-	void SvgStroke::ParseDashOffset(const SvgDocument& document, const std::string& dashOffset)
+	void SvgStroke::ParseDashOffset(const std::string& dashOffset)
 	{
 		if (dashOffset.empty()) return;
-		_dashOffset = SvgLength(dashOffset).CalculateActualValue(document, 0, document.GetActualLength());
+		_dashOffset = SvgLength(dashOffset);
 	}
 
 	void SvgStroke::ParseLineCap(const std::string& value)

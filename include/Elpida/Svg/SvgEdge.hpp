@@ -42,13 +42,19 @@ namespace Elpida
 			return _direction;
 		}
 
+		void Transform(const SvgTransform& transform)
+		{
+			_a.Transform(transform);
+			_b.Transform(transform);
+		}
+
 		SvgEdge()
-			: _direction(0)
+				:_direction(0)
 		{
 		}
 
 		SvgEdge(const SvgPoint& a, const SvgPoint& b, const int direction)
-			: _a(a), _b(b), _direction(direction)
+				:_a(a), _b(b), _direction(direction)
 		{
 		}
 

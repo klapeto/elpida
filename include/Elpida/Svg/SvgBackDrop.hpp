@@ -18,7 +18,7 @@ namespace Elpida
 {
 	class SvgPolygon;
 
-	class SvgRasterizerPaint;
+	class SvgCalculatedPaint;
 
 	class SvgBackDrop final
 	{
@@ -31,7 +31,7 @@ namespace Elpida
 		}
 
 		void Draw(const SvgPolygon& polygon,
-				const SvgRasterizerPaint& paint,
+				const SvgCalculatedPaint& paint,
 				SvgFillRule fillRule = SvgFillRule::NonZero,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,

@@ -26,7 +26,7 @@ add_library(elpida-svg
         SvgCubicBezierCurve.cpp
         SvgEdge.cpp
         SvgPathGenerator.cpp
-        SvgRasterizerPaint.cpp
+        SvgCalculatedPaint.cpp
         SvgLinearEquation.cpp
         SvgEllipseEquation.cpp
         SvgShapePolygonizer.cpp
@@ -36,7 +36,11 @@ add_library(elpida-svg
         SvgCompositor.cpp
         SvgColorConverter.cpp
         SvgSuperSampler.cpp
-        ../../../include/Elpida/Svg/SvgSuperSampler.hpp
+        SvgCalculatedShape.cpp
+        SvgRectangle.cpp
+        SvgCalculationContext.cpp
+        SvgPath.cpp
+        SvgCalculatedGradientStop.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

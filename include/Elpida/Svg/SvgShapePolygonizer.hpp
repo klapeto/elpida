@@ -14,12 +14,14 @@ namespace Elpida
 	class SvgElement;
 	class SvgPathInstance;
 	class SvgStroke;
+	class SvgCalculatedShape;
+	class SvgCalculationContext;
 
 	class SvgShapePolygonizer
 	{
 	public:
-		static SvgPolygon Polygonize(const std::vector<SvgPathInstance>& paths, double scale);
-		static SvgPolygon PolygonizeStroke(const std::vector<SvgPathInstance>& paths, const SvgStroke& stroke, double scale);
+		static SvgPolygon Polygonize(const SvgCalculatedShape& shape);
+		static SvgPolygon PolygonizeStroke(const SvgCalculatedShape& shape, const SvgCalculationContext& calculationContext, const SvgStroke& stroke);
 	};
 } // Elpida
 

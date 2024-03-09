@@ -9,6 +9,8 @@
 #include <Elpida/Svg/SvgLineJoin.hpp>
 #include <Elpida/Svg/SvgPathInstance.hpp>
 #include <Elpida/Svg/SvgStroke.hpp>
+#include <Elpida/Svg/SvgCalculatedShape.hpp>
+#include <Elpida/Svg/SvgCalculationContext.hpp>
 
 namespace Elpida
 {
@@ -72,36 +74,36 @@ namespace Elpida
 		}
 
 		SvgRasterizerPoint()
-			: SvgPoint(), _flags(NONE)
+				:SvgPoint(), _flags(NONE)
 		{
 		}
 
 		SvgRasterizerPoint(const double x, const double y)
-			: SvgPoint(x, y), _flags(NONE)
+				:SvgPoint(x, y), _flags(NONE)
 		{
 		}
 
 		SvgRasterizerPoint(const SvgPoint& point, const PointFlags flags)
-			: SvgPoint(point), _flags(flags)
+				:SvgPoint(point), _flags(flags)
 		{
 		}
 
 		explicit SvgRasterizerPoint(const SvgPoint& point)
-			: SvgPoint(point), _flags(NONE)
+				:SvgPoint(point), _flags(NONE)
 		{
 		}
 
 		SvgRasterizerPoint(const double x,
-		                   const double y,
-		                   const double dx,
-		                   const double dy,
-		                   const double dmx,
-		                   const double dmy,
-		                   const PointFlags flags)
-			: SvgPoint(x, y),
-			  _direction(dx, dy),
-			  _extrusion(dmx, dmy),
-			  _flags(flags)
+				const double y,
+				const double dx,
+				const double dy,
+				const double dmx,
+				const double dmy,
+				const PointFlags flags)
+				:SvgPoint(x, y),
+				 _direction(dx, dy),
+				 _extrusion(dmx, dmy),
+				 _flags(flags)
 		{
 		}
 
@@ -158,10 +160,10 @@ namespace Elpida
 	}
 
 	static void InitClosed(SvgPoint& left,
-		SvgPoint& right,
-		const SvgPoint& p0,
-		const SvgPoint& p1,
-		const double lineWidth)
+			SvgPoint& right,
+			const SvgPoint& p0,
+			const SvgPoint& p1,
+			const double lineWidth)
 	{
 		const double w = lineWidth * 0.5;
 
@@ -177,12 +179,12 @@ namespace Elpida
 	}
 
 	static void ButtCap(std::vector<SvgEdge>& edges,
-		SvgPoint& left,
-		SvgPoint& right,
-		const SvgPoint& p,
-		const SvgPoint& delta,
-		const double lineWidth,
-		const bool connect)
+			SvgPoint& left,
+			SvgPoint& right,
+			const SvgPoint& p,
+			const SvgPoint& delta,
+			const double lineWidth,
+			const bool connect)
 	{
 		const double w = lineWidth * 0.5;
 
@@ -203,12 +205,12 @@ namespace Elpida
 	}
 
 	static void SquareCap(std::vector<SvgEdge>& edges,
-		SvgPoint& left,
-		SvgPoint& right,
-		const SvgPoint& p,
-		const SvgPoint& delta,
-		const double lineWidth,
-		const bool connect)
+			SvgPoint& left,
+			SvgPoint& right,
+			const SvgPoint& p,
+			const SvgPoint& delta,
+			const double lineWidth,
+			const bool connect)
 	{
 		const double w = lineWidth * 0.5f;
 
@@ -231,13 +233,13 @@ namespace Elpida
 	}
 
 	static void RoundCap(std::vector<SvgEdge>& edges,
-		SvgPoint& left,
-		SvgPoint& right,
-		const SvgPoint& p,
-		const SvgPoint& delta,
-		const double lineWidth,
-		const std::size_t ncap,
-		const bool connect)
+			SvgPoint& left,
+			SvgPoint& right,
+			const SvgPoint& p,
+			const SvgPoint& delta,
+			const double lineWidth,
+			const std::size_t ncap,
+			const bool connect)
 	{
 		const double w = lineWidth * 0.5;
 
@@ -283,11 +285,11 @@ namespace Elpida
 	}
 
 	static void BevelJoin(std::vector<SvgEdge>& edges,
-		SvgPoint& left,
-		SvgPoint& right,
-		const SvgRasterizerPoint& p0,
-		const SvgRasterizerPoint& p1,
-		const double lineWidth)
+			SvgPoint& left,
+			SvgPoint& right,
+			const SvgRasterizerPoint& p0,
+			const SvgRasterizerPoint& p1,
+			const double lineWidth)
 	{
 		const double w = lineWidth * 0.5;
 		const auto dl0 = p0.GetDirection().GetInverse();
@@ -310,11 +312,11 @@ namespace Elpida
 	}
 
 	static void MiterJoin(std::vector<SvgEdge>& edges,
-		SvgPoint& left,
-		SvgPoint& right,
-		const SvgRasterizerPoint& p0,
-		const SvgRasterizerPoint& p1,
-		const double lineWidth)
+			SvgPoint& left,
+			SvgPoint& right,
+			const SvgRasterizerPoint& p0,
+			const SvgRasterizerPoint& p1,
+			const double lineWidth)
 	{
 		const double w = lineWidth * 0.5f;
 
@@ -353,12 +355,12 @@ namespace Elpida
 	}
 
 	static void RoundJoin(std::vector<SvgEdge>& edges,
-		SvgPoint& left,
-		SvgPoint& right,
-		const SvgRasterizerPoint& p0,
-		const SvgRasterizerPoint& p1,
-		const double lineWidth,
-		const std::size_t ncap)
+			SvgPoint& left,
+			SvgPoint& right,
+			const SvgRasterizerPoint& p0,
+			const SvgRasterizerPoint& p1,
+			const double lineWidth,
+			const std::size_t ncap)
 	{
 		const double w = lineWidth * 0.5;
 		const auto dl0 = p0.GetDirection().GetInverse();
@@ -400,10 +402,10 @@ namespace Elpida
 	}
 
 	static void StraightJoin(std::vector<SvgEdge>& edges,
-		SvgPoint& left,
-		SvgPoint& right,
-		const SvgRasterizerPoint& p1,
-		const double lineWidth)
+			SvgPoint& left,
+			SvgPoint& right,
+			const SvgRasterizerPoint& p1,
+			const double lineWidth)
 	{
 		const double w = lineWidth * 0.5;
 		const auto left0 = p1 - (p1.GetExtrusion() * w);
@@ -416,14 +418,13 @@ namespace Elpida
 		right = right0;
 	}
 
-
 	static void FlattenCubicBez(std::vector<SvgRasterizerPoint>& points,
-	                            const SvgPoint& start,
-	                            const SvgPoint& controlA,
-	                            const SvgPoint& controlB,
-	                            const SvgPoint& end,
-	                            const int level,
-	                            const PointFlags type)
+			const SvgPoint& start,
+			const SvgPoint& controlA,
+			const SvgPoint& controlB,
+			const SvgPoint& end,
+			const int level,
+			const PointFlags type)
 	{
 		if (level > 10)
 		{
@@ -454,11 +455,11 @@ namespace Elpida
 	}
 
 	static void ExpandStroke(std::vector<SvgEdge>& edges,
-		std::vector<SvgRasterizerPoint>& points,
-		bool closed,
-		const SvgLineJoin lineJoin,
-		const SvgLineCap lineCap,
-		double lineWidth)
+			std::vector<SvgRasterizerPoint>& points,
+			bool closed,
+			const SvgLineJoin lineJoin,
+			const SvgLineCap lineCap,
+			double lineWidth)
 	{
 		const auto ncap = CurveDivs(lineWidth * 0.5, std::numbers::pi);
 		SvgRasterizerPoint left, right, firstLeft, firstRight;
@@ -561,8 +562,8 @@ namespace Elpida
 	}
 
 	static void PrepareStroke(std::vector<SvgRasterizerPoint>& points,
-		const double miterLimit,
-		const SvgLineJoin lineJoin)
+			const double miterLimit,
+			const SvgLineJoin lineJoin)
 	{
 		// TODO: index based
 		auto p0 = --points.end();
@@ -614,8 +615,9 @@ namespace Elpida
 
 			// Keep track of left turns.
 			const auto cross =
-				p1->GetDirection().GetX() * p0->GetDirection().GetY() - p0->GetDirection().GetX() * p1->GetDirection().
-				GetY();
+					p1->GetDirection().GetX() * p0->GetDirection().GetY() -
+					p0->GetDirection().GetX() * p1->GetDirection().
+							GetY();
 			if (cross > 0.0)
 			{
 				p1->AppendFlag(LEFT);
@@ -636,11 +638,13 @@ namespace Elpida
 		}
 	}
 
-	SvgPolygon SvgShapePolygonizer::Polygonize(const std::vector<SvgPathInstance>& paths, double scale)
+	SvgPolygon SvgShapePolygonizer::Polygonize(const SvgCalculatedShape& shape)
 	{
+		constexpr double scale = 1.0;
+
 		std::vector<SvgEdge> edges;
 
-		for (auto& pathInstance : paths)
+		for (auto& pathInstance : shape.GetPaths())
 		{
 			std::vector<SvgRasterizerPoint> points;
 
@@ -653,12 +657,12 @@ namespace Elpida
 			{
 				auto endPoint = curve.GetEnd() * scale;
 				FlattenCubicBez(points,
-					startPoint,
-					curve.GetStartControl() * scale,
-					curve.GetEndControl() * scale,
-					endPoint,
-					0,
-					PointFlags::NONE);
+						startPoint,
+						curve.GetStartControl() * scale,
+						curve.GetEndControl() * scale,
+						endPoint,
+						0,
+						PointFlags::NONE);
 				startPoint = endPoint;
 			}
 
@@ -672,21 +676,19 @@ namespace Elpida
 			}
 		}
 
-		SvgBounds bounds = SvgBounds::CreateMinimum();
-		for (auto edge : edges)
-		{
-			bounds.Merge(SvgBounds(edge.GetA(), edge.GetB()));
-		}
-
-		return SvgPolygon(std::move(edges), bounds);
+		return SvgPolygon(std::move(edges));
 	}
 
-	SvgPolygon SvgShapePolygonizer::PolygonizeStroke(const std::vector<SvgPathInstance>& paths, const SvgStroke& stroke, double scale)
+	SvgPolygon SvgShapePolygonizer::PolygonizeStroke(const SvgCalculatedShape& shape, const SvgCalculationContext& calculationContext, const SvgStroke& stroke)
 	{
 		std::vector<SvgEdge> edges;
 
-		const double lineWidth = stroke.GetWidth() * scale;
-		for (auto& path : paths)
+		constexpr double scale = 1.0;
+
+		const double viewPortLength = calculationContext.GetViewBox().GetLength();
+
+		const double lineWidth = stroke.GetWidth().CalculateValue(calculationContext, viewPortLength) * scale;
+		for (auto& path : shape.GetPaths())
 		{
 			auto& curves = path.GetCurves();
 			if (curves.empty()) continue;
@@ -700,12 +702,12 @@ namespace Elpida
 			{
 				auto endPoint = curve.GetEnd() * scale;
 				FlattenCubicBez(points,
-					startPoint,
-					curve.GetStartControl() * scale,
-					curve.GetEndControl() * scale,
-					endPoint,
-					0,
-					PointFlags::CORNER);
+						startPoint,
+						curve.GetStartControl() * scale,
+						curve.GetEndControl() * scale,
+						endPoint,
+						0,
+						PointFlags::CORNER);
 
 				startPoint = endPoint;
 			}
@@ -727,6 +729,14 @@ namespace Elpida
 			auto& dashesArray = stroke.GetDashes();
 			if (!dashesArray.empty())
 			{
+				std::vector<double> calculatedDashes;
+				calculatedDashes.reserve(dashesArray.size());
+
+				for (auto& dash: dashesArray)
+				{
+					calculatedDashes.push_back(dash.CalculateValue(calculationContext, viewPortLength));
+				}
+
 				bool dashState = true;
 				if (closed)
 				{
@@ -743,31 +753,31 @@ namespace Elpida
 
 				// Figure out dash offset.
 				double allDashLength = 0.0;
-				for (const auto dash : dashesArray)
+				for (const auto dash : calculatedDashes)
 				{
 					allDashLength += dash;
 				}
 
-				if (dashesArray.size() & 1)
+				if (calculatedDashes.size() & 1)
 				{
 					allDashLength *= 2.0;
 				}
 
 				// Find location inside pattern
-				auto dashOffset = fmod(stroke.GetDashOffset(), allDashLength);
+				auto dashOffset = std::fmod(stroke.GetDashOffset().CalculateValue(calculationContext, viewPortLength), allDashLength);
 				if (dashOffset < 0.0)
 				{
 					dashOffset += allDashLength;
 				}
 
 				std::size_t dashIndex = 0;
-				while (dashOffset > dashesArray[dashIndex])
+				while (dashOffset > calculatedDashes[dashIndex])
 				{
-					dashOffset -= dashesArray[dashIndex];
-					dashIndex = (dashIndex + 1) % dashesArray.size();
+					dashOffset -= calculatedDashes[dashIndex];
+					dashIndex = (dashIndex + 1) % calculatedDashes.size();
 				}
 
-				auto dashLength = (dashesArray[dashIndex] - dashOffset) * scale;
+				auto dashLength = (calculatedDashes[dashIndex] - dashOffset) * scale;
 				double totalDistance = 0.0;
 				for (std::size_t j = 1; j < points2.size();)
 				{
@@ -792,8 +802,8 @@ namespace Elpida
 
 						// Advance dash pattern
 						dashState = !dashState;
-						dashIndex = (dashIndex + 1) % dashesArray.size();
-						dashLength = dashesArray[dashIndex] * scale;
+						dashIndex = (dashIndex + 1) % calculatedDashes.size();
+						dashLength = calculatedDashes[dashIndex] * scale;
 
 						// Restart
 						current = SvgRasterizerPoint(point, CORNER);
@@ -823,13 +833,6 @@ namespace Elpida
 			}
 		}
 
-		// this can be optimized inside the actual procedure
-		SvgBounds bounds = SvgBounds::CreateMinimum();
-		for (auto edge : edges)
-		{
-			bounds.Merge(SvgBounds(edge.GetA(), edge.GetB()));
-		}
-
-		return SvgPolygon(std::move(edges), bounds);
+		return SvgPolygon(std::move(edges));
 	}
 } // Elpida

@@ -190,8 +190,8 @@ int main(int argC, char** argV)
 
 	SvgDocument svgDocument(element);
 
-	std::size_t width = svgDocument.GetActualWidth();
-	std::size_t height = svgDocument.GetActualHeight();
+	std::size_t width = svgDocument.GetElement().GetViewBox().GetWidth();
+	std::size_t height = svgDocument.GetElement().GetViewBox().GetHeight();
 
 	SvgRasterizer rasterizer;
 	auto backDrop = rasterizer.Rasterize(svgDocument);

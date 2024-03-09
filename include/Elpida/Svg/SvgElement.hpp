@@ -10,10 +10,23 @@
 #include "SvgStroke.hpp"
 #include "Elpida/Svg/SvgTransform.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
+#include "SvgPath.hpp"
+#include "SvgRectangle.hpp"
+#include "SvgCalculatedShape.hpp"
+
+#include <variant>
 
 namespace Elpida
 {
 	class SvgDocument;
+	class SvgCalculationContext;
+
+	enum class SvgShapeType
+	{
+		NonShape,
+		Path,
+		Rectangle
+	};
 
 	class SvgElement
 	{
@@ -66,20 +79,10 @@ namespace Elpida
 			return _visible;
 		}
 
-		const std::vector<SvgPathInstance>& GetPaths() const
-		{
-			return _paths;
-		}
-
 		[[nodiscard]]
-		const SvgBounds& GetBounds() const
-		{
-			return _bounds;
-		}
+		SvgCalculatedShape CalculateShape(const SvgDocument& document, SvgCalculationContext& calculationContext) const;
 
-
-
-		SvgElement() = default;
+		SvgElement();
 		explicit SvgElement(const XmlElement& element, SvgDocument& document);
 		SvgElement(const SvgElement&) = delete;
 		SvgElement(SvgElement&& other) noexcept = default;
@@ -90,22 +93,19 @@ namespace Elpida
 		std::string _id;
 		SvgTransform _transform;
 		XmlMap _properties;
-		std::vector<SvgPathInstance> _paths;
 		std::vector<SvgElement> _children;
 		SvgFill _fill;
 		SvgStroke _stroke;
-		SvgBounds _bounds;
 		double _opacity;
 		bool _visible;
-
-		static constexpr double Kappa = 0.5522847493;
-		void ParseAsRectangle(const SvgDocument& document);
-		void ParseAsPath();
+		SvgShapeType _shapeType;
+		std::variant<std::monostate, SvgPath, SvgRectangle> _shape;
 
 	protected:
-		template<typename T, typename TConverter> void ConditionallyAssignProperty(const std::string& name,
-			T& targetValue,
-			TConverter converter)
+		template<typename T, typename TConverter>
+		void ConditionallyAssignProperty(const std::string& name,
+				T& targetValue,
+				TConverter converter)
 		{
 			if (auto& value = _properties.GetValue(name); !value.empty())
 			{
@@ -113,13 +113,12 @@ namespace Elpida
 			}
 		}
 
-		template<typename T> void ConditionallyAssignProperty(const std::string& name, T& targetValue)
+		template<typename T>
+		void ConditionallyAssignProperty(const std::string& name, T& targetValue)
 		{
-			ConditionallyAssignProperty<T>(name, targetValue, [](const auto& s) { return T(s); });
+			ConditionallyAssignProperty<T>(name, targetValue, [](const auto& s)
+			{ return T(s); });
 		}
-
-
-		void CalculateBounds();
 	};
 } // Elpida
 

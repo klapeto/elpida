@@ -7,30 +7,15 @@
 
 #include "Elpida/Svg/SvgGradientStop.hpp"
 #include "Elpida/Svg/SvgTransform.hpp"
+#include "Elpida/Svg/SvgSpreadType.hpp"
+#include "Elpida/Svg/SvgGradientUnits.hpp"
+#include "Elpida/Svg/SvgGradientType.hpp"
 
 #include <string>
 #include <vector>
 
 namespace Elpida
 {
-	enum class SvgSpreadType
-	{
-		Pad = 0,
-		Reflect = 1,
-		Repeat = 2
-	};
-
-	enum class SvgGradientUnits
-	{
-		Object,
-		User
-	};
-
-	enum class SvgGradientType
-	{
-		Linear,
-		Radial
-	};
 
 	class SvgGradient : public SvgElement
 	{
@@ -52,7 +37,10 @@ namespace Elpida
 				SvgLength fx;
 				SvgLength fy;
 			} radial;
-			GradientData(){}
+
+			GradientData()
+			{
+			}
 		};
 
 		[[nodiscard]]

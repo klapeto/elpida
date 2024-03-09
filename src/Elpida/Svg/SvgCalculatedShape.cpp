@@ -1,0 +1,70 @@
+//
+// Created by klapeto on 8/3/2024.
+//
+
+#include "Elpida/Svg/SvgCalculatedShape.hpp"
+#include "Elpida/Svg/SvgPaint.hpp"
+
+namespace Elpida
+{
+	void SvgCalculatedShape::RecalculateBounds()
+	{
+		SvgBounds bounds = SvgBounds::CreateMinimum();
+
+		for (auto& path : _paths)
+		{
+			bounds.Merge(path.GetBounds());
+		}
+
+		for (auto& child : _children)
+		{
+			bounds.Merge(child.GetBounds());
+		}
+	}
+
+	const std::vector<SvgPathInstance>& SvgCalculatedShape::GetPaths() const
+	{
+		return _paths;
+	}
+
+	const std::vector<SvgCalculatedShape>& SvgCalculatedShape::GetChildren() const
+	{
+		return _children;
+	}
+
+	const SvgBounds& SvgCalculatedShape::GetBounds() const
+	{
+		return _bounds;
+	}
+
+	SvgCalculatedShape::SvgCalculatedShape(std::vector<SvgPathInstance>&& paths,
+			const SvgPaint& fill,
+			const SvgPaint& stroke,
+			const SvgDocument& document,
+			const SvgCalculationContext& calculationContext)
+			:_paths(std::move(paths))
+	{
+		RecalculateBounds();
+
+		if (fill.IsSet())
+		{
+			_fill = SvgCalculatedPaint(fill, _bounds, document, calculationContext);
+		}
+
+		if (stroke.IsSet())
+		{
+			_stroke = SvgCalculatedPaint(stroke, _bounds, document, calculationContext);
+		}
+	}
+
+	const std::optional<SvgCalculatedPaint>& SvgCalculatedShape::GetFill() const
+	{
+		return _fill;
+	}
+
+	const std::optional<SvgCalculatedPaint>& SvgCalculatedShape::GetStroke() const
+	{
+		return _stroke;
+	}
+
+} // Elpida

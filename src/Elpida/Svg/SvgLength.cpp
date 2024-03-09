@@ -6,6 +6,7 @@
 
 #include "Elpida/Svg/SvgNumber.hpp"
 #include "Elpida/Svg/SvgDocument.hpp"
+#include "Elpida/Svg/SvgCalculationContext.hpp"
 #include "Elpida/Xml/CharacterStream.hpp"
 
 namespace Elpida
@@ -79,34 +80,6 @@ namespace Elpida
 		}
 	}
 
-	double SvgLength::CalculateActualValue(const SvgDocument& document, const double orig, const double length) const
-	{
-		switch (_units)
-		{
-		case SvgUnits::Raw:
-		case SvgUnits::Px:
-			return _value;
-		case SvgUnits::Pt:
-			return _value / 72.0 * document.GetDpi();
-		case SvgUnits::Pc:
-			return _value / 6.0 * document.GetDpi();
-		case SvgUnits::Mm:
-			return _value / 25.4 * document.GetDpi();
-		case SvgUnits::Cm:
-			return _value / 2.54 * document.GetDpi();
-		case SvgUnits::In:
-			return _value * document.GetDpi();
-		case SvgUnits::Percent:
-			return orig + (_value / 100.0 * length);
-		case SvgUnits::Em:
-			return _value * document.GetFontSize();
-		case SvgUnits::Ex:
-			return _value * document.GetFontSize() * 0.52;
-		default:
-			return _value;
-		}
-	}
-
 	SvgLength::SvgLength(const std::string_view view)
 	{
 		try
@@ -119,6 +92,35 @@ namespace Elpida
 		{
 			_value = 0;
 			_units = SvgUnits::Raw;
+		}
+	}
+
+	double SvgLength::CalculateValue(const SvgCalculationContext& calculationContext, double orig,
+			double length) const
+	{
+		switch (_units)
+		{
+		case SvgUnits::Raw:
+		case SvgUnits::Px:
+			return _value;
+		case SvgUnits::Pt:
+			return _value / 72.0 * calculationContext.GetDpi();
+		case SvgUnits::Pc:
+			return _value / 6.0 * calculationContext.GetDpi();
+		case SvgUnits::Mm:
+			return _value / 25.4 * calculationContext.GetDpi();
+		case SvgUnits::Cm:
+			return _value / 2.54 * calculationContext.GetDpi();
+		case SvgUnits::In:
+			return _value * calculationContext.GetDpi();
+		case SvgUnits::Percent:
+			return orig + (_value / 100.0 * length);
+		case SvgUnits::Em:
+			return _value * calculationContext.GetNumber("font-size");
+		case SvgUnits::Ex:
+			return _value * calculationContext.GetNumber("font-size") * 0.52;
+		default:
+			return _value;
 		}
 	}
 } // Elpida

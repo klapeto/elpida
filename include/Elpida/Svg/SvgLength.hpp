@@ -24,6 +24,7 @@ namespace Elpida
 	};
 
 	class SvgDocument;
+	class SvgCalculationContext;
 
 	class SvgLength final
 	{
@@ -42,7 +43,19 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double CalculateActualValue(const SvgDocument& document, double orig, double length) const;
+		double CalculateValue(const SvgCalculationContext& calculationContext, double orig, double length) const;
+
+		[[nodiscard]]
+		double CalculateValue(const SvgCalculationContext& calculationContext, double length) const
+		{
+			return CalculateValue(calculationContext, 0.0, length);
+		}
+
+//		[[nodiscard]]
+//		double CalculateValue(const SvgCalculationContext& calculationContext) const
+//		{
+//			return CalculateValue(calculationContext, 0.0, 1.0);
+//		}
 
 		constexpr SvgLength()
 			: _value(0), _units(SvgUnits::Raw)

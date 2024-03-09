@@ -29,49 +29,12 @@ namespace Elpida
 			return _element;
 		}
 
-		constexpr double GetDpi() const
-		{
-			return _dpi;
-		}
-
-		double GetFontSize() const
-		{
-			return _fontSizes.top();
-		}
-
-		double GetActualWidth() const
-		{
-			return _element.GetViewBox().GetWidth();
-		}
-
-		double GetActualHeight() const
-		{
-			return _element.GetViewBox().GetHeight();
-		}
-
-		double GetActualLength() const
-		{
-			const double width = GetActualWidth();
-			const double height = GetActualHeight();
-			return Sqrt(width * width + height * height) / Sqrt(2.0);
-		}
-
 		explicit SvgDocument(const XmlElement& element);
 		SvgDocument(SvgDocument&& other) noexcept = default;
 
 	private:
 		SvgDefs _defs;
 		SvgSvgElement _element;
-		double _dpi = 96.0;
-		std::stack<double> _fontSizes;
-		// std::stack<SvgLineCap> _lineCaps;	// for inheritance
-		// std::stack<SvgLineJoin> _lineJoins;
-		// std::stack<SvgFillRule> _fillRules;
-
-		static constexpr double Sqrt(const double x)
-		{
-			return sqrt(x);
-		}
 
 		friend class SvgElement;
 	};

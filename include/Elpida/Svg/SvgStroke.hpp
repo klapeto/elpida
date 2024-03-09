@@ -10,6 +10,7 @@
 #include "SvgLineJoin.hpp"
 #include "SvgLineCap.hpp"
 #include "SvgPaint.hpp"
+#include "SvgLength.hpp"
 
 namespace Elpida
 {
@@ -19,7 +20,7 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		const std::vector<double>& GetDashes() const
+		const std::vector<SvgLength>& GetDashes() const
 		{
 			return _dashes;
 		}
@@ -37,13 +38,13 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetDashOffset() const
+		const SvgLength& GetDashOffset() const
 		{
 			return _dashOffset;
 		}
 
 		[[nodiscard]]
-		double GetWidth() const
+		const SvgLength& GetWidth() const
 		{
 			return _width;
 		}
@@ -54,25 +55,25 @@ namespace Elpida
 			return _miterLimit;
 		}
 
-		SvgStroke(const XmlMap& properties, const SvgDocument& document);
 		SvgStroke()
-			: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _dashOffset(0), _width(1.0), _miterLimit(0.0)
+			: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _miterLimit(0.0)
 		{
 		}
+		explicit SvgStroke(const XmlMap& properties);
 	private:
-		std::vector<double> _dashes;
+		std::vector<SvgLength> _dashes;
 		SvgLineJoin _lineJoin;
 		SvgLineCap _lineCap;
-		double _dashOffset;
-		double _width;
+		SvgLength _dashOffset;
+		SvgLength _width;
 		double _miterLimit;
 
-		void ParseDashArray(const std::string& value, const SvgDocument& document);
-		void ParseWidth(const std::string& value, const SvgDocument& document);
+		void ParseDashArray(const std::string& value);
+		void ParseWidth(const std::string& value);
 		void ParseLineCap(const std::string& value);
 		void ParseLineJoin(const std::string& value);
 		void ParseMiterLimit(const std::string& value);
-		void ParseDashOffset(const SvgDocument& document, const std::string& dashOffset);
+		void ParseDashOffset(const std::string& dashOffset);
 	};
 } // Elpida
 

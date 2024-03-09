@@ -11,7 +11,7 @@
 namespace Elpida
 {
 	class SvgPolygon;
-	class SvgRasterizerPaint;
+	class SvgCalculatedPaint;
 
 	class SvgSuperSampler
 	{
@@ -20,7 +20,7 @@ namespace Elpida
 		SvgColor CalculatePixelColor(const SvgPolygon& polygon,
 				std::size_t x,
 				std::size_t y,
-				const SvgRasterizerPaint& paint,
+				const SvgCalculatedPaint& paint,
 				SvgFillRule fillRule) const;
 
 		explicit SvgSuperSampler(std::size_t subSamples);

@@ -15,8 +15,6 @@ namespace Elpida
 		{
 			_width = 0;
 			_height = 0;
-			_minX = 0;
-			_minY = 0;
 			return;
 		}
 
@@ -24,7 +22,7 @@ namespace Elpida
 
 		auto callback = [](auto c) { return CharacterStream::IsSpace(c) || c == ',' || c == '%'; };
 
-		_minX = SvgNumber::ParseNumber(stream);
+		auto minX = SvgNumber::ParseNumber(stream);
 		stream.Skip(callback);
 
 		if (stream.Eof())
@@ -32,7 +30,10 @@ namespace Elpida
 			throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
 		}
 
-		_minY = SvgNumber::ParseNumber(stream);
+		auto minY = SvgNumber::ParseNumber(stream);
+
+		_min = SvgPoint(minX, minY);
+
 		stream.Skip(callback);
 
 		if (stream.Eof())
@@ -49,5 +50,33 @@ namespace Elpida
 		}
 
 		_height = SvgNumber::ParseNumber(stream);
+
+		CalculateLength();
+	}
+
+	static constexpr double Sqrt(const double x)
+	{
+		return std::sqrt(x);
+	}
+
+	void SvgViewBox::CalculateLength()
+	{
+		_length =  Sqrt(_width * _width + _height * _height) / Sqrt(2.0);
+	}
+
+	SvgViewBox::SvgViewBox(const double minX, const double minY, const double width, const double height)
+			:_min(minX, minY),
+			 _width(width),
+			 _height(height),
+			 _length(0.0)
+	{
+		CalculateLength();
+	}
+
+	SvgViewBox::SvgViewBox()
+			:_width(0.0),
+			 _height(0.0),
+			 _length(0.0)
+	{
 	}
 } // Elpida
