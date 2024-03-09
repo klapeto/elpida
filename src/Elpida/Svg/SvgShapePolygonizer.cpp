@@ -679,15 +679,16 @@ namespace Elpida
 		return SvgPolygon(std::move(edges));
 	}
 
-	SvgPolygon SvgShapePolygonizer::PolygonizeStroke(const SvgCalculatedShape& shape, const SvgCalculationContext& calculationContext, const SvgStroke& stroke)
+	SvgPolygon SvgShapePolygonizer::PolygonizeStroke(const SvgCalculatedShape& shape)
 	{
+		if (!shape.GetStroke().has_value()) return {};
+
 		std::vector<SvgEdge> edges;
 
 		constexpr double scale = 1.0;
 
-		const double viewPortLength = calculationContext.GetViewBox().GetLength();
-
-		const double lineWidth = stroke.GetWidth().CalculateValue(calculationContext, viewPortLength) * scale;
+		auto& stroke = shape.GetStroke().value();
+		const double lineWidth = stroke.GetWidth() * scale;
 		for (auto& path : shape.GetPaths())
 		{
 			auto& curves = path.GetCurves();
@@ -729,14 +730,7 @@ namespace Elpida
 			auto& dashesArray = stroke.GetDashes();
 			if (!dashesArray.empty())
 			{
-				std::vector<double> calculatedDashes;
-				calculatedDashes.reserve(dashesArray.size());
-
-				for (auto& dash: dashesArray)
-				{
-					calculatedDashes.push_back(dash.CalculateValue(calculationContext, viewPortLength));
-				}
-
+				auto& calculatedDashes = stroke.GetDashes();
 				bool dashState = true;
 				if (closed)
 				{
@@ -764,7 +758,7 @@ namespace Elpida
 				}
 
 				// Find location inside pattern
-				auto dashOffset = std::fmod(stroke.GetDashOffset().CalculateValue(calculationContext, viewPortLength), allDashLength);
+				auto dashOffset = std::fmod(stroke.GetDashOffset(), allDashLength);
 				if (dashOffset < 0.0)
 				{
 					dashOffset += allDashLength;

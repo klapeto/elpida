@@ -24,19 +24,20 @@ namespace Elpida
 	class SvgDocument;
 	class SvgCalculationContext;
 
-	class SvgCalculatedPaint final
+	class SvgCalculatedPaint
 	{
 	public:
 		[[nodiscard]]
 		SvgColor CalculateColor(const SvgPoint& point) const;
 
 		SvgCalculatedPaint();
-		explicit SvgCalculatedPaint(const SvgPaint& paint, const SvgBounds& elementBounds, const SvgDocument& document, const SvgCalculationContext& calculationContext);
+		explicit SvgCalculatedPaint(const SvgPaint& paint, const SvgBounds& elementBounds, const SvgDocument& document,
+				const SvgCalculationContext& calculationContext);
 		SvgCalculatedPaint(const SvgCalculatedPaint&) = delete;
 		SvgCalculatedPaint& operator=(const SvgCalculatedPaint&) noexcept = delete;
 		SvgCalculatedPaint(SvgCalculatedPaint&&) noexcept = default;
 		SvgCalculatedPaint& operator=(SvgCalculatedPaint&&) noexcept = default;
-		~SvgCalculatedPaint() = default;
+		virtual ~SvgCalculatedPaint() = default;
 	private:
 		SvgColor _color;
 		std::vector<SvgCalculatedGradientStop> _stops;
@@ -56,7 +57,8 @@ namespace Elpida
 		};
 		std::variant<std::monostate, LinearCache, RadialCache> _gradientCache;
 
-		void AsGradient(const SvgPaint& paint, const SvgBounds& elementBounds, const SvgDocument& document, const SvgCalculationContext& calculationContext);
+		void AsGradient(const SvgPaint& paint, const SvgBounds& elementBounds, const SvgDocument& document,
+				const SvgCalculationContext& calculationContext);
 		void AsColor(const SvgPaint& paint);
 
 		[[nodiscard]]
@@ -73,18 +75,19 @@ namespace Elpida
 		[[nodiscard]]
 		SvgColor CalculateRadialGradientReflect(const SvgPoint& point) const;
 
-
 		[[nodiscard]]
 		static SvgColor CalculateColorForLinear(const SvgPoint& point,
-		                                        const SvgLinearEquation& gradientEquation,
-		                                        const SvgCalculatedGradientStop& stopA,
-		                                        const SvgLinearEquation& normalA,
-		                                        const SvgCalculatedGradientStop& stopB,
-		                                        const SvgLinearEquation& normalB);
+				const SvgLinearEquation& gradientEquation,
+				const SvgCalculatedGradientStop& stopA,
+				const SvgLinearEquation& normalA,
+				const SvgCalculatedGradientStop& stopB,
+				const SvgLinearEquation& normalB);
 
 		[[nodiscard]]
-		static SvgColor InterpolateColor(const SvgCalculatedGradientStop& stopA, const SvgCalculatedGradientStop& stopB, double ratio);
-		static void GetGradients(const SvgDocument& document, const SvgPaint& paint, const SvgGradient** gradient, const SvgGradient** gradientStops);
+		static SvgColor InterpolateColor(const SvgCalculatedGradientStop& stopA, const SvgCalculatedGradientStop& stopB,
+				double ratio);
+		static void GetGradients(const SvgDocument& document, const SvgPaint& paint, const SvgGradient** gradient,
+				const SvgGradient** gradientStops);
 		void CalculateStops(const SvgGradient& gradientStops, const SvgCalculationContext& calculationContext);
 	};
 } // Elpida

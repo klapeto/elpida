@@ -38,6 +38,7 @@ namespace Elpida
 
 		void Transform(const SvgTransform& transform);
 
+		SvgPolygon() = default;
 		explicit SvgPolygon(std::vector<SvgEdge>&& edges)
 				:_edges(std::move(edges))
 		{

@@ -23,7 +23,9 @@ namespace Elpida
 
 	enum class SvgShapeType
 	{
-		NonShape,
+		NonRenderable,
+		Svg,
+		Group,
 		Path,
 		Rectangle
 	};
@@ -35,6 +37,12 @@ namespace Elpida
 		const std::string& GetId() const
 		{
 			return _id;
+		}
+
+		[[nodiscard]]
+		const std::string& GetName() const
+		{
+			return _name;
 		}
 
 		[[nodiscard]]
@@ -79,6 +87,8 @@ namespace Elpida
 			return _visible;
 		}
 
+		SvgShapeType GetShapeType() const;
+
 		[[nodiscard]]
 		SvgCalculatedShape CalculateShape(const SvgDocument& document, SvgCalculationContext& calculationContext) const;
 
@@ -91,6 +101,7 @@ namespace Elpida
 
 	private:
 		std::string _id;
+		std::string _name;
 		SvgTransform _transform;
 		XmlMap _properties;
 		std::vector<SvgElement> _children;

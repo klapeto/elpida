@@ -25,6 +25,12 @@ namespace Elpida
 	public:
 
 		[[nodiscard]]
+		std::size_t GetWidth() const;
+
+		[[nodiscard]]
+		std::size_t GetHeight() const;
+
+		[[nodiscard]]
 		const std::vector<SvgColor>& GetColorData() const
 		{
 			return _colorData;
@@ -37,6 +43,7 @@ namespace Elpida
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
 				std::size_t subSamples = 32);
 
+		SvgBackDrop();
 		SvgBackDrop(std::size_t width, std::size_t height);
 		SvgBackDrop(const SvgBackDrop&) = delete;
 		SvgBackDrop& operator=(const SvgBackDrop&) = delete;

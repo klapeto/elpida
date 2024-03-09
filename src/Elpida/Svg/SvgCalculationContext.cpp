@@ -5,6 +5,8 @@
 #include "Elpida/Svg/SvgCalculationContext.hpp"
 #include "Elpida/Xml/XmlMap.hpp"
 #include "Elpida/Svg/SvgNumber.hpp"
+#include "Elpida/Svg/SvgElement.hpp"
+#include "Elpida/Svg/SvgViewPort.hpp"
 
 namespace Elpida
 {
@@ -15,24 +17,41 @@ namespace Elpida
 
 	const SvgViewBox& SvgCalculationContext::GetViewBox() const
 	{
-		return _viewBox;
+		return _viewBox.top();
 	}
 
-	void SvgCalculationContext::Push(const XmlMap& properties)
+	void SvgCalculationContext::Push(const SvgElement& element)
 	{
-		for (auto& pair : properties)
+		for (auto& pair : element.GetProperties())
 		{
 			auto& stack = _stackedValues[pair.first];
 			stack.push(pair.second);
 		}
+
+		if (element.GetName() == "svg")
+		{
+			_viewBox.emplace(element.GetProperties().GetValue("viewBox"));
+
+			SvgViewPort viewPort(element.GetProperties());
+
+			_viewPort.emplace(
+					viewPort.GetX().CalculateValue(*this, GetViewPort().GetWidth()),
+					viewPort.GetY().CalculateValue(*this, GetViewPort().GetHeight()),
+					viewPort.GetWidth().CalculateValue(*this, GetViewPort().GetWidth()),
+					viewPort.GetHeight().CalculateValue(*this, GetViewPort().GetHeight())
+			);
+		}
+
 		_currentDepth++;
 	}
 
-	SvgCalculationContext::SvgCalculationContext(const SvgViewBox& viewBox, double rootFontSize, double dpi)
-			:_viewBox(viewBox), _rootFontSize(rootFontSize), _dpi(dpi), _currentDepth(1)
+	SvgCalculationContext::SvgCalculationContext(double rootFontSize, double dpi)
+			:_rootFontSize(rootFontSize), _dpi(dpi), _currentDepth(1)
 	{
 		auto& stack = _stackedValues["font-size"];
 		stack.push(std::to_string(rootFontSize));
+		_viewBox.emplace(0,0,0,0);
+		_viewPort.emplace(0,0,300,150);
 	}
 
 	void SvgCalculationContext::Pop()
@@ -45,6 +64,15 @@ namespace Elpida
 			{
 				stack.pop();
 			}
+		}
+		while (_viewBox.size() > _currentDepth - 1)
+		{
+			_viewBox.pop();
+		}
+
+		while (_viewPort.size() > _currentDepth - 1)
+		{
+			_viewPort.pop();
 		}
 		_currentDepth--;
 	}
@@ -66,5 +94,15 @@ namespace Elpida
 		double value = 0.0;
 		SvgNumber::TryParseNumber(GetValue(name), value);
 		return value;
+	}
+
+	const SvgCalculatedViewPort& SvgCalculationContext::GetViewPort() const
+	{
+		return _viewPort.top();
+	}
+
+	double SvgCalculationContext::GetRootFontSize() const
+	{
+		return _rootFontSize;
 	}
 } // Elpida

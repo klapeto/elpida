@@ -41,6 +41,9 @@ add_library(elpida-svg
         SvgCalculationContext.cpp
         SvgPath.cpp
         SvgCalculatedGradientStop.cpp
+        SvgViewPort.cpp
+        SvgCalculatedViewPort.cpp
+        SvgCalculatedStroke.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

@@ -16,7 +16,7 @@
 namespace Elpida
 {
 	SvgElement::SvgElement(const XmlElement& element, SvgDocument& document)
-		: _opacity(1.0), _visible(true), _shapeType(SvgShapeType::NonShape)
+		: _opacity(1.0), _visible(true), _shapeType(SvgShapeType::NonRenderable)
 	{
 		_properties = element.GetAttributes();
 
@@ -45,15 +45,25 @@ namespace Elpida
 		_fill = SvgFill(GetProperties());
 		_stroke = SvgStroke(GetProperties());
 
-		if (element.GetName() == "path")
+		_name = element.GetName();
+
+		if (_name == "path")
 		{
 			_shapeType = SvgShapeType::Path;
 			_shape = SvgPath(_properties);
 		}
-		else if (element.GetName() == "rect")
+		else if (_name == "rect")
 		{
 			_shapeType = SvgShapeType::Rectangle;
 			_shape = SvgRectangle(_properties);
+		}
+		else if (_name == "svg")
+		{
+			_shapeType = SvgShapeType::Svg;
+		}
+		else if (_name == "g")
+		{
+			_shapeType = SvgShapeType::Group;
 		}
 
 		auto& defs = document._defs;
@@ -80,11 +90,11 @@ namespace Elpida
 	SvgCalculatedShape SvgElement::CalculateShape(const SvgDocument& document,
 			SvgCalculationContext& calculationContext) const
 	{
-		calculationContext.Push(_properties);
+		calculationContext.Push(*this);
 		std::vector<SvgPathInstance> paths;
 		switch (_shapeType)
 		{
-		case SvgShapeType::NonShape:
+		case SvgShapeType::NonRenderable:
 			break;
 		case SvgShapeType::Path:
 			paths = std::get<SvgPath>(_shape).CalculatePaths();
@@ -92,15 +102,20 @@ namespace Elpida
 		case SvgShapeType::Rectangle:
 			paths = std::get<SvgRectangle>(_shape).CalculatePaths(calculationContext);
 			break;
+		default:
+			break;
 		}
 
-		auto calculatedInstance = SvgCalculatedShape(std::move(paths), _fill, _stroke, document, calculationContext);
+		auto calculatedInstance = SvgCalculatedShape(std::move(paths), _fill, _stroke, document, _opacity, calculationContext);
 
 		std::vector<SvgCalculatedShape> children;
 		children.reserve(_children.size());
 		for (auto& child : _children)
 		{
-			children.push_back(child.CalculateShape(document, calculationContext));
+			if (child.GetShapeType() != SvgShapeType::NonRenderable && child.IsVisible())
+			{
+				children.push_back(child.CalculateShape(document, calculationContext));
+			}
 		}
 		calculatedInstance.AddChildren(std::move(children));
 
@@ -109,8 +124,13 @@ namespace Elpida
 	}
 
 	SvgElement::SvgElement()
-			: _opacity(1.0), _visible(false), _shapeType(SvgShapeType::NonShape)
+			: _opacity(1.0), _visible(false), _shapeType(SvgShapeType::NonRenderable)
 	{
 
+	}
+
+	SvgShapeType SvgElement::GetShapeType() const
+	{
+		return _shapeType;
 	}
 } // Elpida

@@ -4,6 +4,8 @@
 
 #include "Elpida/Svg/SvgCalculatedShape.hpp"
 #include "Elpida/Svg/SvgPaint.hpp"
+#include "Elpida/Svg/SvgStroke.hpp"
+#include "Elpida/Svg/SvgCalculationContext.hpp"
 
 namespace Elpida
 {
@@ -39,10 +41,11 @@ namespace Elpida
 
 	SvgCalculatedShape::SvgCalculatedShape(std::vector<SvgPathInstance>&& paths,
 			const SvgPaint& fill,
-			const SvgPaint& stroke,
+			const SvgStroke& stroke,
 			const SvgDocument& document,
+			double opacity,
 			const SvgCalculationContext& calculationContext)
-			:_paths(std::move(paths))
+			:_paths(std::move(paths)), _opacity(opacity)
 	{
 		RecalculateBounds();
 
@@ -53,7 +56,7 @@ namespace Elpida
 
 		if (stroke.IsSet())
 		{
-			_stroke = SvgCalculatedPaint(stroke, _bounds, document, calculationContext);
+			_stroke = SvgCalculatedStroke(stroke, _bounds, document, calculationContext);
 		}
 	}
 
@@ -62,9 +65,20 @@ namespace Elpida
 		return _fill;
 	}
 
-	const std::optional<SvgCalculatedPaint>& SvgCalculatedShape::GetStroke() const
+	const std::optional<SvgCalculatedStroke>& SvgCalculatedShape::GetStroke() const
 	{
 		return _stroke;
+	}
+
+	double SvgCalculatedShape::GetOpacity() const
+	{
+		return _opacity;
+	}
+
+	SvgCalculatedShape::SvgCalculatedShape()
+			:_opacity(1.0)
+	{
+
 	}
 
 } // Elpida

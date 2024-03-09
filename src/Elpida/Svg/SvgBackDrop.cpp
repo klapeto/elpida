@@ -86,4 +86,20 @@ namespace Elpida
 		_colorData = std::move(other._colorData);
 		return *this;
 	}
+
+	SvgBackDrop::SvgBackDrop()
+			:_width(0), _height(0)
+	{
+
+	}
+
+	size_t SvgBackDrop::GetWidth() const
+	{
+		return _width;
+	}
+
+	size_t SvgBackDrop::GetHeight() const
+	{
+		return _height;
+	}
 } // Elpida

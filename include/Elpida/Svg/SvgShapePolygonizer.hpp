@@ -21,7 +21,7 @@ namespace Elpida
 	{
 	public:
 		static SvgPolygon Polygonize(const SvgCalculatedShape& shape);
-		static SvgPolygon PolygonizeStroke(const SvgCalculatedShape& shape, const SvgCalculationContext& calculationContext, const SvgStroke& stroke);
+		static SvgPolygon PolygonizeStroke(const SvgCalculatedShape& shape);
 	};
 } // Elpida
 

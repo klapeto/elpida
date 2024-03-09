@@ -9,6 +9,7 @@
 #include "SvgLength.hpp"
 #include "SvgPreserveAspectRatio.hpp"
 #include "SvgViewBox.hpp"
+#include "SvgViewPort.hpp"
 
 namespace Elpida
 {
@@ -22,30 +23,23 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
+		const SvgViewPort& GetViewPort() const
+		{
+			return _viewPort;
+		}
+
+		[[nodiscard]]
 		const SvgPreserveAspectRatio& GetPreserveAspectRatio() const
 		{
 			return _preserveAspectRatio;
-		}
-
-		[[nodiscard]]
-		const SvgLength& GetWidth() const
-		{
-			return _width;
-		}
-
-		[[nodiscard]]
-		const SvgLength& GetHeight() const
-		{
-			return _height;
 		}
 
 		SvgSvgElement() = default;
 		SvgSvgElement(const XmlElement& element, SvgDocument& document);
 	private:
 		SvgViewBox _viewBox;
+		SvgViewPort _viewPort;
 		SvgPreserveAspectRatio _preserveAspectRatio;
-		SvgLength _width;
-		SvgLength _height;
 	};
 } // Elpida
 

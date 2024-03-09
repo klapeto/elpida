@@ -27,7 +27,10 @@ namespace Elpida
 
 		if (stream.Eof())
 		{
-			throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
+			_width = 0;
+			_height = 0;
+			return;
+			//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
 		}
 
 		auto minY = SvgNumber::ParseNumber(stream);
@@ -38,7 +41,11 @@ namespace Elpida
 
 		if (stream.Eof())
 		{
-			throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
+			_min = {};
+			_width = 0;
+			_height = 0;
+			return;
+			//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
 		}
 
 		_width = SvgNumber::ParseNumber(stream);
@@ -46,7 +53,11 @@ namespace Elpida
 
 		if (stream.Eof())
 		{
-			throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
+			_min = {};
+			_width = 0;
+			_height = 0;
+			return;
+			//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
 		}
 
 		_height = SvgNumber::ParseNumber(stream);
@@ -70,7 +81,10 @@ namespace Elpida
 			 _height(height),
 			 _length(0.0)
 	{
-		CalculateLength();
+		if (_width > 0.0 && _height > 0.0)
+		{
+			CalculateLength();
+		}
 	}
 
 	SvgViewBox::SvgViewBox()

@@ -5,7 +5,9 @@
 #ifndef ELPIDA_SVGCALCULATIONCONTEXT_HPP
 #define ELPIDA_SVGCALCULATIONCONTEXT_HPP
 
-#include "SvgViewBox.hpp"
+#include "Elpida/Svg/SvgViewBox.hpp"
+#include "Elpida/Svg/SvgCalculatedViewPort.hpp"
+
 #include <stack>
 #include <unordered_map>
 #include <string>
@@ -14,6 +16,7 @@
 namespace Elpida
 {
 	class XmlMap;
+	class SvgElement;
 
 	class SvgCalculationContext
 	{
@@ -21,6 +24,9 @@ namespace Elpida
 
 		[[nodiscard]]
 		const SvgViewBox& GetViewBox() const;
+
+		[[nodiscard]]
+		const SvgCalculatedViewPort& GetViewPort() const;
 
 		[[nodiscard]]
 		std::string_view GetValue(const std::string_view& name) const;
@@ -32,18 +38,16 @@ namespace Elpida
 		double GetDpi() const;
 
 		[[nodiscard]]
-		double GetRootFontSize() const
-		{
-			return _rootFontSize;
-		}
+		double GetRootFontSize() const;
 
-		void Push(const XmlMap& properties);
+		void Push(const SvgElement& element);
 
 		void Pop();
 
-		SvgCalculationContext(const SvgViewBox& viewBox, double rootFontSize, double dpi);
+		SvgCalculationContext(double rootFontSize, double dpi);
 	private:
-		SvgViewBox _viewBox;
+		std::stack<SvgViewBox> _viewBox;
+		std::stack<SvgCalculatedViewPort> _viewPort;
 		std::unordered_map<std::string_view, std::stack<std::string>> _stackedValues;
 		double _rootFontSize;
 		double _dpi;

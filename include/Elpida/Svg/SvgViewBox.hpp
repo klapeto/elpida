@@ -16,6 +16,12 @@ namespace Elpida
 	public:
 
 		[[nodiscard]]
+		bool IsValid() const
+		{
+			return _width > 0.0 && _height > 0.0;
+		}
+
+		[[nodiscard]]
 		const SvgPoint& GetMin() const
 		{
 			return _min;
