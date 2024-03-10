@@ -30,8 +30,6 @@ namespace Elpida
 
 		if (element.GetName() == "svg")
 		{
-			_viewBox.emplace(element.GetProperties().GetValue("viewBox"));
-
 			SvgViewPort viewPort(element.GetProperties());
 
 			_viewPort.emplace(
@@ -40,6 +38,18 @@ namespace Elpida
 					viewPort.GetWidth().CalculateValue(*this, GetViewPort().GetWidth()),
 					viewPort.GetHeight().CalculateValue(*this, GetViewPort().GetHeight())
 			);
+
+			auto viewBox = SvgViewBox(element.GetProperties().GetValue("viewBox"));
+			if (viewBox.IsValid())
+			{
+				_viewBox.push(viewBox);
+			}
+			else
+			{
+				auto& latestViewPort =_viewPort.top();
+				_viewBox.emplace(latestViewPort.GetX(), latestViewPort.GetY(), latestViewPort.GetWidth(), latestViewPort.GetHeight());
+			}
+
 		}
 
 		_currentDepth++;
@@ -50,8 +60,8 @@ namespace Elpida
 	{
 		auto& stack = _stackedValues["font-size"];
 		stack.push(std::to_string(rootFontSize));
-		_viewBox.emplace(0,0,0,0);
-		_viewPort.emplace(0,0,300,150);
+		_viewBox.emplace(0, 0, 0, 0);
+		_viewPort.emplace(0, 0, 300, 150);
 	}
 
 	void SvgCalculationContext::Pop()

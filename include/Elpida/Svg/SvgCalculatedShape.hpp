@@ -7,14 +7,15 @@
 
 #include "Elpida/Svg/SvgPathInstance.hpp"
 #include "Elpida/Svg/SvgCalculatedPaint.hpp"
-#include "SvgCalculatedStroke.hpp"
+#include "Elpida/Svg/SvgCalculatedStroke.hpp"
+#include "Elpida/Svg/SvgCalculatedFill.hpp"
 
 #include <vector>
 #include <optional>
 
 namespace Elpida
 {
-	class SvgPaint;
+	class SvgFill;
 	class SvgStroke;
 
 	class SvgCalculatedShape
@@ -31,7 +32,7 @@ namespace Elpida
 		const SvgBounds& GetBounds() const;
 
 		[[nodiscard]]
-		const std::optional<SvgCalculatedPaint>& GetFill() const;
+		const std::optional<SvgCalculatedFill>& GetFill() const;
 
 		[[nodiscard]]
 		const std::optional<SvgCalculatedStroke>& GetStroke() const;
@@ -39,9 +40,11 @@ namespace Elpida
 		[[nodiscard]]
 		double GetOpacity() const;
 
+		void Transform(const SvgTransform& transform);
+
 		SvgCalculatedShape();
 		explicit SvgCalculatedShape(std::vector<SvgPathInstance>&& paths,
-				const SvgPaint& fill,
+				const SvgFill& fill,
 				const SvgStroke& stroke,
 				const SvgDocument& document,
 				double opacity,
@@ -49,7 +52,7 @@ namespace Elpida
 	private:
 		std::vector<SvgPathInstance> _paths;
 		std::vector<SvgCalculatedShape> _children;
-		std::optional<SvgCalculatedPaint> _fill;
+		std::optional<SvgCalculatedFill> _fill;
 		std::optional<SvgCalculatedStroke> _stroke;
 		SvgBounds _bounds;
 		double _opacity;

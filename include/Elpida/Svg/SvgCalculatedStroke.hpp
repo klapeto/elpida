@@ -37,6 +37,8 @@ namespace Elpida
 		[[nodiscard]]
 		double GetMiterLimit() const;
 
+		void Transform(const SvgTransform& transform) override;
+
 		SvgCalculatedStroke(const SvgStroke& stroke, const SvgBounds& elementBounds, const SvgDocument& document, const SvgCalculationContext& calculatingContext);
 	private:
 		std::vector<double> _dashes;

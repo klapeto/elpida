@@ -15,13 +15,14 @@ namespace Elpida
 	class SvgDocument;
 	class SvgViewBox;
 	class SvgCalculatedShape;
+	class SvgTransform;
 
 	class SvgRasterizer
 	{
 	public:
 		SvgBackDrop Rasterize(const SvgDocument& document, double scale = 1.0, std::size_t subSamples = 16);
 	private:
-		void RasterizeShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape);
+		void RasterizeShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, const SvgTransform& transform);
 	};
 } // Elpida
 

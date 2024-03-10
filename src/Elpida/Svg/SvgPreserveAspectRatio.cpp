@@ -26,7 +26,8 @@ namespace Elpida
 				{
 					throw ParseException("Unexpected character: expected 'none'");
 				}
-				_type = SvgAlignType::None;
+				_alignX = SvgAxisAlignType::None;
+				_alignY = SvgAxisAlignType::None;
 				return;
 			}
 

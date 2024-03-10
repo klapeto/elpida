@@ -4,6 +4,7 @@
 
 #ifndef ELPIDA_SVG_SVGLINEAREQUATION_HPP
 #define ELPIDA_SVG_SVGLINEAREQUATION_HPP
+
 #include "SvgPoint.hpp"
 
 namespace Elpida
@@ -42,7 +43,7 @@ namespace Elpida
 			const auto dx = _p2.GetX() - _p1.GetX();
 			const auto dy = _p2.GetY() - _p1.GetY();
 			return std::abs(dx * (_p1.GetY() - point.GetY()) - (_p1.GetX() - point.GetX()) * dy) / sqrt(
-				dx * dx + dy * dy);
+					dx * dx + dy * dy);
 		}
 
 		[[nodiscard]]
@@ -83,8 +84,8 @@ namespace Elpida
 			const auto dy = _p1.GetY() - a.GetY();
 
 			return {
-				SvgPoint(a.GetX() + dx, a.GetY() + dy),
-				SvgPoint(b.GetX() + dx, b.GetY() + dy)
+					SvgPoint(a.GetX() + dx, a.GetY() + dy),
+					SvgPoint(b.GetX() + dx, b.GetY() + dy)
 			};
 		}
 
@@ -105,8 +106,8 @@ namespace Elpida
 			const auto dy = _p2.GetY() - a.GetY();
 
 			return {
-				SvgPoint(a.GetX() + dx, a.GetY() + dy),
-				SvgPoint(b.GetX() + dx, b.GetY() + dy)
+					SvgPoint(a.GetX() + dx, a.GetY() + dy),
+					SvgPoint(b.GetX() + dx, b.GetY() + dy)
 			};
 		}
 
@@ -153,9 +154,16 @@ namespace Elpida
 			return point - _p2;
 		}
 
+		[[nodiscard]]
 		const SvgPoint& GetDirection() const
 		{
 			return _direction;
+		}
+
+		SvgLinearEquation()
+				:_a(0.0), _b(0.0)
+		{
+
 		}
 
 		SvgLinearEquation(const SvgPoint& a, const SvgPoint& b)
@@ -166,8 +174,8 @@ namespace Elpida
 		}
 
 		SvgLinearEquation(const double a, const double b)
-			: _a(a),
-			  _b(b)
+				:_a(a),
+				 _b(b)
 		{
 		}
 
@@ -177,7 +185,6 @@ namespace Elpida
 		double _a;
 		double _b;
 		SvgPoint _direction;
-
 
 		void Recalculate()
 		{

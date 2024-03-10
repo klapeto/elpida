@@ -57,4 +57,19 @@ namespace Elpida
 		return _miterLimit;
 	}
 
+	void SvgCalculatedStroke::Transform(const SvgTransform& transform)
+	{
+		SvgCalculatedPaint::Transform(transform);
+
+		auto value= transform[SvgTransform::A] * transform[SvgTransform::D];
+		_width = _width * _width * value;
+
+		for (double & dash : _dashes)
+		{
+			dash = dash* dash * value;
+		}
+
+		_dashOffset  = _dashOffset * _dashOffset * value;
+	}
+
 } // Elpida

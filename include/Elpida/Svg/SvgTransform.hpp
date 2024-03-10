@@ -14,12 +14,11 @@ namespace Elpida
 
 	class SvgTransform final
 	{
-	private:
+	public:
 		enum Matrix
 		{
 			A,B,C,D,E,F
 		};
-	public:
 
 		SvgTransform& Translate(const double tx, const double ty)
 		{

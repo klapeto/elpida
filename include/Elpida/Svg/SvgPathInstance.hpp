@@ -7,53 +7,42 @@
 
 #include <vector>
 
-#include "SvgBounds.hpp"
-#include "SvgPoint.hpp"
-#include "SvgCubicBezierCurve.hpp"
+#include "Elpida/Svg/SvgBounds.hpp"
+#include "Elpida/Svg/SvgPoint.hpp"
+#include "Elpida/Svg/SvgCubicBezierCurve.hpp"
 
-namespace Elpida {
+namespace Elpida
+{
 
 	class SvgPathInstance
 	{
 	public:
 		[[nodiscard]]
-		const std::vector<SvgCubicBezierCurve>& GetCurves() const
-		{
-			return _curves;
-		}
+		const std::vector<SvgCubicBezierCurve>& GetCurves() const;
 
 		[[nodiscard]]
-		const SvgBounds& GetBounds() const
-		{
-			return _bounds;
-		}
+		const SvgBounds& GetBounds() const;
 
 		[[nodiscard]]
-		bool IsClosed() const
-		{
-			return _closed;
-		}
+		bool IsClosed() const;
 
 		[[nodiscard]]
-		const SvgPoint& GetStartPoint() const
-		{
-			return _startPoint;
-		}
+		const SvgPoint& GetStartPoint() const;
 
-		SvgPathInstance(const SvgPoint& startPoint, std::vector<SvgCubicBezierCurve>&& curves, const SvgBounds& bounds,
-		                const bool closed)
-			: _startPoint(startPoint),
-			  _curves(std::move(curves)),
-			  _bounds(bounds),
-			  _closed(closed)
-		{
-		}
+		void Transform(const SvgTransform& transform);
 
+		SvgPathInstance(const SvgPoint& startPoint, std::vector<SvgCubicBezierCurve>&& curves, bool closed);
 	private:
 		SvgPoint _startPoint;
 		std::vector<SvgCubicBezierCurve> _curves;
 		SvgBounds _bounds;
 		bool _closed;
+
+		static double EvaluateBezier(double t, double p0, double p1, double p2, double p3);
+		static void AddBezierPoints(double aX, double bX, double cX, double dX, double& boundMin, double& boundMax);
+		static SvgBounds CalculateBounds(const SvgPoint& a, const SvgPoint& b, const SvgPoint& c, const SvgPoint& d);
+
+		void ReCalculateBounds();
 	};
 
 } // Elpida

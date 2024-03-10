@@ -3,7 +3,7 @@
 //
 
 #include "Elpida/Svg/SvgCalculatedShape.hpp"
-#include "Elpida/Svg/SvgPaint.hpp"
+#include "Elpida/Svg/SvgFill.hpp"
 #include "Elpida/Svg/SvgStroke.hpp"
 #include "Elpida/Svg/SvgCalculationContext.hpp"
 
@@ -40,7 +40,7 @@ namespace Elpida
 	}
 
 	SvgCalculatedShape::SvgCalculatedShape(std::vector<SvgPathInstance>&& paths,
-			const SvgPaint& fill,
+			const SvgFill& fill,
 			const SvgStroke& stroke,
 			const SvgDocument& document,
 			double opacity,
@@ -51,7 +51,7 @@ namespace Elpida
 
 		if (fill.IsSet())
 		{
-			_fill = SvgCalculatedPaint(fill, _bounds, document, calculationContext);
+			_fill = SvgCalculatedFill(fill, _bounds, document, calculationContext);
 		}
 
 		if (stroke.IsSet())
@@ -60,7 +60,7 @@ namespace Elpida
 		}
 	}
 
-	const std::optional<SvgCalculatedPaint>& SvgCalculatedShape::GetFill() const
+	const std::optional<SvgCalculatedFill>& SvgCalculatedShape::GetFill() const
 	{
 		return _fill;
 	}
@@ -79,6 +79,29 @@ namespace Elpida
 			:_opacity(1.0)
 	{
 
+	}
+
+	void SvgCalculatedShape::Transform(const SvgTransform& transform)
+	{
+		for (auto& path : _paths)
+		{
+			path.Transform(transform);
+		}
+
+		if (_fill.has_value())
+		{
+			_fill->Transform(transform);
+		}
+
+		if (_stroke.has_value())
+		{
+			_stroke->Transform(transform);
+		}
+
+		for (auto& child : _children)
+		{
+			child.Transform(transform);
+		}
 	}
 
 } // Elpida

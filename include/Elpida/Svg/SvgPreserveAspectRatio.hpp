@@ -12,13 +12,13 @@ namespace Elpida
 
 	enum class SvgAlignType
 	{
-		None,
 		Meet,
 		Slice
 	};
 
 	enum class SvgAxisAlignType
 	{
+		None,
 		Min,
 		Mid,
 		Max
