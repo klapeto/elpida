@@ -5,8 +5,10 @@
 #ifndef ELPIDA_SVGSUPERSAMPLER_HPP
 #define ELPIDA_SVGSUPERSAMPLER_HPP
 
-#include "SvgColor.hpp"
-#include "SvgFillRule.hpp"
+#include "Elpida/Svg/SvgColor.hpp"
+#include "Elpida/Svg/SvgFillRule.hpp"
+#include "Elpida/Svg/SvgPoint.hpp"
+#include <vector>
 
 namespace Elpida
 {
@@ -18,17 +20,14 @@ namespace Elpida
 	public:
 		[[nodiscard]]
 		SvgColor CalculatePixelColor(const SvgPolygon& polygon,
-				std::size_t x,
-				std::size_t y,
+				double x,
+				double y,
 				const SvgCalculatedPaint& paint,
 				SvgFillRule fillRule) const;
 
 		explicit SvgSuperSampler(std::size_t subSamples);
 	private:
-		std::size_t _subSamplesPerDimension;
-		double _actualSubSamples;
-		double _subSampleStep;
-		static constexpr double sideHalf = 1.0 / 2.0;
+		std::vector<SvgPoint> _samplePoints;
 	};
 } // Elpida
 

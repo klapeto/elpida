@@ -37,7 +37,7 @@ namespace Elpida
 		{
 			for (std::size_t x = startX; x < width; ++x)
 			{
-				auto calculatedColor = superSampler.CalculatePixelColor(polygon, x, y, paint, fillRule);
+				auto calculatedColor = superSampler.CalculatePixelColor(polygon, x + 0.5, y + 0.5, paint, fillRule);
 
 				// See https://www.w3.org/TR/2015/CR-compositing-1-20150113/#generalformula
 				auto& backdropColor = _colorData[y * _width + x];
