@@ -102,6 +102,7 @@ namespace Elpida
 		{
 			child.Transform(transform);
 		}
+		RecalculateBounds();
 	}
 
 } // Elpida

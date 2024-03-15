@@ -28,6 +28,11 @@ namespace Elpida
 			stack.push(pair.second);
 		}
 
+		if (!element.GetTransform().IsIdentity())
+		{
+			_transforms.push_back(element.GetTransform());
+		}
+
 		if (element.GetName() == "svg")
 		{
 			SvgViewPort viewPort(element.GetProperties());
@@ -80,6 +85,11 @@ namespace Elpida
 			_viewBox.pop();
 		}
 
+		while (_transforms.size() > _currentDepth - 1)
+		{
+			_transforms.pop_back();
+		}
+
 		while (_viewPort.size() > _currentDepth - 1)
 		{
 			_viewPort.pop();
@@ -114,5 +124,17 @@ namespace Elpida
 	double SvgCalculationContext::GetRootFontSize() const
 	{
 		return _rootFontSize;
+	}
+
+	SvgTransform SvgCalculationContext::CalculateTransform() const
+	{
+		SvgTransform transform;
+
+		for (auto& thisTransform : _transforms)
+		{
+			transform.PreMultiply(thisTransform);
+		}
+
+		return transform;
 	}
 } // Elpida

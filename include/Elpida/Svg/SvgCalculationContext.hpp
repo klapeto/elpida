@@ -9,6 +9,7 @@
 #include "Elpida/Svg/SvgCalculatedViewPort.hpp"
 
 #include <stack>
+#include <vector>
 #include <unordered_map>
 #include <string>
 #include <string_view>
@@ -35,6 +36,9 @@ namespace Elpida
 		double GetNumber(const std::string_view& name) const;
 
 		[[nodiscard]]
+		SvgTransform CalculateTransform() const;
+
+		[[nodiscard]]
 		double GetDpi() const;
 
 		[[nodiscard]]
@@ -48,6 +52,7 @@ namespace Elpida
 	private:
 		std::stack<SvgViewBox> _viewBox;
 		std::stack<SvgCalculatedViewPort> _viewPort;
+		std::vector<SvgTransform> _transforms;
 		std::unordered_map<std::string_view, std::stack<std::string>> _stackedValues;
 		double _rootFontSize;
 		double _dpi;

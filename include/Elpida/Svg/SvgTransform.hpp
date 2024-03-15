@@ -20,6 +20,16 @@ namespace Elpida
 			A,B,C,D,E,F
 		};
 
+		bool IsIdentity() const
+		{
+			return t[A] == 1.0
+				   && t[B] == 0.0
+				   && t[C] == 0.0
+				   && t[D] == 1.0
+				   && t[E] == 0.0
+				   && t[F] == 0.0;
+		}
+
 		SvgTransform& Translate(const double tx, const double ty)
 		{
 			SvgTransform transform;

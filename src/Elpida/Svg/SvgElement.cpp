@@ -16,7 +16,7 @@
 namespace Elpida
 {
 	SvgElement::SvgElement(const XmlElement& element, SvgDocument& document)
-		: _opacity(1.0), _visible(true), _shapeType(SvgShapeType::NonRenderable)
+			:_opacity(1.0), _visible(true), _shapeType(SvgShapeType::NonRenderable)
 	{
 		_properties = element.GetAttributes();
 
@@ -29,18 +29,18 @@ namespace Elpida
 		ConditionallyAssignProperty<>("transform", _transform);
 
 		ConditionallyAssignProperty<>("opacity",
-			_opacity,
-			[](const auto& s)
-			{
-				double v;
-				return SvgNumber::TryParseNumber(s, v) ? v : 1.0;
-			});
+				_opacity,
+				[](const auto& s)
+				{
+				  double v;
+				  return SvgNumber::TryParseNumber(s, v) ? v : 1.0;
+				});
 		ConditionallyAssignProperty<>("display",
-			_visible,
-			[](const auto& s)
-			{
-				return static_cast<bool>(SvgVisibility(s));
-			});
+				_visible,
+				[](const auto& s)
+				{
+				  return static_cast<bool>(SvgVisibility(s));
+				});
 
 		_fill = SvgFill(GetProperties());
 		_stroke = SvgStroke(GetProperties());
@@ -77,7 +77,7 @@ namespace Elpida
 					if (id.empty()) continue;
 					if (def.GetName() == "linearGradient" || def.GetName() == "radialGradient")
 					{
-						defs.insert({ id,  SvgGradient(def, document) });
+						defs.insert({ id, SvgGradient(def, document) });
 					}
 				}
 				continue;
@@ -106,7 +106,14 @@ namespace Elpida
 			break;
 		}
 
-		auto calculatedInstance = SvgCalculatedShape(std::move(paths), _fill, _stroke, document, _opacity, calculationContext);
+		auto calculatedInstance = SvgCalculatedShape(std::move(paths), _fill, _stroke, document, _opacity,
+				calculationContext);
+
+		auto transform = calculationContext.CalculateTransform();
+		if (!transform.IsIdentity())
+		{
+			calculatedInstance.Transform(transform);
+		}
 
 		std::vector<SvgCalculatedShape> children;
 		children.reserve(_children.size());
@@ -124,7 +131,7 @@ namespace Elpida
 	}
 
 	SvgElement::SvgElement()
-			: _opacity(1.0), _visible(false), _shapeType(SvgShapeType::NonRenderable)
+			:_opacity(1.0), _visible(false), _shapeType(SvgShapeType::NonRenderable)
 	{
 
 	}
