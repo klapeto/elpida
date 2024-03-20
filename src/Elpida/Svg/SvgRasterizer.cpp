@@ -120,28 +120,28 @@ namespace Elpida
 
 		calculated.Transform(transform);
 
-		RasterizeShape(backDrop, calculated, transform);
+		RasterizeShape(backDrop, calculated, transform, subSamples);
 
 		return backDrop;
 	}
 
-	void SvgRasterizer::RasterizeShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, const SvgTransform& transform)
+	void SvgRasterizer::RasterizeShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, const SvgTransform& transform, std::size_t subSamples)
 	{
 		if (shape.GetFill().has_value())
 		{
 			auto polygon = SvgShapePolygonizer::Polygonize(shape);
-			backDrop.Draw(polygon, shape.GetFill().value(), shape.GetFill()->GetFillRule());
+			backDrop.Draw(polygon, shape.GetFill().value(), shape.GetFill()->GetFillRule(), SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
 		}
 
 		if (shape.GetStroke().has_value())
 		{
 			auto polygon = SvgShapePolygonizer::PolygonizeStroke(shape);
-			backDrop.Draw(polygon, shape.GetStroke().value());
+			backDrop.Draw(polygon, shape.GetStroke().value(), SvgFillRule::NonZero, SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
 		}
 
 		for (auto& child : shape.GetChildren())
 		{
-			RasterizeShape(backDrop, child, transform);
+			RasterizeShape(backDrop, child, transform, subSamples);
 		}
 	}
 } // Elpida

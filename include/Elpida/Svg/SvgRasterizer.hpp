@@ -22,7 +22,7 @@ namespace Elpida
 	public:
 		SvgBackDrop Rasterize(const SvgDocument& document, double scale = 1.0, std::size_t subSamples = 16);
 	private:
-		void RasterizeShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, const SvgTransform& transform);
+		void RasterizeShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, const SvgTransform& transform, std::size_t subSamples);
 	};
 } // Elpida
 

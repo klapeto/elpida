@@ -11,7 +11,7 @@
 namespace Elpida
 {
 	SvgGradient::SvgGradient(const XmlElement& element, SvgDocument& document)
-		: SvgElement(element, document), _type(SvgGradientType::Linear)
+		: SvgElement(element, document), _type(SvgGradientType::Linear), _spreadType(SvgSpreadType::Pad)
 	{
 		{
 			auto& value = element.GetAttributeValue("gradientUnits");
