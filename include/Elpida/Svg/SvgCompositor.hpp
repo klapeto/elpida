@@ -14,7 +14,8 @@ namespace Elpida
 	{
 	public:
 
-		double Composite(double as, double Cs, double ab, double Cb)
+		[[nodiscard]]
+		double Composite(double as, double Cs, double ab, double Cb) const
 		{
 			return _compositor(as, Cs, ab, Cb);
 		}

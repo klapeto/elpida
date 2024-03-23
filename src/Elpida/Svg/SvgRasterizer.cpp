@@ -3,28 +3,19 @@
 //
 
 #include "Elpida/Svg/SvgRasterizer.hpp"
+#include "Elpida/Svg/SvgCalculatedPaint.hpp"
 #include "Elpida/Svg/SvgCalculationContext.hpp"
+#include "Elpida/Svg/SvgDocument.hpp"
+#include "Elpida/Svg/SvgShapePolygonizer.hpp"
+#include "Elpida/Svg/SvgViewBox.hpp"
+#include "Elpida/Svg/SvgViewPort.hpp"
 
-#include <algorithm>
 #include <iostream>
-#include <cstring>
-#include <list>
-#include <memory>
-
-#include <Elpida/Svg/SvgDocument.hpp>
-#include <Elpida/Svg/SvgGradient.hpp>
-#include <Elpida/Svg/SvgPaint.hpp>
-#include <Elpida/Svg/SvgEdge.hpp>
-#include <Elpida/Svg/SvgCalculatedPaint.hpp>
-#include <Elpida/Svg/SvgShapePolygonizer.hpp>
-#include <Elpida/Svg/SvgShapePolygonizer.hpp>
-#include <Elpida/Svg/SvgViewPort.hpp>
-#include <Elpida/Svg/SvgViewBox.hpp>
 
 namespace Elpida
 {
-	static SvgTransform CalculateTransform(const SvgCalculatedViewPort& viewPort, const SvgViewBox& viewBox,
-			const SvgPreserveAspectRatio& preserveAspectRatio)
+	static SvgTransform CalculateTransform(const SvgCalculatedViewPort &viewPort, const SvgViewBox &viewBox,
+	                                       const SvgPreserveAspectRatio &preserveAspectRatio)
 	{
 		if (!viewBox.IsValid()) return {};
 		auto vbX = viewBox.GetMinX();
@@ -96,27 +87,30 @@ namespace Elpida
 	}
 
 
-	SvgBackDrop SvgRasterizer::Rasterize(const SvgDocument& document, double scale, std::size_t subSamples)
+	SvgBackDrop SvgRasterizer::Rasterize(const SvgDocument &document, double scale, std::size_t subSamples)
 	{
-		auto& rootSvgElement = document.GetElement();
-		auto& viewBox = rootSvgElement.GetViewBox();
-		auto& viewPort = rootSvgElement.GetViewPort();
+		auto &rootSvgElement = document.GetElement();
+		auto &viewBox = rootSvgElement.GetViewBox();
+		auto &viewPort = rootSvgElement.GetViewPort();
 
 		SvgCalculationContext calculationContext(1.0, 96.0);
 
 		auto calculatedViewPort = SvgCalculatedViewPort(
-				0,
-				0,
-				viewPort.GetWidth().CalculateValue(calculationContext, 300.0),
-				viewPort.GetHeight().CalculateValue(calculationContext,150.0));
+			0,
+			0,
+			viewPort.GetWidth().CalculateValue(calculationContext, 300.0),
+			viewPort.GetHeight().CalculateValue(calculationContext, 150.0));
 
-		auto calculatedViewBox = viewBox.IsValid() ?  viewBox : SvgViewBox(0,0 ,calculatedViewPort.GetWidth(), calculatedViewPort.GetHeight());
+		auto calculatedViewBox = viewBox.IsValid()
+			                         ? viewBox
+			                         : SvgViewBox(0, 0, calculatedViewPort.GetWidth(), calculatedViewPort.GetHeight());
 
 		SvgBackDrop backDrop(calculatedViewPort.GetWidth(), calculatedViewPort.GetHeight());
 
 		auto calculated = rootSvgElement.CalculateShape(document, calculationContext);
 
-		auto transform = CalculateTransform(calculatedViewPort, calculatedViewBox, rootSvgElement.GetPreserveAspectRatio());
+		auto transform = CalculateTransform(calculatedViewPort, calculatedViewBox,
+		                                    rootSvgElement.GetPreserveAspectRatio());
 
 		calculated.Transform(transform);
 
@@ -125,23 +119,43 @@ namespace Elpida
 		return backDrop;
 	}
 
-	void SvgRasterizer::RasterizeShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, const SvgTransform& transform, std::size_t subSamples)
+	void SvgRasterizer::RasterizeShapeToBackdrop(SvgBackDrop &targetBackDrop, const SvgCalculatedShape &shape,
+	                                             const SvgTransform &transform, std::size_t subSamples)
 	{
 		if (shape.GetFill().has_value())
 		{
 			auto polygon = SvgShapePolygonizer::Polygonize(shape);
-			backDrop.Draw(polygon, shape.GetFill().value(), shape.GetOpacity(), shape.GetFill()->GetFillRule(), SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+			targetBackDrop.Draw(polygon, shape.GetFill().value(), 1.0, shape.GetFill()->GetFillRule(),
+			                    SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
 		}
 
 		if (shape.GetStroke().has_value())
 		{
 			auto polygon = SvgShapePolygonizer::PolygonizeStroke(shape);
-			backDrop.Draw(polygon, shape.GetStroke().value(), shape.GetOpacity(), SvgFillRule::NonZero, SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+			targetBackDrop.Draw(polygon, shape.GetStroke().value(), 1.0, SvgFillRule::NonZero, SvgBlendMode::Normal,
+			                    SvgCompositingMode::SourceOver, subSamples);
 		}
 
-		for (auto& child : shape.GetChildren())
+		for (auto &child: shape.GetChildren())
 		{
-			RasterizeShape(backDrop, child, transform, subSamples);
+			RasterizeShape(targetBackDrop, child, transform, subSamples);
+		}
+	}
+
+	void SvgRasterizer::RasterizeShape(SvgBackDrop &backDrop, const SvgCalculatedShape &shape,
+	                                   const SvgTransform &transform, std::size_t subSamples)
+	{
+		if (shape.GetOpacity() != 1.0)
+		{
+			SvgBackDrop isolatedBackDrop(backDrop.GetWidth(), backDrop.GetHeight());
+
+			RasterizeShapeToBackdrop(isolatedBackDrop, shape, transform, subSamples);
+
+			backDrop.Draw(isolatedBackDrop, 0, 0, shape.GetOpacity());
+		}
+		else
+		{
+			RasterizeShapeToBackdrop(backDrop, shape, transform, subSamples);
 		}
 	}
 } // Elpida

@@ -23,7 +23,6 @@ namespace Elpida
 	class SvgBackDrop final
 	{
 	public:
-
 		[[nodiscard]]
 		std::size_t GetWidth() const;
 
@@ -31,26 +30,34 @@ namespace Elpida
 		std::size_t GetHeight() const;
 
 		[[nodiscard]]
-		const std::vector<SvgColor>& GetColorData() const
+		const std::vector<SvgColor> &GetColorData() const
 		{
 			return _colorData;
 		}
 
-		void Draw(const SvgPolygon& polygon,
-				const SvgCalculatedPaint& paint,
-				double opacity = 1.0,
-				SvgFillRule fillRule = SvgFillRule::NonZero,
-				SvgBlendMode blendMode = SvgBlendMode::Normal,
-				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
-				std::size_t subSamples = 32);
+		void Draw(const SvgPolygon &polygon,
+		          const SvgCalculatedPaint &paint,
+		          double opacity = 1.0,
+		          SvgFillRule fillRule = SvgFillRule::NonZero,
+		          SvgBlendMode blendMode = SvgBlendMode::Normal,
+		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
+		          std::size_t subSamples = 32);
+
+		void Draw(const SvgBackDrop &other,
+		          std::size_t x,
+		          std::size_t y,
+		          double opacity,
+		          SvgBlendMode blendMode = SvgBlendMode::Normal,
+		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
 
 		SvgBackDrop();
 		SvgBackDrop(std::size_t width, std::size_t height);
-		SvgBackDrop(const SvgBackDrop&) = delete;
-		SvgBackDrop& operator=(const SvgBackDrop&) = delete;
-		SvgBackDrop(SvgBackDrop&&) noexcept;
-		SvgBackDrop& operator=(SvgBackDrop&&) noexcept;
+		SvgBackDrop(const SvgBackDrop &) = delete;
+		SvgBackDrop &operator=(const SvgBackDrop &) = delete;
+		SvgBackDrop(SvgBackDrop &&) noexcept;
+		SvgBackDrop &operator=(SvgBackDrop &&) noexcept;
 		~SvgBackDrop() = default;
+
 	private:
 		std::vector<SvgColor> _colorData;
 		std::size_t _width;

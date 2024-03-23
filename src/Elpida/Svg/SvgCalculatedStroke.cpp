@@ -61,15 +61,15 @@ namespace Elpida
 	{
 		SvgCalculatedPaint::Transform(transform);
 
-		auto value= transform[SvgTransform::A] * transform[SvgTransform::D];
-		_width = _width * _width * value;
+		auto value= (transform[SvgTransform::A] + transform[SvgTransform::D]) / 2.0;
+		_width *=  value;
 
 		for (double & dash : _dashes)
 		{
-			dash = dash* dash * value;
+			dash *= value;
 		}
 
-		_dashOffset  = _dashOffset * _dashOffset * value;
+		_dashOffset *= value;
 	}
 
 } // Elpida

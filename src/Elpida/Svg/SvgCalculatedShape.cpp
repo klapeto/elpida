@@ -11,16 +11,16 @@ namespace Elpida
 {
 	void SvgCalculatedShape::RecalculateBounds()
 	{
-		SvgBounds bounds = SvgBounds::CreateMinimum();
+		_bounds = SvgBounds::CreateMinimum();
 
 		for (auto& path : _paths)
 		{
-			bounds.Merge(path.GetBounds());
+			_bounds.Merge(path.GetBounds());
 		}
 
 		for (auto& child : _children)
 		{
-			bounds.Merge(child.GetBounds());
+			_bounds.Merge(child.GetBounds());
 		}
 	}
 
