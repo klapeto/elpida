@@ -130,13 +130,13 @@ namespace Elpida
 		if (shape.GetFill().has_value())
 		{
 			auto polygon = SvgShapePolygonizer::Polygonize(shape);
-			backDrop.Draw(polygon, shape.GetFill().value(), shape.GetFill()->GetFillRule(), SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+			backDrop.Draw(polygon, shape.GetFill().value(), shape.GetOpacity(), shape.GetFill()->GetFillRule(), SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
 		}
 
 		if (shape.GetStroke().has_value())
 		{
 			auto polygon = SvgShapePolygonizer::PolygonizeStroke(shape);
-			backDrop.Draw(polygon, shape.GetStroke().value(), SvgFillRule::NonZero, SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+			backDrop.Draw(polygon, shape.GetStroke().value(), shape.GetOpacity(), SvgFillRule::NonZero, SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
 		}
 
 		for (auto& child : shape.GetChildren())

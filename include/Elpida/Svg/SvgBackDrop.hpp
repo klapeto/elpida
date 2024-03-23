@@ -38,6 +38,7 @@ namespace Elpida
 
 		void Draw(const SvgPolygon& polygon,
 				const SvgCalculatedPaint& paint,
+				double opacity = 1.0,
 				SvgFillRule fillRule = SvgFillRule::NonZero,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,

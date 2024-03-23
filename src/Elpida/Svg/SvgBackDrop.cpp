@@ -18,6 +18,7 @@ namespace Elpida
 
 	void SvgBackDrop::Draw(const SvgPolygon& polygon,
 			const SvgCalculatedPaint& paint,
+			double opacity,
 			SvgFillRule fillRule,
 			SvgBlendMode blendMode,
 			SvgCompositingMode compositingMode,
@@ -41,7 +42,7 @@ namespace Elpida
 
 				// See https://www.w3.org/TR/2015/CR-compositing-1-20150113/#generalformula
 				auto& backdropColor = _colorData[y * _width + x];
-				auto as = calculatedColor.A();
+				auto as = calculatedColor.A() * opacity;
 				auto ab = backdropColor.A();
 
 				auto rCs = blender.Blend(calculatedColor.R(), backdropColor.R(), ab);

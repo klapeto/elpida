@@ -6,10 +6,8 @@
 #define ELPIDA_SVGCALCULATEDRADIALGRADIENT_HPP
 
 #include <vector>
-#include "Elpida/Svg/SvgEllipseEquation.hpp"
 #include "Elpida/Svg/SvgCalculatedGradient.hpp"
-#include <array>
-
+#include "Elpida/Svg/SvgEllipseEquation.hpp"
 #include "Elpida/Svg/SvgCircle.hpp"
 
 namespace Elpida
