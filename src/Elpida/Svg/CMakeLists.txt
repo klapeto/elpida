@@ -48,6 +48,8 @@ add_library(elpida-svg
         SvgCalculatedLinearGradient.cpp
         SvgCalculatedRadialGradient.cpp
         SvgCalculatedGradient.cpp
+        SvgCircle.cpp
+        ../../../include/Elpida/Svg/SvgCircle.hpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

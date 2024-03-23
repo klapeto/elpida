@@ -11,26 +11,31 @@
 
 namespace Elpida
 {
-
 	class SvgTransform final
 	{
 	public:
+		/*
+		 * 	A C E
+		 *  B D F
+		 *  0 0 1
+		 */
+
 		enum Matrix
 		{
-			A,B,C,D,E,F
+			A, B, C, D, E, F
 		};
 
 		bool IsIdentity() const
 		{
 			return t[A] == 1.0
-				   && t[B] == 0.0
-				   && t[C] == 0.0
-				   && t[D] == 1.0
-				   && t[E] == 0.0
-				   && t[F] == 0.0;
+			       && t[B] == 0.0
+			       && t[C] == 0.0
+			       && t[D] == 1.0
+			       && t[E] == 0.0
+			       && t[F] == 0.0;
 		}
 
-		SvgTransform& Translate(const double tx, const double ty)
+		SvgTransform &Translate(const double tx, const double ty)
 		{
 			SvgTransform transform;
 			transform.SetTranslation(tx, ty);
@@ -38,7 +43,7 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform& Scale(const double sx, const double sy)
+		SvgTransform &Scale(const double sx, const double sy)
 		{
 			SvgTransform transform;
 			transform.SetScale(sx, sy);
@@ -46,7 +51,7 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform& RotateRadians(const double radians)
+		SvgTransform &RotateRadians(const double radians)
 		{
 			SvgTransform transform;
 			transform.SetRotation(radians);
@@ -54,12 +59,12 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform& RotateDegrees(const double degrees)
+		SvgTransform &RotateDegrees(const double degrees)
 		{
 			return RotateRadians(degrees / 180 * std::numbers::pi);
 		}
 
-		SvgTransform& SkewX(const double angle)
+		SvgTransform &SkewX(const double angle)
 		{
 			SvgTransform transform;
 			transform.SetSkewX(angle);
@@ -67,7 +72,7 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform& SkewY(const double angle)
+		SvgTransform &SkewY(const double angle)
 		{
 			SvgTransform transform;
 			transform.SetSkewY(angle);
@@ -143,9 +148,10 @@ namespace Elpida
 			t[F] = 0.0;
 		}
 
-		void Multiply(const SvgTransform& other)
+		void Multiply(const SvgTransform &other)
 		{
-			const auto& o = other.t;
+			const auto &o = other.t;
+
 			const auto a = t[A] * o[A] + t[C] * o[B];
 			const auto c = t[A] * o[C] + t[C] * o[D];
 			const auto e = t[A] * o[E] + t[C] * o[F] + t[E];
@@ -161,7 +167,7 @@ namespace Elpida
 			t[F] = f;
 		}
 
-		void PreMultiply(const SvgTransform& other)
+		void PreMultiply(const SvgTransform &other)
 		{
 			// TODO: non copy version
 			auto copy = other;
@@ -169,7 +175,7 @@ namespace Elpida
 			*this = copy;
 		}
 
-		void Inverse(const SvgTransform& other)
+		void Inverse(const SvgTransform &other)
 		{
 			const double det = other.t[0] * other.t[3] - other.t[2] * other.t[1];
 			if (det > -1e-6 && det < 1e-6)
@@ -186,7 +192,7 @@ namespace Elpida
 			t[5] = (other.t[1] * other.t[4] - other.t[0] * other.t[5]) * invdet;
 		}
 
-		void ApplyToPoint(double& x, double& y) const
+		void ApplyToPoint(double &x, double &y) const
 		{
 			const auto tx = t[A] * x + t[C] * y + t[E];
 			const auto ty = t[B] * x + t[D] * y + t[F];
@@ -194,28 +200,26 @@ namespace Elpida
 			y = ty;
 		}
 
-		void ApplyToPoint(double& dx, double& dy, const double x, const double y) const
+		void ApplyToPoint(double &dx, double &dy, const double x, const double y) const
 		{
 			dx = x * t[0] + y * t[2] + t[4];
 			dy = x * t[1] + y * t[3] + t[5];
 		}
 
-		void ApplyToVector(double& dx, double& dy, const double x, const double y) const
+		void ApplyToVector(double &dx, double &dy, const double x, const double y) const
 		{
 			dx = x * t[0] + y * t[2];
 			dy = x * t[1] + y * t[3];
 		}
 
 		SvgTransform()
-			: t{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 }
+			: t{1.0, 0.0, 0.0, 1.0, 0.0, 0.0}
 		{
-
 		}
 
 		explicit SvgTransform(double values[6])
-			: t{ values[0], values[1], values[2], values[3], values[4], values[5] }
+			: t{values[0], values[1], values[2], values[3], values[4], values[5]}
 		{
-
 		}
 
 		explicit SvgTransform(const double a, const double b, const double c, const double d, const double e,
@@ -226,9 +230,10 @@ namespace Elpida
 
 		explicit SvgTransform(std::string_view view);
 
-		SvgTransform(const SvgTransform&) = default;
-		SvgTransform& operator=(const SvgTransform&) = default;
+		SvgTransform(const SvgTransform &) = default;
+		SvgTransform &operator=(const SvgTransform &) = default;
 		~SvgTransform() = default;
+
 	private:
 		double t[6];
 	};
