@@ -270,6 +270,9 @@ namespace Elpida
 		}
 		catch (const ParseException&)
 		{
+			_r = 0.0;
+			_g = 0.0;
+			_b = 0.0;
 			// ignored
 		}
 	}

@@ -3,9 +3,14 @@
 //
 
 #include <Elpida/Svg/SvgBlendMode.hpp>
-#include <Elpida/Xml/ParseException.hpp>
 
 #include "gtest/gtest.h"
 
 using namespace Elpida;
+
+TEST(SvgBlendModeTests, Parse_Success)
+{
+	EXPECT_EQ(ParseBlendMode("normal"), SvgBlendMode::Normal);
+}
+
 

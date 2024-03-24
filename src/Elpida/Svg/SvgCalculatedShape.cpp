@@ -4,7 +4,6 @@
 
 #include "Elpida/Svg/SvgCalculatedShape.hpp"
 
-#include <bits/struct_stat.h>
 #include <Elpida/Xml/CharacterStream.hpp>
 
 #include "Elpida/Svg/SvgFill.hpp"

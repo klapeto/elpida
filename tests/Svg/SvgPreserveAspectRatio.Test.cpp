@@ -14,9 +14,9 @@ TEST(SvgPreserveAspectRatioTests, Valid_Success)
 {
 	{
 		const SvgPreserveAspectRatio value("none");
-		EXPECT_EQ(value.GetType(), SvgAlignType::None);
-		EXPECT_EQ(value.GetAlignX(), SvgAxisAlignType::Mid);
-		EXPECT_EQ(value.GetAlignY(), SvgAxisAlignType::Mid);
+		EXPECT_EQ(value.GetType(), SvgAlignType::Meet);
+		EXPECT_EQ(value.GetAlignX(), SvgAxisAlignType::None);
+		EXPECT_EQ(value.GetAlignY(), SvgAxisAlignType::None);
 	}
 
 	{

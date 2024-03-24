@@ -22,45 +22,54 @@ namespace Elpida
 
 		auto callback = [](auto c) { return CharacterStream::IsSpace(c) || c == ',' || c == '%'; };
 
-		auto minX = SvgNumber::ParseNumber(stream);
-		stream.Skip(callback);
-
-		if (stream.Eof())
+		try
 		{
-			_width = 0;
-			_height = 0;
-			return;
-			//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
+			auto minX = SvgNumber::ParseNumber(stream);
+			stream.Skip(callback);
+
+			if (stream.Eof())
+			{
+				_width = 0;
+				_height = 0;
+				return;
+				//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
+			}
+
+			auto minY = SvgNumber::ParseNumber(stream);
+
+			_min = SvgPoint(minX, minY);
+
+			stream.Skip(callback);
+
+			if (stream.Eof())
+			{
+				_min = {};
+				_width = 0;
+				_height = 0;
+				return;
+				//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
+			}
+
+			_width = SvgNumber::ParseNumber(stream);
+			stream.Skip(callback);
+
+			if (stream.Eof())
+			{
+				_min = {};
+				_width = 0;
+				_height = 0;
+				return;
+				//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
+			}
+
+			_height = SvgNumber::ParseNumber(stream);
 		}
-
-		auto minY = SvgNumber::ParseNumber(stream);
-
-		_min = SvgPoint(minX, minY);
-
-		stream.Skip(callback);
-
-		if (stream.Eof())
+		catch (const ParseException &)
 		{
 			_min = {};
 			_width = 0;
 			_height = 0;
-			return;
-			//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
 		}
-
-		_width = SvgNumber::ParseNumber(stream);
-		stream.Skip(callback);
-
-		if (stream.Eof())
-		{
-			_min = {};
-			_width = 0;
-			_height = 0;
-			return;
-			//throw ParseException("Unexpected Eof: expected view box 'minX minY width height'");
-		}
-
-		_height = SvgNumber::ParseNumber(stream);
 
 		CalculateLength();
 	}

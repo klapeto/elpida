@@ -37,13 +37,20 @@ TEST(SvgViewBoxTests, Value_Valid_Sets)
 	}
 }
 
-
-TEST(SvgViewBoxTests, Value_Invalid_Throws)
+static void AssertInvalidViewBox(const SvgViewBox& box)
 {
-	EXPECT_THROW(SvgViewBox("1 "), ParseException);
-	EXPECT_THROW(SvgViewBox("1 2"), ParseException);
-	EXPECT_THROW(SvgViewBox("1 2 3"), ParseException);
-	EXPECT_THROW(SvgViewBox("1 a 3"), ParseException);
-	EXPECT_THROW(SvgViewBox("1akgjajd"), ParseException);
-	EXPECT_THROW(SvgViewBox("    "), ParseException);
+	EXPECT_EQ(box.GetMinX(), 0);
+	EXPECT_EQ(box.GetMinY(), 0);
+	EXPECT_EQ(box.GetWidth(), 0);
+	EXPECT_EQ(box.GetHeight(), 0);
+}
+
+TEST(SvgViewBoxTests, Value_Invalid_Resets)
+{
+	AssertInvalidViewBox(SvgViewBox("1 "));
+	AssertInvalidViewBox(SvgViewBox("1 2"));
+	AssertInvalidViewBox(SvgViewBox("1 2 3"));
+	AssertInvalidViewBox(SvgViewBox("1 a 3"));
+	AssertInvalidViewBox(SvgViewBox("1akgjajd"));
+	AssertInvalidViewBox(SvgViewBox("    "));
 }

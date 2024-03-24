@@ -111,7 +111,7 @@ namespace Elpida
 			auto c = stream.Current();
 			if (c == 'e' || c == 'E')
 			{
-				c = stream.Char(1);
+				c = stream.FutureChar(1);
 				if (c == '+' || c == '-')
 				{
 					stream.Next();
