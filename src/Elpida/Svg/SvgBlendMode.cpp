@@ -8,7 +8,7 @@
 
 namespace Elpida
 {
-	SvgBlendMode ParseBlendMode(std::string_view view)
+	SvgBlendMode SvgBlendModeParser::Parse(std::string_view view)
 	{
 		if (view.empty()) return SvgBlendMode::Normal;
 

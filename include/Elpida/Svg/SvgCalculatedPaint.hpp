@@ -34,6 +34,12 @@ namespace Elpida
 
 		virtual void Transform(const SvgTransform& transform);
 
+		[[nodiscard]]
+		double Opacity() const
+		{
+			return _opacity;
+		}
+
 		SvgCalculatedPaint();
 		explicit SvgCalculatedPaint(const SvgPaint& paint, const SvgBounds& elementBounds, const SvgDocument& document,
 				const SvgCalculationContext& calculationContext);
@@ -46,6 +52,7 @@ namespace Elpida
 		std::variant<SvgColor, SvgCalculatedLinearGradient, SvgCalculatedRadialGradient> _state;
 		SvgGradientType _gradientType;
 		bool _color;
+		double _opacity;
 
 		void AsGradient(const SvgPaint& paint, const SvgBounds& elementBounds, const SvgDocument& document,
 				const SvgCalculationContext& calculationContext);

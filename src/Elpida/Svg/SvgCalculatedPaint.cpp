@@ -45,6 +45,7 @@ namespace Elpida
 		{
 			AsGradient(paint, elementBounds, document, calculationContext);
 		}
+		_opacity = paint.GetOpacity();
 	}
 
 	void SvgCalculatedPaint::AsGradient(const SvgPaint& paint,

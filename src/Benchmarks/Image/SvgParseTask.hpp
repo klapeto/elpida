@@ -10,8 +10,8 @@
 
 #include "Elpida/Core/SharedPtr.hpp"
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
-#include "Xml/XmlElement.hpp"
-#include "Xml/XmlParser.hpp"
+#include "Elpida/Xml/XmlElement.hpp"
+#include "Elpida/Xml/XmlParser.hpp"
 
 namespace Elpida
 {

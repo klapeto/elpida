@@ -47,7 +47,7 @@ namespace Elpida
 			width = 0.0;
 		}
 
-		auto height = _width.CalculateValue(calculationContext, viewBox.GetHeight());
+		auto height = _height.CalculateValue(calculationContext, viewBox.GetHeight());
 		if (height < 0.0)
 		{
 			height = 0.0;

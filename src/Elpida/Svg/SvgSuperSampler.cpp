@@ -63,6 +63,6 @@ namespace Elpida
 		b /= subSamples;
 		a /= subSamples;
 
-		return { r, g, b, a };
+		return { r, g, b, a * paint.Opacity() };
 	}
 } // Elpida

@@ -16,7 +16,6 @@ namespace Elpida
 {
 	void SvgBackDrop::Draw(const SvgPolygon &polygon,
 	                       const SvgCalculatedPaint &paint,
-	                       double opacity,
 	                       SvgFillRule fillRule,
 	                       SvgBlendMode blendMode,
 	                       SvgCompositingMode compositingMode,
@@ -78,7 +77,7 @@ namespace Elpida
 		{
 			for (std::size_t targetX = startX, sourceX = 0; targetX < width; ++targetX, ++sourceX)
 			{
-				auto& inputColor = colorData[sourceY * sourceWidth + sourceX];
+				auto inputColor = colorData[sourceY * sourceWidth + sourceX].WithMultipliedAplha(opacity);
 				auto& backdropColor = _colorData[targetY * _width + targetX];
 
 				auto color = blender.Blend(inputColor, backdropColor);

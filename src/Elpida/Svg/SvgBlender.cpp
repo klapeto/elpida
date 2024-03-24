@@ -106,7 +106,7 @@ namespace Elpida
 
 		if (Cs <= 0.5)
 		{
-			return ClampColor(Cb - (1.0 - (2 * Cs) * Cb * (1.0 - Cb)));
+			return ClampColor(Cb - (1.0 - 2 * Cs) * Cb * (1.0 - Cb));
 		}
 		else
 		{

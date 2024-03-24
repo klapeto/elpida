@@ -42,102 +42,6 @@ namespace Elpida
 		return _bounds;
 	}
 
-	static SvgBlendMode ParseBlendMode(std::string_view view)
-	{
-		if (view.empty()) return SvgBlendMode::Normal;
-
-		CharacterStream stream(view);
-
-		stream.SkipSpace();
-
-		switch (stream.Current())
-		{
-			case 'n':
-				stream.Next();
-				if (stream.ConsumeNextChars("ormal"))
-				{
-					return SvgBlendMode::Normal;
-				}
-				break;
-			case 'm':
-				stream.Next();
-				if (stream.ConsumeNextChars("ultiply"))
-				{
-					return SvgBlendMode::Multiply;
-				}
-				break;
-			case 's':
-				stream.Next();
-				if (stream.ConsumeNextChars("creen"))
-				{
-					return SvgBlendMode::Screen;
-				}
-				break;
-			case 'o':
-				stream.Next();
-				if (stream.ConsumeNextChars("verlay"))
-				{
-					return SvgBlendMode::Overlay;
-				}
-				break;
-			case 'd':
-				stream.Next();
-				switch (stream.Current())
-				{
-					case 'a':
-						stream.Next();
-						if (stream.ConsumeNextChars("rken"))
-						{
-							return SvgBlendMode::Darken;
-						}
-						break;
-					case 'i':
-						stream.Next();
-						if (stream.ConsumeNextChars("fference"))
-						{
-							return SvgBlendMode::Difference;
-						}
-						break;
-					default: break;
-				}
-				break;
-			case 'l':
-				stream.Next();
-				if (stream.ConsumeNextChars("ighten"))
-				{
-					return SvgBlendMode::Lighten;
-				}
-				break;
-
-			case 'c':
-				stream.Next();
-				if (stream.ConsumeNextChars("olor-"))
-				{
-					switch (stream.Current())
-					{
-						case 'd':
-							stream.Next();
-							if (stream.ConsumeNextChars("odge"))
-							{
-								return SvgBlendMode::ColorDodge;
-							}
-							break;
-						case 'b':
-							stream.Next();
-							if (stream.ConsumeNextChars("urn"))
-							{
-								return SvgBlendMode::ColorBurn;
-							}
-							break;
-						default: break;
-					}
-				}
-				break;
-			default:
-				return SvgBlendMode::Normal;
-		}
-	}
-
 	SvgCalculatedShape::SvgCalculatedShape(std::vector<SvgPathInstance> &&paths,
 	                                       const SvgFill &fill,
 	                                       const SvgStroke &stroke,
@@ -159,7 +63,7 @@ namespace Elpida
 			_stroke = SvgCalculatedStroke(stroke, _bounds, document, calculationContext);
 		}
 
-		_blendMode = ParseBlendMode(calculationContext.GetValue("mix-blend-mode"));
+		_blendMode = SvgBlendModeParser::Parse(calculationContext.GetValue("mix-blend-mode"));
 	}
 
 	const std::optional<SvgCalculatedFill> &SvgCalculatedShape::GetFill() const

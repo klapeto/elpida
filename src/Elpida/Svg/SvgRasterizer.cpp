@@ -125,14 +125,14 @@ namespace Elpida
 		if (shape.GetFill().has_value())
 		{
 			auto polygon = SvgShapePolygonizer::Polygonize(shape);
-			targetBackDrop.Draw(polygon, shape.GetFill().value(), 1.0, shape.GetFill()->GetFillRule(),
+			targetBackDrop.Draw(polygon, shape.GetFill().value(), shape.GetFill()->GetFillRule(),
 			                    SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
 		}
 
 		if (shape.GetStroke().has_value())
 		{
 			auto polygon = SvgShapePolygonizer::PolygonizeStroke(shape);
-			targetBackDrop.Draw(polygon, shape.GetStroke().value(), 1.0, SvgFillRule::NonZero, SvgBlendMode::Normal,
+			targetBackDrop.Draw(polygon, shape.GetStroke().value(), SvgFillRule::NonZero, SvgBlendMode::Normal,
 			                    SvgCompositingMode::SourceOver, subSamples);
 		}
 
@@ -145,17 +145,10 @@ namespace Elpida
 	void SvgRasterizer::RasterizeShape(SvgBackDrop &backDrop, const SvgCalculatedShape &shape,
 	                                   const SvgTransform &transform, std::size_t subSamples)
 	{
-		if (shape.GetOpacity() != 1.0)
-		{
-			SvgBackDrop isolatedBackDrop(backDrop.GetWidth(), backDrop.GetHeight());
+		SvgBackDrop isolatedBackDrop(backDrop.GetWidth(), backDrop.GetHeight());
 
-			RasterizeShapeToBackdrop(isolatedBackDrop, shape, transform, subSamples);
+		RasterizeShapeToBackdrop(isolatedBackDrop, shape, transform, subSamples);
 
-			backDrop.Draw(isolatedBackDrop, 0, 0, shape.GetOpacity());
-		}
-		else
-		{
-			RasterizeShapeToBackdrop(backDrop, shape, transform, subSamples);
-		}
+		backDrop.Draw(isolatedBackDrop, 0, 0, shape.GetOpacity(), shape.BlendMode(), shape.CompositingMode());
 	}
 } // Elpida

@@ -1,6 +1,4 @@
 project(Elpida-Tests)
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
 add_executable(elpida-tests
         Svg/SvgColor.Test.cpp
         Svg/SvgNumber.Test.cpp
@@ -13,6 +11,6 @@ add_executable(elpida-tests
         Svg/SvgStyle.Test.cpp
         Svg/SvgDocument.Test.cpp
         Svg/SvgPath.Test.cpp
-        Svg/SvgBlendMode.Test.Cpp)
+        Svg/SvgBlendMode.Test.cpp)
 
 target_link_libraries(elpida-tests gtest gtest_main elpida-svg)

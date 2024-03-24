@@ -25,7 +25,11 @@ namespace Elpida
 		Exclusion
 	};
 
-	static SvgBlendMode ParseBlendMode(std::string_view view);
+	class SvgBlendModeParser
+	{
+	public:
+		static SvgBlendMode Parse(std::string_view view);
+	};
 } //Elpida
 
 #endif //ELPIDA_SVG_SVGBLENDMODE_HPP
