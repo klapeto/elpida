@@ -24,4 +24,4 @@ namespace Elpida
 	};
 }
 
-#endif //SVGBLENDMODE_HPP
+#endif //ELPIDA_SVG_SVGBLENDMODE_HPP

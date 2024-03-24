@@ -27,41 +27,30 @@ namespace Elpida
 		const SvgSuperSampler superSampler(subSamples);
 
 		auto &bounds = polygon.GetBounds();
-		const std::size_t startY = std::floor(std::max(0.0, bounds.GetMinY()));
-		const std::size_t startX = std::floor(std::max(0.0, bounds.GetMinX()));
-		const std::size_t width = std::ceil(std::min(static_cast<double>(_width), bounds.GetWidth() + startX));
-		const std::size_t height = std::ceil(std::min(static_cast<double>(_height), bounds.GetHeight() + startY));
+
+		const std::size_t startY = std::max(0.0, std::floor(bounds.GetMinY()));
+		const std::size_t startX = std::max(0.0, std::floor(bounds.GetMinX()));
+		const std::size_t width = std::min(static_cast<double>(_width), std::ceil(bounds.GetMinX() + bounds.GetMaxX()));
+		const std::size_t height = std::min(static_cast<double>(_height), std::ceil(bounds.GetMinY() + bounds.GetMaxY()));
 
 		for (std::size_t y = startY; y < height; ++y)
 		{
 			for (std::size_t x = startX; x < width; ++x)
 			{
-				auto calculatedColor = superSampler.CalculatePixelColor(polygon, x + 0.5, y + 0.5, paint, fillRule);
+				auto calculatedColor = superSampler.CalculatePixelColor(polygon, x, y, paint, fillRule);
 
 				// See https://www.w3.org/TR/2015/CR-compositing-1-20150113/#generalformula
 				auto &backdropColor = _colorData[y * _width + x];
 				const auto as = calculatedColor.A() * opacity;
 				const auto ab = backdropColor.A();
 
-				auto rCs = blender.Blend(calculatedColor.R(), backdropColor.R(), ab);
-				auto gCs = blender.Blend(calculatedColor.G(), backdropColor.G(), ab);
-				auto bCs = blender.Blend(calculatedColor.B(), backdropColor.B(), ab);
+				auto color = blender.Blend(calculatedColor, backdropColor);
+				color = compositor.Composite(color, backdropColor);
 
-				rCs = compositor.Composite(as, rCs, ab, backdropColor.R());
-				gCs = compositor.Composite(as, gCs, ab, backdropColor.G());
-				bCs = compositor.Composite(as, bCs, ab, backdropColor.B());
-
-				auto ao = as + ab * (1.0 - as);
-
-				if (ao <= 0.0)
-				{
-					// This is to avoid division by 0
-					backdropColor = SvgColor(rCs, gCs, bCs, ao);
-				}
-				else
+				if (color.A() > 0.0)
 				{
 					// the color after these calculation is alpha pre-multiplied, so we need to un-premultiply
-					backdropColor = SvgColor(rCs / ao, gCs / ao, bCs / ao, ao);
+					backdropColor = SvgColor(color.R() / color.A(), color.G() / color.A(), color.B() / color.A(), color.A());
 				}
 			}
 		}

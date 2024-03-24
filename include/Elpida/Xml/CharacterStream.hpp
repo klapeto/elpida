@@ -102,7 +102,7 @@ namespace Elpida
 		{
 			for (std::size_t i = 0; i < N - 1; ++i)
 			{
-				if (str[i] != Char(i)) return false;
+				if (str[i] != FutureChar(i)) return false;
 			}
 			_index += N - 1;
 			UpdateEofFlag();
@@ -148,11 +148,20 @@ namespace Elpida
 			return _maxIndex - _index;
 		}
 
-		char Char(const std::size_t i) const
+		char FutureChar(const std::size_t i) const
 		{
 			if (_index + i <= _maxIndex)
 			{
 				return _data[_index + i];
+			}
+			return 0;
+		}
+
+		char Char(const std::size_t i) const
+		{
+			if (i <= _maxIndex)
+			{
+				return _data[i];
 			}
 			return 0;
 		}

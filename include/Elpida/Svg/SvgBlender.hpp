@@ -5,7 +5,8 @@
 #ifndef ELPIDA_SVGBLENDER_HPP
 #define ELPIDA_SVGBLENDER_HPP
 
-#include "SvgBlendMode.hpp"
+#include "Elpida/Svg/SvgBlendMode.hpp"
+#include "Elpida/Svg/SvgColor.hpp"
 
 namespace Elpida
 {
@@ -14,15 +15,26 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		double Blend(double Cb, double Cs) const
+		double Blend(const double Cb, const double Cs) const
 		{
 			return _blender(Cb, Cs);
 		}
 
 		[[nodiscard]]
-		double Blend(double Cs, double Cb, double ab) const
+		double Blend(const double Cs, const double Cb, const double ab) const
 		{
 			return (1.0 - ab) * Cs + ab * Blend(Cb, Cs);
+		}
+
+		[[nodiscard]]
+		SvgColor Blend(const SvgColor& Cs, const SvgColor& Cb) const
+		{
+			return {
+				Blend(Cs.R(), Cb.R(), Cb.A()),
+				Blend(Cs.G(), Cb.G(), Cb.A()),
+				Blend(Cs.B(), Cb.B(), Cb.A()),
+				Cs.A()
+			};
 		}
 
 		explicit SvgBlender(SvgBlendMode mode);

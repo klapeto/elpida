@@ -3,13 +3,12 @@
 //
 
 #include "Elpida/Svg/SvgCompositor.hpp"
-#include "Elpida/Svg/SvgColor.hpp"
 
 namespace Elpida
 {
-	static double Composite(double as, double Cs, double ab, double Cb, double Fa, double Fb)
+	static double Composite(const double as, const double Cs, const double ab, const double Cb, const double Fa, const double Fb)
 	{
-		return as * Fa * Cs + ab * Fb * Cb;
+		return (as * Fa * Cs) + (ab * Fb * Cb);
 	}
 
 	static double Clear(double as, double Cs, double ab, double Cb)
@@ -17,67 +16,67 @@ namespace Elpida
 		return 0.0;
 	}
 
-	static double Copy(double as, double Cs, double ab, double Cb)
+	static double Copy(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0, 0.0);
 	}
 
-	static double Destination(double as, double Cs, double ab, double Cb)
+	static double Destination(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 0.0, 1.0);
 	}
 
-	static double SourceOver(double as, double Cs, double ab, double Cb)
+	static double SourceOver(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0, 1.0 - as);
 	}
 
-	static double DestinationOver(double as, double Cs, double ab, double Cb)
+	static double DestinationOver(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0 - ab, 1.0);
 	}
 
-	static double SourceIn(double as, double Cs, double ab, double Cb)
+	static double SourceIn(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb,  ab, 0.0);
 	}
 
-	static double DestinationIn(double as, double Cs, double ab, double Cb)
+	static double DestinationIn(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 0.0, as);
 	}
 
-	static double SourceOut(double as, double Cs, double ab, double Cb)
+	static double SourceOut(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0 - ab, 0.0);
 	}
 
-	static double DestinationOut(double as, double Cs, double ab, double Cb)
+	static double DestinationOut(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 0.0, 1.0 - as);
 	}
 
-	static double SourceAtop(double as, double Cs, double ab, double Cb)
+	static double SourceAtop(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, ab, 1.0 - as);
 	}
 
-	static double DestinationAtop(double as, double Cs, double ab, double Cb)
+	static double DestinationAtop(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0 - ab, as);
 	}
 
-	static double Xor(double as, double Cs, double ab, double Cb)
+	static double Xor(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0 - ab, 1.0 - as);
 	}
 
-	static double Lighter(double as, double Cs, double ab, double Cb)
+	static double Lighter(const double as, const double Cs, const double ab, const double Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0, 1.0);
 	}
 
-	SvgCompositor::SvgCompositor(SvgCompositingMode mode)
+	SvgCompositor::SvgCompositor(const SvgCompositingMode mode)
 	{
 		switch (mode)
 		{

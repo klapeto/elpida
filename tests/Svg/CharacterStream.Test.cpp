@@ -204,8 +204,8 @@ TEST(CharacterStreamTests, Char_ValidIndex_ReturnsChar)
 {
 	const CharacterStream stream("ABCDEF");
 
-	EXPECT_EQ(stream.Char(2), 'C');
-	EXPECT_EQ(stream.Char(3), 'D');
+	EXPECT_EQ(stream.FutureChar(2), 'C');
+	EXPECT_EQ(stream.FutureChar(3), 'D');
 	EXPECT_EQ(stream.Current(), 'A');
 }
 
@@ -213,5 +213,5 @@ TEST(CharacterStreamTests, Char_InvalidIndex_ReturnsChar)
 {
 	const CharacterStream stream("ABCDEF");
 
-	EXPECT_EQ(stream.Char(5455), 0);
+	EXPECT_EQ(stream.FutureChar(5455), 0);
 }
