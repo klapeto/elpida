@@ -43,6 +43,18 @@ namespace Elpida
 		[[nodiscard]]
 		double GetOpacity() const;
 
+		[[nodiscard]]
+		SvgCompositingMode CompositingMode() const
+		{
+			return _compositingMode;
+		}
+
+		[[nodiscard]]
+		SvgBlendMode BlendMode() const
+		{
+			return _blendMode;
+		}
+
 		void Transform(const SvgTransform& transform);
 
 		SvgCalculatedShape();

@@ -114,13 +114,12 @@ namespace Elpida
 
 		calculated.Transform(transform);
 
-		RasterizeShape(backDrop, calculated, transform, subSamples);
+		RasterizeShape(backDrop, calculated, subSamples);
 
 		return backDrop;
 	}
 
-	void SvgRasterizer::RasterizeShapeToBackdrop(SvgBackDrop &targetBackDrop, const SvgCalculatedShape &shape,
-	                                             const SvgTransform &transform, std::size_t subSamples)
+	void SvgRasterizer::RasterizeShapeToBackdrop(SvgBackDrop &targetBackDrop, const SvgCalculatedShape &shape, std::size_t subSamples)
 	{
 		if (shape.GetFill().has_value())
 		{
@@ -138,16 +137,15 @@ namespace Elpida
 
 		for (auto &child: shape.GetChildren())
 		{
-			RasterizeShape(targetBackDrop, child, transform, subSamples);
+			RasterizeShape(targetBackDrop, child, subSamples);
 		}
 	}
 
-	void SvgRasterizer::RasterizeShape(SvgBackDrop &backDrop, const SvgCalculatedShape &shape,
-	                                   const SvgTransform &transform, std::size_t subSamples)
+	void SvgRasterizer::RasterizeShape(SvgBackDrop &backDrop, const SvgCalculatedShape &shape, std::size_t subSamples)
 	{
 		SvgBackDrop isolatedBackDrop(backDrop.GetWidth(), backDrop.GetHeight());
 
-		RasterizeShapeToBackdrop(isolatedBackDrop, shape, transform, subSamples);
+		RasterizeShapeToBackdrop(isolatedBackDrop, shape, subSamples);
 
 		backDrop.Draw(isolatedBackDrop, 0, 0, shape.GetOpacity(), shape.BlendMode(), shape.CompositingMode());
 	}
