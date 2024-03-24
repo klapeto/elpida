@@ -2,8 +2,8 @@
 // Created by klapeto on 9/3/2024.
 //
 
-#ifndef ELPIDA_SVGSPREADTYPE_HPP
-#define ELPIDA_SVGSPREADTYPE_HPP
+#ifndef ELPIDA_SVG_SVGSPREADTYPE_HPP
+#define ELPIDA_SVG_SVGSPREADTYPE_HPP
 
 namespace Elpida
 {
@@ -15,4 +15,4 @@ namespace Elpida
 	};
 }
 
-#endif //ELPIDA_SVGSPREADTYPE_HPP
+#endif //ELPIDA_SVG_SVGSPREADTYPE_HPP

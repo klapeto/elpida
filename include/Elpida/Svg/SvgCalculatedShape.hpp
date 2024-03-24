@@ -13,6 +13,9 @@
 #include <vector>
 #include <optional>
 
+#include "SvgBlendMode.hpp"
+#include "SvgCompositingMode.hpp"
+
 namespace Elpida
 {
 	class SvgFill;
@@ -56,6 +59,8 @@ namespace Elpida
 		std::optional<SvgCalculatedStroke> _stroke;
 		SvgBounds _bounds;
 		double _opacity;
+		SvgCompositingMode _compositingMode;
+		SvgBlendMode _blendMode;
 
 		void RecalculateBounds();
 

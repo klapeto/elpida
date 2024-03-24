@@ -41,8 +41,6 @@ namespace Elpida
 
 				// See https://www.w3.org/TR/2015/CR-compositing-1-20150113/#generalformula
 				auto &backdropColor = _colorData[y * _width + x];
-				const auto as = calculatedColor.A() * opacity;
-				const auto ab = backdropColor.A();
 
 				auto color = blender.Blend(calculatedColor, backdropColor);
 				color = compositor.Composite(color, backdropColor);
@@ -82,28 +80,14 @@ namespace Elpida
 			{
 				auto& inputColor = colorData[sourceY * sourceWidth + sourceX];
 				auto& backdropColor = _colorData[targetY * _width + targetX];
-				const auto as = inputColor.A() * opacity;
-				const auto ab = backdropColor.A();
 
-				auto rCs = blender.Blend(inputColor.R(), backdropColor.R(), ab);
-				auto gCs = blender.Blend(inputColor.G(), backdropColor.G(), ab);
-				auto bCs = blender.Blend(inputColor.B(), backdropColor.B(), ab);
+				auto color = blender.Blend(inputColor, backdropColor);
+				color = compositor.Composite(color, backdropColor);
 
-				rCs = compositor.Composite(as, rCs, ab, backdropColor.R());
-				gCs = compositor.Composite(as, gCs, ab, backdropColor.G());
-				bCs = compositor.Composite(as, bCs, ab, backdropColor.B());
-
-				auto ao = as + ab * (1.0 - as);
-
-				if (ao <= 0.0)
-				{
-					// This is to avoid division by 0
-					backdropColor = SvgColor(rCs, gCs, bCs, ao);
-				}
-				else
+				if (color.A() > 0.0)
 				{
 					// the color after these calculation is alpha pre-multiplied, so we need to un-premultiply
-					backdropColor = SvgColor(rCs / ao, gCs / ao, bCs / ao, ao);
+					backdropColor = SvgColor(color.R() / color.A(), color.G() / color.A(), color.B() / color.A(), color.A());
 				}
 			}
 		}
