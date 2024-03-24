@@ -10,8 +10,6 @@
 
 namespace Elpida
 {
-	static constexpr double Kappa = 0.5522847493;
-
 	SvgRectangle::SvgRectangle(const XmlMap& properties)
 	{
 		_x = SvgLength(properties.GetValue("x"));
@@ -87,23 +85,24 @@ namespace Elpida
 			else
 			{
 				// Rounded rectangle
+				auto kappa = SvgPathGenerator::Kappa;
 
 				generator.MoveTo(SvgPoint(x + rx, y));
 				generator.LineTo(SvgPoint(x + width - rx, y));
-				generator.CubicBezTo(SvgPoint(x + width - rx * (1 - Kappa), y),
-						SvgPoint(x + width, y + ry * (1 - Kappa)),
+				generator.CubicBezTo(SvgPoint(x + width - rx * (1 - kappa), y),
+						SvgPoint(x + width, y + ry * (1 - kappa)),
 						SvgPoint(x + width, y + ry));
 				generator.LineTo(SvgPoint(x + width, y + height - ry));
-				generator.CubicBezTo(SvgPoint(x + width, y + height - ry * (1 - Kappa)),
-						SvgPoint(x + width - rx * (1 - Kappa), y + height),
+				generator.CubicBezTo(SvgPoint(x + width, y + height - ry * (1 - kappa)),
+						SvgPoint(x + width - rx * (1 - kappa), y + height),
 						SvgPoint(x + width - rx, y + height));
 				generator.LineTo(SvgPoint(x + rx, y + height));
-				generator.CubicBezTo(SvgPoint(x + rx * (1 - Kappa), y + height),
-						SvgPoint(x, y + height - ry * (1 - Kappa)),
+				generator.CubicBezTo(SvgPoint(x + rx * (1 - kappa), y + height),
+						SvgPoint(x, y + height - ry * (1 - kappa)),
 						SvgPoint(x, y + height - ry));
 				generator.LineTo(SvgPoint(x, y + ry));
-				generator.CubicBezTo(SvgPoint(x, y + ry * (1 - Kappa)),
-						SvgPoint(x + rx * (1 - Kappa), y),
+				generator.CubicBezTo(SvgPoint(x, y + ry * (1 - kappa)),
+						SvgPoint(x + rx * (1 - kappa), y),
 						SvgPoint(x + rx, y));
 			}
 

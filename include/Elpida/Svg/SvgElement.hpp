@@ -5,14 +5,14 @@
 #ifndef ELPIDA_SVG_SVGELEMENT_HPP
 #define ELPIDA_SVG_SVGELEMENT_HPP
 
-#include "SvgFill.hpp"
-#include "SvgPathInstance.hpp"
-#include "SvgStroke.hpp"
+#include "Elpida/Svg/SvgCalculatedShape.hpp"
+#include "Elpida/Svg/SvgFill.hpp"
+#include "Elpida/Svg/SvgPath.hpp"
+#include "Elpida/Svg/SvgRectangle.hpp"
+#include "Elpida/Svg/SvgStroke.hpp"
 #include "Elpida/Svg/SvgTransform.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
-#include "SvgPath.hpp"
-#include "SvgRectangle.hpp"
-#include "SvgCalculatedShape.hpp"
+#include "Elpida/Svg/SvgCircle.hpp"
 
 #include <variant>
 
@@ -27,7 +27,8 @@ namespace Elpida
 		Svg,
 		Group,
 		Path,
-		Rectangle
+		Rectangle,
+		Circle
 	};
 
 	class SvgElement
@@ -110,7 +111,7 @@ namespace Elpida
 		double _opacity;
 		bool _visible;
 		SvgShapeType _shapeType;
-		std::variant<std::monostate, SvgPath, SvgRectangle> _shape;
+		std::variant<std::monostate, SvgPath, SvgRectangle, SvgCircle> _shape;
 
 	protected:
 		template<typename T, typename TConverter>

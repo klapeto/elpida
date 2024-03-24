@@ -15,6 +15,8 @@ namespace Elpida
 	class SvgPathGenerator final
 	{
 	public:
+		static constexpr double Kappa = 0.5522847493;	// Length proportional to radius of a cubic bezier handle for 90deg arcs.
+
 		std::vector<SvgPathInstance>& GetPaths()
 		{
 			return _paths;

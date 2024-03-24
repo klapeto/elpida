@@ -8,11 +8,10 @@
 #include <vector>
 #include "Elpida/Svg/SvgCalculatedGradient.hpp"
 #include "Elpida/Svg/SvgEllipseEquation.hpp"
-#include "Elpida/Svg/SvgCircle.hpp"
+#include "Elpida/Svg/SvgCircleEquation.hpp"
 
 namespace Elpida
 {
-
 	class SvgGradient;
 	class SvgBounds;
 	class SvgCalculationContext;
@@ -26,12 +25,13 @@ namespace Elpida
 		SvgColor CalculateColor(const SvgPoint& point) const;
 
 		SvgCalculatedRadialGradient(const SvgGradient& gradient,
-				const SvgBounds& elementBounds,
-				std::vector<SvgCalculatedGradientStop>&& stops,
-				const SvgCalculationContext& calculationContext);
+		                            const SvgBounds& elementBounds,
+		                            std::vector<SvgCalculatedGradientStop>&& stops,
+		                            const SvgCalculationContext& calculationContext);
+
 	private:
-		std::vector<SvgCircle> _circles;
-		std::vector<SvgCircle> _inverseCircles;
+		std::vector<SvgCircleEquation> _circles;
+		std::vector<SvgCircleEquation> _inverseCircles;
 		SvgTransform _transform;
 
 		[[nodiscard]]
@@ -41,16 +41,15 @@ namespace Elpida
 		SvgColor CalculateRepeat(const SvgPoint& point) const;
 
 		[[nodiscard]]
-		static SvgColor CalculateColorFromStops(const SvgPoint &actualPoint,
-		                                        const SvgCalculatedGradientStop &stopA,
-		                                        const SvgCalculatedGradientStop &stopB,
-		                                        const SvgCircle &circleA,
-		                                        const SvgCircle &circleB);
+		static SvgColor CalculateColorFromStops(const SvgPoint& actualPoint,
+		                                        const SvgCalculatedGradientStop& stopA,
+		                                        const SvgCalculatedGradientStop& stopB,
+		                                        const SvgCircleEquation& circleA,
+		                                        const SvgCircleEquation& circleB);
 
 		[[nodiscard]]
 		SvgColor CalculateReflect(const SvgPoint& point) const;
 	};
-
 } // Elpida
 
 #endif //ELPIDA_SVGCALCULATEDRADIALGRADIENT_HPP

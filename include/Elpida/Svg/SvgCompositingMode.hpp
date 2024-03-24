@@ -4,7 +4,7 @@
 
 #ifndef ELPIDA_SVGCOMPOSITINGOPERATOR_HPP
 #define ELPIDA_SVGCOMPOSITINGOPERATOR_HPP
-
+#include <string_view>
 
 namespace Elpida
 {
@@ -24,6 +24,12 @@ namespace Elpida
 		Xor,
 		Lighter
 	};
-}
+
+	class SvgCompositingModeParser
+	{
+	public:
+		static SvgCompositingMode Parse(std::string_view view);
+	};
+} // Elpida
 
 #endif //ELPIDA_SVGCOMPOSITINGOPERATOR_HPP

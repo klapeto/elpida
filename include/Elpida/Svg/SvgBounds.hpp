@@ -5,9 +5,7 @@
 #ifndef ELPIDA_SVG_SVGBOUNDS_HPP
 #define ELPIDA_SVG_SVGBOUNDS_HPP
 
-
-#include <limits>
-#include "SvgPoint.hpp"
+#include "Elpida/Svg/SvgPoint.hpp"
 
 namespace Elpida
 {

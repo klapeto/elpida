@@ -6,13 +6,12 @@
 #define ELPIDA_SVG_SVGFRAMEBUFFER_HPP
 
 #include <cstddef>
-#include <memory>
 #include <vector>
 
 #include "SvgBlendMode.hpp"
 #include "SvgColor.hpp"
-#include "SvgFillRule.hpp"
 #include "SvgCompositingMode.hpp"
+#include "SvgFillRule.hpp"
 
 namespace Elpida
 {

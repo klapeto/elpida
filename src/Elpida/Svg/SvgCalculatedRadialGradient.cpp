@@ -66,8 +66,8 @@ namespace Elpida
 		const SvgCalculatedGradientStop *stopA = nullptr;
 		const SvgCalculatedGradientStop *stopB = nullptr;
 
-		const SvgCircle *circleA = nullptr;
-		const SvgCircle *circleB = nullptr;
+		const SvgCircleEquation *circleA = nullptr;
+		const SvgCircleEquation *circleB = nullptr;
 
 		auto actualPoint = point;
 		actualPoint.Transform(_transform);	// Transform the point to non transformed cicle space
@@ -122,8 +122,8 @@ namespace Elpida
 		const SvgCalculatedGradientStop *stopA = nullptr;
 		const SvgCalculatedGradientStop *stopB = nullptr;
 
-		const SvgCircle *circleA = nullptr;
-		const SvgCircle *circleB = nullptr;
+		const SvgCircleEquation *circleA = nullptr;
+		const SvgCircleEquation *circleB = nullptr;
 
 		for (std::size_t i = 0; i < _stops.size() - 1; i++)
 		{
@@ -148,8 +148,8 @@ namespace Elpida
 		const SvgPoint &actualPoint,
 		const SvgCalculatedGradientStop &stopA,
 		const SvgCalculatedGradientStop &stopB,
-		const SvgCircle &circleA,
-		const SvgCircle &circleB)
+		const SvgCircleEquation &circleA,
+		const SvgCircleEquation &circleB)
 	{
 		const auto distanceFromA = circleA.GetCenter().GetDistance(actualPoint);
 
@@ -170,7 +170,7 @@ namespace Elpida
 		const auto distanceFromPoint = lastCircle.GetCenter().GetDistance(actualPoint);
 
 		bool inverted = false;
-		std::vector<SvgCircle> circles;	//copy
+		std::vector<SvgCircleEquation> circles;	//copy
 		if (distanceFromPoint > lastCircle.GetRadius())
 		{
 			const int ratio = distanceFromPoint / lastCircle.GetRadius();
@@ -192,8 +192,8 @@ namespace Elpida
 		const SvgCalculatedGradientStop *stopA = nullptr;
 		const SvgCalculatedGradientStop *stopB = nullptr;
 
-		const SvgCircle *circleA = nullptr;
-		const SvgCircle *circleB = nullptr;
+		const SvgCircleEquation *circleA = nullptr;
+		const SvgCircleEquation *circleB = nullptr;
 
 		if (inverted)
 		{
