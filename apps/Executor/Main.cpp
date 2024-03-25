@@ -163,6 +163,7 @@ int main(int argC, char** argV)
 
 	//return 0;
 
+	//std::ifstream file("/home/klapeto/elpida/images/Elpida_Background.svg", std::ifstream::binary | std::ifstream::in);
 	std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
 
 
@@ -192,7 +193,7 @@ int main(int argC, char** argV)
 
 
 	SvgRasterizer rasterizer;
-	auto backDrop = rasterizer.Rasterize(svgDocument);
+	auto backDrop = rasterizer.Rasterize(svgDocument, 1.0);
 
 	std::size_t width = backDrop.GetWidth();
 	std::size_t height = backDrop.GetHeight();

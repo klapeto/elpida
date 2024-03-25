@@ -76,7 +76,23 @@ namespace Elpida
 				std::size_t height);
 		void DrawPolygonMultiThreaded(const SvgPolygon& polygon, const SvgCalculatedPaint& paint, SvgFillRule& fillRule,
 				const SvgBlender& blender, const SvgCompositor& compositor, const SvgSuperSampler& superSampler,
-				const size_t startY, const size_t startX, const size_t width, const size_t height);
+				size_t startY,
+				size_t startX,
+				size_t width,
+				size_t height);
+		void DoDrawOther(double opacity,
+				const SvgBlender& blender,
+				const SvgCompositor& compositor,
+				size_t startX,
+				size_t startY,
+				size_t width,
+				size_t height,
+				size_t sourceY,
+				const std::vector<SvgColor>& colorData,
+				size_t sourceWidth);
+		void DoDrawOtherMultiThreaded(double opacity, const SvgBlender& blender, const SvgCompositor& compositor,
+				const size_t startX, const size_t startY, const size_t width, const size_t height,
+				const std::vector<SvgColor>& colorData, const size_t sourceWidth);
 	};
 } // Elpida
 

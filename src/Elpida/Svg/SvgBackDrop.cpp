@@ -8,7 +8,6 @@
 #include "Elpida/Svg/SvgSuperSampler.hpp"
 
 #include <cmath>
-#include <cstring>
 #include <Elpida/Svg/SvgPolygon.hpp>
 #include <Elpida/Svg/SvgCalculatedPaint.hpp>
 #include <thread>
@@ -33,8 +32,7 @@ namespace Elpida
 		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(bounds.GetMaxX())));
 		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetMaxY())));
 
-		DrawPolygonMultiThreaded(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width,
-				height);
+		DrawPolygonMultiThreaded(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height);
 	}
 
 	void SvgBackDrop::DrawPolygonMultiThreaded(const SvgPolygon& polygon, const SvgCalculatedPaint& paint,
@@ -42,8 +40,8 @@ namespace Elpida
 			const SvgBlender& blender, const SvgCompositor& compositor, const SvgSuperSampler& superSampler,
 			const size_t startY, const size_t startX, const size_t width, const size_t height)
 	{
-		auto threadCount = std::min(20ul, height);
-		std::size_t linesPerThread = ceil(height / static_cast<double>(threadCount));
+		auto threadCount = std::min((std::size_t)std::thread::hardware_concurrency(), height);
+		std::size_t linesPerThread = std::ceil(height / static_cast<double>(threadCount));
 
 		std::vector<std::thread> threads;
 		threads.reserve(threadCount);
@@ -116,7 +114,43 @@ namespace Elpida
 		auto& colorData = other.GetColorData();
 		const auto sourceWidth = other.GetWidth();
 
-		for (std::size_t targetY = startY, sourceY = 0; targetY < height; ++targetY, ++sourceY)
+		DoDrawOtherMultiThreaded(opacity, blender, compositor, startX, startY, width, height, colorData, sourceWidth);
+	}
+
+	void
+	SvgBackDrop::DoDrawOtherMultiThreaded(double opacity, const SvgBlender& blender, const SvgCompositor& compositor,
+			const size_t startX, const size_t startY, const size_t width, const size_t height,
+			const std::vector<SvgColor>& colorData, const size_t sourceWidth)
+	{
+		auto threadCount = std::min((std::size_t)std::thread::hardware_concurrency(), height);
+		std::size_t linesPerThread = ceil(height / static_cast<double>(threadCount));
+
+		std::vector<std::thread> threads;
+		threads.reserve(threadCount);
+		for (std::size_t t = 0, h = startY, sourceY = 0; t < threadCount; ++t, h += linesPerThread, sourceY += linesPerThread)
+		{
+			auto thisEndLine = std::min(h + linesPerThread, height);
+			threads.emplace_back([&](std::size_t thisStartY, std::size_t thisEndY, std::size_t sourceY)
+			{
+				DoDrawOther(opacity, blender, compositor, startX, thisStartY, width, thisEndY, sourceY, colorData, sourceWidth);
+			}, h, thisEndLine, sourceY);
+		}
+
+		for (auto& th: threads)
+		{
+			th.join();
+		}
+	}
+
+	void SvgBackDrop::DoDrawOther(double opacity, const SvgBlender& blender, const SvgCompositor& compositor,
+			const size_t startX,
+			const size_t startY,
+			const size_t width,
+			const size_t height,
+			size_t sourceY,
+			const std::vector<SvgColor>& colorData, const size_t sourceWidth)
+	{
+		for (std::size_t targetY = startY; targetY < height; ++targetY, ++sourceY)
 		{
 			for (std::size_t targetX = startX, sourceX = 0; targetX < width; ++targetX, ++sourceX)
 			{
