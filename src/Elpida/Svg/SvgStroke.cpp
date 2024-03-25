@@ -14,7 +14,7 @@ namespace Elpida
 {
 
 	SvgStroke::SvgStroke(const XmlMap& properties)
-		: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _miterLimit(0.0)
+		: SvgStroke()
 	{
 		ParseColor(properties.GetValue("stroke"));
 		ParseOpacity(properties.GetValue("stroke-opacity"));

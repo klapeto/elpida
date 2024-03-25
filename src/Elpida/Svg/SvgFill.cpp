@@ -10,7 +10,7 @@
 namespace Elpida
 {
 	SvgFill::SvgFill(const XmlMap& properties)
-		: _fillRule(SvgFillRule::NonZero)
+		: SvgFill()
 	{
 		ParseColor(properties.GetValue("fill"));
 		ParseOpacity(properties.GetValue("fill-opacity"));

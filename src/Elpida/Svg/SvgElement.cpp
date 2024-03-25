@@ -16,12 +16,12 @@
 namespace Elpida
 {
 	SvgElement::SvgElement(const XmlElement& element, SvgDocument& document)
-			:_opacity(1.0), _visible(true), _shapeType(SvgShapeType::NonRenderable)
+			: _opacity(1.0), _visible(true), _shapeType(SvgShapeType::NonRenderable)
 	{
 		_properties = element.GetAttributes();
 
 		SvgStyle style(element.GetAttributeValue("style"));
-		for (auto& [key, value] : style.GetRules())
+		for (auto& [key, value]: style.GetRules())
 		{
 			_properties.Set(key, std::move(value));
 		}
@@ -32,14 +32,14 @@ namespace Elpida
 				_opacity,
 				[](const auto& s)
 				{
-				  double v;
-				  return SvgNumber::TryParseNumber(s, v) ? v : 1.0;
+					double v;
+					return SvgNumber::TryParseNumber(s, v) ? v : 1.0;
 				});
 		ConditionallyAssignProperty<>("display",
 				_visible,
 				[](const auto& s)
 				{
-				  return static_cast<bool>(SvgVisibility(s));
+					return static_cast<bool>(SvgVisibility(s));
 				});
 
 		_fill = SvgFill(GetProperties());
@@ -75,13 +75,18 @@ namespace Elpida
 			_shapeType = SvgShapeType::Ellipse;
 			_shape = SvgEllipse(_properties);
 		}
+		else if (_name == "line")
+		{
+			_shapeType = SvgShapeType::Line;
+			_shape = SvgLine(_properties);
+		}
 
 		auto& defs = document._defs;
-		for (auto& child : element.GetChildren())
+		for (auto& child: element.GetChildren())
 		{
 			if (child.GetName() == "defs")
 			{
-				for (auto& def : child.GetChildren())
+				for (auto& def: child.GetChildren())
 				{
 					auto& id = def.GetAttributeValue("id");
 					if (id.empty()) continue;
@@ -118,6 +123,9 @@ namespace Elpida
 		case SvgShapeType::Ellipse:
 			paths = std::get<SvgEllipse>(_shape).CalculatePaths(calculationContext);
 			break;
+		case SvgShapeType::Line:
+			paths = std::get<SvgLine>(_shape).CalculatePaths(calculationContext);
+			break;
 		default:
 			break;
 		}
@@ -133,7 +141,7 @@ namespace Elpida
 
 		std::vector<SvgCalculatedShape> children;
 		children.reserve(_children.size());
-		for (auto& child : _children)
+		for (auto& child: _children)
 		{
 			if (child.GetShapeType() != SvgShapeType::NonRenderable && child.IsVisible())
 			{
@@ -147,7 +155,7 @@ namespace Elpida
 	}
 
 	SvgElement::SvgElement()
-			:_opacity(1.0), _visible(false), _shapeType(SvgShapeType::NonRenderable)
+			: _opacity(1.0), _visible(false), _shapeType(SvgShapeType::NonRenderable)
 	{
 
 	}

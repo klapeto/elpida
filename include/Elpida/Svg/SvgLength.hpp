@@ -51,12 +51,6 @@ namespace Elpida
 			return CalculateValue(calculationContext, 0.0, length);
 		}
 
-//		[[nodiscard]]
-//		double CalculateValue(const SvgCalculationContext& calculationContext) const
-//		{
-//			return CalculateValue(calculationContext, 0.0, 1.0);
-//		}
-
 		constexpr SvgLength()
 			: _value(0), _units(SvgUnits::Raw)
 		{

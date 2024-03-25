@@ -56,7 +56,7 @@ namespace Elpida
 		}
 
 		SvgStroke()
-			: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _miterLimit(0.0)
+			: SvgPaint(), _lineJoin(SvgLineJoin::Miter), _lineCap(SvgLineCap::Butt), _miterLimit(4.0), _width(1.0, SvgUnits::Px)
 		{
 		}
 		explicit SvgStroke(const XmlMap& properties);
