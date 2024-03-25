@@ -17,7 +17,7 @@ namespace Elpida
 
 	static bool IsNumberic(const char c)
 	{
-		return SvgNumber::IsNumber(c) || c == '+' || c == '-';
+		return SvgNumber::IsNumber(c) || c == 'e' || c == 'E' || c == '+' || c == '-';
 	}
 
 	static double VectorMagnitude(const double x, const double y)

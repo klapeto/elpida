@@ -64,7 +64,7 @@ TEST(SvgTransformTests, Translate_Valid_Success)
 TEST(SvgTransformTests, Rotate_Valid_Success)
 {
 	SvgTransform calculated;
-	calculated.SetRotation(5.32);
+	calculated.RotateDegrees(5.32);
 	const SvgTransform transform("  rotate  ( 5.32  )  ");
 	EXPECT_EQ(transform[0], calculated[0]);
 	EXPECT_EQ(transform[1], calculated[1]);

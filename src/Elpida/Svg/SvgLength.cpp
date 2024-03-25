@@ -82,6 +82,7 @@ namespace Elpida
 
 	SvgLength::SvgLength(const std::string_view view)
 	{
+		if (view.empty()) return;
 		try
 		{
 			CharacterStream stream(view);

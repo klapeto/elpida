@@ -14,23 +14,23 @@
 
 namespace Elpida
 {
-	void SvgBackDrop::Draw(const SvgPolygon &polygon,
-	                       const SvgCalculatedPaint &paint,
-	                       SvgFillRule fillRule,
-	                       SvgBlendMode blendMode,
-	                       SvgCompositingMode compositingMode,
-	                       const std::size_t subSamples)
+	void SvgBackDrop::Draw(const SvgPolygon& polygon,
+			const SvgCalculatedPaint& paint,
+			SvgFillRule fillRule,
+			SvgBlendMode blendMode,
+			SvgCompositingMode compositingMode,
+			const std::size_t subSamples)
 	{
 		const SvgBlender blender(blendMode);
 		const SvgCompositor compositor(compositingMode);
 		const SvgSuperSampler superSampler(subSamples);
 
-		auto &bounds = polygon.GetBounds();
+		auto& bounds = polygon.GetBounds();
 
-		const std::size_t startY = std::max(0.0, std::floor(bounds.GetMinY()));
-		const std::size_t startX = std::max(0.0, std::floor(bounds.GetMinX()));
-		const std::size_t width = std::min(static_cast<double>(_width), std::ceil(startX + bounds.GetWidth()));
-		const std::size_t height = std::min(static_cast<double>(_height), std::ceil(startY + bounds.GetHeight()));
+		const std::size_t startY = std::max(0ul, static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinY()))));
+		const std::size_t startX = std::max(0ul, static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinX()))));
+		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(startX + bounds.GetWidth())));
+		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(startY + bounds.GetHeight())));
 
 		for (std::size_t y = startY; y < height; ++y)
 		{
@@ -39,7 +39,7 @@ namespace Elpida
 				auto calculatedColor = superSampler.CalculatePixelColor(polygon, x, y, paint, fillRule);
 
 				// See https://www.w3.org/TR/2015/CR-compositing-1-20150113/#generalformula
-				auto &backdropColor = _colorData[y * _width + x];
+				auto& backdropColor = _colorData[y * _width + x];
 
 				auto color = blender.Blend(calculatedColor, backdropColor);
 				color = compositor.Composite(color, backdropColor);
@@ -47,26 +47,27 @@ namespace Elpida
 				if (color.A() > 0.0)
 				{
 					// the color after these calculation is alpha pre-multiplied, so we need to un-premultiply
-					backdropColor = SvgColor(color.R() / color.A(), color.G() / color.A(), color.B() / color.A(), color.A());
+					backdropColor = SvgColor(color.R() / color.A(), color.G() / color.A(), color.B() / color.A(),
+							color.A());
 				}
 			}
 		}
 	}
 
-	void SvgBackDrop::Draw(const SvgBackDrop &other,
-	                       std::size_t x,
-	                       std::size_t y,
-	                       double opacity,
-	                       SvgBlendMode blendMode,
-	                       SvgCompositingMode compositingMode)
+	void SvgBackDrop::Draw(const SvgBackDrop& other,
+			std::size_t x,
+			std::size_t y,
+			double opacity,
+			SvgBlendMode blendMode,
+			SvgCompositingMode compositingMode)
 	{
 		if (x > _width || y > _width) return;
 
 		const SvgBlender blender(blendMode);
 		const SvgCompositor compositor(compositingMode);
 
-		const auto startX = std::min(x, _width);
-		const auto startY = std::min(y, _height);
+		const auto startX = std::max(0ul, std::min(x, _width));
+		const auto startY = std::max(0ul, std::min(y, _height));
 		const auto width = std::min(_width, other.GetWidth() + x);
 		const auto height = std::min(_height, other.GetHeight() + y);
 
@@ -86,24 +87,25 @@ namespace Elpida
 				if (color.A() > 0.0)
 				{
 					// the color after these calculation is alpha pre-multiplied, so we need to un-premultiply
-					backdropColor = SvgColor(color.R() / color.A(), color.G() / color.A(), color.B() / color.A(), color.A());
+					backdropColor = SvgColor(color.R() / color.A(), color.G() / color.A(), color.B() / color.A(),
+							color.A());
 				}
 			}
 		}
 	}
 
 	SvgBackDrop::SvgBackDrop(std::size_t width, std::size_t height)
-		: _width(width), _height(height)
+			: _width(width), _height(height)
 	{
 		_colorData.resize(width * height);
 	}
 
-	SvgBackDrop::SvgBackDrop(SvgBackDrop &&other) noexcept
-		: _colorData(std::move(other._colorData)), _width(other._width), _height(other._height)
+	SvgBackDrop::SvgBackDrop(SvgBackDrop&& other) noexcept
+			: _colorData(std::move(other._colorData)), _width(other._width), _height(other._height)
 	{
 	}
 
-	SvgBackDrop &SvgBackDrop::operator=(SvgBackDrop &&other) noexcept
+	SvgBackDrop& SvgBackDrop::operator=(SvgBackDrop&& other) noexcept
 	{
 		_height = other._height;
 		_width = other._width;
@@ -112,7 +114,7 @@ namespace Elpida
 	}
 
 	SvgBackDrop::SvgBackDrop()
-		: _width(0), _height(0)
+			: _width(0), _height(0)
 	{
 	}
 

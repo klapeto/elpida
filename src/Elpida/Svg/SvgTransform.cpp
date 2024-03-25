@@ -82,7 +82,7 @@ namespace Elpida
 					{
 						double t[2];
 						ParseTransformationValues(stream, t);
-						transform.SetTranslation(t[0], t[1]);
+						transform.Translate(t[0], t[1]);
 					}
 					break;
 				case 's':

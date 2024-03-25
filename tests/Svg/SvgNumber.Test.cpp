@@ -40,7 +40,8 @@ TEST(SvgNumberTests, ParseNumberSuccess)
     EXPECT_EQ(SvgNumber::ParseNumber("-6543132"), -6543132);
     EXPECT_EQ(SvgNumber::ParseNumber("-1.35e+2"), -135);
     EXPECT_EQ(SvgNumber::ParseNumber("+1.35e+2"), 135);
-    EXPECT_EQ(SvgNumber::ParseNumber("1.35e-2"), 1.35 * 1 / 100);
+    EXPECT_EQ(SvgNumber::ParseNumber("1.35e-2"), 1.35 * 1.0 / 100);
+    EXPECT_EQ(SvgNumber::ParseNumber("-1.7e-4"), -0.00017);
 }
 
 
