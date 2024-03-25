@@ -105,12 +105,14 @@ namespace Elpida
 			                         ? viewBox
 			                         : SvgViewBox(0, 0, calculatedViewPort.GetWidth(), calculatedViewPort.GetHeight());
 
-		SvgBackDrop backDrop(calculatedViewPort.GetWidth(), calculatedViewPort.GetHeight());
+		SvgBackDrop backDrop(calculatedViewPort.GetWidth() * scale, calculatedViewPort.GetHeight() * scale);
 
 		auto calculated = rootSvgElement.CalculateShape(document, calculationContext);
 
 		auto transform = CalculateTransform(calculatedViewPort, calculatedViewBox,
 		                                    rootSvgElement.GetPreserveAspectRatio());
+
+		transform.Scale(scale,scale);
 
 		calculated.Transform(transform);
 

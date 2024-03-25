@@ -27,10 +27,10 @@ namespace Elpida
 
 		auto& bounds = polygon.GetBounds();
 
-		const std::size_t startY = std::max(0ul, static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinY()))));
-		const std::size_t startX = std::max(0ul, static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinX()))));
-		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(startX + bounds.GetWidth())));
-		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(startY + bounds.GetHeight())));
+		const std::size_t startY = static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinY())));
+		const std::size_t startX = static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinX())));
+		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(bounds.GetMaxX())));
+		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetMaxY())));
 
 		for (std::size_t y = startY; y < height; ++y)
 		{
@@ -68,8 +68,8 @@ namespace Elpida
 
 		const auto startX = std::max(0ul, std::min(x, _width));
 		const auto startY = std::max(0ul, std::min(y, _height));
-		const auto width = std::min(_width, other.GetWidth() + x);
-		const auto height = std::min(_height, other.GetHeight() + y);
+		const auto width = std::min(_width, x + other.GetWidth());
+		const auto height = std::min(_height, y+ other.GetHeight());
 
 		auto& colorData = other.GetColorData();
 		const auto sourceWidth = other.GetWidth();
