@@ -11,6 +11,7 @@
 #include <cstring>
 #include <Elpida/Svg/SvgPolygon.hpp>
 #include <Elpida/Svg/SvgCalculatedPaint.hpp>
+#include <thread>
 
 namespace Elpida
 {
@@ -32,6 +33,47 @@ namespace Elpida
 		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(bounds.GetMaxX())));
 		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetMaxY())));
 
+		DrawPolygonMultiThreaded(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width,
+				height);
+	}
+
+	void SvgBackDrop::DrawPolygonMultiThreaded(const SvgPolygon& polygon, const SvgCalculatedPaint& paint,
+			SvgFillRule& fillRule,
+			const SvgBlender& blender, const SvgCompositor& compositor, const SvgSuperSampler& superSampler,
+			const size_t startY, const size_t startX, const size_t width, const size_t height)
+	{
+		auto threadCount = std::min(20ul, height);
+		std::size_t linesPerThread = ceil(height / static_cast<double>(threadCount));
+
+		std::vector<std::thread> threads;
+		threads.reserve(threadCount);
+		for (std::size_t t = 0, h = startY; t < threadCount; ++t, h += linesPerThread)
+		{
+			auto thisEndLine = std::min(h + linesPerThread, height);
+			threads.emplace_back([&](std::size_t thisStartY, std::size_t thisEndY)
+			{
+				DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, thisStartY, startX, width, thisEndY);
+			}, h, thisEndLine);
+		}
+
+		for (auto& th: threads)
+		{
+			th.join();
+		}
+	}
+
+	void SvgBackDrop::DoDrawPolygon(
+			const SvgPolygon& polygon,
+			const SvgCalculatedPaint& paint,
+			SvgFillRule fillRule,
+			const SvgBlender& blender,
+			const SvgCompositor& compositor,
+			const SvgSuperSampler& superSampler,
+			const size_t startY,
+			const size_t startX,
+			const size_t width,
+			const size_t height)
+	{
 		for (std::size_t y = startY; y < height; ++y)
 		{
 			for (std::size_t x = startX; x < width; ++x)
@@ -69,7 +111,7 @@ namespace Elpida
 		const auto startX = std::max(0ul, std::min(x, _width));
 		const auto startY = std::max(0ul, std::min(y, _height));
 		const auto width = std::min(_width, x + other.GetWidth());
-		const auto height = std::min(_height, y+ other.GetHeight());
+		const auto height = std::min(_height, y + other.GetHeight());
 
 		auto& colorData = other.GetColorData();
 		const auto sourceWidth = other.GetWidth();

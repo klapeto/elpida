@@ -20,7 +20,7 @@ namespace Elpida
 	class SvgRasterizer
 	{
 	public:
-		SvgBackDrop Rasterize(const SvgDocument& document, double scale = 1.0, std::size_t subSamples = 8);
+		SvgBackDrop Rasterize(const SvgDocument& document, double scale = 1.0, std::size_t subSamples = 16);
 	private:
 		void RasterizeShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, std::size_t subSamples);
 		void RasterizeShapeToBackdrop(SvgBackDrop& targetBackDrop, const SvgCalculatedShape &shape, std::size_t subSamples);

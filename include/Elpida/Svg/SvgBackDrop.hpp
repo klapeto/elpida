@@ -12,6 +12,9 @@
 #include "SvgColor.hpp"
 #include "SvgCompositingMode.hpp"
 #include "SvgFillRule.hpp"
+#include "SvgBlender.hpp"
+#include "SvgCompositor.hpp"
+#include "SvgSuperSampler.hpp"
 
 namespace Elpida
 {
@@ -60,6 +63,20 @@ namespace Elpida
 		std::vector<SvgColor> _colorData;
 		std::size_t _width;
 		std::size_t _height;
+
+		void DoDrawPolygon(const SvgPolygon& polygon,
+				const SvgCalculatedPaint& paint,
+				SvgFillRule fillRule,
+				const Elpida::SvgBlender& blender,
+				const Elpida::SvgCompositor& compositor,
+				const Elpida::SvgSuperSampler& superSampler,
+				std::size_t startY,
+				std::size_t startX,
+				std::size_t width,
+				std::size_t height);
+		void DrawPolygonMultiThreaded(const SvgPolygon& polygon, const SvgCalculatedPaint& paint, SvgFillRule& fillRule,
+				const SvgBlender& blender, const SvgCompositor& compositor, const SvgSuperSampler& superSampler,
+				const size_t startY, const size_t startX, const size_t width, const size_t height);
 	};
 } // Elpida
 
