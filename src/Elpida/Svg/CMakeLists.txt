@@ -52,6 +52,7 @@ add_library(elpida-svg
         SvgBlendMode.cpp
         SvgCircle.cpp
         SvgCompositingMode.cpp
+        SvgEllipse.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

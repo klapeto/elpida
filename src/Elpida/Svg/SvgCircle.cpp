@@ -13,31 +13,35 @@ namespace Elpida
 	{
 		auto& viewBox = calculationContext.GetViewBox();
 		auto cx = _cx.CalculateValue(calculationContext, viewBox.GetMinX(), viewBox.GetWidth());
-		auto cy = _cy.CalculateValue(calculationContext, viewBox.GetMinY(),viewBox.GetHeight());
+		auto cy = _cy.CalculateValue(calculationContext, viewBox.GetMinY(), viewBox.GetHeight());
 		auto r = _r.CalculateValue(calculationContext, viewBox.GetLength());
 
-		SvgPathGenerator generator;
-		generator.MoveTo(SvgPoint(cx + r, cy));
+		if (r > 0.0)
+		{
+			SvgPathGenerator generator;
+			generator.MoveTo(SvgPoint(cx + r, cy));
 
-		auto kappa = SvgPathGenerator::Kappa;
-		generator.CubicBezTo(SvgPoint(cx + r, cy + r * kappa),
-				SvgPoint(cx + r * kappa, cy + r),
-				SvgPoint(cx, cy + r));
+			auto kappa = SvgPathGenerator::Kappa;
+			generator.CubicBezTo(SvgPoint(cx + r, cy + r * kappa),
+					SvgPoint(cx + r * kappa, cy + r),
+					SvgPoint(cx, cy + r));
 
-		generator.CubicBezTo(SvgPoint(cx - r * kappa, cy + r),
-				SvgPoint(cx - r, cy + r * kappa),
-				SvgPoint(cx - r, cy));
+			generator.CubicBezTo(SvgPoint(cx - r * kappa, cy + r),
+					SvgPoint(cx - r, cy + r * kappa),
+					SvgPoint(cx - r, cy));
 
-		generator.CubicBezTo(SvgPoint(cx - r, cy - r * kappa),
-				SvgPoint(cx - r * kappa, cy - r),
-				SvgPoint(cx, cy - r));
+			generator.CubicBezTo(SvgPoint(cx - r, cy - r * kappa),
+					SvgPoint(cx - r * kappa, cy - r),
+					SvgPoint(cx, cy - r));
 
-		generator.CubicBezTo(SvgPoint(cx + r * kappa, cy - r),
-				SvgPoint(cx + r, cy - r * kappa),
-				SvgPoint(cx + r, cy));
+			generator.CubicBezTo(SvgPoint(cx + r * kappa, cy - r),
+					SvgPoint(cx + r, cy - r * kappa),
+					SvgPoint(cx + r, cy));
 
-		generator.CommitPath(true);
-		return std::move(generator.GetPaths());
+			generator.CommitPath(true);
+			return std::move(generator.GetPaths());
+		}
+		return {};
 	}
 
 	SvgCircle::SvgCircle(const XmlMap& properties)

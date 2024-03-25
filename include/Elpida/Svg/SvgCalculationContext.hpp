@@ -50,10 +50,19 @@ namespace Elpida
 
 		SvgCalculationContext(double rootFontSize, double dpi);
 	private:
-		std::stack<SvgViewBox> _viewBox;
-		std::stack<SvgCalculatedViewPort> _viewPort;
-		std::vector<SvgTransform> _transforms;
-		std::unordered_map<std::string_view, std::stack<std::string>> _stackedValues;
+
+		template<typename T>
+		class StackedValue
+		{
+		public:
+			T value;
+			std::size_t index;
+		};
+
+		std::stack<StackedValue<SvgViewBox>> _viewBox;
+		std::stack<StackedValue<SvgCalculatedViewPort>> _viewPort;
+		std::vector<StackedValue<SvgTransform>> _transforms;
+		std::unordered_map<std::string_view, std::stack<StackedValue<std::string>>> _stackedValues;
 		double _rootFontSize;
 		double _dpi;
 		std::size_t _currentDepth;

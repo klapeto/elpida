@@ -29,8 +29,8 @@ namespace Elpida
 
 		const std::size_t startY = std::max(0.0, std::floor(bounds.GetMinY()));
 		const std::size_t startX = std::max(0.0, std::floor(bounds.GetMinX()));
-		const std::size_t width = std::min(static_cast<double>(_width), std::ceil(bounds.GetMinX() + bounds.GetMaxX()));
-		const std::size_t height = std::min(static_cast<double>(_height), std::ceil(bounds.GetMinY() + bounds.GetMaxY()));
+		const std::size_t width = std::min(static_cast<double>(_width), std::ceil(startX + bounds.GetWidth()));
+		const std::size_t height = std::min(static_cast<double>(_height), std::ceil(startY + bounds.GetHeight()));
 
 		for (std::size_t y = startY; y < height; ++y)
 		{

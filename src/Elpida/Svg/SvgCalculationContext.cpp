@@ -17,84 +17,85 @@ namespace Elpida
 
 	const SvgViewBox& SvgCalculationContext::GetViewBox() const
 	{
-		return _viewBox.top();
+		return _viewBox.top().value;
 	}
 
 	void SvgCalculationContext::Push(const SvgElement& element)
 	{
+		_currentDepth++;
+
 		for (auto& pair : element.GetProperties())
 		{
 			auto& stack = _stackedValues[pair.first];
-			stack.push(pair.second);
+			stack.push({pair.second, _currentDepth});
 		}
 
 		if (!element.GetTransform().IsIdentity())
 		{
-			_transforms.push_back(element.GetTransform());
+			_transforms.push_back({element.GetTransform(), _currentDepth});
 		}
 
 		if (element.GetName() == "svg")
 		{
 			SvgViewPort viewPort(element.GetProperties());
 
-			_viewPort.emplace(
+			_viewPort.push({ SvgCalculatedViewPort(
 					viewPort.GetX().CalculateValue(*this, GetViewPort().GetWidth()),
 					viewPort.GetY().CalculateValue(*this, GetViewPort().GetHeight()),
 					viewPort.GetWidth().CalculateValue(*this, GetViewPort().GetWidth()),
-					viewPort.GetHeight().CalculateValue(*this, GetViewPort().GetHeight())
+					viewPort.GetHeight().CalculateValue(*this, GetViewPort().GetHeight())),
+							 _currentDepth }
 			);
 
 			auto viewBox = SvgViewBox(element.GetProperties().GetValue("viewBox"));
 			if (viewBox.IsValid())
 			{
-				_viewBox.push(viewBox);
+				_viewBox.push({viewBox, _currentDepth});
 			}
 			else
 			{
-				auto& latestViewPort =_viewPort.top();
-				_viewBox.emplace(latestViewPort.GetX(), latestViewPort.GetY(), latestViewPort.GetWidth(), latestViewPort.GetHeight());
+				auto& latestViewPort =_viewPort.top().value;
+				_viewBox.push({SvgViewBox(latestViewPort.GetX(), latestViewPort.GetY(), latestViewPort.GetWidth(), latestViewPort.GetHeight()), _currentDepth});
 			}
 
 		}
-
-		_currentDepth++;
 	}
 
 	SvgCalculationContext::SvgCalculationContext(double rootFontSize, double dpi)
 			:_rootFontSize(rootFontSize), _dpi(dpi), _currentDepth(1)
 	{
 		auto& stack = _stackedValues["font-size"];
-		stack.push(std::to_string(rootFontSize));
-		_viewBox.emplace(0, 0, 0, 0);
-		_viewPort.emplace(0, 0, 300, 150);
+		stack.push({std::to_string(rootFontSize), _currentDepth});
+		_viewBox.push({SvgViewBox(0, 0, 0, 0), _currentDepth});
+		_viewPort.push({SvgCalculatedViewPort(0, 0, 300, 150), _currentDepth});
 	}
 
 	void SvgCalculationContext::Pop()
 	{
+		_currentDepth--;
 		for (auto& pair : _stackedValues)
 		{
 			auto& stack = pair.second;
 
-			while (stack.size() > _currentDepth - 1)
+			while (!stack.empty() && stack.top().index > _currentDepth)
 			{
 				stack.pop();
 			}
 		}
-		while (_viewBox.size() > _currentDepth - 1)
+		while (!_viewBox.empty() && _viewBox.top().index > _currentDepth)
 		{
 			_viewBox.pop();
 		}
 
-		while (_transforms.size() > _currentDepth - 1)
+		while (!_transforms.empty() && _transforms.back().index > _currentDepth)
 		{
 			_transforms.pop_back();
 		}
 
-		while (_viewPort.size() > _currentDepth - 1)
+		while (!_viewPort.empty() && _viewPort.top().index > _currentDepth)
 		{
 			_viewPort.pop();
 		}
-		_currentDepth--;
 	}
 
 	std::string_view SvgCalculationContext::GetValue(const std::string_view& name) const
@@ -104,7 +105,7 @@ namespace Elpida
 		{
 			auto& stack = (*itr).second;
 			if (stack.empty()) return "";
-			return stack.top();
+			return stack.top().value;
 		}
 		return "";
 	}
@@ -118,7 +119,7 @@ namespace Elpida
 
 	const SvgCalculatedViewPort& SvgCalculationContext::GetViewPort() const
 	{
-		return _viewPort.top();
+		return _viewPort.top().value;
 	}
 
 	double SvgCalculationContext::GetRootFontSize() const
@@ -132,7 +133,7 @@ namespace Elpida
 
 		for (auto& thisTransform : _transforms)
 		{
-			transform.PreMultiply(thisTransform);
+			transform.Multiply(thisTransform.value);
 		}
 
 		return transform;

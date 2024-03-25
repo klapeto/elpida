@@ -87,7 +87,7 @@ namespace Elpida
 		const SvgLinearEquation* normalA = nullptr;
 		const SvgLinearEquation* normalB = nullptr;
 
-		for (std::size_t i = 0; i < _stops.size(); i++)
+		for (std::size_t i = 0; i < _stops.size() - 1; i++)
 		{
 			normalA = &_stopNormals[i];
 			normalB = &_stopNormals[i + 1];

@@ -52,6 +52,14 @@ namespace Elpida
 			_shapeType = SvgShapeType::Path;
 			_shape = SvgPath(_properties);
 		}
+		else if (_name == "g")
+		{
+			_shapeType = SvgShapeType::Group;
+		}
+		else if (_name == "svg")
+		{
+			_shapeType = SvgShapeType::Svg;
+		}
 		else if (_name == "rect")
 		{
 			_shapeType = SvgShapeType::Rectangle;
@@ -62,13 +70,10 @@ namespace Elpida
 			_shapeType = SvgShapeType::Circle;
 			_shape = SvgCircle(_properties);
 		}
-		else if (_name == "svg")
+		else if (_name == "ellipse")
 		{
-			_shapeType = SvgShapeType::Svg;
-		}
-		else if (_name == "g")
-		{
-			_shapeType = SvgShapeType::Group;
+			_shapeType = SvgShapeType::Ellipse;
+			_shape = SvgEllipse(_properties);
 		}
 
 		auto& defs = document._defs;
@@ -109,6 +114,10 @@ namespace Elpida
 			break;
 		case SvgShapeType::Circle:
 			paths = std::get<SvgCircle>(_shape).CalculatePaths(calculationContext);
+			break;
+		case SvgShapeType::Ellipse:
+			paths = std::get<SvgEllipse>(_shape).CalculatePaths(calculationContext);
+			break;
 		default:
 			break;
 		}

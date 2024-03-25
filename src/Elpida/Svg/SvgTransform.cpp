@@ -60,7 +60,7 @@ namespace Elpida
 					{
 						double t[1];
 						ParseTransformationValues(stream, t);
-						transform.SetRotation(t[0]);
+						transform.RotateDegrees(t[0]);
 					}
 					break;
 				case 'm':

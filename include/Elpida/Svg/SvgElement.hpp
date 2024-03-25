@@ -13,6 +13,7 @@
 #include "Elpida/Svg/SvgTransform.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
 #include "Elpida/Svg/SvgCircle.hpp"
+#include "SvgEllipse.hpp"
 
 #include <variant>
 
@@ -28,7 +29,8 @@ namespace Elpida
 		Group,
 		Path,
 		Rectangle,
-		Circle
+		Circle,
+		Ellipse
 	};
 
 	class SvgElement
@@ -111,7 +113,7 @@ namespace Elpida
 		double _opacity;
 		bool _visible;
 		SvgShapeType _shapeType;
-		std::variant<std::monostate, SvgPath, SvgRectangle, SvgCircle> _shape;
+		std::variant<std::monostate, SvgPath, SvgRectangle, SvgCircle, SvgEllipse> _shape;
 
 	protected:
 		template<typename T, typename TConverter>
