@@ -32,6 +32,9 @@ namespace Elpida
 		const std::vector<SvgCalculatedShape>& GetChildren() const;
 
 		[[nodiscard]]
+		std::vector<SvgCalculatedShape>& GetChildren();
+
+		[[nodiscard]]
 		const SvgBounds& GetBounds() const;
 
 		[[nodiscard]]
@@ -39,6 +42,13 @@ namespace Elpida
 
 		[[nodiscard]]
 		const std::optional<SvgCalculatedStroke>& GetStroke() const;
+
+		[[nodiscard]]
+		std::optional<SvgCalculatedFill>& GetFill();
+
+		[[nodiscard]]
+		std::optional<SvgCalculatedStroke>& GetStroke();
+
 
 		[[nodiscard]]
 		double GetOpacity() const;

@@ -14,8 +14,8 @@
 
 namespace Elpida
 {
-	static SvgTransform CalculateTransform(const SvgCalculatedViewPort &viewPort, const SvgViewBox &viewBox,
-	                                       const SvgPreserveAspectRatio &preserveAspectRatio)
+	static SvgTransform CalculateTransform(const SvgCalculatedViewPort& viewPort, const SvgViewBox& viewBox,
+			const SvgPreserveAspectRatio& preserveAspectRatio)
 	{
 		if (!viewBox.IsValid()) return {};
 		auto vbX = viewBox.GetMinX();
@@ -87,32 +87,32 @@ namespace Elpida
 	}
 
 
-	SvgBackDrop SvgRasterizer::Rasterize(const SvgDocument &document, double scale, std::size_t subSamples)
+	SvgBackDrop SvgRasterizer::Rasterize(const SvgDocument& document, double scale, std::size_t subSamples)
 	{
-		auto &rootSvgElement = document.GetElement();
-		auto &viewBox = rootSvgElement.GetViewBox();
-		auto &viewPort = rootSvgElement.GetViewPort();
+		auto& rootSvgElement = document.GetElement();
+		auto& viewBox = rootSvgElement.GetViewBox();
+		auto& viewPort = rootSvgElement.GetViewPort();
 
 		SvgCalculationContext calculationContext(1.0, 96.0);
 
 		auto calculatedViewPort = SvgCalculatedViewPort(
-			0,
-			0,
-			viewPort.GetWidth().CalculateValue(calculationContext, 300.0),
-			viewPort.GetHeight().CalculateValue(calculationContext, 150.0));
+				0,
+				0,
+				viewPort.GetWidth().CalculateValue(calculationContext, 300.0),
+				viewPort.GetHeight().CalculateValue(calculationContext, 150.0));
 
 		auto calculatedViewBox = viewBox.IsValid()
-			                         ? viewBox
-			                         : SvgViewBox(0, 0, calculatedViewPort.GetWidth(), calculatedViewPort.GetHeight());
+								 ? viewBox
+								 : SvgViewBox(0, 0, calculatedViewPort.GetWidth(), calculatedViewPort.GetHeight());
 
 		SvgBackDrop backDrop(calculatedViewPort.GetWidth() * scale, calculatedViewPort.GetHeight() * scale);
 
 		auto calculated = rootSvgElement.CalculateShape(document, calculationContext);
 
 		auto transform = CalculateTransform(calculatedViewPort, calculatedViewBox,
-		                                    rootSvgElement.GetPreserveAspectRatio());
+				rootSvgElement.GetPreserveAspectRatio());
 
-		transform.Scale(scale,scale);
+		transform.Scale(scale, scale);
 
 		calculated.Transform(transform);
 
@@ -121,34 +121,82 @@ namespace Elpida
 		return backDrop;
 	}
 
-	void SvgRasterizer::RasterizeShapeToBackdrop(SvgBackDrop &targetBackDrop, const SvgCalculatedShape &shape, std::size_t subSamples)
+	SvgRasterizer::RasterizedShape SvgRasterizer::RasterizeShape(SvgCalculatedShape& shape, std::size_t subSamples)
 	{
+		SvgPolygon fillPolygon;
+		SvgPolygon strokePolygon;
+		SvgBounds bounds;
+
 		if (shape.GetFill().has_value())
 		{
-			auto polygon = SvgShapePolygonizer::Polygonize(shape);
-			targetBackDrop.Draw(polygon, shape.GetFill().value(), shape.GetFill()->GetFillRule(),
-			                    SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+			fillPolygon = SvgShapePolygonizer::Polygonize(shape);
+			bounds = fillPolygon.GetBounds();
 		}
 
 		if (shape.GetStroke().has_value())
 		{
-			auto polygon = SvgShapePolygonizer::PolygonizeStroke(shape);
-			targetBackDrop.Draw(polygon, shape.GetStroke().value(), SvgFillRule::NonZero, SvgBlendMode::Normal,
-			                    SvgCompositingMode::SourceOver, subSamples);
+			strokePolygon = SvgShapePolygonizer::PolygonizeStroke(shape);
+			bounds.Merge(strokePolygon.GetBounds());
+		}
+		std::vector<RasterizedShape> rasterizedChildren;
+		auto& children = shape.GetChildren();
+		rasterizedChildren.reserve(children.size());
+		for (auto& child: shape.GetChildren())
+		{
+			rasterizedChildren.push_back(RasterizeShape(child, subSamples));
 		}
 
-		for (auto &child: shape.GetChildren())
+		for (auto& rasterizedChild: rasterizedChildren)
 		{
-			RasterizeShape(targetBackDrop, child, subSamples);
+			bounds.Merge(rasterizedChild.GetActualBounds());
 		}
+
+		SvgBackDrop isolatedBackDrop(std::ceil(bounds.GetWidth()), std::ceil(bounds.GetHeight()));
+
+		SvgTransform transform;
+		transform.Translate(-std::max(0.0, std::floor(bounds.GetMinX())), -std::max(0.0, std::floor(bounds.GetMinY())));
+
+		strokePolygon.Transform(transform);
+		fillPolygon.Transform(transform);
+
+		if (!fillPolygon.GetEdges().empty())
+		{
+			shape.GetFill()->Transform(transform);
+			isolatedBackDrop.Draw(fillPolygon, shape.GetFill().value(), shape.GetFill()->GetFillRule(),
+					SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+		}
+
+		if (!strokePolygon.GetEdges().empty())
+		{
+			shape.GetStroke()->Transform(transform);
+			isolatedBackDrop.Draw(strokePolygon, shape.GetStroke().value(), SvgFillRule::NonZero,
+					SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+		}
+
+		for (std::size_t i = 0; i < rasterizedChildren.size(); ++i)
+		{
+			auto& rasterized = rasterizedChildren[i];
+			auto& child = children[i];
+
+			auto& childBounds = rasterized.GetActualBounds();
+			isolatedBackDrop.Draw(rasterized.GetBackdrop(),
+					std::max(0.0, childBounds.GetMinX() - std::max(0.0, bounds.GetMinX())),
+					std::max(0.0, childBounds.GetMinY() - std::max(0.0, bounds.GetMinY())),
+					child.GetOpacity(),
+					child.BlendMode(),
+					child.CompositingMode());
+		}
+
+		return RasterizedShape(std::move(isolatedBackDrop), bounds);
 	}
 
-	void SvgRasterizer::RasterizeShape(SvgBackDrop &backDrop, const SvgCalculatedShape &shape, std::size_t subSamples)
+	void SvgRasterizer::RasterizeShape(SvgBackDrop& backDrop, SvgCalculatedShape& shape, std::size_t subSamples)
 	{
-		SvgBackDrop isolatedBackDrop(backDrop.GetWidth(), backDrop.GetHeight());
-
-		RasterizeShapeToBackdrop(isolatedBackDrop, shape, subSamples);
-
-		backDrop.Draw(isolatedBackDrop, 0, 0, shape.GetOpacity(), shape.BlendMode(), shape.CompositingMode());
+		auto childRasterizedShape = RasterizeShape(shape, subSamples);
+		auto& childBounds = childRasterizedShape.GetActualBounds();
+		backDrop.Draw(childRasterizedShape.GetBackdrop(), std::max(0.0, childBounds.GetMinX()), std::max(0.0, childBounds.GetMinY()),
+				shape.GetOpacity(),
+				shape.BlendMode(),
+				shape.CompositingMode());
 	}
 } // Elpida
