@@ -56,9 +56,6 @@ namespace Elpida
 		SvgPoint _previousControlPointB;
 		bool _closed;
 
-		static SvgBounds CalculateBounds(const SvgPoint& a, const SvgPoint& b, const SvgPoint& c, const SvgPoint& d);
-		static void AddBezierPoints(double aX, double bX, double cX, double dX, double& boundMin,double& boundMax);
-		static double EvaluateBezier(double t, double p0, double p1, double p2, double p3);
 		void LineTo(const SvgPoint& start, const SvgPoint& end);
 	};
 } // Elpida

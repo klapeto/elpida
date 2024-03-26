@@ -640,8 +640,6 @@ namespace Elpida
 
 	SvgPolygon SvgShapePolygonizer::Polygonize(const SvgCalculatedShape& shape)
 	{
-		constexpr double scale = 1.0;
-
 		std::vector<SvgEdge> edges;
 
 		for (auto& pathInstance : shape.GetPaths())
@@ -649,17 +647,17 @@ namespace Elpida
 			std::vector<SvgRasterizerPoint> points;
 
 			auto& curves = pathInstance.GetCurves();
-			auto startPoint = pathInstance.GetStartPoint() * scale;
+			auto startPoint = pathInstance.GetStartPoint();
 			// Flatten path
 			AddPoint(points, startPoint, PointFlags::NONE);
 
 			for (auto& curve : curves)
 			{
-				auto endPoint = curve.GetEnd() * scale;
+				auto endPoint = curve.GetEnd();
 				FlattenCubicBez(points,
 						startPoint,
-						curve.GetStartControl() * scale,
-						curve.GetEndControl() * scale,
+						curve.GetStartControl(),
+						curve.GetEndControl(),
 						endPoint,
 						0,
 						PointFlags::NONE);

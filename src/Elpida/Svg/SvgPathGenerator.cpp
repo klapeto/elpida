@@ -22,25 +22,20 @@ namespace Elpida
 
 	static double VectorMagnitude(const double x, const double y)
 	{
-		return sqrt(x * x + y * y);
+		return std::sqrt(x * x + y * y);
 	}
 
-	static double VectorDotProduct(const double x1, const double y1, const double x2, const double y2)
+	static double VectorCosTheta(const double ux, const double uy, const double vx, const double vy)
 	{
-		return x1 * x2 + y1 * y2;
+		return (ux * vx + uy * vy) / (VectorMagnitude(ux, uy) * VectorMagnitude(vx, vy));
 	}
 
-	static double VectorCosTheta(const double x1, const double y1, const double x2, const double y2)
+	static double VectorAngle(const double ux, const double uy, const double vx, const double vy)
 	{
-		return VectorDotProduct(x1, y2, x2, y2) / (VectorMagnitude(x1, y1) * VectorMagnitude(x2, y2));
-	}
-
-	static double VectorAngle(const double x1, const double y1, const double x2, const double y2)
-	{
-		double res = VectorCosTheta(x1, y1, x2, y2);
+		double res = VectorCosTheta(ux, uy, vx, vy);
 		if (res < -1.0) res = -1.0;
 		if (res > 1.0) res = 1.0;
-		return (x1 * y2 < y1 * x2 ? -1.0 : 1.0) * acos(res);
+		return ((ux * vy < uy * vx) ? -1.0 : 1.0) * std::acos(res);
 	}
 
 	static void ParseAllNumbers(CharacterStream& stream, std::vector<double>& currentNumbers)
@@ -263,8 +258,8 @@ namespace Elpida
 							currentArguments[i],
 							currentArguments[i + 1],
 							currentArguments[i + 2],
-							fabs(currentArguments[i + 3]) > 1e-6,
-							fabs(currentArguments[i + 4]) > 1e-6,
+							std::abs(currentArguments[i + 3]) > 1e-6,
+							std::abs(currentArguments[i + 4]) > 1e-6,
 							SvgPoint(currentArguments[i + 5], currentArguments[i + 6]),
 							relative);
 					}
@@ -404,8 +399,8 @@ namespace Elpida
 		SvgPoint endpoint,
 		const bool relative)
 	{
-		auto rx = fabs(radiusX); // y radius
-		auto ry = fabs(radiusY); // x radius
+		auto rx = std::abs(radiusX); // y radius
+		auto ry = std::abs(radiusY); // x radius
 		const auto rotx = xAxisRotation / 180.0 * std::numbers::pi; // x rotation angle
 		const auto fa = largeArc; // Large arc
 		const auto fs = sweep; // Sweep direction
@@ -417,7 +412,7 @@ namespace Elpida
 
 		double dx = _currentPoint.GetX() - endpoint.GetX();
 		double dy = _currentPoint.GetY() - endpoint.GetY();
-		double distance = sqrt(dx * dx + dy * dy);
+		double distance = std::sqrt(dx * dx + dy * dy);
 		if (distance < 1e-6 || rx < 1e-6 || ry < 1e-6)
 		{
 			// The arc degenerates to a line
@@ -427,8 +422,8 @@ namespace Elpida
 			return;
 		}
 
-		const auto sinrx = sin(rotx);
-		const auto cosrx = cos(rotx);
+		const auto sinrx = std::sin(rotx);
+		const auto cosrx = std::cos(rotx);
 
 		// Convert to center point parameterization.
 		// http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
@@ -438,7 +433,7 @@ namespace Elpida
 		distance = Square(x1p) / Square(rx) + Square(y1p) / Square(ry);
 		if (distance > 1)
 		{
-			distance = sqrt(distance);
+			distance = std::sqrt(distance);
 			rx *= distance;
 			ry *= distance;
 		}
@@ -454,7 +449,7 @@ namespace Elpida
 
 		if (sb > 0.0)
 		{
-			s = sqrt(sa / sb);
+			s = std::sqrt(sa / sb);
 		}
 
 		if (fa == fs)
@@ -494,7 +489,7 @@ namespace Elpida
 
 		// Split arc into max 90 degree segments.
 		// The loop assumes an iteration per end point (including start and end), this +1.
-		const auto ndivs = static_cast<std::size_t>(fabs(da) / (std::numbers::pi * 0.5) + 1.0);
+		const auto ndivs = static_cast<std::size_t>(std::abs(da) / (std::numbers::pi * 0.5) + 1.0);
 		auto hda = (da / static_cast<double>(ndivs)) / 2.0;
 
 		// Fix for ticket #179: division by 0: avoid cotangens around 0 (infinite)
@@ -504,10 +499,10 @@ namespace Elpida
 		}
 		else
 		{
-			hda = (1.0 - cos(hda)) / sin(hda);
+			hda = (1.0 - std::cos(hda)) / std::sin(hda);
 		}
 
-		double kappa = fabs(4.0 / 3.0 * hda);
+		double kappa = std::abs(4.0 / 3.0 * hda);
 
 		if (da < 0.0)
 		{
@@ -526,8 +521,8 @@ namespace Elpida
 		{
 			const double a = a1 + da * (static_cast<double>(i) / static_cast<double>(ndivs));
 
-			dx = cos(a);
-			dy = sin(a);
+			dx = std::cos(a);
+			dy = std::sin(a);
 
 			transform.ApplyToPoint(x, y, dx * rx, dy * ry); // position
 			transform.ApplyToVector(tanx, tany, -dy * rx * kappa, dx * ry * kappa); // tangent
