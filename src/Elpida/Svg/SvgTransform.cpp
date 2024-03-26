@@ -83,9 +83,22 @@ namespace Elpida
 						throw ParseException("Unexpected character: expected 'matrix'");
 					}
 					{
-						double t[1];
-						ParseTransformationValues(stream, t);
-						transform.RotateDegrees(t[0]);
+						double angle;
+						if (!ParseNextNumber(stream, angle))
+						{
+							throw ParseException("Unexpected Eof: Expected rotate(angle)");
+						}
+						double x, y;
+						bool translate = ParseNextNumber(stream, x) && ParseNextNumber(stream, y);
+						if (translate)
+						{
+							transform.Translate(-x, -y);
+						}
+						transform.RotateDegrees(angle);
+						if (translate)
+						{
+							transform.Translate(x, y);
+						}
 					}
 					break;
 				case 'm':
