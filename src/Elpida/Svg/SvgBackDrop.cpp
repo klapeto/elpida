@@ -32,6 +32,7 @@ namespace Elpida
 		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(bounds.GetMaxX())));
 		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetMaxY())));
 
+		//DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height);
 		DrawPolygonMultiThreaded(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height);
 	}
 
@@ -114,6 +115,7 @@ namespace Elpida
 		auto& colorData = other.GetColorData();
 		const auto sourceWidth = other.GetWidth();
 
+		//DoDrawOther(opacity, blender, compositor, startX, startY, width, height, 0, colorData, sourceWidth);
 		DoDrawOtherMultiThreaded(opacity, blender, compositor, startX, startY, width, height, colorData, sourceWidth);
 	}
 

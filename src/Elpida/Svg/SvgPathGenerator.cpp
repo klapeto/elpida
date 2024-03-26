@@ -284,6 +284,8 @@ namespace Elpida
 					_moveToPoint = _currentPoint;
 					stream.Next();
 					break;
+				case 0:
+					break;
 				default:
 					throw ParseException(c, "m,M,");
 				}

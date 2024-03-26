@@ -38,6 +38,31 @@ namespace Elpida
 		}
 	}
 
+	static bool ParseNextNumber(CharacterStream& stream, double& value)
+	{
+		std::size_t i = 0;
+		while (!stream.Eof())
+		{
+			stream.SkipSpace();
+			auto c = stream.Current();
+
+			if (c == ')')
+			{
+				return false;
+			}
+
+			if (c == '(' || c == ',')
+			{
+				stream.Next();
+			}
+			stream.SkipSpace();
+
+			value = SvgNumber::ParseNumber(stream);
+			return true;
+		}
+		return false;
+	}
+
 	SvgTransform::SvgTransform(const std::string_view view)
 		: t{1.0, 0.0, 0.0, 1.0, 0.0, 0.0}
 	{
@@ -80,9 +105,16 @@ namespace Elpida
 						throw ParseException("Unexpected character: expected 'translate'");
 					}
 					{
-						double t[2];
-						ParseTransformationValues(stream, t);
-						transform.Translate(t[0], t[1]);
+						double tx, ty;
+						if (!ParseNextNumber(stream, tx))
+						{
+							throw ParseException("Unexpected Eof: Expected translate(sx,sy)");
+						}
+						if (!ParseNextNumber(stream, ty))
+						{
+							ty = 0.0;
+						}
+						transform.SetTranslation(tx, ty);
 					}
 					break;
 				case 's':
@@ -97,9 +129,16 @@ namespace Elpida
 							throw ParseException("Unexpected character: expected 'scale'");
 						}
 
-						double t[2];
-						ParseTransformationValues(stream, t);
-						transform.SetScale(t[0], t[1]);
+						double sx, sy;
+						if (!ParseNextNumber(stream, sx))
+						{
+							throw ParseException("Unexpected Eof: Expected scale(sx,sy)");
+						}
+						if (!ParseNextNumber(stream, sy))
+						{
+							sy = sx;
+						}
+						transform.SetScale(sx, sy);
 					}
 					else if (stream.Current() == 'k')
 					{
