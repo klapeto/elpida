@@ -32,6 +32,7 @@ namespace Elpida
 	private:
 		SvgLinearEquation _equation;
 		std::vector<SvgLinearEquation> _stopNormals;
+		SvgTransform _transform;
 		double _length;
 
 		[[nodiscard]]

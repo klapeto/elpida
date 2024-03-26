@@ -49,13 +49,13 @@ namespace Elpida
 		[[nodiscard]]
 		SvgLinearEquation GetPerpendicularEquationFromPoint(const SvgPoint& point) const
 		{
-			if (_direction.GetX() == 0.0)
+			if (std::abs(_direction.GetX()) < SvgPoint::Tolerance)
 			{
 				// vertical line
 				return SvgLinearEquation(point, SvgPoint(_p1.GetX(), point.GetY()));
 			}
 
-			if (_direction.GetY() == 0.0)
+			if (std::abs(_direction.GetY()) < SvgPoint::Tolerance)
 			{
 				// horizontal line
 				return SvgLinearEquation(point, SvgPoint(point.GetX(), _p1.GetY()));
@@ -114,7 +114,7 @@ namespace Elpida
 		[[nodiscard]]
 		bool IsPointBehindLine(const SvgPoint& point, const SvgPoint& direction) const
 		{
-			if (_direction.GetX() == 0.0)
+			if (std::abs(_direction.GetX()) < SvgPoint::Tolerance)
 			{
 				// vertical line
 				const auto sign = GetSign(point.GetX() - _p1.GetX());
@@ -122,7 +122,7 @@ namespace Elpida
 				return sign != GetSign(direction.GetX());
 			}
 
-			if (_direction.GetY() == 0.0)
+			if (std::abs(_direction.GetY()) < SvgPoint::Tolerance)
 			{
 				// horzizontal line
 				const auto sign = GetSign(point.GetY() - _p1.GetY());
@@ -189,7 +189,7 @@ namespace Elpida
 		void Recalculate()
 		{
 			_direction = _p2 - _p1;
-			_a = _direction.GetX() != 0.0 ? (_direction.GetY()) / (_direction.GetX()) : 0.0;
+			_a = std::abs(_direction.GetX()) > SvgPoint::Tolerance ? (_direction.GetY()) / (_direction.GetX()) : 0.0;
 			_b = _p1.GetY() - _a * _p1.GetX();
 		}
 

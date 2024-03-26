@@ -32,9 +32,6 @@ namespace Elpida
 				data.y2.CalculateValue(calculationContext, bounds.GetHeight())
 		);
 
-		gradientPointA.Transform(gradient.GetGradientTransform());
-		gradientPointB.Transform(gradient.GetGradientTransform());
-
 		_equation = SvgLinearEquation(gradientPointA, gradientPointB);
 		_length = gradientPointA.GetDistance(gradientPointB);
 
@@ -54,16 +51,16 @@ namespace Elpida
 		}
 
 		_stopNormals.push_back(_equation.GetBNormal());
+		_transform.Inverse(gradient.GetGradientTransform());
 	}
 
 	void SvgCalculatedLinearGradient::Transform(const SvgTransform& transform)
 	{
-		_equation.Transform(transform);
-		for (auto& normal : _stopNormals)
-		{
-			normal.Transform(transform);
-		}
-		_length = _equation.GetP1().GetDistance(_equation.GetP2());
+		// since this will move the points further we need to perform the inverse transform to move them back to the circle space.
+		SvgTransform actualTransform;
+		actualTransform.Inverse(transform);
+
+		_transform.Multiply(actualTransform);
 	}
 
 	SvgColor SvgCalculatedLinearGradient::CalculateColor(const SvgPoint& point) const
@@ -87,19 +84,22 @@ namespace Elpida
 		const SvgLinearEquation* normalA = nullptr;
 		const SvgLinearEquation* normalB = nullptr;
 
+		auto actualPoint = point;
+		actualPoint.Transform(_transform);	// Transform the point to non transformed cicle space
+
 		for (std::size_t i = 0; i < _stops.size() - 1; i++)
 		{
 			normalA = &_stopNormals[i];
 			normalB = &_stopNormals[i + 1];
 
-			if (normalA->IsPointBehindLine(point, _equation.GetDirection()))
+			if (normalA->IsPointBehindLine(actualPoint, _equation.GetDirection()))
 			{
 				break;
 			}
 
 			stopA = &_stops[i];
 
-			if (normalB->IsPointBehindLine(point, _equation.GetDirection()))
+			if (normalB->IsPointBehindLine(actualPoint, _equation.GetDirection()))
 			{
 				stopB = &_stops[i + 1];
 				break;
@@ -120,7 +120,7 @@ namespace Elpida
 			return lastStop.GetColor().WithMultipliedAplha(lastStop.GetOpacity());
 		}
 
-		return CalculateColor(point, *stopA, *normalA, *stopB, *normalB);
+		return CalculateColor(actualPoint, *stopA, *normalA, *stopB, *normalB);
 	}
 
 	SvgColor SvgCalculatedLinearGradient::CalculateColor(const SvgPoint& point,
@@ -140,12 +140,15 @@ namespace Elpida
 
 	SvgColor SvgCalculatedLinearGradient::CalculateRepeat(const SvgPoint& point) const
 	{
+		auto actualPoint = point;
+		actualPoint.Transform(_transform);	// Transform the point to non transformed circle space
+
 		auto stopNormals = _stopNormals; // copy
 
 		SvgTransform transform;
 
-		const auto distanceFromA = stopNormals.front().GetDistanceFromPoint(point);
-		const auto distanceFromB = stopNormals.back().GetDistanceFromPoint(point);
+		const auto distanceFromA = stopNormals.front().GetDistanceFromPoint(actualPoint);
+		const auto distanceFromB = stopNormals.back().GetDistanceFromPoint(actualPoint);
 		const auto stopDistance = _length;
 
 		if (distanceFromA > stopDistance || distanceFromB > stopDistance)
@@ -181,7 +184,7 @@ namespace Elpida
 
 			stopA = &_stops[i];
 
-			if (normalB->IsPointBehindLine(point, _equation.GetDirection()))
+			if (normalB->IsPointBehindLine(actualPoint, _equation.GetDirection()))
 			{
 				stopB = &_stops[i + 1];
 				break;
@@ -191,17 +194,20 @@ namespace Elpida
 		assert(normalA != nullptr);
 		assert(normalB != nullptr);
 
-		return CalculateColor(point, *stopA, *normalA, *stopB, *normalB);
+		return CalculateColor(actualPoint, *stopA, *normalA, *stopB, *normalB);
 	}
 
 	SvgColor SvgCalculatedLinearGradient::CalculateReflect(const SvgPoint& point) const
 	{
+		auto actualPoint = point;
+		actualPoint.Transform(_transform);	// Transform the point to non transformed circle space
+
 		auto stopNormals = _stopNormals; // copy
 
 		SvgTransform transform;
 
-		const auto distanceA = stopNormals.front().GetDistanceFromPoint(point);
-		const auto distanceB = stopNormals.back().GetDistanceFromPoint(point);
+		const auto distanceA = stopNormals.front().GetDistanceFromPoint(actualPoint);
+		const auto distanceB = stopNormals.back().GetDistanceFromPoint(actualPoint);
 		const auto distance = _equation.GetP1().GetDistance(_equation.GetP2());
 
 		bool inverse = false;
@@ -260,7 +266,7 @@ namespace Elpida
 
 			stopA = &_stops[i];
 
-			if (normalB->IsPointBehindLine(point, direction))
+			if (normalB->IsPointBehindLine(actualPoint, direction))
 			{
 				stopB = &_stops[i + 1];
 				break;
@@ -269,6 +275,6 @@ namespace Elpida
 
 		assert(stopA != nullptr);
 		assert(stopB != nullptr);
-		return CalculateColor(point, *stopA, *normalA, *stopB, *normalB);
+		return CalculateColor(actualPoint, *stopA, *normalA, *stopB, *normalB);
 	}
 } // Elpida

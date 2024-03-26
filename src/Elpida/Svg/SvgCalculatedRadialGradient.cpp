@@ -56,11 +56,6 @@ namespace Elpida
 		return {};
 	}
 
-	static double Clamp(double a, double mn, double mx)
-	{
-		return a < mn ? mn : (a > mx ? mx : a);
-	}
-
 	SvgColor SvgCalculatedRadialGradient::CalculatePad(const SvgPoint &point) const
 	{
 		const SvgCalculatedGradientStop *stopA = nullptr;
@@ -209,7 +204,8 @@ namespace Elpida
 					break;
 				}
 			}
-		} else
+		}
+		else
 		{
 			for (std::size_t i = 0; i < _stops.size() - 1; i++)
 			{
@@ -233,10 +229,10 @@ namespace Elpida
 
 	void SvgCalculatedRadialGradient::Transform(const SvgTransform &transform)
 	{
-		// since this will move the points furterwe need to perform the inverse transform to move them back to the circle space.
-		SvgTransform actualTransfrom;
-		actualTransfrom.Inverse(transform);
+		// since this will move the points further we need to perform the inverse transform to move them back to the circle space.
+		SvgTransform actualTransform;
+		actualTransform.Inverse(transform);
 
-		_transform.Multiply(actualTransfrom);
+		_transform.Multiply(actualTransform);
 	}
 } // Elpida
