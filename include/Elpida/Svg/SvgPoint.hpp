@@ -139,9 +139,10 @@ namespace Elpida
 
 		bool operator==(const SvgPoint& other) const
 		{
+			constexpr auto distanceTolerance = Tolerance * Tolerance;
 			const double dx = _x - other._x;
 			const double dy = _y - other._y;
-			return dx * dx + dy * dy < Tolerance * Tolerance;
+			return dx * dx + dy * dy < distanceTolerance;
 		}
 
 		[[nodiscard]]

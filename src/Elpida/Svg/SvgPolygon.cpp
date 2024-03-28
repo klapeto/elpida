@@ -9,10 +9,24 @@ namespace Elpida
 	bool SvgPolygon::IsPointInsideEvenOdd(const SvgPoint& point) const
 	{
 		bool inside = false;
-		for (const auto& edge : _edges)
+
+		auto y = point.GetY();
+		auto x = point.GetX();
+
+		for (const auto& edge: _edges)
 		{
 			auto& a = edge.GetA();
 			auto& b = edge.GetB();
+
+			auto aX = a.GetX();
+			auto aY = a.GetY();
+			auto bX = b.GetX();
+			auto bY = b.GetY();
+
+			if (aY > y)
+			{
+				break;
+			}
 
 			if (point == a || point == b)
 			{
@@ -21,10 +35,9 @@ namespace Elpida
 				break;
 			}
 
-			if (a.GetY() > point.GetY() != b.GetY() > point.GetY())
+			if (bY > y)
 			{
-				const auto determinant = (point.GetX() - a.GetX()) * (b.GetY() - a.GetY()) - (b.GetX() - a.GetX()) * (
-						point.GetY() - a.GetY());
+				const auto determinant = (x - aX) * (bY - aY) - (bX - aX) * (y - aY);
 				if (determinant == 0)
 				{
 					// Is directly at line
@@ -32,7 +45,7 @@ namespace Elpida
 					break;
 				}
 
-				if (determinant < 0 != (b.GetY() < a.GetY()))
+				if (determinant < 0 != (bY < aY))
 				{
 					inside = !inside;
 				}
@@ -44,10 +57,22 @@ namespace Elpida
 	bool SvgPolygon::IsPointInsideNonZero(const SvgPoint& point) const
 	{
 		int inside = 0;
-		for (const auto& _edge : _edges)
+		auto y = point.GetY();
+		auto x = point.GetX();
+		for (const auto& _edge: _edges)
 		{
 			auto& a = _edge.GetA();
 			auto& b = _edge.GetB();
+
+			auto aX = a.GetX();
+			auto aY = a.GetY();
+			auto bX = b.GetX();
+			auto bY = b.GetY();
+
+			if (aY > y)
+			{
+				break;
+			}
 
 			if (point == a || point == b)
 			{
@@ -56,10 +81,9 @@ namespace Elpida
 				break;
 			}
 
-			if (a.GetY() > point.GetY() != b.GetY() > point.GetY())
+			if (bY > y)
 			{
-				const auto determinant = (point.GetX() - a.GetX()) * (b.GetY() - a.GetY()) - (b.GetX() - a.GetX()) * (
-						point.GetY() - a.GetY());
+				const auto determinant = (x - aX) * (bY - aY) - (bX - aX) * (y - aY);
 				if (determinant == 0)
 				{
 					// Is directly at line
@@ -67,7 +91,7 @@ namespace Elpida
 					break;
 				}
 
-				if (determinant < 0 != (b.GetY() < a.GetY()))
+				if (determinant < 0 != (bY < aY))
 				{
 					inside += _edge.GetDirection();
 				}
@@ -79,15 +103,20 @@ namespace Elpida
 	void SvgPolygon::CalculateBounds()
 	{
 		_bounds = SvgBounds::CreateMinimum();
-		for (auto edge : _edges)
+		for (auto edge: _edges)
 		{
 			_bounds.Merge(SvgBounds(edge.GetA(), edge.GetB()));
 		}
+
+		std::sort(_edges.begin(), _edges.end(), [](SvgEdge& a, SvgEdge& b)
+		{
+			return a.GetA().GetY() < b.GetA().GetY();
+		});
 	}
 
 	void SvgPolygon::Transform(const SvgTransform& transform)
 	{
-		for (auto& edge : _edges)
+		for (auto& edge: _edges)
 		{
 			edge.Transform(transform);
 		}
