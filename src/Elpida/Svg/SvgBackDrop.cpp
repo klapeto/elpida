@@ -102,7 +102,7 @@ namespace Elpida
 			SvgBlendMode blendMode,
 			SvgCompositingMode compositingMode)
 	{
-		if (x > _width || y > _width) return;
+		if (x > _width || y > _height) return;
 
 		const SvgBlender blender(blendMode);
 		const SvgCompositor compositor(compositingMode);

@@ -53,6 +53,15 @@ namespace Elpida
 			return _max.GetY() - _min.GetY();
 		}
 
+		[[nodiscard]]
+		bool IsValid() const
+		{
+			return _max.GetX() >= _min.GetX()
+				   && _max.GetY() >= _min.GetY()
+				   && GetWidth() > 0
+				   && GetHeight() > 0;
+		}
+
 		void Merge(const SvgBounds& other);
 
 		static SvgBounds CreateMinimum();

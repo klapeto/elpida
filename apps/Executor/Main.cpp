@@ -163,8 +163,8 @@ int main(int argC, char** argV)
 
 	//return 0;
 
-	//std::ifstream file("/home/klapeto/elpida/images/Elpida_Background.svg", std::ifstream::binary | std::ifstream::in);
-	std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
+	std::ifstream file("/home/klapeto/about.svg", std::ifstream::binary | std::ifstream::in);
+	//std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
 
 
 	file.seekg(0,std::ifstream::end);
@@ -181,7 +181,13 @@ int main(int argC, char** argV)
 	auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[pixels]);
 
 	auto rasterizer = nsvgCreateRasterizer();
+	auto a = std::chrono::high_resolution_clock ::now();
 	nsvgRasterize(rasterizer, svg, 0,0 ,1.0,bitmapData.get(), svg->width, svg->height, svg->width*4);
+
+	auto b = std::chrono::high_resolution_clock ::now();
+
+
+	std::cout << "Took: " << std::chrono::duration_cast<std::chrono::duration<double>>(b-a).count() << std::endl;
 
 	std::size_t width = svg->width;
 	std::size_t height = svg->height;
@@ -193,8 +199,12 @@ int main(int argC, char** argV)
 
 
 	SvgRasterizer rasterizer;
-	auto backDrop = rasterizer.Rasterize(svgDocument, 1.0);
+	auto a = std::chrono::high_resolution_clock ::now();
+	auto backDrop = rasterizer.Rasterize(svgDocument, 1.0, 16);
+	auto b = std::chrono::high_resolution_clock ::now();
 
+
+	std::cout << "Took: " << std::chrono::duration_cast<std::chrono::duration<double>>(b-a).count() << std::endl;
 	std::size_t width = backDrop.GetWidth();
 	std::size_t height = backDrop.GetHeight();
 	auto bitmapData = SvgColorConverter::Convert<unsigned char>(backDrop.GetColorData());

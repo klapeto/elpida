@@ -102,6 +102,11 @@ namespace Elpida
 
 	void SvgPolygon::CalculateBounds()
 	{
+		if (_edges.empty())
+		{
+			_bounds = {};
+			return;
+		}
 		_bounds = SvgBounds::CreateMinimum();
 		for (auto edge: _edges)
 		{
