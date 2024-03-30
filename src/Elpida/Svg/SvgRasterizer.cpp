@@ -15,11 +15,6 @@
 
 namespace Elpida
 {
-	static std::size_t Round(double x)
-	{
-		return std::round(x);
-	}
-
 	static SvgTransform CalculateTransform(const SvgCalculatedViewPort& viewPort, const SvgViewBox& viewBox,
 			const SvgPreserveAspectRatio& preserveAspectRatio)
 	{
@@ -139,7 +134,7 @@ namespace Elpida
 			rasterizationFutures.reserve(children.size());
 			for (auto& child: children)
 			{
-				rasterizationFutures.push_back(std::async( [&]()
+				rasterizationFutures.push_back(std::async([&]()
 				{
 					return RasterizeShape(child, subSamples);
 				}));
@@ -153,56 +148,56 @@ namespace Elpida
 
 		auto rasterizedSelf = std::move(selfDrawFuture.get());
 
-		auto& selfBounds = rasterizedSelf.GetActualBounds();
 
-		SvgBounds bounds = SvgBounds::CreateMinimum();
+		std::size_t x = std::numeric_limits<std::size_t>::max();
+		std::size_t y = std::numeric_limits<std::size_t>::max();
+		std::size_t width = 0;
+		std::size_t height = 0;
 
-		if (selfBounds.IsValid())
+		if (rasterizedSelf.GetBackdrop().GetWidth() > 0)
 		{
-			bounds.Merge(selfBounds);
+			x = std::min(x, rasterizedSelf.GetX());
+			y = std::min(y, rasterizedSelf.GetY());
+			width = std::max(width, rasterizedSelf.GetX() + rasterizedSelf.GetBackdrop().GetWidth());
+			height = std::max(height, rasterizedSelf.GetY() + rasterizedSelf.GetBackdrop().GetHeight());
 		}
 
 		for (auto& rasterizedChild: rasterizedChildren)
 		{
-			auto childBounds = rasterizedChild.GetActualBounds();
-			if (childBounds.IsValid())
-			{
-				bounds.Merge(rasterizedChild.GetActualBounds());
-			}
+			x = std::min(x, rasterizedChild.GetX());
+			y = std::min(y, rasterizedChild.GetY());
+			width = std::max(width, rasterizedChild.GetX() + rasterizedChild.GetBackdrop().GetWidth());
+			height = std::max(height, rasterizedChild.GetY() + rasterizedChild.GetBackdrop().GetHeight());
 		}
 
-		if (!bounds.IsValid()) return {};
+		if (width == 0 || height == 0) return {};
 
-		SvgBackDrop finalBackDrop(std::ceil(bounds.GetWidth()), std::ceil(bounds.GetHeight()));
+		SvgBackDrop finalBackDrop(width, height);
 
-		finalBackDrop.Draw(rasterizedSelf.GetBackdrop(),
-				Round(selfBounds.GetMinX() - bounds.GetMinX()),
-				Round(selfBounds.GetMinX() - bounds.GetMinX()));
+		finalBackDrop.Draw(rasterizedSelf.GetBackdrop(), rasterizedSelf.GetX() - x, rasterizedSelf.GetY() - y);
 
 		for (std::size_t i = 0; i < rasterizedChildren.size(); ++i)
 		{
 			auto& rasterized = rasterizedChildren[i];
 			auto& child = children[i];
 
-			auto& childBounds = rasterized.GetActualBounds();
 			finalBackDrop.Draw(rasterized.GetBackdrop(),
-					Round(std::max(0.0, childBounds.GetMinX() - std::max(0.0, bounds.GetMinX()))),
-							Round(std::max(0.0, childBounds.GetMinY() - std::max(0.0, bounds.GetMinY()))),
+					rasterized.GetX() - x,
+					rasterized.GetY() - y,
 					child.GetOpacity(),
 					child.BlendMode(),
 					child.CompositingMode());
 		}
 
-		return RasterizedShape(std::move(finalBackDrop), bounds);
+		return RasterizedShape(std::move(finalBackDrop), x, y);
 	}
 
 	void SvgRasterizer::RasterizeRootShape(SvgBackDrop& backDrop, SvgCalculatedShape& shape, std::size_t subSamples)
 	{
 		auto childRasterizedShape = RasterizeShape(shape, subSamples);
-		auto& childBounds = childRasterizedShape.GetActualBounds();
 		backDrop.Draw(childRasterizedShape.GetBackdrop(),
-				Round(std::max(0.0, childBounds.GetMinX())),
-				Round(std::max(0.0, childBounds.GetMinY())),
+				childRasterizedShape.GetX(),
+				childRasterizedShape.GetY(),
 				shape.GetOpacity(),
 				shape.BlendMode(),
 				shape.CompositingMode());
@@ -233,38 +228,39 @@ namespace Elpida
 							SvgFillRule::NonZero, subSamples);
 				});
 			}
-
-			SvgBounds totalBounds = SvgBounds::CreateMinimum();
+			std::size_t x = std::numeric_limits<std::size_t>::max();
+			std::size_t y = std::numeric_limits<std::size_t>::max();
+			std::size_t width = 0;
+			std::size_t height = 0;
 
 			RasterizedShape fill;
 			if (fillRasterization.valid())
 			{
 				fill = std::move(fillRasterization.get());
-				totalBounds.Merge(fill.GetActualBounds());
+				x = std::min(x, fill.GetX());
+				y = std::min(y, fill.GetY());
+				width = std::max(width, fill.GetX() + fill.GetBackdrop().GetWidth());
+				height = std::max(height, fill.GetY() + fill.GetBackdrop().GetHeight());
 			}
 
 			RasterizedShape stroke;
 			if (strokeRasterization.valid())
 			{
 				stroke = std::move(strokeRasterization.get());
-				totalBounds.Merge(stroke.GetActualBounds());
+				x = std::min(x, stroke.GetX());
+				y = std::min(y, stroke.GetY());
+				width = std::max(width, stroke.GetX() + stroke.GetBackdrop().GetWidth());
+				height = std::max(height, stroke.GetY() + stroke.GetBackdrop().GetHeight());
 			}
 
-			if (!totalBounds.IsValid()) return RasterizedShape();
+			if (width == 0 || height == 0) return RasterizedShape();
 
-			SvgBackDrop finalBackdrop(std::ceil(totalBounds.GetWidth()), std::ceil(totalBounds.GetHeight()));
+			SvgBackDrop finalBackdrop(width, height);
 
-			auto& fillBounds = fill.GetActualBounds();
-			auto& strokeBounds = stroke.GetActualBounds();
+			finalBackdrop.Draw(fill.GetBackdrop(), fill.GetX() - x, fill.GetY() - y);
+			finalBackdrop.Draw(stroke.GetBackdrop(), stroke.GetX() - x, stroke.GetY() - y);
 
-			finalBackdrop.Draw(fill.GetBackdrop(),
-					Round(std::max(0.0, fillBounds.GetMinX() - std::max(0.0, totalBounds.GetMinX()))),
-					Round(std::max(0.0, fillBounds.GetMinY() - std::max(0.0, totalBounds.GetMinY()))));
-			finalBackdrop.Draw(stroke.GetBackdrop(),
-					Round(std::max(0.0, strokeBounds.GetMinX() - std::max(0.0, totalBounds.GetMinX()))),
-					Round(std::max(0.0, strokeBounds.GetMinY() - std::max(0.0, totalBounds.GetMinY()))));
-
-			return RasterizedShape(std::move(finalBackdrop), totalBounds);
+			return RasterizedShape(std::move(finalBackdrop), x, y);
 		});
 	}
 
@@ -272,18 +268,28 @@ namespace Elpida
 	SvgRasterizer::RasterizePolygon(SvgPolygon polygon, SvgCalculatedPaint& paint, SvgFillRule fillRule,
 			std::size_t subSamples)
 	{
+
 		auto bounds = polygon.GetBounds();
 
+		auto gapX = bounds.GetMinX() > 0.0 ? 5 : 0;
+		auto gapY = bounds.GetMinY() > 0.0 ? 5 : 0;
+
+		auto offsetX = std::floor(std::max(0.0, bounds.GetMinX()));
+		auto offsetY = std::floor(std::max(0.0, bounds.GetMinY()));
+
+		std::size_t x = std::max(0.0, offsetX - gapX);
+		std::size_t y = std::max(0.0, offsetY - gapY);
+
 		SvgTransform transform;
-		transform.Translate(-std::max(0.0, bounds.GetMinX()),-std::max(0.0, bounds.GetMinY()));
+		transform.Translate(-(static_cast<double>(offsetX)) + gapX, -(static_cast<double>(offsetY)) + gapY);
 
 		polygon.Transform(transform);
 		paint.Transform(transform);
 
-		SvgBackDrop backDrop(std::ceil(bounds.GetWidth()), std::ceil(bounds.GetHeight()));
+		SvgBackDrop backDrop(std::ceil(bounds.GetWidth() + gapX * 2), std::ceil(bounds.GetHeight() + gapY * 2));
 
 		backDrop.Draw(polygon, paint, fillRule, SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
 
-		return { std::move(backDrop), bounds };
+		return { std::move(backDrop), x, y };
 	}
 } // Elpida

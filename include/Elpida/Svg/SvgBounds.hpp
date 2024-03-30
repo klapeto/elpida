@@ -44,13 +44,13 @@ namespace Elpida
 		[[nodiscard]]
 		double GetWidth() const
 		{
-			return _max.GetX() - _min.GetX();
+			return std::abs(_max.GetX()) - std::abs(_min.GetX());
 		}
 
 		[[nodiscard]]
 		double GetHeight() const
 		{
-			return _max.GetY() - _min.GetY();
+			return std::abs( _max.GetY()) - std::abs(_min.GetY());
 		}
 
 		[[nodiscard]]

@@ -33,15 +33,19 @@ namespace Elpida
 				return _backdrop;
 			}
 
-			[[nodiscard]]
-			const SvgBounds& GetActualBounds() const
+			size_t GetX() const
 			{
-				return _actualBounds;
+				return _x;
+			}
+
+			size_t GetY() const
+			{
+				return _y;
 			}
 
 			RasterizedShape() = default;
-			RasterizedShape(SvgBackDrop&& backDrop, const SvgBounds& actualBounds)
-					: _backdrop(std::move(backDrop)), _actualBounds(actualBounds)
+			RasterizedShape(SvgBackDrop&& backDrop,  std::size_t x, std::size_t y)
+					: _backdrop(std::move(backDrop)), _x(x), _y(y)
 			{
 
 			}
@@ -52,7 +56,8 @@ namespace Elpida
 			RasterizedShape& operator=(RasterizedShape&&) noexcept = default;
 		private:
 			SvgBackDrop _backdrop;
-			SvgBounds _actualBounds;
+			std::size_t _x = 0;
+			std::size_t _y = 0;
 		};
 		void RasterizeRootShape(SvgBackDrop& backDrop, SvgCalculatedShape& shape, std::size_t subSamples);
 		static RasterizedShape RasterizeShape(SvgCalculatedShape &shape, std::size_t subSamples);
