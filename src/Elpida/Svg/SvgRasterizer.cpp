@@ -148,33 +148,35 @@ namespace Elpida
 
 		auto rasterizedSelf = std::move(selfDrawFuture.get());
 
-
-		std::size_t x = std::numeric_limits<std::size_t>::max();
-		std::size_t y = std::numeric_limits<std::size_t>::max();
-		std::size_t width = 0;
-		std::size_t height = 0;
+		std::size_t minX = std::numeric_limits<std::size_t>::max();
+		std::size_t minY = std::numeric_limits<std::size_t>::max();
+		std::size_t maxX = 0;
+		std::size_t maxY = 0;
 
 		if (rasterizedSelf.GetBackdrop().GetWidth() > 0)
 		{
-			x = std::min(x, rasterizedSelf.GetX());
-			y = std::min(y, rasterizedSelf.GetY());
-			width = std::max(width, rasterizedSelf.GetX() + rasterizedSelf.GetBackdrop().GetWidth());
-			height = std::max(height, rasterizedSelf.GetY() + rasterizedSelf.GetBackdrop().GetHeight());
+			minX = std::min(minX, rasterizedSelf.GetX());
+			minY = std::min(minY, rasterizedSelf.GetY());
+			maxX = std::max(maxX, rasterizedSelf.GetX() + rasterizedSelf.GetBackdrop().GetWidth());
+			maxY = std::max(maxY, rasterizedSelf.GetY() + rasterizedSelf.GetBackdrop().GetHeight());
 		}
 
 		for (auto& rasterizedChild: rasterizedChildren)
 		{
-			x = std::min(x, rasterizedChild.GetX());
-			y = std::min(y, rasterizedChild.GetY());
-			width = std::max(width, rasterizedChild.GetX() + rasterizedChild.GetBackdrop().GetWidth());
-			height = std::max(height, rasterizedChild.GetY() + rasterizedChild.GetBackdrop().GetHeight());
+			minX = std::min(minX, rasterizedChild.GetX());
+			minY = std::min(minY, rasterizedChild.GetY());
+			maxX = std::max(maxX, rasterizedChild.GetX() + rasterizedChild.GetBackdrop().GetWidth());
+			maxY = std::max(maxY, rasterizedChild.GetY() + rasterizedChild.GetBackdrop().GetHeight());
 		}
+
+		auto width = maxX - minX;
+		auto height = maxY - minY;
 
 		if (width == 0 || height == 0) return {};
 
 		SvgBackDrop finalBackDrop(width, height);
 
-		finalBackDrop.Draw(rasterizedSelf.GetBackdrop(), rasterizedSelf.GetX() - x, rasterizedSelf.GetY() - y);
+		finalBackDrop.Draw(rasterizedSelf.GetBackdrop(), rasterizedSelf.GetX() - minX, rasterizedSelf.GetY() - minY);
 
 		for (std::size_t i = 0; i < rasterizedChildren.size(); ++i)
 		{
@@ -182,14 +184,14 @@ namespace Elpida
 			auto& child = children[i];
 
 			finalBackDrop.Draw(rasterized.GetBackdrop(),
-					rasterized.GetX() - x,
-					rasterized.GetY() - y,
+					rasterized.GetX() - minX,
+					rasterized.GetY() - minY,
 					child.GetOpacity(),
 					child.BlendMode(),
 					child.CompositingMode());
 		}
 
-		return RasterizedShape(std::move(finalBackDrop), x, y);
+		return RasterizedShape(std::move(finalBackDrop), minX, minY);
 	}
 
 	void SvgRasterizer::RasterizeRootShape(SvgBackDrop& backDrop, SvgCalculatedShape& shape, std::size_t subSamples)
@@ -206,7 +208,7 @@ namespace Elpida
 	std::future<SvgRasterizer::RasterizedShape>
 	SvgRasterizer::RasterizedSelfShape(SvgCalculatedShape& shape, std::size_t subSamples)
 	{
-		return std::async(std::launch::deferred, [&, subSamples]()
+		return std::async([&, subSamples]()
 		{
 			std::future<RasterizedShape> fillRasterization;
 			std::future<RasterizedShape> strokeRasterization;
@@ -239,8 +241,8 @@ namespace Elpida
 				fill = std::move(fillRasterization.get());
 				x = std::min(x, fill.GetX());
 				y = std::min(y, fill.GetY());
-				width = std::max(width, fill.GetX() + fill.GetBackdrop().GetWidth());
-				height = std::max(height, fill.GetY() + fill.GetBackdrop().GetHeight());
+				width = std::max(width, (fill.GetX() + fill.GetBackdrop().GetWidth()) - fill.GetX());
+				height = std::max(height, (fill.GetY() + fill.GetBackdrop().GetHeight()) - fill.GetY());
 			}
 
 			RasterizedShape stroke;
@@ -249,8 +251,8 @@ namespace Elpida
 				stroke = std::move(strokeRasterization.get());
 				x = std::min(x, stroke.GetX());
 				y = std::min(y, stroke.GetY());
-				width = std::max(width, stroke.GetX() + stroke.GetBackdrop().GetWidth());
-				height = std::max(height, stroke.GetY() + stroke.GetBackdrop().GetHeight());
+				width = std::max(width, (stroke.GetX() + stroke.GetBackdrop().GetWidth()) - stroke.GetX());
+				height = std::max(height, (stroke.GetY() + stroke.GetBackdrop().GetHeight()) - stroke.GetY());
 			}
 
 			if (width == 0 || height == 0) return RasterizedShape();
