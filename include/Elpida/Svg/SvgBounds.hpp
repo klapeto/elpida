@@ -44,22 +44,13 @@ namespace Elpida
 		[[nodiscard]]
 		double GetWidth() const
 		{
-			return std::abs(_max.GetX()) - std::abs(_min.GetX());
+			return _max.GetX() - _min.GetX();
 		}
 
 		[[nodiscard]]
 		double GetHeight() const
 		{
-			return std::abs( _max.GetY()) - std::abs(_min.GetY());
-		}
-
-		[[nodiscard]]
-		bool IsValid() const
-		{
-			return _max.GetX() >= _min.GetX()
-				   && _max.GetY() >= _min.GetY()
-				   && GetWidth() > 0
-				   && GetHeight() > 0;
+			return _max.GetY() - _min.GetY();
 		}
 
 		void Merge(const SvgBounds& other);

@@ -40,7 +40,6 @@ namespace Elpida
 
 	static bool ParseNextNumber(CharacterStream& stream, double& value)
 	{
-		std::size_t i = 0;
 		while (!stream.Eof())
 		{
 			stream.SkipSpace();
@@ -99,6 +98,12 @@ namespace Elpida
 						{
 							transform.Translate(x, y);
 						}
+
+						stream.SkipSpace();
+						if (stream.Current() != ')')
+						{
+							throw ParseException("Unexpected Eof: Expected rotate(...). Expected ')' as final character");
+						}
 					}
 					break;
 				case 'm':
@@ -128,6 +133,12 @@ namespace Elpida
 							ty = 0.0;
 						}
 						transform.SetTranslation(tx, ty);
+
+						stream.SkipSpace();
+						if (stream.Current() != ')')
+						{
+							throw ParseException("Unexpected Eof: Expected translate(sx,sy). Expected ')' as final character");
+						}
 					}
 					break;
 				case 's':
@@ -152,6 +163,11 @@ namespace Elpida
 							sy = sx;
 						}
 						transform.SetScale(sx, sy);
+						stream.SkipSpace();
+						if (stream.Current() != ')')
+						{
+							throw ParseException("Unexpected Eof: Expected scale(sx,sy). Expected ')' as final character");
+						}
 					}
 					else if (stream.Current() == 'k')
 					{
