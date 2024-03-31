@@ -146,14 +146,19 @@ namespace Elpida
 			}
 		}
 
-		auto rasterizedSelf = std::move(selfDrawFuture.get());
+		RasterizedShape rasterizedSelf;
+
+		if (selfDrawFuture.valid())
+		{
+			rasterizedSelf = std::move(selfDrawFuture.get());
+		}
 
 		std::size_t minX = std::numeric_limits<std::size_t>::max();
 		std::size_t minY = std::numeric_limits<std::size_t>::max();
 		std::size_t maxX = 0;
 		std::size_t maxY = 0;
 
-		if (rasterizedSelf.GetBackdrop().GetWidth() > 0)
+		if (rasterizedSelf.IsValid())
 		{
 			minX = std::min(minX, rasterizedSelf.GetX());
 			minY = std::min(minY, rasterizedSelf.GetY());
@@ -176,16 +181,19 @@ namespace Elpida
 
 		SvgBackDrop finalBackDrop(width, height);
 
-		finalBackDrop.Draw(rasterizedSelf.GetBackdrop(), rasterizedSelf.GetX() - minX, rasterizedSelf.GetY() - minY);
+		if (rasterizedSelf.IsValid())
+		{
+			finalBackDrop.Draw(rasterizedSelf.GetBackdrop(), rasterizedSelf.GetX() - minX,rasterizedSelf.GetY() - minY);
+		}
 
 		for (std::size_t i = 0; i < rasterizedChildren.size(); ++i)
 		{
-			auto& rasterized = rasterizedChildren[i];
+			auto& rasterizedChild = rasterizedChildren[i];
 			auto& child = children[i];
 
-			finalBackDrop.Draw(rasterized.GetBackdrop(),
-					rasterized.GetX() - minX,
-					rasterized.GetY() - minY,
+			finalBackDrop.Draw(rasterizedChild.GetBackdrop(),
+					rasterizedChild.GetX() - minX,
+					rasterizedChild.GetY() - minY,
 					child.GetOpacity(),
 					child.BlendMode(),
 					child.CompositingMode());
@@ -208,6 +216,7 @@ namespace Elpida
 	std::future<SvgRasterizer::RasterizedShape>
 	SvgRasterizer::RasterizedSelfShape(SvgCalculatedShape& shape, std::size_t subSamples)
 	{
+		if (shape.GetPaths().empty()) return {};
 		return std::async([&, subSamples]()
 		{
 			std::future<RasterizedShape> fillRasterization;
@@ -273,22 +282,19 @@ namespace Elpida
 
 		auto bounds = polygon.GetBounds();
 
-		auto gapX = bounds.GetMinX() > 0.0 ? 5 : 0;
-		auto gapY = bounds.GetMinY() > 0.0 ? 5 : 0;
-
 		auto offsetX = std::floor(std::max(0.0, bounds.GetMinX()));
 		auto offsetY = std::floor(std::max(0.0, bounds.GetMinY()));
-
-		std::size_t x = std::max(0.0, offsetX - gapX);
-		std::size_t y = std::max(0.0, offsetY - gapY);
+		std::size_t x = offsetX;
+		std::size_t y = offsetY;
 
 		SvgTransform transform;
-		transform.Translate(-(static_cast<double>(offsetX)) + gapX, -(static_cast<double>(offsetY)) + gapY);
+		transform.Translate(-(static_cast<double>(offsetX)), -(static_cast<double>(offsetY)));
 
 		polygon.Transform(transform);
 		paint.Transform(transform);
 
-		SvgBackDrop backDrop(std::ceil(bounds.GetWidth() + gapX * 2), std::ceil(bounds.GetHeight() + gapY * 2));
+		// +0.5 because backdrop pixels are actually drawn at + 0.5 due to 0.0 is at the center of the first pixel
+		SvgBackDrop backDrop(std::ceil(bounds.GetWidth() + 0.5), std::ceil(bounds.GetHeight() + 0.5));
 
 		backDrop.Draw(polygon, paint, fillRule, SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
 

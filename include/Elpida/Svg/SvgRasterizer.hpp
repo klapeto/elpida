@@ -33,14 +33,22 @@ namespace Elpida
 				return _backdrop;
 			}
 
-			size_t GetX() const
+			[[nodiscard]]
+			std::size_t GetX() const
 			{
 				return _x;
 			}
 
-			size_t GetY() const
+			[[nodiscard]]
+			std::size_t GetY() const
 			{
 				return _y;
+			}
+
+			[[nodiscard]]
+			bool IsValid() const
+			{
+				return _backdrop.GetWidth() > 0;
 			}
 
 			RasterizedShape() = default;

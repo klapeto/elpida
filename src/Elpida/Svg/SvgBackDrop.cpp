@@ -29,17 +29,26 @@ namespace Elpida
 
 		const std::size_t startY = static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinY())));
 		const std::size_t startX = static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinX())));
-		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(bounds.GetMaxX())));
-		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetMaxY())));
+
+		// We add + 0.5 because here the (0,0) is at the "center" of the pixel (0,0) where in Svg coordinates it is at top left
+		// with this we ensure we have enough width for this case. See the super sample that starts eg. at x + 0.5
+		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(bounds.GetWidth() + 0.5)));
+		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetHeight() + 0.5)));
 
 		//DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height);
 		DrawPolygonMultiThreaded(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height);
 	}
 
-	void SvgBackDrop::DrawPolygonMultiThreaded(const SvgPolygon& polygon, const SvgCalculatedPaint& paint,
+	void SvgBackDrop::DrawPolygonMultiThreaded(const SvgPolygon& polygon,
+			const SvgCalculatedPaint& paint,
 			SvgFillRule& fillRule,
-			const SvgBlender& blender, const SvgCompositor& compositor, const SvgSuperSampler& superSampler,
-			const size_t startY, const size_t startX, const size_t width, const size_t height)
+			const SvgBlender& blender,
+			const SvgCompositor& compositor,
+			const SvgSuperSampler& superSampler,
+			const size_t startY,
+			const size_t startX,
+			const size_t width,
+			const size_t height)
 	{
 		auto threadCount = std::min((std::size_t)std::thread::hardware_concurrency(), height);
 		std::size_t linesPerThread = std::ceil(height / static_cast<double>(threadCount));

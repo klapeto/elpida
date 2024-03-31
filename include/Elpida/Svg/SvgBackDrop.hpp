@@ -42,7 +42,7 @@ namespace Elpida
 		          SvgFillRule fillRule = SvgFillRule::NonZero,
 		          SvgBlendMode blendMode = SvgBlendMode::Normal,
 		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
-		          std::size_t subSamples = 32);
+		          std::size_t subSamples = 16);
 
 		void Draw(const SvgBackDrop &other,
 		          std::size_t x,
