@@ -32,6 +32,8 @@ namespace Elpida
 		void SetNumaNode(const NumaNode& cacheNode);
 		void SetCpuKind(const CpuKind& cacheNode);
 
+		void PinThreadToThisProcessor() const;
+
 		explicit ProcessingUnitNode();
 		ProcessingUnitNode(const ProcessingUnitNode&) = delete;
 		ProcessingUnitNode(ProcessingUnitNode&&) noexcept = delete;

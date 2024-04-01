@@ -14,15 +14,17 @@
 
 namespace Elpida
 {
-	class SvgDocument;
+	class SvgCalculatedDocument;
 	class SvgViewBox;
 	class SvgCalculatedShape;
 	class SvgTransform;
+	class ThreadPool;
 
 	class SvgRasterizer
 	{
 	public:
-		SvgBackDrop Rasterize(const SvgDocument& document, double scale = 1.0, std::size_t subSamples = 16);
+		SvgBackDrop Rasterize(SvgCalculatedDocument& document, std::size_t subSamples = 16);
+		SvgBackDrop RasterizeMultiThreaded(SvgCalculatedDocument& document, ThreadPool& threadPool, std::size_t subSamples = 16);
 	private:
 		class RasterizedShape final
 		{

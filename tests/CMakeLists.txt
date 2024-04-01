@@ -11,6 +11,7 @@ add_executable(elpida-tests
         Svg/SvgStyle.Test.cpp
         Svg/SvgDocument.Test.cpp
         Svg/SvgPath.Test.cpp
-        Svg/SvgBlendMode.Test.cpp)
+        Svg/SvgBlendMode.Test.cpp
+        Svg/SvgBounds.Test.cpp)
 
 target_link_libraries(elpida-tests gtest gtest_main elpida-svg)
