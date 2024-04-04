@@ -34,7 +34,7 @@ namespace Elpida
 		{
 			std::unique_lock<std::mutex> lock(_mutex);
 			if (_stop) return;
-			_queue.push(value);
+			_queue.push(std::move(value));
 			_notifier.notify_all();
 		}
 

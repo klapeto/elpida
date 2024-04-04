@@ -21,6 +21,7 @@ namespace Elpida
 	class SvgPolygon;
 
 	class SvgCalculatedPaint;
+	class ThreadPool;
 
 	class SvgBackDrop final
 	{
@@ -44,12 +45,29 @@ namespace Elpida
 		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
 		          std::size_t subSamples = 16);
 
+		void DrawMultiThread(const SvgPolygon &polygon,
+				const SvgCalculatedPaint &paint,
+				ThreadPool& threadPool,
+				SvgFillRule fillRule = SvgFillRule::NonZero,
+				SvgBlendMode blendMode = SvgBlendMode::Normal,
+				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
+				std::size_t subSamples = 16);
+
 		void Draw(const SvgBackDrop &other,
 		          std::size_t x,
 		          std::size_t y,
 		          double opacity = 1.0,
 		          SvgBlendMode blendMode = SvgBlendMode::Normal,
 		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
+
+
+		void DrawMultiThread(const SvgBackDrop &other,
+				std::size_t x,
+				std::size_t y,
+				ThreadPool& threadPool,
+				double opacity = 1.0,
+				SvgBlendMode blendMode = SvgBlendMode::Normal,
+				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
 
 		SvgBackDrop();
 		SvgBackDrop(std::size_t width, std::size_t height);
@@ -74,12 +92,15 @@ namespace Elpida
 				std::size_t startX,
 				std::size_t width,
 				std::size_t height);
+
 		void DrawPolygonMultiThreaded(const SvgPolygon& polygon, const SvgCalculatedPaint& paint, SvgFillRule& fillRule,
 				const SvgBlender& blender, const SvgCompositor& compositor, const SvgSuperSampler& superSampler,
+				ThreadPool& threadPool,
 				size_t startY,
 				size_t startX,
 				size_t width,
 				size_t height);
+
 		void DoDrawOther(double opacity,
 				const SvgBlender& blender,
 				const SvgCompositor& compositor,
@@ -91,6 +112,7 @@ namespace Elpida
 				const std::vector<SvgColor>& colorData,
 				size_t sourceWidth);
 		void DoDrawOtherMultiThreaded(double opacity, const SvgBlender& blender, const SvgCompositor& compositor,
+				ThreadPool& threadPool,
 				const size_t startX, const size_t startY, const size_t width, const size_t height,
 				const std::vector<SvgColor>& colorData, const size_t sourceWidth);
 	};

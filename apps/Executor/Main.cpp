@@ -106,69 +106,27 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 #define OLD false
 #if OLD
 #define NANOSVG_IMPLEMENTATION
-#define NANOSVGRAST_IMPLEMENTATION
+#define NANOSVGRAST_IMPLEMENTATION				_collections.emplace_back();
 #include "nanosvg.h"
 #include "nanosvgrast.h"
 #endif
 
+#include <ranges>
+
+#include "Elpida/Core/ThreadPool.hpp"
+#include "Elpida/Svg/SvgCalculatedDocument.hpp"
 
 int main(int argC, char** argV)
 {
-	// auto width = 100;
-	// auto height = 100;
-	// auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[width*height * 4]);
-	// SvgTransform transform;
-	//
-	//  //transform.Scale(4,4);
-	// SvgEllipseEquation equation(20, 20, 8, 3);
-	//
-	// auto center = equation.GetCenter();
-	//
-	//
-	// transform.Translate(-center.GetX(),-center.GetY());
-	// SvgTransform transform2;
-	// transform2.Scale(4,4);
-	// transform.PreMultiply(transform2);
-	// transform.Translate(center.GetX(),center.GetY());
-	//
-	// equation.Transform(transform);
-	// //
-	// // transform.SetTranslation(center.GetX() - equation.GetCenter().GetX(), center.GetY() - equation.GetCenter().GetY());
-	// //
-	// // equation.Transform(transform);
-	//
-	// for (auto i = 0; i < height; ++i)
-	// {
-	// 	for (auto j = 0; j < width; ++j)
-	// 	{
-	// 		auto x = (double)j;
-	// 		auto y = (double)i;
-	// 		if (equation.IsPointInside(SvgPoint(x, y)))
-	// 		{
-	// 			bitmapData[i * width * 4 + (j * 4)] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 1] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 2] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 3] = 255;
-	// 		}
-	// 		else
-	// 		{
-	// 			bitmapData[i * width * 4 + (j * 4)] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 1] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 2] = 0;
-	// 			bitmapData[i * width * 4 + (j * 4) + 3] = 0;
-	// 		}
-	// 	}
-	// 	//std::cout << std::endl;
-	// }
+	auto topology = TopologyLoader::LoadTopology();
 
-	//return 0;
+	ThreadPool pool(topology.GetAllProcessingUnits());
 
 	std::ifstream file("/home/klapeto/about.svg", std::ifstream::binary | std::ifstream::in);
 	//std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
 
-
 	file.seekg(0,std::ifstream::end);
-	auto  size = file.tellg();
+	auto size = file.tellg();
 	file.seekg(0, std::ifstream::beg);
 
 	auto inputData = std::unique_ptr<char[]>(new char[size]);
@@ -197,10 +155,12 @@ int main(int argC, char** argV)
 
 	SvgDocument svgDocument(element);
 
+	auto calculated = SvgCalculatedDocument(svgDocument, 1.0);
 
 	SvgRasterizer rasterizer;
 	auto a = std::chrono::high_resolution_clock ::now();
-	auto backDrop = rasterizer.Rasterize(svgDocument, 1.0, 16);
+	auto backDrop = rasterizer.RasterizeMultiThreaded(calculated, pool, 16);
+	//auto backDrop = rasterizer.Rasterize(calculated, 16);
 	auto b = std::chrono::high_resolution_clock ::now();
 
 
@@ -244,7 +204,7 @@ int main(int argC, char** argV)
 		}
 	}
 
-
+	std::cout << "Queue: " << pool.GetQueue().size() << std::endl;
 
 	return 0;
 

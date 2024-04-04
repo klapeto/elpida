@@ -54,6 +54,7 @@ add_library(elpida-svg
         SvgCompositingMode.cpp
         SvgEllipse.cpp
         SvgLine.cpp
+        SvgCalculatedDocument.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)

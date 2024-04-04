@@ -42,7 +42,8 @@ set(ELPIDA_CORE_SOURCES
         ThreadPool.cpp
         BlockingCollection.cpp
         Topology/ProcessingUnitNode.Unix.cpp
-        Topology/ProcessingUnitNote.Windows.cpp)
+        Topology/ProcessingUnitNote.Windows.cpp
+        ThreadPoolThread.cpp)
 
 configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
 
