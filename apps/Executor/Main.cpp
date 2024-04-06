@@ -21,23 +21,13 @@
 // Created by klapeto on 10/12/2022.
 //
 
-#include <stdexcept>
-
-#include <cmath>
 #include <cstdlib>
-#include <cstring>
 #include <iostream>
-#include <math.h>
-#include <Elpida/Svg/SvgDocument.hpp>
-#include <Elpida/Svg/SvgEllipseEquation.hpp>
-#include <Elpida/Svg/SvgRasterizer.hpp>
-#include <Elpida/Xml/XmlParser.hpp>
 
 #include "Elpida/Core/AllocatorFactory.hpp"
 #include "Elpida/Core/DefaultAllocatorFactory.hpp"
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
-#include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
@@ -98,123 +88,8 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	}
 }
 
-#include <fstream>
-#include <png.h>
-
-#include "Elpida/Svg/SvgColorConverter.hpp"
-
-#define OLD false
-#if OLD
-#define NANOSVG_IMPLEMENTATION
-#define NANOSVGRAST_IMPLEMENTATION				_collections.emplace_back();
-#include "nanosvg.h"
-#include "nanosvgrast.h"
-#endif
-
-#include <ranges>
-
-#include "Elpida/Core/ThreadPool/ThreadPool.hpp"
-#include "Elpida/Svg/SvgCalculatedDocument.hpp"
-
 int main(int argC, char** argV)
 {
-	auto topology = TopologyLoader::LoadTopology();
-
-	ThreadPool pool(topology.GetAllProcessingUnits()/*| std::ranges::views::take(4)*/);
-
-	std::ifstream file("/home/klapeto/about.svg", std::ifstream::binary | std::ifstream::in);
-	//std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
-
-	file.seekg(0,std::ifstream::end);
-	auto size = file.tellg();
-	file.seekg(0, std::ifstream::beg);
-
-	auto inputData = std::unique_ptr<char[]>(new char[size]);
-
-	file.read(inputData.get(), size);
-
-#if OLD
-	auto svg = nsvgParse(inputData.get(), "px", 96.0);
-	auto pixels = static_cast<std::size_t>(svg->height * svg->width * 4);
-	auto bitmapData = std::unique_ptr<unsigned char[]>(new unsigned char[pixels]);
-
-	auto rasterizer = nsvgCreateRasterizer();
-	auto a = std::chrono::high_resolution_clock ::now();
-	nsvgRasterize(rasterizer, svg, 0,0 ,1.0,bitmapData.get(), svg->width, svg->height, svg->width*4);
-
-	auto b = std::chrono::high_resolution_clock ::now();
-
-
-	std::cout << "Took: " << std::chrono::duration_cast<std::chrono::duration<double>>(b-a).count() << std::endl;
-
-	std::size_t width = svg->width;
-	std::size_t height = svg->height;
-#else
-
-	auto element = XmlParser::Parse(inputData.get(), size);
-
-	SvgDocument svgDocument(element);
-
-	auto calculated = SvgCalculatedDocument(svgDocument, 2.0);
-
-	SvgRasterizer rasterizer;
-
-	SvgBackDrop backDrop;
-
-	for (int i = 0; i < 4; ++i)
-	{
-		auto a = std::chrono::high_resolution_clock ::now();
-		backDrop = rasterizer.RasterizeMultiThreaded(calculated, pool, 16);
-		//auto backDrop = rasterizer.Rasterize(calculated, 16);
-		auto b = std::chrono::high_resolution_clock ::now();
-
-		std::cout << "Took: " << std::chrono::duration_cast<std::chrono::duration<double>>(b-a).count() << std::endl;
-	}
-
-	std::size_t width = backDrop.GetWidth();
-	std::size_t height = backDrop.GetHeight();
-	auto bitmapData = SvgColorConverter::Convert<unsigned char>(backDrop.GetColorData());
-#endif
-	{
-		png_image image{};
-		image.version = PNG_IMAGE_VERSION;
-
-		std::size_t outputSize;
-
-		image.width = width;
-		image.height = height;
-		image.format = PNG_FORMAT_RGBA;
-
-		if (png_image_write_to_memory(&image, nullptr, &outputSize, 0, bitmapData.get(), 0, nullptr))
-		{
-			auto outputData = std::unique_ptr<char[]>(new char[outputSize]);
-
-			if (!png_image_write_to_memory(&image,
-						outputData.get(),
-						&outputSize,
-						0,
-						bitmapData.get(),
-						0,
-						nullptr))
-			{
-				throw ElpidaException("Failed to encode image: ", image.message);
-			}
-
-			std::ofstream outputFile("/home/klapeto/σχεδίαση.out.png", std::ofstream::binary | std::ofstream::out | std::ofstream::trunc);
-
-			outputFile.write(outputData.get(), outputSize);
-		}
-		else
-		{
-			throw ElpidaException("Failed to encode image: ", image.message);
-		}
-	}
-
-	std::cout << "Queue: " << pool.GetQueue().size() << std::endl;
-
-	return 0;
-
-
 	try
 	{
 		ArgumentsHelper helper;

@@ -7,11 +7,11 @@
 namespace Elpida
 {
 
-	ThreadPool::ThreadPool(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors, bool pin)
-			: _targetProcessors(targetProcessors), _currentThreadId(0), _pin(pin), _keepGoing(true)
+	ThreadPool::ThreadPool(std::size_t threadCount)
+			: _maxThreads(threadCount), _keepGoing(true)
 	{
 		_cleanUpThread = std::thread(&ThreadPool::ThreadCleanupProcedure, this);
-		for (std::size_t i = 0; i < _targetProcessors.size(); ++i)
+		for (std::size_t i = 0; i <_maxThreads; ++i)
 		{
 			_threadQueue.emplace(CreateNewThread());
 		}
@@ -31,20 +31,13 @@ namespace Elpida
 
 	std::unique_ptr<ThreadPoolThread> ThreadPool::CreateNewThread()
 	{
-		if (_currentThreadId >= _targetProcessors.size())
-		{
-			_currentThreadId = 0;
-		}
-
-		auto targetThreadId = _currentThreadId++;
-
-		return std::make_unique<ThreadPoolThread>(_targetProcessors[targetThreadId], _pin);
+		return std::make_unique<ThreadPoolThread>();
 	}
 
 	void ThreadPool::RequeueThread(std::unique_ptr<ThreadPoolThread>&& thread)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
-		if (_threadQueue.size() < _targetProcessors.size())
+		if (_threadQueue.size() < _maxThreads)
 		{
 			_threadQueue.push(std::move(thread));
 		}
@@ -62,7 +55,7 @@ namespace Elpida
 	}
 
 	ThreadPool::ThreadPool()
-			: _currentThreadId(0), _pin(false), _keepGoing(false)
+			: ThreadPool(std::thread::hardware_concurrency())
 	{
 
 	}

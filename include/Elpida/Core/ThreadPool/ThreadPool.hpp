@@ -80,8 +80,6 @@ namespace Elpida
 			std::promise<T> promise;
 			auto future = promise.get_future();
 
-			if (_targetProcessors.empty()) return std::async(std::launch::deferred, callable);
-
 			auto th = GetNextThread();
 			auto ptr = th.get();
 
@@ -102,25 +100,23 @@ namespace Elpida
 		[[nodiscard]]
 		std::size_t GetAvailableThreads() const
 		{
-			return _targetProcessors.size();
+			return _maxThreads;
 		}
 
 		ThreadPool();
-		explicit ThreadPool(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors, bool pin = false);
+		explicit ThreadPool(std::size_t threadCount);
 
 		~ThreadPool();
 	private:
 		std::mutex _mutex;
-		std::vector<Ref<const ProcessingUnitNode>> _targetProcessors;
 		std::queue<std::unique_ptr<ThreadPoolThread>> _threadQueue;
 		std::thread _cleanUpThread;
 		BlockingCollection<std::unique_ptr<ThreadPoolThread>> _threadsToClean;
-		std::size_t _currentThreadId;
+		std::size_t _maxThreads;
 		bool _keepGoing;
-		bool _pin;
 
 		std::unique_ptr<ThreadPoolThread> GetNextThread();
-		std::unique_ptr<ThreadPoolThread> CreateNewThread();
+		static std::unique_ptr<ThreadPoolThread> CreateNewThread();
 		void RequeueThread(std::unique_ptr<ThreadPoolThread>&& thread);
 		void ThreadCleanupProcedure();
 	};

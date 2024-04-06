@@ -27,8 +27,8 @@ namespace Elpida
 		_thread.join();
 	}
 
-	ThreadPoolThread::ThreadPoolThread(const Ref<const ProcessingUnitNode>& targetProcessor, bool pin)
-			: _targetProcessor(targetProcessor), _execute(false), _keepGoing(true), _pin(pin)
+	ThreadPoolThread::ThreadPoolThread()
+			: _execute(false), _keepGoing(true)
 	{
 		_thread = std::thread(&ThreadPoolThread::Procedure, this);
 	}
@@ -40,10 +40,6 @@ namespace Elpida
 
 	void ThreadPoolThread::Procedure()
 	{
-		if (_pin)
-		{
-			_targetProcessor.get().PinThreadToThisProcessor();
-		}
 		while (_keepGoing)
 		{
 			std::unique_lock<std::mutex> lock(_mutex);

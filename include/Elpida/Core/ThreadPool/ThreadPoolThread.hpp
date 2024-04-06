@@ -5,7 +5,6 @@
 #ifndef ELPIDA_THREADPOOLTHREAD_HPP
 #define ELPIDA_THREADPOOLTHREAD_HPP
 
-#include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 #include "Elpida/Core/ThreadPool/Functor.hpp"
 
 #include <thread>
@@ -22,17 +21,15 @@ namespace Elpida
 		void Excecute(std::unique_ptr<Functor>&& function);
 		void Terminate();
 
-		explicit ThreadPoolThread(const Ref<const ProcessingUnitNode>& targetProcessor, bool pin);
+		explicit ThreadPoolThread();
 		~ThreadPoolThread();
 	private:
 		std::thread _thread;
 		std::mutex _mutex;
 		std::condition_variable _notifier;
 		std::unique_ptr<Functor> _function;
-		const Ref<const ProcessingUnitNode>& _targetProcessor;
 		bool _execute;
 		bool _keepGoing;
-		bool _pin;
 
 		void Procedure();
 	};
