@@ -81,6 +81,7 @@ namespace Elpida
 	}
 
 	SvgLength::SvgLength(const std::string_view view)
+		: _units(SvgUnits::Raw)
 	{
 		if (view.empty()) return;
 		try

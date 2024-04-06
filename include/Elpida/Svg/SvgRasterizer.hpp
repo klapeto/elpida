@@ -23,8 +23,8 @@ namespace Elpida
 	class SvgRasterizer
 	{
 	public:
-		SvgBackDrop Rasterize(SvgCalculatedDocument& document, std::size_t subSamples = 16);
-		SvgBackDrop RasterizeMultiThreaded(SvgCalculatedDocument& document, ThreadPool& threadPool, std::size_t subSamples = 16);
+		SvgBackDrop Rasterize(const SvgCalculatedDocument& document, std::size_t subSamples = 16);
+		SvgBackDrop RasterizeMultiThreaded(const SvgCalculatedDocument& document, ThreadPool& threadPool, std::size_t subSamples = 16);
 
 	};
 } // Elpida

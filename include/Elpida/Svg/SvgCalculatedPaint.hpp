@@ -41,10 +41,12 @@ namespace Elpida
 		}
 
 		SvgCalculatedPaint();
-		explicit SvgCalculatedPaint(const SvgPaint& paint, const SvgBounds& elementBounds, const SvgDocument& document,
+		explicit SvgCalculatedPaint(const SvgPaint& paint,
+				const SvgBounds& elementBounds,
+				const SvgDocument& document,
 				const SvgCalculationContext& calculationContext);
-		SvgCalculatedPaint(const SvgCalculatedPaint&) = delete;
-		SvgCalculatedPaint& operator=(const SvgCalculatedPaint&) noexcept = delete;
+		SvgCalculatedPaint(const SvgCalculatedPaint&) = default;
+		SvgCalculatedPaint& operator=(const SvgCalculatedPaint&) = default;
 		SvgCalculatedPaint(SvgCalculatedPaint&&) noexcept = default;
 		SvgCalculatedPaint& operator=(SvgCalculatedPaint&&) noexcept = default;
 		virtual ~SvgCalculatedPaint() = default;

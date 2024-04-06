@@ -40,6 +40,11 @@ namespace Elpida
 		void Transform(const SvgTransform& transform) override;
 
 		SvgCalculatedStroke(const SvgStroke& stroke, const SvgBounds& elementBounds, const SvgDocument& document, const SvgCalculationContext& calculatingContext);
+		SvgCalculatedStroke(const SvgCalculatedStroke&) = default;
+		SvgCalculatedStroke& operator=(const SvgCalculatedStroke&) = default;
+		SvgCalculatedStroke(SvgCalculatedStroke&&) noexcept = default;
+		SvgCalculatedStroke& operator=(SvgCalculatedStroke&&) noexcept = default;
+		~SvgCalculatedStroke() override = default;
 	private:
 		std::vector<double> _dashes;
 		SvgLineJoin _lineJoin;
@@ -47,7 +52,6 @@ namespace Elpida
 		double _dashOffset;
 		double _width;
 		double _miterLimit;
-
 	};
 
 } // Svg

@@ -6,11 +6,12 @@
 #include "Elpida/Svg/SvgBlender.hpp"
 #include "Elpida/Svg/SvgCompositor.hpp"
 #include "Elpida/Svg/SvgSuperSampler.hpp"
-#include "Elpida/Core/ThreadPool.hpp"
+#include "Elpida/Svg/SvgPolygon.hpp"
+#include "Elpida/Svg/SvgCalculatedPaint.hpp"
+#include "Elpida/Core/ThreadPool/ThreadPool.hpp"
 
 #include <cmath>
-#include <Elpida/Svg/SvgPolygon.hpp>
-#include <Elpida/Svg/SvgCalculatedPaint.hpp>
+
 #include <thread>
 #include <future>
 
@@ -38,7 +39,6 @@ namespace Elpida
 		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetHeight() + 0.5)));
 
 		DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height);
-		//DrawPolygonMultiThreaded(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height);
 	}
 
 	void SvgBackDrop::DrawPolygonMultiThreaded(const SvgPolygon& polygon,
@@ -53,7 +53,7 @@ namespace Elpida
 			const size_t width,
 			const size_t height)
 	{
-		auto threadCount = std::min((std::size_t)std::thread::hardware_concurrency(), height);
+		auto threadCount = std::min(threadPool.GetAvailableThreads(), height);
 		std::size_t linesPerThread = std::ceil(height / static_cast<double>(threadCount));
 
 		std::vector<std::future<void>> threads;
@@ -61,7 +61,7 @@ namespace Elpida
 		for (std::size_t t = 0, h = startY; t < threadCount; ++t, h += linesPerThread)
 		{
 			auto thisEndLine = std::min(h + linesPerThread, height);
-			threads.push_back(threadPool.Queue([&, thisStartY = h, thisEndY = thisEndLine]()
+			threads.push_back(threadPool.Queue<void>([&, thisStartY = h, thisEndY = thisEndLine]()
 			{
 				DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, thisStartY, startX, width, thisEndY);
 			}));
@@ -128,7 +128,7 @@ namespace Elpida
 		const auto sourceWidth = other.GetWidth();
 
 		DoDrawOther(opacity, blender, compositor, startX, startY, width, height, 0, colorData, sourceWidth);
-		//DoDrawOtherMultiThreaded(opacity, blender, compositor, startX, startY, width, height, colorData, sourceWidth);
+
 	}
 
 	void
@@ -137,7 +137,7 @@ namespace Elpida
 			const size_t startX, const size_t startY, const size_t width, const size_t height,
 			const std::vector<SvgColor>& colorData, const size_t sourceWidth)
 	{
-		auto threadCount = std::min((std::size_t)std::thread::hardware_concurrency(), height);
+		auto threadCount = std::min(threadPool.GetAvailableThreads(), height);
 		std::size_t linesPerThread = ceil(height / static_cast<double>(threadCount));
 
 		std::vector<std::future<void>> threads;
@@ -145,7 +145,7 @@ namespace Elpida
 		for (std::size_t t = 0, h = startY, sourceY = 0; t < threadCount; ++t, h += linesPerThread, sourceY += linesPerThread)
 		{
 			auto thisEndLine = std::min(h + linesPerThread, height);
-			threads.emplace_back(threadPool.Queue([&, thisStartY = h, thisEndY = thisEndLine, sourceY = sourceY]
+			threads.emplace_back(threadPool.Queue<void>([&, thisStartY = h, thisEndY = thisEndLine, sourceY = sourceY]
 			{
 				DoDrawOther(opacity, blender, compositor, startX, thisStartY, width, thisEndY, sourceY, colorData, sourceWidth);
 			}));

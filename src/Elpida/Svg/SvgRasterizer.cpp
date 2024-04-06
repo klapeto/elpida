@@ -9,23 +9,13 @@
 #include "Elpida/Svg/SvgShapePolygonizer.hpp"
 #include "Elpida/Svg/SvgViewBox.hpp"
 #include "Elpida/Svg/SvgViewPort.hpp"
-#include "Elpida/Core/ThreadPool.hpp"
+#include "Elpida/Core/ThreadPool/ThreadPool.hpp"
 
 #include <iostream>
 #include <future>
 
 namespace Elpida
 {
-	class AsyncThreadPool
-	{
-	public:
-		template<typename T, typename TCallable>
-		std::future<T> Queue(TCallable&& callable)
-		{
-			return std::async(callable);
-		}
-	};
-
 	class RasterizedShape final
 	{
 	public:
@@ -98,7 +88,7 @@ namespace Elpida
 		return { std::move(backDrop), x, y };
 	}
 
-	static std::future<RasterizedShape> RasterizedSelfShape(SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
+	static std::future<RasterizedShape> RasterizedSelfShape(const SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
 	{
 		if (shape.GetPaths().empty()) return {};
 		return threadPool.template Queue<RasterizedShape>([&, subSamples]()
@@ -110,7 +100,8 @@ namespace Elpida
 			{
 				fillRasterization = threadPool.template Queue<RasterizedShape>([&]()
 				{
-					return RasterizePolygon(SvgShapePolygonizer::Polygonize(shape), shape.GetFill().value(), threadPool,
+					auto paint = shape.GetFill().value();
+					return RasterizePolygon(SvgShapePolygonizer::Polygonize(shape), paint, threadPool,
 							shape.GetFill()->GetFillRule(), subSamples);
 				});
 			}
@@ -119,7 +110,8 @@ namespace Elpida
 			{
 				strokeRasterization = threadPool.template Queue<RasterizedShape>([&]()
 				{
-					return RasterizePolygon(SvgShapePolygonizer::PolygonizeStroke(shape), shape.GetStroke().value(), threadPool,
+					auto paint = shape.GetStroke().value();
+					return RasterizePolygon(SvgShapePolygonizer::PolygonizeStroke(shape), paint, threadPool,
 							SvgFillRule::NonZero, subSamples);
 				});
 			}
@@ -160,7 +152,7 @@ namespace Elpida
 	}
 
 
-	static RasterizedShape RasterizeShape(SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
+	static RasterizedShape RasterizeShape(const SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
 	{
 		auto selfDrawFuture = RasterizedSelfShape(shape, threadPool, subSamples);
 
@@ -243,7 +235,7 @@ namespace Elpida
 	}
 
 
-	static void RasterizeRootShape(SvgBackDrop& backDrop, SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
+	static void RasterizeRootShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
 	{
 		auto childRasterizedShape = RasterizeShape(shape, threadPool, subSamples);
 		backDrop.DrawMultiThread(childRasterizedShape.GetBackdrop(),
@@ -255,18 +247,18 @@ namespace Elpida
 				shape.CompositingMode());
 	}
 
-	SvgBackDrop SvgRasterizer::Rasterize(SvgCalculatedDocument& document, std::size_t subSamples)
+	SvgBackDrop SvgRasterizer::Rasterize(const SvgCalculatedDocument& document, std::size_t subSamples)
 	{
 		auto& viewPort = document.GetViewPort();
 		SvgBackDrop backDrop(std::ceil(viewPort.GetWidth()), std::ceil(viewPort.GetHeight()));
 
-		ThreadPool pool({});
+		ThreadPool pool;
 		RasterizeRootShape(backDrop, document.GetRootShape(), pool, subSamples);
 
 		return backDrop;
 	}
 
-	SvgBackDrop SvgRasterizer::RasterizeMultiThreaded(SvgCalculatedDocument& document,
+	SvgBackDrop SvgRasterizer::RasterizeMultiThreaded(const SvgCalculatedDocument& document,
 			ThreadPool& threadPool,
 			std::size_t subSamples)
 	{

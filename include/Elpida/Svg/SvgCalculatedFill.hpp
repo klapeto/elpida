@@ -19,8 +19,16 @@ namespace Elpida
 		[[nodiscard]]
 		SvgFillRule GetFillRule() const;
 
-		SvgCalculatedFill(const SvgFill& paint, const SvgBounds& elementBounds, const SvgDocument& document,
+		SvgCalculatedFill(const SvgFill& paint,
+				const SvgBounds& elementBounds,
+				const SvgDocument& document,
 				const SvgCalculationContext& calculationContext);
+
+		SvgCalculatedFill(const SvgCalculatedFill&) = default;
+		SvgCalculatedFill& operator=(const SvgCalculatedFill&) = default;
+		SvgCalculatedFill(SvgCalculatedFill&&) noexcept = default;
+		SvgCalculatedFill& operator=(SvgCalculatedFill&&) noexcept = default;
+		~SvgCalculatedFill() override = default;
 	private:
 		SvgFillRule _fillRule;
 	};

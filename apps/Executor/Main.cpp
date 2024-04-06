@@ -113,14 +113,14 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 
 #include <ranges>
 
-#include "Elpida/Core/ThreadPool.hpp"
+#include "Elpida/Core/ThreadPool/ThreadPool.hpp"
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
 
 int main(int argC, char** argV)
 {
 	auto topology = TopologyLoader::LoadTopology();
 
-	ThreadPool pool(topology.GetAllProcessingUnits());
+	ThreadPool pool(topology.GetAllProcessingUnits()/*| std::ranges::views::take(4)*/);
 
 	std::ifstream file("/home/klapeto/about.svg", std::ifstream::binary | std::ifstream::in);
 	//std::ifstream file("/home/klapeto/σχεδίαση.svg", std::ifstream::binary | std::ifstream::in);
@@ -155,16 +155,22 @@ int main(int argC, char** argV)
 
 	SvgDocument svgDocument(element);
 
-	auto calculated = SvgCalculatedDocument(svgDocument, 1.0);
+	auto calculated = SvgCalculatedDocument(svgDocument, 2.0);
 
 	SvgRasterizer rasterizer;
-	auto a = std::chrono::high_resolution_clock ::now();
-	auto backDrop = rasterizer.RasterizeMultiThreaded(calculated, pool, 16);
-	//auto backDrop = rasterizer.Rasterize(calculated, 16);
-	auto b = std::chrono::high_resolution_clock ::now();
 
+	SvgBackDrop backDrop;
 
-	std::cout << "Took: " << std::chrono::duration_cast<std::chrono::duration<double>>(b-a).count() << std::endl;
+	for (int i = 0; i < 4; ++i)
+	{
+		auto a = std::chrono::high_resolution_clock ::now();
+		backDrop = rasterizer.RasterizeMultiThreaded(calculated, pool, 16);
+		//auto backDrop = rasterizer.Rasterize(calculated, 16);
+		auto b = std::chrono::high_resolution_clock ::now();
+
+		std::cout << "Took: " << std::chrono::duration_cast<std::chrono::duration<double>>(b-a).count() << std::endl;
+	}
+
 	std::size_t width = backDrop.GetWidth();
 	std::size_t height = backDrop.GetHeight();
 	auto bitmapData = SvgColorConverter::Convert<unsigned char>(backDrop.GetColorData());
