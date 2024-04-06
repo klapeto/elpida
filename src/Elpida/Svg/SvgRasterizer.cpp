@@ -44,7 +44,8 @@ namespace Elpida
 		}
 
 		RasterizedShape() = default;
-		RasterizedShape(SvgBackDrop&& backDrop,  std::size_t x, std::size_t y)
+
+		RasterizedShape(SvgBackDrop&& backDrop, std::size_t x, std::size_t y)
 				: _backdrop(std::move(backDrop)), _x(x), _y(y)
 		{
 
@@ -60,12 +61,147 @@ namespace Elpida
 		std::size_t _y = 0;
 	};
 
+	template<typename T>
+	class CompletedFuture
+	{
+	public:
+		T& get()
+		{
+			return _value.value();
+		}
+
+		bool valid() const
+		{
+			return _value.has_value();
+		}
+
+		CompletedFuture() = default;
+
+		explicit CompletedFuture(T&& value)
+				: _value(std::move(value))
+		{
+		}
+
+	private:
+		std::optional<T> _value;
+	};
+
+	class MultiThreadPolygonRasterizer
+	{
+	public:
+		explicit MultiThreadPolygonRasterizer(ThreadPool& threadPool)
+				: _threadPool(threadPool)
+		{
+		}
+
+		void operator()(SvgBackDrop& backDrop,
+				const SvgPolygon& polygon,
+				SvgCalculatedPaint& paint,
+				SvgFillRule fillRule,
+				std::size_t subSamples)
+		{
+			backDrop.DrawMultiThread(polygon, paint, _threadPool, fillRule, SvgBlendMode::Normal,
+					SvgCompositingMode::SourceOver, subSamples);
+		}
+
+	private:
+		ThreadPool& _threadPool;
+	};
+
+	class MultiThreadFutureGenerator
+	{
+	public:
+		template<typename T>
+		using FutureType = std::future<T>;
+
+		explicit MultiThreadFutureGenerator(ThreadPool& threadPool)
+				: _threadPool(threadPool)
+		{
+		}
+
+		template<typename T, typename TCallable>
+		FutureType<T> Generate(TCallable callable)
+		{
+			return _threadPool.Queue<T>(callable);
+		}
+
+	private:
+		ThreadPool& _threadPool;
+	};
+
+
+	class MultiThreadBackDropDrawer
+	{
+	public:
+		explicit MultiThreadBackDropDrawer(ThreadPool& threadPool)
+				: _threadPool(threadPool)
+		{
+		}
+
+		void operator()(SvgBackDrop& backDrop,
+				const SvgBackDrop& other,
+				std::size_t x,
+				std::size_t y,
+				double opacity,
+				SvgBlendMode blendMode,
+				SvgCompositingMode compositingMode)
+		{
+			backDrop.DrawMultiThread(other, x, y, _threadPool, opacity, blendMode, compositingMode);
+		}
+
+	private:
+		ThreadPool& _threadPool;
+	};
+
+	class SingleThreadPolygonRasterizer
+	{
+	public:
+
+		void operator()(SvgBackDrop& backDrop,
+				const SvgPolygon& polygon,
+				SvgCalculatedPaint& paint,
+				SvgFillRule fillRule,
+				std::size_t subSamples)
+		{
+			backDrop.Draw(polygon, paint, fillRule, SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+		}
+	};
+
+	class SingleThreadFutureGenerator
+	{
+	public:
+		template<typename T>
+		using FutureType = CompletedFuture<T>;
+
+		template<typename T, typename TCallable>
+		FutureType<T> Generate(TCallable callable)
+		{
+			return CompletedFuture<T>(callable());
+		}
+	};
+
+	class SingleThreadBackDropDrawer
+	{
+	public:
+		void operator()(SvgBackDrop& backDrop,
+				const SvgBackDrop& other,
+				std::size_t x,
+				std::size_t y,
+				double opacity,
+				SvgBlendMode blendMode,
+				SvgCompositingMode compositingMode)
+		{
+			backDrop.Draw(other, x, y, opacity, blendMode, compositingMode);
+		}
+	};
+
+	template<typename TPolyRasterize>
 	static RasterizedShape
 	RasterizePolygon(SvgPolygon polygon,
 			SvgCalculatedPaint& paint,
-			ThreadPool& threadPool,
 			SvgFillRule fillRule,
-			std::size_t subSamples)
+			std::size_t subSamples,
+			TPolyRasterize& rasterize)
 	{
 		auto bounds = polygon.GetBounds();
 
@@ -83,36 +219,42 @@ namespace Elpida
 		// +0.5 because backdrop pixels are actually drawn at + 0.5 due to 0.0 is at the center of the first pixel
 		SvgBackDrop backDrop(std::ceil(bounds.GetWidth() + 0.5), std::ceil(bounds.GetHeight() + 0.5));
 
-		backDrop.DrawMultiThread(polygon, paint,threadPool, fillRule, SvgBlendMode::Normal, SvgCompositingMode::SourceOver, subSamples);
+		rasterize(backDrop, polygon, paint, fillRule, subSamples);
 
 		return { std::move(backDrop), x, y };
 	}
 
-	static std::future<RasterizedShape> RasterizedSelfShape(const SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
+	template<typename TFuture, typename TFutureGenerator, typename TPolyRasterize, typename TBackdropRasterize>
+	static TFuture
+	RasterizedSelfShape(const SvgCalculatedShape& shape,
+			std::size_t subSamples,
+			TFutureGenerator& futureGenerator,
+			TPolyRasterize& polyRasterize,
+			TBackdropRasterize& backdropRasterize)
 	{
 		if (shape.GetPaths().empty()) return {};
-		return threadPool.template Queue<RasterizedShape>([&, subSamples]()
+		return futureGenerator.template Generate<RasterizedShape>([&, subSamples]()
 		{
-			std::future<RasterizedShape> fillRasterization;
-			std::future<RasterizedShape> strokeRasterization;
+			TFuture fillRasterization;
+			TFuture strokeRasterization;
 
 			if (shape.GetFill().has_value())
 			{
-				fillRasterization = threadPool.template Queue<RasterizedShape>([&]()
+				fillRasterization = futureGenerator.template Generate<RasterizedShape>([&]()
 				{
 					auto paint = shape.GetFill().value();
-					return RasterizePolygon(SvgShapePolygonizer::Polygonize(shape), paint, threadPool,
-							shape.GetFill()->GetFillRule(), subSamples);
+					return RasterizePolygon(SvgShapePolygonizer::Polygonize(shape), paint,
+							shape.GetFill()->GetFillRule(), subSamples, polyRasterize);
 				});
 			}
 
 			if (shape.GetStroke().has_value())
 			{
-				strokeRasterization = threadPool.template Queue<RasterizedShape>([&]()
+				strokeRasterization = futureGenerator.template Generate<RasterizedShape>([&]()
 				{
 					auto paint = shape.GetStroke().value();
-					return RasterizePolygon(SvgShapePolygonizer::PolygonizeStroke(shape), paint, threadPool,
-							SvgFillRule::NonZero, subSamples);
+					return RasterizePolygon(SvgShapePolygonizer::PolygonizeStroke(shape), paint,
+							SvgFillRule::NonZero, subSamples, polyRasterize);
 				});
 			}
 			std::size_t x = std::numeric_limits<std::size_t>::max();
@@ -144,30 +286,39 @@ namespace Elpida
 
 			SvgBackDrop finalBackdrop(width, height);
 
-			finalBackdrop.DrawMultiThread(fill.GetBackdrop(), fill.GetX() - x, fill.GetY() - y, threadPool);
-			finalBackdrop.DrawMultiThread(stroke.GetBackdrop(), stroke.GetX() - x, stroke.GetY() - y, threadPool);
+			backdropRasterize(finalBackdrop, fill.GetBackdrop(), fill.GetX() - x, fill.GetY() - y, 1.0,
+					SvgBlendMode::Normal, SvgCompositingMode::SourceOver);
+			backdropRasterize(finalBackdrop, stroke.GetBackdrop(), stroke.GetX() - x, stroke.GetY() - y, 1.0,
+					SvgBlendMode::Normal, SvgCompositingMode::SourceOver);
 
 			return RasterizedShape(std::move(finalBackdrop), x, y);
 		});
 	}
 
-
-	static RasterizedShape RasterizeShape(const SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
+	template<typename TFutureGenerator, typename TPolyRasterize, typename TBackdropRasterize>
+	static RasterizedShape
+	RasterizeShape(const SvgCalculatedShape& shape,
+			std::size_t subSamples,
+			TFutureGenerator& futureGenerator,
+			TPolyRasterize& polyRasterize,
+			TBackdropRasterize& backdropRasterize)
 	{
-		auto selfDrawFuture = RasterizedSelfShape(shape, threadPool, subSamples);
+		using TFuture = TFutureGenerator::template FutureType<RasterizedShape>;
+		auto selfDrawFuture = RasterizedSelfShape<TFuture>(shape, subSamples, futureGenerator, polyRasterize,
+				backdropRasterize);
 
 		std::vector<RasterizedShape> rasterizedChildren;
 		auto& children = shape.GetChildren();
 		rasterizedChildren.reserve(children.size());
 		{
-			std::vector<std::future<RasterizedShape>> rasterizationFutures;
+			std::vector<TFuture> rasterizationFutures;
 
 			rasterizationFutures.reserve(children.size());
 			for (auto& child: children)
 			{
-				rasterizationFutures.push_back(threadPool.template Queue<RasterizedShape>([&]()
+				rasterizationFutures.push_back(futureGenerator.template Generate<RasterizedShape>([&]()
 				{
-					return RasterizeShape(child, threadPool, subSamples);
+					return RasterizeShape(child, subSamples, futureGenerator, polyRasterize, backdropRasterize);
 				}));
 			}
 
@@ -214,7 +365,13 @@ namespace Elpida
 
 		if (rasterizedSelf.IsValid())
 		{
-			finalBackDrop.DrawMultiThread(rasterizedSelf.GetBackdrop(), rasterizedSelf.GetX() - minX,rasterizedSelf.GetY() - minY, threadPool);
+			backdropRasterize(finalBackDrop,
+					rasterizedSelf.GetBackdrop(),
+					rasterizedSelf.GetX() - minX,
+					rasterizedSelf.GetY() - minY,
+					1.0,
+					SvgBlendMode::Normal,
+					SvgCompositingMode::SourceOver);
 		}
 
 		for (std::size_t i = 0; i < rasterizedChildren.size(); ++i)
@@ -222,10 +379,10 @@ namespace Elpida
 			auto& rasterizedChild = rasterizedChildren[i];
 			auto& child = children[i];
 
-			finalBackDrop.DrawMultiThread(rasterizedChild.GetBackdrop(),
+			backdropRasterize(finalBackDrop,
+					rasterizedChild.GetBackdrop(),
 					rasterizedChild.GetX() - minX,
 					rasterizedChild.GetY() - minY,
-					threadPool,
 					child.GetOpacity(),
 					child.BlendMode(),
 					child.CompositingMode());
@@ -235,13 +392,22 @@ namespace Elpida
 	}
 
 
-	static void RasterizeRootShape(SvgBackDrop& backDrop, const SvgCalculatedShape& shape, ThreadPool& threadPool, std::size_t subSamples)
+	template<typename TFutureGenerator, typename TPolyRasterize, typename TBackdropRasterize>
+	static void RasterizeRootShape(SvgBackDrop& backDrop,
+			const SvgCalculatedShape& shape,
+			std::size_t subSamples,
+			TFutureGenerator futureGenerator,
+			TPolyRasterize polyRasterize,
+			TBackdropRasterize backdropRasterize)
 	{
-		auto childRasterizedShape = RasterizeShape(shape, threadPool, subSamples);
-		backDrop.DrawMultiThread(childRasterizedShape.GetBackdrop(),
+		auto childRasterizedShape = RasterizeShape(shape,
+				subSamples,
+				futureGenerator,
+				polyRasterize,
+				backdropRasterize);
+		backdropRasterize(backDrop, childRasterizedShape.GetBackdrop(),
 				childRasterizedShape.GetX(),
 				childRasterizedShape.GetY(),
-				threadPool,
 				shape.GetOpacity(),
 				shape.BlendMode(),
 				shape.CompositingMode());
@@ -252,8 +418,12 @@ namespace Elpida
 		auto& viewPort = document.GetViewPort();
 		SvgBackDrop backDrop(std::ceil(viewPort.GetWidth()), std::ceil(viewPort.GetHeight()));
 
-		ThreadPool pool;
-		RasterizeRootShape(backDrop, document.GetRootShape(), pool, subSamples);
+		RasterizeRootShape(backDrop,
+				document.GetRootShape(),
+				subSamples,
+				SingleThreadFutureGenerator(),
+				SingleThreadPolygonRasterizer(),
+				SingleThreadBackDropDrawer());
 
 		return backDrop;
 	}
@@ -265,7 +435,12 @@ namespace Elpida
 		auto& viewPort = document.GetViewPort();
 		SvgBackDrop backDrop(std::ceil(viewPort.GetWidth()), std::ceil(viewPort.GetHeight()));
 
-		RasterizeRootShape(backDrop, document.GetRootShape(), threadPool, subSamples);
+		RasterizeRootShape(backDrop,
+				document.GetRootShape(),
+				subSamples,
+				MultiThreadFutureGenerator(threadPool),
+				MultiThreadPolygonRasterizer(threadPool),
+				MultiThreadBackDropDrawer(threadPool));
 
 		return backDrop;
 	}
