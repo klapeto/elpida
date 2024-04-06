@@ -126,9 +126,12 @@ int main(int argC, char** argV)
 			           0),
 			helper.GetNumaAware()
 				? UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
-				: UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()));
+				: UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()),
+				        helper.GetPinThreads());
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
+
+		ProcessingUnitNode::PinProcessToProcessors(targetProcessors);
 
 		auto result = benchmark->Run(targetProcessors, config, environmentInfo);
 

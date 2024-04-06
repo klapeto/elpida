@@ -38,7 +38,16 @@ namespace Elpida
 		[[nodiscard]]
 		const AllocatorFactory& GetAllocatorFactory() const;
 
-		EnvironmentInfo(CpuInfo&& cpuInfo, MemoryInfo&& memoryInfo, OsInfo&& osInfo, TopologyInfo&& topologyInfo, TimingInfo&& overheadsInfo, UniquePtr<AllocatorFactory> allocatorFactory);
+		[[nodiscard]]
+		bool IsPinThreads() const;
+
+		EnvironmentInfo(CpuInfo&& cpuInfo,
+				MemoryInfo&& memoryInfo,
+				OsInfo&& osInfo,
+				TopologyInfo&& topologyInfo,
+				TimingInfo&& overheadsInfo,
+				UniquePtr<AllocatorFactory> allocatorFactory,
+				bool pinThreads);
 		EnvironmentInfo(const EnvironmentInfo&) = delete;
 		EnvironmentInfo(EnvironmentInfo&&) noexcept = default;
 		EnvironmentInfo& operator=(const EnvironmentInfo&) = delete;
@@ -50,8 +59,8 @@ namespace Elpida
 		TopologyInfo _topologyInfo;
 		OsInfo _osInfo;
 		TimingInfo _overheadsInfo;
-
 		UniquePtr<AllocatorFactory> _allocatorFactory;
+		bool _pinThreads;
 	};
 
 } // Elpida

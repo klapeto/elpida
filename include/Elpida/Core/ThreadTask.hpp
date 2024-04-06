@@ -40,10 +40,7 @@ namespace Elpida
 
 		void WakeThread();
 
-		static void PinCurrentThreadToProcessor(const TopologyNode& topologyNode);
-		static void PinCurrentThreadToProcessor(unsigned int processorId);
-
-		ThreadTask(UniquePtr<Task> taskToRun, Ref<const TopologyNode> targetProcessor);
+		ThreadTask(UniquePtr<Task> taskToRun, Ref<const ProcessingUnitNode> targetProcessor, bool pin);
 		~ThreadTask() final;
 	 protected:
 		void DoRun() final;
@@ -55,9 +52,10 @@ namespace Elpida
 		std::thread _thread;
 		std::condition_variable _conditionVariable;
 		std::mutex _mutex;
-		Ref<const TopologyNode> _targetProcessor;
+		Ref<const ProcessingUnitNode> _targetProcessor;
 		Duration _taskRunDuration;
 		volatile bool _doStart;
+		bool _pin;
 
 		void ThreadProcedure();
 	};

@@ -14,12 +14,6 @@
 
 namespace Elpida
 {
-
-	struct BenchmarkResultTuple {
-		Duration duration;
-		Size processDataSize;
-	};
-
 	BenchmarkResult Benchmark::Run(
 		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
 		const Vector<TaskConfiguration>& configuration,
@@ -39,11 +33,13 @@ namespace Elpida
 			Size processedDataSize = 0;
 			if (task->CanBeMultiThreaded())
 			{
-				duration = ExecuteMultiThread(data, std::move(task), allocators, targetProcessors, processedDataSize);
+				duration = ExecuteMultiThread(data, std::move(task), allocators, targetProcessors, processedDataSize,
+						environmentInfo.IsPinThreads());
 			}
 			else
 			{
-				duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front(), processedDataSize);
+				duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front(), processedDataSize,
+						environmentInfo.IsPinThreads());
 			}
 
 			taskResults.emplace_back(duration, processedDataSize);
@@ -59,10 +55,11 @@ namespace Elpida
 	Duration
 	Benchmark::ExecuteSingleThread(UniquePtr<AbstractTaskData>& data,
 		UniquePtr<Task> task,
-		const TopologyNode& targetProcessor,
-		Size& processedDataSize)
+		const ProcessingUnitNode& targetProcessor,
+		Size& processedDataSize,
+		bool pinThreads)
 	{
-		ThreadTask threadTask(std::move(task), targetProcessor);
+		ThreadTask threadTask(std::move(task), targetProcessor, pinThreads);
 
 		auto allocator = data->GetAllocator();
 		threadTask.Prepare(std::move(data));
@@ -82,7 +79,7 @@ namespace Elpida
 		UniquePtr<Task> task,
 		const Vector<SharedPtr<Allocator>>& allocators,
 		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-		Size& processedDataSize)
+		Size& processedDataSize, bool pinThreads)
 	{
 		auto chunks = data->Split(allocators);
 
@@ -92,7 +89,7 @@ namespace Elpida
 
 		for (std::size_t i = 0; i < chunks.size(); ++i)
 		{
-			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), targetProcessors[i]);
+			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), targetProcessors[i], pinThreads);
 
 			auto  allocator = chunks[i]->GetAllocator();
 			threadTask->Prepare(std::move(chunks[i]));

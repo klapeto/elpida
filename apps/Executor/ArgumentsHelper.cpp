@@ -96,6 +96,8 @@ namespace Elpida
 		accumulator << R"("           The virtual call overhead in nanoseconds)" << std::endl;
 		accumulator << R"("       --numa-aware)" << std::endl;
 		accumulator << R"("           Enable numa aware allocations)" << std::endl;
+		accumulator << R"("       --pin-threads)" << std::endl;
+		accumulator << R"("           Enable thread pining. Threads will be pinned to target affinity and cannot jump to other processors)" << std::endl;
 
 		return accumulator.str();
 	}
@@ -172,7 +174,8 @@ namespace Elpida
 			NowOverhead,
 			LoopOverhead,
 			VirtualOverhead,
-			NumaAware
+			NumaAware,
+			PinThreads
 		};
 
 		struct option options[] = {
@@ -187,6 +190,7 @@ namespace Elpida
 			{ "loop-nanoseconds", required_argument, nullptr, LoopOverhead },
 			{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
 			{ "numa-aware", no_argument, nullptr, NumaAware },
+			{ "pin-threads", no_argument, nullptr, PinThreads },
 			{ nullptr, 0, nullptr, 0 }
 		};
 
@@ -230,6 +234,9 @@ namespace Elpida
 				break;
 			case NumaAware:
 				_numaAware = true;
+				break;
+			case PinThreads:
+				_pinThreads = true;
 				break;
 			case '?':
 				returnText = "Unknown option: " + std::string(GetValueOrDefault(optarg));
@@ -336,12 +343,17 @@ namespace Elpida
 	}
 
 	ArgumentsHelper::ArgumentsHelper()
-		: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0), _numaAware(false)
+		: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0), _numaAware(false), _pinThreads(false)
 	{
 
 	}
 	bool ArgumentsHelper::GetNumaAware() const
 	{
 		return _numaAware;
+	}
+
+	bool ArgumentsHelper::GetPinThreads() const
+	{
+		return _pinThreads;
 	}
 } // Elpida

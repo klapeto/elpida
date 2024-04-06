@@ -40,4 +40,5 @@ namespace Elpida
 	{
 		_cpuKind = cpuKind;
 	}
+
 } // Elpida

@@ -15,8 +15,6 @@ set(ELPIDA_CORE_SOURCES
         ValueUtilities.cpp
         TimingInfo.cpp
         ThreadTask.cpp
-        ThreadTask.Unix.cpp
-        ThreadTask.Windows.cpp
         BenchmarkGroup.cpp
         TaskConfiguration.cpp
         ElpidaException.cpp

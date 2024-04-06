@@ -32,7 +32,13 @@ namespace Elpida
 		void SetNumaNode(const NumaNode& cacheNode);
 		void SetCpuKind(const CpuKind& cacheNode);
 
-		void PinThreadToThisProcessor() const;
+		static void PinThreadToProcessor(unsigned int processorId);
+		static void PinProcessToProcessors(const std::vector<Ref<const ProcessingUnitNode>>& processors);
+
+		void PinThreadToThisProcessor() const
+		{
+			PinThreadToProcessor(GetOsIndex().value());
+		}
 
 		explicit ProcessingUnitNode();
 		ProcessingUnitNode(const ProcessingUnitNode&) = delete;
