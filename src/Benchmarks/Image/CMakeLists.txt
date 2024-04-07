@@ -11,11 +11,6 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         ConvertToGrayscaleTask.cpp
         ConvertToUInt8Task.cpp
         ImageTaskData.cpp
-        SvgParseTask.cpp
-        SvgRasterization.cpp
-        SvgBenchmark.cpp
-        nanosvg.c
-        nanosvgrast.c
         Plugin.cpp
 )
 

@@ -6,3 +6,5 @@ add_library(elpida-xml
         XmlElement.cpp
         XmlParser.cpp
         XmlMap.cpp)
+
+set_property(TARGET elpida-xml PROPERTY POSITION_INDEPENDENT_CODE ON)

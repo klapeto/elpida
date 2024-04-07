@@ -15,7 +15,7 @@
 namespace Elpida
 {
 
-	class FileReadTask: public Task
+	class FileReadTask : public Task
 	{
 	 public:
 		void Prepare(UniquePtr<AbstractTaskData> inputData) override;

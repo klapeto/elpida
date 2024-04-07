@@ -6,10 +6,11 @@ project("Elpida common tasks" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_COMMON_TASKS_SOURCES
         FileReadTask.cpp
         FileWriteTask.cpp
-        )
+        ParseXmlTask.cpp
+)
 
 add_library(elpida-common-tasks ${ELPIDA_COMMON_TASKS_SOURCES})
 
-target_link_libraries(elpida-common-tasks PRIVATE elpida-core)
+target_link_libraries(elpida-common-tasks PRIVATE elpida-core elpida-xml)
 
 set_property(TARGET elpida-common-tasks PROPERTY POSITION_INDEPENDENT_CODE ON)
