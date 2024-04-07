@@ -30,8 +30,13 @@ namespace Elpida::Application
 			return _scoreType;
 		}
 
-		TaskModel(std::string name, std::string unit, ScoreType scoreType)
-			: _name(std::move(name)), _unit(std::move(unit)), _scoreType(scoreType)
+		bool IsMeasured() const
+		{
+			return _isMeasured;
+		}
+
+		TaskModel(std::string name, std::string unit, ScoreType scoreType, bool isMeasured)
+				: _name(std::move(name)), _unit(std::move(unit)), _scoreType(scoreType), _isMeasured(isMeasured)
 		{
 
 		}
@@ -45,6 +50,7 @@ namespace Elpida::Application
 		std::string _name;
 		std::string _unit;
 		ScoreType _scoreType;
+		bool _isMeasured;
 	};
 
 } // Application

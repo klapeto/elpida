@@ -59,7 +59,7 @@ namespace Elpida
 		return UniquePtr<Task>(new ThreadTask(_taskToRun->Duplicate(), _targetProcessor, _pin));
 	}
 
-	TaskInfo ThreadTask::GetInfo() const
+	TaskInfo ThreadTask::DoGetInfo() const
 	{
 		return _taskToRun->GetInfo();
 	}

@@ -25,6 +25,12 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
+		T& GetUnderlyingData()
+		{
+			return _data;
+		}
+
+		[[nodiscard]]
 		constexpr Size GetSize() const override
 		{
 			return sizeof(T);
@@ -36,7 +42,14 @@ namespace Elpida
 
 			auto ptr = dynamic_cast<SimpleTaskData<T>*>(data[0].get());
 			if (ptr == nullptr) throw ElpidaException("Attempted to merge a non SimpleTaskData<T>");
-			_data = ptr->_data;
+			if constexpr (std::is_copy_assignable_v<T>)
+			{
+				_data = ptr->_data;
+			}
+			else
+			{
+				_data = std::move(ptr->_data);
+			}
 		}
 
 		void Allocate(Size size) override
@@ -63,14 +76,22 @@ namespace Elpida
 			returnVector.reserve(targetAllocators.size());
 			for (auto& allocator: targetAllocators)
 			{
-				returnVector.push_back(std::make_unique<SimpleTaskData<T>>(_data, allocator));
+				if constexpr (std::is_copy_assignable_v<T>)
+				{
+					returnVector.push_back(std::make_unique<SimpleTaskData<T>>(_data, allocator));
+				}
+				else
+				{
+					returnVector.push_back(std::make_unique<SimpleTaskData<T>>(std::move(_data), allocator));
+				}
+
 			}
 
 			return returnVector;
 		}
 
 		SimpleTaskData(const T& data, SharedPtr<Allocator> allocator)
-			: _data(data), _allocator(std::move(allocator))
+				: _data(data), _allocator(std::move(allocator))
 		{
 
 		}

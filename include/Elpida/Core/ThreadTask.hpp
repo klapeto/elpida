@@ -33,9 +33,6 @@ namespace Elpida
 		bool CanBeMultiThreaded() const final;
 
 		[[nodiscard]]
-		TaskInfo GetInfo() const final;
-
-		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
 		void WakeThread();
@@ -58,6 +55,9 @@ namespace Elpida
 		bool _pin;
 
 		void ThreadProcedure();
+
+		[[nodiscard]]
+		TaskInfo DoGetInfo() const final;
 	};
 
 } // Elpida

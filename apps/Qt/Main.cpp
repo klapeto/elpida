@@ -237,7 +237,7 @@ static std::vector<BenchmarkGroupModel> LoadBenchmarks(SettingsService& settings
 
 					for (auto& task: taskInfos)
 					{
-						tasks.emplace_back(task.GetName(), task.GetScoreUnit(), task.GetScoreType());
+						tasks.emplace_back(task.GetName(), task.GetScoreUnit(), task.GetScoreType(), task.IsMeasured());
 					}
 
 					std::vector<BenchmarkConfigurationModel> configurations;

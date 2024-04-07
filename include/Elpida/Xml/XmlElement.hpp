@@ -37,7 +37,7 @@ namespace Elpida
 			return _children;
 		}
 
-		const std::string& GetAttributeValue(const std::string_view name) const
+		const std::string& GetAttributeValue(const std::string& name) const
 		{
 			return _attributes.GetValue(name);
 		}

@@ -14,7 +14,7 @@ namespace Elpida
 {
 	class XmlElement;
 
-	class SvgDocument
+	class SvgDocument final
 	{
 	public:
 		[[nodiscard]]
@@ -29,9 +29,11 @@ namespace Elpida
 			return _element;
 		}
 
+		SvgDocument() = default;
 		explicit SvgDocument(const XmlElement& element);
 		SvgDocument(SvgDocument&& other) noexcept = default;
-
+		SvgDocument& operator=(SvgDocument&& other) noexcept = default;
+		~SvgDocument() = default;
 	private:
 		SvgDefs _defs;
 		SvgSvgElement _element;

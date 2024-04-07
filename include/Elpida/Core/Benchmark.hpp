@@ -56,6 +56,23 @@ namespace Elpida {
 			bool pinThreads);
 
 		void ValidateConfiguration(const Vector<TaskConfiguration>& configuration) const;
+
+	protected:
+		template<typename T>
+		static UniquePtr<T> CreateTask(bool measured = true)
+		{
+			auto task = std::make_unique<T>();
+			task->SetMeasured(measured);
+			return std::move(task);
+		}
+
+		template<typename T, typename ... TArgs>
+		static UniquePtr<T> CreateTask(bool measured, TArgs&& ... args)
+		{
+			auto task = std::make_unique<T>(std::forward<TArgs...>(args...));
+			task->SetMeasured(measured);
+			return std::move(task);
+		}
 	};
 
 } // Elpida

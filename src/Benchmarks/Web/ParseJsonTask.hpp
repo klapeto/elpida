@@ -22,15 +22,15 @@ namespace Elpida
 		UniquePtr<AbstractTaskData> Finalize() override;
 
 		[[nodiscard]]
-		TaskInfo GetInfo() const override;
-
-		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
 		ParseJsonTask() = default;
 		~ParseJsonTask() override = default;
 	protected:
 		void DoRun(Iterations iterations) override;
+
+		[[nodiscard]]
+		TaskInfo DoGetInfo() const override;
 
 		[[nodiscard]]
 		Size GetOperationsPerformedPerRun() override;

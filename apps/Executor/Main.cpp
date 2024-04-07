@@ -87,9 +87,17 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 		taskConfigurations[i].Parse(configurationValues[i]);
 	}
 }
+#include <unistd.h>
+
+volatile int attached = 0;
 
 int main(int argC, char** argV)
 {
+//	while (attached == 0)
+//	{
+//		sleep(1);
+//	}
+
 	try
 	{
 		ArgumentsHelper helper;

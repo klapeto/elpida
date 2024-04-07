@@ -175,7 +175,7 @@ namespace Elpida
 		return std::move(_data);
 	}
 
-	TaskInfo MemoryLatencyTask::GetInfo() const
+	TaskInfo MemoryLatencyTask::DoGetInfo() const
 	{
 		return {
 			"Memory latency",

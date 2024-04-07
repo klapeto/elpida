@@ -31,6 +31,7 @@ namespace Elpida
 			task->SetEnvironmentInfo(environmentInfo);
 			Duration duration;
 			Size processedDataSize = 0;
+			bool shouldBeMeasured = task->ShouldBeMeasured();
 			if (task->CanBeMultiThreaded())
 			{
 				duration = ExecuteMultiThread(data, std::move(task), allocators, targetProcessors, processedDataSize,
@@ -42,7 +43,10 @@ namespace Elpida
 						environmentInfo.IsPinThreads());
 			}
 
-			taskResults.emplace_back(duration, processedDataSize);
+			if (shouldBeMeasured)
+			{
+				taskResults.emplace_back(duration, processedDataSize);
+			}
 		}
 
 		auto score = CalculateScore(taskResults);

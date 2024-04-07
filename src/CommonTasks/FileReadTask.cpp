@@ -37,7 +37,7 @@ namespace Elpida
 		return std::move(_outputData);
 	}
 
-	TaskInfo FileReadTask::GetInfo() const
+	TaskInfo FileReadTask::DoGetInfo() const
 	{
 		return {
 			"File read",
@@ -55,7 +55,6 @@ namespace Elpida
 	FileReadTask::FileReadTask(std::string filePath)
 		: _filePath(std::move(filePath))
 	{
-
 	}
 
 	void FileReadTask::DoRun()

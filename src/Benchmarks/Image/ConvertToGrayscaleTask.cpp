@@ -32,7 +32,7 @@ namespace Elpida
 		return std::move(_inputData);
 	}
 
-	TaskInfo ConvertToGrayscaleTask::GetInfo() const
+	TaskInfo ConvertToGrayscaleTask::DoGetInfo() const
 	{
 		return {
 			"Convert to grayscale",

@@ -37,7 +37,7 @@ namespace Elpida
 		return std::move(_outputData);
 	}
 
-	TaskInfo ConvertToFloatTask::GetInfo() const
+	TaskInfo ConvertToFloatTask::DoGetInfo() const
 	{
 		return { "Convert to float",
 				 "Converts RGBA pixels to float channels (0.0 - 1.0)",

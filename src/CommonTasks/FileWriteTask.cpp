@@ -20,7 +20,7 @@ namespace Elpida
 		return std::move(_inputData);
 	}
 
-	TaskInfo FileWriteTask::GetInfo() const
+	TaskInfo FileWriteTask::DoGetInfo() const
 	{
 		return {
 			"File write",

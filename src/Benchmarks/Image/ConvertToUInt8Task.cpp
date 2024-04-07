@@ -41,7 +41,7 @@ namespace Elpida
 		return std::move(_outputData);
 	}
 
-	TaskInfo ConvertToUInt8Task::GetInfo() const
+	TaskInfo ConvertToUInt8Task::DoGetInfo() const
 	{
 		return {
 			"Convert to UInt8",

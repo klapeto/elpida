@@ -17,13 +17,13 @@ namespace Elpida
 		Duration nowOverhead = _environmentInfo->get().GetOverheadsInfo().GetNowOverhead();
 		Duration loopOverhead = _environmentInfo->get().GetOverheadsInfo().GetLoopOverhead();
 
-		Size iterations = TimingUtilities::GetMinimumIterationsNeededForExecutionTime(
+		Size iterations = ShouldBeMeasured() ? TimingUtilities::GetMinimumIterationsNeededForExecutionTime(
 			minimumDuration,
 			nowOverhead,
 			loopOverhead,
 			[this](){OnBeforeRun();},
 			[this](auto duration){return PostProcessDuration(duration);},
-			[this](Size iterations){DoRun(iterations);});
+			[this](Size iterations){DoRun(iterations);}) : 1;
 
 		// Consider the previous run as 'warmups'
 		// now the real deal

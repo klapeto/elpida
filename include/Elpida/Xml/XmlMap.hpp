@@ -10,10 +10,10 @@
 
 namespace Elpida
 {
-	class XmlMap : public std::unordered_map<std::string_view, std::string>
+	class XmlMap : public std::unordered_map<std::string, std::string>
 	{
 	public:
-		const std::string& GetValue(const std::string_view key) const
+		const std::string& GetValue(const std::string& key) const
 		{
 			if (const auto itr = find(key); itr != end())
 			{
@@ -24,7 +24,7 @@ namespace Elpida
 
 		void Set(const std::string_view key, std::string value)
 		{
-			this->operator[](key) = std::move(value);
+			this->operator[](std::string(key)) = std::move(value);
 		}
 
 	private:

@@ -16,7 +16,6 @@ namespace Elpida
 		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
 		UniquePtr<AbstractTaskData> Finalize() override;
 		bool CanBeMultiThreaded() const override;
-		TaskInfo GetInfo() const override;
 		Size GetProcessedDataSize() const override;
 		explicit MemoryReadBandwidthTask(Size size);
 		~MemoryReadBandwidthTask() override = default;
@@ -25,6 +24,7 @@ namespace Elpida
 		Size GetOperationsPerformedPerRun() override;
 		Duration GetExecutionMinimumDuration() override;
 		UniquePtr<Task> DoDuplicate() const override;
+		TaskInfo DoGetInfo() const override;
 	 private:
 		UniquePtr<AbstractTaskData> _data;
 		unsigned char* _ptr;

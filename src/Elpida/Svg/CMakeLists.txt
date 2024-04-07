@@ -58,3 +58,5 @@ add_library(elpida-svg
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-xml)
+
+set_property(TARGET elpida-svg PROPERTY POSITION_INDEPENDENT_CODE ON)

@@ -18,7 +18,7 @@ namespace Elpida
 		return std::move(_data);
 	}
 
-	TaskInfo MemoryReadBandwidthTask::GetInfo() const
+	TaskInfo MemoryReadBandwidthTask::DoGetInfo() const
 	{
 		return {
 			"Memory read bandwidth",

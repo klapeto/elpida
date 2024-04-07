@@ -13,13 +13,13 @@ namespace Elpida
 		return false;
 	}
 
-	TaskInfo ParseXmlTask::GetInfo() const
+	TaskInfo ParseXmlTask::DoGetInfo() const
 	{
 		return { "XML Parsing",
 				 "Parses an XML document and measures the parsing throughput",
 				 "chars",
 				 "How many characters are processes in the time",
-				 ScoreType::Throughput };
+				 ScoreType::Throughput};
 	}
 
 	UniquePtr<Task> ParseXmlTask::DoDuplicate() const
@@ -59,6 +59,6 @@ namespace Elpida
 
 	Duration ParseXmlTask::GetExecutionMinimumDuration()
 	{
-		return Elpida::Seconds(2);
+		return Elpida::Seconds(5);
 	}
 } // Elpida

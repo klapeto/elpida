@@ -20,15 +20,15 @@ namespace Elpida
 	 public:
 		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
 		UniquePtr<AbstractTaskData> Finalize() override;
-		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 		Size GetProcessedDataSize() const override;
 
-		explicit FileReadTask(std::string filePath);
+		explicit FileReadTask(std::string filePath;
 		~FileReadTask() override = default;
 	 protected:
 		void DoRun() override;
 		std::unique_ptr<Task> DoDuplicate() const override;
+		TaskInfo DoGetInfo() const override;
 	 private:
 		UniquePtr<AbstractTaskData> _outputData;
 		std::fstream _fileStream;

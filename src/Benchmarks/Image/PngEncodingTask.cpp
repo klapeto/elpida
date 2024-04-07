@@ -42,7 +42,7 @@ namespace Elpida
 		return std::move(_outputData);
 	}
 
-	TaskInfo PngEncodingTask::GetInfo() const
+	TaskInfo PngEncodingTask::DoGetInfo() const
 	{
 		return {
 			"Png encoding",

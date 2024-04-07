@@ -67,17 +67,20 @@ namespace Elpida::Application
 				affinity.push_back(node.get().GetOsIndex().value());
 			}
 
-			_benchmarkResultsModel.Add(_benchmarkExecutionService.Execute(
-				*selectedBenchmark,
-				affinity,
-				std::chrono::duration_cast<NanoSeconds>(
-					_overheadsModel.GetNowOverhead()).count(),
-				std::chrono::duration_cast<NanoSeconds>(
-					_overheadsModel.GetLoopOverhead()).count(),
-				std::chrono::duration_cast<NanoSeconds>(
-					_overheadsModel.GetVirtualCallOverhead()).count(),
-				_benchmarkRunConfigurationModel.IsNumaAware(),
-					_benchmarkRunConfigurationModel.IsPinThreads()));
+			for (std::size_t i = 0; i < _benchmarkRunConfigurationModel.GetIterationsToRun(); ++i)
+			{
+				_benchmarkResultsModel.Add(_benchmarkExecutionService.Execute(
+						*selectedBenchmark,
+						affinity,
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetNowOverhead()).count(),
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetLoopOverhead()).count(),
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetVirtualCallOverhead()).count(),
+						_benchmarkRunConfigurationModel.IsNumaAware(),
+						_benchmarkRunConfigurationModel.IsPinThreads()));
+			}
 		}
 		catch (const ElpidaException& ex)
 		{

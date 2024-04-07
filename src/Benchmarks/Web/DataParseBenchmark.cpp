@@ -18,9 +18,9 @@ namespace Elpida
 				"Measures the parsing speed of various web data exchange formats.",
 				"ParseMarks",
 				"The score of web parsing", {
-						xmlRead.GetInfo(),
+						xmlRead.SetMeasured(false).GetInfo(),
 						xmlParse.GetInfo(),
-						xmlRead.GetInfo(),
+						xmlRead.SetMeasured(false).GetInfo(),
 						jsonParse.GetInfo(),
 				});
 	}
@@ -38,18 +38,18 @@ namespace Elpida
 	{
 		std::vector<std::unique_ptr<Task>> returnTasks;
 
-		returnTasks.push_back(std::make_unique<FileReadTask>(configuration.at(0).GetValue()));
-		returnTasks.push_back(std::make_unique<ParseXmlTask>());
-		returnTasks.push_back(std::make_unique<FileReadTask>(configuration.at(1).GetValue()));
-		returnTasks.push_back(std::make_unique<ParseJsonTask>());
+		returnTasks.push_back(CreateTask<FileReadTask>(false, configuration.at(0).GetValue()));
+		returnTasks.push_back(CreateTask<ParseXmlTask>());
+		returnTasks.push_back(CreateTask<FileReadTask>(false, configuration.at(1).GetValue()));
+		returnTasks.push_back(CreateTask<ParseJsonTask>());
 
 		return returnTasks;
 	}
 
 	double DataParseBenchmark::CalculateScore(const Vector<TaskResult>& taskResults) const
 	{
-		auto a = taskResults[1].GetDataSize() / taskResults[1].GetDuration().count();
-		auto b = taskResults[3].GetDataSize() / taskResults[3].GetDuration().count();
-		return a + b;
+		auto a = taskResults[0].GetDataSize() / taskResults[0].GetDuration().count();
+		auto b = taskResults[1].GetDataSize() / taskResults[1].GetDuration().count();
+		return (a + b) / std::mega::num;
 	}
 } // Elpida

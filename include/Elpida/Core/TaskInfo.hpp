@@ -45,11 +45,24 @@ namespace Elpida
 			return _scoreType;
 		}
 
+		[[nodiscard]]
+		bool IsMeasured() const
+		{
+			return _isMeasured;
+		}
+
 		TaskInfo(String name,
 			String description,
 			String scoreUnit,
 			String scoreDescription,
-			ScoreType scoreType);
+			ScoreType scoreType,
+			bool isMeasured);
+
+		TaskInfo(String name,
+				String description,
+				String scoreUnit,
+				String scoreDescription,
+				ScoreType scoreType);
 		TaskInfo(const TaskInfo&) = default;
 		TaskInfo(TaskInfo&&) = default;
 		~TaskInfo() = default;
@@ -59,6 +72,9 @@ namespace Elpida
 		String _scoreUnit;
 		String _scoreDescription;
 		ScoreType _scoreType;
+		bool _isMeasured;
+
+		friend class Task;
 	};
 
 } // Elpida

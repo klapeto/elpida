@@ -19,7 +19,7 @@ namespace Elpida
 {
 	class Task
 	{
-	 public:
+	public:
 		virtual void Prepare(UniquePtr<AbstractTaskData> inputData) = 0;
 
 		[[nodiscard]]
@@ -29,7 +29,12 @@ namespace Elpida
 		virtual UniquePtr<AbstractTaskData> Finalize() = 0;
 
 		[[nodiscard]]
-		virtual TaskInfo GetInfo() const = 0;
+		TaskInfo GetInfo() const
+		{
+			auto info = DoGetInfo();
+			info._isMeasured = _measured;
+			return std::move(info);
+		}
 
 		[[nodiscard]]
 		virtual bool CanBeMultiThreaded() const = 0;
@@ -40,12 +45,28 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> Duplicate() const;
 
+		Task& SetMeasured(bool measured)
+		{
+			_measured = measured;
+			return *this;
+		}
+
+		[[nodiscard]]
+		bool ShouldBeMeasured() const
+		{
+			return _measured;
+		}
+
 		void SetEnvironmentInfo(const EnvironmentInfo& environmentInfo);
 
 		Task() = default;
 		virtual ~Task() = default;
-	 protected:
+	protected:
 		Optional<Ref<const EnvironmentInfo>> _environmentInfo;
+		bool _measured = true;
+
+		[[nodiscard]]
+		virtual TaskInfo DoGetInfo() const = 0;
 
 		virtual void DoRun() = 0;
 

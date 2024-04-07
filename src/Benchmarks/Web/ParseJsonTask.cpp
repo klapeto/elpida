@@ -22,13 +22,14 @@ namespace Elpida
 		return std::make_unique<SimpleTaskData<nlohmann::json>>(std::move(_parsedElement), _inputData->GetAllocator());
 	}
 
-	TaskInfo ParseJsonTask::GetInfo() const
+	TaskInfo ParseJsonTask::DoGetInfo() const
 	{
 		return { "JSON Parsing",
 				 "Parses an JSON document and measures the parsing throughput",
 				 "chars",
 				 "How many characters are processes in the time",
-				 ScoreType::Throughput };
+				 ScoreType::Throughput
+		};
 	}
 
 	Size ParseJsonTask::GetProcessedDataSize() const
@@ -53,7 +54,7 @@ namespace Elpida
 
 	Duration ParseJsonTask::GetExecutionMinimumDuration()
 	{
-		return Elpida::Seconds(2);
+		return Elpida::Seconds(5);
 	}
 
 	UniquePtr<Task> ParseJsonTask::DoDuplicate() const

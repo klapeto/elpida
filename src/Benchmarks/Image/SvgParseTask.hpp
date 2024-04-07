@@ -2,15 +2,17 @@
 // Created by klapeto on 7/4/2024.
 //
 
-#ifndef ELPIDA_PARSEXMLTASK_HPP
-#define ELPIDA_PARSEXMLTASK_HPP
+#ifndef ELPIDA_SVGPARSETASK_HPP
+#define ELPIDA_SVGPARSETASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
+#include "Elpida/Svg/SvgDocument.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
 
 namespace Elpida
 {
-	class ParseXmlTask : public MicroTask
+
+	class SvgParseTask : public MicroTask
 	{
 	public:
 
@@ -25,12 +27,11 @@ namespace Elpida
 		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
-		ParseXmlTask() = default;
-		~ParseXmlTask() override = default;
+		SvgParseTask() = default;
+		~SvgParseTask() override = default;
 	protected:
 		void DoRun(Iterations iterations) override;
 
-		[[nodiscard]]
 		TaskInfo DoGetInfo() const override;
 
 		[[nodiscard]]
@@ -43,9 +44,10 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
 		UniquePtr<AbstractTaskData> _inputData;
-		XmlElement _parsedElement;
+		XmlElement _inputXmlElement;
+		SvgDocument _parsedElement;
 	};
 
 } // Elpida
 
-#endif //ELPIDA_PARSEXMLTASK_HPP
+#endif //ELPIDA_SVGPARSETASK_HPP

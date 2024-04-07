@@ -25,15 +25,15 @@ namespace Elpida
 		UniquePtr<AbstractTaskData> Finalize() override;
 
 		[[nodiscard]]
-		TaskInfo GetInfo() const override;
-
-		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
 		MemoryLatencyTask(Size size, Size cacheLineSize, Size pageSize);
 		~MemoryLatencyTask() override = default;
 	 protected:
 		void DoRun(Iterations iterations) override;
+
+		[[nodiscard]]
+		TaskInfo DoGetInfo() const override;
 
 		[[nodiscard]]
 		Size GetOperationsPerformedPerRun() override;

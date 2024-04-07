@@ -19,7 +19,6 @@ namespace Elpida
 	 public:
 		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
 		UniquePtr<AbstractTaskData> Finalize() override;
-		TaskInfo GetInfo() const override;
 		bool CanBeMultiThreaded() const override;
 		Size GetProcessedDataSize() const override;
 
@@ -28,6 +27,7 @@ namespace Elpida
 	 protected:
 		void DoRun() override;
 		UniquePtr<Task> DoDuplicate() const override;
+		TaskInfo DoGetInfo() const override;
 	 private:
 		UniquePtr<ImageTaskData> _outputData;
 		UniquePtr<AbstractTaskData> _inputData;
