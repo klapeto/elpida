@@ -55,8 +55,9 @@ namespace Elpida::Application
 			_maxBenchmarkIndex(0), _cancel(false)
 	{
 		_ui->setupUi(this);
-		dynamic_cast<QVBoxLayout*>(_ui->gbExecution->layout())->insertWidget(2,
-				new BenchmarkRunConfigurationView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController));
+		auto configurationView = new BenchmarkRunConfigurationView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController);
+		configurationView->DisableAdvancedSettings();
+		dynamic_cast<QVBoxLayout*>(_ui->gbExecution->layout())->insertWidget(2,configurationView);
 
 		SetDelta(_ui->lblTotalScoreDelta, 1, 1);
 		SetDelta(_ui->lblSingleScoreDelta, 1, 1);

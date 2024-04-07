@@ -15,12 +15,13 @@ namespace Elpida::Application
 	{
 	public:
 		void SetIterationsToRun(std::size_t  iterations);
-
 		void SetUploadResults(bool uploadResults);
-
 		void SetOpenResult(bool openResult);
-
 		void SetNumaAware(bool numaAware);
+		void SetPinThreads(bool pinThreads);
+
+		[[nodiscard]]
+		bool IsPinThreads() const;
 
 		[[nodiscard]]
 		std::size_t GetIterationsToRun() const;
@@ -42,6 +43,7 @@ namespace Elpida::Application
 		bool _uploadResults;
 		bool _openResult;
 		bool _numaAware;
+		bool _pinThreads;
 	};
 
 } // Elpida

@@ -64,5 +64,11 @@ namespace Elpida::Application
 		_model.SetNumaAware(numaAware);
 		_settingsService.Set("NumaAware", numaAware ? "1" : "0");
 	}
+
+	void BenchmarkRunConfigurationController::SetPinThreads(bool pinThreads)
+	{
+		_model.SetPinThreads(pinThreads);
+		_settingsService.Set("PinThreads", pinThreads ? "1" : "0");
+	}
 } // Elpida
 // Application

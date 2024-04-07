@@ -14,17 +14,10 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="lblRun">
+   <item row="2" column="0" colspan="2">
+    <widget class="QCheckBox" name="chkOpenResult">
      <property name="text">
-      <string>Run it </string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="3">
-    <widget class="QCheckBox" name="chkUpload">
-     <property name="text">
-      <string>Upload results anonymously to elpida website.</string>
+      <string>Open result in browser after upload.</string>
      </property>
     </widget>
    </item>
@@ -35,10 +28,17 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QCheckBox" name="chkOpenResult">
+   <item row="1" column="0" colspan="3">
+    <widget class="QCheckBox" name="chkUpload">
      <property name="text">
-      <string>Open result in browser after upload.</string>
+      <string>Upload results anonymously to elpida website.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="lblRun">
+     <property name="text">
+      <string>Run it </string>
      </property>
     </widget>
    </item>
@@ -52,11 +52,27 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QCheckBox" name="chkNumaAware">
-     <property name="text">
-      <string>Use NUMA aware allocator</string>
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="gbAdvanced">
+     <property name="title">
+      <string>Advanced settings</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="chkNumaAware">
+        <property name="text">
+         <string>Use NUMA aware allocator</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chkPinThreads">
+        <property name="text">
+         <string>Pin threads to target processors</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

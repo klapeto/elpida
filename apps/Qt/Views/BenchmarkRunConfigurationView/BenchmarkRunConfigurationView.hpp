@@ -19,6 +19,9 @@ namespace Elpida::Application
 	Q_OBJECT
 
 	public:
+
+		void DisableAdvancedSettings();
+
 		explicit BenchmarkRunConfigurationView(
 				const BenchmarkRunConfigurationModel& model,
 				BenchmarkRunConfigurationController& controller,
@@ -40,6 +43,8 @@ namespace Elpida::Application
 		void on_chkOpenResult_stateChanged(int state);
 
 		void on_chkNumaAware_stateChanged(int state);
+
+		void on_chkPinThreads_stateChanged(int state);
 
 		void on_spnTimes_valueChanged(int value);
 	};

@@ -23,7 +23,8 @@ namespace Elpida::Application
 				double nowOverheadNanoseconds,
 				double loopOverheadNanoseconds,
 				double virtualCallOverheadNanoseconds,
-				bool numaAware);
+				bool numaAware,
+				bool pinThreads);
 
 		void StopCurrentExecution();
 

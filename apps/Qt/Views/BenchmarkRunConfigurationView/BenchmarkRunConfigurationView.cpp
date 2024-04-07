@@ -52,6 +52,7 @@ namespace Elpida::Application
 		_ui->chkUpload->setChecked(_model.IsUploadResults());
 		_ui->chkOpenResult->setChecked(_model.IsOpenResult());
 		_ui->chkNumaAware->setChecked(_model.IsNumaAware());
+		_ui->chkPinThreads->setChecked(_model.IsPinThreads());
 		_ui->chkOpenResult->setEnabled(_model.IsUploadResults());
 		_ui->spnTimes->setValue(_model.GetIterationsToRun());
 		_uiUpdating = false;
@@ -61,5 +62,16 @@ namespace Elpida::Application
 	{
 		if (_uiUpdating) return;
 		_controller.SetNumaAware(state == Qt::Checked);
+	}
+
+	void BenchmarkRunConfigurationView::on_chkPinThreads_stateChanged(int state)
+	{
+		if (_uiUpdating) return;
+		_controller.SetPinThreads(state == Qt::Checked);
+	}
+
+	void BenchmarkRunConfigurationView::DisableAdvancedSettings()
+	{
+		_ui->gbAdvanced->setVisible(false);
 	}
 }

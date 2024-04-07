@@ -7,7 +7,7 @@
 namespace Elpida::Application
 {
 	BenchmarkRunConfigurationModel::BenchmarkRunConfigurationModel()
-			: _iterationsToRun(1), _uploadResults(true), _openResult(false), _numaAware(false)
+			: _iterationsToRun(1), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false)
 	{
 
 	}
@@ -53,5 +53,16 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationModel::SetNumaAware(bool numaAware)
 	{
 		_numaAware = numaAware;
+	}
+
+	bool BenchmarkRunConfigurationModel::IsPinThreads() const
+	{
+		return _pinThreads;
+	}
+
+	void BenchmarkRunConfigurationModel::SetPinThreads(bool pinThreads)
+	{
+		_pinThreads = pinThreads;
+		OnDataChanged();
 	}
 } // Elpida

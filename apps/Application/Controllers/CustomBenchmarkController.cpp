@@ -76,7 +76,8 @@ namespace Elpida::Application
 					_overheadsModel.GetLoopOverhead()).count(),
 				std::chrono::duration_cast<NanoSeconds>(
 					_overheadsModel.GetVirtualCallOverhead()).count(),
-				_benchmarkRunConfigurationModel.IsNumaAware()));
+				_benchmarkRunConfigurationModel.IsNumaAware(),
+					_benchmarkRunConfigurationModel.IsPinThreads()));
 		}
 		catch (const ElpidaException& ex)
 		{

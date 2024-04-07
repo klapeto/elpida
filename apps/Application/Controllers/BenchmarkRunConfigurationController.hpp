@@ -19,6 +19,7 @@ namespace Elpida::Application
 		void SetUploadResults(bool uploadResults);
 		void SetOpenResultAfterUpload(bool openResult);
 		void SetNumaAware(bool numaAware);
+		void SetPinThreads(bool pinThreads);
 		void SetIterationsToRun(std::size_t iterationsToRun);
 
 		explicit BenchmarkRunConfigurationController(BenchmarkRunConfigurationModel& model, SettingsService& settingsService);

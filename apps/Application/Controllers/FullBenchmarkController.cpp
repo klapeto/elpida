@@ -81,8 +81,8 @@ namespace Elpida::Application
 
 		_model.SetCurrentRunningBenchmark(_pngEncoding->GetName());
 
-		_pngEncoding->GetConfigurations()[0].SetValue("/home/klapeto/Elpida-1.png");
-		_pngEncoding->GetConfigurations()[1].SetValue("/home/klapeto/Elpida-1.out.png");
+		_pngEncoding->GetConfigurations()[0].SetValue("/home/klapeto/σχεδίαση.out.png");
+		_pngEncoding->GetConfigurations()[1].SetValue("/home/klapeto/σχεδίαση.out.FS.png");
 		try
 		{
 			auto pngResult = co_await AsyncPromise<BenchmarkResultModel>([&]()
@@ -96,7 +96,8 @@ namespace Elpida::Application
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
-								_benchmarkRunConfigurationModel.IsNumaAware());
+								false,
+								false);
 			});
 
 			auto& taskResults = pngResult.GetTaskResults();
@@ -133,7 +134,8 @@ namespace Elpida::Application
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
-					_benchmarkRunConfigurationModel.IsNumaAware());
+					false,
+					false);
 			});
 
 			auto& taskResults = latencyResult.GetTaskResults();
@@ -164,7 +166,8 @@ namespace Elpida::Application
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
-					_benchmarkRunConfigurationModel.IsNumaAware());
+						false,
+						false);
 			});
 
 

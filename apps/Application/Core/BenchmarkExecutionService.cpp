@@ -28,35 +28,36 @@ namespace Elpida::Application
 
 	BenchmarkResultModel
 	BenchmarkExecutionService::Execute(const BenchmarkModel& benchmarkModel,
-		const std::vector<std::size_t>& affinity,
-		double nowOverheadNanoseconds,
-		double loopOverheadNanoseconds,
-		double virtualCallOverheadNanoseconds,
-		bool numaAware)
+			const std::vector<std::size_t>& affinity,
+			double nowOverheadNanoseconds,
+			double loopOverheadNanoseconds,
+			double virtualCallOverheadNanoseconds,
+			bool numaAware,
+			bool pinThreads)
 	{
 
 		std::vector<std::string> configuration;
 		configuration.reserve(benchmarkModel.GetConfigurations().size());
 
-		for (auto& config : benchmarkModel.GetConfigurations())
+		for (auto& config: benchmarkModel.GetConfigurations())
 		{
 			configuration.emplace_back(config.GetValue());
 		}
 
 		std::locale::global(std::locale());
 		std::vector<std::string> arguments
-			{
-				std::string("--module=") + "\"" + benchmarkModel.GetFilePath() + "\"",
-				"--index=" + std::to_string(benchmarkModel.GetIndex()),
-				"--now-nanoseconds=" + std::to_string(nowOverheadNanoseconds),
-				"--loop-nanoseconds=" + std::to_string(loopOverheadNanoseconds),
-				"--virtual-nanoseconds=" + std::to_string(virtualCallOverheadNanoseconds),
-				"--format=json"
-			};
+				{
+						std::string("--module=") + "\"" + benchmarkModel.GetFilePath() + "\"",
+						"--index=" + std::to_string(benchmarkModel.GetIndex()),
+						"--now-nanoseconds=" + std::to_string(nowOverheadNanoseconds),
+						"--loop-nanoseconds=" + std::to_string(loopOverheadNanoseconds),
+						"--virtual-nanoseconds=" + std::to_string(virtualCallOverheadNanoseconds),
+						"--format=json"
+				};
 
 		std::ostringstream affinityAccumulator;
 		affinityAccumulator << "--affinity=";
-		for (auto processor : affinity)
+		for (auto processor: affinity)
 		{
 			affinityAccumulator << processor << ',';
 		}
@@ -64,7 +65,7 @@ namespace Elpida::Application
 
 		arguments.push_back(affinityStr.substr(0, affinityStr.size() - 1));
 
-		for (auto& value : configuration)
+		for (auto& value: configuration)
 		{
 			arguments.push_back(std::string("--config=\"").append(value).append("\""));
 		}
@@ -72,6 +73,11 @@ namespace Elpida::Application
 		if (numaAware)
 		{
 			arguments.emplace_back("--numa-aware");
+		}
+
+		if (pinThreads)
+		{
+			arguments.emplace_back("--pin-threads");
 		}
 
 		std::locale::global(std::locale(""));
@@ -104,11 +110,11 @@ namespace Elpida::Application
 		std::vector<TaskResultModel> taskResults;
 		taskResults.reserve(taskResultsJ.size());
 
-		for (auto& taskJ : taskResultsJ)
+		for (auto& taskJ: taskResultsJ)
 		{
 			taskResults.emplace_back(
-				NanoSeconds(taskJ["durationNanoseconds"].template get<double>()),
-				taskJ["dataSize"].get<std::size_t>()
+					NanoSeconds(taskJ["durationNanoseconds"].template get<double>()),
+					taskJ["dataSize"].get<std::size_t>()
 			);
 		}
 		return BenchmarkResultModel(benchmarkModel, score, std::move(taskResults));
