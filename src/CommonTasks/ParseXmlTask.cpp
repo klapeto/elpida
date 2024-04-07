@@ -44,7 +44,7 @@ namespace Elpida
 
 	void ParseXmlTask::DoRun(Iterations iterations)
 	{
-		const char* ptr = reinterpret_cast<char*>(_inputData.get());
+		const char* ptr = reinterpret_cast<char*>(_inputData.get()->GetData());
 		auto size = _inputData->GetSize();
 		while (iterations-- > 0)
 		{
@@ -59,6 +59,6 @@ namespace Elpida
 
 	Duration ParseXmlTask::GetExecutionMinimumDuration()
 	{
-		return Elpida::Seconds(2);
+		return Elpida::Seconds(4);
 	}
 } // Elpida
