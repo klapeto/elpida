@@ -27,7 +27,6 @@ namespace Elpida
 		}
 	}
 
-
 	void ProcessingUnitNode::PinProcessToProcessors(const std::vector<Ref<const ProcessingUnitNode>>& processors)
 	{
 		cpu_set_t mask;

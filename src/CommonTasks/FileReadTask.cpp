@@ -18,7 +18,7 @@ namespace Elpida
 			throw ElpidaException("File: '", _filePath, "' does not exist.");
 		}
 
-		_outputData = std::move(inputData);
+		_outputData = std::make_unique<RawTaskData>(inputData->GetAllocator());
 
 		auto path = std::filesystem::u8path(_filePath);
 		auto size =std::filesystem::file_size(_filePath);

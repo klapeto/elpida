@@ -69,8 +69,14 @@ namespace Elpida
 			return returnVector;
 		}
 
-		SimpleTaskData(T data, SharedPtr<Allocator> allocator)
+		SimpleTaskData(const T& data, SharedPtr<Allocator> allocator)
 			: _data(data), _allocator(std::move(allocator))
+		{
+
+		}
+
+		SimpleTaskData(T&& data, SharedPtr<Allocator> allocator)
+				: _data(std::move(data)), _allocator(std::move(allocator))
 		{
 
 		}

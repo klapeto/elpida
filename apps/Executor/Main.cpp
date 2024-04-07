@@ -131,7 +131,10 @@ int main(int argC, char** argV)
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
 
-		ProcessingUnitNode::PinProcessToProcessors(targetProcessors);
+		if (helper.GetPinThreads())
+		{
+			ProcessingUnitNode::PinProcessToProcessors(targetProcessors);
+		}
 
 		auto result = benchmark->Run(targetProcessors, config, environmentInfo);
 

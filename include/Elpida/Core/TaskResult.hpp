@@ -27,8 +27,14 @@ namespace Elpida
 			return _dataSize;
 		}
 
+		[[nodiscard]]
+		Size GetIterations() const
+		{
+			return _iterations;
+		}
+
 		TaskResult(const Duration& duration, Size dataSize)
-			: _duration(duration), _dataSize(dataSize)
+			: _duration(duration), _dataSize(dataSize), _iterations(1)
 		{
 		}
 
@@ -38,6 +44,7 @@ namespace Elpida
 	 private:
 		Duration _duration;
 		Size _dataSize;
+		Size _iterations;
 	};
 
 } // Elpida
