@@ -25,6 +25,7 @@ namespace Elpida
 		[[nodiscard]]
 		double GetHeight() const;
 
+		SvgCalculatedViewPort();
 		SvgCalculatedViewPort(double x, double y, double width, double height);
 	public:
 		double _x;

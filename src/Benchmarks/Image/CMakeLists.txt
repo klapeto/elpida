@@ -14,6 +14,9 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         Plugin.cpp
         SvgParseTask.cpp
         SvgParseBenchmark.cpp
+        SvgCalculateTask.cpp
+        SvgRasterizationSingleThreadedTask.cpp
+        SvgRasterizationSingleThreadBenchmark.cpp
 )
 
 add_library(elpida-image-benchmarks SHARED ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})

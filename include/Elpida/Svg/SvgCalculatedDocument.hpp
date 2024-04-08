@@ -35,6 +35,7 @@ namespace Elpida
 			return _viewPort;
 		}
 
+		SvgCalculatedDocument() = default;
 		explicit SvgCalculatedDocument(const SvgDocument& document, double scale = 1.0);
 	private:
 		SvgCalculatedShape _rootShape;

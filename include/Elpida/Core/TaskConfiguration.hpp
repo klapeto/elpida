@@ -49,8 +49,8 @@ namespace Elpida
 		void SetValue(Float value);
 		void Parse(const String& value);
 
-		Integer AsInteger();
-		Float AsFloat();
+		Integer AsInteger() const;
+		Float AsFloat() const;
 
 		TaskConfiguration(String name, ConfigurationType type, String defaultValue = String());
 		TaskConfiguration(const TaskConfiguration&) = default;

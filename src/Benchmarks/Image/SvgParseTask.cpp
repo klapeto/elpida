@@ -29,8 +29,8 @@ namespace Elpida
 	{
 		return { "SVG Parsing",
 				 "Parses a SVG document and measures the parsing throughput",
-				 "elements",
-				 "How many elements are processes in the time",
+				 "Elements",
+				 "How many elements are processed in the time",
 				 ScoreType::Throughput
 		};
 	}

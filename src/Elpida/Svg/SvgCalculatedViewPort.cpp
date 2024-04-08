@@ -30,4 +30,10 @@ namespace Elpida
 	{
 		return _height;
 	}
+
+	SvgCalculatedViewPort::SvgCalculatedViewPort()
+			:_x(0.0), _y(0.0), _width(0.0), _height(0.0)
+	{
+
+	}
 } // Elpida

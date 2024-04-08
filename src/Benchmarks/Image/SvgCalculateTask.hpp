@@ -1,0 +1,55 @@
+//
+// Created by klapeto on 7/4/2024.
+//
+
+#ifndef ELPIDA_SVGCALCULATETASK_HPP
+#define ELPIDA_SVGCALCULATETASK_HPP
+
+#include "Elpida/Core/MicroTask.hpp"
+#include "Elpida/Svg/SvgDocument.hpp"
+#include "Elpida/Svg/SvgCalculatedDocument.hpp"
+
+namespace Elpida
+{
+
+	class SvgCalculateTask: public MicroTask
+	{
+	public:
+
+		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
+
+		[[nodiscard]]
+		bool CanBeMultiThreaded() const override;
+
+		[[nodiscard]]
+		UniquePtr<AbstractTaskData> Finalize() override;
+
+		[[nodiscard]]
+		Size GetProcessedDataSize() const override;
+
+		explicit SvgCalculateTask(double scale);
+		~SvgCalculateTask() override = default;
+	private:
+		double _scale;
+	protected:
+		void DoRun(Iterations iterations) override;
+
+		TaskInfo DoGetInfo() const override;
+
+		[[nodiscard]]
+		Size GetOperationsPerformedPerRun() override;
+
+		[[nodiscard]]
+		Duration GetExecutionMinimumDuration() override;
+
+		[[nodiscard]]
+		UniquePtr<Task> DoDuplicate() const override;
+	private:
+		UniquePtr<AbstractTaskData> _inputData;
+		SvgDocument _inputDocument;
+		SvgCalculatedDocument _calculatedDocument;
+	};
+
+} // Elpida
+
+#endif //ELPIDA_SVGCALCULATETASK_HPP

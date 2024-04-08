@@ -57,7 +57,7 @@ namespace Elpida
 		_value = std::to_string(value);
 	}
 
-	TaskConfiguration::Integer TaskConfiguration::AsInteger()
+	TaskConfiguration::Integer TaskConfiguration::AsInteger() const
 	{
 		if (_type != ConfigurationType::Integer)
 		{
@@ -67,7 +67,7 @@ namespace Elpida
 		return std::stol(_value);
 	}
 
-	TaskConfiguration::Float TaskConfiguration::AsFloat()
+	TaskConfiguration::Float TaskConfiguration::AsFloat() const
 	{
 		if (_type != ConfigurationType::Float)
 		{

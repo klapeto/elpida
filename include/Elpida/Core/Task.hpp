@@ -75,6 +75,12 @@ namespace Elpida
 
 		[[nodiscard]]
 		virtual UniquePtr<Task> DoDuplicate() const = 0;
+
+		template<typename T, typename ... TArgs>
+		UniquePtr<T> CreateData(TArgs&& ... args)
+		{
+			return std::make_unique<T>(std::forward<TArgs>(args)...);
+		}
 	};
 
 } // Elpida

@@ -32,6 +32,7 @@ namespace Elpida::Application
 		if (_model != nullptr)
 		{
 			_ui->lblName->setText(QString::fromStdString(_model->GetName()));
+			_ui->spnValue->setValue(std::stol(_model->GetValue()));
 		}
 	}
 

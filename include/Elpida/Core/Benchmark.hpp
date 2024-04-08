@@ -69,7 +69,7 @@ namespace Elpida {
 		template<typename T, typename ... TArgs>
 		static UniquePtr<T> CreateTask(bool measured, TArgs&& ... args)
 		{
-			auto task = std::make_unique<T>(std::forward<TArgs...>(args...));
+			auto task = std::make_unique<T>(std::forward<TArgs>(args)...);
 			task->SetMeasured(measured);
 			return std::move(task);
 		}

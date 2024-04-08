@@ -23,7 +23,7 @@ namespace Elpida
 		bool CanBeMultiThreaded() const override;
 		Size GetProcessedDataSize() const override;
 
-		explicit FileReadTask(std::string filePath;
+		explicit FileReadTask(std::string filePath);
 		~FileReadTask() override = default;
 	 protected:
 		void DoRun() override;
