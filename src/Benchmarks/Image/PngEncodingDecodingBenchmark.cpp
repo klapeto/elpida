@@ -12,6 +12,7 @@
 #include "ConvertToGrayscaleTask.hpp"
 #include "ConvertToUInt8Task.hpp"
 #include "Elpida/Core/TaskConfiguration.hpp"
+#include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida
 {
@@ -40,12 +41,11 @@ namespace Elpida
 			});
 	}
 
-	std::vector<std::unique_ptr<Task>> PngEncodingDecodingBenchmark::GetTasks(
-		const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-		const std::vector<TaskConfiguration>& configuration,
-		const EnvironmentInfo& environmentInfo) const
+	std::vector<std::unique_ptr<Task>> PngEncodingDecodingBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
 		std::vector<std::unique_ptr<Task>> returnTasks;
+
+		auto& configuration = context.GetConfiguration();
 
 		returnTasks.push_back(std::make_unique<FileReadTask>(configuration.at(0).GetValue()));
 		returnTasks.push_back(std::make_unique<PngDecodingTask>());

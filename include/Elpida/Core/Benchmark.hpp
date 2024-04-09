@@ -15,6 +15,7 @@
 namespace Elpida {
 
 	class TimingInfo;
+	class BenchmarkRunContext;
 
 	class Benchmark {
 	public:
@@ -22,10 +23,7 @@ namespace Elpida {
 		virtual BenchmarkInfo GetInfo() const = 0;
 
 		[[nodiscard]]
-		BenchmarkResult Run(
-			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-			const Vector<TaskConfiguration>& configuration,
-			const EnvironmentInfo& environmentInfo) const;
+		BenchmarkResult Run(BenchmarkRunContext& context) const;
 
 		[[nodiscard]]
 		virtual Vector<TaskConfiguration> GetRequiredConfiguration() const = 0;
@@ -39,10 +37,7 @@ namespace Elpida {
 	 protected:
 
 		[[nodiscard]]
-		virtual Vector<UniquePtr<Task>> GetTasks(
-			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-			const Vector<TaskConfiguration>& configuration,
-			const EnvironmentInfo& environmentInfo) const = 0;
+		virtual Vector<UniquePtr<Task>> GetTasks(BenchmarkRunContext& context) const = 0;
 
 		[[nodiscard]]
 		virtual double CalculateScore(const Vector<TaskResult>& taskResults) const = 0;

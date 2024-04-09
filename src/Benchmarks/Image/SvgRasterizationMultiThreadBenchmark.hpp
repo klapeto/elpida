@@ -1,16 +1,16 @@
 //
-// Created by klapeto on 8/4/2024.
+// Created by klapeto on 9/4/2024.
 //
 
-#ifndef ELPIDA_SVGRASTERIZATIONSINGLETHREADBENCHMARK_HPP
-#define ELPIDA_SVGRASTERIZATIONSINGLETHREADBENCHMARK_HPP
+#ifndef ELPIDA_SVGRASTERIZATIONMULTITHREADBENCHMARK_HPP
+#define ELPIDA_SVGRASTERIZATIONMULTITHREADBENCHMARK_HPP
 
 #include "Elpida/Core/Benchmark.hpp"
 
 namespace Elpida
 {
 
-	class SvgRasterizationSingleThreadBenchmark: public Benchmark
+	class SvgRasterizationMultiThreadBenchmark: public Benchmark
 	{
 	public:
 		[[nodiscard]]
@@ -19,8 +19,8 @@ namespace Elpida
 		[[nodiscard]]
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
-		SvgRasterizationSingleThreadBenchmark() = default;
-		~SvgRasterizationSingleThreadBenchmark() override = default;
+		SvgRasterizationMultiThreadBenchmark() = default;
+		~SvgRasterizationMultiThreadBenchmark() override = default;
 	protected:
 
 		[[nodiscard]]
@@ -32,4 +32,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //ELPIDA_SVGRASTERIZATIONSINGLETHREADBENCHMARK_HPP
+#endif //ELPIDA_SVGRASTERIZATIONMULTITHREADBENCHMARK_HPP

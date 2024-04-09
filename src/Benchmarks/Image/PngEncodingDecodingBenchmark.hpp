@@ -24,10 +24,7 @@ namespace Elpida
 	 protected:
 
 		[[nodiscard]]
-		std::vector<std::unique_ptr<Task>> GetTasks(
-			const std::vector<std::reference_wrapper<const ProcessingUnitNode>>& targetProcessors,
-			const std::vector<TaskConfiguration>& configuration,
-			const EnvironmentInfo& environmentInfo) const override;
+		std::vector<std::unique_ptr<Task>> GetTasks(BenchmarkRunContext& context) const override;
 
 		[[nodiscard]]
 		double CalculateScore(const std::vector<TaskResult>& taskResults) const override;

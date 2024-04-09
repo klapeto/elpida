@@ -1,6 +1,8 @@
 //
-// Created by klapeto on 8/4/2024.
+// Created by klapeto on 9/4/2024.
 //
+
+#include "SvgRasterizationMultiThreadBenchmark.hpp"
 
 #include "SvgRasterizationSingleThreadBenchmark.hpp"
 #include "CommonTasks/FileReadTask.hpp"
@@ -8,26 +10,27 @@
 #include "CommonTasks/ParseXmlTask.hpp"
 #include "SvgParseTask.hpp"
 #include "SvgCalculateTask.hpp"
-#include "SvgRasterizationSingleThreadedTask.hpp"
+#include "SvgRasterizationMultiThreadedTask.hpp"
 #include "ConvertToUInt8Task.hpp"
 #include "PngEncodingTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida
 {
-	BenchmarkInfo SvgRasterizationSingleThreadBenchmark::GetInfo() const
+
+	BenchmarkInfo SvgRasterizationMultiThreadBenchmark::GetInfo() const
 	{
 
 		FileReadTask read("");
 		ParseXmlTask parseXmlTask;
 		SvgParseTask svgParseTask;
 		SvgCalculateTask svgCalculateTask(1.0);
-		SvgRasterizationSingleThreadedTask rasterization(16);
+		SvgRasterizationMultiThreadedTask rasterization(16, nullptr);
 		//ConvertToUInt8Task convert;
 		//PngEncodingTask pngEncodingTask;
 		//FileWriteTask fileWriteTask("");
 		return BenchmarkInfo(
-				"Svg Rasterization (Single Thread)",
+				"Svg Rasterization (Multi Thread)",
 				"Rasterizes an calculated Svg document using 1 thread.",
 				"pixels",
 				"How many pixels per second are rasterized on average.",
@@ -43,7 +46,7 @@ namespace Elpida
 				});
 	}
 
-	std::vector<TaskConfiguration> SvgRasterizationSingleThreadBenchmark::GetRequiredConfiguration() const
+	std::vector<TaskConfiguration> SvgRasterizationMultiThreadBenchmark::GetRequiredConfiguration() const
 	{
 		return {
 				TaskConfiguration("Input SVG file", ConfigurationType::File, "./test-data-single.svg"),
@@ -53,7 +56,7 @@ namespace Elpida
 		};
 	}
 
-	std::vector<std::unique_ptr<Task>> SvgRasterizationSingleThreadBenchmark::GetTasks(BenchmarkRunContext& context) const
+	std::vector<std::unique_ptr<Task>> SvgRasterizationMultiThreadBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
 		std::vector<std::unique_ptr<Task>> returnTasks;
 
@@ -63,7 +66,7 @@ namespace Elpida
 		returnTasks.push_back(CreateTask<ParseXmlTask>(false));
 		returnTasks.push_back(CreateTask<SvgParseTask>(false));
 		returnTasks.push_back(CreateTask<SvgCalculateTask>(false, configuration.at(1).AsFloat()));
-		returnTasks.push_back(CreateTask<SvgRasterizationSingleThreadedTask>(true, configuration.at(2).AsInteger()));
+		returnTasks.push_back(CreateTask<SvgRasterizationMultiThreadedTask>(true, configuration.at(2).AsInteger(), &context.GetThreadPool()));
 		//returnTasks.push_back(CreateTask<ConvertToUInt8Task>(false));
 		//returnTasks.push_back(CreateTask<PngEncodingTask>(false));
 		//returnTasks.push_back(CreateTask<FileWriteTask>(false, configuration.at(3).GetValue()));
@@ -71,7 +74,7 @@ namespace Elpida
 		return returnTasks;
 	}
 
-	double SvgRasterizationSingleThreadBenchmark::CalculateScore(const std::vector<TaskResult>& taskResults) const
+	double SvgRasterizationMultiThreadBenchmark::CalculateScore(const std::vector<TaskResult>& taskResults) const
 	{
 		return taskResults[0].GetDataSize() / taskResults[0].GetDuration().count();
 	}

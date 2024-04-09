@@ -43,6 +43,7 @@ set(ELPIDA_CORE_SOURCES
         ThreadPool/ThreadPool.cpp
         ThreadPool/ThreadPoolThread.cpp
         BlockingCollection.cpp
+        BenchmarkRunContext.cpp
 )
 
 configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")

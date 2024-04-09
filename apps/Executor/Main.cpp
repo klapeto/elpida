@@ -39,6 +39,8 @@
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
+#include "Elpida/Core/BenchmarkRunContext.hpp"
+#include "Elpida/Core/ThreadPool/ThreadPool.hpp"
 
 using namespace Elpida;
 
@@ -49,10 +51,10 @@ ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const Topolo
 	returnVector.reserve(affinity.size());
 
 	auto& processors = topologyInfo.GetAllProcessingUnits();
-	for (auto index : affinity)
+	for (auto index: affinity)
 	{
 		bool found = false;
-		for (auto& processor : processors)
+		for (auto& processor: processors)
 		{
 			if (processor.get().GetOsIndex().value() == index)
 			{
@@ -77,9 +79,9 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	if (configurationValues.size() != taskConfigurations.size())
 	{
 		throw ElpidaException("benchmark required ",
-		                      taskConfigurations.size(),
-		                      " configurations but were provided ",
-		                      configurationValues.size());
+				taskConfigurations.size(),
+				" configurations but were provided ",
+				configurationValues.size());
 	}
 
 	for (Size i = 0; i < taskConfigurations.size(); ++i)
@@ -87,6 +89,7 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 		taskConfigurations[i].Parse(configurationValues[i]);
 	}
 }
+
 #include <unistd.h>
 
 volatile int attached = 0;
@@ -115,27 +118,24 @@ int main(int argC, char** argV)
 		BenchmarkGroupModule module(helper.GetModulePath());
 
 		auto& benchmark = module
-		                  .GetBenchmarkGroup()
-		                  .GetBenchmarks()
-		                  .at(helper.GetBenchmarkIndex());
+				.GetBenchmarkGroup()
+				.GetBenchmarks()
+				.at(helper.GetBenchmarkIndex());
 
 		auto config = benchmark->GetRequiredConfiguration();
 		ValidateAndAssignConfiguration(helper.GetConfigurationValues(), config);
 
 		EnvironmentInfo environmentInfo(
-			CpuInfoLoader::Load(),
-			MemoryInfoLoader::Load(),
-			OsInfoLoader::Load(),
-			TopologyLoader::LoadTopology(),
-			TimingInfo(NanoSeconds(helper.GetNowOverhead()),
-			           NanoSeconds(helper.GetLoopOverhead()),
-			           NanoSeconds(helper.GetVCallOverhead()),
-			           Seconds(0),
-			           0),
-			helper.GetNumaAware()
-				? UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
-				: UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()),
-				        helper.GetPinThreads());
+				CpuInfoLoader::Load(),
+				MemoryInfoLoader::Load(),
+				OsInfoLoader::Load(),
+				TopologyLoader::LoadTopology(),
+				TimingInfo(NanoSeconds(helper.GetNowOverhead()),
+						NanoSeconds(helper.GetLoopOverhead()),
+						NanoSeconds(helper.GetVCallOverhead()),
+						Seconds(0),
+						0),
+				helper.GetPinThreads());
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
 
@@ -144,11 +144,19 @@ int main(int argC, char** argV)
 			ProcessingUnitNode::PinProcessToProcessors(targetProcessors);
 		}
 
-		auto result = benchmark->Run(targetProcessors, config, environmentInfo);
+		ThreadPool threadPool(targetProcessors.size());
+
+		auto context = BenchmarkRunContext(targetProcessors, config, threadPool,
+				helper.GetNumaAware() ?
+				UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
+									  : UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()),
+				environmentInfo);
+
+		auto result = benchmark->Run(context);
 
 		std::cout
-			<< helper.GetResultFormatter().ConvertToString(result, *benchmark.get())
-			<< std::endl;
+				<< helper.GetResultFormatter().ConvertToString(result, *benchmark.get())
+				<< std::endl;
 	}
 	catch (const std::exception& ex)
 	{

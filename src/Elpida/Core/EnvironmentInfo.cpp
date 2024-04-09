@@ -6,8 +6,8 @@
 
 namespace Elpida
 {
-	EnvironmentInfo::EnvironmentInfo(CpuInfo&& cpuInfo, MemoryInfo&& memoryInfo, OsInfo&& osInfo, TopologyInfo&& topologyInfo, TimingInfo&& overheadsInfo, UniquePtr<AllocatorFactory> allocatorFactory, bool pinThreads)
-		: _cpuInfo(std::move(cpuInfo)), _memoryInfo(std::move(memoryInfo)), _osInfo(std::move(osInfo)), _topologyInfo(std::move(topologyInfo)), _overheadsInfo(overheadsInfo), _allocatorFactory(std::move(allocatorFactory)), _pinThreads(pinThreads)
+	EnvironmentInfo::EnvironmentInfo(CpuInfo&& cpuInfo, MemoryInfo&& memoryInfo, OsInfo&& osInfo, TopologyInfo&& topologyInfo, TimingInfo&& overheadsInfo, bool pinThreads)
+		: _cpuInfo(std::move(cpuInfo)), _memoryInfo(std::move(memoryInfo)), _osInfo(std::move(osInfo)), _topologyInfo(std::move(topologyInfo)), _overheadsInfo(overheadsInfo), _pinThreads(pinThreads)
 	{
 
 	}
@@ -21,10 +21,6 @@ namespace Elpida
 		return _overheadsInfo;
 	}
 
-	const AllocatorFactory& EnvironmentInfo::GetAllocatorFactory() const
-	{
-		return *_allocatorFactory;
-	}
 	const CpuInfo& EnvironmentInfo::GetCpuInfo() const
 	{
 		return _cpuInfo;

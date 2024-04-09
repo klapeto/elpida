@@ -10,6 +10,7 @@
 #include "PngEncodingDecodingBenchmark.hpp"
 #include "SvgParseBenchmark.hpp"
 #include "SvgRasterizationSingleThreadBenchmark.hpp"
+#include "SvgRasterizationMultiThreadBenchmark.hpp"
 
 using namespace Elpida;
 
@@ -20,6 +21,7 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	vec.emplace_back(new PngEncodingDecodingBenchmark());
 	vec.emplace_back(new SvgParseBenchmark());
 	vec.emplace_back(new SvgRasterizationSingleThreadBenchmark());
+	vec.emplace_back(new SvgRasterizationMultiThreadBenchmark());
 
 	return new BenchmarkGroup("Image benchmarks", std::move(vec));
 }

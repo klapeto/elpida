@@ -24,10 +24,7 @@ namespace Elpida
 		~MemoryLatencyBenchmark() override = default;
 	 protected:
 		[[nodiscard]]
-		Vector<UniquePtr<Task>> GetTasks(
-			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-			const Vector<TaskConfiguration>& configuration,
-			const EnvironmentInfo& environmentInfo) const override;
+		Vector<UniquePtr<Task>> GetTasks(BenchmarkRunContext& context) const override;
 
 		[[nodiscard]]
 		double CalculateScore(const Vector<TaskResult>& taskResults) const override;

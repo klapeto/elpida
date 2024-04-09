@@ -4,6 +4,7 @@
 
 #include "MemoryReadBandwidthBenchmark.hpp"
 #include "MemoryReadBandwidthTask.hpp"
+#include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida
 {
@@ -38,11 +39,11 @@ namespace Elpida
 	}
 
 	Vector<UniquePtr<Task>>
-	MemoryReadBandwidthBenchmark::GetTasks(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors, const Vector<TaskConfiguration>& configuration, const EnvironmentInfo& environmentInfo) const
+	MemoryReadBandwidthBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
 		Size cacheSize = 16 * 1024 * 1024;
 
-		for (auto& processor: targetProcessors)
+		for (auto& processor: context.GetTargetProcessors())
 		{
 			auto cache = processor.get().GetLastCache();
 			if (cache.has_value())

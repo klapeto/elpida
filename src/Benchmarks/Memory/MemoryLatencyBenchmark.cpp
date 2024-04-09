@@ -4,20 +4,18 @@
 
 #include "MemoryLatencyBenchmark.hpp"
 #include "MemoryLatencyTask.hpp"
+#include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida
 {
 	Vector<UniquePtr<Task>>
-	MemoryLatencyBenchmark::GetTasks(
-		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-		const Vector<TaskConfiguration>& configuration,
-		const EnvironmentInfo& environmentInfo) const
+	MemoryLatencyBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
 		Size cacheSize = 16 * 1024 * 1024;
 		Size cacheLineSize = 16;
 		Size pageSize = 32;
 
-		for (auto& processor: targetProcessors)
+		for (auto& processor: context.GetTargetProcessors())
 		{
 			auto cache = processor.get().GetLastCache();
 			if (cache.has_value())

@@ -11,36 +11,34 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Core/TaskConfiguration.hpp"
 #include "Elpida/Core/Vector.hpp"
+#include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida
 {
-	BenchmarkResult Benchmark::Run(
-		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-		const Vector<TaskConfiguration>& configuration,
-		const EnvironmentInfo& environmentInfo) const
+	BenchmarkResult Benchmark::Run(BenchmarkRunContext& context) const
 	{
-		ValidateConfiguration(configuration);
-		auto tasks = GetTasks(targetProcessors, configuration, environmentInfo);
+		ValidateConfiguration(context.GetConfiguration());
+		auto tasks = GetTasks(context);
 
 		Vector<TaskResult> taskResults;
 
-		auto allocators = environmentInfo.GetAllocatorFactory().Create({targetProcessors});
+		auto allocators = context.GetAllocatorFactory()->Create({context.GetTargetProcessors()});
 		UniquePtr<AbstractTaskData> data = std::make_unique<RawTaskData>(allocators.front());
 		for (auto& task : tasks)
 		{
-			task->SetEnvironmentInfo(environmentInfo);
+			task->SetEnvironmentInfo(context.GetEnvironmentInfo());
 			Duration duration;
 			Size processedDataSize = 0;
 			bool shouldBeMeasured = task->ShouldBeMeasured();
 			if (task->CanBeMultiThreaded())
 			{
-				duration = ExecuteMultiThread(data, std::move(task), allocators, targetProcessors, processedDataSize,
-						environmentInfo.IsPinThreads());
+				duration = ExecuteMultiThread(data, std::move(task), allocators, context.GetTargetProcessors(), processedDataSize,
+						context.GetEnvironmentInfo().IsPinThreads());
 			}
 			else
 			{
-				duration = ExecuteSingleThread(data, std::move(task), targetProcessors.front(), processedDataSize,
-						environmentInfo.IsPinThreads());
+				duration = ExecuteSingleThread(data, std::move(task), context.GetTargetProcessors().front(), processedDataSize,
+						context.GetEnvironmentInfo().IsPinThreads());
 			}
 
 			if (shouldBeMeasured)

@@ -6,6 +6,7 @@
 #include "CommonTasks/FileReadTask.hpp"
 #include "CommonTasks/ParseXmlTask.hpp"
 #include "ParseJsonTask.hpp"
+#include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida
 {
@@ -33,10 +34,11 @@ namespace Elpida
 		};
 	}
 
-	Vector<UniquePtr<Task>> DataParseBenchmark::GetTasks(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-			const Vector<TaskConfiguration>& configuration, const EnvironmentInfo& environmentInfo) const
+	Vector<UniquePtr<Task>> DataParseBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
 		std::vector<std::unique_ptr<Task>> returnTasks;
+
+		auto& configuration = context.GetConfiguration();
 
 		returnTasks.push_back(CreateTask<FileReadTask>(false, configuration.at(0).GetValue()));
 		returnTasks.push_back(CreateTask<ParseXmlTask>());
