@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Elpida::Application::IntegerConfigurationView</class>
  <widget class="QWidget" name="Elpida::Application::IntegerConfigurationView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>110</width>
+    <height>34</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -14,7 +22,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QSpinBox" name="spnValue"/>
+    <widget class="QSpinBox" name="spnValue">
+     <property name="maximum">
+      <number>99999</number>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

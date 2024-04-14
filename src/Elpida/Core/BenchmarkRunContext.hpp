@@ -29,19 +29,21 @@ namespace Elpida
 		const EnvironmentInfo& GetEnvironmentInfo() const;
 
 		[[nodiscard]]
+		bool IsPinThreads() const;
+
+		[[nodiscard]]
 		const UniquePtr<AllocatorFactory>& GetAllocatorFactory() const;
 
 		explicit BenchmarkRunContext(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-				const Vector<TaskConfiguration>& configuration,
-				ThreadPool& threadPool,
-				UniquePtr<AllocatorFactory> allocatorFactory,
-				const EnvironmentInfo& environmentInfo);
+				const Vector<TaskConfiguration>& configuration, ThreadPool& threadPool,
+				UniquePtr<AllocatorFactory> allocatorFactory, const EnvironmentInfo& environmentInfo, bool pinThreads);
 	private:
 		const Vector<Ref<const ProcessingUnitNode>>& _targetProcessors;
 		const Vector<TaskConfiguration>& _configuration;
 		ThreadPool& _threadPool;
 		const EnvironmentInfo& _environmentInfo;
 		UniquePtr<AllocatorFactory> _allocatorFactory;
+		bool _pinThreads;
 	};
 
 } // Elpida

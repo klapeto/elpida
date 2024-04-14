@@ -6,7 +6,6 @@
 
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingUtilities.hpp"
-#include "Elpida/Core/ThreadTask.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
 
 #include "Elpida/Core/DummyClass.hpp"

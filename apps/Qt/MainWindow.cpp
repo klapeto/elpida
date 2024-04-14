@@ -70,10 +70,7 @@ namespace Elpida::Application
 				benchmarkRunConfigurationController, fullBenchmarkModel, fullBenchmarkController));
 
 		_selectedNodesLabel = new QLabel(_nonSelected);
-		_selectedBenchmarkLabel = new QLabel(_nonSelected);
 
-		_ui->statusbar->addWidget(new QLabel("Selected benchmarks:"), 0);
-		_ui->statusbar->addWidget(_selectedBenchmarkLabel, 1);
 		_ui->statusbar->addWidget(new QLabel("Selected cpus:"), 0);
 		_ui->statusbar->addWidget(_selectedNodesLabel, 1);
 
@@ -82,14 +79,8 @@ namespace Elpida::Application
 			OnTopologyModelChanged();
 		});
 
-		_benchmarksModelChanged = customBenchmarksModel.DataChanged().Subscribe([this]()
-		{
-			OnBenchmarksModelChanged();
-		});
-
 		_ui->tabCustomBenchmark->layout()->addWidget(new CustomBenchmarkView(customBenchmarksModel, customBenchmarkResultsModel, benchmarkRunConfigurationModel, customBenchmarksController, benchmarkRunConfigurationController, configurationViewPool));
 		OnTopologyModelChanged();
-		OnBenchmarksModelChanged();
 	}
 
 	MainWindow::~MainWindow()
@@ -158,19 +149,6 @@ namespace Elpida::Application
 	void MainWindow::on_actionAbout_triggered()
 	{
 		QMessageBox::about(QApplication::activeWindow(), "About: Elpida", aboutText);
-	}
-
-	void MainWindow::OnBenchmarksModelChanged()
-	{
-		auto selectedBenchmark = _benchmarksModel.GetSelectedBenchmark();
-		if (selectedBenchmark != nullptr)
-		{
-			_selectedBenchmarkLabel->setText(QString::fromStdString(selectedBenchmark->GetName()));
-		}
-		else
-		{
-			_selectedBenchmarkLabel->setText(_nonSelected);
-		}
 	}
 
 }

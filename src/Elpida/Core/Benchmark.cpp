@@ -32,13 +32,11 @@ namespace Elpida
 			bool shouldBeMeasured = task->ShouldBeMeasured();
 			if (task->CanBeMultiThreaded())
 			{
-				duration = ExecuteMultiThread(data, std::move(task), allocators, context.GetTargetProcessors(), processedDataSize,
-						context.GetEnvironmentInfo().IsPinThreads());
+				duration = ExecuteMultiThread(data, std::move(task), allocators, context.GetTargetProcessors(), processedDataSize, context.IsPinThreads());
 			}
 			else
 			{
-				duration = ExecuteSingleThread(data, std::move(task), context.GetTargetProcessors().front(), processedDataSize,
-						context.GetEnvironmentInfo().IsPinThreads());
+				duration = ExecuteSingleThread(data, std::move(task), context.GetTargetProcessors().front(), processedDataSize, context.IsPinThreads());
 			}
 
 			if (shouldBeMeasured)
@@ -59,9 +57,9 @@ namespace Elpida
 		UniquePtr<Task> task,
 		const ProcessingUnitNode& targetProcessor,
 		Size& processedDataSize,
-		bool pinThreads)
+			bool pinThreads)
 	{
-		ThreadTask threadTask(std::move(task), targetProcessor, pinThreads);
+		ThreadTask threadTask(std::move(task), pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessor): std::nullopt);
 
 		auto allocator = data->GetAllocator();
 		threadTask.Prepare(std::move(data));
@@ -81,7 +79,8 @@ namespace Elpida
 		UniquePtr<Task> task,
 		const Vector<SharedPtr<Allocator>>& allocators,
 		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-		Size& processedDataSize, bool pinThreads)
+		Size& processedDataSize,
+		bool pinThreads)
 	{
 		auto chunks = data->Split(allocators);
 
@@ -91,7 +90,7 @@ namespace Elpida
 
 		for (std::size_t i = 0; i < chunks.size(); ++i)
 		{
-			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), targetProcessors[i], pinThreads);
+			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessors[i]): std::nullopt);
 
 			auto  allocator = chunks[i]->GetAllocator();
 			threadTask->Prepare(std::move(chunks[i]));

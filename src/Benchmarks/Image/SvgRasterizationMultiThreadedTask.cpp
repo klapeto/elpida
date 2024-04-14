@@ -47,7 +47,7 @@ namespace Elpida
 
 	Size SvgRasterizationMultiThreadedTask::GetProcessedDataSize() const
 	{
-		return _inputDocument.GetViewPort().GetWidth() * _inputDocument.GetViewPort().GetHeight();
+		return _inputDocument.GetViewPort().GetWidth() * _inputDocument.GetViewPort().GetHeight() * _subSamples;
 	}
 
 	void SvgRasterizationMultiThreadedTask::DoRun(Iterations iterations)
@@ -68,8 +68,8 @@ namespace Elpida
 	{
 		return { "Svg Rasterization (Multi Thread)",
 				 "Rasterizes an calculated Svg document using many thread.",
-				 "pixels",
-				 "How many pixels per second are rasterized on average.",
+				 "samples",
+				 "How many samples per second are calculated on average",
 				 ScoreType::Throughput };
 	}
 

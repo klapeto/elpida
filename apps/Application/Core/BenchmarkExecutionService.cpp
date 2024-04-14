@@ -55,15 +55,18 @@ namespace Elpida::Application
 						"--format=json"
 				};
 
-		std::ostringstream affinityAccumulator;
-		affinityAccumulator << "--affinity=";
-		for (auto processor: affinity)
+		if (!affinity.empty())
 		{
-			affinityAccumulator << processor << ',';
-		}
-		auto affinityStr = affinityAccumulator.str();
+			std::ostringstream affinityAccumulator;
+			affinityAccumulator << "--affinity=";
+			for (auto processor: affinity)
+			{
+				affinityAccumulator << processor << ',';
+			}
+			auto affinityStr = affinityAccumulator.str();
 
-		arguments.push_back(affinityStr.substr(0, affinityStr.size() - 1));
+			arguments.push_back(affinityStr.substr(0, affinityStr.size() - 1));
+		}
 
 		for (auto& value: configuration)
 		{

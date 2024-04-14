@@ -7,12 +7,10 @@
 namespace Elpida
 {
 	BenchmarkRunContext::BenchmarkRunContext(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-			const Vector<TaskConfiguration>& configuration,
-			ThreadPool& threadPool,
-			UniquePtr<AllocatorFactory> allocatorFactory,
-			const EnvironmentInfo& environmentInfo)
+			const Vector<TaskConfiguration>& configuration, ThreadPool& threadPool,
+			UniquePtr<AllocatorFactory> allocatorFactory, const EnvironmentInfo& environmentInfo, bool pinThreads)
 			: _targetProcessors(targetProcessors), _configuration(configuration), _threadPool(threadPool),
-			  _environmentInfo(environmentInfo), _allocatorFactory(std::move(allocatorFactory))
+			  _environmentInfo(environmentInfo), _allocatorFactory(std::move(allocatorFactory)), _pinThreads(pinThreads)
 	{
 	}
 
@@ -39,5 +37,10 @@ namespace Elpida
 	const UniquePtr<AllocatorFactory>& BenchmarkRunContext::GetAllocatorFactory() const
 	{
 		return _allocatorFactory;
+	}
+
+	bool BenchmarkRunContext::IsPinThreads() const
+	{
+		return _pinThreads;
 	}
 } // Elpida

@@ -74,21 +74,23 @@ namespace Elpida
 		};
 
 	public:
+
 		template<typename T, typename TCallable>
 		std::future<T> Queue(TCallable callable)
 		{
-			std::promise<T> promise;
-			auto future = promise.get_future();
-
-			auto th = GetNextThread();
-			auto ptr = th.get();
-
-			ptr->Excecute(std::make_unique<ThreadPoolFunctor<T, TCallable>>(std::move(promise),
-					std::move(th),
-					*this,
-					std::move(callable)));
-
-			return std::move(future);
+			return std::async(std::launch::async, callable);
+//			std::promise<T> promise;
+//			auto future = promise.get_future();
+//
+//			auto th = GetNextThread();
+//			auto ptr = th.get();
+//
+//			ptr->Excecute(std::make_unique<ThreadPoolFunctor<T, TCallable>>(std::move(promise),
+//					std::move(th),
+//					*this,
+//					std::move(callable)));
+//
+//			return std::move(future);
 		}
 
 		[[nodiscard]]

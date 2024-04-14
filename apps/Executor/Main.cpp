@@ -47,6 +47,8 @@ using namespace Elpida;
 static Vector<Ref<const ProcessingUnitNode>>
 ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const TopologyInfo& topologyInfo)
 {
+	if (affinity.empty()) return topologyInfo.GetAllProcessingUnits();
+
 	Vector<Ref<const ProcessingUnitNode>> returnVector;
 	returnVector.reserve(affinity.size());
 
@@ -90,17 +92,8 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	}
 }
 
-#include <unistd.h>
-
-volatile int attached = 0;
-
 int main(int argC, char** argV)
 {
-//	while (attached == 0)
-//	{
-//		sleep(1);
-//	}
-
 	try
 	{
 		ArgumentsHelper helper;
@@ -134,23 +127,23 @@ int main(int argC, char** argV)
 						NanoSeconds(helper.GetLoopOverhead()),
 						NanoSeconds(helper.GetVCallOverhead()),
 						Seconds(0),
-						0),
-				helper.GetPinThreads());
+						0));
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
 
-		if (helper.GetPinThreads())
+		if (!helper.GetAffinity().empty())
 		{
 			ProcessingUnitNode::PinProcessToProcessors(targetProcessors);
 		}
 
-		ThreadPool threadPool (helper.GetPinThreads() ? targetProcessors.size() : std::thread::hardware_concurrency());
+		ThreadPool threadPool(!targetProcessors.empty() ? targetProcessors.size() : std::thread::hardware_concurrency());
 
 		auto context = BenchmarkRunContext(targetProcessors, config, threadPool,
 				helper.GetNumaAware() ?
 				UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
 									  : UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()),
-				environmentInfo);
+				environmentInfo,
+				helper.GetPinThreads());
 
 		auto result = benchmark->Run(context);
 

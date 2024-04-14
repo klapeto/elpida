@@ -42,7 +42,11 @@ namespace Elpida {
 		[[nodiscard]]
 		virtual double CalculateScore(const Vector<TaskResult>& taskResults) const = 0;
 	 private:
-		static Duration ExecuteSingleThread(UniquePtr<AbstractTaskData>& data, UniquePtr<Task> task, const ProcessingUnitNode& topologyNode, Size& processedDataSize, bool pinThreads);
+		static Duration ExecuteSingleThread(UniquePtr<AbstractTaskData>& data,
+				UniquePtr<Task> task,
+				const ProcessingUnitNode& topologyNode,
+				Size& processedDataSize,
+				bool pinThreads);
 		static Duration ExecuteMultiThread(UniquePtr<AbstractTaskData>& data,
 			UniquePtr<Task> task,
 			const Vector<SharedPtr<Allocator>>& allocators,

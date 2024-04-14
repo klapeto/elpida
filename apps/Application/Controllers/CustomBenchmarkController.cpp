@@ -51,11 +51,6 @@ namespace Elpida::Application
 			throw ElpidaException("You have to select a benchmark first.");
 		}
 
-		if (_topologyModel.GetSelectedLeafNodes().empty())
-		{
-			throw ElpidaException("You have to select a the target processors first.");
-		}
-
 		try
 		{
 

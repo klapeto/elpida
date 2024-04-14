@@ -35,15 +35,11 @@ namespace Elpida
 		[[nodiscard]]
 		const TimingInfo& GetOverheadsInfo() const;
 
-		[[nodiscard]]
-		bool IsPinThreads() const;
-
 		EnvironmentInfo(CpuInfo&& cpuInfo,
 				MemoryInfo&& memoryInfo,
 				OsInfo&& osInfo,
 				TopologyInfo&& topologyInfo,
-				TimingInfo&& overheadsInfo,
-				bool pinThreads);
+				TimingInfo&& overheadsInfo);
 		EnvironmentInfo(const EnvironmentInfo&) = delete;
 		EnvironmentInfo(EnvironmentInfo&&) noexcept = default;
 		EnvironmentInfo& operator=(const EnvironmentInfo&) = delete;
@@ -55,7 +51,6 @@ namespace Elpida
 		TopologyInfo _topologyInfo;
 		OsInfo _osInfo;
 		TimingInfo _overheadsInfo;
-		bool _pinThreads;
 	};
 
 } // Elpida

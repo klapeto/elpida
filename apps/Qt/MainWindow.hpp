@@ -50,16 +50,13 @@ namespace Elpida::Application
 		~MainWindow() override;
 	 private:
 		EventSubscription<> _topologyModelChanged;
-		EventSubscription<> _benchmarksModelChanged;
 		TopologyModel& _topologyModel;
 		CustomBenchmarkModel& _benchmarksModel;
 		QLabel* _selectedNodesLabel;
-		QLabel* _selectedBenchmarkLabel;
-		QString _nonSelected = "<b style=\"color: #d73e3e;\">No selected</b>";
+		QString _nonSelected = "<b>No selected. All Cpus will be used.</b>";
 		Ui::MainWindow* _ui;
 
 		void OnTopologyModelChanged();
-		void OnBenchmarksModelChanged();
 
 	 private slots:
 		void on_actionExit_triggered();
