@@ -29,8 +29,8 @@ namespace Elpida
 		return BenchmarkInfo(
 				"Svg Rasterization (Single Thread)",
 				"Rasterizes an calculated Svg document using 1 thread.",
-				"pixels",
-				"How many pixels per second are rasterized on average.",
+				"samples",
+				"How many samples per second are rasterized on average.",
 				{
 						read.SetMeasured(false).GetInfo(),
 						parseXmlTask.SetMeasured(false).GetInfo(),
@@ -46,7 +46,7 @@ namespace Elpida
 	std::vector<TaskConfiguration> SvgRasterizationSingleThreadBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-				TaskConfiguration("Input SVG file", ConfigurationType::File, "./test-data-single.svg"),
+				TaskConfiguration("Input SVG file", ConfigurationType::File, "./assets/svg-rasterization.single.svg"),
 				TaskConfiguration("SVG output scale", ConfigurationType::Float, "1.0"),
 				TaskConfiguration("SVG rasterization sub samples", ConfigurationType::Integer, "16"),
 				//TaskConfiguration("Output Png file", ConfigurationType::File, "./test-data-single.png"),

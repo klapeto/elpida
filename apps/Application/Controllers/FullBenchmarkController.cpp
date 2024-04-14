@@ -27,7 +27,8 @@ namespace Elpida::Application
 			_benchmarkExecutionService(benchmarkExecutionService),
 			_memoryLatency(nullptr),
 			_memoryReadBandwidth(nullptr),
-			_pngEncoding(nullptr),
+			_svgRasterizationSingle(nullptr),
+			_svgRasterizationMulti(nullptr),
 			_cancelling(false)
 	{
 		for (auto& group: benchmarkGroups)
@@ -43,9 +44,13 @@ namespace Elpida::Application
 				{
 					_memoryReadBandwidth = &benchmark;
 				}
-				else if (name == "Png Encoding/Decoding")
+				else if (name == "Svg Rasterization (Multi Thread)")
 				{
-					_pngEncoding = &benchmark;
+					_svgRasterizationMulti = &benchmark;
+				}
+				else if (name == "Svg Rasterization (Single Thread)")
+				{
+					_svgRasterizationSingle = &benchmark;
 				}
 			}
 		}
@@ -54,12 +59,17 @@ namespace Elpida::Application
 			throw ElpidaException("Missing benchmarks: Memory benchmarks");
 		}
 
-		if (!_pngEncoding)
+		if (!_svgRasterizationMulti)
 		{
-			throw ElpidaException("Missing benchmarks: Image benchmarks");
+			throw ElpidaException("Missing benchmarks: Svg Rasterization (Multi Thread)");
 		}
 
-		_model.SetTotalBenchmarks(3);
+		if (!_svgRasterizationSingle)
+		{
+			throw ElpidaException("Missing benchmarks: Svg Rasterization (Single Thread)");
+		}
+
+		_model.SetTotalBenchmarks(4);
 	}
 
 	Promise<> FullBenchmarkController::RunAsync()
@@ -67,28 +77,23 @@ namespace Elpida::Application
 		_cancelling = false;
 		_model.SetRunning(true);
 		std::vector<std::size_t> affinity;
-
-		affinity.reserve(_topologyModel.GetLeafNodes().size());
-		for (auto& node: _topologyModel.GetLeafNodes())
-		{
-			affinity.push_back(node.get().GetOsIndex().value());
-		}
-
 		FullBenchmarkResultModel::Score singleCoreScore = 0;
 		FullBenchmarkResultModel::Score multiCoreScore = 0.0;
 		FullBenchmarkResultModel::Score memoryScore = 0.0;
 		std::vector<BenchmarkResultModel> benchmarkResults;
 
-		_model.SetCurrentRunningBenchmark(_pngEncoding->GetName());
+		_model.SetCurrentRunningBenchmark(_svgRasterizationSingle->GetName());
 
-		_pngEncoding->GetConfigurations()[0].SetValue("/home/klapeto/σχεδίαση.out.png");
-		_pngEncoding->GetConfigurations()[1].SetValue("/home/klapeto/σχεδίαση.out.FS.png");
+		_svgRasterizationSingle->GetConfigurations()[0].SetValue("./assets/svg-rasterization.single.svg");
+		_svgRasterizationSingle->GetConfigurations()[1].SetValue("1.0");
+		_svgRasterizationSingle->GetConfigurations()[2].SetValue("16");
+
 		try
 		{
-			auto pngResult = co_await AsyncPromise<BenchmarkResultModel>([&]()
+			auto svgRasterizationSingle = co_await AsyncPromise<BenchmarkResultModel>([&]()
 			{
 				return _benchmarkExecutionService.Execute(
-						*_pngEncoding,
+						*_svgRasterizationSingle,
 						affinity,
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetNowOverhead()).count(),
@@ -97,23 +102,57 @@ namespace Elpida::Application
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
 								1.0,
-								10.0,
+								1.0,
 								false,
 								false);
 			});
 
-			auto& taskResults = pngResult.GetTaskResults();
+			auto& taskResults = svgRasterizationSingle.GetTaskResults();
 
-			auto& decoding = taskResults[1];
-			singleCoreScore += decoding.GetInputSize() / decoding.GetDuration().count() / Divider;
+			auto& rasterizationResult = taskResults[0];
+			singleCoreScore += rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count() / Divider;
 
-			auto& encoding = taskResults[5];
-			singleCoreScore += encoding.GetInputSize() / encoding.GetDuration().count() / Divider;
+			benchmarkResults.push_back(std::move(svgRasterizationSingle));
+		}
+		catch (const ElpidaException&)
+		{
+			_model.SetRunning(false);
+			co_return;
+		}
 
-			auto& grayscale = taskResults[3];
-			multiCoreScore += grayscale.GetInputSize() / grayscale.GetDuration().count() / Divider / 10;
+		_model.SetCurrentRunningBenchmark(_svgRasterizationMulti->GetName());
 
-			benchmarkResults.push_back(std::move(pngResult));
+		auto targetSamples = _overheadsModel.GetIterationsPerSecond() * 16 / std::giga::num;
+
+		_svgRasterizationMulti->GetConfigurations()[0].SetValue("./assets/svg-rasterization.multi.svg");
+		_svgRasterizationMulti->GetConfigurations()[1].SetValue("1.0");
+		_svgRasterizationMulti->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
+
+		try
+		{
+			auto svgRasterizationMulti = co_await AsyncPromise<BenchmarkResultModel>([&]()
+			{
+				return _benchmarkExecutionService.Execute(
+						*_svgRasterizationMulti,
+						affinity,
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetNowOverhead()).count(),
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetLoopOverhead()).count(),
+						std::chrono::duration_cast<NanoSeconds>(
+								_overheadsModel.GetVirtualCallOverhead()).count(),
+						20.0,
+						20.0,
+						false,
+						false);
+			});
+
+			auto& taskResults = svgRasterizationMulti.GetTaskResults();
+
+			auto& rasterizationResult = taskResults[0];
+			multiCoreScore += rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count() / Divider;
+
+			benchmarkResults.push_back(std::move(svgRasterizationMulti));
 		}
 		catch (const ElpidaException&)
 		{
@@ -137,7 +176,7 @@ namespace Elpida::Application
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
 						1.0,
-						10.0,
+						1.0,
 					false,
 					false);
 			});
@@ -171,7 +210,7 @@ namespace Elpida::Application
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
 						1.0,
-						10.0,
+						1.0,
 						false,
 						false);
 			});
