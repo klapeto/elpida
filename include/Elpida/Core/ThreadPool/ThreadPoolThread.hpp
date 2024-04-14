@@ -6,9 +6,11 @@
 #define ELPIDA_THREADPOOLTHREAD_HPP
 
 #include "Elpida/Core/ThreadPool/Functor.hpp"
+#include "Elpida/Core/BlockingCollection.hpp"
 
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include <condition_variable>
 
 namespace Elpida
@@ -24,12 +26,9 @@ namespace Elpida
 		explicit ThreadPoolThread();
 		~ThreadPoolThread();
 	private:
+		BlockingCollection<std::unique_ptr<Functor>> _queue;
 		std::thread _thread;
-		std::mutex _mutex;
-		std::condition_variable _notifier;
-		std::unique_ptr<Functor> _function;
-		bool _execute;
-		bool _keepGoing;
+		std::atomic<bool> _keepGoing;
 
 		void Procedure();
 	};

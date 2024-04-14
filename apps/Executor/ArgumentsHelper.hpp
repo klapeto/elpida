@@ -64,6 +64,8 @@ namespace Elpida
 		double _nowOverhead;
 		double _loopOverhead;
 		double _vCallOverhead;
+		double _dependentThreadsPreAllocation;
+		double _independentThreadsPreAllocation;
 		bool _numaAware;
 		bool _pinThreads;
 

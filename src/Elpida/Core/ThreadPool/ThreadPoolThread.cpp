@@ -6,29 +6,21 @@
 
 namespace Elpida
 {
-
 	void ThreadPoolThread::Excecute(std::unique_ptr<Functor>&& function)
 	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		_function = std::move(function);
-		_execute = true;
-		_notifier.notify_all();
+		_queue.Add(std::move(function));
 	}
 
 	void ThreadPoolThread::Terminate()
 	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		_keepGoing = false;
-		_function.reset();
-		_execute = true;
-		_notifier.notify_all();
-		lock.unlock();
+		_keepGoing.store(false, std::memory_order::release);
+		_queue.Destroy();
 
 		_thread.join();
 	}
 
 	ThreadPoolThread::ThreadPoolThread()
-			: _execute(false), _keepGoing(true)
+			: _keepGoing(true)
 	{
 		_thread = std::thread(&ThreadPoolThread::Procedure, this);
 	}
@@ -42,14 +34,7 @@ namespace Elpida
 	{
 		while (_keepGoing)
 		{
-			std::unique_lock<std::mutex> lock(_mutex);
-			while (!_execute)
-			{
-				_notifier.wait(lock);
-			}
-			_execute = false;
-			auto function = std::move(_function);
-			lock.unlock();
+			auto function = _queue.Get();
 			if (function)
 			{
 				(*function)();

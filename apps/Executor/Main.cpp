@@ -136,7 +136,8 @@ int main(int argC, char** argV)
 			ProcessingUnitNode::PinProcessToProcessors(targetProcessors);
 		}
 
-		ThreadPool threadPool(!targetProcessors.empty() ? targetProcessors.size() : std::thread::hardware_concurrency());
+		auto targetProcessorCount = !targetProcessors.empty() ? targetProcessors.size() : std::thread::hardware_concurrency();
+		ThreadPool threadPool(targetProcessorCount, targetProcessorCount * 500);
 
 		auto context = BenchmarkRunContext(targetProcessors, config, threadPool,
 				helper.GetNumaAware() ?

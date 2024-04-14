@@ -25,7 +25,7 @@ namespace Elpida
 	class ThreadPool final
 	{
 		template<typename T, typename TCallable>
-		class ThreadPoolFunctor : public Functor
+		class DependentThreadPoolFunctor : public Functor
 		{
 		public:
 			void operator()() override
@@ -49,7 +49,7 @@ namespace Elpida
 				_threadPool.RequeueThread(std::move(_thread));
 			}
 
-			ThreadPoolFunctor(std::promise<T>&& promise, std::unique_ptr<ThreadPoolThread>&& thread, ThreadPool& threadPool,
+			DependentThreadPoolFunctor(std::promise<T>&& promise, std::unique_ptr<ThreadPoolThread>&& thread, ThreadPool& threadPool,
 					TCallable&& callable)
 					: _promise(std::move(promise)), _callable(std::move(callable)), _thread(std::move(thread)),
 					  _threadPool(threadPool)
@@ -57,14 +57,14 @@ namespace Elpida
 
 			}
 
-			ThreadPoolFunctor(ThreadPoolFunctor<T, TCallable>&& other) noexcept
+			DependentThreadPoolFunctor(DependentThreadPoolFunctor<T, TCallable>&& other) noexcept
 					: _promise(std::move(other._promise)), _callable(std::move(other._callable)),
 					  _thread(std::move(other._thread)), _threadPool(other._threadPool)
 			{
 
 			}
 
-			~ThreadPoolFunctor() override = default;
+			~DependentThreadPoolFunctor() override = default;
 
 		private:
 			std::promise<T> _promise;
@@ -73,30 +73,79 @@ namespace Elpida
 			ThreadPool& _threadPool;
 		};
 
+		template<typename T, typename TCallable>
+		class IndependentThreadPoolFunctor : public Functor
+		{
+		public:
+			void operator()() override
+			{
+				try
+				{
+					if constexpr (std::is_void_v<T>)
+					{
+						_callable();
+						_promise.set_value();
+					}
+					else
+					{
+						_promise.set_value(_callable());
+					}
+				}
+				catch (...)
+				{
+					_promise.set_exception(std::current_exception());
+				}
+			}
+
+			IndependentThreadPoolFunctor(std::promise<T>&& promise,TCallable&& callable)
+					: _promise(std::move(promise)), _callable(std::move(callable))
+			{
+
+			}
+
+			IndependentThreadPoolFunctor(IndependentThreadPoolFunctor<T, TCallable>&& other) noexcept
+					: _promise(std::move(other._promise)), _callable(std::move(other._callable))
+			{
+
+			}
+
+			~IndependentThreadPoolFunctor() override = default;
+
+		private:
+			std::promise<T> _promise;
+			TCallable _callable;
+		};
+
 	public:
 
 		template<typename T, typename TCallable>
 		std::future<T> Queue(TCallable callable)
 		{
-			return std::async(std::launch::async, callable);
-//			std::promise<T> promise;
-//			auto future = promise.get_future();
-//
-//			auto th = GetNextThread();
-//			auto ptr = th.get();
-//
-//			ptr->Excecute(std::make_unique<ThreadPoolFunctor<T, TCallable>>(std::move(promise),
-//					std::move(th),
-//					*this,
-//					std::move(callable)));
-//
-//			return std::move(future);
+			std::promise<T> promise;
+			auto future = promise.get_future();
+
+			auto th = GetNextDependedThread();
+			auto ptr = th.get();
+
+			ptr->Excecute(std::make_unique<DependentThreadPoolFunctor<T, TCallable>>(std::move(promise),
+					std::move(th),
+					*this,
+					std::move(callable)));
+
+			return std::move(future);
 		}
 
-		[[nodiscard]]
-		const std::queue<std::unique_ptr<ThreadPoolThread>>& GetQueue() const
+		template<typename T, typename TCallable>
+		std::future<T> QueueIndependent(TCallable callable)
 		{
-			return _threadQueue;
+			std::promise<T> promise;
+			auto future = promise.get_future();
+
+			auto& th = _independentQueue[GetNextIndependentIndex()];
+			th->Excecute(std::make_unique<IndependentThreadPoolFunctor<T, TCallable>>(std::move(promise), std::move(callable)));
+
+
+			return std::move(future);
 		}
 
 		[[nodiscard]]
@@ -106,18 +155,22 @@ namespace Elpida
 		}
 
 		ThreadPool();
-		explicit ThreadPool(std::size_t threadCount);
+		explicit ThreadPool(std::size_t dependentThreadCount, std::size_t independentThreadCount);
 
 		~ThreadPool();
 	private:
 		std::mutex _mutex;
-		std::queue<std::unique_ptr<ThreadPoolThread>> _threadQueue;
+		std::queue<std::unique_ptr<ThreadPoolThread>> _dependedQueue;
+		std::vector<std::unique_ptr<ThreadPoolThread>> _independentQueue;
 		std::thread _cleanUpThread;
 		BlockingCollection<std::unique_ptr<ThreadPoolThread>> _threadsToClean;
 		std::size_t _maxThreads;
+		std::size_t _currentIndependentIndex;
 		bool _keepGoing;
 
-		std::unique_ptr<ThreadPoolThread> GetNextThread();
+		std::size_t GetNextIndependentIndex();
+
+		std::unique_ptr<ThreadPoolThread> GetNextDependedThread();
 		static std::unique_ptr<ThreadPoolThread> CreateNewThread();
 		void RequeueThread(std::unique_ptr<ThreadPoolThread>&& thread);
 		void ThreadCleanupProcedure();

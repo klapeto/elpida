@@ -70,8 +70,8 @@ namespace Elpida
 		std::ostringstream accumulator;
 		accumulator << R"("Elpida Benchmark Executor: )" << ELPIDA_VERSION << std::endl;
 		accumulator
-			<< R"(Example usage: elpida-executor --module="./dir/benchmark.so" --index=0 --affinity=0,1,5,32 --format=json --config="Config A" --config="Config B" ...)"
-			<< std::endl;
+				<< R"(Example usage: elpida-executor --module="./dir/benchmark.so" --index=0 --affinity=0,1,5,32 --format=json --config="Config A" --config="Config B" ...)"
+				<< std::endl;
 		accumulator << R"("       -v, --version)" << std::endl;
 		accumulator << R"("           Prints the version and exits)" << std::endl;
 		accumulator << R"("       -h, --help)" << std::endl;
@@ -86,8 +86,8 @@ namespace Elpida
 		accumulator << R"("           The result output format. Accepted values (default, json))" << std::endl;
 		accumulator << R"("       --config="CONFIG_VALUE")" << std::endl;
 		accumulator
-			<< R"("           Sets a configuration. Successive configurations are appended in the order defined)"
-			<< std::endl;
+				<< R"("           Sets a configuration. Successive configurations are appended in the order defined)"
+				<< std::endl;
 		accumulator << R"("       --now-nanoseconds=NANOSECONDS)" << std::endl;
 		accumulator << R"("           The now overhead in nanoseconds)" << std::endl;
 		accumulator << R"("       --loop-nanoseconds=NANOSECONDS)" << std::endl;
@@ -97,7 +97,9 @@ namespace Elpida
 		accumulator << R"("       --numa-aware)" << std::endl;
 		accumulator << R"("           Enable numa aware allocations)" << std::endl;
 		accumulator << R"("       --pin-threads)" << std::endl;
-		accumulator << R"("           Enable thread pining. Threads will be pinned to target affinity and cannot jump to other processors)" << std::endl;
+		accumulator
+				<< R"("           Enable thread pining. Threads will be pinned to target affinity and cannot jump to other processors)"
+				<< std::endl;
 
 		return accumulator.str();
 	}
@@ -134,7 +136,7 @@ namespace Elpida
 		return str;
 	}
 
-	double static ParseTime(const String& value, const char* name)
+	double static ParseDouble(const String& value, const char* name)
 	{
 		if (value.empty())
 		{
@@ -175,23 +177,27 @@ namespace Elpida
 			LoopOverhead,
 			VirtualOverhead,
 			NumaAware,
-			PinThreads
+			PinThreads,
+			DependedRatio,
+			IndependentRatio
 		};
 
 		struct option options[] = {
-			{ "version", no_argument, nullptr, Version },
-			{ "help", no_argument, nullptr, Help },
-			{ "module", required_argument, nullptr, Module },
-			{ "index", required_argument, nullptr, Index },
-			{ "affinity", required_argument, nullptr, Affinity },
-			{ "format", required_argument, nullptr, Format },
-			{ "config", required_argument, nullptr, Config },
-			{ "now-nanoseconds", required_argument, nullptr, NowOverhead },
-			{ "loop-nanoseconds", required_argument, nullptr, LoopOverhead },
-			{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
-			{ "numa-aware", no_argument, nullptr, NumaAware },
-			{ "pin-threads", no_argument, nullptr, PinThreads },
-			{ nullptr, 0, nullptr, 0 }
+				{ "version",             no_argument,       nullptr, Version },
+				{ "help",                no_argument,       nullptr, Help },
+				{ "module",              required_argument, nullptr, Module },
+				{ "index",               required_argument, nullptr, Index },
+				{ "affinity",            required_argument, nullptr, Affinity },
+				{ "format",              required_argument, nullptr, Format },
+				{ "config",              required_argument, nullptr, Config },
+				{ "now-nanoseconds",     required_argument, nullptr, NowOverhead },
+				{ "loop-nanoseconds",    required_argument, nullptr, LoopOverhead },
+				{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
+				{ "numa-aware",          no_argument,       nullptr, NumaAware },
+				{ "pin-threads",         no_argument,       nullptr, PinThreads },
+				{ "dependent-ratio", required_argument, nullptr, DependedRatio },
+				{ "independent-ratio", required_argument, nullptr, IndependentRatio },
+				{ nullptr, 0,                               nullptr, 0 }
 		};
 
 		int option_index = 0;
@@ -224,19 +230,25 @@ namespace Elpida
 				_configurationValues.emplace_back(GetConfigValue(optarg));
 				break;
 			case NowOverhead:
-				_nowOverhead = ParseTime(GetValueOrDefault(optarg), "now-overhead");
+				_nowOverhead = ParseDouble(GetValueOrDefault(optarg), "now-overhead");
 				break;
 			case LoopOverhead:
-				_loopOverhead = ParseTime(GetValueOrDefault(optarg), "loop-overhead");
+				_loopOverhead = ParseDouble(GetValueOrDefault(optarg), "loop-overhead");
 				break;
 			case VirtualOverhead:
-				_vCallOverhead = ParseTime(GetValueOrDefault(optarg), "virtual-overhead");
+				_vCallOverhead = ParseDouble(GetValueOrDefault(optarg), "virtual-overhead");
 				break;
 			case NumaAware:
 				_numaAware = true;
 				break;
 			case PinThreads:
 				_pinThreads = true;
+				break;
+			case DependedRatio:
+				_dependentThreadsPreAllocation = ParseDouble(GetValueOrDefault(optarg), "dependent-ratio");
+				break;
+			case IndependentRatio:
+				_independentThreadsPreAllocation = ParseDouble(GetValueOrDefault(optarg), "independent-ratio");
 				break;
 			case '?':
 				returnText = "Unknown option: " + std::string(GetValueOrDefault(optarg));
@@ -343,10 +355,13 @@ namespace Elpida
 	}
 
 	ArgumentsHelper::ArgumentsHelper()
-		: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0), _numaAware(false), _pinThreads(false)
+			: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0),
+			  _dependentThreadsPreAllocation(1.0), _independentThreadsPreAllocation(1.0),
+			  _numaAware(false), _pinThreads(false)
 	{
 
 	}
+
 	bool ArgumentsHelper::GetNumaAware() const
 	{
 		return _numaAware;
@@ -356,4 +371,5 @@ namespace Elpida
 	{
 		return _pinThreads;
 	}
+
 } // Elpida

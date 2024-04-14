@@ -61,7 +61,7 @@ namespace Elpida
 		for (std::size_t t = 0, h = startY; t < threadCount; ++t, h += linesPerThread)
 		{
 			auto thisEndLine = std::min(h + linesPerThread, height);
-			threads.push_back(threadPool.Queue<void>([&, thisStartY = h, thisEndY = thisEndLine]()
+			threads.push_back(threadPool.QueueIndependent<void>([&, thisStartY = h, thisEndY = thisEndLine]()
 			{
 				DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, thisStartY, startX, width, thisEndY);
 			}));
@@ -145,7 +145,7 @@ namespace Elpida
 		for (std::size_t t = 0, h = startY, sourceY = 0; t < threadCount; ++t, h += linesPerThread, sourceY += linesPerThread)
 		{
 			auto thisEndLine = std::min(h + linesPerThread, height);
-			threads.emplace_back(threadPool.Queue<void>([&, thisStartY = h, thisEndY = thisEndLine, sourceY = sourceY]
+			threads.emplace_back(threadPool.QueueIndependent<void>([&, thisStartY = h, thisEndY = thisEndLine, sourceY = sourceY]
 			{
 				DoDrawOther(opacity, blender, compositor, startX, thisStartY, width, thisEndY, sourceY, colorData, sourceWidth);
 			}));
