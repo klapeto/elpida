@@ -21,6 +21,8 @@ namespace Elpida::Application
 		void SetNumaAware(bool numaAware);
 		void SetPinThreads(bool pinThreads);
 		void SetIterationsToRun(std::size_t iterationsToRun);
+		void SetDependentQueueRatio(double ratio);
+		void SetIndependentQueueRatio(double ratio);
 
 		explicit BenchmarkRunConfigurationController(BenchmarkRunConfigurationModel& model, SettingsService& settingsService);
 		~BenchmarkRunConfigurationController() override = default;

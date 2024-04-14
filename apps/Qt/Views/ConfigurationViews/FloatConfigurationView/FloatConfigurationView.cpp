@@ -21,9 +21,17 @@ namespace Elpida::Application
 
 	void FloatConfigurationView::on_spnValue_valueChanged(double value)
 	{
+		auto toString = [](double d)
+		{
+			std::ostringstream doubleToStringAccumulator;
+			doubleToStringAccumulator.imbue(std::locale::classic());
+			doubleToStringAccumulator << d;
+			return doubleToStringAccumulator.str();
+		};
+
 		if (_model != nullptr)
 		{
-			_controller->SetValue(std::to_string(value));
+			_controller->SetValue(toString(value));
 		}
 	}
 

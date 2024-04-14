@@ -47,6 +47,10 @@ namespace Elpida::Application
 		void on_chkPinThreads_stateChanged(int state);
 
 		void on_spnTimes_valueChanged(int value);
+
+		void on_spnDependentRatio_valueChanged(double value);
+
+		void on_spnIndependentRatio_valueChanged(double value);
 	};
 }
 #endif // BENCHMARKRUNCONFIGURATIONVIEW_HPP

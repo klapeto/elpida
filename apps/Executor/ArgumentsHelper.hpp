@@ -51,6 +51,12 @@ namespace Elpida
 		[[nodiscard]]
 		bool GetPinThreads() const;
 
+		[[nodiscard]]
+		double GetDependentQueueRatio() const;
+
+		[[nodiscard]]
+		double GetIndependentQueueRatio() const;
+
 		bool ParseAndGetExitText(int argC, char* argV[], std::string& returnText);
 
 		ArgumentsHelper();
@@ -64,8 +70,8 @@ namespace Elpida
 		double _nowOverhead;
 		double _loopOverhead;
 		double _vCallOverhead;
-		double _dependentThreadsPreAllocation;
-		double _independentThreadsPreAllocation;
+		double _dependentQueueRatio;
+		double _independentQueueRatio;
 		bool _numaAware;
 		bool _pinThreads;
 

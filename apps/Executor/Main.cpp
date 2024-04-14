@@ -96,6 +96,7 @@ int main(int argC, char** argV)
 {
 	try
 	{
+		std::locale::global(std::locale::classic());
 		ArgumentsHelper helper;
 
 		{
@@ -137,7 +138,8 @@ int main(int argC, char** argV)
 		}
 
 		auto targetProcessorCount = !targetProcessors.empty() ? targetProcessors.size() : std::thread::hardware_concurrency();
-		ThreadPool threadPool(targetProcessorCount, targetProcessorCount * 500);
+
+		ThreadPool threadPool(targetProcessorCount * helper.GetDependentQueueRatio(), targetProcessorCount * helper.GetIndependentQueueRatio());
 
 		auto context = BenchmarkRunContext(targetProcessors, config, threadPool,
 				helper.GetNumaAware() ?

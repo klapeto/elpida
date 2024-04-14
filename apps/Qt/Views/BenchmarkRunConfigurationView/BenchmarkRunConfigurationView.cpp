@@ -55,6 +55,8 @@ namespace Elpida::Application
 		_ui->chkPinThreads->setChecked(_model.IsPinThreads());
 		_ui->chkOpenResult->setEnabled(_model.IsUploadResults());
 		_ui->spnTimes->setValue(_model.GetIterationsToRun());
+		_ui->spnIndependentRatio->setValue(_model.GetIndependentQueueRatio());
+		_ui->spnDependentRatio->setValue(_model.GetDependentQueueRatio());
 		_uiUpdating = false;
 	}
 
@@ -73,5 +75,17 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationView::DisableAdvancedSettings()
 	{
 		_ui->gbAdvanced->setVisible(false);
+	}
+
+	void BenchmarkRunConfigurationView::on_spnDependentRatio_valueChanged(double value)
+	{
+		if (_uiUpdating) return;
+		_controller.SetDependentQueueRatio(value);
+	}
+
+	void BenchmarkRunConfigurationView::on_spnIndependentRatio_valueChanged(double value)
+	{
+		if (_uiUpdating) return;
+		_controller.SetIndependentQueueRatio(value);
 	}
 }

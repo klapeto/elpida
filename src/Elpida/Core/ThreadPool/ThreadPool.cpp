@@ -10,7 +10,7 @@ namespace Elpida
 	ThreadPool::ThreadPool(std::size_t dependentThreadCount, std::size_t independentThreadCount)
 			: _maxThreads(dependentThreadCount), _keepGoing(true), _currentIndependentIndex(0)
 	{
-		_cleanUpThread = std::thread(&ThreadPool::ThreadCleanupProcedure, this);
+		//_cleanUpThread = std::thread(&ThreadPool::ThreadCleanupProcedure, this);
 		for (std::size_t i = 0; i < dependentThreadCount; ++i)
 		{
 			_dependedQueue.emplace(CreateNewThread());
@@ -42,21 +42,25 @@ namespace Elpida
 	void ThreadPool::RequeueThread(std::unique_ptr<ThreadPoolThread>&& thread)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
-		if (_dependedQueue.size() < _maxThreads)
-		{
+//		if (_dependedQueue.size() < _maxThreads)
+//		{
 			_dependedQueue.push(std::move(thread));
-		}
-		else
-		{
-			_threadsToClean.Add(std::move(thread));
-		}
+//		}
+//		else
+//		{
+//			_threadsToClean.Add(std::move(thread));
+//		}
 	}
 
 	ThreadPool::~ThreadPool()
 	{
 		_keepGoing = false;
 		_threadsToClean.Destroy();
-		_cleanUpThread.join();
+		if(_cleanUpThread.joinable())
+		{
+			_cleanUpThread.join();
+		}
+
 	}
 
 	ThreadPool::ThreadPool()

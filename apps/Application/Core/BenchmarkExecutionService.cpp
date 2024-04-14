@@ -32,6 +32,8 @@ namespace Elpida::Application
 			double nowOverheadNanoseconds,
 			double loopOverheadNanoseconds,
 			double virtualCallOverheadNanoseconds,
+			double dependentQueueRatio,
+			double independentQueueRatio,
 			bool numaAware,
 			bool pinThreads)
 	{
@@ -44,14 +46,22 @@ namespace Elpida::Application
 			configuration.emplace_back(config.GetValue());
 		}
 
-		std::locale::global(std::locale());
+
+		auto toString = [](double d)
+		{
+			std::ostringstream doubleToStringAccumulator;
+			doubleToStringAccumulator.imbue(std::locale());
+			doubleToStringAccumulator << d;
+			return doubleToStringAccumulator.str();
+		};
+
 		std::vector<std::string> arguments
 				{
 						std::string("--module=") + "\"" + benchmarkModel.GetFilePath() + "\"",
 						"--index=" + std::to_string(benchmarkModel.GetIndex()),
-						"--now-nanoseconds=" + std::to_string(nowOverheadNanoseconds),
-						"--loop-nanoseconds=" + std::to_string(loopOverheadNanoseconds),
-						"--virtual-nanoseconds=" + std::to_string(virtualCallOverheadNanoseconds),
+						"--now-nanoseconds=" + toString(nowOverheadNanoseconds),
+						"--loop-nanoseconds=" + toString(loopOverheadNanoseconds),
+						"--virtual-nanoseconds=" + toString(virtualCallOverheadNanoseconds),
 						"--format=json"
 				};
 
@@ -83,7 +93,17 @@ namespace Elpida::Application
 			arguments.emplace_back("--pin-threads");
 		}
 
-		std::locale::global(std::locale(""));
+		if (dependentQueueRatio > 0.0)
+		{
+			arguments.emplace_back(std::string("--dependent-queue-ratio=").append(toString(dependentQueueRatio)));
+		}
+
+		if (independentQueueRatio > 0.0)
+		{
+			arguments.emplace_back(
+					std::string("--independent-queue-ratio=").append(toString(independentQueueRatio)));
+		}
+
 		_currentProcess = Process(ExecutablePath, arguments, true, true);
 
 		AsyncPipeReader stdOutReader(_currentProcess.GetStdOut());

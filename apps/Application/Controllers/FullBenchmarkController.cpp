@@ -96,6 +96,8 @@ namespace Elpida::Application
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
+								1.0,
+								10.0,
 								false,
 								false);
 			});
@@ -134,6 +136,8 @@ namespace Elpida::Application
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
+						1.0,
+						10.0,
 					false,
 					false);
 			});
@@ -166,6 +170,8 @@ namespace Elpida::Application
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
+						1.0,
+						10.0,
 						false,
 						false);
 			});

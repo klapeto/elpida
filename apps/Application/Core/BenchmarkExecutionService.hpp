@@ -23,6 +23,8 @@ namespace Elpida::Application
 				double nowOverheadNanoseconds,
 				double loopOverheadNanoseconds,
 				double virtualCallOverheadNanoseconds,
+				double dependentQueueRatio,
+				double independentQueueRatio,
 				bool numaAware,
 				bool pinThreads);
 

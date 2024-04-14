@@ -9,8 +9,8 @@
 namespace Elpida::Application
 {
 	BenchmarkRunConfigurationController::BenchmarkRunConfigurationController(BenchmarkRunConfigurationModel& model,
-		SettingsService& settingsService)
-		: Controller(model), _settingsService(settingsService)
+			SettingsService& settingsService)
+			: Controller(model), _settingsService(settingsService)
 	{
 		std::string value = settingsService.Get("UploadResults");
 		if (!value.empty())
@@ -38,6 +38,32 @@ namespace Elpida::Application
 		if (!value.empty())
 		{
 			_model.SetNumaAware(value == "1");
+		}
+
+		value = settingsService.Get("PinThreads");
+		if (!value.empty())
+		{
+			_model.SetPinThreads(value == "1");
+		}
+
+		value = settingsService.Get("DependentQueueRatio");
+		if (!value.empty())
+		{
+			_model.SetDependentRatio(std::stod(value));
+		}
+		else
+		{
+			_model.SetDependentRatio(20.0);
+		}
+
+		value = settingsService.Get("IndependentQueueRatio");
+		if (!value.empty())
+		{
+			_model.SetIndependentRatio(std::stod(value));
+		}
+		else
+		{
+			_model.SetDependentRatio(20.0);
 		}
 	}
 
@@ -69,6 +95,18 @@ namespace Elpida::Application
 	{
 		_model.SetPinThreads(pinThreads);
 		_settingsService.Set("PinThreads", pinThreads ? "1" : "0");
+	}
+
+	void BenchmarkRunConfigurationController::SetDependentQueueRatio(double ratio)
+	{
+		_model.SetDependentRatio(ratio);
+		_settingsService.Set("DependentQueueRatio", std::to_string(ratio));
+	}
+
+	void BenchmarkRunConfigurationController::SetIndependentQueueRatio(double ratio)
+	{
+		_model.SetIndependentRatio(ratio);
+		_settingsService.Set("IndependentQueueRatio", std::to_string(ratio));
 	}
 } // Elpida
 // Application

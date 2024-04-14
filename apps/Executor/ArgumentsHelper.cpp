@@ -94,6 +94,10 @@ namespace Elpida
 		accumulator << R"("           The loop overhead in nanoseconds)" << std::endl;
 		accumulator << R"("       --virtual-nanoseconds=NANOSECONDS)" << std::endl;
 		accumulator << R"("           The virtual call overhead in nanoseconds)" << std::endl;
+		accumulator << R"("       --dependent-queue-ratio=VALUE)" << std::endl;
+		accumulator << R"("           Set the dependent thread pre-allocation ratio to the target processor count)" << std::endl;
+		accumulator << R"("       --independent-queue-ratio=VALUE)" << std::endl;
+		accumulator << R"("           Set the dependent thread pre-allocation ratio to the target processor count)" << std::endl;
 		accumulator << R"("       --numa-aware)" << std::endl;
 		accumulator << R"("           Enable numa aware allocations)" << std::endl;
 		accumulator << R"("       --pin-threads)" << std::endl;
@@ -178,8 +182,8 @@ namespace Elpida
 			VirtualOverhead,
 			NumaAware,
 			PinThreads,
-			DependedRatio,
-			IndependentRatio
+			DependentQueueRatio,
+			IndependentQueueRatio
 		};
 
 		struct option options[] = {
@@ -195,8 +199,8 @@ namespace Elpida
 				{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
 				{ "numa-aware",          no_argument,       nullptr, NumaAware },
 				{ "pin-threads",         no_argument,       nullptr, PinThreads },
-				{ "dependent-ratio", required_argument, nullptr, DependedRatio },
-				{ "independent-ratio", required_argument, nullptr, IndependentRatio },
+				{ "dependent-queue-ratio", required_argument, nullptr, DependentQueueRatio },
+				{ "independent-queue-ratio", required_argument, nullptr, IndependentQueueRatio },
 				{ nullptr, 0,                               nullptr, 0 }
 		};
 
@@ -244,11 +248,11 @@ namespace Elpida
 			case PinThreads:
 				_pinThreads = true;
 				break;
-			case DependedRatio:
-				_dependentThreadsPreAllocation = ParseDouble(GetValueOrDefault(optarg), "dependent-ratio");
+			case DependentQueueRatio:
+				_dependentQueueRatio = ParseDouble(GetValueOrDefault(optarg), "dependent-queue-ratio");
 				break;
-			case IndependentRatio:
-				_independentThreadsPreAllocation = ParseDouble(GetValueOrDefault(optarg), "independent-ratio");
+			case IndependentQueueRatio:
+				_independentQueueRatio = ParseDouble(GetValueOrDefault(optarg), "independent-queue-ratio");
 				break;
 			case '?':
 				returnText = "Unknown option: " + std::string(GetValueOrDefault(optarg));
@@ -356,7 +360,7 @@ namespace Elpida
 
 	ArgumentsHelper::ArgumentsHelper()
 			: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0),
-			  _dependentThreadsPreAllocation(1.0), _independentThreadsPreAllocation(1.0),
+			  _dependentQueueRatio(20.0), _independentQueueRatio(20.0),
 			  _numaAware(false), _pinThreads(false)
 	{
 
@@ -370,6 +374,16 @@ namespace Elpida
 	bool ArgumentsHelper::GetPinThreads() const
 	{
 		return _pinThreads;
+	}
+
+	double ArgumentsHelper::GetDependentQueueRatio() const
+	{
+		return _dependentQueueRatio;
+	}
+
+	double ArgumentsHelper::GetIndependentQueueRatio() const
+	{
+		return _independentQueueRatio;
 	}
 
 } // Elpida

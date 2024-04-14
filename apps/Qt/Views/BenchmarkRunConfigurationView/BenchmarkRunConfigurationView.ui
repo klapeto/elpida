@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Elpida::Application::BenchmarkRunConfigurationView</class>
- <widget class="QWidget" name="BenchmarkRunConfigurationView">
+ <widget class="QWidget" name="Elpida::Application::BenchmarkRunConfigurationView">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>99</height>
+    <width>391</width>
+    <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,23 +52,72 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="3" column="0" colspan="3">
     <widget class="QGroupBox" name="gbAdvanced">
      <property name="title">
       <string>Advanced settings</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0" colspan="2">
        <widget class="QCheckBox" name="chkNumaAware">
+        <property name="toolTip">
+         <string>Use NUMA aware allocator where possible. Only makes a difference in NUMA systems.</string>
+        </property>
         <property name="text">
          <string>Use NUMA aware allocator</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="spnIndependentRatio">
+        <property name="toolTip">
+         <string>The ratio to the target processor count for pre-created available threads in the independent queue. A value of 2.0 means the thread pool will pre-create (TargetProcessors * 2.0) threads available to run independent procedures. Independent procedures are the ones that do not spawn other thread pool procedures internally, usually leaf functions.</string>
+        </property>
+        <property name="minimum">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
        <widget class="QCheckBox" name="chkPinThreads">
+        <property name="toolTip">
+         <string>Pin each thread to the target processors defined in topology. Pining happens in orderly matter. E.g. if a task is single threaded, it will be pinned on the first processor definned in the topology tab. Only affects automatically multithreaded tasks.</string>
+        </property>
         <property name="text">
-         <string>Pin threads to target processors</string>
+         <string>Pin threads for automatically multithreaded tasks</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblIndependentRatio">
+        <property name="toolTip">
+         <string>The ratio to the target processor count for pre-created available threads in the independent queue. A value of 2.0 means the thread pool will pre-create (TargetProcessors * 2.0) threads available to run independent procedures. Independent procedures are the ones that do not spawn other thread pool procedures internally, usually leaf functions.</string>
+        </property>
+        <property name="text">
+         <string>Independent queue pre-allocation ratio:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="lbDependentRatio">
+        <property name="toolTip">
+         <string>The ratio to the target processor count for pre-created available threads in the dependent queue. A value of 2.0 means the thread pool will pre-create (TargetProcessors * 2.0) threads available to run dependent procedures. Dependent procedures are the ones that spawn other thread pool procedures internally.</string>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dependent queue pre-allocation ratio:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="spnDependentRatio">
+        <property name="toolTip">
+         <string>The ratio to the target processor count for pre-created available threads in the dependent queue. A value of 2.0 means the thread pool will pre-create (TargetProcessors * 2.0) threads available to run dependent procedures. Dependent procedures are the ones that spawn other thread pool procedures internally.</string>
+        </property>
+        <property name="minimum">
+         <double>1.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>2.000000000000000</double>
         </property>
        </widget>
       </item>

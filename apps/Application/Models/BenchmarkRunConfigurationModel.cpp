@@ -65,4 +65,24 @@ namespace Elpida::Application
 		_pinThreads = pinThreads;
 		OnDataChanged();
 	}
+
+	double BenchmarkRunConfigurationModel::GetIndependentQueueRatio() const
+	{
+		return _independentRatio;
+	}
+
+	void BenchmarkRunConfigurationModel::SetIndependentRatio(double independentRatio)
+	{
+		_independentRatio = independentRatio;
+	}
+
+	double BenchmarkRunConfigurationModel::GetDependentQueueRatio() const
+	{
+		return _dependentRatio;
+	}
+
+	void BenchmarkRunConfigurationModel::SetDependentRatio(double dependentRatio)
+	{
+		_dependentRatio = dependentRatio;
+	}
 } // Elpida

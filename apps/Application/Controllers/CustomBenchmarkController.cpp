@@ -73,6 +73,8 @@ namespace Elpida::Application
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
+						_benchmarkRunConfigurationModel.GetDependentQueueRatio(),
+						_benchmarkRunConfigurationModel.GetIndependentQueueRatio(),
 						_benchmarkRunConfigurationModel.IsNumaAware(),
 						_benchmarkRunConfigurationModel.IsPinThreads()));
 			}
