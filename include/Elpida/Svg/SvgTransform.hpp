@@ -6,8 +6,8 @@
 #define ELPIDA_SVG_SVGTRANSFORM_HPP
 
 #include <cmath>
-#include <numbers>
 #include <string_view>
+#include <Elpida/Svg/SvgUtilities.hpp>
 
 namespace Elpida
 {
@@ -61,7 +61,7 @@ namespace Elpida
 
 		SvgTransform &RotateDegrees(const double degrees)
 		{
-			return RotateRadians(degrees / 180 * std::numbers::pi);
+			return RotateRadians(degrees / 180 * SvgUtilities::Pi);
 		}
 
 		SvgTransform &SkewX(const double angle)

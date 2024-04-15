@@ -16,6 +16,7 @@ namespace Elpida
 	class SvgNumber
 	{
 	public:
+
 		static bool IsNumber(const char c)
 		{
 			return (unsigned char)(c - '0') < 10;

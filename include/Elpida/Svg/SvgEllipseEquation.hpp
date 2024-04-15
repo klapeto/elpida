@@ -36,7 +36,7 @@ namespace Elpida
 		void Expand(const double rX, const double rY, double angle)
 		{
 			// the angle of the top point is the angle of the right point + 90 degrees
-			_topPoint += SvgPoint(rY * cos(angle + std::numbers::pi / 2.0), rY * sin(angle + std::numbers::pi / 2.0));
+			_topPoint += SvgPoint(rY * cos(angle + SvgUtilities::Pi / 2.0), rY * sin(angle + SvgUtilities::Pi / 2.0));
 			_rightPoint -= SvgPoint(rX * cos(angle), rX * sin(angle));
 			Recalculate();
 		}

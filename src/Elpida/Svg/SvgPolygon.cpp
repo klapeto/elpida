@@ -4,6 +4,8 @@
 
 #include "Elpida/Svg/SvgPolygon.hpp"
 
+#include <algorithm>
+
 namespace Elpida
 {
 	bool SvgPolygon::IsPointInsideEvenOdd(const SvgPoint& point) const

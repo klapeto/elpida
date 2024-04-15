@@ -117,18 +117,18 @@ namespace Elpida::Application
 			  exceptionMessage = ex.what();
 		  }
 
-		  while (!rejected.load(std::memory_order::acquire) && !dialog.isVisible())
+		  while (!rejected.load(std::memory_order_acquire) && !dialog.isVisible())
 		  {
 			  std::this_thread::sleep_for(MilliSeconds(10));
 		  }
-		  if (!rejected.load(std::memory_order::acquire))
+		  if (!rejected.load(std::memory_order_acquire))
 		  {
 			  dialog.accept();
 		  }
 		});
 		if (dialog.exec() == QDialog::Rejected)
 		{
-			rejected.store(true, std::memory_order::release);
+			rejected.store(true, std::memory_order_release);
 			_customBenchmarksController.StopRunning();
 		}
 		th.join();

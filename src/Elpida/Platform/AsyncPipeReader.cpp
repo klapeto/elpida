@@ -26,7 +26,7 @@ namespace Elpida
 		  std::size_t bytesRead;
 		  try
 		  {
-			  while (_running.load(std::memory_order::acquire) &&
+			  while (_running.load(std::memory_order_acquire) &&
 				  (bytesRead = _pipe.Read(buffer, sizeof(buffer))) > 0)
 			  {
 				  _stringStream << std::string_view(buffer, bytesRead);

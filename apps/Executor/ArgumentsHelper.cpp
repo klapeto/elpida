@@ -128,12 +128,12 @@ namespace Elpida
 		if (!value) return {};
 		std::string str(value);
 
-		while (str.starts_with('\"'))
+		while (!str.empty() && str[0] == '"')
 		{
 			str = str.substr(1);
 		}
 
-		while (str.ends_with('\"'))
+		while (!str.empty() && str[str.length() - 1] == '"')
 		{
 			str = str.substr(0, str.length() - 1);
 		}

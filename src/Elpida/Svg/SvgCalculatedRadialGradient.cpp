@@ -6,6 +6,7 @@
 
 #include "Elpida/Svg/SvgGradient.hpp"
 #include "Elpida/Svg/SvgPoint.hpp"
+#include "Elpida/Svg/SvgUtilities.hpp"
 
 #include <cassert>
 
@@ -32,8 +33,8 @@ namespace Elpida
 		for (const auto &stop: _stops)
 		{
 			// calculate the linear interpolation of the radius
-			const auto thisRadius = std::lerp(0, actualRadius, stop.GetOffset());
-			const auto thisInverseRadius = std::lerp(0, actualRadius, 1.0 - stop.GetOffset());
+			const auto thisRadius = SvgUtilities::Lerp(0, actualRadius, stop.GetOffset());
+			const auto thisInverseRadius = SvgUtilities::Lerp(0, actualRadius, 1.0 - stop.GetOffset());
 
 			_circles.emplace_back(SvgPoint(actualCX, actualCY), thisRadius);
 			_inverseCircles.emplace_back(SvgPoint(actualCX, actualCY), thisInverseRadius);

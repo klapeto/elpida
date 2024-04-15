@@ -303,7 +303,7 @@ namespace Elpida
 			TPolyRasterize& polyRasterize,
 			TBackdropRasterize& backdropRasterize)
 	{
-		using TFuture = TFutureGenerator::template FutureType<RasterizedShape>;
+		using TFuture = typename TFutureGenerator::template FutureType<RasterizedShape>;
 		auto selfDrawFuture = RasterizedSelfShape<TFuture>(shape, subSamples, futureGenerator, polyRasterize,
 				backdropRasterize);
 

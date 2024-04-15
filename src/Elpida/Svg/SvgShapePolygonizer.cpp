@@ -11,6 +11,7 @@
 #include <Elpida/Svg/SvgStroke.hpp>
 #include <Elpida/Svg/SvgCalculatedShape.hpp>
 #include <Elpida/Svg/SvgCalculationContext.hpp>
+#include <Elpida/Svg/SvgUtilities.hpp>
 
 namespace Elpida
 {
@@ -251,7 +252,7 @@ namespace Elpida
 
 		for (std::size_t i = 0; i < ncap; i++)
 		{
-			const double a = static_cast<double>(i) / static_cast<double>(ncap - 1) * std::numbers::pi;
+			const double a = static_cast<double>(i) / static_cast<double>(ncap - 1) * SvgUtilities::Pi;
 			const double ax = cos(a) * w;
 			const double ay = sin(a) * w;
 
@@ -369,10 +370,10 @@ namespace Elpida
 		const double a1 = atan2(dl1.GetY(), dl1.GetX());
 		double da = a1 - a0;
 
-		if (da < std::numbers::pi) da += std::numbers::pi * 2;
-		if (da > std::numbers::pi) da -= std::numbers::pi * 2;
+		if (da < SvgUtilities::Pi) da += SvgUtilities::Pi * 2;
+		if (da > SvgUtilities::Pi) da -= SvgUtilities::Pi * 2;
 
-		auto nV = static_cast<int>(std::ceil((std::abs(da) / std::numbers::pi) * static_cast<double>(ncap)));
+		auto nV = static_cast<int>(std::ceil((std::abs(da) / SvgUtilities::Pi) * static_cast<double>(ncap)));
 		if (nV < 2) nV = 2;
 
 		std::size_t n = nV;
@@ -461,7 +462,7 @@ namespace Elpida
 			const SvgLineCap lineCap,
 			double lineWidth)
 	{
-		const auto ncap = CurveDivs(lineWidth * 0.5, std::numbers::pi);
+		const auto ncap = CurveDivs(lineWidth * 0.5, SvgUtilities::Pi);
 		SvgRasterizerPoint left, right, firstLeft, firstRight;
 
 		std::vector<SvgRasterizerPoint>::iterator p0;

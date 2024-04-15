@@ -6,6 +6,7 @@
 #include "Elpida/Svg/SvgGradient.hpp"
 #include "Elpida/Svg/SvgCalculationContext.hpp"
 #include "Elpida/Svg/SvgPoint.hpp"
+#include "Elpida/Svg/SvgUtilities.hpp"
 
 #include <cmath>
 #include <cassert>
@@ -44,8 +45,8 @@ namespace Elpida
 			auto& stop = _stops[i];
 
 			// calculate the linear interpolation (where x,y exactly lies between the points)
-			const auto x = std::lerp(gradientPointA.GetX(), gradientPointB.GetX(), stop.GetOffset());
-			const auto y = std::lerp(gradientPointA.GetY(), gradientPointB.GetY(), stop.GetOffset());
+			const auto x = SvgUtilities::Lerp(gradientPointA.GetX(), gradientPointB.GetX(), stop.GetOffset());
+			const auto y = SvgUtilities::Lerp(gradientPointA.GetY(), gradientPointB.GetY(), stop.GetOffset());
 
 			_stopNormals.push_back(SvgLinearEquation(gradientPointA, SvgPoint(x, y)).GetBNormal());
 		}
@@ -74,6 +75,8 @@ namespace Elpida
 			return CalculateReflect(point);
 		case SvgSpreadType::Repeat:
 			return CalculateRepeat(point);
+		default:
+			return CalculatePad(point);
 		}
 	}
 

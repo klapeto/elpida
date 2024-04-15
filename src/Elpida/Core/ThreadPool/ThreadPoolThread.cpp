@@ -13,7 +13,7 @@ namespace Elpida
 
 	void ThreadPoolThread::Terminate()
 	{
-		_keepGoing.store(false, std::memory_order::release);
+		_keepGoing.store(false, std::memory_order_release);
 		_queue.Destroy();
 
 		_thread.join();

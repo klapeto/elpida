@@ -7,6 +7,7 @@
 #include <Elpida/Svg/SvgNumber.hpp>
 #include <Elpida/Xml/CharacterStream.hpp>
 #include <Elpida/Xml/ParseException.hpp>
+#include <Elpida/Svg/SvgUtilities.hpp>
 
 namespace Elpida
 {
@@ -401,7 +402,7 @@ namespace Elpida
 	{
 		auto rx = std::abs(radiusX); // y radius
 		auto ry = std::abs(radiusY); // x radius
-		const auto rotx = xAxisRotation / 180.0 * std::numbers::pi; // x rotation angle
+		const auto rotx = xAxisRotation / 180.0 * SvgUtilities::Pi; // x rotation angle
 		const auto fa = largeArc; // Large arc
 		const auto fs = sweep; // Sweep direction
 
@@ -477,11 +478,11 @@ namespace Elpida
 
 		if (fs == 0 && da > 0)
 		{
-			da -= 2 * std::numbers::pi;
+			da -= 2 * SvgUtilities::Pi;
 		}
 		else if (fs == 1 && da < 0)
 		{
-			da += 2 * std::numbers::pi;
+			da += 2 * SvgUtilities::Pi;
 		}
 
 		const SvgTransform transform(cosrx, sinrx, -sinrx, cosrx, cx, cy);
@@ -489,7 +490,7 @@ namespace Elpida
 
 		// Split arc into max 90 degree segments.
 		// The loop assumes an iteration per end point (including start and end), this +1.
-		const auto ndivs = static_cast<std::size_t>(std::abs(da) / (std::numbers::pi * 0.5) + 1.0);
+		const auto ndivs = static_cast<std::size_t>(std::abs(da) / (SvgUtilities::Pi * 0.5) + 1.0);
 		auto hda = (da / static_cast<double>(ndivs)) / 2.0;
 
 		// Fix for ticket #179: division by 0: avoid cotangens around 0 (infinite)
