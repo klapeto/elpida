@@ -29,7 +29,27 @@ namespace Elpida::Application
 		L3DCache,
 		L4Cache,
 		L5Cache,
-		ProcessingUnit
+		ProcessingUnit,
+	};
+
+	enum NativeNodeType
+	{
+		Machine = 0,
+		Package = 1,
+		NumaDomain = 1 << 1,
+		Group = 1 << 2,
+		Die = 1 << 3,
+		Core = 1 << 4,
+		L1ICache = 1 << 5,
+		L1DCache = 1 << 6,
+		L2ICache = 1 << 7,
+		L2DCache = 1 << 8,
+		L3ICache = 1 << 9,
+		L3DCache = 1 << 10,
+		L4Cache = 1 << 11,
+		L5Cache = 1 << 12,
+		ProcessingUnit = 1 << 13,
+		Unknown = -1
 	};
 
 	class TopologyNodeModel final : public Model
@@ -94,6 +114,46 @@ namespace Elpida::Application
 	protected:
 		void OnDataChanged() const override;
 	};
+
+	static TopologyNodeType TranslateNativeTopologyType(NativeNodeType nativeNodeType)
+	{
+		switch (nativeNodeType)
+		{
+		case Machine:
+			return Elpida::Application::TopologyNodeType::Machine;
+		case Package:
+			return Elpida::Application::TopologyNodeType::Package;
+		case NumaDomain:
+			return Elpida::Application::TopologyNodeType::NumaDomain;
+		case Group:
+			return Elpida::Application::TopologyNodeType::Group;
+		case Die:
+			return Elpida::Application::TopologyNodeType::Die;
+		case Core:
+			return Elpida::Application::TopologyNodeType::Core;
+		case L1ICache:
+			return Elpida::Application::TopologyNodeType::L1ICache;
+		case L1DCache:
+			return Elpida::Application::TopologyNodeType::L1DCache;
+		case L2ICache:
+			return Elpida::Application::TopologyNodeType::L2ICache;
+		case L2DCache:
+			return Elpida::Application::TopologyNodeType::L2DCache;
+		case L3ICache:
+			return Elpida::Application::TopologyNodeType::L3ICache;
+		case L3DCache:
+			return Elpida::Application::TopologyNodeType::L3DCache;
+		case L4Cache:
+			return Elpida::Application::TopologyNodeType::L4Cache;
+		case L5Cache:
+			return Elpida::Application::TopologyNodeType::L5Cache;
+		case ProcessingUnit:
+			return Elpida::Application::TopologyNodeType::ProcessingUnit;
+		case Unknown:
+			break;
+		}
+		return Elpida::Application::TopologyNodeType::ProcessingUnit;
+	}
 
 } // Application
 

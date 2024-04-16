@@ -10,12 +10,10 @@ namespace Elpida::Application
 	TimingModel::TimingModel(const Duration& nowOverhead,
 		const Duration& loopOverhead,
 		const Duration& virtualCallOverhead,
-		Iterations iterationsPerSecond,
-		const Duration& stableTime)
+		Iterations iterationsPerSecond)
 		: _nowOverhead(nowOverhead),
 		  _loopOverhead(loopOverhead),
 		  _virtualCallOverhead(virtualCallOverhead),
-		  _stableTime(stableTime),
 		  _iterationsPerSecond(iterationsPerSecond)
 	{
 	}
@@ -33,11 +31,6 @@ namespace Elpida::Application
 	const Duration& TimingModel::GetVirtualCallOverhead() const
 	{
 		return _virtualCallOverhead;
-	}
-
-	const Duration& TimingModel::GetStableTime() const
-	{
-		return _stableTime;
 	}
 
 	Size TimingModel::GetIterationsPerSecond() const

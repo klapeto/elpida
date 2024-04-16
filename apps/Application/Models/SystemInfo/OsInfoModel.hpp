@@ -25,11 +25,12 @@ namespace Elpida::Application
 		[[nodiscard]]
 		const std::string& GetVersion() const;
 
+		OsInfoModel() = default;
 		OsInfoModel(std::string category, std::string name, std::string version);
 		OsInfoModel(const OsInfoModel&) = delete;
-		OsInfoModel(OsInfoModel&&) = delete;
+		OsInfoModel(OsInfoModel&&) = default;
 		OsInfoModel& operator=(const OsInfoModel&) = delete;
-		OsInfoModel& operator=(OsInfoModel&&) = delete;
+		OsInfoModel& operator=(OsInfoModel&&) = default;
 		~OsInfoModel() override = default;
 	 private:
 		std::string _category;

@@ -55,6 +55,8 @@ set(ELPIDA_APPLICATION_SOURCES
         Controllers/FullBenchmarkController.hpp
         Models/Full/FullBenchmarkModel.cpp
         Models/Full/FullBenchmarkModel.hpp
+        ModelBuilderJson.cpp
+        ModelBuilderJson.hpp
 )
 
 

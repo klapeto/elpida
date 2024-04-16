@@ -33,12 +33,12 @@ namespace Elpida::Application
 //		_ui->gnAdditionalInfo->setLayout(additionalInfoLayout);
 
 
-		auto featuresLayout = new FlowLayout();
-		for (auto& feature: cpuInfo.GetFeatures())
-		{
-			featuresLayout->addWidget(new QLabel(QString::fromStdString(feature)));
-		}
-		_ui->saFeatures->setLayout(featuresLayout);
+//		auto featuresLayout = new FlowLayout();
+//		for (auto& feature: cpuInfo.GetFeatures())
+//		{
+//			featuresLayout->addWidget(new QLabel(QString::fromStdString(feature)));
+//		}
+//		_ui->saFeatures->setLayout(featuresLayout);
 	}
 
 	CpuInfoView::~CpuInfoView()

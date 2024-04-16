@@ -24,6 +24,10 @@ namespace Elpida::Application
 
 		MemoryInfoModel() = default;
 		MemoryInfoModel(std::size_t totalSize, std::size_t pageSize);
+		MemoryInfoModel(MemoryInfoModel&&) noexcept = default;
+		MemoryInfoModel& operator=(MemoryInfoModel&&) noexcept = default;
+		MemoryInfoModel(const MemoryInfoModel&) = delete;
+		MemoryInfoModel& operator=(const MemoryInfoModel&) = delete;
 		~MemoryInfoModel() override = default;
 	private:
 		std::size_t _totalSize;

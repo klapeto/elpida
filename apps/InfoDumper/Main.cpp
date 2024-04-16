@@ -150,16 +150,16 @@ static json DumpTask(const TaskInfo& taskInfo)
 }
 
 
-static json DumpBenchmark(const Benchmark& benchmark)
+static json DumpBenchmark(const Benchmark& benchmark, std::size_t index)
 {
 	json jBenchmark;
 	auto info = benchmark.GetInfo();
 
+	jBenchmark["index"] = index;
 	jBenchmark["name"] = info.GetName();
 	jBenchmark["description"] = info.GetDescription();
 	jBenchmark["scoreUnit"] = info.GetScoreUnit();
 	jBenchmark["scoreDescription"] = info.GetScoreDescription();
-
 
 	json taskArray = json::array();
 	for (auto& task: info.GetTaskInfos())
@@ -188,16 +188,19 @@ static json DumpBenchmark(const Benchmark& benchmark)
 	return jBenchmark;
 }
 
-static json DumpBenchmarkGroup(const BenchmarkGroup& group)
+static json DumpBenchmarkGroup(const BenchmarkGroup& group, const std::string& modulePath)
 {
 	json jBenchmarkGroup;
 
 	jBenchmarkGroup["name"] = group.GetName();
+	jBenchmarkGroup["filePath"] = modulePath;
 
 	json benchmarkArray = json::array();
-	for (auto& benchmark: group.GetBenchmarks())
+
+	auto& benchmarks = group.GetBenchmarks();
+	for (std::size_t i = 0; i < benchmarks.size(); ++i)
 	{
-		benchmarkArray.push_back(DumpBenchmark(*benchmark));
+		benchmarkArray.push_back(DumpBenchmark(*benchmarks[i], i));
 	}
 
 	jBenchmarkGroup["benchmarks"] = std::move(benchmarkArray);
@@ -221,9 +224,10 @@ static json DumpBenchmarks(const std::string& path)
 		{
 			try
 			{
-				BenchmarkGroupModule module(entry.path().string());
+				auto strPath = entry.path().string();
+				BenchmarkGroupModule module(strPath);
 
-				benchmarkGroups.push_back(DumpBenchmarkGroup(module.GetBenchmarkGroup()));
+				benchmarkGroups.push_back(DumpBenchmarkGroup(module.GetBenchmarkGroup(), strPath));
 			}
 			catch (const std::exception& ex)
 			{
@@ -245,7 +249,6 @@ json DumpTimingInfo()
 	jTiming["loopOverheadNs"] = std::chrono::duration_cast<NanoSeconds>(timing.GetLoopOverhead()).count();
 	jTiming["nowOverheadNs"] = std::chrono::duration_cast<NanoSeconds>(timing.GetNowOverhead()).count();
 	jTiming["vCallOverheadNs"] = std::chrono::duration_cast<NanoSeconds>(timing.GetVirtualCallOverhead()).count();
-
 
 	return jTiming;
 }

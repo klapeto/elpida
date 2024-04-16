@@ -28,12 +28,6 @@
 #include <cctype>
 #include <filesystem>
 #include <string>
-#include <vector>
-
-#include "Elpida/Core/TaskConfiguration.hpp"
-#include "Elpida/Core/Topology/TopologyNode.hpp"
-#include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
-#include "Elpida/Core/TimingCalculator.hpp"
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
@@ -41,29 +35,20 @@
 #include "QtThreadQueue.hpp"
 #include "QtSettingsService.hpp"
 
-#include "Elpida/Platform/OsInfoLoader.hpp"
-#include "Elpida/Platform/MemoryInfoLoader.hpp"
-#include "Elpida/Platform/CpuInfoLoader.hpp"
-#include "Elpida/Platform/TopologyLoader.hpp"
-#include "Elpida/Platform/BenchmarkGroupModule.hpp"
-
-#include "Models/Benchmark/TaskModel.hpp"
-#include "Models/SystemInfo/OsInfoModel.hpp"
-#include "Models/SystemInfo/MemoryInfoModel.hpp"
-#include "Models/SystemInfo/CpuInfoModel.hpp"
-#include "Models/SystemInfo/TimingModel.hpp"
 #include "Models/SystemInfo/TopologyModel.hpp"
-#include "Models/SystemInfo/TopologyNodeModel.hpp"
 #include "Models/Custom/CustomBenchmarkModel.hpp"
-#include "Models/Benchmark/BenchmarkModel.hpp"
 #include "Models/Custom/CustomBenchmarkResultsModel.hpp"
-
-#include "Controllers/CustomBenchmarkController.hpp"
-#include "Core/BenchmarkExecutionService.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
-#include "Controllers/BenchmarkRunConfigurationController.hpp"
 #include "Models/Full/FullBenchmarkModel.hpp"
+
+#include "Core/BenchmarkExecutionService.hpp"
+#include "Controllers/CustomBenchmarkController.hpp"
+#include "Controllers/BenchmarkRunConfigurationController.hpp"
 #include "Controllers/FullBenchmarkController.hpp"
+#include "ModelBuilderJson.hpp"
+
+#include "Elpida/Platform/Process.hpp"
+#include "Elpida/Platform/AsyncPipeReader.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -92,187 +77,6 @@ static void setupPlatformSpecifics()
 	signal(SIGSEGV, segFaultHandler);
 	signal(SIGABRT, segFaultHandler);
 #endif
-}
-
-static TopologyNodeType TranslateType(NodeType nodeType)
-{
-	switch (nodeType)
-	{
-	case Machine:
-		return Elpida::Application::TopologyNodeType::Machine;
-	case Package:
-		return Elpida::Application::TopologyNodeType::Package;
-	case NumaDomain:
-		return Elpida::Application::TopologyNodeType::NumaDomain;
-	case Group:
-		return Elpida::Application::TopologyNodeType::Group;
-	case Die:
-		return Elpida::Application::TopologyNodeType::Die;
-	case Core:
-		return Elpida::Application::TopologyNodeType::Core;
-	case L1ICache:
-		return Elpida::Application::TopologyNodeType::L1ICache;
-	case L1DCache:
-		return Elpida::Application::TopologyNodeType::L1DCache;
-	case L2ICache:
-		return Elpida::Application::TopologyNodeType::L2ICache;
-	case L2DCache:
-		return Elpida::Application::TopologyNodeType::L2DCache;
-	case L3ICache:
-		return Elpida::Application::TopologyNodeType::L3ICache;
-	case L3DCache:
-		return Elpida::Application::TopologyNodeType::L3DCache;
-	case L4Cache:
-		return Elpida::Application::TopologyNodeType::L4Cache;
-	case L5Cache:
-		return Elpida::Application::TopologyNodeType::L5Cache;
-	case ProcessingUnit:
-		return Elpida::Application::TopologyNodeType::ProcessingUnit;
-	case Unknown:
-		break;
-	}
-	return Elpida::Application::TopologyNodeType::ProcessingUnit;
-}
-
-static std::optional<std::size_t> GetSize(const TopologyNode& node)
-{
-	std::optional<std::size_t> size;
-	switch (node.GetType())
-	{
-	case NumaDomain:
-		size = static_cast<const NumaNode&>(node).GetLocalMemorySize();
-		break;
-	case L1ICache:
-	case L1DCache:
-	case L2ICache:
-	case L2DCache:
-	case L3ICache:
-	case L3DCache:
-	case L4Cache:
-	case L5Cache:
-		size = static_cast<const CpuCacheNode&>(node).GetSize();
-		break;
-	case Group:
-	case Die:
-	case Core:
-	case Machine:
-	case Package:
-	case ProcessingUnit:
-	case Unknown:
-		break;
-	}
-
-	return size;
-}
-
-static TopologyNodeModel GetNode(const TopologyNode& node)
-{
-	auto& originalMemoryChildren = node.GetMemoryChildren();
-	std::vector<TopologyNodeModel> memoryChildren;
-	memoryChildren.reserve(originalMemoryChildren.size());
-
-	for (auto& child: originalMemoryChildren)
-	{
-		memoryChildren.push_back(GetNode(*child));
-	}
-
-	auto& originalChildren = node.GetChildren();
-	std::vector<TopologyNodeModel> children;
-	memoryChildren.reserve(children.size());
-	for (auto& child: originalChildren)
-	{
-		children.push_back(GetNode(*child));
-	}
-
-	std::optional<int> efficiency;
-	if (node.GetType() == ProcessingUnit)
-	{
-		auto kind = static_cast<const ProcessingUnitNode&>(node).GetCpuKind();
-		if (kind.has_value())
-		{
-			efficiency = kind->get().GetEfficiency();
-		}
-
-	}
-
-	return TopologyNodeModel(TranslateType(node.GetType()), node.GetOsIndex(), GetSize(node), efficiency, std::move(children),
-			std::move(memoryChildren));
-}
-
-static Elpida::Application::ConfigurationType TranslateConfigurationType(Elpida::ConfigurationType configurationType)
-{
-	return (Elpida::Application::ConfigurationType)configurationType;
-}
-
-static std::vector<BenchmarkGroupModel> LoadBenchmarks(SettingsService& settingsService)
-{
-	auto benchmarksDirectory = std::filesystem::current_path() / "Benchmarks";
-	if (!std::filesystem::exists(benchmarksDirectory))
-	{
-		return {};
-	}
-
-	QSettings settings;
-	std::vector<BenchmarkGroupModel> benchmarkGroups;
-	for (auto& entry: std::filesystem::directory_iterator(benchmarksDirectory))
-	{
-		if (!entry.is_directory() && entry.is_regular_file())
-		{
-			try
-			{
-				BenchmarkGroupModule module(entry.path().string());
-
-				auto& benchmarks = module.GetBenchmarkGroup().GetBenchmarks();
-				std::vector<BenchmarkModel> benchmarkModels;
-				benchmarkModels.reserve(benchmarks.size());
-
-				for (std::size_t i = 0; i < benchmarks.size(); ++i)
-				{
-					auto& benchmark = benchmarks[i];
-					auto info = benchmark->GetInfo();
-					auto& taskInfos = info.GetTaskInfos();
-
-					std::vector<TaskModel> tasks;
-					tasks.reserve(taskInfos.size());
-
-					for (auto& task: taskInfos)
-					{
-						tasks.emplace_back(task.GetName(), task.GetScoreUnit(), task.GetScoreType(), task.IsMeasured());
-					}
-
-					std::vector<BenchmarkConfigurationModel> configurations;
-					configurations.reserve(benchmark->GetRequiredConfiguration().size());
-					for (auto& config: benchmark->GetRequiredConfiguration())
-					{
-						std::string id = info.GetName() + config.GetName();
-						std::string value = settingsService.Get(id);
-						if (value.empty())
-						{
-							value = config.GetValue();
-						}
-						configurations.emplace_back(config.GetName(),
-								info.GetName() + config.GetName(),
-								value,
-								TranslateConfigurationType(config.GetType()));
-					}
-					benchmarkModels.emplace_back(benchmark->GetInfo().GetName(),
-							entry.path().string(),
-							i,
-							info.GetScoreUnit(),
-							std::move(tasks),
-							std::move(configurations));
-				}
-
-				benchmarkGroups.emplace_back(module.GetBenchmarkGroup().GetName(), std::move(benchmarkModels));
-			}
-			catch (const std::exception& ex)
-			{
-				// invalid file
-			}
-		}
-	}
-
-	return benchmarkGroups;
 }
 
 static void SaveSelectedNodes(SettingsService& settingsService, TopologyModel& topologyModel)
@@ -320,9 +124,38 @@ static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& t
 	}
 }
 
+static std::string GetInfoData()
+{
+	Process process("./elpida-info-dumper", {}, true, true);
+	AsyncPipeReader stdOut(process.GetStdOut());
+	AsyncPipeReader stdErr(process.GetStdErr());
+
+	stdOut.StartReading();
+	stdErr.StartReading();
+	try
+	{
+		process.WaitToExit();
+		stdOut.StopReading();
+		return stdOut.GetString();
+	}
+	catch (...)
+	{
+		stdErr.StopReading();
+		auto err = stdErr.GetString();
+		if (err.empty())
+		{
+			throw;
+		}
+		else
+		{
+			throw ElpidaException("Info dumper process failed with error: ", err);
+		}
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
-
 	setupPlatformSpecifics();
 
 	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
@@ -340,64 +173,46 @@ int main(int argc, char* argv[])
 	QSplashScreen splash(pixmap);
 
 	splash.show();
+	splash.showMessage("Getting system info (it should take about 5 seconds)...");
 	QApplication::processEvents();
+
+	ModelBuilderJson builderJson(GetInfoData());
 
 	QtSettingsService settingsService;
 
-	OsInfo osInfo = OsInfoLoader::Load();
-	OsInfoModel osInfoModel(osInfo.GetCategory(), osInfo.GetName(), osInfo.GetVersion());
+	LoadSelectedNodes(settingsService, builderJson.GetTopologyInfoModel());
 
-	MemoryInfo memoryInfo = MemoryInfoLoader::Load();
-	MemoryInfoModel memoryInfoModel(memoryInfo.GetTotalSize(), memoryInfo.GetPageSize());
-
-	splash.showMessage("Getting topology info...");
-	TopologyInfo topologyInfo = TopologyLoader::LoadTopology();
-	TopologyModel topologyModel(GetNode(topologyInfo.GetRoot()));
-	topologyModel.GetRoot().SetParents();
-	LoadSelectedNodes(settingsService, topologyModel);
-
-	splash.showMessage("Calculating Overheads (it should take about 5 seconds)...");
-
-	auto timingInfo = TimingCalculator::CalculateTiming();
-	TimingModel timingModel(timingInfo.GetNowOverhead(),
-			timingInfo.GetLoopOverhead(),
-			timingInfo.GetVirtualCallOverhead(),
-			timingInfo.GetIterationsPerSecond(),
-			timingInfo.GetMinimumTimeForStableMeasurement());
-
-	splash.showMessage("Getting CPU info...");
-
-	CpuInfo cpuInfo = CpuInfoLoader::Load();
-	CpuInfoModel cpuInfoModel(cpuInfo.GetArchitecture(), cpuInfo.GetVendorName(), cpuInfo.GetModelName(),
-			cpuInfo.GetFeatures(), cpuInfo.GetAdditionalInfo());
-
-	splash.showMessage("Loading benchmarks...");
-	auto benchmarkGroups = LoadBenchmarks(settingsService);
+	auto benchmarkGroups = builderJson.GetBenchmarkGroups();
 
 	QtMessageService messageService;
 	BenchmarkExecutionService executionService;
 
 	BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
-	BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel, settingsService);
+	BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel,
+			settingsService);
 
 	CustomBenchmarkResultsModel customBenchmarkResultsModel;
 	CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
 	CustomBenchmarkController
-			benchmarksController(customBenchmarkModel, topologyModel, timingModel, customBenchmarkResultsModel,benchmarkRunConfigurationModel, executionService);
+			benchmarksController(customBenchmarkModel, builderJson.GetTopologyInfoModel(), builderJson.GetTimingModel(),
+			customBenchmarkResultsModel,
+			benchmarkRunConfigurationModel, executionService);
 
 	ConfigurationViewPool configurationViewPool(settingsService);
 
 	FullBenchmarkModel fullBenchmarkModel;
-	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel, topologyModel, timingModel, benchmarkRunConfigurationModel, executionService, benchmarkGroups);
+	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel, builderJson.GetTopologyInfoModel(),
+			builderJson.GetTimingModel(),
+			benchmarkRunConfigurationModel, executionService, benchmarkGroups);
 
-	MainWindow mainWindow(osInfoModel,
-			memoryInfoModel,
-			cpuInfoModel,
-			timingModel,
+	MainWindow mainWindow(builderJson.GetOsInfoModel(),
+			builderJson.GetMemoryInfoModel(),
+			builderJson.GetCpuInfoModel(),
+			builderJson.GetTimingModel(),
 			customBenchmarkResultsModel,
 			benchmarkRunConfigurationModel,
 			fullBenchmarkModel,
-			topologyModel,
+			builderJson.GetTopologyInfoModel(),
 			customBenchmarkModel,
 			benchmarksController,
 			benchmarkRunConfigurationController,
@@ -412,6 +227,6 @@ int main(int argc, char* argv[])
 	ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
 	ThreadQueue::Current().lock()->Run();
 
-	SaveSelectedNodes(settingsService, topologyModel);
+	SaveSelectedNodes(settingsService, builderJson.GetTopologyInfoModel());
 	return EXIT_SUCCESS;
 }

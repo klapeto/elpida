@@ -15,11 +15,6 @@ namespace Elpida::Application
 	class CpuInfoModel : public Model
 	{
 	public:
-		[[nodiscard]]
-		const std::vector<std::string>& GetFeatures() const;
-
-		[[nodiscard]]
-		const std::unordered_map<std::string, std::string>& GetAdditionalInfo() const;
 
 		[[nodiscard]]
 		const std::string& GetArchitecture() const;
@@ -33,9 +28,12 @@ namespace Elpida::Application
 		CpuInfoModel() = default;
 		CpuInfoModel(std::string architecture,
 				std::string vendorName,
-				std::string modelName,
-				std::vector<std::string> features,
-				std::unordered_map<std::string, std::string> additionalInfo);
+				std::string modelName);
+
+		CpuInfoModel(CpuInfoModel&&) noexcept = default;
+		CpuInfoModel& operator=(CpuInfoModel&&) noexcept = default;
+		CpuInfoModel(const CpuInfoModel&) = delete;
+		CpuInfoModel& operator=(const CpuInfoModel&) = delete;
 		~CpuInfoModel() override = default;
 	private:
 		std::vector<std::string> _features;

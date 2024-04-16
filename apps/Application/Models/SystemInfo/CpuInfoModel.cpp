@@ -9,26 +9,13 @@
 namespace Elpida::Application
 {
 	CpuInfoModel::CpuInfoModel(std::string architecture,
-		std::string vendorName,
-		std::string modelName,
-		std::vector<std::string> features,
-		std::unordered_map<std::string, std::string> additionalInfo)
-		: _features(std::move(features)),
-		  _additionalInfo(std::move(additionalInfo)),
-		  _architecture(std::move(architecture)),
-		  _vendorName(std::move(vendorName)),
-		  _modelName(std::move(modelName))
+			std::string vendorName,
+			std::string modelName)
+			:
+			_architecture(std::move(architecture)),
+			_vendorName(std::move(vendorName)),
+			_modelName(std::move(modelName))
 	{
-	}
-
-	const std::vector<std::string>& CpuInfoModel::GetFeatures() const
-	{
-		return _features;
-	}
-
-	const std::unordered_map<std::string, std::string>& CpuInfoModel::GetAdditionalInfo() const
-	{
-		return _additionalInfo;
 	}
 
 	const std::string& CpuInfoModel::GetArchitecture() const

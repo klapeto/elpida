@@ -24,11 +24,12 @@ namespace Elpida::Application
 		const std::vector<std::reference_wrapper<TopologyNodeModel>>& GetSelectedLeafNodes();
 		const std::vector<std::reference_wrapper<TopologyNodeModel>>& GetLeafNodes();
 
+		TopologyModel() = default;
 		explicit TopologyModel(TopologyNodeModel root);
 		TopologyModel(const TopologyModel&) = delete;
 		TopologyModel& operator=(const TopologyModel&) = delete;
-		TopologyModel(TopologyModel&&) noexcept = delete;
-		TopologyModel& operator=(TopologyModel&&) noexcept = delete;
+		TopologyModel(TopologyModel&&) noexcept = default;
+		TopologyModel& operator=(TopologyModel&&) noexcept = default;
 		~TopologyModel() override = default;
 	private:
 		TopologyNodeModel _root;
