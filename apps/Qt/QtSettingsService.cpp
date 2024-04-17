@@ -8,11 +8,11 @@ namespace Elpida::Application
 {
 	void QtSettingsService::Set(const std::string& name, const std::string& value)
 	{
-		settings.setValue(QString::fromStdString(name), QString::fromStdString(value));
+		_settings.setValue(QString::fromStdString(name), QString::fromStdString(value));
 	}
 
 	std::string QtSettingsService::Get(const std::string& name)
 	{
-		return settings.value(QString::fromStdString(name)).toString().toStdString();
+		return _settings.value(QString::fromStdString(name)).toString().toStdString();
 	}
 } // Application

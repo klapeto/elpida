@@ -8,6 +8,14 @@
 
 namespace Elpida::Application
 {
+	static std::string ToString(double d)
+	{
+		std::ostringstream doubleToStringAccumulator;
+		doubleToStringAccumulator.imbue(std::locale::classic());
+		doubleToStringAccumulator << d;
+		return doubleToStringAccumulator.str();
+	}
+
 	BenchmarkRunConfigurationController::BenchmarkRunConfigurationController(BenchmarkRunConfigurationModel& model,
 			SettingsService& settingsService)
 			: Controller(model), _settingsService(settingsService)
@@ -100,13 +108,13 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationController::SetDependentQueueRatio(double ratio)
 	{
 		_model.SetDependentRatio(ratio);
-		_settingsService.Set("DependentQueueRatio", std::to_string(ratio));
+		_settingsService.Set("DependentQueueRatio", ToString(ratio));
 	}
 
 	void BenchmarkRunConfigurationController::SetIndependentQueueRatio(double ratio)
 	{
 		_model.SetIndependentRatio(ratio);
-		_settingsService.Set("IndependentQueueRatio", std::to_string(ratio));
+		_settingsService.Set("IndependentQueueRatio", ToString(ratio));
 	}
 } // Elpida
 // Application

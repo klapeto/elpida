@@ -7,6 +7,7 @@
 
 #include <QSettings>
 #include "Core/SettingsService.hpp"
+
 namespace Elpida::Application
 {
 
@@ -23,7 +24,7 @@ namespace Elpida::Application
 		QtSettingsService operator=(const QtSettingsService&&) noexcept = delete;
 		~QtSettingsService() = default;
 	private:
-		QSettings settings;
+		QSettings _settings;
 	};
 
 } // Application
