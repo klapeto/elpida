@@ -34,7 +34,7 @@ namespace Elpida::Application
 
 	void FileConfigurationView::on_leValue_textChanged(const QString& value)
 	{
-		if (_model != nullptr)
+		if (_model != nullptr && !_settingModel)
 		{
 			_controller->SetValue(value.toStdString());
 		}

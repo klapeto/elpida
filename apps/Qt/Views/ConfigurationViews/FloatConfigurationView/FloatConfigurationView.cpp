@@ -29,7 +29,7 @@ namespace Elpida::Application
 			return doubleToStringAccumulator.str();
 		};
 
-		if (_model != nullptr)
+		if (_model != nullptr && !_settingModel)
 		{
 			_controller->SetValue(toString(value));
 		}

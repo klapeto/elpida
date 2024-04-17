@@ -7,7 +7,7 @@
 namespace Elpida::Application
 {
 	ConfigurationView::ConfigurationView(QWidget* parent)
-		: QWidget(parent), _controller(nullptr), _model(nullptr)
+		: QWidget(parent), _controller(nullptr), _model(nullptr), _settingModel(false)
 	{
 
 	}
@@ -17,6 +17,8 @@ namespace Elpida::Application
 	{
 		_model = model;
 		_controller = &controller;
+		_settingModel = true;
 		OnModelSet();
+		_settingModel = false;
 	}
 } // Application

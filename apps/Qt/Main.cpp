@@ -31,7 +31,6 @@
 
 #include "MainWindow.hpp"
 #include "ConfigurationViewPool.hpp"
-#include "QtMessageService.hpp"
 #include "QtThreadQueue.hpp"
 #include "QtSettingsService.hpp"
 
@@ -153,6 +152,21 @@ static std::string GetInfoData()
 	}
 }
 
+static void UpdateBenchmarkSettings(std::vector<BenchmarkGroupModel>& groups, SettingsService& settingsService)
+{
+	for (auto& group: groups)
+	{
+		for (auto& benchmark: group.GetBenchmarks())
+		{
+			for (auto& config: benchmark.GetConfigurations())
+			{
+				auto value = settingsService.Get(config.GetId());
+				if (value.empty()) continue;
+				config.SetValue(value);
+			}
+		}
+	}
+}
 
 int main(int argc, char* argv[])
 {
@@ -184,7 +198,8 @@ int main(int argc, char* argv[])
 
 	auto benchmarkGroups = builderJson.GetBenchmarkGroups();
 
-	QtMessageService messageService;
+	UpdateBenchmarkSettings(benchmarkGroups, settingsService);
+
 	BenchmarkExecutionService executionService;
 
 	BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
@@ -204,6 +219,8 @@ int main(int argc, char* argv[])
 	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel, builderJson.GetTopologyInfoModel(),
 			builderJson.GetTimingModel(),
 			benchmarkRunConfigurationModel, executionService, benchmarkGroups);
+
+
 
 	MainWindow mainWindow(builderJson.GetOsInfoModel(),
 			builderJson.GetMemoryInfoModel(),

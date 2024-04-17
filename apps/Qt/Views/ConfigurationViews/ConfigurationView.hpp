@@ -21,6 +21,7 @@ namespace Elpida::Application
 	 protected:
 		BenchmarkConfigurationInstanceController* _controller;
 		const BenchmarkConfigurationModel* _model;
+		bool _settingModel;
 		virtual void OnModelSet() = 0;
 	};
 

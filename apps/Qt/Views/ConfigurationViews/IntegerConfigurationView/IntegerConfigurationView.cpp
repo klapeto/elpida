@@ -21,7 +21,7 @@ namespace Elpida::Application
 
 	void IntegerConfigurationView::on_spnValue_valueChanged(int value)
 	{
-		if (_model != nullptr)
+		if (_model != nullptr  && !_settingModel)
 		{
 			_controller->SetValue(std::to_string(value));
 		}
