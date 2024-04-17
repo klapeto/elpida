@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
+if (MSVC)
+    #cmake_policy(SET CMP0091 NEW)
+    #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif ()
+
 include(cmake-modules/GetElpidaVersion.cmake)
 include(cmake-modules/generate_product_version.cmake)
 

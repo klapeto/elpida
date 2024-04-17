@@ -7,6 +7,8 @@
 #include "Elpida/Svg/SvgNumber.hpp"
 #include "Elpida/Xml/CharacterStream.hpp"
 
+#include <string>
+
 namespace Elpida
 {
 	template <std::size_t N>

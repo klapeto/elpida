@@ -24,16 +24,23 @@ namespace Elpida
 		std::wstring valueBuf; // Contiguous buffer since C++11.
 		valueBuf.resize(bufferSize);
 		auto cbData = static_cast<DWORD>(bufferSize * sizeof(wchar_t));
-		HRESULT rc = RegGetValueW(
-				HKEY_LOCAL_MACHINE,
-				regSubKey.c_str(),
-				regValue.c_str(),
-				RRF_RT_REG_SZ,
-				nullptr,
-				static_cast<void*>(valueBuf.data()),
-				&cbData
-		);
-		while (rc == ERROR_MORE_DATA)
+
+		HKEY hKey = {};
+		auto result = RegOpenKeyExW(HKEY_LOCAL_MACHINE, regSubKey.c_str(), 0, KEY_READ, &hKey);
+
+		if (result != ERROR_SUCCESS)
+		{
+			throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", OsUtilities::GetLastErrorString());
+		}
+
+		result = RegQueryValueExW(hKey,
+			regValue.c_str(),
+			NULL,
+			NULL,
+			reinterpret_cast<LPBYTE>(valueBuf.data()),
+			&cbData);
+
+		while (result == ERROR_MORE_DATA)
 		{
 			// Get a buffer that is big enough.
 			cbData /= sizeof(wchar_t);
@@ -47,26 +54,28 @@ namespace Elpida
 				cbData = static_cast<DWORD>(bufferSize * sizeof(wchar_t));
 			}
 			valueBuf.resize(bufferSize);
-			rc = RegGetValueW(
-					HKEY_LOCAL_MACHINE,
-					regSubKey.c_str(),
-					regValue.c_str(),
-					RRF_RT_REG_SZ,
-					nullptr,
-					static_cast<void*>(valueBuf.data()),
-					&cbData
-			);
+			result = RegQueryValueExW(hKey,
+				regValue.c_str(),
+				NULL,
+				NULL,
+				reinterpret_cast<LPBYTE>(valueBuf.data()),
+				&cbData);
 		}
-		if (rc == ERROR_SUCCESS)
+		if (result == ERROR_SUCCESS)
 		{
 			cbData /= sizeof(wchar_t);
 			valueBuf.resize(static_cast<size_t>(cbData - 1)); // remove end null character
+			RegCloseKey(hKey);
 			return ValueUtilities::WstringTostring(valueBuf);
 		}
 		else
 		{
+			RegCloseKey(hKey);
 			throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", OsUtilities::GetLastErrorString());
 		}
+
+
+		RegCloseKey(hKey);
 	}
 
 	OsInfo OsInfoLoader::Load()

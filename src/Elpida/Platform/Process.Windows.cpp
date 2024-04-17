@@ -95,7 +95,7 @@ namespace Elpida
 		CloseHandle(handle);
 	}
 
-	void Process::WaitToExitImpl(bool noThrow)
+	void Process::WaitToExitImpl(bool noThrow) const
 	{
 		if (_pid < 0) return;
 		auto handle = OpenProcess(SYNCHRONIZE, FALSE, _pid);
@@ -116,7 +116,7 @@ namespace Elpida
 		if (exitCode != 0)
 		{
 			if (noThrow) return;
-			throw ElpidaException("Process exited with error: (", _path, ") (", _pid, "): ", _stdError.str());
+			throw ElpidaException("Process exited with error: (", _path, ") (", _pid, "): ");
 		}
 	}
 

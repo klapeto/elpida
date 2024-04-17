@@ -9,7 +9,12 @@
 #include "JsonFormatter.hpp"
 
 #include <filesystem>
+
+#ifdef _MSC_VER
+#include "getopt_MSVC.h"
+#else
 #include <getopt.h>
+#endif
 
 namespace Elpida
 {

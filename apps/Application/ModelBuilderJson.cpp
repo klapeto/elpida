@@ -120,6 +120,18 @@ namespace Elpida::Application
 		};
 	}
 
+	static std::string RemoveSpaces(const std::string& name)
+	{
+		std::ostringstream stream;
+
+		for (auto c: name)
+		{
+			if (isspace(c)) continue;
+			stream << c;
+		}
+		return stream.str();
+	}
+
 	static BenchmarkModel ParseBenchmark(const nlohmann::json& jBenchmark, const std::string& path)
 	{
 
@@ -138,15 +150,19 @@ namespace Elpida::Application
 
 		std::vector<BenchmarkConfigurationModel> configurationModels;
 		auto jConfiguration = GetOptional(jBenchmark, "requiredConfiguration");
+
+		auto benchmarkId = RemoveSpaces(benchmarkName);
+
 		if (!jConfiguration.is_null() && jConfiguration.is_array())
 		{
 			configurationModels.reserve(jConfiguration.size());
 			for (auto& jConfig: jConfiguration)
 			{
 				auto name = jConfig.at("name").get<std::string>();
+				auto settingName = benchmarkId;
 				configurationModels.emplace_back(
 						name,
-						benchmarkName + name,
+						settingName.append("/").append(RemoveSpaces(name)),
 						jConfig.at("defaultValue").get<std::string>(),
 						jConfig.at("type").get<ConfigurationType>()
 				);

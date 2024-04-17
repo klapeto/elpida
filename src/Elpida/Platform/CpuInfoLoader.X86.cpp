@@ -6,11 +6,7 @@
 
 #include "Elpida/Core/Config.hpp"
 
-#if defined(__x86_64__) || defined(_M_X64)
-
-
-#include "Elpida/Core/TimingUtilities.hpp"
-#include "Elpida/Core/ThreadTask.hpp"
+#if defined(__x86_64__) || defined(_M_X64) || defined(WIN32)
 
 #ifdef _MSC_VER
 #include <intrin.h>

@@ -32,11 +32,20 @@ set(ELPIDA_PLATFORM_SOURCES
         AnonymousPipe.cpp
         AnonymousPipe.Unix.cpp
         AnonymousPipe.Windows.cpp
-        AsyncPipeReader.cpp ../../../include/Elpida/Platform/AsyncPipeReader.hpp NumaAllocatorFactory.cpp ../../../include/Elpida/Platform/NumaAllocatorFactory.hpp)
+        AsyncPipeReader.cpp
+        NumaAllocatorFactory.cpp
+)
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 
-target_link_libraries(elpida-platform elpida-core hwloc)
+if (MSVC)
+    include(FindHWLOC)
+    target_include_directories(elpida-platform PUBLIC ${HWLOC_INCLUDE_DIRS})
+    target_link_directories(elpida-platform PUBLIC ${HWLOC_LIBRARY_DIRS})
+    target_link_libraries(elpida-platform elpida-core libhwloc)
+else()
+    target_link_libraries(elpida-platform elpida-core hwloc)
+endif()
 
 if (UNIX)
     target_link_libraries(elpida-platform elpida-core numa)

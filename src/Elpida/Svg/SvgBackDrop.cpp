@@ -11,8 +11,7 @@
 #include "Elpida/Core/ThreadPool/ThreadPool.hpp"
 
 #include <cmath>
-
-#include <thread>
+#include <algorithm>
 #include <future>
 
 namespace Elpida
@@ -119,8 +118,8 @@ namespace Elpida
 		const SvgBlender blender(blendMode);
 		const SvgCompositor compositor(compositingMode);
 
-		const auto startX = std::max(0ul, std::min(x, _width));
-		const auto startY = std::max(0ul, std::min(y, _height));
+		const auto startX = std::max(static_cast<std::size_t>(0), std::min(x, _width));
+		const auto startY = std::max(static_cast<std::size_t>(0), std::min(y, _height));
 		const auto width = std::min(_width, x + other.GetWidth());
 		const auto height = std::min(_height, y + other.GetHeight());
 
@@ -248,8 +247,8 @@ namespace Elpida
 		const SvgBlender blender(blendMode);
 		const SvgCompositor compositor(compositingMode);
 
-		const auto startX = std::max(0ul, std::min(x, _width));
-		const auto startY = std::max(0ul, std::min(y, _height));
+		const auto startX = std::max(static_cast<std::size_t>(0), std::min(x, _width));
+		const auto startY = std::max(static_cast<std::size_t>(0), std::min(y, _height));
 		const auto width = std::min(_width, x + other.GetWidth());
 		const auto height = std::min(_height, y + other.GetHeight());
 
