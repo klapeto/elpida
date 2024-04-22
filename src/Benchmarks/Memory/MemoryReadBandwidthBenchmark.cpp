@@ -12,11 +12,11 @@ namespace Elpida
 	{
 		MemoryReadBandwidthTask task(0);
 		return BenchmarkInfo(
-			"Memory read bandwidth",
-			"Calculates the peak memory read bandwidth by continuously reading a memory stream.",
-			"B/s",
-			"The peak read bandwidth.",
-			{ task.GetInfo() });
+				"Memory read bandwidth",
+				"Calculates the peak memory read bandwidth by continuously reading a memory stream.",
+				"B/s",
+				"The peak read bandwidth.",
+				{ task.GetInfo() });
 	}
 
 	double MemoryReadBandwidthBenchmark::CalculateScore(const Vector<TaskResult>& taskResults) const
@@ -24,7 +24,7 @@ namespace Elpida
 		Size totalSize = 0;
 		Duration totalDuration = Seconds(0);
 
-		for (auto& result: taskResults)
+		for (auto& result : taskResults)
 		{
 			totalSize += result.GetDataSize();
 			totalDuration += result.GetDuration();
@@ -43,13 +43,21 @@ namespace Elpida
 	{
 		Size cacheSize = 16 * 1024 * 1024;
 
-		for (auto& processor: context.GetTargetProcessors())
+		for (auto& processor : context.GetTargetProcessors())
 		{
 			auto cache = processor.get().GetLastCache();
 			if (cache.has_value())
 			{
 				cacheSize = std::max(cacheSize, cache->get().GetSize());
 			}
+		}
+
+		auto maxTotalSize = context.GetEnvironmentInfo().GetMemoryInfo().GetTotalSize() / 2;
+		auto currentTotalSize = context.GetTargetProcessors().size() * cacheSize * 8;
+
+		if (currentTotalSize > maxTotalSize)
+		{
+			cacheSize = maxTotalSize / context.GetTargetProcessors().size() / 8;
 		}
 
 		Vector<UniquePtr<Task>> tasks;

@@ -31,7 +31,7 @@ namespace Elpida
 		}
 		auto th = std::move(_dependedQueue.front());
 		_dependedQueue.pop();
-		return std::move(th);
+		return th;
 	}
 
 	std::unique_ptr<ThreadPoolThread> ThreadPool::CreateNewThread()

@@ -48,6 +48,7 @@
 
 #include "Elpida/Platform/Process.hpp"
 #include "Elpida/Platform/AsyncPipeReader.hpp"
+#include "QtMessageService.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -192,6 +193,8 @@ int main(int argc, char* argv[])
 
 	ModelBuilderJson builderJson(GetInfoData());
 
+	QtMessageService messageService;
+
 	QtSettingsService settingsService;
 
 	LoadSelectedNodes(settingsService, builderJson.GetTopologyInfoModel());
@@ -216,11 +219,8 @@ int main(int argc, char* argv[])
 	ConfigurationViewPool configurationViewPool(settingsService);
 
 	FullBenchmarkModel fullBenchmarkModel;
-	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel, builderJson.GetTopologyInfoModel(),
-			builderJson.GetTimingModel(),
-			benchmarkRunConfigurationModel, executionService, benchmarkGroups);
-
-
+	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel,
+			builderJson.GetTimingModel(), executionService, messageService, benchmarkGroups);
 
 	MainWindow mainWindow(builderJson.GetOsInfoModel(),
 			builderJson.GetMemoryInfoModel(),

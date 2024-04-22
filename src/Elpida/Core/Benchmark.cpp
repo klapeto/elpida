@@ -36,7 +36,7 @@ namespace Elpida
 			}
 			else
 			{
-				duration = ExecuteSingleThread(data, std::move(task), context.GetTargetProcessors().front(), processedDataSize, context.IsPinThreads());
+				duration = ExecuteSingleThread(data, std::move(task), processedDataSize);
 			}
 
 			if (shouldBeMeasured)
@@ -55,21 +55,17 @@ namespace Elpida
 	Duration
 	Benchmark::ExecuteSingleThread(UniquePtr<AbstractTaskData>& data,
 		UniquePtr<Task> task,
-		const ProcessingUnitNode& targetProcessor,
-		Size& processedDataSize,
-			bool pinThreads)
+		Size& processedDataSize)
 	{
-		ThreadTask threadTask(std::move(task), pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessor): std::nullopt);
-
 		auto allocator = data->GetAllocator();
-		threadTask.Prepare(std::move(data));
+		task->Prepare(std::move(data));
 
 		allocator->ResetStatistics();
-		auto duration = threadTask.Run();
+		auto duration = task->Run();
 
-		processedDataSize = threadTask.GetProcessedDataSize();
+		processedDataSize = task->GetProcessedDataSize();
 
-		data = threadTask.Finalize();
+		data = task->Finalize();
 
 		return duration;
 	}

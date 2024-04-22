@@ -191,7 +191,10 @@ namespace Elpida::Application
 		if (_uiUpdating) return;
 
 		auto selected = _topologyNodeModel.IsSelected();
+		_uiUpdating = true;
+
 		_ui->chkSelected->setCheckState(selected ? Qt::Checked : Qt::Unchecked);
+		_uiUpdating = false;
 	}
 
 	void TopologyNodeView::mousePressEvent(QMouseEvent* event)

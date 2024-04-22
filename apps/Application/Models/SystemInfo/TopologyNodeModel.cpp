@@ -27,7 +27,7 @@ namespace Elpida::Application
 
 	void TopologyNodeModel::SetSelected(bool selected)
 	{
-		Transactional<TopologyNodeModel>([&selected](TopologyNodeModel& model)
+		Transactional<TopologyNodeModel>([selected](TopologyNodeModel& model)
 		{
 			model.SetSelectedInternal(selected);
 		});

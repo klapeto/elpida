@@ -66,7 +66,7 @@ namespace Elpida
 
 		std::thread([&]()
 		{
-		  ProcessingUnitNode::PinThreadToProcessor(0);
+		  //ProcessingUnitNode::PinThreadToProcessor(0);
 
 		  loopOverhead = CalculateLoopOverhead();
 		  nowOverhead = CalculateNowOverhead(loopOverhead);

@@ -15,6 +15,7 @@ namespace Elpida
 
 	UniquePtr<AbstractTaskData> MemoryReadBandwidthTask::Finalize()
 	{
+		_data->Deallocate();
 		return std::move(_data);
 	}
 
@@ -22,7 +23,7 @@ namespace Elpida
 	{
 		return {
 			"Memory read bandwidth",
-			"Continuously reads a stream a memory to determine th maximum memory readbandwidth.",
+			"Continuously reads a stream a memory to determine th maximum memory read bandwidth.",
 			"B",
 			"The memory bandwidth throughput",
 			ScoreType::Throughput
@@ -87,7 +88,7 @@ namespace Elpida
 
 	Duration MemoryReadBandwidthTask::GetExecutionMinimumDuration()
 	{
-		return Seconds(2);
+		return Seconds(5);
 	}
 
 	bool MemoryReadBandwidthTask::CanBeMultiThreaded() const

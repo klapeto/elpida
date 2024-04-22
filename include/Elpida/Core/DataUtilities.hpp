@@ -52,6 +52,15 @@ namespace Elpida
 			Vector<UniquePtr<TReturn>> targetChunksVec;
 			targetChunksVec.reserve(targetChunksCount);
 
+			if (outputTotalSize == 0)
+			{
+				for (std::size_t i = 0; i < targetChunksCount; ++i)
+				{
+					targetChunksVec.push_back(constructor(targetAllocators[0], 0));
+				}
+				return targetChunksVec;
+			}
+
 			Size currentChunkIndex = 0;
 			const T* currentChunk = nullptr;
 			Size currentChunkOffset = 0;

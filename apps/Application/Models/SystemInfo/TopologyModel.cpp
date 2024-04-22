@@ -96,4 +96,27 @@ namespace Elpida::Application
 	{
 		return reinterpret_cast<const std::vector<std::reference_wrapper<TopologyNodeModel>>&>(reinterpret_cast<const TopologyModel*>(this)->GetLeafNodes());
 	}
+
+	TopologyModel::TopologyModel(TopologyModel&& other) noexcept
+		: _root(std::move(other._root)), _selectedLeafNodes(std::move(other._selectedLeafNodes)), _leafNodes(std::move(other._leafNodes))
+	{
+		_rootDataChanged = _root.DataChanged().Subscribe([this]()
+		{
+		  SetSelectedLeafNodes();
+		  OnDataChanged();
+		});
+	}
+
+	TopologyModel& TopologyModel::operator=(TopologyModel&& other) noexcept
+	{
+		_root = std::move(other._root);
+		_selectedLeafNodes = std::move(other._selectedLeafNodes);
+		_leafNodes = std::move(other._leafNodes);
+		_rootDataChanged = _root.DataChanged().Subscribe([this]()
+		{
+		  SetSelectedLeafNodes();
+		  OnDataChanged();
+		});
+		return *this;
+	}
 } // Application

@@ -199,7 +199,8 @@ namespace Elpida
 			  {
 				  return itr->second;
 			  }
-			  return { MinValue, MinValue, MinValue };
+			  static std::tuple<double, double, double> defaultColor = { MinValue, MinValue, MinValue};
+			  return defaultColor;
 			};
 
 			stream.SkipSpace();

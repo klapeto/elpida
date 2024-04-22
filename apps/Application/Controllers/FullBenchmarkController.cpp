@@ -4,27 +4,24 @@
 
 #include "FullBenchmarkController.hpp"
 
-#include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/SystemInfo/TimingModel.hpp"
-#include "Models/BenchmarkRunConfigurationModel.hpp"
 
 #include "Core/BenchmarkExecutionService.hpp"
+#include "Core/MessageService.hpp"
 
 namespace Elpida::Application
 {
 	const double Divider = 1000000.0;
 
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
-			const TopologyModel& topologyModel,
 			const TimingModel& overheadsModel,
-			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			BenchmarkExecutionService& benchmarkExecutionService,
+			MessageService& messageService,
 			const std::vector<BenchmarkGroupModel>& benchmarkGroups) :
 			Controller(model),
-			_topologyModel(topologyModel),
 			_overheadsModel(overheadsModel),
-			_benchmarkRunConfigurationModel(benchmarkRunConfigurationModel),
 			_benchmarkExecutionService(benchmarkExecutionService),
+			_messageService(messageService),
 			_memoryLatency(nullptr),
 			_memoryReadBandwidth(nullptr),
 			_svgRasterizationSingle(nullptr),
@@ -114,15 +111,16 @@ namespace Elpida::Application
 
 			benchmarkResults.push_back(std::move(svgRasterizationSingle));
 		}
-		catch (const ElpidaException&)
+		catch (const ElpidaException& ex)
 		{
 			_model.SetRunning(false);
+			_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
 			co_return;
 		}
 
 		_model.SetCurrentRunningBenchmark(_svgRasterizationMulti->GetName());
 
-		auto targetSamples = _overheadsModel.GetIterationsPerSecond() * 16 / std::giga::num;
+		auto targetSamples = (_overheadsModel.GetIterationsPerSecond() * std::thread::hardware_concurrency() * 16) / std::giga::num;
 
 		_svgRasterizationMulti->GetConfigurations()[0].SetValue("./assets/svg-rasterization.multi.svg");
 		_svgRasterizationMulti->GetConfigurations()[1].SetValue("1.0");
@@ -141,8 +139,8 @@ namespace Elpida::Application
 								_overheadsModel.GetLoopOverhead()).count(),
 						std::chrono::duration_cast<NanoSeconds>(
 								_overheadsModel.GetVirtualCallOverhead()).count(),
-						20.0,
-						20.0,
+						32.0,
+						32.0,
 						false,
 						false);
 			});
@@ -154,9 +152,10 @@ namespace Elpida::Application
 
 			benchmarkResults.push_back(std::move(svgRasterizationMulti));
 		}
-		catch (const ElpidaException&)
+		catch (const ElpidaException& ex)
 		{
 			_model.SetRunning(false);
+			_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
 			co_return;
 		}
 
@@ -178,7 +177,7 @@ namespace Elpida::Application
 						1.0,
 						1.0,
 					false,
-					false);
+					true);
 			});
 
 			auto& taskResults = latencyResult.GetTaskResults();
@@ -187,9 +186,10 @@ namespace Elpida::Application
 
 			benchmarkResults.push_back(std::move(latencyResult));
 		}
-		catch (const ElpidaException&)
+		catch (const ElpidaException& ex)
 		{
 			_model.SetRunning(false);
+			_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
 			co_return;
 		}
 
@@ -212,7 +212,7 @@ namespace Elpida::Application
 						1.0,
 						1.0,
 						false,
-						false);
+						true);
 			});
 
 
@@ -220,9 +220,10 @@ namespace Elpida::Application
 
 			benchmarkResults.push_back(std::move(bandwidthResult));
 		}
-		catch (const ElpidaException&)
+		catch (const ElpidaException& ex)
 		{
 			_model.SetRunning(false);
+			_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
 			co_return;
 		}
 

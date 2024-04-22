@@ -28,8 +28,8 @@ namespace Elpida::Application
 		explicit TopologyModel(TopologyNodeModel root);
 		TopologyModel(const TopologyModel&) = delete;
 		TopologyModel& operator=(const TopologyModel&) = delete;
-		TopologyModel(TopologyModel&&) noexcept = default;
-		TopologyModel& operator=(TopologyModel&&) noexcept = default;
+		TopologyModel(TopologyModel&&) noexcept;
+		TopologyModel& operator=(TopologyModel&&) noexcept;
 		~TopologyModel() override = default;
 	private:
 		TopologyNodeModel _root;

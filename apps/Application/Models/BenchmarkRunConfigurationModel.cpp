@@ -7,7 +7,7 @@
 namespace Elpida::Application
 {
 	BenchmarkRunConfigurationModel::BenchmarkRunConfigurationModel()
-			: _iterationsToRun(1), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false)
+			: _iterationsToRun(1),  _independentRatio(20.0), _dependentRatio(20.0), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false)
 	{
 
 	}

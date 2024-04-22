@@ -150,10 +150,11 @@ namespace Elpida::Application
 														 + benchmark.GetScoreUnit()) }));
 			auto& taskResults = benchmarkResult.GetTaskResults();
 			auto& tasks = benchmark.GetTasks();
-			for (std::size_t i = 0; i < tasks.size(); ++i)
+			for (std::size_t i = 0, j = 0; i < tasks.size(); ++i)
 			{
-				auto& taskResult = taskResults[i];
 				auto& task = tasks[i];
+				if (!task.IsMeasured()) continue;
+				auto& taskResult = taskResults[j++];
 				auto taskItem = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
 						QStringList({ QString::fromStdString(task.GetName()),
 									  QString::fromStdString(GetTaskValue(task, taskResult)) }));

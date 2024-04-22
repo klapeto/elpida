@@ -44,9 +44,7 @@ namespace Elpida {
 	 private:
 		static Duration ExecuteSingleThread(UniquePtr<AbstractTaskData>& data,
 				UniquePtr<Task> task,
-				const ProcessingUnitNode& topologyNode,
-				Size& processedDataSize,
-				bool pinThreads);
+				Size& processedDataSize);
 		static Duration ExecuteMultiThread(UniquePtr<AbstractTaskData>& data,
 			UniquePtr<Task> task,
 			const Vector<SharedPtr<Allocator>>& allocators,
