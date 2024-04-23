@@ -57,6 +57,6 @@ add_library(elpida-svg
         SvgCalculatedDocument.cpp
 )
 
-target_link_libraries(elpida-svg PRIVATE elpida-xml)
+target_link_libraries(elpida-svg PRIVATE elpida-xml elpida-core)
 
 set_property(TARGET elpida-svg PROPERTY POSITION_INDEPENDENT_CODE ON)

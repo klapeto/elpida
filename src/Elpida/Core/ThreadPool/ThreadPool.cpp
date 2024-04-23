@@ -8,7 +8,7 @@ namespace Elpida
 {
 
 	ThreadPool::ThreadPool(std::size_t dependentThreadCount, std::size_t independentThreadCount)
-			: _maxThreads(dependentThreadCount), _keepGoing(true), _currentIndependentIndex(0)
+			: _maxThreads(dependentThreadCount), _currentIndependentIndex(0), _keepGoing(true)
 	{
 		//_cleanUpThread = std::thread(&ThreadPool::ThreadCleanupProcedure, this);
 		for (std::size_t i = 0; i < dependentThreadCount; ++i)
