@@ -10,4 +10,4 @@ set(ELPIDA_INFO_DUMPER_SOURCES
 add_executable(elpida-info-dumper ${ELPIDA_INFO_DUMPER_SOURCES})
 target_link_libraries(elpida-info-dumper elpida-core overheads-calculator elpida-platform)
 
-install(TARGETS elpida-info-dumper RUNTIME)
+install(TARGETS elpida-info-dumper RUNTIME DESTINATION bin)
