@@ -81,6 +81,11 @@ namespace Elpida
 			CloseHandle(GetWriteHandle<HANDLE>());
 		}
 	}
+
+	bool AnonymousPipe::IsOpen() const
+	{
+		return _readHandle.has_value();
+	}
 } // Elpida
 
 #endif // defined(ELPIDA_WINDOWS)
