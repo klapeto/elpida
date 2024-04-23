@@ -18,7 +18,6 @@
 #include <functional>
 #include <queue>
 #include <stack>
-#include <ranges>
 
 namespace Elpida
 {
