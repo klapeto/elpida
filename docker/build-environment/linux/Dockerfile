@@ -1,4 +1,4 @@
-FROM gcc:9.4
+FROM gcc:12
 LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -24,7 +24,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         libgdk-pixbuf2.0-dev \
         fakeroot \
         strace && \
-    pip3 install appimage-builder && \
+    pip3 install --break-system-packages appimage-builder && \
     wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /opt/appimagetool && \
     chmod +x /opt/appimagetool && \
     cd /opt/ && \
