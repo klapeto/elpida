@@ -81,7 +81,7 @@ namespace Elpida::Application
 
 		_model.SetCurrentRunningBenchmark(_svgRasterizationSingle->GetName());
 
-		_svgRasterizationSingle->GetConfigurations()[0].SetValue("./assets/svg-rasterization.single.svg");
+		_svgRasterizationSingle->GetConfigurations()[0].SetValue("./assets/Elpida-Background.svg");
 		_svgRasterizationSingle->GetConfigurations()[1].SetValue("1.0");
 		_svgRasterizationSingle->GetConfigurations()[2].SetValue("16");
 
@@ -120,9 +120,9 @@ namespace Elpida::Application
 
 		_model.SetCurrentRunningBenchmark(_svgRasterizationMulti->GetName());
 
-		auto targetSamples = (_overheadsModel.GetIterationsPerSecond() * std::thread::hardware_concurrency() * 16) / std::giga::num;
+		auto targetSamples = (_overheadsModel.GetIterationsPerSecond() * std::thread::hardware_concurrency() * 4) / std::giga::num;
 
-		_svgRasterizationMulti->GetConfigurations()[0].SetValue("./assets/svg-rasterization.multi.svg");
+		_svgRasterizationMulti->GetConfigurations()[0].SetValue("./assets/Elpida-Background.svg");
 		_svgRasterizationMulti->GetConfigurations()[1].SetValue("1.0");
 		_svgRasterizationMulti->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
 
