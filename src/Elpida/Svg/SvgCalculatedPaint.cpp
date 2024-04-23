@@ -126,7 +126,7 @@ namespace Elpida
 	}
 
 	SvgCalculatedPaint::SvgCalculatedPaint()
-			:_gradientType(SvgGradientType::Linear), _color(true)
+			:_gradientType(SvgGradientType::Linear), _color(true), _opacity(1.0)
 	{
 
 	}
