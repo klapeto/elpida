@@ -124,9 +124,9 @@ static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& t
 	}
 }
 
-static std::string GetInfoData()
+static std::string GetInfoData(const std::string& benchmarksPath)
 {
-	Process process("./elpida-info-dumper", {}, true, true);
+	Process process("./elpida-info-dumper", {benchmarksPath}, true, true);
 	AsyncPipeReader stdOut(process.GetStdOut());
 	AsyncPipeReader stdErr(process.GetStdErr());
 
@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
 	splash.showMessage("Getting system info (it should take about 5 seconds)...");
 	QApplication::processEvents();
 
-	ModelBuilderJson builderJson(GetInfoData());
+	ModelBuilderJson builderJson(GetInfoData(argc > 1 ? argv[1] : "./Benchmarks"));
 
 	QtMessageService messageService;
 

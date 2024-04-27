@@ -7,7 +7,7 @@ AppDir:
     icon: elpida
     version: latest
     exec: bin/elpida-qt
-    exec_args: $@
+    exec_args: $APPDIR/bin/Benchmarks $@
   apt:
     arch:
       - amd64
