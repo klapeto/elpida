@@ -1,6 +1,6 @@
 version: 1
 AppDir:
-  path: /elpida/AppDir
+  path: ./AppDir
   app_info:
     id: dev.elpida.qt
     name: Elpida
