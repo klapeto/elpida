@@ -25,6 +25,7 @@
 #include <QSplashScreen>
 #include <QScreen>
 
+#include <iostream>
 #include <cctype>
 #include <filesystem>
 #include <string>
@@ -59,6 +60,7 @@ using namespace Elpida::Application;
 #include <csignal>
 #include <cstdlib>
 #include <unistd.h>
+
 
 void segFaultHandler(int sig)
 {
@@ -173,77 +175,85 @@ int main(int argc, char* argv[])
 {
 	setupPlatformSpecifics();
 
-	QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	try
+	{
+		QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+		QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-	QCoreApplication::setOrganizationName("Elpida");
-	QCoreApplication::setOrganizationDomain(ELPIDA_WEBSITE_URL);
-	QCoreApplication::setApplicationName("Elpida Qt");
+		QCoreApplication::setOrganizationName("Elpida");
+		QCoreApplication::setOrganizationDomain(ELPIDA_WEBSITE_URL);
+		QCoreApplication::setApplicationName("Elpida Qt");
 
-	QApplication application(argc, argv);
+		QApplication application(argc, argv);
 
-	auto screenSize = QGuiApplication::primaryScreen()->size();
-	auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(QSize(screenSize.width() / 2, screenSize.height() / 2));
-	QSplashScreen splash(pixmap);
+		auto screenSize = QGuiApplication::primaryScreen()->size();
+		auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(QSize(screenSize.width() / 2, screenSize.height() / 2));
+		QSplashScreen splash(pixmap);
 
-	splash.show();
-	splash.showMessage("Getting system info (it should take about 5 seconds)...");
-	QApplication::processEvents();
+		splash.show();
+		splash.showMessage("Getting system info (it should take about 5 seconds)...");
+		QApplication::processEvents();
 
-	ModelBuilderJson builderJson(GetInfoData(argc > 1 ? argv[1] : "./Benchmarks"));
+		ModelBuilderJson builderJson(GetInfoData(argc > 1 ? argv[1] : "./Benchmarks"));
 
-	QtMessageService messageService;
+		QtMessageService messageService;
 
-	QtSettingsService settingsService;
+		QtSettingsService settingsService;
 
-	LoadSelectedNodes(settingsService, builderJson.GetTopologyInfoModel());
+		LoadSelectedNodes(settingsService, builderJson.GetTopologyInfoModel());
 
-	auto benchmarkGroups = builderJson.GetBenchmarkGroups();
+		auto benchmarkGroups = builderJson.GetBenchmarkGroups();
 
-	UpdateBenchmarkSettings(benchmarkGroups, settingsService);
+		UpdateBenchmarkSettings(benchmarkGroups, settingsService);
 
-	BenchmarkExecutionService executionService;
+		BenchmarkExecutionService executionService;
 
-	BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
-	BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel,
-			settingsService);
+		BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
+		BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel,
+				settingsService);
 
-	CustomBenchmarkResultsModel customBenchmarkResultsModel;
-	CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
-	CustomBenchmarkController
-			benchmarksController(customBenchmarkModel, builderJson.GetTopologyInfoModel(), builderJson.GetTimingModel(),
-			customBenchmarkResultsModel,
-			benchmarkRunConfigurationModel, executionService);
+		CustomBenchmarkResultsModel customBenchmarkResultsModel;
+		CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
+		CustomBenchmarkController
+				benchmarksController(customBenchmarkModel, builderJson.GetTopologyInfoModel(), builderJson.GetTimingModel(),
+				customBenchmarkResultsModel,
+				benchmarkRunConfigurationModel, executionService);
 
-	ConfigurationViewPool configurationViewPool(settingsService);
+		ConfigurationViewPool configurationViewPool(settingsService);
 
-	FullBenchmarkModel fullBenchmarkModel;
-	FullBenchmarkController fullBenchmarkController(fullBenchmarkModel,
-			builderJson.GetTimingModel(), executionService, messageService, benchmarkGroups);
+		FullBenchmarkModel fullBenchmarkModel;
+		FullBenchmarkController fullBenchmarkController(fullBenchmarkModel,
+				builderJson.GetTimingModel(), executionService, messageService, benchmarkGroups);
 
-	MainWindow mainWindow(builderJson.GetOsInfoModel(),
-			builderJson.GetMemoryInfoModel(),
-			builderJson.GetCpuInfoModel(),
-			builderJson.GetTimingModel(),
-			customBenchmarkResultsModel,
-			benchmarkRunConfigurationModel,
-			fullBenchmarkModel,
-			builderJson.GetTopologyInfoModel(),
-			customBenchmarkModel,
-			benchmarksController,
-			benchmarkRunConfigurationController,
-			fullBenchmarkController,
-			configurationViewPool);
+		MainWindow mainWindow(builderJson.GetOsInfoModel(),
+				builderJson.GetMemoryInfoModel(),
+				builderJson.GetCpuInfoModel(),
+				builderJson.GetTimingModel(),
+				customBenchmarkResultsModel,
+				benchmarkRunConfigurationModel,
+				fullBenchmarkModel,
+				builderJson.GetTopologyInfoModel(),
+				customBenchmarkModel,
+				benchmarksController,
+				benchmarkRunConfigurationController,
+				fullBenchmarkController,
+				configurationViewPool);
 
-	mainWindow.resize(QSize(screenSize.width() / 2, screenSize.height() / 2));
-	mainWindow.show();
+		mainWindow.resize(QSize(screenSize.width() / 2, screenSize.height() / 2));
+		mainWindow.show();
 
-	splash.finish(&mainWindow);
+		splash.finish(&mainWindow);
 
-	ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
-	ThreadQueue::Current().lock()->Run();
+		ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
+		ThreadQueue::Current().lock()->Run();
 
-	SaveSelectedNodes(settingsService, builderJson.GetTopologyInfoModel());
-	return EXIT_SUCCESS;
+		SaveSelectedNodes(settingsService, builderJson.GetTopologyInfoModel());
+		return EXIT_SUCCESS;
+	}
+	catch (const std::exception& ex)
+	{
+		std::cerr << "Failed to initialize: " << ex.what() << std::endl;
+		return EXIT_FAILURE;
+	}
 }

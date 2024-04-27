@@ -7,7 +7,7 @@ build:windows:
     - git submodule update --init
     - x86_64-w64-mingw32.shared-cmake -S .
       -B "$BUILD_DIR"
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
       -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
       -DELPIDA_WEB_API_URL="$ELPIDA_WEB_API_URL"

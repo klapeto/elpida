@@ -58,7 +58,7 @@ namespace Elpida
 				NULL,                                        // process security attributes
 				NULL,                                        // primary thread security attributes
 				TRUE,                                        // handles are inherited
-				0,                                            // creation flags
+				CREATE_NO_WINDOW,                                            // creation flags
 				NULL,                                        // use parent's environment
 				NULL,                                        // use parent's current directory
 				&siStartInfo,                                // STARTUPINFO pointer
