@@ -54,15 +54,15 @@ namespace Elpida
 
 	std::filesystem::path OsUtilities::GetExecutableDirectory()
 	{
-		LPWSTR messageBuffer[MAX_PATH];
+		WCHAR buffer[MAX_PATH];
 
-		auto lenght = GetModuleFileName();
+		auto lenght = GetModuleFileNameW(NULL, buffer, sizeof(buffer));
 		if (lenght == MAX_PATH || GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 		{
-			throw ElpidaException("Failed to geth the executable path. Path required larger buffer")
+			throw ElpidaException("Failed to get the executable path. Path required larger buffer");
 		}
 
-		String pathStr(messageBuffer, lenght);
+		std::wstring pathStr(buffer, lenght);
 
 		return std::filesystem::path(pathStr).parent_path();
 	}

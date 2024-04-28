@@ -44,7 +44,7 @@ namespace Elpida
 		BOOL success = FALSE;
 
 		auto actualPath = path;
-		actualPath.replace_extension("exe");	// We are passed unix like with no extension
+		actualPath.replace_extension(std::filesystem::path("exe"));	// We are passed unix like with no extension
 
 		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 
@@ -57,7 +57,7 @@ namespace Elpida
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 		success = CreateProcessW(NULL,
-				(LPWSTR)Vu::StringToWstring(GetCommandLine(actualPath, args)).c_str(), // command line
+				(LPWSTR)Vu::StringToWstring(GetCommandLine(actualPath.string(), args)).c_str(), // command line
 				NULL,                                        // process security attributes
 				NULL,                                        // primary thread security attributes
 				TRUE,                                        // handles are inherited

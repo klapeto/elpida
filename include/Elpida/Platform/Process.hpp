@@ -33,7 +33,7 @@ namespace Elpida
 		Process& operator=(Process&&) noexcept;
 		~Process();
 	private:
-		String _path;
+		std::filesystem::path _path;;
 		AnonymousPipe _outputPipe;
 		AnonymousPipe _errorPipe;
 		int _pid;

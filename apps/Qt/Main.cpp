@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
 		splash.showMessage("Getting system info (it should take about 5 seconds)...");
 		QApplication::processEvents();
 
-		ModelBuilderJson builderJson(GetInfoData(argc > 1 ? argv[1] : "./Benchmarks"));
+		ModelBuilderJson builderJson(GetInfoData(argc > 1 ? argv[1] : (OsUtilities::GetExecutableDirectory() / "Benchmarks").string()));
 
 		QtMessageService messageService;
 
