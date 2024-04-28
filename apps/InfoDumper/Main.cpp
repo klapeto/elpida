@@ -13,6 +13,7 @@
 #include <Elpida/Platform/CpuInfoLoader.hpp>
 #include <Elpida/Platform/MemoryInfoLoader.hpp>
 #include <Elpida/Platform/OsInfoLoader.hpp>
+#include <Elpida/Platform/OsUtilities.hpp>
 #include <Elpida/Core/TimingCalculator.hpp>
 
 using namespace nlohmann;
@@ -209,9 +210,9 @@ static json DumpBenchmarkGroup(const BenchmarkGroup& group, const std::string& m
 }
 
 
-static json DumpBenchmarks(const std::string& path)
+static json DumpBenchmarks(const std::filesystem::path& path)
 {
-	if (!std::filesystem::exists(path))
+	if (!is_directory(path))
 	{
 		return {};
 	}
@@ -255,7 +256,7 @@ json DumpTimingInfo()
 
 int main(int argC, char** argV)
 {
-	std::string benchmarkPath;
+	std::filesystem::path benchmarkPath;
 
 	if (argC > 1)
 	{
@@ -263,7 +264,7 @@ int main(int argC, char** argV)
 	}
 	else
 	{
-		benchmarkPath = "./Benchmarks";
+		benchmarkPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
 	}
 
 	try

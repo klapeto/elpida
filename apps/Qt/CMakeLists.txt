@@ -118,6 +118,8 @@ if (MSVC)
 		set(QT_MSVC 2017)
 	elseif(${MSVC_TOOLSET_VERSION} EQUAL 142)
 		set(QT_MSVC 2019)
+	elseif(${MSVC_TOOLSET_VERSION} EQUAL 143)
+		set(QT_MSVC 2022)
 	else()
 		message(FATAL_ERROR "Unsupported MSVC version")
 	endif()
@@ -154,7 +156,7 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
 endif ()
 
 
-if (MSYS OR MINGW)
+if (MSYS OR MINGW OR MSVC)
 	generate_product_version(
 			ELPIDA_QT_SOURCES
 			NAME ${PROJECT_NAME}

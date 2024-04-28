@@ -9,7 +9,7 @@
 
 namespace Elpida
 {
-	AsyncPipeReader::AsyncPipeReader(const AnonymousPipe& pipe)
+	AsyncPipeReader::AsyncPipeReader(AnonymousPipe& pipe)
 		: _pipe(pipe), _running(false)
 	{
 

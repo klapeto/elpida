@@ -7,6 +7,7 @@
 #if defined(ELPIDA_WINDOWS)
 
 #include "Elpida/Platform/OsUtilities.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
 
 #include <windows.h>
 #include <strsafe.h>
@@ -49,6 +50,21 @@ namespace Elpida
 
 			throw;
 		}
+	}
+
+	std::filesystem::path OsUtilities::GetExecutableDirectory()
+	{
+		LPWSTR messageBuffer[MAX_PATH];
+
+		auto lenght = GetModuleFileName();
+		if (lenght == MAX_PATH || GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+		{
+			throw ElpidaException("Failed to geth the executable path. Path required larger buffer")
+		}
+
+		String pathStr(messageBuffer, lenght);
+
+		return std::filesystem::path(pathStr).parent_path();
 	}
 
 } // Elpida

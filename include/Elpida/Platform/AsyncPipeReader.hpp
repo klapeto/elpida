@@ -23,12 +23,12 @@ namespace Elpida
 		void StopReading();
 		std::string GetString();
 
-		explicit AsyncPipeReader(const AnonymousPipe& pipe);
+		explicit AsyncPipeReader(AnonymousPipe& pipe);
 		~AsyncPipeReader();
 	private:
 		std::ostringstream _stringStream;
 		std::thread _readerThread;
-		const AnonymousPipe& _pipe;
+		AnonymousPipe& _pipe;
 		std::atomic<bool> _running;
 	};
 

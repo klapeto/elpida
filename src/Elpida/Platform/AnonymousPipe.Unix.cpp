@@ -31,6 +31,8 @@ namespace Elpida
 		{
 			close(std::any_cast<int>(_readHandle));
 			close(std::any_cast<int>(_writeHandle));
+			_readHandle = {};
+			_writeHandle = {};
 		}
 	}
 

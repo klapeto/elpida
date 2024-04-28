@@ -31,16 +31,6 @@ namespace Elpida
 			throw ElpidaException("Failed to create pipe: ", OsUtilities::GetLastErrorString());
 		}
 
-		if (!SetHandleInformation(readHandle, HANDLE_FLAG_INHERIT, 0))
-		{
-			throw ElpidaException("Failed to set handle information: ", OsUtilities::GetLastErrorString());
-		}
-
-		if (!SetHandleInformation(writeHandle, HANDLE_FLAG_INHERIT, 0))
-		{
-			throw ElpidaException("Failed to set handle information: ", OsUtilities::GetLastErrorString());
-		}
-
 		_readHandle = readHandle;
 		_writeHandle = writeHandle;
 	}
@@ -49,7 +39,7 @@ namespace Elpida
 	{
 		DWORD bytes;
 
-		if (!ReadFile(std::any_cast<HANDLE>(_readHandle), buffer, size, &bytes, NULL))
+		if (!ReadFile(GetReadHandle<HANDLE>(), buffer, size, &bytes, NULL))
 		{
 			throw ElpidaException("Failed to read from pipe: ", OsUtilities::GetLastErrorString());
 		}
@@ -61,7 +51,7 @@ namespace Elpida
 	{
 		DWORD bytes;
 
-		if (!WriteFile(std::any_cast<HANDLE>(_readHandle), buffer, size, &bytes, NULL))
+		if (!WriteFile(GetWriteHandle<HANDLE>(), buffer, size, &bytes, NULL))
 		{
 			throw ElpidaException("Failed to write to pipe: ", OsUtilities::GetLastErrorString());
 		}
@@ -74,11 +64,13 @@ namespace Elpida
 		if (_readHandle.has_value())
 		{
 			CloseHandle(GetReadHandle<HANDLE>());
+			_readHandle = {};
 		}
 
 		if (_writeHandle.has_value())
 		{
 			CloseHandle(GetWriteHandle<HANDLE>());
+			_writeHandle = {};
 		}
 	}
 

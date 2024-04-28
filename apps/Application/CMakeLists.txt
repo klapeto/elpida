@@ -60,7 +60,7 @@ set(ELPIDA_APPLICATION_SOURCES
 )
 
 
-if (MSYS OR MINGW)
+if (MSYS OR MINGW OR MSVC)
     generate_product_version(
             ELPIDA_APPLICATION_SOURCES
             NAME ${PROJECT_NAME}
@@ -76,10 +76,6 @@ endif()
 
 add_library(elpida-application ${ELPIDA_APPLICATION_SOURCES})
 
-add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
-
-include(FindOpenSSL)
-
 if (ELPIDA_WEB_API_KEY)
     add_definitions(-DELPIDA_WEB_API_KEY="${ELPIDA_WEB_API_KEY}")
 endif()
@@ -88,13 +84,15 @@ if (ELPIDA_WEB_API_URL)
     add_definitions(-DELPIDA_WEB_API_URL="${ELPIDA_WEB_API_URL}")
 endif()
 
-if(MSYS OR MINGW)
+if(MSYS OR MINGW OR MSVC)
     target_link_libraries(elpida-application ws2_32 crypt32)
 else()
-    target_link_libraries(elpida-application)
+    add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
+    include(FindOpenSSL)
+    target_link_libraries(elpida-application OpenSSL::SSL)
 endif()
 
-target_link_libraries(elpida-application elpida-core elpida-platform OpenSSL::SSL)
+target_link_libraries(elpida-application elpida-core elpida-platform)
 
 if (UNIX OR MSYS OR MINGW)
     if (${CMAKE_CXX_COMPILER_VERSION} STRLESS 9.3)

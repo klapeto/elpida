@@ -6,7 +6,7 @@
 #define ELPIDA_OSUTILITIES_HPP_
 
 #include "Elpida/Core/String.hpp"
-#include "Elpida/Core/Vector.hpp"
+#include <filesystem>
 
 namespace Elpida
 {
@@ -15,6 +15,7 @@ namespace Elpida
 	{
 	 public:
 		static String GetLastErrorString();
+		static std::filesystem::path GetExecutableDirectory();
 		static unsigned int GetNumaNodeIdForProcessor(unsigned int processorId);
 	};
 

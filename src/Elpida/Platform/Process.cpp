@@ -5,20 +5,27 @@
 #include "Elpida/Platform/Process.hpp"
 
 #include "Elpida/Core/ValueUtilities.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
 
 namespace Elpida
 {
 	using Vu = Elpida::ValueUtilities;
 
 	Process::Process()
-			: _pid(-1)
+			:_pid(-1)
 	{
 
 	}
 
-	Process::Process(const String& path, const Vector<String>& args, bool redirectStdOut, bool redirectStdErr)
-			: _path(path)
+	Process::Process(const std::filesystem::path& path, const Vector<String>& args, bool redirectStdOut,
+			bool redirectStdErr)
+			:_path(path)
 	{
+		if (is_directory(path))
+		{
+			throw ElpidaException("Process must be called with a file, not directories etc.");
+		}
+
 		if (redirectStdOut)
 		{
 			_outputPipe.Open();
@@ -28,7 +35,7 @@ namespace Elpida
 		{
 			_errorPipe.Open();
 		}
-		_pid = DoStartProcess(path, args, _outputPipe, _errorPipe);
+		_pid = DoStartProcess(std::filesystem::absolute(path), args, _outputPipe, _errorPipe);
 	}
 
 	void Process::WaitToExit() const
@@ -54,12 +61,12 @@ namespace Elpida
 		WaitToExitImpl(true);
 	}
 
-	const AnonymousPipe& Process::GetStdOut() const
+	AnonymousPipe& Process::GetStdOut()
 	{
 		return _outputPipe;
 	}
 
-	const AnonymousPipe& Process::GetStdErr() const
+	AnonymousPipe& Process::GetStdErr()
 	{
 		return _errorPipe;
 	}

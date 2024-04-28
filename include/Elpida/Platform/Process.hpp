@@ -10,6 +10,8 @@
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Platform/AnonymousPipe.hpp"
 
+#include <filesystem>
+
 namespace Elpida
 {
 
@@ -18,13 +20,13 @@ namespace Elpida
 	public:
 		void WaitToExit() const;
 
-		const AnonymousPipe& GetStdOut() const;
-		const AnonymousPipe& GetStdErr() const;
+		AnonymousPipe& GetStdOut();
+		AnonymousPipe& GetStdErr();
 
 		void Terminate();
 
 		Process();
-		Process(const String& path, const Vector<String>& args, bool redirectStdOut = false, bool redirectStdErr = false);
+		Process(const std::filesystem::path& path, const Vector<String>& args, bool redirectStdOut = false, bool redirectStdErr = false);
 		Process(const Process&) = delete;
 		Process& operator=(const Process&) = delete;
 		Process(Process&&) noexcept;
@@ -36,7 +38,7 @@ namespace Elpida
 		AnonymousPipe _errorPipe;
 		int _pid;
 
-		static int DoStartProcess(const String& path,
+		static int DoStartProcess(const std::filesystem::path& path,
 				const Vector<String>& args,
 				AnonymousPipe& outputPipe,
 				AnonymousPipe& errorPipe);

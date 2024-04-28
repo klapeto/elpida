@@ -35,13 +35,16 @@ namespace Elpida
 		return accumulator.str();
 	}
 
-	int Process::DoStartProcess(const String& path,
+	int Process::DoStartProcess(const std::filesystem::path& path,
 			const Vector<String>& args,
 			AnonymousPipe& outputPipe,
 			AnonymousPipe& errorPipe)
 	{
 		PROCESS_INFORMATION piProcInfo;
 		BOOL success = FALSE;
+
+		auto actualPath = path;
+		actualPath.replace_extension("exe");	// We are passed unix like with no extension
 
 		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 
@@ -54,7 +57,7 @@ namespace Elpida
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 		success = CreateProcessW(NULL,
-				(LPWSTR)Vu::StringToWstring(GetCommandLine(path, args)).c_str(), // command line
+				(LPWSTR)Vu::StringToWstring(GetCommandLine(actualPath, args)).c_str(), // command line
 				NULL,                                        // process security attributes
 				NULL,                                        // primary thread security attributes
 				TRUE,                                        // handles are inherited
@@ -98,12 +101,16 @@ namespace Elpida
 	void Process::WaitToExitImpl(bool noThrow) const
 	{
 		if (_pid < 0) return;
-		auto handle = OpenProcess(SYNCHRONIZE, FALSE, _pid);
+		auto handle = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, _pid);
 		if (handle == nullptr)
 		{
+			// Assume exited.
+			return;
+#if false
 			if (noThrow) return;
 			throw ElpidaException("Failed to open process: (", _path, ") (", _pid, "): ",
 					OsUtilities::GetLastErrorString());
+#endif
 		}
 
 		WaitForSingleObject(handle, INFINITE);

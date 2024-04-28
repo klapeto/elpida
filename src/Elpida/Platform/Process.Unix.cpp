@@ -81,7 +81,7 @@ namespace Elpida
 		_exit(1);
 	}
 
-	int Process::DoStartProcess(const String& path, const Vector<String>& args, AnonymousPipe& outputPipe, AnonymousPipe& errorPipe)
+	int Process::DoStartProcess(const std::filesystem::path& path, const Vector<String>& args, AnonymousPipe& outputPipe, AnonymousPipe& errorPipe)
 	{
 		auto pid = fork();
 		if (pid == -1)

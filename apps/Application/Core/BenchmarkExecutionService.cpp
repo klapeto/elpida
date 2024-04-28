@@ -19,12 +19,6 @@
 
 namespace Elpida::Application
 {
-	static inline const char* ExecutablePath = "./elpida-executor"
-											   #if defined(ELPIDA_WINDOWS)
-											   ".exe";
-											   #elif defined(ELPIDA_UNIX)
-											   "";
-#endif
 
 	BenchmarkResultModel
 	BenchmarkExecutionService::Execute(const BenchmarkModel& benchmarkModel,
@@ -104,7 +98,7 @@ namespace Elpida::Application
 					std::string("--independent-queue-ratio=").append(toString(independentQueueRatio)));
 		}
 
-		_currentProcess = Process(ExecutablePath, arguments, true, true);
+		_currentProcess = Process(OsUtilities::GetExecutableDirectory() / "elpida-executor", arguments, true, true);
 
 		AsyncPipeReader stdOutReader(_currentProcess.GetStdOut());
 		AsyncPipeReader stdErrReader(_currentProcess.GetStdErr());

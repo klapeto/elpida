@@ -49,6 +49,7 @@
 
 #include "Elpida/Platform/Process.hpp"
 #include "Elpida/Platform/AsyncPipeReader.hpp"
+#include "Elpida/Platform/OsUtilities.hpp"
 #include "QtMessageService.hpp"
 
 using namespace Elpida;
@@ -128,7 +129,7 @@ static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& t
 
 static std::string GetInfoData(const std::string& benchmarksPath)
 {
-	Process process("./elpida-info-dumper", {benchmarksPath}, true, true);
+	Process process(OsUtilities::GetExecutableDirectory() / "elpida-info-dumper", { benchmarksPath}, true, true);
 	AsyncPipeReader stdOut(process.GetStdOut());
 	AsyncPipeReader stdErr(process.GetStdErr());
 

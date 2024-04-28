@@ -32,6 +32,11 @@ namespace Elpida
 		return numa_node_of_cpu(processorId);
 	}
 
+	std::filesystem::path OsUtilities::GetExecutableDirectory()
+	{
+		return std::filesystem::canonical("/proc/self/exe").parent_path();
+	}
+
 } // Elpida
 
 
