@@ -5,14 +5,10 @@
 #ifndef ELPIDA_TIMINGCALCULATOR_HPP
 #define ELPIDA_TIMINGCALCULATOR_HPP
 
-#include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
-#include "Elpida/Core/Topology/TopologyInfo.hpp"
 
 namespace Elpida
 {
-
-	class TopologyInfo;
 
 	class TimingCalculator final
 	{

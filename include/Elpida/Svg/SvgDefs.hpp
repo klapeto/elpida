@@ -6,6 +6,7 @@
 #define ELPIDA_SVG_SVGDEFS_HPP
 
 #include <unordered_map>
+#include <string>
 
 #include "SvgGradient.hpp"
 

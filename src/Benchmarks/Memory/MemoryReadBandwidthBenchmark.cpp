@@ -6,6 +6,8 @@
 #include "MemoryReadBandwidthTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
+#include <algorithm>
+
 namespace Elpida
 {
 	BenchmarkInfo MemoryReadBandwidthBenchmark::GetInfo() const

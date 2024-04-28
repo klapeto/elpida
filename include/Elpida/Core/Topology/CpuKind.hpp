@@ -24,7 +24,7 @@ namespace Elpida
 		CpuKind(const CpuKind&) = delete;
 		CpuKind(CpuKind&&) noexcept = default;
 		CpuKind& operator=(const CpuKind&) = delete;
-		CpuKind& operator=(CpuKind&&) = default;
+		CpuKind& operator=(CpuKind&&) noexcept = default;
 		~CpuKind() = default;
 	 private:
 		Map<String, String> _infos;

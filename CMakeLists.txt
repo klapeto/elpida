@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
-if (MSVC)
-    #cmake_policy(SET CMP0091 NEW)
-    #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+set(ELPIDA_MSVC_STATIC ON)
+
+if (MSVC AND ELPIDA_MSVC_STATIC)
+    cmake_policy(SET CMP0091 NEW)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif ()
 
 #add_compile_options ( -O3 )

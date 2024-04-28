@@ -6,6 +6,7 @@
 #define ELPIDA_SVG_SVGCOLOR_HPP
 
 #include <string_view>
+#include <algorithm>
 
 namespace Elpida
 {

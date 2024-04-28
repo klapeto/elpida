@@ -6,6 +6,8 @@
 #include "MemoryLatencyTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
+#include <algorithm>
+
 namespace Elpida
 {
 	Vector<UniquePtr<Task>>

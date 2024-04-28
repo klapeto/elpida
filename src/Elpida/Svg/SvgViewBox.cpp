@@ -74,14 +74,9 @@ namespace Elpida
 		CalculateLength();
 	}
 
-	static constexpr double Sqrt(const double x)
-	{
-		return std::sqrt(x);
-	}
-
 	void SvgViewBox::CalculateLength()
 	{
-		_length =  Sqrt(_width * _width + _height * _height) / Sqrt(2.0);
+		_length = std::sqrt(_width * _width + _height * _height) / std::sqrt(2.0);
 	}
 
 	SvgViewBox::SvgViewBox(const double minX, const double minY, const double width, const double height)

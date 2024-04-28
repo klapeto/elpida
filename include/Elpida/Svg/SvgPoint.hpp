@@ -5,6 +5,8 @@
 #ifndef ELPIDA_SVG_SVGPOINT_HPP
 #define ELPIDA_SVG_SVGPOINT_HPP
 
+#include <algorithm>
+
 #include "SvgTransform.hpp"
 
 namespace Elpida
