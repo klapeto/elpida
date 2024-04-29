@@ -8,6 +8,9 @@ AppDir:
     version: latest
     exec: bin/elpida-qt
     exec_args: $APPDIR/bin/Benchmarks $@
+  runtime:
+    env:
+      APPDIR_LIBRARY_PATH: $APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/lib/x86_64-linux-gnu:$APPDIR/lib:$APPDIR/usr/local/lib
   apt:
     arch:
       - amd64
