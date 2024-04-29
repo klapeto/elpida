@@ -30,7 +30,7 @@ namespace Elpida
 	{
 		Size elements = element.GetChildren().size() + 1;
 
-		for (auto& child: element.GetChildren())
+		for (auto& child : element.GetChildren())
 		{
 			elements += GetElementCount(child);
 		}
@@ -52,9 +52,13 @@ namespace Elpida
 		}
 	}
 
-	SvgCalculateTask::SvgCalculateTask(double scale) : _scale(scale)
+	SvgCalculateTask::SvgCalculateTask(double scale)
+			:_scale(scale)
 	{
-
+		if (_scale <= 0.0)
+		{
+			throw ElpidaException("Invalid SVG scale: ", _scale);
+		}
 	}
 
 	TaskInfo SvgCalculateTask::DoGetInfo() const

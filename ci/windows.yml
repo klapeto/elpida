@@ -48,6 +48,7 @@ package:windows:
     - cp "$INSTALL_DIR/bin/elpida-executor.exe" "$stagingDir"
     - cp "$INSTALL_DIR/bin/elpida-info-dumper.exe" "$stagingDir"
     - cp "$INSTALL_DIR/bin/qt.conf" "$stagingDir"
+    - cp "$INSTALL_DIR/bin/assets" "$stagingDir"
     - cd "$stagingDir"
     - zip z -r .
     - cp ./z.zip "$currentDir/$PACKAGE_FILENAME.zip"

@@ -8,9 +8,22 @@
 
 #include "Core/BenchmarkExecutionService.hpp"
 #include "Core/MessageService.hpp"
+#include "Elpida/Platform/OsUtilities.hpp"
+
+#include <sstream>
+#include <locale>
+#include <string>
 
 namespace Elpida::Application
 {
+	static std::string ToString(double d)
+	{
+		std::ostringstream doubleToStringAccumulator;
+		doubleToStringAccumulator.imbue(std::locale::classic());
+		doubleToStringAccumulator << d;
+		return doubleToStringAccumulator.str();
+	}
+
 	const double Divider = 1000000.0;
 
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
@@ -81,8 +94,11 @@ namespace Elpida::Application
 
 		_model.SetCurrentRunningBenchmark(_svgRasterizationSingle->GetName());
 
-		_svgRasterizationSingle->GetConfigurations()[0].SetValue("./assets/Elpida-Background.svg");
-		_svgRasterizationSingle->GetConfigurations()[1].SetValue("1.0");
+		auto thisPath = OsUtilities::GetExecutableDirectory();
+
+		auto targetScale = 0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
+		_svgRasterizationSingle->GetConfigurations()[0].SetValue((thisPath / "assets/Elpida-Background.svg").string());
+		_svgRasterizationSingle->GetConfigurations()[1].SetValue(ToString(targetScale));
 		_svgRasterizationSingle->GetConfigurations()[2].SetValue("16");
 
 		try
@@ -120,10 +136,11 @@ namespace Elpida::Application
 
 		_model.SetCurrentRunningBenchmark(_svgRasterizationMulti->GetName());
 
-		auto targetSamples = (_overheadsModel.GetIterationsPerSecond() * std::thread::hardware_concurrency() * 4) / std::giga::num;
+		auto targetSamples = (_overheadsModel.GetIterationsPerSecond() * std::thread::hardware_concurrency()) / std::giga::num;
 
-		_svgRasterizationMulti->GetConfigurations()[0].SetValue("./assets/Elpida-Background.svg");
-		_svgRasterizationMulti->GetConfigurations()[1].SetValue("1.0");
+		targetScale *=  0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
+		_svgRasterizationMulti->GetConfigurations()[0].SetValue((thisPath / "assets/Elpida-Background.svg").string());
+		_svgRasterizationMulti->GetConfigurations()[1].SetValue(ToString(targetScale));
 		_svgRasterizationMulti->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
 
 		try
