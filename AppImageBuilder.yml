@@ -29,8 +29,11 @@ AppDir:
           main
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1E9377A2BA9EF27F'
     include:
-      - libc6:amd64
-      - Elpida
+      - libnuma1
+      - libqt5svg5
+      - libqt5x11extras5
+      - libssl1.1
+      - qt5-image-formats-plugins
   files:
     include: []
     exclude:
