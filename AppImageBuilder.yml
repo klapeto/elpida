@@ -38,7 +38,8 @@ AppDir:
       - libssl1.1
       - qt5-image-formats-plugins
   files:
-    include: []
+    include:
+      - /usr/local/lib/libhwloc.*
     exclude:
       - usr/share/man
       - usr/share/doc/*/README.*
