@@ -16,7 +16,6 @@ variables:
   PACKAGE_FILENAME_DEPLOY: Elpida-latest-x86_64
   PACKAGE_FILENAME_DEPLOY_BETA: Elpida-latest-beta-x86_64
   DEPLOY_ENVIRONMENT: "development"
-  GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/project-name
 
 workflow:
   rules:
