@@ -48,10 +48,9 @@ set(ELPIDA_CORE_SOURCES
 
 configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
 
-add_library(elpida-core ${ELPIDA_CORE_SOURCES})
+add_library(elpida-core SHARED ${ELPIDA_CORE_SOURCES})
 
 add_library(overheads-calculator TimingCalculator.cpp DummyClass.cpp)
-#target_link_libraries(overheads-calculator elpida-core)
 target_compile_options(overheads-calculator PRIVATE -O3 -fno-dce -fno-tree-dce)
 
 target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/include)
@@ -66,5 +65,3 @@ if (UNIX)
 endif()
 
 target_link_libraries(elpida-core overheads-calculator)
-
-set_property(TARGET elpida-core PROPERTY POSITION_INDEPENDENT_CODE ON)

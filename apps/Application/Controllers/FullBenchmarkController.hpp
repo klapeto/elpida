@@ -14,6 +14,7 @@ namespace Elpida::Application
 	class BenchmarkExecutionService;
 	class TimingModel;
 	class MessageService;
+	class BenchmarkRunConfigurationModel;
 
 	class FullBenchmarkController : public Controller<FullBenchmarkModel>
 	{
@@ -22,6 +23,7 @@ namespace Elpida::Application
 		void StopRunning();
 		FullBenchmarkController(FullBenchmarkModel& model,
 				const TimingModel& overheadsModel,
+				const BenchmarkRunConfigurationModel& runConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService,
 				MessageService& messageService,
 				const std::vector<BenchmarkGroupModel>& benchmarkGroups);
@@ -29,6 +31,7 @@ namespace Elpida::Application
 		~FullBenchmarkController() override = default;
 	private:
 		const TimingModel& _overheadsModel;
+		const BenchmarkRunConfigurationModel& _runConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		MessageService& _messageService;
 

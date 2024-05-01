@@ -12,6 +12,6 @@ set(ELPIDA_EXECUTOR_SOURCES
 
 
 add_executable(elpida-executor ${ELPIDA_EXECUTOR_SOURCES})
-target_link_libraries(elpida-executor elpida-core elpida-platform elpida-svg png)
+target_link_libraries(elpida-executor elpida-core elpida-platform elpida-shared)
 
 install(TARGETS elpida-executor RUNTIME DESTINATION bin)

@@ -5,6 +5,7 @@
 #include "FullBenchmarkController.hpp"
 
 #include "Models/SystemInfo/TimingModel.hpp"
+#include "Models/BenchmarkRunConfigurationModel.hpp"
 
 #include "Core/BenchmarkExecutionService.hpp"
 #include "Core/MessageService.hpp"
@@ -28,11 +29,13 @@ namespace Elpida::Application
 
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TimingModel& overheadsModel,
+			const BenchmarkRunConfigurationModel& runConfigurationModel,
 			BenchmarkExecutionService& benchmarkExecutionService,
 			MessageService& messageService,
 			const std::vector<BenchmarkGroupModel>& benchmarkGroups) :
 			Controller(model),
 			_overheadsModel(overheadsModel),
+			_runConfigurationModel(runConfigurationModel),
 			_benchmarkExecutionService(benchmarkExecutionService),
 			_messageService(messageService),
 			_memoryLatency(nullptr),
@@ -86,168 +89,173 @@ namespace Elpida::Application
 	{
 		_cancelling = false;
 		_model.SetRunning(true);
-		std::vector<std::size_t> affinity;
-		FullBenchmarkResultModel::Score singleCoreScore = 0;
-		FullBenchmarkResultModel::Score multiCoreScore = 0.0;
-		FullBenchmarkResultModel::Score memoryScore = 0.0;
-		std::vector<BenchmarkResultModel> benchmarkResults;
-
-		_model.SetCurrentRunningBenchmark(_svgRasterizationSingle->GetName());
-
-		auto thisPath = OsUtilities::GetExecutableDirectory();
-
-		auto targetScale = 0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
-		_svgRasterizationSingle->GetConfigurations()[0].SetValue((thisPath / "assets/Elpida-Background.svg").string());
-		_svgRasterizationSingle->GetConfigurations()[1].SetValue(ToString(targetScale));
-		_svgRasterizationSingle->GetConfigurations()[2].SetValue("16");
-
-		try
+		for (std::size_t i = 0; i < _runConfigurationModel.GetIterationsToRun(); ++i)
 		{
-			auto svgRasterizationSingle = co_await AsyncPromise<BenchmarkResultModel>([&]()
+			std::vector<std::size_t> affinity;
+			FullBenchmarkResultModel::Score singleCoreScore = 0;
+			FullBenchmarkResultModel::Score multiCoreScore = 0.0;
+			FullBenchmarkResultModel::Score memoryScore = 0.0;
+			std::vector<BenchmarkResultModel> benchmarkResults;
+
+			_model.SetCurrentRunningBenchmark(_svgRasterizationSingle->GetName());
+
+			auto thisPath = OsUtilities::GetExecutableDirectory();
+
+			auto targetScale = 0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
+			_svgRasterizationSingle->GetConfigurations()[0].SetValue((thisPath / "assets/Elpida-Background.svg").string());
+			_svgRasterizationSingle->GetConfigurations()[1].SetValue(ToString(targetScale));
+			_svgRasterizationSingle->GetConfigurations()[2].SetValue("16");
+
+			try
 			{
-				return _benchmarkExecutionService.Execute(
-						*_svgRasterizationSingle,
-						affinity,
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetNowOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetLoopOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetVirtualCallOverhead()).count(),
-								1.0,
-								1.0,
-								false,
-								false);
-			});
+				auto svgRasterizationSingle = co_await AsyncPromise<BenchmarkResultModel>([&]()
+				{
+				  return _benchmarkExecutionService.Execute(
+						  *_svgRasterizationSingle,
+						  affinity,
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetNowOverhead()).count(),
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetLoopOverhead()).count(),
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetVirtualCallOverhead()).count(),
+						  1.0,
+						  1.0,
+						  false,
+						  false);
+				});
 
-			auto& taskResults = svgRasterizationSingle.GetTaskResults();
+				auto& taskResults = svgRasterizationSingle.GetTaskResults();
 
-			auto& rasterizationResult = taskResults[0];
-			singleCoreScore += rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count() / Divider;
+				auto& rasterizationResult = taskResults[0];
+				singleCoreScore += rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count() / Divider;
 
-			benchmarkResults.push_back(std::move(svgRasterizationSingle));
-		}
-		catch (const ElpidaException& ex)
-		{
-			_model.SetRunning(false);
-			_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
-			co_return;
-		}
-
-		_model.SetCurrentRunningBenchmark(_svgRasterizationMulti->GetName());
-
-		auto targetSamples = (_overheadsModel.GetIterationsPerSecond() * std::thread::hardware_concurrency()) / std::giga::num;
-
-		targetScale *=  0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
-		_svgRasterizationMulti->GetConfigurations()[0].SetValue((thisPath / "assets/Elpida-Background.svg").string());
-		_svgRasterizationMulti->GetConfigurations()[1].SetValue(ToString(targetScale));
-		_svgRasterizationMulti->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
-
-		try
-		{
-			auto svgRasterizationMulti = co_await AsyncPromise<BenchmarkResultModel>([&]()
+				benchmarkResults.push_back(std::move(svgRasterizationSingle));
+			}
+			catch (const ElpidaException& ex)
 			{
-				return _benchmarkExecutionService.Execute(
-						*_svgRasterizationMulti,
-						affinity,
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetNowOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetLoopOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetVirtualCallOverhead()).count(),
-						32.0,
-						32.0,
-						false,
-						false);
-			});
+				_model.SetRunning(false);
+				_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
+				co_return;
+			}
 
-			auto& taskResults = svgRasterizationMulti.GetTaskResults();
+			_model.SetCurrentRunningBenchmark(_svgRasterizationMulti->GetName());
 
-			auto& rasterizationResult = taskResults[0];
-			multiCoreScore += rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count() / Divider;
+			auto targetSamples = (_overheadsModel.GetIterationsPerSecond() * std::thread::hardware_concurrency()) / std::giga::num;
 
-			benchmarkResults.push_back(std::move(svgRasterizationMulti));
-		}
-		catch (const ElpidaException& ex)
-		{
-			_model.SetRunning(false);
-			_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
-			co_return;
-		}
+			targetScale *=  0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
+			_svgRasterizationMulti->GetConfigurations()[0].SetValue((thisPath / "assets/Elpida-Background.svg").string());
+			_svgRasterizationMulti->GetConfigurations()[1].SetValue(ToString(targetScale));
+			_svgRasterizationMulti->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
 
-		_model.SetCurrentRunningBenchmark(_memoryLatency->GetName());
-
-		try
-		{
-			auto latencyResult = co_await AsyncPromise<BenchmarkResultModel>([&]()
+			try
 			{
-				return _benchmarkExecutionService.Execute(
-						*_memoryLatency,
-						affinity,
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetNowOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetLoopOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetVirtualCallOverhead()).count(),
-						1.0,
-						1.0,
-					false,
-					true);
-			});
+				auto svgRasterizationMulti = co_await AsyncPromise<BenchmarkResultModel>([&]()
+				{
+				  return _benchmarkExecutionService.Execute(
+						  *_svgRasterizationMulti,
+						  affinity,
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetNowOverhead()).count(),
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetLoopOverhead()).count(),
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetVirtualCallOverhead()).count(),
+						  32.0,
+						  32.0,
+						  false,
+						  false);
+				});
 
-			auto& taskResults = latencyResult.GetTaskResults();
+				auto& taskResults = svgRasterizationMulti.GetTaskResults();
 
-			memoryScore += Divider / (latencyResult.GetScore() * std::nano::den);
+				auto& rasterizationResult = taskResults[0];
+				multiCoreScore += rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count() / Divider;
 
-			benchmarkResults.push_back(std::move(latencyResult));
-		}
-		catch (const ElpidaException& ex)
-		{
-			_model.SetRunning(false);
-			_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
-			co_return;
-		}
-
-
-		_model.SetCurrentRunningBenchmark(_memoryReadBandwidth->GetName());
-
-		try
-		{
-			auto bandwidthResult = co_await AsyncPromise<BenchmarkResultModel>([&]()
+				benchmarkResults.push_back(std::move(svgRasterizationMulti));
+			}
+			catch (const ElpidaException& ex)
 			{
-				return _benchmarkExecutionService.Execute(
-						*_memoryReadBandwidth,
-						affinity,
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetNowOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetLoopOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetVirtualCallOverhead()).count(),
-						1.0,
-						1.0,
-						false,
-						true);
-			});
+				_model.SetRunning(false);
+				_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
+				co_return;
+			}
+
+			_model.SetCurrentRunningBenchmark(_memoryLatency->GetName());
+
+			try
+			{
+				auto latencyResult = co_await AsyncPromise<BenchmarkResultModel>([&]()
+				{
+				  return _benchmarkExecutionService.Execute(
+						  *_memoryLatency,
+						  affinity,
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetNowOverhead()).count(),
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetLoopOverhead()).count(),
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetVirtualCallOverhead()).count(),
+						  1.0,
+						  1.0,
+						  false,
+						  true);
+				});
+
+				auto& taskResults = latencyResult.GetTaskResults();
+
+				memoryScore += Divider / (latencyResult.GetScore() * std::nano::den);
+
+				benchmarkResults.push_back(std::move(latencyResult));
+			}
+			catch (const ElpidaException& ex)
+			{
+				_model.SetRunning(false);
+				_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
+				co_return;
+			}
 
 
-			memoryScore += bandwidthResult.GetScore() / Divider / 1000;
+			_model.SetCurrentRunningBenchmark(_memoryReadBandwidth->GetName());
 
-			benchmarkResults.push_back(std::move(bandwidthResult));
+			try
+			{
+				auto bandwidthResult = co_await AsyncPromise<BenchmarkResultModel>([&]()
+				{
+				  return _benchmarkExecutionService.Execute(
+						  *_memoryReadBandwidth,
+						  affinity,
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetNowOverhead()).count(),
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetLoopOverhead()).count(),
+						  std::chrono::duration_cast<NanoSeconds>(
+								  _overheadsModel.GetVirtualCallOverhead()).count(),
+						  1.0,
+						  1.0,
+						  false,
+						  true);
+				});
+
+
+				memoryScore += bandwidthResult.GetScore() / Divider / 1000;
+
+				benchmarkResults.push_back(std::move(bandwidthResult));
+			}
+			catch (const ElpidaException& ex)
+			{
+				_model.SetRunning(false);
+				_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
+				co_return;
+			}
+
+			FullBenchmarkResultModel resultModel(std::move(benchmarkResults),
+					singleCoreScore + multiCoreScore + memoryScore, singleCoreScore, multiCoreScore, memoryScore);
+
+			_model.AddResult(std::move(resultModel));
 		}
-		catch (const ElpidaException& ex)
-		{
-			_model.SetRunning(false);
-			_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
-			co_return;
-		}
 
-		FullBenchmarkResultModel resultModel(std::move(benchmarkResults),
-				singleCoreScore + multiCoreScore + memoryScore, singleCoreScore, multiCoreScore, memoryScore);
 
-		_model.AddResult(std::move(resultModel));
 		_model.SetRunning(false);
 	}
 

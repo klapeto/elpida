@@ -8,9 +8,7 @@ set(ELPIDA_WEB_BENCHMARKS_SOURCES
         DataParseBenchmark.cpp
         ParseJsonTask.cpp)
 
-add_library(elpida-web-benchmarks SHARED ${ELPIDA_WEB_BENCHMARKS_SOURCES})
-
-set_target_properties(elpida-web-benchmarks PROPERTIES POSITION_INDEPENDENT_CODE ON)
+add_library(elpida-web-benchmarks MODULE ${ELPIDA_WEB_BENCHMARKS_SOURCES})
 
 target_link_libraries(elpida-web-benchmarks PRIVATE elpida-core elpida-common-tasks)
 

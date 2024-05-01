@@ -24,7 +24,6 @@
 #ifndef APPS_QT_MODELS_ABSTRACTIONS_ASSOCIATIVEMODEL_HPP
 #define APPS_QT_MODELS_ABSTRACTIONS_ASSOCIATIVEMODEL_HPP
 
-#include "Elpida/Core/Config.hpp"
 #include "Models/Abstractions/CollectionModel.hpp"
 #include "Models/Abstractions/AssociativeModel/AssociativeItem.hpp"
 #include <unordered_map>

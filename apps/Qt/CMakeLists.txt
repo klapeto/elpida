@@ -177,7 +177,7 @@ if (MSYS OR MINGW)
 endif()
 
 target_include_directories(elpida-qt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(elpida-qt elpida-core elpida-platform elpida-application overheads-calculator Qt5::Core Qt5::Widgets)
+target_link_libraries(elpida-qt elpida-application elpida-shared Qt5::Core Qt5::Widgets)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION bin)
 install(FILES qt.conf DESTINATION bin)

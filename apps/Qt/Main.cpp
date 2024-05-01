@@ -225,7 +225,10 @@ int main(int argc, char* argv[])
 
 		FullBenchmarkModel fullBenchmarkModel;
 		FullBenchmarkController fullBenchmarkController(fullBenchmarkModel,
-				builderJson.GetTimingModel(), executionService, messageService, benchmarkGroups);
+				builderJson.GetTimingModel(),
+				benchmarkRunConfigurationModel,
+				executionService, messageService,
+				benchmarkGroups);
 
 		MainWindow mainWindow(builderJson.GetOsInfoModel(),
 				builderJson.GetMemoryInfoModel(),

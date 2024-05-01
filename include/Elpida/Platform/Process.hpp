@@ -5,7 +5,6 @@
 #ifndef ELPIDA_PROCESS_HPP
 #define ELPIDA_PROCESS_HPP
 
-#include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Platform/AnonymousPipe.hpp"

@@ -36,17 +36,19 @@ set(ELPIDA_PLATFORM_SOURCES
         NumaAllocatorFactory.cpp
 )
 
-add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
+add_library(elpida-platform SHARED ${ELPIDA_PLATFORM_SOURCES})
+
+target_link_libraries(elpida-platform elpida-core)
 
 if (MSVC)
     include(FindHWLOC)
     target_include_directories(elpida-platform PUBLIC ${HWLOC_INCLUDE_DIRS})
     target_link_directories(elpida-platform PUBLIC ${HWLOC_LIBRARY_DIRS})
-    target_link_libraries(elpida-platform elpida-core libhwloc)
+    target_link_libraries(elpida-platform libhwloc)
 else()
-    target_link_libraries(elpida-platform elpida-core hwloc)
+    target_link_libraries(elpida-platform hwloc)
 endif()
 
 if (UNIX)
-    target_link_libraries(elpida-platform elpida-core numa)
+    target_link_libraries(elpida-platform numa)
 endif ()

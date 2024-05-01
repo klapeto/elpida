@@ -13,7 +13,6 @@
 
 namespace Elpida
 {
-	class ProcessingUnitNode;
 	class Allocator;
 
 	class AbstractTaskData

@@ -1,3 +1,4 @@
+add_subdirectory(Shared)
 add_subdirectory(Application)
 add_subdirectory(Executor)
 add_subdirectory(InfoDumper)

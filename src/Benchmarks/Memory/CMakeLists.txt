@@ -10,7 +10,7 @@ set(ELPIDA_MEMORY_BENCHMARKS_SOURCES
         MemoryReadBandwidthTask.cpp
         Plugin.cpp)
 
-add_library(elpida-memory-benchmarks SHARED ${ELPIDA_MEMORY_BENCHMARKS_SOURCES})
+add_library(elpida-memory-benchmarks MODULE ${ELPIDA_MEMORY_BENCHMARKS_SOURCES})
 
 target_link_libraries(elpida-memory-benchmarks PRIVATE elpida-core elpida-common-tasks)
 target_compile_options(elpida-memory-benchmarks PRIVATE -fno-dce -fno-tree-dce)

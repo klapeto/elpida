@@ -1,6 +1,6 @@
 project("Elpida Svg")
 
-add_library(elpida-svg
+add_library(elpida-svg SHARED
         SvgBounds.cpp
         SvgColor.cpp
         SvgLength.cpp
@@ -57,6 +57,4 @@ add_library(elpida-svg
         SvgCalculatedDocument.cpp
 )
 
-target_link_libraries(elpida-svg PRIVATE elpida-xml elpida-core)
-
-set_property(TARGET elpida-svg PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(elpida-svg PRIVATE elpida-core elpida-xml)
