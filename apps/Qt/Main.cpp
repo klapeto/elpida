@@ -45,7 +45,9 @@
 #include "Controllers/CustomBenchmarkController.hpp"
 #include "Controllers/BenchmarkRunConfigurationController.hpp"
 #include "Controllers/FullBenchmarkController.hpp"
+#include "Controllers/MainController.hpp"
 #include "ModelBuilderJson.hpp"
+#include "ResultSerializer.hpp"
 
 #include "Elpida/Platform/Process.hpp"
 #include "Elpida/Platform/AsyncPipeReader.hpp"
@@ -230,7 +232,14 @@ int main(int argc, char* argv[])
 				executionService, messageService,
 				benchmarkGroups);
 
-		MainWindow mainWindow(builderJson.GetOsInfoModel(),
+
+		ResultSerializer resultSerializer(builderJson.GetCpuInfoModel(), builderJson.GetMemoryInfoModel(), builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(), builderJson.GetTimingModel());
+
+		MainController mainController(fullBenchmarkModel, customBenchmarkResultsModel, resultSerializer);
+
+		MainWindow mainWindow(
+				mainController,
+				builderJson.GetOsInfoModel(),
 				builderJson.GetMemoryInfoModel(),
 				builderJson.GetCpuInfoModel(),
 				builderJson.GetTimingModel(),

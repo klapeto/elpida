@@ -119,4 +119,9 @@ namespace Elpida::Application
 		});
 		return *this;
 	}
+
+	const TopologyNodeModel& TopologyModel::GetRoot() const
+	{
+		return _root;
+	}
 } // Application

@@ -93,12 +93,12 @@ namespace Elpida
 		accumulator
 				<< R"("           Sets a configuration. Successive configurations are appended in the order defined)"
 				<< std::endl;
-		accumulator << R"("       --now-nanoseconds=NANOSECONDS)" << std::endl;
-		accumulator << R"("           The now overhead in nanoseconds)" << std::endl;
-		accumulator << R"("       --loop-nanoseconds=NANOSECONDS)" << std::endl;
-		accumulator << R"("           The loop overhead in nanoseconds)" << std::endl;
-		accumulator << R"("       --virtual-nanoseconds=NANOSECONDS)" << std::endl;
-		accumulator << R"("           The virtual call overhead in nanoseconds)" << std::endl;
+		accumulator << R"("       --now-overhead=SECONDS)" << std::endl;
+		accumulator << R"("           The now overhead in fractional seconds)" << std::endl;
+		accumulator << R"("       --loop-overhead=SECONDS)" << std::endl;
+		accumulator << R"("           The loop overhead in fractional seconds)" << std::endl;
+		accumulator << R"("       --virtual-overhead=SECONDS)" << std::endl;
+		accumulator << R"("           The virtual call overhead in fractional seconds)" << std::endl;
 		accumulator << R"("       --dependent-queue-ratio=VALUE)" << std::endl;
 		accumulator << R"("           Set the dependent thread pre-allocation ratio to the target processor count)" << std::endl;
 		accumulator << R"("       --independent-queue-ratio=VALUE)" << std::endl;
@@ -199,9 +199,9 @@ namespace Elpida
 				{ "affinity",            required_argument, nullptr, Affinity },
 				{ "format",              required_argument, nullptr, Format },
 				{ "config",              required_argument, nullptr, Config },
-				{ "now-nanoseconds",     required_argument, nullptr, NowOverhead },
-				{ "loop-nanoseconds",    required_argument, nullptr, LoopOverhead },
-				{ "virtual-nanoseconds", required_argument, nullptr, VirtualOverhead },
+				{ "now-overhead",     required_argument, nullptr, NowOverhead },
+				{ "loop-overhead",    required_argument, nullptr, LoopOverhead },
+				{ "virtual-overhead", required_argument, nullptr, VirtualOverhead },
 				{ "numa-aware",          no_argument,       nullptr, NumaAware },
 				{ "pin-threads",         no_argument,       nullptr, PinThreads },
 				{ "dependent-queue-ratio", required_argument, nullptr, DependentQueueRatio },

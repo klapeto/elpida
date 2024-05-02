@@ -228,9 +228,9 @@ namespace Elpida::Application
 			throw ElpidaException("Missing info data: 'timing'");
 		}
 		return {
-			NanoSeconds(jTiming.at("nowOverheadNs").get<double>()),
-			NanoSeconds(jTiming.at("loopOverheadNs").get<double>()),
-			NanoSeconds(jTiming.at("vCallOverheadNs").get<double>()),
+			Seconds(jTiming.at("nowOverhead").get<double>()),
+			Seconds(jTiming.at("loopOverhead").get<double>()),
+			Seconds(jTiming.at("vCallOverhead").get<double>()),
 			jTiming.at("iterations").get<Iterations>(),
 		};
 	}

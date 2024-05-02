@@ -20,9 +20,9 @@ namespace Elpida::Application
 	public:
 		BenchmarkResultModel Execute(const BenchmarkModel& benchmarkModel,
 				const std::vector<std::size_t>& affinity,
-				double nowOverheadNanoseconds,
-				double loopOverheadNanoseconds,
-				double virtualCallOverheadNanoseconds,
+				double nowOverheadSeconds,
+				double loopOverheadSeconds,
+				double virtualCallSeconds,
 				double dependentQueueRatio,
 				double independentQueueRatio,
 				bool numaAware,

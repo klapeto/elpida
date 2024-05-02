@@ -18,6 +18,9 @@ namespace Elpida::Application
 		[[nodiscard]]
 		TopologyNodeModel& GetRoot();
 
+		[[nodiscard]]
+		const TopologyNodeModel& GetRoot() const;
+
 		const std::vector<std::reference_wrapper<const TopologyNodeModel>>& GetSelectedLeafNodes() const;
 		const std::vector<std::reference_wrapper<const TopologyNodeModel>>& GetLeafNodes() const;
 

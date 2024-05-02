@@ -57,6 +57,10 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/Full/FullBenchmarkModel.hpp
         ModelBuilderJson.cpp
         ModelBuilderJson.hpp
+        ResultSerializer.cpp
+        ResultSerializer.hpp
+        Controllers/MainController.cpp
+        Controllers/MainController.hpp
 )
 
 

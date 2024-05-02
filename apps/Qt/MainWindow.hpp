@@ -26,12 +26,14 @@ namespace Elpida::Application
 	class FullBenchmarkModel;
 	class FullBenchmarkController;
 	class ConfigurationViewPool;
+	class MainController;
 
 	class MainWindow : public QMainWindow
 	{
 	 Q_OBJECT
 	 public:
 		explicit MainWindow(
+				MainController& mainController,
 			const OsInfoModel& osInfoModel,
 			const MemoryInfoModel& memoryInfoModel,
 			const CpuInfoModel& cpuInfoModel,
@@ -51,10 +53,12 @@ namespace Elpida::Application
 	 private:
 		EventSubscription<> _topologyModelChanged;
 		TopologyModel& _topologyModel;
-		CustomBenchmarkModel& _benchmarksModel;
 		QLabel* _selectedNodesLabel;
-		QString _nonSelected = "<b>No selected. All Cpus will be used.</b>";
+		MainController& _mainController;
+		const CpuInfoModel& _cpuInfoModel;
 		Ui::MainWindow* _ui;
+
+		QString _nonSelected = "<b>No selected. All Cpus will be used.</b>";
 
 		void OnTopologyModelChanged();
 

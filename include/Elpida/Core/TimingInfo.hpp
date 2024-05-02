@@ -15,12 +15,6 @@ namespace Elpida
 	public:
 
 		[[nodiscard]]
-		const Duration& GetMinimumTimeForStableMeasurement() const
-		{
-			return _minimumTimeForStableMeasurement;
-		}
-
-		[[nodiscard]]
 		Iterations GetIterationsPerSecond() const
 		{
 			return _iterationsPerSecond;
@@ -52,12 +46,10 @@ namespace Elpida
 		TimingInfo(const Duration& nowOverhead,
 			const Duration& loopOverhead,
 			const Duration& virtualCallOverhead,
-			const Duration& minimumTimeForStableMeasurement,
 			Iterations iterationsPerSecond)
 			: _nowOverhead(nowOverhead),
 			  _loopOverhead(loopOverhead),
 			  _virtualCallOverhead(virtualCallOverhead),
-			  _minimumTimeForStableMeasurement(minimumTimeForStableMeasurement),
 			  _iterationsPerSecond(iterationsPerSecond)
 		{
 		}
@@ -66,7 +58,6 @@ namespace Elpida
 		Duration _nowOverhead;
 		Duration _loopOverhead;
 		Duration _virtualCallOverhead;
-		Duration _minimumTimeForStableMeasurement;
 		Iterations _iterationsPerSecond;
 	};
 

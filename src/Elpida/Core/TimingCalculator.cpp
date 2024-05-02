@@ -62,7 +62,6 @@ namespace Elpida
 		Duration loopOverhead;
 		Duration nowOverhead;
 		Duration vCallOverhead;
-		Duration minimumTimeForStableMeasurement(0);
 
 		std::thread([&]()
 		{
@@ -76,7 +75,6 @@ namespace Elpida
 		return TimingInfo(nowOverhead,
 			loopOverhead,
 			vCallOverhead,
-			minimumTimeForStableMeasurement,
 			1.0 / loopOverhead.count());
 	}
 } // Application

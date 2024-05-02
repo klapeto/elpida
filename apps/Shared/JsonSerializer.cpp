@@ -203,9 +203,9 @@ namespace Elpida
 		json jTiming;
 
 		jTiming["iterations"] = timingInfo.GetIterationsPerSecond();
-		jTiming["loopOverheadNs"] = std::chrono::duration_cast<NanoSeconds>(timingInfo.GetLoopOverhead()).count();
-		jTiming["nowOverheadNs"] = std::chrono::duration_cast<NanoSeconds>(timingInfo.GetNowOverhead()).count();
-		jTiming["vCallOverheadNs"] = std::chrono::duration_cast<NanoSeconds>(timingInfo.GetVirtualCallOverhead()).count();
+		jTiming["loopOverhead"] = timingInfo.GetLoopOverhead().count();
+		jTiming["nowOverhead"] = timingInfo.GetNowOverhead().count();
+		jTiming["vCallOverhead"] = timingInfo.GetVirtualCallOverhead().count();
 
 		return jTiming;
 	}

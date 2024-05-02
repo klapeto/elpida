@@ -8,19 +8,9 @@
 
 namespace Elpida
 {
-	CpuInfo::CpuInfo(String architecture, String vendorName, String modelName, Vector<String>&& features, Map<String, String>&& additionalInfo)
-		: _features(std::move(features)), _additionalInfo(std::move(additionalInfo)), _architecture(std::move(architecture)), _vendorName(std::move(vendorName)), _modelName(std::move(modelName))
+	CpuInfo::CpuInfo(String architecture, String vendorName, String modelName)
+		: _architecture(std::move(architecture)), _vendorName(std::move(vendorName)), _modelName(std::move(modelName))
 	{
-	}
-
-	const Vector<String>& CpuInfo::GetFeatures() const
-	{
-		return _features;
-	}
-
-	const Map<String, String>& CpuInfo::GetAdditionalInfo() const
-	{
-		return _additionalInfo;
 	}
 
 	const String& CpuInfo::GetArchitecture() const

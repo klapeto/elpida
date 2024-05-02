@@ -113,12 +113,9 @@ namespace Elpida::Application
 				  return _benchmarkExecutionService.Execute(
 						  *_svgRasterizationSingle,
 						  affinity,
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetNowOverhead()).count(),
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetLoopOverhead()).count(),
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetVirtualCallOverhead()).count(),
+						  _overheadsModel.GetNowOverhead().count(),
+						  _overheadsModel.GetLoopOverhead().count(),
+						  _overheadsModel.GetVirtualCallOverhead().count(),
 						  1.0,
 						  1.0,
 						  false,
@@ -155,12 +152,9 @@ namespace Elpida::Application
 				  return _benchmarkExecutionService.Execute(
 						  *_svgRasterizationMulti,
 						  affinity,
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetNowOverhead()).count(),
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetLoopOverhead()).count(),
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetVirtualCallOverhead()).count(),
+						  _overheadsModel.GetNowOverhead().count(),
+						  _overheadsModel.GetLoopOverhead().count(),
+						  _overheadsModel.GetVirtualCallOverhead().count(),
 						  32.0,
 						  32.0,
 						  false,
@@ -190,12 +184,9 @@ namespace Elpida::Application
 				  return _benchmarkExecutionService.Execute(
 						  *_memoryLatency,
 						  affinity,
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetNowOverhead()).count(),
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetLoopOverhead()).count(),
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetVirtualCallOverhead()).count(),
+						  _overheadsModel.GetNowOverhead().count(),
+						  _overheadsModel.GetLoopOverhead().count(),
+						  _overheadsModel.GetVirtualCallOverhead().count(),
 						  1.0,
 						  1.0,
 						  false,
@@ -225,12 +216,9 @@ namespace Elpida::Application
 				  return _benchmarkExecutionService.Execute(
 						  *_memoryReadBandwidth,
 						  affinity,
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetNowOverhead()).count(),
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetLoopOverhead()).count(),
-						  std::chrono::duration_cast<NanoSeconds>(
-								  _overheadsModel.GetVirtualCallOverhead()).count(),
+						  _overheadsModel.GetNowOverhead().count(),
+						  _overheadsModel.GetLoopOverhead().count(),
+						  _overheadsModel.GetVirtualCallOverhead().count(),
 						  1.0,
 						  1.0,
 						  false,

@@ -23,9 +23,9 @@ namespace Elpida::Application
 	BenchmarkResultModel
 	BenchmarkExecutionService::Execute(const BenchmarkModel& benchmarkModel,
 			const std::vector<std::size_t>& affinity,
-			double nowOverheadNanoseconds,
-			double loopOverheadNanoseconds,
-			double virtualCallOverheadNanoseconds,
+			double nowOverheadSeconds,
+			double loopOverheadSeconds,
+			double virtualCallSeconds,
 			double dependentQueueRatio,
 			double independentQueueRatio,
 			bool numaAware,
@@ -53,9 +53,9 @@ namespace Elpida::Application
 				{
 						std::string("--module=") + "\"" + benchmarkModel.GetFilePath() + "\"",
 						"--index=" + std::to_string(benchmarkModel.GetIndex()),
-						"--now-nanoseconds=" + toString(nowOverheadNanoseconds),
-						"--loop-nanoseconds=" + toString(loopOverheadNanoseconds),
-						"--virtual-nanoseconds=" + toString(virtualCallOverheadNanoseconds),
+						"--now-overhead=" + toString(nowOverheadSeconds),
+						"--loop-overhead=" + toString(loopOverheadSeconds),
+						"--virtual-overhead=" + toString(virtualCallSeconds),
 						"--format=json"
 				};
 

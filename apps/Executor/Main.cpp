@@ -124,10 +124,9 @@ int main(int argC, char** argV)
 				MemoryInfoLoader::Load(),
 				OsInfoLoader::Load(),
 				TopologyLoader::LoadTopology(),
-				TimingInfo(NanoSeconds(helper.GetNowOverhead()),
-						NanoSeconds(helper.GetLoopOverhead()),
-						NanoSeconds(helper.GetVCallOverhead()),
-						Seconds(0),
+				TimingInfo(Seconds(helper.GetNowOverhead()),
+						Seconds(helper.GetLoopOverhead()),
+						Seconds(helper.GetVCallOverhead()),
 						0));
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());

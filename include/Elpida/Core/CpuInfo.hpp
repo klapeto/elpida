@@ -5,8 +5,6 @@
 #ifndef ELPIDA_CPUINFO_HPP_
 #define ELPIDA_CPUINFO_HPP_
 
-#include "Elpida/Core/Vector.hpp"
-#include "Elpida/Core/Map.hpp"
 #include "Elpida/Core/String.hpp"
 
 namespace Elpida
@@ -16,12 +14,6 @@ namespace Elpida
 	{
 	 public:
 		[[nodiscard]]
-		const Vector<String>& GetFeatures() const;
-
-		[[nodiscard]]
-		const Map<String, String>& GetAdditionalInfo() const;
-
-		[[nodiscard]]
 		const String& GetArchitecture() const;
 
 		[[nodiscard]]
@@ -30,15 +22,13 @@ namespace Elpida
 		[[nodiscard]]
 		const String& GetModelName() const;
 
-		CpuInfo(String architecture, String vendorName, String modelName, Vector<String>&& features, Map<String, String>&& additionalInfo);
+		CpuInfo(String architecture, String vendorName, String modelName);
 		CpuInfo(const CpuInfo&) = default;
 		CpuInfo(CpuInfo&&) noexcept = default;
 		CpuInfo& operator=(const CpuInfo&) = default;
 		CpuInfo& operator=(CpuInfo&&) noexcept = default;
 		~CpuInfo() = default;
 	 private:
-		Vector<String> _features;
-		Map<String, String> _additionalInfo;
 		String _architecture;
 		String _vendorName;
 		String _modelName;

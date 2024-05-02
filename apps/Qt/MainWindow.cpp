@@ -1,3 +1,4 @@
+
 #include "MainWindow.hpp"
 #include "ui_MainWindow.h"
 
@@ -5,11 +6,15 @@
 
 #include <sstream>
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "Elpida/Core/Config.hpp"
 
+#include "Controllers/MainController.hpp"
+
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/Custom/CustomBenchmarkModel.hpp"
+#include "Models/SystemInfo/CpuInfoModel.hpp"
 
 #include "Views/OsInfoView/OsInfoView.hpp"
 #include "Views/MemoryInfoView/MemoryInfoView.hpp"
@@ -30,7 +35,9 @@ namespace Elpida::Application
 									  "<p>Copyright (C) 2023  Ioannis Panagiotopoulos</p>"
 									  "More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
 
-	MainWindow::MainWindow(const OsInfoModel& osInfoModel,
+	MainWindow::MainWindow(
+			MainController& mainController,
+			const OsInfoModel& osInfoModel,
 			const MemoryInfoModel& memoryInfoModel,
 			const CpuInfoModel& cpuInfoModel,
 			const TimingModel& timingModel,
@@ -43,11 +50,12 @@ namespace Elpida::Application
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
 			FullBenchmarkController& fullBenchmarkController,
 			ConfigurationViewPool& configurationViewPool,
-		QWidget* parent)
-		: QMainWindow(parent),
-		_topologyModel(topologyModel),
-		_benchmarksModel(customBenchmarksModel),
-		_ui(new Ui::MainWindow)
+			QWidget* parent)
+			:QMainWindow(parent),
+			 _topologyModel(topologyModel),
+			 _mainController(mainController),
+			 _cpuInfoModel(cpuInfoModel),
+			 _ui(new Ui::MainWindow)
 	{
 		_ui->setupUi(this);
 
@@ -76,10 +84,13 @@ namespace Elpida::Application
 
 		_topologyModelChanged = topologyModel.DataChanged().Subscribe([this]()
 		{
-			OnTopologyModelChanged();
+		  OnTopologyModelChanged();
 		});
 
-		_ui->tabCustomBenchmark->layout()->addWidget(new CustomBenchmarkView(customBenchmarksModel, customBenchmarkResultsModel, benchmarkRunConfigurationModel, customBenchmarksController, benchmarkRunConfigurationController, configurationViewPool));
+		_ui->tabCustomBenchmark->layout()->addWidget(
+				new CustomBenchmarkView(customBenchmarksModel, customBenchmarkResultsModel,
+						benchmarkRunConfigurationModel, customBenchmarksController, benchmarkRunConfigurationController,
+						configurationViewPool));
 		OnTopologyModelChanged();
 	}
 
@@ -101,7 +112,7 @@ namespace Elpida::Application
 
 			std::sort(selected.begin(), selected.end(), [](auto& a, auto& b)
 			{
-				return a.get().GetOsIndex().value() < b.get().GetOsIndex().value();
+			  return a.get().GetOsIndex().value() < b.get().GetOsIndex().value();
 			});
 
 			const std::size_t maxShownElement = 8;
@@ -143,7 +154,38 @@ namespace Elpida::Application
 
 	void MainWindow::on_actionSave_results_as_triggered()
 	{
-		//QMessageBox::about(QApplication::activeWindow(), "About: Elpida", "LOL");
+		QFileDialog dialog(this);
+		dialog.setFileMode(QFileDialog::AnyFile);
+		dialog.setAcceptMode(QFileDialog::AcceptSave);
+
+		auto filter = QString::fromStdString("Json document (*.json)");
+		dialog.setNameFilter(filter);
+		dialog.selectNameFilter(filter);
+
+		auto targetFilename = _cpuInfoModel.GetModelName() + "-" + std::to_string(time(nullptr)) + ".json";
+		dialog.selectFile(QString::fromStdString(targetFilename));
+		dialog.setNameFilter(tr("Json document (*.json)"));
+
+		if (dialog.exec())
+		{
+			QStringList fileNames = dialog.selectedFiles();
+			const auto& filepath = std::filesystem::path(fileNames.at(0).toStdString());
+
+			if (_ui->tbBenchmark->isTabVisible(2))
+			{
+				_mainController.SaveCustomResults(filepath);
+
+			}
+			else
+			{
+				_mainController.SaveFullResults(filepath);
+			}
+
+			auto cannonical = "file:///" + QString(canonical(filepath).c_str());
+			QMessageBox::information(this, "Save successful",
+					"Save was successful. Results were saved in: <a href='" + cannonical + "'>" + cannonical + "</a>");
+
+		}
 	}
 
 	void MainWindow::on_actionAbout_triggered()

@@ -24,20 +24,6 @@ namespace Elpida
 	{
 		std::fstream cpuInfo("/proc/cpuinfo", std::ios::in);
 
-		Vector<String> features;
-		auto featuresDelegate = [&features](const String& value)
-		{
-			std::stringstream inStream(value);
-			std::string token;
-			while (getline(inStream, token, ' '))
-			{
-				if (!token.empty())
-				{
-					features.emplace_back(token);
-				}
-			}
-		};
-
 		Size cpuImplementer = 0;
 		auto vendorDelegate = [&cpuImplementer](const String& value)
 		{
@@ -52,12 +38,6 @@ namespace Elpida
 
 		Map<String, std::function<void(const String&)>> fields
 			{
-				{ "Features",         featuresDelegate },
-//						{ "type",             featuresDelegate },
-//						{ "flags",            featuresDelegate },
-//						{ "features",         featuresDelegate },
-//						{ "ASEs implemented", featuresDelegate },
-
 				{ "CPU implementer",  vendorDelegate },
 //						{ "vendor",           vendorDelegate },
 //						{ "vendor_id",        vendorDelegate },
@@ -316,9 +296,7 @@ namespace Elpida
 		return {
 			architecture,
 			vendorName,
-			modelName,
-			std::move(features),
-			Map<String, String>()
+			modelName
 		};
 	}
 }

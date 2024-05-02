@@ -67,12 +67,9 @@ namespace Elpida::Application
 				_benchmarkResultsModel.Add(_benchmarkExecutionService.Execute(
 						*selectedBenchmark,
 						affinity,
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetNowOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetLoopOverhead()).count(),
-						std::chrono::duration_cast<NanoSeconds>(
-								_overheadsModel.GetVirtualCallOverhead()).count(),
+						_overheadsModel.GetNowOverhead().count(),
+						_overheadsModel.GetLoopOverhead().count(),
+						_overheadsModel.GetVirtualCallOverhead().count(),
 						_benchmarkRunConfigurationModel.GetDependentQueueRatio(),
 						_benchmarkRunConfigurationModel.GetIndependentQueueRatio(),
 						_benchmarkRunConfigurationModel.IsNumaAware(),
