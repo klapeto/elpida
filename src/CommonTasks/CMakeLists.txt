@@ -12,3 +12,5 @@ set(ELPIDA_COMMON_TASKS_SOURCES
 add_library(elpida-common-tasks SHARED ${ELPIDA_COMMON_TASKS_SOURCES})
 
 target_link_libraries(elpida-common-tasks PRIVATE elpida-core elpida-xml)
+
+install(TARGETS elpida-common-tasks)

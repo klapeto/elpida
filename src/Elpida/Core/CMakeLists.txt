@@ -65,3 +65,5 @@ if (UNIX)
 endif()
 
 target_link_libraries(elpida-core overheads-calculator)
+
+install(TARGETS elpida-core)

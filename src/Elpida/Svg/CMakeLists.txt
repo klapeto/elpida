@@ -58,3 +58,6 @@ add_library(elpida-svg SHARED
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-core elpida-xml)
+
+
+install(TARGETS elpida-svg)

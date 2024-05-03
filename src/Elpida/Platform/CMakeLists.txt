@@ -52,3 +52,5 @@ endif()
 if (UNIX)
     target_link_libraries(elpida-platform numa)
 endif ()
+
+install(TARGETS elpida-platform)

@@ -110,5 +110,6 @@ set_property(TARGET elpida-application PROPERTY CXX_STANDARD 20)
 
 target_include_directories(elpida-application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+install(TARGETS elpida-application)
 install(FILES Assets/Elpida-Background.svg DESTINATION bin/assets)
 
