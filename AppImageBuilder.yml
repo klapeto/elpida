@@ -8,9 +8,6 @@ AppDir:
     version: latest
     exec: bin/elpida-qt
     exec_args: $APPDIR/bin/Benchmarks $@
-  runtime:
-    env:
-      APPDIR_LIBRARY_PATH: $APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/lib/x86_64-linux-gnu:$APPDIR/lib:$APPDIR/usr/local/lib
   apt:
     arch:
       - amd64
@@ -34,9 +31,9 @@ AppDir:
       - sourceline: deb http://archive.neon.kde.org/user bionic main
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xE6D4736255751E5D'
     include:
-      - libstdc++6
       - libnuma1
       - libqt5core5a
+      - libqt5widgets5
       - libqt5svg5
       - libqt5x11extras5
       - libssl1.1
