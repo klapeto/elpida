@@ -31,6 +31,7 @@ AppDir:
       - sourceline: deb http://archive.neon.kde.org/user bionic main
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xE6D4736255751E5D'
     include:
+      - libstdc++6
       - libnuma1
       - libqt5core5a
       - libqt5svg5
