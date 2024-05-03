@@ -181,9 +181,9 @@ namespace Elpida::Application
 				_mainController.SaveFullResults(filepath);
 			}
 
-			auto cannonical = "file:///" + QString(canonical(filepath).c_str());
+			auto uri = "file:///" + QString::fromStdString(canonical(filepath).string());
 			QMessageBox::information(this, "Save successful",
-					"Save was successful. Results were saved in: <a href='" + cannonical + "'>" + cannonical + "</a>");
+					"Save was successful. Results were saved in: <a href='" + uri + "'>" + uri + "</a>");
 
 		}
 	}
