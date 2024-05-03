@@ -171,7 +171,7 @@ namespace Elpida::Application
 			QStringList fileNames = dialog.selectedFiles();
 			const auto& filepath = std::filesystem::path(fileNames.at(0).toStdString());
 
-			if (_ui->tbBenchmark->isTabVisible(2))
+			if (_ui->tbBenchmark->currentIndex() == 2)
 			{
 				_mainController.SaveCustomResults(filepath);
 
