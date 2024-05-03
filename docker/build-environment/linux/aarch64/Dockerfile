@@ -21,7 +21,9 @@ RUN wget https://github.com/NixOS/patchelf/releases/download/0.12/patchelf-0.12.
     tar -xvf patchelf-0.12.tar.bz2;  \
     cd patchelf-0.12.20200827.8d3a16e; \
     ./configure && make && make install; \
-    rm -rf patchelf-*
+    rm -rf patchelf-* \
+
+WORKDIR /
 
 # update GCC to 11. modified version of: https://gist.github.com/application2000/73fd6f4bf1be6600a2cf9f56315a2d91
 RUN apt-get update && \

@@ -27,7 +27,5 @@ workflow:
     - when: always  
 
 include:
-  - local: 'ci/docker-image-linux.yml'
-  - local: 'ci/linux.yml'
-  - local: 'ci/windows.yml'
-  # - local: 'ci/docker-image-windows.yml' # Do not run this because it takes a lot of time. Run and upload manually
+  - local: 'ci/linux/root.yml'
+  - local: 'ci/windows/root.yml'

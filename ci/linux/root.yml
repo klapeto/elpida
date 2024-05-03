@@ -1,0 +1,5 @@
+include:
+  - local: 'docker-image.yml'
+  - local: 'build.yml'
+  - local: 'package.yml'
+  - local: 'deploy.yml'

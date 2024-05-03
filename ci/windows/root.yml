@@ -1,0 +1,5 @@
+include:
+  #- local: 'docker-image.yml' # Do not run this because it takes a lot of time. Run and upload manually
+  - local: 'build.yml'
+  - local: 'package.yml'
+  - local: 'deploy.yml'
