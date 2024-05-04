@@ -1,24 +1,46 @@
-FROM appimagecrafters/appimage-builder
+FROM ubuntu:20.04
 LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 
-# update GCC to 11. modified version of: https://gist.github.com/application2000/73fd6f4bf1be6600a2cf9f56315a2d91
+# This part is copied and modified from https://github.com/AppImageCrafters/appimage-builder/blob/0b2f1910b2e99df2fdbb50e12b37d97246a6fa9b/Dockerfile
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
-    apt-get install build-essential software-properties-common -y && \
-    add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
-    apt-get update && \
-    apt-get install gcc-snapshot -y && \
-    apt-get update && \
-    apt-get install gcc-11 g++-11 -y && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 --slave /usr/bin/g++ g++ /usr/bin/g++-11 && \
-    update-alternatives --config gcc
+    apt-get -yq install \
+        breeze-icon-theme \
+        desktop-file-utils \
+        elfutils \
+        fakeroot \
+        file \
+        git \
+        gnupg2 \
+        gtk-update-icon-cache \
+        libgdk-pixbuf2.0-dev \
+        libglib2.0-bin \
+        librsvg2-dev \
+        libyaml-dev \
+        python3 \
+        python3-pip \
+        python3-setuptools \
+        strace \
+        wget \
+        squashfs-tools \
+        zsync && \
+    apt-get -yq autoclean
 
- # install some cmake build requirements
-RUN apt-get install git libssl-dev -y
+WORKDIR /opt
+RUN git clone https://github.com/AppImageCrafters/appimage-builder.git
 
-# install latest cmake
-RUN git clone https://gitlab.kitware.com/cmake/cmake.git && \
-    cd cmake && \
-    ./bootstrap --parallel=$(nproc) && make -j$(nproc) && make install
+WORKDIR /tmp
+RUN wget https://github.com/NixOS/patchelf/releases/download/0.12/patchelf-0.12.tar.bz2; \
+    tar -xvf patchelf-0.12.tar.bz2;  \
+    cd patchelf-0.12.20200827.8d3a16e; \
+    ./configure && make && make install; \
+    rm -rf patchelf-*
+
+RUN python3 -m pip install /opt/appimage-builder
+RUN rm -rf /opt/appimage-builder
+
+WORKDIR /
 
  # install some hwloc build requirements
 RUN apt-get install automake libtool pkg-config -y
@@ -27,15 +49,16 @@ RUN apt-get install automake libtool pkg-config -y
 RUN git clone -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git && \
     cd hwloc && \
     ./autogen.sh && ./configure && make -j$(nproc) && make install && \
+    rm -rf /hwloc && \
     ldconfig
 
 # update qt
-RUN echo 'deb http://archive.neon.kde.org/user/ bionic main' > /etc/apt/sources.list.d/neon.list && \
+RUN echo 'deb http://archive.neon.kde.org/user/ focal main' > /etc/apt/sources.list.d/neon.list && \
     wget -qO - https://archive.neon.kde.org/public.key | apt-key add - && \
     apt-get update && \
-    apt-get install qt5-default libqt5svg5 libqt5x11extras5 qt5-image-formats-plugins -y
+    apt-get install qtbase5-dev libqt5svg5 libqt5x11extras5 qt5-image-formats-plugins -y
 
 # install elpida build requirements
-RUN apt-get install libnuma-dev -y
+RUN apt-get install libnuma-dev cmake libssl-dev -y
 
 CMD ["/bin/bash"]
