@@ -42,6 +42,7 @@ namespace Elpida::Application
 		std::weak_ptr<ThreadQueue> _threadQueue;
 		int _currentBenchmarkIndex;
 		int _maxBenchmarkIndex;
+		std::size_t _resultsShownCount;
 		bool _cancel;
 
 		void UpdateProgress();

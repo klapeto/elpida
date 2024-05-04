@@ -24,6 +24,7 @@
 #include <QIcon>
 #include <QSplashScreen>
 #include <QScreen>
+#include <QMessageBox>
 
 #include <iostream>
 #include <cctype>
@@ -174,6 +175,41 @@ static void UpdateBenchmarkSettings(std::vector<BenchmarkGroupModel>& groups, Se
 	}
 }
 
+
+static ModelBuilderJson GetBasicInfo(const std::string& benchmarksPath){
+
+	std::string data;
+	std::string error;
+	std::atomic<bool> done = false;
+	auto th = std::thread([&]
+	{
+		try
+		{
+			data = GetInfoData(benchmarksPath);
+		}
+		catch (const std::exception& ex)
+		{
+			error = ex.what();
+		}
+		done.store(true, std::memory_order_release);
+	});
+
+	while (!done.load(std::memory_order_acquire))
+	{
+		QApplication::processEvents();
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	}
+	th.join();
+
+	if (!error.empty())
+	{
+		QMessageBox::critical(QApplication::activeWindow(), "Critical error", QString::fromStdString(error));
+		std::abort();
+	}
+
+	return ModelBuilderJson(data);
+}
+
 int main(int argc, char* argv[])
 {
 	setupPlatformSpecifics();
@@ -200,7 +236,7 @@ int main(int argc, char* argv[])
 		splash.showMessage("Getting system info (it should take about 5 seconds)...");
 		QApplication::processEvents();
 
-		ModelBuilderJson builderJson(GetInfoData(argc > 1 ? argv[1] : (OsUtilities::GetExecutableDirectory() / "Benchmarks").string()));
+		ModelBuilderJson builderJson = GetBasicInfo(argc > 1 ? argv[1] : (OsUtilities::GetExecutableDirectory() / "Benchmarks").string());
 
 		QtMessageService messageService;
 

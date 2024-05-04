@@ -183,7 +183,7 @@ namespace Elpida::Application
 
 			auto uri = "file:///" + QString::fromStdString(canonical(filepath).string());
 			QMessageBox::information(this, "Save successful",
-					"Save was successful. Results were saved in: <a href='" + uri + "'>" + uri + "</a>");
+					"Save was successful. Results were saved in: <a href='" + uri + "'>" + QString::fromStdString(filepath.filename().string()) + "</a>");
 
 		}
 	}

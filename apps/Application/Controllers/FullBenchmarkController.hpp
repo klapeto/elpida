@@ -37,6 +37,7 @@ namespace Elpida::Application
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		MessageService& _messageService;
 		std::thread _runnerThread;
+		std::atomic<bool> _running;
 		std::atomic<bool> _cancelling;
 
 		const BenchmarkModel* _memoryLatency;

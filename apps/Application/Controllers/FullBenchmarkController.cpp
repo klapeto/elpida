@@ -17,7 +17,7 @@
 
 namespace Elpida::Application
 {
-	constexpr static double MinimumScale = 0.2;
+	constexpr static double MinimumScale = 0.5;
 	const double Divider = 1000000.0;
 
 	static std::string ToString(double d)
@@ -40,6 +40,7 @@ namespace Elpida::Application
 			_runConfigurationModel(runConfigurationModel),
 			_benchmarkExecutionService(benchmarkExecutionService),
 			_messageService(messageService),
+			_running(false),
 			_cancelling(false),
 			_memoryLatency(nullptr),
 			_memoryReadBandwidth(nullptr),
@@ -89,7 +90,14 @@ namespace Elpida::Application
 
 	void FullBenchmarkController::RunAsync()
 	{
-		if (_runnerThread.joinable()) return;
+		if (_running.load(std::memory_order_acquire)) return;
+
+		if (_runnerThread.joinable())
+		{
+			_runnerThread.join();
+		}
+
+		_running.store(true, std::memory_order_release);
 		_cancelling.store(false, std::memory_order_release);
 		_runnerThread = std::thread([this]
 		{
@@ -97,7 +105,7 @@ namespace Elpida::Application
 			for (std::size_t i = 0; i < _runConfigurationModel.GetIterationsToRun(); ++i)
 			{
 				std::vector<std::size_t> affinity;
-				FullBenchmarkResultModel::Score singleCoreScore = 0;
+				FullBenchmarkResultModel::Score singleCoreScore = 0.0;
 				FullBenchmarkResultModel::Score multiCoreScore = 0.0;
 				FullBenchmarkResultModel::Score memoryScore = 0.0;
 				std::vector<BenchmarkResultModel> benchmarkResults;
@@ -255,6 +263,7 @@ namespace Elpida::Application
 			}
 
 			_model.SetRunning(false);
+			_running.store(false, std::memory_order_release);
 		});
 	}
 
