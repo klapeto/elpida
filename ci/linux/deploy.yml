@@ -1,0 +1,31 @@
+.deploy:linux:
+  stage: deploy
+  only:
+    - master
+    - staging
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  script:
+    - cp "$PACKAGE_FILENAME.AppImage" "$PACKAGE_FILENAME_DEPLOY.AppImage"
+    - sha256sum "$PACKAGE_FILENAME.AppImage" > $PACKAGE_FILENAME.AppImage.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY.AppImage" > $PACKAGE_FILENAME_DEPLOY.AppImage.SHA256SUMS
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME_DEPLOY.AppImage
+      - $PACKAGE_FILENAME.AppImage
+      - $PACKAGE_FILENAME_DEPLOY.AppImage.SHA256SUMS
+      - $PACKAGE_FILENAME.AppImage.SHA256SUMS
+
+deploy:linux:amd64:
+  variables:
+    TARGET_ARCH: amd64
+  dependencies:
+    - package:linux:amd64
+  extends: .deploy:linux
+
+deploy:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+  dependencies:
+    - package:linux:aarch64
+  extends: .deploy:linux

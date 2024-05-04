@@ -1,0 +1,25 @@
+.docker-image:windows:
+  image: docker:latest
+  stage: build-containers
+  tags:
+    - $TARGET_ARCH
+  variables:
+    IMAGE_NAME: "$CI_REGISTRY_IMAGE/build-environment/windows-$TARGET_ARCH:latest"
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker build --pull -t $IMAGE_NAME docker/build-environment/windows/$TARGET_ARCH
+    - docker push $IMAGE_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - docker/build-environment/windows/$TARGET_ARCH/Dockerfile
+          - ci/windows/docker-image.yml
+
+docker-image:windows:amd64:
+  variables:
+    TARGET_ARCH: amd64
+  extends: .docker-image:windows

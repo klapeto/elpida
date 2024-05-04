@@ -1,0 +1,35 @@
+.package:linux:
+  image: $CI_REGISTRY_IMAGE/build-environment/linux-$TARGET_ARCH
+  stage: package
+  tags:
+    - $TARGET_ARCH
+  script:
+    - mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/"
+      "$INSTALL_DIR/usr/share/metainfo/"
+      "$INSTALL_DIR/usr/share/applications/"
+    - cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/usr/share/icons/default/apps/32/elpida.svg"
+    - cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
+    - cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
+    - cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
+    - appimage-builder --skip-tests
+    - mv "Elpida-latest-$TARGET_ARCH.AppImage" "$PACKAGE_FILENAME.AppImage"
+    - sha256sum "$PACKAGE_FILENAME.AppImage" > SHA256SUMS
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $PACKAGE_FILENAME.AppImage
+      - SHA256SUMS
+
+package:linux:amd64:
+  variables:
+    TARGET_ARCH: amd64
+  dependencies:
+    - build:linux:amd64
+  extends: .package:linux
+
+package:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+  dependencies:
+    - build:linux:aarch64
+  extends: .package:linux

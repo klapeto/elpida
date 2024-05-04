@@ -1,0 +1,31 @@
+.docker-image:linux:
+  image: docker:latest
+  stage: build-containers
+  tags:
+    - $TARGET_ARCH
+  variables:
+    IMAGE_NAME: "$CI_REGISTRY_IMAGE/build-environment/linux-$TARGET_ARCH:latest"
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker build --pull -t $IMAGE_NAME docker/build-environment/linux/$TARGET_ARCH
+    - docker push $IMAGE_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - docker/build-environment/linux/$TARGET_ARCH/Dockerfile
+          - ci/linux/docker-image.yml
+
+
+docker-image:linux:amd64:
+  variables:
+    TARGET_ARCH: amd64
+  extends: .docker-image:linux
+
+docker-image:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+  extends: .docker-image:linux
