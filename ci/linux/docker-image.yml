@@ -12,10 +12,13 @@
   script:
     - docker build --pull -t $IMAGE_NAME docker/build-environment/linux/$TARGET_ARCH
     - docker push $IMAGE_NAME
-  only:
-    changes:
-      - docker/build-environment/linux/$TARGET_ARCH/Dockerfile
-      - ci/linux/docker-image.yml
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - docker/build-environment/linux/$TARGET_ARCH/Dockerfile
+          - ci/linux/docker-image.yml
+
 
 docker-image:linux:amd64:
   variables:
