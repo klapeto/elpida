@@ -10,7 +10,7 @@ AppDir:
     exec_args: $APPDIR/bin/Benchmarks $@
   apt:
     arch:
-      - '{{TARGET_ARCH_APPIMAGE_APT}}'
+      - amd64
     allow_unauthenticated: true
     sources:
       - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal main restricted
@@ -26,6 +26,7 @@ AppDir:
       - sourceline: deb http://security.ubuntu.com/ubuntu/ focal-security multiverse
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
       - sourceline: deb http://archive.neon.kde.org/user/ focal main
+        key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xE6D4736255751E5D'
     include:
       - libnuma1
       - libqt5core5a
@@ -73,6 +74,6 @@ AppDir:
       command: ./AppRun
       use_host_x: true
 AppImage:
-  arch: '{{TARGET_ARCH_APPIMAGE_RUNTIME}}'
+  arch: x86_64
   comp: xz
   update-information: guess
