@@ -49,52 +49,66 @@ namespace Elpida::Application
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
 			const FullBenchmarkModel& model,
 			FullBenchmarkController& controller,
-			QWidget* parent) :
+			QWidget* parent)
+			:
 			QWidget(parent),
 			_ui(new Ui::FullBenchmarkView), _model(model), _controller(controller), _currentBenchmarkIndex(0),
 			_maxBenchmarkIndex(0), _cancel(false)
 	{
 		_ui->setupUi(this);
-		auto configurationView = new BenchmarkRunConfigurationView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController);
+		auto configurationView = new BenchmarkRunConfigurationView(benchmarkRunConfigurationModel,
+				benchmarkRunConfigurationController);
 		configurationView->DisableAdvancedSettings();
-		dynamic_cast<QVBoxLayout*>(_ui->gbExecution->layout())->insertWidget(2,configurationView);
+		dynamic_cast<QVBoxLayout*>(_ui->gbExecution->layout())->insertWidget(2, configurationView);
 
 		SetDelta(_ui->lblTotalScoreDelta, 1, 1);
 		SetDelta(_ui->lblSingleScoreDelta, 1, 1);
 		SetDelta(_ui->lblMultiCoreScoreDelta, 1, 1);
 		SetDelta(_ui->lblMemoryScoreDelta, 1, 1);
 
+		_threadQueue = ThreadQueue::Current();
 		_runningChanged = _model.RunningChanged().Subscribe([this](auto running)
 		{
-			if (running)
+			auto thread = _threadQueue.lock();
+			if (!thread) return;
+			thread->Enqueue([this, running]()
 			{
-				_currentBenchmarkIndex = 0;
-				_maxBenchmarkIndex = _model.GetTotalBenchmarks();
-				_ui->pbProgress->setRange(0, _maxBenchmarkIndex);
-				_ui->bpStart->setText("Cancel");
-				_ui->lblStatus->setText("Running...");
-			}
-			else
-			{
-				_currentBenchmarkIndex = 0;
-				_maxBenchmarkIndex = 0;
-				_ui->bpStart->setText("Start");
-				_ui->lblStatus->setText("Ready");
-				if (!_cancel)
+				if (running)
 				{
-					UpdateScore();
+					_currentBenchmarkIndex = 0;
+					_maxBenchmarkIndex = _model.GetTotalBenchmarks();
+					_ui->pbProgress->setRange(0, _maxBenchmarkIndex);
+					_ui->bpStart->setText("Cancel");
+					_ui->lblStatus->setText("Running...");
 				}
-			}
-			UpdateProgress();
-			_cancel = false;
-			_ui->lblCurrentBenchmarkValue->setText("N/A");
+				else
+				{
+					_currentBenchmarkIndex = 0;
+					_maxBenchmarkIndex = 0;
+					_ui->bpStart->setText("Start");
+					_ui->lblStatus->setText("Ready");
+					if (!_cancel)
+					{
+						UpdateScore();
+					}
+				}
+				UpdateProgress();
+				_cancel = false;
+				_ui->lblCurrentBenchmarkValue->setText("N/A");
+			});
+
 		});
 
 		_currentBenchmarkChanged = _model.CurrentRunningBenchmarkChanged().Subscribe([this](auto& benchmark)
 		{
-			_ui->lblCurrentBenchmarkValue->setText(QString::fromStdString(benchmark));
-			UpdateProgress();
-			_currentBenchmarkIndex++;
+			auto thread = _threadQueue.lock();
+			if (!thread) return;
+			thread->Enqueue([this, &benchmark]()
+			{
+				_ui->lblCurrentBenchmarkValue->setText(QString::fromStdString(benchmark));
+				UpdateProgress();
+				_currentBenchmarkIndex++;
+			});
 		});
 	}
 
@@ -141,13 +155,14 @@ namespace Elpida::Application
 
 		_ui->twBenchmarkResults->addTopLevelItem(item);
 
-		for (auto& benchmarkResult: currentResult.GetBenchmarkResults())
+		for (auto& benchmarkResult : currentResult.GetBenchmarkResults())
 		{
 			auto& benchmark = benchmarkResult.GetBenchmark();
 			auto root = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
 					QStringList({ QString::fromStdString(benchmark.GetName()),
-								  QString::fromStdString(Elpida::ValueUtilities::GetValueScaleStringSI(benchmarkResult.GetScore())
-														 + benchmark.GetScoreUnit()) }));
+								  QString::fromStdString(
+										  Elpida::ValueUtilities::GetValueScaleStringSI(benchmarkResult.GetScore())
+										  + benchmark.GetScoreUnit()) }));
 			auto& taskResults = benchmarkResult.GetTaskResults();
 			auto& tasks = benchmark.GetTasks();
 			for (std::size_t i = 0, j = 0; i < tasks.size(); ++i)

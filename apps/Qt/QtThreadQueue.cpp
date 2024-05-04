@@ -12,6 +12,7 @@ namespace Elpida::Application
 {
 	void QtThreadQueue::Enqueue(std::function<void()> func)
 	{
+		// TODO: Same thread optimization
 		std::unique_lock<std::mutex> lock(mutex);
 		_queue.push_back(std::move(func));
 		lock.unlock();

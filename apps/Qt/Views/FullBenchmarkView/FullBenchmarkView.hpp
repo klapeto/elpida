@@ -2,7 +2,9 @@
 #define BENCHMARKVIEW_HPP
 
 #include <QWidget>
+#include <memory>
 #include "EventSubscription.hpp"
+#include "Core/ThreadQueue.hpp"
 
 namespace Elpida::Application
 {
@@ -37,6 +39,7 @@ namespace Elpida::Application
 
 		EventSubscription<bool> _runningChanged;
 		EventSubscription<const std::string&> _currentBenchmarkChanged;
+		std::weak_ptr<ThreadQueue> _threadQueue;
 		int _currentBenchmarkIndex;
 		int _maxBenchmarkIndex;
 		bool _cancel;

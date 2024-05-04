@@ -103,10 +103,10 @@ if (UNIX OR MSYS OR MINGW)
         target_link_libraries(elpida-application stdc++fs)
     endif()
 
-    target_compile_options(elpida-application PUBLIC -fcoroutines)
+    if (CXX_STANDARD GREATER_EQUAL 20)
+        target_compile_options(elpida-application PUBLIC -fcoroutines)
+    endif ()
 endif()
-
-set_property(TARGET elpida-application PROPERTY CXX_STANDARD 20)
 
 target_include_directories(elpida-application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

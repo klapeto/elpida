@@ -7,7 +7,9 @@
 
 #include "Models/Full/FullBenchmarkModel.hpp"
 #include "Controller.hpp"
-#include "Core/Promise.hpp"
+
+#include <thread>
+#include <atomic>
 
 namespace Elpida::Application
 {
@@ -19,7 +21,7 @@ namespace Elpida::Application
 	class FullBenchmarkController : public Controller<FullBenchmarkModel>
 	{
 	public:
-		Promise<> RunAsync();
+		void RunAsync();
 		void StopRunning();
 		FullBenchmarkController(FullBenchmarkModel& model,
 				const TimingModel& overheadsModel,
@@ -28,18 +30,19 @@ namespace Elpida::Application
 				MessageService& messageService,
 				const std::vector<BenchmarkGroupModel>& benchmarkGroups);
 
-		~FullBenchmarkController() override = default;
+		~FullBenchmarkController() override;
 	private:
 		const TimingModel& _overheadsModel;
 		const BenchmarkRunConfigurationModel& _runConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		MessageService& _messageService;
+		std::thread _runnerThread;
+		std::atomic<bool> _cancelling;
 
 		const BenchmarkModel* _memoryLatency;
 		const BenchmarkModel* _memoryReadBandwidth;
 		const BenchmarkModel* _svgRasterizationSingle;
 		const BenchmarkModel* _svgRasterizationMulti;
-		bool _cancelling;
 	};
 
 } // Elpida

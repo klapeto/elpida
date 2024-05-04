@@ -5,6 +5,8 @@
 #ifndef ELPIDA_PROMISE_HPP
 #define ELPIDA_PROMISE_HPP
 
+#if __cplusplus > 202002L
+
 #include <future>
 #include <functional>
 #include <coroutine>
@@ -252,3 +254,5 @@ namespace Elpida::Application
 } // Application
 
 #endif //ELPIDA_PROMISE_HPP
+
+#endif //  __cplusplus > 202002L

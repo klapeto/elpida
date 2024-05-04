@@ -180,6 +180,8 @@ int main(int argc, char* argv[])
 
 	try
 	{
+		ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
+
 		QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 		QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -258,7 +260,6 @@ int main(int argc, char* argv[])
 
 		splash.finish(&mainWindow);
 
-		ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
 		ThreadQueue::Current().lock()->Run();
 
 		SaveSelectedNodes(settingsService, builderJson.GetTopologyInfoModel());
