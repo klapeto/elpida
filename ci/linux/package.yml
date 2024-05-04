@@ -12,7 +12,7 @@
     - cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
     - cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
     - appimage-builder --skip-tests
-    - mv "Elpida-latest-$TARGET_ARCH.AppImage" "$PACKAGE_FILENAME.AppImage"
+    - mv "Elpida-$ELPIDA_VERSION_STRING-$TARGET_ARCH_APPIMAGE_RUNTIME.AppImage" "$PACKAGE_FILENAME.AppImage"
     - sha256sum "$PACKAGE_FILENAME.AppImage" > SHA256SUMS
   artifacts:
     expire_in: 2h30min
@@ -23,6 +23,8 @@
 package:linux:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_ARCH_APPIMAGE_RUNTIME: x86_64
+    TARGET_ARCH_APPIMAGE_APT: amd64
   dependencies:
     - build:linux:amd64
   extends: .package:linux
@@ -30,6 +32,8 @@ package:linux:amd64:
 package:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
+    TARGET_ARCH_APPIMAGE_RUNTIME: aarch64
+    TARGET_ARCH_APPIMAGE_APT: arm64
   dependencies:
     - build:linux:aarch64
   extends: .package:linux

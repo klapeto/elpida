@@ -5,12 +5,12 @@ AppDir:
     id: dev.elpida.qt
     name: Elpida
     icon: elpida
-    version: latest
+    version: '{{ELPIDA_VERSION_STRING}}'
     exec: bin/elpida-qt
     exec_args: $APPDIR/bin/Benchmarks $@
   apt:
     arch:
-      - amd64
+      - '{{TARGET_ARCH_APPIMAGE_APT}}'
     allow_unauthenticated: true
     sources:
       - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal main restricted
@@ -73,6 +73,5 @@ AppDir:
       command: ./AppRun
       use_host_x: true
 AppImage:
-  arch: x86_64
-  comp: xz
+  arch: '{{TARGET_ARCH_APPIMAGE_RUNTIME}}'
   update-information: guess
