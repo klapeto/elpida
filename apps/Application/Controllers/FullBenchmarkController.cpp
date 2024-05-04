@@ -17,6 +17,9 @@
 
 namespace Elpida::Application
 {
+	constexpr static double MinimumScale = 0.2;
+	const double Divider = 1000000.0;
+
 	static std::string ToString(double d)
 	{
 		std::ostringstream doubleToStringAccumulator;
@@ -24,8 +27,6 @@ namespace Elpida::Application
 		doubleToStringAccumulator << d;
 		return doubleToStringAccumulator.str();
 	}
-
-	const double Divider = 1000000.0;
 
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TimingModel& overheadsModel,
@@ -105,7 +106,7 @@ namespace Elpida::Application
 
 				auto thisPath = OsUtilities::GetExecutableDirectory();
 
-				auto targetScale = 0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
+				auto targetScale = std::max(MinimumScale, 0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num));
 				_svgRasterizationSingle->GetConfigurations()[0].SetValue(
 						(thisPath / "assets/Elpida-Background.svg").string());
 				_svgRasterizationSingle->GetConfigurations()[1].SetValue(ToString(targetScale));
@@ -148,6 +149,7 @@ namespace Elpida::Application
 									 std::giga::num;
 
 				targetScale *= 0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
+				targetScale = std::max(MinimumScale, targetScale);
 				_svgRasterizationMulti->GetConfigurations()[0].SetValue(
 						(thisPath / "assets/Elpida-Background.svg").string());
 				_svgRasterizationMulti->GetConfigurations()[1].SetValue(ToString(targetScale));
