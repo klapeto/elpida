@@ -12,7 +12,6 @@
     - cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
     - cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
     - appimage-builder --skip-tests --recipe AppImageBuilder.$TARGET_ARCH.yml
-#    - mv "Elpida-$ELPIDA_VERSION_STRING-$TARGET_ARCH_APPIMAGE_RUNTIME.AppImage" "$PACKAGE_FILENAME.AppImage"
     - sha256sum "$PACKAGE_FILENAME.AppImage" > SHA256SUMS
   artifacts:
     expire_in: 2h30min
