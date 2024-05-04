@@ -1,5 +1,5 @@
 include:
-  #- local: '/ci/windows/docker-image.yml' # Do not run this because it takes a lot of time. Run and upload manually
+  - local: '/ci/windows/docker-image.yml' # Do not run this because it takes a lot of time. Run and upload manually
   - local: '/ci/windows/build.yml'
   - local: '/ci/windows/package.yml'
   - local: '/ci/windows/deploy.yml'

@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:20.04
 LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -45,7 +45,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     xz-utils && \
     git clone -b elpida_updates https://github.com/klapeto/mxe.git && \
     cd mxe && \
-    make -j 32 MXE_TARGETS='x86_64-w64-mingw32.shared' MXE_PLUGIN_DIRS=plugins/gcc12 cmake hwloc qtbase qtsvg gcc openssl
+    make -j 32 MXE_TARGETS='x86_64-w64-mingw32.shared' MXE_PLUGIN_DIRS=plugins/gcc9 cmake hwloc qtbase qtsvg gcc openssl
 
 ENV PATH=/mxe/usr/bin:$PATH
 
