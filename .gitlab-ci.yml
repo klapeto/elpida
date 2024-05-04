@@ -27,5 +27,5 @@ workflow:
     - when: always  
 
 include:
-  - local: 'ci/linux/root.yml'
-  - local: 'ci/windows/root.yml'
+  - local: '/ci/linux/root.yml'
+  - local: '/ci/windows/root.yml'
