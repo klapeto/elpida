@@ -11,7 +11,6 @@
 
 #include <cmath>
 #include <cstdint>
-#include <iostream>
 #include <limits>
 
 namespace Elpida

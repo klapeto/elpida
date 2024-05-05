@@ -19,8 +19,8 @@
 
 namespace Elpida::Application
 {
-	constexpr static double MinimumScale = 0.5;
 	const double Divider = 1000000.0;
+	const std::size_t RasterizationSamplesBase = 1024;
 
 	static std::string ToString(double d)
 	{
@@ -120,11 +120,11 @@ namespace Elpida::Application
 
 				auto thisPath = OsUtilities::GetExecutableDirectory();
 
-				auto targetScale = std::max(MinimumScale, 0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num));
+				auto targetSamples = std::max((std::size_t)1, (std::size_t)(RasterizationSamplesBase * ((double)_overheadsModel.GetIterationsPerSecond() / std::giga::num)));
 				_svgRasterizationSingle->GetConfigurations()[0].SetValue(
 						(thisPath / "assets/Elpida-Background.svg").string());
-				_svgRasterizationSingle->GetConfigurations()[1].SetValue(ToString(targetScale));
-				_svgRasterizationSingle->GetConfigurations()[2].SetValue("16");
+				_svgRasterizationSingle->GetConfigurations()[1].SetValue("0.05");
+				_svgRasterizationSingle->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
 
 				try
 				{
@@ -159,14 +159,10 @@ namespace Elpida::Application
 
 				_model.SetCurrentRunningBenchmark(_svgRasterizationMulti->GetName());
 
-				auto targetSamples = (_overheadsModel.GetIterationsPerSecond() * std::thread::hardware_concurrency()) /
-									 std::giga::num;
-
-				targetScale *= 0.2 * (_overheadsModel.GetIterationsPerSecond() / std::giga::num);
-				targetScale = std::max(MinimumScale, targetScale);
+				targetSamples *= std::min<double>(std::thread::hardware_concurrency(), std::max<double>(4.0, std::thread::hardware_concurrency() / 4.0));
 				_svgRasterizationMulti->GetConfigurations()[0].SetValue(
 						(thisPath / "assets/Elpida-Background.svg").string());
-				_svgRasterizationMulti->GetConfigurations()[1].SetValue(ToString(targetScale));
+				_svgRasterizationMulti->GetConfigurations()[1].SetValue("0.05");
 				_svgRasterizationMulti->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
 
 				try
