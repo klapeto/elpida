@@ -21,31 +21,27 @@ namespace Elpida::Application
 	class BenchmarkRunConfigurationModel;
 	class BenchmarkRunConfigurationController;
 	class CustomBenchmarkModel;
-	class CustomBenchmarkResultsModel;
 	class CustomBenchmarkController;
 	class FullBenchmarkModel;
 	class FullBenchmarkController;
 	class ConfigurationViewPool;
-	class MainController;
 
 	class MainWindow : public QMainWindow
 	{
 	 Q_OBJECT
 	 public:
 		explicit MainWindow(
-				MainController& mainController,
 			const OsInfoModel& osInfoModel,
 			const MemoryInfoModel& memoryInfoModel,
 			const CpuInfoModel& cpuInfoModel,
 			const TimingModel& timingModel,
-			const CustomBenchmarkResultsModel& customBenchmarkResultsModel,
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			const FullBenchmarkModel& fullBenchmarkModel,
+			const CustomBenchmarkModel& customBenchmarksModel,
 			TopologyModel& topologyModel,
-			CustomBenchmarkModel& customBenchmarksModel,
+			FullBenchmarkController& fullBenchmarkController,
 			CustomBenchmarkController& customBenchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
-			FullBenchmarkController& fullBenchmarkController,
 			ConfigurationViewPool& configurationViewPool,
 			QWidget* parent = nullptr);
 
@@ -54,8 +50,9 @@ namespace Elpida::Application
 		EventSubscription<> _topologyModelChanged;
 		TopologyModel& _topologyModel;
 		QLabel* _selectedNodesLabel;
-		MainController& _mainController;
 		const CpuInfoModel& _cpuInfoModel;
+		CustomBenchmarkController& _customBenchmarkController;
+		FullBenchmarkController& _fullBenchmarkController;
 		Ui::MainWindow* _ui;
 
 		QString _nonSelected = "<b>No selected. All Cpus will be used.</b>";
@@ -65,6 +62,7 @@ namespace Elpida::Application
 	 private slots:
 		void on_actionExit_triggered();
 		void on_actionSave_results_as_triggered();
+		void on_actionClear_results_triggered();
 		void on_actionAbout_triggered();
 	};
 }

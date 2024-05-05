@@ -23,7 +23,7 @@ namespace Elpida::Application
 	{
 	public:
 		[[nodiscard]]
-		std::string Serialize(const std::vector<FullBenchmarkResultModel>& fullBenchmarkResultModels) const;
+		std::string Serialize(const ListModel<FullBenchmarkResultModel>& fullBenchmarkResultModels) const;
 
 		[[nodiscard]]
 		std::string Serialize(const ListModel<BenchmarkResultModel>& benchmarkResultModels) const;

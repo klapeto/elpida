@@ -38,7 +38,6 @@
 
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/Custom/CustomBenchmarkModel.hpp"
-#include "Models/Custom/CustomBenchmarkResultsModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 #include "Models/Full/FullBenchmarkModel.hpp"
 
@@ -46,7 +45,6 @@
 #include "Controllers/CustomBenchmarkController.hpp"
 #include "Controllers/BenchmarkRunConfigurationController.hpp"
 #include "Controllers/FullBenchmarkController.hpp"
-#include "Controllers/MainController.hpp"
 #include "ModelBuilderJson.hpp"
 #include "ResultSerializer.hpp"
 
@@ -250,16 +248,16 @@ int main(int argc, char* argv[])
 
 		BenchmarkExecutionService executionService;
 
+		ResultSerializer resultSerializer(builderJson.GetCpuInfoModel(), builderJson.GetMemoryInfoModel(), builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(), builderJson.GetTimingModel());
+
 		BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
 		BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel,
 				settingsService);
 
-		CustomBenchmarkResultsModel customBenchmarkResultsModel;
 		CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
 		CustomBenchmarkController
-				benchmarksController(customBenchmarkModel, builderJson.GetTopologyInfoModel(), builderJson.GetTimingModel(),
-				customBenchmarkResultsModel,
-				benchmarkRunConfigurationModel, executionService);
+				customBenchmarkController(customBenchmarkModel, builderJson.GetTopologyInfoModel(), builderJson.GetTimingModel(),
+				benchmarkRunConfigurationModel, executionService, resultSerializer);
 
 		ConfigurationViewPool configurationViewPool(settingsService);
 
@@ -267,28 +265,25 @@ int main(int argc, char* argv[])
 		FullBenchmarkController fullBenchmarkController(fullBenchmarkModel,
 				builderJson.GetTimingModel(),
 				benchmarkRunConfigurationModel,
-				executionService, messageService,
+				executionService,
+				resultSerializer,
+				messageService,
 				benchmarkGroups);
 
 
-		ResultSerializer resultSerializer(builderJson.GetCpuInfoModel(), builderJson.GetMemoryInfoModel(), builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(), builderJson.GetTimingModel());
-
-		MainController mainController(fullBenchmarkModel, customBenchmarkResultsModel, resultSerializer);
 
 		MainWindow mainWindow(
-				mainController,
 				builderJson.GetOsInfoModel(),
 				builderJson.GetMemoryInfoModel(),
 				builderJson.GetCpuInfoModel(),
 				builderJson.GetTimingModel(),
-				customBenchmarkResultsModel,
 				benchmarkRunConfigurationModel,
 				fullBenchmarkModel,
-				builderJson.GetTopologyInfoModel(),
 				customBenchmarkModel,
-				benchmarksController,
-				benchmarkRunConfigurationController,
+				builderJson.GetTopologyInfoModel(),
 				fullBenchmarkController,
+				customBenchmarkController,
+				benchmarkRunConfigurationController,
 				configurationViewPool);
 
 		mainWindow.resize(QSize(screenSize.width() / 2, screenSize.height() / 2));

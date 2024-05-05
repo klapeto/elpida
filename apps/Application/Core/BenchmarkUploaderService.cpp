@@ -9,9 +9,4 @@ namespace Elpida::Application
 	BenchmarkUploaderService::BenchmarkUploaderService()
 	{
 	}
-
-	void BenchmarkUploaderService::UploadResult(const BenchmarkResultModel& resultModel)
-	{
-
-	}
 } // Elpida

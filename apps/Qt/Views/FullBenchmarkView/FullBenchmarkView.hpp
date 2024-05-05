@@ -3,7 +3,10 @@
 
 #include <QWidget>
 #include <memory>
+#include <optional>
 #include "EventSubscription.hpp"
+#include "Models/Abstractions/CollectionItem.hpp"
+#include "Models/Full/FullBenchmarkResultModel.hpp"
 #include "Core/ThreadQueue.hpp"
 
 namespace Elpida::Application
@@ -14,6 +17,7 @@ namespace Elpida::Application
 	}
 
 	class FullBenchmarkModel;
+	class FullBenchmarkResultModel;
 	class FullBenchmarkController;
 	class BenchmarkRunConfigurationModel;
 	class BenchmarkRunConfigurationController;
@@ -33,20 +37,31 @@ namespace Elpida::Application
 		~FullBenchmarkView() override;
 
 	private:
+		struct PreviousScores {
+			FullBenchmarkResultModel::Score _totalScore;
+			FullBenchmarkResultModel::Score _singleCoreScore;
+			FullBenchmarkResultModel::Score _multiCoreScore;
+			FullBenchmarkResultModel::Score _memoryScore;
+		};
 		Ui::FullBenchmarkView* _ui;
 		const FullBenchmarkModel& _model;
 		FullBenchmarkController& _controller;
 
 		EventSubscription<bool> _runningChanged;
+		EventSubscription<const CollectionItem<FullBenchmarkResultModel>&> _itemAdded;
 		EventSubscription<const std::string&> _currentBenchmarkChanged;
+		EventSubscription<> _resultsCleared;
+		std::optional<PreviousScores> _previousScores;
 		std::weak_ptr<ThreadQueue> _threadQueue;
 		int _currentBenchmarkIndex;
 		int _maxBenchmarkIndex;
-		std::size_t _resultsShownCount;
 		bool _cancel;
 
+		QString _na = "N/A";
+
 		void UpdateProgress();
-		void UpdateScore();
+		void OnResultAdded(const FullBenchmarkResultModel& result);
+		void OnResultsCleared();
 
 	private slots:
 		void on_bpStart_clicked(bool checked);

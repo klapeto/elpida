@@ -6,18 +6,18 @@
 #define ELPIDA_CUSTOMBENCHMARKSCONTROLLER_HPP_
 
 #include "Controller.hpp"
-#include "Core/Promise.hpp"
+#include "Models/Custom/CustomBenchmarkModel.hpp"
+#include <filesystem>
 
 namespace Elpida::Application
 {
-	class CustomBenchmarkModel;
 	class BenchmarkModel;
 	class TopologyModel;
 	class MessageService;
 	class BenchmarkExecutionService;
 	class BenchmarkRunConfigurationModel;
 	class TimingModel;
-	class CustomBenchmarkResultsModel;
+	class ResultSerializer;
 
 	class CustomBenchmarkController : public Controller<CustomBenchmarkModel>
 	{
@@ -27,20 +27,22 @@ namespace Elpida::Application
 
 		void Run();
 		void StopRunning();
+		void ClearResults();
+		void SaveResults(const std::filesystem::path& filePath);
 
 		explicit CustomBenchmarkController(CustomBenchmarkModel& model,
 				TopologyModel& topologyModel,
 				TimingModel& overheadsModel,
-				CustomBenchmarkResultsModel& benchmarkResultsModel,
 				BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
-				BenchmarkExecutionService& benchmarkExecutionService);
+				BenchmarkExecutionService& benchmarkExecutionService,
+				const ResultSerializer& resultSerializer);
 		~CustomBenchmarkController() override = default;
 	 private:
 		TopologyModel& _topologyModel;
 		TimingModel& _overheadsModel;
-		CustomBenchmarkResultsModel& _benchmarkResultsModel;
 		BenchmarkRunConfigurationModel& _benchmarkRunConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
+		const ResultSerializer& _resultSerializer;
 		bool _cancelling;
 	};
 

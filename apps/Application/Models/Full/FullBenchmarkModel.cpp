@@ -62,16 +62,5 @@ namespace Elpida::Application
 	{
 		return _currentRunningBenchmarkChanged;
 	}
-
-	void FullBenchmarkModel::AddResult(FullBenchmarkResultModel&& result)
-	{
-		_results.push_back(std::move(result));
-		OnDataChanged();
-	}
-
-	const std::vector<FullBenchmarkResultModel>& FullBenchmarkModel::GetResults() const
-	{
-		return _results;
-	}
 } // Elpida
 // Application

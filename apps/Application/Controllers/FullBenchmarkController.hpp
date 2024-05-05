@@ -10,11 +10,13 @@
 
 #include <thread>
 #include <atomic>
+#include <filesystem>
 
 namespace Elpida::Application
 {
 	class BenchmarkExecutionService;
 	class TimingModel;
+	class ResultSerializer;
 	class MessageService;
 	class BenchmarkRunConfigurationModel;
 
@@ -23,10 +25,13 @@ namespace Elpida::Application
 	public:
 		void RunAsync();
 		void StopRunning();
+		void ClearResults();
+		void SaveResults(const std::filesystem::path& filePath);
 		FullBenchmarkController(FullBenchmarkModel& model,
 				const TimingModel& overheadsModel,
 				const BenchmarkRunConfigurationModel& runConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService,
+				const ResultSerializer& resultSerializer,
 				MessageService& messageService,
 				const std::vector<BenchmarkGroupModel>& benchmarkGroups);
 
@@ -35,6 +40,7 @@ namespace Elpida::Application
 		const TimingModel& _overheadsModel;
 		const BenchmarkRunConfigurationModel& _runConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
+		const ResultSerializer& _resultSerializer;
 		MessageService& _messageService;
 		std::thread _runnerThread;
 		std::atomic<bool> _running;

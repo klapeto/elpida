@@ -10,8 +10,10 @@
 #include "Core/BenchmarkExecutionService.hpp"
 #include "Core/MessageService.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
+#include "ResultSerializer.hpp"
 
 #include <sstream>
+#include <fstream>
 #include <locale>
 #include <string>
 
@@ -32,6 +34,7 @@ namespace Elpida::Application
 			const TimingModel& overheadsModel,
 			const BenchmarkRunConfigurationModel& runConfigurationModel,
 			BenchmarkExecutionService& benchmarkExecutionService,
+			const ResultSerializer& resultSerializer,
 			MessageService& messageService,
 			const std::vector<BenchmarkGroupModel>& benchmarkGroups)
 			:
@@ -39,6 +42,7 @@ namespace Elpida::Application
 			_overheadsModel(overheadsModel),
 			_runConfigurationModel(runConfigurationModel),
 			_benchmarkExecutionService(benchmarkExecutionService),
+			_resultSerializer(resultSerializer),
 			_messageService(messageService),
 			_running(false),
 			_cancelling(false),
@@ -99,6 +103,8 @@ namespace Elpida::Application
 
 		_running.store(true, std::memory_order_release);
 		_cancelling.store(false, std::memory_order_release);
+
+		_model.SetTotalBenchmarks(4 * _runConfigurationModel.GetIterationsToRun());
 		_runnerThread = std::thread([this]
 		{
 			_model.SetRunning(true);
@@ -259,7 +265,7 @@ namespace Elpida::Application
 				FullBenchmarkResultModel resultModel(std::move(benchmarkResults),
 						singleCoreScore + multiCoreScore + memoryScore, singleCoreScore, multiCoreScore, memoryScore);
 
-				_model.AddResult(std::move(resultModel));
+				_model.Add(std::move(resultModel));
 			}
 
 			_model.SetRunning(false);
@@ -280,6 +286,17 @@ namespace Elpida::Application
 			StopRunning();
 			_runnerThread.join();
 		}
+	}
+
+	void FullBenchmarkController::ClearResults()
+	{
+		_model.Clear();
+	}
+
+	void FullBenchmarkController::SaveResults(const std::filesystem::path& filePath)
+	{
+		std::fstream file(filePath.c_str(), std::ios::trunc | std::fstream::out);
+		file << _resultSerializer.Serialize(_model);
 	}
 } // Elpida
 // Application

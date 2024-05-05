@@ -19,7 +19,6 @@ namespace Elpida::Application
 	class BenchmarkRunConfigurationModel;
 	class BenchmarkModel;
 	class CustomBenchmarkModel;
-	class CustomBenchmarkResultsModel;
 	class CustomBenchmarkConfigurationView;
 	class CustomBenchmarkResultsView;
 	class CustomBenchmarkController;
@@ -32,7 +31,6 @@ namespace Elpida::Application
 	 public:
 		explicit CustomBenchmarkView(
 			const CustomBenchmarkModel& benchmarksModel,
-			const CustomBenchmarkResultsModel& benchmarkResultsModel,
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			CustomBenchmarkController& benchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,

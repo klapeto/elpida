@@ -5,12 +5,14 @@
 #include <QVBoxLayout>
 
 #include <sstream>
+#include <filesystem>
 #include <QMessageBox>
 #include <QFileDialog>
 
 #include "Elpida/Core/Config.hpp"
 
-#include "Controllers/MainController.hpp"
+#include "Controllers/FullBenchmarkController.hpp"
+#include "Controllers/CustomBenchmarkController.hpp"
 
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/Custom/CustomBenchmarkModel.hpp"
@@ -36,25 +38,24 @@ namespace Elpida::Application
 									  "More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
 
 	MainWindow::MainWindow(
-			MainController& mainController,
 			const OsInfoModel& osInfoModel,
 			const MemoryInfoModel& memoryInfoModel,
 			const CpuInfoModel& cpuInfoModel,
 			const TimingModel& timingModel,
-			const CustomBenchmarkResultsModel& customBenchmarkResultsModel,
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			const FullBenchmarkModel& fullBenchmarkModel,
+			const CustomBenchmarkModel& customBenchmarksModel,
 			TopologyModel& topologyModel,
-			CustomBenchmarkModel& customBenchmarksModel,
+			FullBenchmarkController& fullBenchmarkController,
 			CustomBenchmarkController& customBenchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
-			FullBenchmarkController& fullBenchmarkController,
 			ConfigurationViewPool& configurationViewPool,
 			QWidget* parent)
 			:QMainWindow(parent),
 			 _topologyModel(topologyModel),
-			 _mainController(mainController),
 			 _cpuInfoModel(cpuInfoModel),
+			 _customBenchmarkController(customBenchmarksController),
+			 _fullBenchmarkController(fullBenchmarkController),
 			 _ui(new Ui::MainWindow)
 	{
 		_ui->setupUi(this);
@@ -88,7 +89,7 @@ namespace Elpida::Application
 		});
 
 		_ui->tabCustomBenchmark->layout()->addWidget(
-				new CustomBenchmarkView(customBenchmarksModel, customBenchmarkResultsModel,
+				new CustomBenchmarkView(customBenchmarksModel,
 						benchmarkRunConfigurationModel, customBenchmarksController, benchmarkRunConfigurationController,
 						configurationViewPool));
 		OnTopologyModelChanged();
@@ -173,12 +174,12 @@ namespace Elpida::Application
 
 			if (_ui->tbBenchmark->currentIndex() == 2)
 			{
-				_mainController.SaveCustomResults(filepath);
+				_customBenchmarkController.SaveResults(filepath);
 
 			}
 			else
 			{
-				_mainController.SaveFullResults(filepath);
+				_fullBenchmarkController.SaveResults(filepath);
 			}
 
 			auto uri = "file:///" + QString::fromStdString(canonical(filepath).string());
@@ -191,6 +192,19 @@ namespace Elpida::Application
 	void MainWindow::on_actionAbout_triggered()
 	{
 		QMessageBox::about(QApplication::activeWindow(), "About: Elpida", aboutText);
+	}
+
+	void MainWindow::on_actionClear_results_triggered()
+	{
+		if (_ui->tbBenchmark->currentIndex() == 2)
+		{
+			_customBenchmarkController.ClearResults();
+
+		}
+		else
+		{
+			_fullBenchmarkController.ClearResults();
+		}
 	}
 
 }

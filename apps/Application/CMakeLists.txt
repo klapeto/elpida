@@ -34,7 +34,6 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/Benchmark/BenchmarkModel.cpp
         Models/Benchmark/BenchmarkConfigurationModel.cpp
         Models/Benchmark/BenchmarkResultModel.cpp
-        Models/Custom/CustomBenchmarkResultsModel.cpp
         Models/Benchmark/TaskResultModel.cpp
         Models/Benchmark/TaskModel.cpp
 
@@ -59,8 +58,6 @@ set(ELPIDA_APPLICATION_SOURCES
         ModelBuilderJson.hpp
         ResultSerializer.cpp
         ResultSerializer.hpp
-        Controllers/MainController.cpp
-        Controllers/MainController.hpp
 )
 
 

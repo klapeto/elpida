@@ -156,7 +156,7 @@ namespace Elpida::Application
 	}
 
 
-	std::string ResultSerializer::Serialize(const std::vector<FullBenchmarkResultModel>& fullBenchmarkResultModels) const
+	std::string ResultSerializer::Serialize(const ListModel<FullBenchmarkResultModel>& fullBenchmarkResultModels) const
 	{
 		json outJson;
 
@@ -167,9 +167,9 @@ namespace Elpida::Application
 		outJson["timing"] = SerializeTimingInfo(_timingModel);
 
 		json resultsJson = json::array();
-		for (auto& result : fullBenchmarkResultModels)
+		for (auto& result : fullBenchmarkResultModels.GetItems())
 		{
-			resultsJson.push_back(SerializeFullBenchmarkResult(result));
+			resultsJson.push_back(SerializeFullBenchmarkResult(result.GetValue()));
 		}
 
 		outJson["results"] = std::move(resultsJson);

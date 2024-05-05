@@ -18,7 +18,6 @@
 namespace Elpida::Application
 {
 	CustomBenchmarkView::CustomBenchmarkView(const CustomBenchmarkModel& benchmarksModel,
-			const CustomBenchmarkResultsModel& benchmarkResultsModel,
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			CustomBenchmarkController& benchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
@@ -37,7 +36,7 @@ namespace Elpida::Application
 
 		_ui->glMain->addWidget(_configurationView, 0, 1);
 
-		_resultsView = new CustomBenchmarkResultsView(benchmarkResultsModel);
+		_resultsView = new CustomBenchmarkResultsView(benchmarksModel);
 		_ui->glMain->addWidget(_resultsView, 1, 1);
 
 		_runConfigurationView = new BenchmarkRunConfigurationView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController);

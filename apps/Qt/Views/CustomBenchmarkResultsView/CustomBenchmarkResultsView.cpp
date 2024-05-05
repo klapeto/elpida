@@ -4,8 +4,7 @@
 #include "Elpida/Core/ScoreType.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
 #include "Models/Benchmark/TaskModel.hpp"
-#include "Models/Custom/CustomBenchmarkResultsModel.hpp"
-#include "Models/Benchmark/BenchmarkModel.hpp"
+#include "Models/Custom/CustomBenchmarkModel.hpp"
 
 #include <qtreewidget.h>
 #include <string>
@@ -30,7 +29,7 @@ namespace Elpida::Application
 		return Elpida::ValueUtilities::GetValueScaleStringSI((double)taskResult.GetInputSize()) + task.GetUnit();
 	}
 
-	CustomBenchmarkResultsView::CustomBenchmarkResultsView(const CustomBenchmarkResultsModel& model, QWidget* parent) :
+	CustomBenchmarkResultsView::CustomBenchmarkResultsView(const CustomBenchmarkModel& model, QWidget* parent) :
 		QWidget(parent),
 		_ui(new Ui::CustomBenchmarkResultsView), _model(model)
 	{
@@ -61,13 +60,18 @@ namespace Elpida::Application
 
 		_resultsCleared = model.Cleared().Subscribe([this]()
 		{
-		  _ui->twResults->clear();
+			OnResultsCleared();
 		});
 	}
 
 	CustomBenchmarkResultsView::~CustomBenchmarkResultsView()
 	{
 		delete _ui;
+	}
+
+	void CustomBenchmarkResultsView::OnResultsCleared()
+	{
+		_ui->twResults->clear();
 	}
 
 } // namespace Elpida

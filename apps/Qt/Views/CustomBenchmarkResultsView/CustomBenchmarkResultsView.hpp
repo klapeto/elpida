@@ -9,7 +9,7 @@
 namespace Elpida::Application
 {
 
-	class CustomBenchmarkResultsModel;
+	class CustomBenchmarkModel;
 
 	namespace Ui
 	{
@@ -21,14 +21,16 @@ namespace Elpida::Application
 	 Q_OBJECT
 
 	 public:
-		explicit CustomBenchmarkResultsView(const CustomBenchmarkResultsModel& model, QWidget* parent = nullptr);
+		explicit CustomBenchmarkResultsView(const CustomBenchmarkModel& model, QWidget* parent = nullptr);
 		~CustomBenchmarkResultsView() override;
 
 	 private:
 		Ui::CustomBenchmarkResultsView* _ui;
-		const CustomBenchmarkResultsModel& _model;
+		const CustomBenchmarkModel& _model;
 		EventSubscription<const CollectionItem<BenchmarkResultModel>&> _resultAdded;
 		EventSubscription<> _resultsCleared;
+
+		void OnResultsCleared();
 	};
 
 } // namespace Elpida

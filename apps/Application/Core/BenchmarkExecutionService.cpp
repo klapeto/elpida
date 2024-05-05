@@ -139,6 +139,13 @@ namespace Elpida::Application
 
 	void BenchmarkExecutionService::StopCurrentExecution()
 	{
-		_currentProcess.Terminate();
+		try
+		{
+			_currentProcess.Terminate();
+		}
+		catch (...)
+		{
+			// if process not exists we do not care
+		}
 	}
 } // Application

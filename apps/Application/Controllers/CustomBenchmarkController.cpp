@@ -10,11 +10,13 @@
 #include "Models/Custom/CustomBenchmarkModel.hpp"
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/SystemInfo/TimingModel.hpp"
-#include "Models/Custom/CustomBenchmarkResultsModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 
 #include "Core/BenchmarkExecutionService.hpp"
 
+#include "ResultSerializer.hpp"
+
+#include <fstream>
 #include <future>
 #include <string>
 
@@ -23,15 +25,15 @@ namespace Elpida::Application
 	CustomBenchmarkController::CustomBenchmarkController(CustomBenchmarkModel& model,
 		TopologyModel& topologyModel,
 		TimingModel& overheadsModel,
-		CustomBenchmarkResultsModel& benchmarkResultsModel,
 		BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
-		BenchmarkExecutionService& benchmarkExecutionService)
+		BenchmarkExecutionService& benchmarkExecutionService,
+			const ResultSerializer& resultSerializer)
 		: Controller<CustomBenchmarkModel>(model),
 		  _topologyModel(topologyModel),
 		  _overheadsModel(overheadsModel),
-		  _benchmarkResultsModel(benchmarkResultsModel),
 		  _benchmarkRunConfigurationModel(benchmarkRunConfigurationModel),
 		  _benchmarkExecutionService(benchmarkExecutionService),
+		  _resultSerializer(resultSerializer),
 		  _cancelling(false)
 	{
 
@@ -64,7 +66,7 @@ namespace Elpida::Application
 
 			for (std::size_t i = 0; i < _benchmarkRunConfigurationModel.GetIterationsToRun(); ++i)
 			{
-				_benchmarkResultsModel.Add(_benchmarkExecutionService.Execute(
+				_model.Add(_benchmarkExecutionService.Execute(
 						*selectedBenchmark,
 						affinity,
 						_overheadsModel.GetNowOverhead().count(),
@@ -88,5 +90,16 @@ namespace Elpida::Application
 	{
 		_cancelling = true;
 		_benchmarkExecutionService.StopCurrentExecution();
+	}
+
+	void CustomBenchmarkController::ClearResults()
+	{
+		_model.Clear();
+	}
+
+	void CustomBenchmarkController::SaveResults(const std::filesystem::path& filePath)
+	{
+		std::fstream file(filePath.c_str(), std::ios::trunc | std::fstream::out);
+		file << _resultSerializer.Serialize(_model);
 	}
 } // Application

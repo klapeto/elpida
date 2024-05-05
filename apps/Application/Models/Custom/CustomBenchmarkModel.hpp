@@ -5,12 +5,14 @@
 #ifndef ELPIDA_CUSTOMBENCHMARKSMODEL_HPP_
 #define ELPIDA_CUSTOMBENCHMARKSMODEL_HPP_
 
+#include "Models/Abstractions/ListModel/ListModel.hpp"
 #include "Models/Abstractions/Model.hpp"
 #include "Models/Benchmark/BenchmarkGroupModel.hpp"
+#include "Models/Benchmark/BenchmarkResultModel.hpp"
 
 namespace Elpida::Application
 {
-	class CustomBenchmarkModel : public Model
+	class CustomBenchmarkModel : public ListModel<BenchmarkResultModel>
 	{
 	 public:
 
