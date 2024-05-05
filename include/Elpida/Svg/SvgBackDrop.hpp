@@ -22,6 +22,7 @@ namespace Elpida
 
 	class SvgCalculatedPaint;
 	class ThreadPool;
+	class SvgSuperSampler;
 
 	class SvgBackDrop final
 	{
@@ -40,18 +41,18 @@ namespace Elpida
 
 		void Draw(const SvgPolygon &polygon,
 		          const SvgCalculatedPaint &paint,
+					const SvgSuperSampler& superSampler,
 		          SvgFillRule fillRule = SvgFillRule::NonZero,
 		          SvgBlendMode blendMode = SvgBlendMode::Normal,
-		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
-		          std::size_t subSamples = 16);
+		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
 
 		void DrawMultiThread(const SvgPolygon &polygon,
 				const SvgCalculatedPaint &paint,
+				const SvgSuperSampler& superSampler,
 				ThreadPool& threadPool,
 				SvgFillRule fillRule = SvgFillRule::NonZero,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
-				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
-				std::size_t subSamples = 16);
+				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
 
 		void Draw(const SvgBackDrop &other,
 		          std::size_t x,

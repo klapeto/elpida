@@ -18,14 +18,13 @@ namespace Elpida
 {
 	void SvgBackDrop::Draw(const SvgPolygon& polygon,
 			const SvgCalculatedPaint& paint,
+			const SvgSuperSampler& superSampler,
 			SvgFillRule fillRule,
 			SvgBlendMode blendMode,
-			SvgCompositingMode compositingMode,
-			const std::size_t subSamples)
+			SvgCompositingMode compositingMode)
 	{
 		const SvgBlender blender(blendMode);
 		const SvgCompositor compositor(compositingMode);
-		const SvgSuperSampler superSampler(subSamples);
 
 		auto& bounds = polygon.GetBounds();
 
@@ -219,12 +218,11 @@ namespace Elpida
 	}
 
 	void
-	SvgBackDrop::DrawMultiThread(const SvgPolygon& polygon, const SvgCalculatedPaint& paint, ThreadPool& threadPool,
-			SvgFillRule fillRule, SvgBlendMode blendMode, SvgCompositingMode compositingMode, std::size_t subSamples)
+	SvgBackDrop::DrawMultiThread(const SvgPolygon& polygon, const SvgCalculatedPaint& paint, const SvgSuperSampler& superSampler, ThreadPool& threadPool,
+			SvgFillRule fillRule, SvgBlendMode blendMode, SvgCompositingMode compositingMode)
 	{
 		const SvgBlender blender(blendMode);
 		const SvgCompositor compositor(compositingMode);
-		const SvgSuperSampler superSampler(subSamples);
 
 		auto& bounds = polygon.GetBounds();
 

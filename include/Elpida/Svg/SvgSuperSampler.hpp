@@ -25,6 +25,17 @@ namespace Elpida
 				const SvgCalculatedPaint& paint,
 				SvgFillRule fillRule) const;
 
+		[[nodiscard]]
+		std::size_t GetSampleCount() const
+		{
+			return _samplePoints.size();
+		}
+
+		SvgSuperSampler()
+				:SvgSuperSampler(1)
+		{
+		}
+
 		explicit SvgSuperSampler(std::size_t subSamples);
 	private:
 		std::vector<SvgPoint> _samplePoints;
