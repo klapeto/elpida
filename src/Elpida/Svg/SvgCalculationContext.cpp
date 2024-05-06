@@ -35,6 +35,16 @@ namespace Elpida
 			_transforms.push_back({element.GetTransform(), _currentDepth});
 		}
 
+		if (element.GetFill().IsSet())
+		{
+			_fills.push_back({ element.GetFill(), _currentDepth });
+		}
+
+		if (element.GetStroke().IsSet())
+		{
+			_stokes.push_back({ element.GetStroke(), _currentDepth });
+		}
+
 		if (element.GetName() == "svg")
 		{
 			SvgViewPort viewPort(element.GetProperties());
@@ -67,6 +77,8 @@ namespace Elpida
 		stack.push({std::to_string(rootFontSize), _currentDepth});
 		_viewBox.push({SvgViewBox(0, 0, 0, 0), _currentDepth});
 		_viewPort.push({SvgCalculatedViewPort(0, 0, 300, 150), _currentDepth});
+		_fills.push_back({{}, _currentDepth});
+		_stokes.push_back({{}, _currentDepth});
 	}
 
 	void SvgCalculationContext::Pop()
@@ -94,6 +106,16 @@ namespace Elpida
 		while (!_viewPort.empty() && _viewPort.top().index > _currentDepth)
 		{
 			_viewPort.pop();
+		}
+
+		while (!_fills.empty() && _fills.back().index > _currentDepth)
+		{
+			_fills.pop_back();
+		}
+
+		while (!_stokes.empty() && _stokes.back().index > _currentDepth)
+		{
+			_stokes.pop_back();
 		}
 	}
 
@@ -136,5 +158,15 @@ namespace Elpida
 		}
 
 		return transform;
+	}
+
+	const SvgFill& SvgCalculationContext::GetFill() const
+	{
+		return _fills.back().value;
+	}
+
+	const SvgStroke& SvgCalculationContext::GetStroke() const
+	{
+		return _stokes.back().value;;
 	}
 } // Elpida

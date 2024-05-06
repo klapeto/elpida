@@ -130,7 +130,7 @@ namespace Elpida
 			break;
 		}
 
-		auto calculatedInstance = SvgCalculatedShape(std::move(paths), _fill, _stroke, document, _opacity,
+		auto calculatedInstance = SvgCalculatedShape(std::move(paths), calculationContext.GetFill(), calculationContext.GetStroke(), document, _opacity,
 				calculationContext);
 
 		auto transform = calculationContext.CalculateTransform();

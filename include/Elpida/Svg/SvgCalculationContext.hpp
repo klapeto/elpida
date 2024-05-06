@@ -6,6 +6,8 @@
 #define ELPIDA_SVGCALCULATIONCONTEXT_HPP
 
 #include "Elpida/Svg/SvgViewBox.hpp"
+#include "Elpida/Svg/SvgFill.hpp"
+#include "Elpida/Svg/SvgStroke.hpp"
 #include "Elpida/Svg/SvgCalculatedViewPort.hpp"
 
 #include <stack>
@@ -22,6 +24,12 @@ namespace Elpida
 	class SvgCalculationContext
 	{
 	public:
+
+		[[nodiscard]]
+		const SvgFill& GetFill() const;
+
+		[[nodiscard]]
+		const SvgStroke& GetStroke() const;
 
 		[[nodiscard]]
 		const SvgViewBox& GetViewBox() const;
@@ -62,6 +70,8 @@ namespace Elpida
 		std::stack<StackedValue<SvgViewBox>> _viewBox;
 		std::stack<StackedValue<SvgCalculatedViewPort>> _viewPort;
 		std::vector<StackedValue<SvgTransform>> _transforms;
+		std::vector<StackedValue<SvgFill>> _fills;
+		std::vector<StackedValue<SvgStroke>> _stokes;
 		std::unordered_map<std::string_view, std::stack<StackedValue<std::string>>> _stackedValues;
 		double _rootFontSize;
 		double _dpi;
