@@ -19,7 +19,6 @@ using namespace Elpida;
 
 int main(int argC, char** argV)
 {
-
 	std::ifstream file("/media/klapeto/Αρχεία/Code/elpida/apps/Application/Assets/Art_Bot.svg",
 			std::ifstream::binary | std::ifstream::in);
 
@@ -50,7 +49,6 @@ int main(int argC, char** argV)
 	auto b = std::chrono::high_resolution_clock::now();
 
 	std::cout << "Took: " << std::chrono::duration_cast<std::chrono::duration<double>>(b - a).count() << std::endl;
-
 
 	std::size_t width = backDrop.GetWidth();
 	std::size_t height = backDrop.GetHeight();

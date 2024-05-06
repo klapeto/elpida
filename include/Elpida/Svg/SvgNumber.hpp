@@ -106,7 +106,7 @@ namespace Elpida
 				throw ParseException("No integer or float parts");
 			}
 
-			double expSign;
+			double expSign = 1.0;
 
 			std::string_view expPart;
 			auto c = stream.Current();

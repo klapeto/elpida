@@ -28,7 +28,7 @@ namespace Elpida
 		[[nodiscard]]
 		std::size_t GetSampleCount() const
 		{
-			return _samplePoints.size();
+			return _subSamples;
 		}
 
 		SvgSuperSampler()
@@ -38,7 +38,7 @@ namespace Elpida
 
 		explicit SvgSuperSampler(std::size_t subSamples);
 	private:
-		std::vector<SvgPoint> _samplePoints;
+		std::size_t _subSamples;
 	};
 } // Elpida
 

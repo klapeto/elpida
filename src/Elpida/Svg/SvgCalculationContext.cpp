@@ -57,7 +57,6 @@ namespace Elpida
 				auto& latestViewPort =_viewPort.top().value;
 				_viewBox.push({SvgViewBox(latestViewPort.GetX(), latestViewPort.GetY(), latestViewPort.GetWidth(), latestViewPort.GetHeight()), _currentDepth});
 			}
-
 		}
 	}
 
