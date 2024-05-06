@@ -18,7 +18,7 @@ namespace Elpida
 
 	static bool IsNumberic(const char c)
 	{
-		return SvgNumber::IsNumber(c) || c == 'e' || c == 'E' || c == '+' || c == '-';
+		return SvgNumber::IsNumber(c) || c == '+' || c == '-' || c == '.';
 	}
 
 	static double VectorMagnitude(const double x, const double y)
@@ -39,6 +39,97 @@ namespace Elpida
 		return ((ux * vy < uy * vx) ? -1.0 : 1.0) * std::acos(res);
 	}
 
+	static std::string_view GetNextNumberView(CharacterStream& stream)
+	{
+		stream.SkipSpace();
+		std::size_t begin = stream.Index();
+		std::size_t end = begin;
+		bool dotGot = false;
+		while (!stream.Eof())
+		{
+			auto c = stream.Current();
+			if (SvgNumber::IsNumber(c))
+			{
+				stream.Next();
+				continue;
+			}
+			else
+			{
+				if (c == 'e' || c == 'E')
+				{
+					if (!stream.Next())
+					{
+						throw ParseException("Invalid number: expected 'x.xxxe+x' format but there is EOF after 'e'");
+					}
+					auto sign = stream.Current();
+					if (sign != '-' && sign != '+')
+					{
+						throw ParseException("Invalid number: expected 'x.xxxe+x' format but there no sign after 'e'");
+					}
+					if (!stream.Next())
+					{
+						throw ParseException("Invalid number: expected 'x.xxxe+x' format but there is EOF after 'e' sign");
+					}
+
+					if (!SvgNumber::IsNumber(stream.Current()))
+					{
+						throw ParseException("Invalid number: expected 'x.xxxe+x' format but there is no number after 'e' sign");
+					}
+
+					while (SvgNumber::IsNumber(stream.Current()) && stream.Next())
+					{
+						end = stream.Index();
+					}
+					if (!SvgNumber::IsNumber(stream.Current()))
+					{
+						end--;
+					}
+					break;
+				}
+				else
+				{
+					if (c == '.')
+					{
+						// numbers can be separated by next decimal eg: '1.25.05' is '1.25' and '.05'
+						if (!dotGot)
+						{
+							dotGot = true;
+							if (!stream.Next())
+							{
+								throw ParseException("Invalid number: expected 'x.x' format but there is EOF after '.'");
+							}
+							if (!SvgNumber::IsNumber(stream.Current()))
+							{
+								throw ParseException("Invalid number: expected 'x.x' format but there is no number after '.'");
+							}
+							continue;
+						}
+						else
+						{
+							end = stream.Index() - 1;
+							break;
+						}
+					}
+
+					// numbers can be separated by next sign eg: '1.25-5.23' is '1.25' and '-5.23'
+					if (begin == stream.Index() && (c == '-' || c == '+'))
+					{
+						stream.Next();
+						continue;
+					}
+					end = stream.Index() - 1;
+					break;
+				}
+			}
+		}
+
+		if (stream.Eof())
+		{
+			end = stream.Index() - 1;
+		}
+		return stream.GetStringView(begin, end);
+	}
+
 	static void ParseAllNumbers(CharacterStream& stream, std::vector<double>& currentNumbers)
 	{
 		currentNumbers.clear();
@@ -46,10 +137,7 @@ namespace Elpida
 		while (!stream.Eof())
 		{
 			stream.SkipSpace();
-			currentNumbers.push_back(SvgNumber::ParseNumber(stream.GetStringViewWhile([](auto c)
-			{
-				return IsNumberic(c) || c == '.';
-			})));
+			currentNumbers.push_back(SvgNumber::ParseNumber(GetNextNumberView(stream)));
 			stream.SkipSpace();
 			if (IsNumberic(stream.Current()))
 			{
@@ -103,7 +191,7 @@ namespace Elpida
 					}
 				}
 
-				break;
+					break;
 				case 'l':
 					relative = true;
 					[[fallthrough]];
@@ -120,7 +208,7 @@ namespace Elpida
 						LineTo(SvgPoint(currentArguments[i], currentArguments[i + 1]), relative);
 					}
 				}
-				break;
+					break;
 				case 'h':
 					relative = true;
 					[[fallthrough]];
@@ -138,7 +226,7 @@ namespace Elpida
 						HorizontalLineTo(currentArguments[i], relative);
 					}
 				}
-				break;
+					break;
 				case 'v':
 					relative = true;
 					[[fallthrough]];
@@ -156,7 +244,7 @@ namespace Elpida
 						VerticalLineTo(currentArguments[i], relative);
 					}
 				}
-				break;
+					break;
 				case 'c':
 					relative = true;
 					[[fallthrough]];
@@ -172,13 +260,13 @@ namespace Elpida
 					for (std::size_t i = 0; i < currentArguments.size(); i += 6)
 					{
 						CubicBezTo(
-							SvgPoint(currentArguments[i], currentArguments[i + 1]),
-							SvgPoint(currentArguments[i + 2], currentArguments[i + 3]),
-							SvgPoint(currentArguments[i + 4], currentArguments[i + 5]),
-							relative);
+								SvgPoint(currentArguments[i], currentArguments[i + 1]),
+								SvgPoint(currentArguments[i + 2], currentArguments[i + 3]),
+								SvgPoint(currentArguments[i + 4], currentArguments[i + 5]),
+								relative);
 					}
 				}
-				break;
+					break;
 				case 's':
 					relative = true;
 					[[fallthrough]];
@@ -194,12 +282,12 @@ namespace Elpida
 					for (std::size_t i = 0; i < currentArguments.size(); i += 4)
 					{
 						CubicBezShortTo(
-							SvgPoint(currentArguments[i], currentArguments[i + 1]),
-							SvgPoint(currentArguments[i + 2], currentArguments[i + 3]),
-							relative);
+								SvgPoint(currentArguments[i], currentArguments[i + 1]),
+								SvgPoint(currentArguments[i + 2], currentArguments[i + 3]),
+								relative);
 					}
 				}
-				break;
+					break;
 				case 'q':
 					relative = true;
 					[[fallthrough]];
@@ -215,12 +303,12 @@ namespace Elpida
 					for (std::size_t i = 0; i < currentArguments.size(); i += 4)
 					{
 						QuadBezTo(
-							SvgPoint(currentArguments[i], currentArguments[i + 1]),
-							SvgPoint(currentArguments[i + 2],currentArguments[i + 3]),
-							relative);
+								SvgPoint(currentArguments[i], currentArguments[i + 1]),
+								SvgPoint(currentArguments[i + 2], currentArguments[i + 3]),
+								relative);
 					}
 				}
-				break;
+					break;
 				case 't':
 					relative = true;
 					[[fallthrough]];
@@ -235,11 +323,11 @@ namespace Elpida
 					for (std::size_t i = 0; i < currentArguments.size(); i += 2)
 					{
 						QuadBezShortTo(
-							SvgPoint(currentArguments[i], currentArguments[i + 1]),
-							relative);
+								SvgPoint(currentArguments[i], currentArguments[i + 1]),
+								relative);
 					}
 				}
-				break;
+					break;
 				case 'a':
 					relative = true;
 					[[fallthrough]];
@@ -250,22 +338,22 @@ namespace Elpida
 					if (currentArguments.empty() || currentArguments.size() % 7 != 0)
 					{
 						throw ParseException(
-							"arc command requires rx ry x-axis-rotation large-arc-flag sweep-flag x y");
+								"arc command requires rx ry x-axis-rotation large-arc-flag sweep-flag x y");
 					}
 
 					for (std::size_t i = 0; i < currentArguments.size(); i += 7)
 					{
 						ArcTo(
-							currentArguments[i],
-							currentArguments[i + 1],
-							currentArguments[i + 2],
-							std::abs(currentArguments[i + 3]) > 1e-6,
-							std::abs(currentArguments[i + 4]) > 1e-6,
-							SvgPoint(currentArguments[i + 5], currentArguments[i + 6]),
-							relative);
+								currentArguments[i],
+								currentArguments[i + 1],
+								currentArguments[i + 2],
+								std::abs(currentArguments[i + 3]) > 1e-6,
+								std::abs(currentArguments[i + 4]) > 1e-6,
+								SvgPoint(currentArguments[i + 5], currentArguments[i + 6]),
+								relative);
 					}
 				}
-				break;
+					break;
 				case 'Z':
 					[[fallthrough]];
 				case 'z':
@@ -310,7 +398,8 @@ namespace Elpida
 		_previousControlPointB = _currentPoint;
 	}
 
-	void SvgPathGenerator::CubicBezTo(SvgPoint controlPointA, SvgPoint controlPointB, SvgPoint endPoint, const bool relative)
+	void SvgPathGenerator::CubicBezTo(SvgPoint controlPointA, SvgPoint controlPointB, SvgPoint endPoint,
+			const bool relative)
 	{
 		if (relative)
 		{
@@ -325,7 +414,7 @@ namespace Elpida
 		_currentPoint = endPoint;
 	}
 
-	void SvgPathGenerator::CubicBezShortTo(SvgPoint controlPointB, SvgPoint endPoint,const bool relative)
+	void SvgPathGenerator::CubicBezShortTo(SvgPoint controlPointB, SvgPoint endPoint, const bool relative)
 	{
 		if (relative)
 		{
@@ -334,7 +423,7 @@ namespace Elpida
 		}
 
 		const SvgPoint controlPointA(2 * _currentPoint.GetX() - controlPointB.GetX(),
-			2 * _currentPoint.GetY() - controlPointB.GetY());
+				2 * _currentPoint.GetY() - controlPointB.GetY());
 
 		_curves.emplace_back(controlPointA, controlPointB, endPoint);
 
@@ -342,7 +431,7 @@ namespace Elpida
 		_currentPoint = endPoint;
 	}
 
-	void SvgPathGenerator::QuadBezTo(SvgPoint controlPoint, SvgPoint endPoint,  const bool relative)
+	void SvgPathGenerator::QuadBezTo(SvgPoint controlPoint, SvgPoint endPoint, const bool relative)
 	{
 		if (relative)
 		{
@@ -352,12 +441,12 @@ namespace Elpida
 
 		// Convert to cubic bezier
 		const SvgPoint controlPointA(
-			_currentPoint.GetX() + 2.0 / 3.0 * (controlPoint.GetX() - _currentPoint.GetX()),
-			_currentPoint.GetY() + 2.0 / 3.0 * (controlPoint.GetY() - _currentPoint.GetY()));
+				_currentPoint.GetX() + 2.0 / 3.0 * (controlPoint.GetX() - _currentPoint.GetX()),
+				_currentPoint.GetY() + 2.0 / 3.0 * (controlPoint.GetY() - _currentPoint.GetY()));
 
 		const SvgPoint controlPointB(
-			endPoint.GetX() + 2.0 / 3.0 * (controlPoint.GetX() - endPoint.GetX()),
-			endPoint.GetY() + 2.0 / 3.0 * (controlPoint.GetY() - endPoint.GetY()));
+				endPoint.GetX() + 2.0 / 3.0 * (controlPoint.GetX() - endPoint.GetX()),
+				endPoint.GetY() + 2.0 / 3.0 * (controlPoint.GetY() - endPoint.GetY()));
 
 		_curves.emplace_back(controlPointA, controlPointB, endPoint);
 
@@ -376,13 +465,13 @@ namespace Elpida
 		const double cy = 2 * _currentPoint.GetY() - _previousControlPointB.GetY();
 
 		const SvgPoint controlPointA(
-			_currentPoint.GetX() + 2.0 / 3.0 * (cx - _currentPoint.GetX()),
-			_currentPoint.GetY() + 2.0 / 3.0 * (cy - _currentPoint.GetY())
+				_currentPoint.GetX() + 2.0 / 3.0 * (cx - _currentPoint.GetX()),
+				_currentPoint.GetY() + 2.0 / 3.0 * (cy - _currentPoint.GetY())
 		);
 
 		const SvgPoint controlPointB(
-			endPoint.GetX() + 2.0 / 3.0 * (cx - endPoint.GetX()),
-			endPoint.GetY() + 2.0 / 3.0 * (cy - endPoint.GetY())
+				endPoint.GetX() + 2.0 / 3.0 * (cx - endPoint.GetX()),
+				endPoint.GetY() + 2.0 / 3.0 * (cy - endPoint.GetY())
 		);
 
 		_curves.emplace_back(controlPointA, controlPointB, endPoint);
@@ -392,13 +481,13 @@ namespace Elpida
 	}
 
 	void SvgPathGenerator::ArcTo(
-		const double radiusX,
-		const double radiusY,
-		const double xAxisRotation,
-		const bool largeArc,
-		const bool sweep,
-		SvgPoint endpoint,
-		const bool relative)
+			const double radiusX,
+			const double radiusY,
+			const double xAxisRotation,
+			const bool largeArc,
+			const bool sweep,
+			SvgPoint endpoint,
+			const bool relative)
 	{
 		auto rx = std::abs(radiusX); // y radius
 		auto ry = std::abs(radiusY); // x radius
@@ -599,8 +688,8 @@ namespace Elpida
 		const double dx = x - px;
 		const double dy = y - py;
 		_curves.emplace_back(SvgPoint(px + dx / 3.0, py + dy / 3.0),
-			SvgPoint(x - dx / 3.0, y - dy / 3.0),
-			end);
+				SvgPoint(x - dx / 3.0, y - dy / 3.0),
+				end);
 	}
 
 	void SvgPathGenerator::CommitPath(bool closed)
