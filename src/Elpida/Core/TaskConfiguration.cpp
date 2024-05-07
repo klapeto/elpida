@@ -20,15 +20,18 @@ namespace Elpida
 			return "String";
 		case ConfigurationType::File:
 			return "File path";
+		case ConfigurationType::Boolean:
+			return "Boolean value (true or false)";
 		}
 		return "Unknown";
 	}
 
 	TaskConfiguration::TaskConfiguration(String name, ConfigurationType type, String defaultValue)
-		: _name(std::move(name)), _type(type), _value(std::move(defaultValue))
+		: _name(std::move(name)), _value(std::move(defaultValue)), _type(type)
 	{
 
 	}
+
 	void TaskConfiguration::SetValue(Integer value)
 	{
 		if (_type != ConfigurationType::Integer)
@@ -36,6 +39,15 @@ namespace Elpida
 			throw ElpidaException("Task configuration '", _name, "' required type of: ", TranslateTypeToString(_type), "but got Integer");
 		}
 		_value = std::to_string(value);
+	}
+
+	void TaskConfiguration::SetValue(Boolean value)
+	{
+		if (_type != ConfigurationType::Boolean)
+		{
+			throw ElpidaException("Task configuration '", _name, "' required type of: ", TranslateTypeToString(_type), "but got Integer");
+		}
+		_value = value ? "true" : "false";
 	}
 
 	void TaskConfiguration::SetValue(const String& value)
@@ -81,7 +93,6 @@ namespace Elpida
 	{
 		switch (_type)
 		{
-
 		case ConfigurationType::Integer:
 			SetValue(std::stol(value));
 			break;
@@ -92,6 +103,19 @@ namespace Elpida
 		case ConfigurationType::File:
 			SetValue(value);
 			break;
+		case ConfigurationType::Boolean:
+			SetValue(value == "true");
+			break;
 		}
+	}
+
+	TaskConfiguration::Boolean TaskConfiguration::AsBoolean() const
+	{
+		if (_type != ConfigurationType::Boolean)
+		{
+			throw ElpidaException("Task configuration '", _name, " was attempted to be parsed as integer but is is: ", TranslateTypeToString(_type));
+		}
+
+		return _value == "true";
 	}
 } // Elpida

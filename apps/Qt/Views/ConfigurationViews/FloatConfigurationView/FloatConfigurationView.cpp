@@ -3,6 +3,7 @@
 
 #include "Models/Benchmark/BenchmarkConfigurationModel.hpp"
 #include "Controllers/BenchmarkConfigurationInstanceController.hpp"
+#include "Elpida/Core/ValueUtilities.hpp"
 
 namespace Elpida::Application
 {
@@ -40,7 +41,7 @@ namespace Elpida::Application
 		if (_model != nullptr)
 		{
 			_ui->lblName->setText(QString::fromStdString(_model->GetName()));
-			_ui->spnValue->setValue(std::stod(_model->GetValue()));
+			_ui->spnValue->setValue(ValueUtilities::StringToDoubleInvariant(_model->GetValue()));
 		}
 	}
 

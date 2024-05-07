@@ -56,6 +56,10 @@ set(ELPIDA_QT_SOURCES
 		Views/CustomBenchmarkConfigurationView/CustomBenchmarkConfigurationView.cpp
 		Views/CustomBenchmarkConfigurationView/CustomBenchmarkConfigurationView.ui
 
+		Views/ConfigurationViews/BooleanConfigurationView/BooleanConfigurationView.hpp
+		Views/ConfigurationViews/BooleanConfigurationView/BooleanConfigurationView.cpp
+		Views/ConfigurationViews/BooleanConfigurationView/BooleanConfigurationView.ui
+
 		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp
 		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.cpp
 		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.ui

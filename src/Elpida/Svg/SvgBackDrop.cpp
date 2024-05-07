@@ -126,7 +126,6 @@ namespace Elpida
 		const auto sourceWidth = other.GetWidth();
 
 		DoDrawOther(opacity, blender, compositor, startX, startY, width, height, 0, colorData, sourceWidth);
-
 	}
 
 	void

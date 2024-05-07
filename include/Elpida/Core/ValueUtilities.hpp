@@ -10,6 +10,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <locale>
 
 namespace Elpida
 {
@@ -167,6 +168,31 @@ namespace Elpida
 			--endCount;
 
 			return input.substr(startCount, size - endCount - startCount);
+		}
+
+		static String DoubleToStringInvariant(double d)
+		{
+			std::ostringstream doubleToStringAccumulator;
+			doubleToStringAccumulator.imbue(std::locale::classic());
+			doubleToStringAccumulator << d;
+			return doubleToStringAccumulator.str();
+		}
+
+		static double StringToDoubleInvariant(const String& str)
+		{
+			const std::string oldLocale = std::setlocale(LC_NUMERIC, nullptr);
+			std::setlocale(LC_NUMERIC, "C");
+			try
+			{
+				double value = std::stod(str);
+				std::setlocale(LC_NUMERIC, oldLocale.c_str());
+				return value;
+			}
+			catch (...)
+			{
+				std::setlocale(LC_NUMERIC, oldLocale.c_str());
+				throw;
+			}
 		}
 
 		static String WstringTostring(const WString& wstring);

@@ -4,17 +4,11 @@
 
 #include "BenchmarkRunConfigurationController.hpp"
 #include "Core/SettingsService.hpp"
+#include "Elpida/Core/ValueUtilities.hpp"
 #include <string>
 
 namespace Elpida::Application
 {
-	static std::string ToString(double d)
-	{
-		std::ostringstream doubleToStringAccumulator;
-		doubleToStringAccumulator.imbue(std::locale::classic());
-		doubleToStringAccumulator << d;
-		return doubleToStringAccumulator.str();
-	}
 
 	BenchmarkRunConfigurationController::BenchmarkRunConfigurationController(BenchmarkRunConfigurationModel& model,
 			SettingsService& settingsService)
@@ -108,13 +102,13 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationController::SetDependentQueueRatio(double ratio)
 	{
 		_model.SetDependentRatio(ratio);
-		_settingsService.Set("DependentQueueRatio", ToString(ratio));
+		_settingsService.Set("DependentQueueRatio", ValueUtilities::DoubleToStringInvariant(ratio));
 	}
 
 	void BenchmarkRunConfigurationController::SetIndependentQueueRatio(double ratio)
 	{
 		_model.SetIndependentRatio(ratio);
-		_settingsService.Set("IndependentQueueRatio", ToString(ratio));
+		_settingsService.Set("IndependentQueueRatio", ValueUtilities::DoubleToStringInvariant(ratio));
 	}
 } // Elpida
 // Application

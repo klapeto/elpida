@@ -42,6 +42,7 @@ namespace Elpida::Application
 		std::vector<std::unique_ptr<ConfigurationView>> _floatViews;
 		std::vector<std::unique_ptr<ConfigurationView>> _integerViews;
 		std::vector<std::unique_ptr<ConfigurationView>> _stringViews;
+		std::vector<std::unique_ptr<ConfigurationView>> _booleanViews;
 		std::unordered_map<const BenchmarkConfigurationModel*, CreatedInstance> _rentedInstances;
 		SettingsService& _settingsService;
 

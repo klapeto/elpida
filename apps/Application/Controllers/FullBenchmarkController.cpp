@@ -22,14 +22,6 @@ namespace Elpida::Application
 	const double Divider = 1000000.0;
 	const std::size_t RasterizationSamplesBase = 1024;
 
-	static std::string ToString(double d)
-	{
-		std::ostringstream doubleToStringAccumulator;
-		doubleToStringAccumulator.imbue(std::locale::classic());
-		doubleToStringAccumulator << d;
-		return doubleToStringAccumulator.str();
-	}
-
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TimingModel& overheadsModel,
 			const BenchmarkRunConfigurationModel& runConfigurationModel,
@@ -48,8 +40,7 @@ namespace Elpida::Application
 			_cancelling(false),
 			_memoryLatency(nullptr),
 			_memoryReadBandwidth(nullptr),
-			_svgRasterizationSingle(nullptr),
-			_svgRasterizationMulti(nullptr)
+			_svgRasterization(nullptr)
 	{
 		for (auto& group : benchmarkGroups)
 		{
@@ -64,13 +55,9 @@ namespace Elpida::Application
 				{
 					_memoryReadBandwidth = &benchmark;
 				}
-				else if (name == "Svg Rasterization (Multi Thread)")
+				else if (name == "Svg Rasterization")
 				{
-					_svgRasterizationMulti = &benchmark;
-				}
-				else if (name == "Svg Rasterization (Single Thread)")
-				{
-					_svgRasterizationSingle = &benchmark;
+					_svgRasterization = &benchmark;
 				}
 			}
 		}
@@ -79,14 +66,9 @@ namespace Elpida::Application
 			throw ElpidaException("Missing benchmarks: Memory benchmarks");
 		}
 
-		if (!_svgRasterizationMulti)
+		if (!_svgRasterization)
 		{
-			throw ElpidaException("Missing benchmarks: Svg Rasterization (Multi Thread)");
-		}
-
-		if (!_svgRasterizationSingle)
-		{
-			throw ElpidaException("Missing benchmarks: Svg Rasterization (Single Thread)");
+			throw ElpidaException("Missing benchmarks: Svg Rasterization");
 		}
 
 		_model.SetTotalBenchmarks(4);
@@ -116,20 +98,22 @@ namespace Elpida::Application
 				FullBenchmarkResultModel::Score memoryScore = 0.0;
 				std::vector<BenchmarkResultModel> benchmarkResults;
 
-				_model.SetCurrentRunningBenchmark(_svgRasterizationSingle->GetName());
+				_model.SetCurrentRunningBenchmark(_svgRasterization->GetName() + " (Single Thread)");
 
 				auto thisPath = OsUtilities::GetExecutableDirectory();
 
 				auto targetSamples = std::max((std::size_t)1, (std::size_t)(RasterizationSamplesBase * ((double)_overheadsModel.GetIterationsPerSecond() / std::giga::num)));
-				_svgRasterizationSingle->GetConfigurations()[0].SetValue(
-						(thisPath / "assets/Elpida-Background.svg").string());
-				_svgRasterizationSingle->GetConfigurations()[1].SetValue("0.05");
-				_svgRasterizationSingle->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
+				_svgRasterization->GetConfigurations()[0].SetValue("1");
+				_svgRasterization->GetConfigurations()[1].SetValue("0.05");
+				_svgRasterization->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
+				_svgRasterization->GetConfigurations()[3].SetValue("false");
+				_svgRasterization->GetConfigurations()[4].SetValue("false");
+				_svgRasterization->GetConfigurations()[5].SetValue("false");
 
 				try
 				{
 					auto svgRasterizationSingle = _benchmarkExecutionService.Execute(
-							*_svgRasterizationSingle,
+							*_svgRasterization,
 							affinity,
 							_overheadsModel.GetNowOverhead().count(),
 							_overheadsModel.GetLoopOverhead().count(),
@@ -157,18 +141,20 @@ namespace Elpida::Application
 					return;
 				}
 
-				_model.SetCurrentRunningBenchmark(_svgRasterizationMulti->GetName());
+				_model.SetCurrentRunningBenchmark(_svgRasterization->GetName() + " (Multi Thread)");
 
 				targetSamples *= std::min<double>(std::thread::hardware_concurrency(), std::max<double>(4.0, std::thread::hardware_concurrency() / 4.0));
-				_svgRasterizationMulti->GetConfigurations()[0].SetValue(
-						(thisPath / "assets/Elpida-Background.svg").string());
-				_svgRasterizationMulti->GetConfigurations()[1].SetValue("0.05");
-				_svgRasterizationMulti->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
+				_svgRasterization->GetConfigurations()[0].SetValue(std::to_string(std::thread::hardware_concurrency()));
+				_svgRasterization->GetConfigurations()[1].SetValue("0.05");
+				_svgRasterization->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
+				_svgRasterization->GetConfigurations()[3].SetValue("true");
+				_svgRasterization->GetConfigurations()[4].SetValue("true");
+				_svgRasterization->GetConfigurations()[5].SetValue("true");
 
 				try
 				{
 					auto svgRasterizationMulti = _benchmarkExecutionService.Execute(
-								*_svgRasterizationMulti,
+								*_svgRasterization,
 								affinity,
 								_overheadsModel.GetNowOverhead().count(),
 								_overheadsModel.GetLoopOverhead().count(),

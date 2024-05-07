@@ -16,6 +16,7 @@ namespace Elpida
 		Float,
 		String,
 		File,
+		Boolean,
 	};
 
 	class TaskConfiguration final
@@ -25,6 +26,7 @@ namespace Elpida
 		using Integer = long;
 		using Float = double;
 		using String = std::string;
+		using Boolean = bool;
 
 		[[nodiscard]]
 		const String& GetName() const
@@ -47,10 +49,12 @@ namespace Elpida
 		void SetValue(Integer value);
 		void SetValue(const String& value);
 		void SetValue(Float value);
+		void SetValue(Boolean value);
 		void Parse(const String& value);
 
 		Integer AsInteger() const;
 		Float AsFloat() const;
+		Boolean AsBoolean() const;
 
 		TaskConfiguration(String name, ConfigurationType type, String defaultValue = String());
 		TaskConfiguration(const TaskConfiguration&) = default;

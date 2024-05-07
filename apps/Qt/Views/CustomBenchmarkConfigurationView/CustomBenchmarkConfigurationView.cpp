@@ -1,6 +1,8 @@
 #include "CustomBenchmarkConfigurationView.hpp"
 #include "ui_CustomBenchmarkConfigurationView.h"
 
+#include <QSpacerItem>
+
 #include "Models/Benchmark/BenchmarkConfigurationModel.hpp"
 #include "Views/ConfigurationViews/ConfigurationView.hpp"
 
@@ -15,6 +17,7 @@ namespace Elpida::Application
 	{
 		_ui->setupUi(this);
 		_ui->container->setLayout(new QVBoxLayout);
+		_ui->container->layout()->addItem(new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
 		_currentBenchmarkChanged = _benchmarksModel.DataChanged().Subscribe([this]()
 		{
@@ -49,7 +52,7 @@ namespace Elpida::Application
 	{
 		auto layout = _ui->container->layout();
 		auto view = _configurationViewPool.RentViewForModel(model);
-		layout->addWidget(view);
+		static_cast<QVBoxLayout*>(layout)->insertWidget(layout->count() - 1,view);
 		_rentedViews.insert({ &model, view });
 	}
 

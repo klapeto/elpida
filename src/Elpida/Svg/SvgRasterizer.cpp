@@ -89,8 +89,8 @@ namespace Elpida
 	class MultiThreadPolygonRasterizer
 	{
 	public:
-		explicit MultiThreadPolygonRasterizer(ThreadPool& threadPool)
-				: _threadPool(threadPool)
+		explicit MultiThreadPolygonRasterizer(bool multiThread, ThreadPool& threadPool)
+				:_threadPool(threadPool), _multiThread(multiThread)
 		{
 		}
 
@@ -100,12 +100,21 @@ namespace Elpida
 				const SvgSuperSampler& superSampler,
 				SvgFillRule fillRule)
 		{
-			backDrop.DrawMultiThread(polygon, paint, superSampler, _threadPool, fillRule, SvgBlendMode::Normal,
-					SvgCompositingMode::SourceOver);
+			if (_multiThread)
+			{
+				backDrop.DrawMultiThread(polygon, paint, superSampler, _threadPool, fillRule, SvgBlendMode::Normal,
+						SvgCompositingMode::SourceOver);
+			}
+			else
+			{
+				backDrop.Draw(polygon, paint, superSampler, fillRule, SvgBlendMode::Normal,
+						SvgCompositingMode::SourceOver);
+			}
 		}
 
 	private:
 		ThreadPool& _threadPool;
+		bool _multiThread;
 	};
 
 	class MultiThreadFutureGenerator
@@ -129,12 +138,40 @@ namespace Elpida
 		ThreadPool& _threadPool;
 	};
 
+	class MultiThreadFutureGenerator2
+	{
+	public:
+		template<typename T>
+		using FutureType = std::future<T>;
+
+		explicit MultiThreadFutureGenerator2(bool multiThread, ThreadPool& threadPool)
+				:_threadPool(threadPool), _multiThread(multiThread)
+		{
+		}
+
+		template<typename T, typename TCallable>
+		FutureType<T> Generate(TCallable callable)
+		{
+			if (_multiThread)
+			{
+				return _threadPool.Queue<T>(callable);
+			}
+			else
+			{
+				return std::async(std::launch::async, callable);
+			}
+		}
+
+	private:
+		ThreadPool& _threadPool;
+		bool _multiThread;
+	};
 
 	class MultiThreadBackDropDrawer
 	{
 	public:
-		explicit MultiThreadBackDropDrawer(ThreadPool& threadPool)
-				: _threadPool(threadPool)
+		explicit MultiThreadBackDropDrawer(bool multiThread, ThreadPool& threadPool)
+				:_threadPool(threadPool), _multiThread(multiThread)
 		{
 		}
 
@@ -146,11 +183,19 @@ namespace Elpida
 				SvgBlendMode blendMode,
 				SvgCompositingMode compositingMode)
 		{
-			backDrop.DrawMultiThread(other, x, y, _threadPool, opacity, blendMode, compositingMode);
+			if (_multiThread)
+			{
+				backDrop.DrawMultiThread(other, x, y, _threadPool, opacity, blendMode, compositingMode);
+			}
+			else
+			{
+				backDrop.Draw(other, x, y, opacity, blendMode, compositingMode);
+			}
 		}
 
 	private:
 		ThreadPool& _threadPool;
+		bool _multiThread;
 	};
 
 	class SingleThreadPolygonRasterizer
@@ -441,8 +486,25 @@ namespace Elpida
 				document.GetRootShape(),
 				superSampler,
 				MultiThreadFutureGenerator(threadPool),
-				MultiThreadPolygonRasterizer(threadPool),
-				MultiThreadBackDropDrawer(threadPool));
+				MultiThreadPolygonRasterizer(true, threadPool),
+				MultiThreadBackDropDrawer(true, threadPool));
+
+		return backDrop;
+	}
+
+	SvgBackDrop SvgRasterizer::RasterizeCustom(const SvgCalculatedDocument& document, std::size_t subSamples,
+			bool multiThreadedShapes, bool multiThreadedSuperSampling, bool multiThreadedBitBlit, ThreadPool& threadPool)
+	{
+		const SvgSuperSampler superSampler(subSamples);
+		auto& viewPort = document.GetViewPort();
+		SvgBackDrop backDrop(std::ceil(viewPort.GetWidth()), std::ceil(viewPort.GetHeight()));
+
+		RasterizeRootShape(backDrop,
+				document.GetRootShape(),
+				superSampler,
+				MultiThreadFutureGenerator2(multiThreadedShapes, threadPool),
+				MultiThreadPolygonRasterizer(multiThreadedSuperSampling, threadPool),
+				MultiThreadBackDropDrawer(multiThreadedBitBlit,threadPool));
 
 		return backDrop;
 	}

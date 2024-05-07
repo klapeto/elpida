@@ -48,8 +48,7 @@ namespace Elpida::Application
 
 		const BenchmarkModel* _memoryLatency;
 		const BenchmarkModel* _memoryReadBandwidth;
-		const BenchmarkModel* _svgRasterizationSingle;
-		const BenchmarkModel* _svgRasterizationMulti;
+		const BenchmarkModel* _svgRasterization;
 	};
 
 } // Elpida

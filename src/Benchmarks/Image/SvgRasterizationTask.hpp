@@ -2,8 +2,8 @@
 // Created by klapeto on 9/4/2024.
 //
 
-#ifndef ELPIDA_SVGRASTERIZATIONMULTITHREADEDTASK_HPP
-#define ELPIDA_SVGRASTERIZATIONMULTITHREADEDTASK_HPP
+#ifndef ELPIDA_SVGRASTERIZATIONTASK_HPP
+#define ELPIDA_SVGRASTERIZATIONTASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
@@ -14,7 +14,7 @@ namespace Elpida
 
 	class ThreadPool;
 
-	class SvgRasterizationMultiThreadedTask: public MicroTask
+	class SvgRasterizationTask: public MicroTask
 	{
 	public:
 
@@ -29,8 +29,8 @@ namespace Elpida
 		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
-		explicit SvgRasterizationMultiThreadedTask(std::size_t subSamples, ThreadPool* threadPool);
-		~SvgRasterizationMultiThreadedTask() override = default;
+		explicit SvgRasterizationTask(std::size_t subSamples, bool multiThreadedShapes, bool multiThreadedSuperSampling, bool multiThreadedBitBlt, ThreadPool* threadPool);
+		~SvgRasterizationTask() override = default;
 	protected:
 		void DoRun(Iterations iterations) override;
 
@@ -50,8 +50,11 @@ namespace Elpida
 		SvgBackDrop _rasterizedImage;
 		ThreadPool* _threadPool;
 		std::size_t _subSamples;
+		bool _multiThreadedShapes;
+		bool _multiThreadedSuperSampling;
+		bool _multiThreadedBitBlt;
 	};
 
 } // Elpida
 
-#endif //ELPIDA_SVGRASTERIZATIONMULTITHREADEDTASK_HPP
+#endif //ELPIDA_SVGRASTERIZATIONTASK_HPP

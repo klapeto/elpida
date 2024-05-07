@@ -8,6 +8,7 @@
 #include "Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.hpp"
 #include "Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp"
 #include "Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.hpp"
+#include "Views/ConfigurationViews/BooleanConfigurationView/BooleanConfigurationView.hpp"
 
 #include "Core/SettingsService.hpp"
 
@@ -36,6 +37,9 @@ namespace Elpida::Application
 			break;
 		case ConfigurationType::File:
 			view = GetOrCreate<FileConfigurationView>(_fileViews);
+			break;
+		case ConfigurationType::Boolean:
+			view = GetOrCreate<BooleanConfigurationView>(_booleanViews);
 			break;
 		}
 
@@ -71,6 +75,9 @@ namespace Elpida::Application
 				break;
 			case ConfigurationType::File:
 				_fileViews.push_back(std::move(ptr));
+				break;
+			case ConfigurationType::Boolean:
+				_booleanViews.push_back(std::move(ptr));
 				break;
 			}
 			_rentedInstances.erase(itr);

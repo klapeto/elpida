@@ -18,6 +18,7 @@ namespace Elpida::Application
 		Float,
 		String,
 		File,
+		Boolean,
 	};
 
 	class BenchmarkConfigurationModel : public Model

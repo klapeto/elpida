@@ -34,10 +34,10 @@ namespace Elpida::Application
 
 		_configurationView = new CustomBenchmarkConfigurationView(benchmarksModel, configurationViewPool);
 
-		_ui->glMain->addWidget(_configurationView, 0, 1);
+		_ui->glMain->addWidget(_configurationView, 0, 1, 2, 1);
 
 		_resultsView = new CustomBenchmarkResultsView(benchmarksModel);
-		_ui->glMain->addWidget(_resultsView, 1, 1);
+		_ui->glMain->addWidget(_resultsView, 0, 2, 2,1);
 
 		_runConfigurationView = new BenchmarkRunConfigurationView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController);
 

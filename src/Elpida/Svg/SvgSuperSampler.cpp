@@ -21,7 +21,7 @@ namespace Elpida
 	}
 
 	static void CalculateSample(const SvgPolygon& polygon, double x, double y, const SvgCalculatedPaint& paint,
-			const SvgFillRule& fillRule, const SvgPoint& sampleOffset, double& r, double& g, double& b, double& a)
+			SvgFillRule fillRule, const SvgPoint& sampleOffset, double& r, double& g, double& b, double& a)
 	{
 		SvgPoint point = SvgPoint(x + 0.5, y + 0.5) + sampleOffset;
 
