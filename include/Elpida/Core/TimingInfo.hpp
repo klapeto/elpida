@@ -39,12 +39,6 @@ namespace Elpida
 			return _virtualCallOverhead;
 		}
 
-		[[nodiscard]]
-		unsigned int GetFastestProcessor() const
-		{
-			return _fastestProcessor;
-		}
-
 		TimingInfo() = default;
 		TimingInfo(const TimingInfo&) = default;
 		TimingInfo(TimingInfo&&) noexcept = default;
@@ -54,13 +48,11 @@ namespace Elpida
 		TimingInfo(const Duration& nowOverhead,
 				const Duration& loopOverhead,
 				const Duration& virtualCallOverhead,
-				Iterations iterationsPerSecond,
-				unsigned int fastestProcessor)
+				Iterations iterationsPerSecond)
 				:_nowOverhead(nowOverhead),
 				 _loopOverhead(loopOverhead),
 				 _virtualCallOverhead(virtualCallOverhead),
-				 _iterationsPerSecond(iterationsPerSecond),
-				 _fastestProcessor(fastestProcessor)
+				 _iterationsPerSecond(iterationsPerSecond)
 		{
 		}
 
@@ -70,7 +62,6 @@ namespace Elpida
 		Duration _loopOverhead;
 		Duration _virtualCallOverhead;
 		Iterations _iterationsPerSecond;
-		unsigned int _fastestProcessor;
 	};
 
 } // Elpida

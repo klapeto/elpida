@@ -14,7 +14,8 @@ namespace Elpida
 	class TimingCalculator final
 	{
 	public:
-		static TimingInfo CalculateTiming(const TopologyInfo& topologyInfo);
+		static TimingInfo CalculateTiming();
+		static Duration CalculateLoopOverheadFast();
 		TimingCalculator() = delete;
 	};
 

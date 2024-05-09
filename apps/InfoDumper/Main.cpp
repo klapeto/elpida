@@ -80,14 +80,38 @@ int main(int argC, char** argV)
 
 		auto topology = TopologyLoader::LoadTopology();
 
-		auto timing = TimingCalculator::CalculateTiming(topology);
+		ProcessingUnitNode::PinThreadToProcessor(0);
+		auto& cores = topology.GetAllCores();
+
+		Duration loopOverhead = Seconds(6546513);
+		unsigned int highestCore = 0;
+
+		for (auto& core : cores)
+		{
+			auto& pu = core.get().GetChildren().front();
+
+			Duration overhead;
+
+			ProcessingUnitNode::PinThreadToProcessor(pu.get()->GetOsIndex().value());
+			overhead = TimingCalculator::CalculateLoopOverheadFast();
+
+			if (overhead < loopOverhead)
+			{
+				highestCore = pu->GetOsIndex().value();
+				loopOverhead = overhead;
+			}
+		}
+
+		ProcessingUnitNode::PinThreadToProcessor(highestCore);
+
+		auto timing = TimingCalculator::CalculateTiming();
 
 		json root;
 		root["cpu"] = JsonSerializer::Serialize(CpuInfoLoader::Load());
 		root["memory"] = JsonSerializer::Serialize(MemoryInfoLoader::Load());
 		root["os"] = JsonSerializer::Serialize(OsInfoLoader::Load());
 		root["topology"] = JsonSerializer::Serialize(topology);
-		root["topology"]["fastestProcessor"] = timing.GetFastestProcessor();
+		root["topology"]["fastestProcessor"] = highestCore;
 		root["timing"] = JsonSerializer::Serialize(timing);
 		root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarkPath);
 
