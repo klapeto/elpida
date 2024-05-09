@@ -5,6 +5,7 @@
 #include "FullBenchmarkController.hpp"
 
 #include "Models/SystemInfo/TimingModel.hpp"
+#include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 
 #include "Core/BenchmarkExecutionService.hpp"
@@ -23,7 +24,8 @@ namespace Elpida::Application
 	const std::size_t RasterizationSamplesBase = 8192;
 
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
-			const TimingModel& overheadsModel,
+			const TimingModel& timingModel,
+			const TopologyModel& topologyModel,
 			const BenchmarkRunConfigurationModel& runConfigurationModel,
 			BenchmarkExecutionService& benchmarkExecutionService,
 			const ResultSerializer& resultSerializer,
@@ -31,7 +33,8 @@ namespace Elpida::Application
 			const std::vector<BenchmarkGroupModel>& benchmarkGroups)
 			:
 			Controller(model),
-			_overheadsModel(overheadsModel),
+			_timingModel(timingModel),
+			_topologyModel(topologyModel),
 			_runConfigurationModel(runConfigurationModel),
 			_benchmarkExecutionService(benchmarkExecutionService),
 			_resultSerializer(resultSerializer),
@@ -92,7 +95,6 @@ namespace Elpida::Application
 			_model.SetRunning(true);
 			for (std::size_t i = 0; i < _runConfigurationModel.GetIterationsToRun(); ++i)
 			{
-				std::vector<std::size_t> affinity;
 				FullBenchmarkResultModel::Score singleCoreScore = 0.0;
 				FullBenchmarkResultModel::Score multiCoreScore = 0.0;
 				FullBenchmarkResultModel::Score memoryScore = 0.0;
@@ -102,7 +104,7 @@ namespace Elpida::Application
 
 				auto thisPath = OsUtilities::GetExecutableDirectory();
 
-				auto targetSamples = std::max((std::size_t)1, (std::size_t)(RasterizationSamplesBase * ((double)_overheadsModel.GetIterationsPerSecond() / std::giga::num)));
+				auto targetSamples = std::max((std::size_t)1, (std::size_t)(RasterizationSamplesBase * ((double)_timingModel.GetIterationsPerSecond() / std::giga::num)));
 				_svgRasterization->GetConfigurations()[0].SetValue("1");
 				_svgRasterization->GetConfigurations()[1].SetValue("0.06");
 				_svgRasterization->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
@@ -114,10 +116,10 @@ namespace Elpida::Application
 				{
 					auto svgRasterizationSingle = _benchmarkExecutionService.Execute(
 							*_svgRasterization,
-							affinity,
-							_overheadsModel.GetNowOverhead().count(),
-							_overheadsModel.GetLoopOverhead().count(),
-							_overheadsModel.GetVirtualCallOverhead().count(),
+							{_topologyModel.GetFastestProcessor()},
+							_timingModel.GetNowOverhead().count(),
+							_timingModel.GetLoopOverhead().count(),
+							_timingModel.GetVirtualCallOverhead().count(),
 							1.0,
 							1.0,
 							false,
@@ -143,7 +145,7 @@ namespace Elpida::Application
 
 				_model.SetCurrentRunningBenchmark(_svgRasterization->GetName() + " (Multi Thread)");
 
-				targetSamples *= 2;
+				//targetSamples *= 2;
 				_svgRasterization->GetConfigurations()[0].SetValue(std::to_string(std::thread::hardware_concurrency()));
 				_svgRasterization->GetConfigurations()[1].SetValue("0.06");
 				_svgRasterization->GetConfigurations()[2].SetValue(std::to_string(targetSamples));
@@ -155,10 +157,10 @@ namespace Elpida::Application
 				{
 					auto svgRasterizationMulti = _benchmarkExecutionService.Execute(
 								*_svgRasterization,
-								affinity,
-								_overheadsModel.GetNowOverhead().count(),
-								_overheadsModel.GetLoopOverhead().count(),
-								_overheadsModel.GetVirtualCallOverhead().count(),
+							{},
+							_timingModel.GetNowOverhead().count(),
+							_timingModel.GetLoopOverhead().count(),
+							_timingModel.GetVirtualCallOverhead().count(),
 								32.0,
 								32.0,
 								false,
@@ -188,10 +190,10 @@ namespace Elpida::Application
 				{
 					auto latencyResult = _benchmarkExecutionService.Execute(
 								*_memoryLatency,
-								affinity,
-								_overheadsModel.GetNowOverhead().count(),
-								_overheadsModel.GetLoopOverhead().count(),
-								_overheadsModel.GetVirtualCallOverhead().count(),
+							{0},
+							_timingModel.GetNowOverhead().count(),
+							_timingModel.GetLoopOverhead().count(),
+							_timingModel.GetVirtualCallOverhead().count(),
 								1.0,
 								1.0,
 								false,
@@ -220,10 +222,10 @@ namespace Elpida::Application
 				{
 					auto bandwidthResult =  _benchmarkExecutionService.Execute(
 								*_memoryReadBandwidth,
-								affinity,
-								_overheadsModel.GetNowOverhead().count(),
-								_overheadsModel.GetLoopOverhead().count(),
-								_overheadsModel.GetVirtualCallOverhead().count(),
+							{},
+							_timingModel.GetNowOverhead().count(),
+							_timingModel.GetLoopOverhead().count(),
+							_timingModel.GetVirtualCallOverhead().count(),
 								1.0,
 								1.0,
 								false,

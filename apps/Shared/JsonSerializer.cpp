@@ -102,7 +102,9 @@ namespace Elpida
 
 	nlohmann::json JsonSerializer::Serialize(const TopologyInfo& topologyInfo)
 	{
-		return Serialize(topologyInfo.GetRoot());
+		json topology;
+		topology["root"] = Serialize(topologyInfo.GetRoot());
+		return topology;
 	}
 
 	nlohmann::json JsonSerializer::Serialize(const MemoryInfo& memoryInfo)

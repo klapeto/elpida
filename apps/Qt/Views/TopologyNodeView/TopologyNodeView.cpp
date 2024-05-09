@@ -32,6 +32,10 @@ namespace Elpida::Application
 			"PU"
 	};
 
+	static const QString FastestCoreDefaultStyle = "border-radius: 0.5em;background-color:#7fbb7b";
+	static const QString FastestCoreHoverStyle = "border-radius: 0.5em;background-color:#8cd088";
+	static const QString FastestCoreClickStyle = "border-radius: 0.5em;background-color:#ade1aa";
+
 	static const QString DefaultStyles[] = {
 			"border-radius: 0.5em;background-color:#aebfef",   //Machine
 			"border-radius: 0.5em;background-color:#99da9f",   //Package
@@ -86,16 +90,16 @@ namespace Elpida::Application
 			"border-radius: 0.5em;background-color:#e4e6ff"    //PU
 	};
 
-	static QWidget* AppendChildren(std::vector<TopologyNodeModel>& children)
+	static QWidget* AppendChildren(std::vector<TopologyNodeModel>& children, std::optional<unsigned int>&  fastestProcessor)
 	{
 		int maxColumns = std::ceil(std::sqrt(children.size()));
 		auto currColumn = 0;
 		auto currRow = 0;
 		auto widget = new QWidget();
 		auto rootLayout = new QGridLayout();
-		for (auto& child: children)
+		for (auto& child : children)
 		{
-			auto childView = new TopologyNodeView(child);
+			auto childView = new TopologyNodeView(child, fastestProcessor);
 			rootLayout->addWidget(childView, currRow, currColumn);
 			if (++currColumn >= maxColumns)
 			{
@@ -108,9 +112,24 @@ namespace Elpida::Application
 		return widget;
 	}
 
-	TopologyNodeView::TopologyNodeView(TopologyNodeModel& topologyNodeModel, QWidget* parent) :
+	static bool IsFastest(TopologyNodeModel& topologyNodeModel, std::optional<unsigned int>& fastestProcessor)
+	{
+		if (!fastestProcessor.has_value()) return false;
+		if (topologyNodeModel.GetType() != TopologyNodeType::Core) return false;
+
+		for (auto& child: topologyNodeModel.GetChildren())
+		{
+			if (child.GetOsIndex().value() == fastestProcessor) return true;
+		}
+
+		return false;
+	}
+
+	TopologyNodeView::TopologyNodeView(TopologyNodeModel& topologyNodeModel, std::optional<unsigned int>& fastestProcessor,
+			QWidget* parent)
+			:
 			QFrame(parent),
-			_ui(new Ui::TopologyNodeView), _topologyNodeModel(topologyNodeModel), _uiUpdating(false)
+			_ui(new Ui::TopologyNodeView), _topologyNodeModel(topologyNodeModel), _uiUpdating(false), _fastest(false)
 	{
 		_ui->setupUi(this);
 
@@ -121,14 +140,21 @@ namespace Elpida::Application
 			OnModelChanged();
 		});
 
+		_fastest = IsFastest(topologyNodeModel, fastestProcessor);
+
+		if (_fastest)
+		{
+			fastestProcessor = std::nullopt;	// prevent further processing
+		}
+
 		if (!_topologyNodeModel.GetMemoryChildren().empty())
 		{
-			_ui->verticalLayout->addWidget(AppendChildren(_topologyNodeModel.GetMemoryChildren()));
+			_ui->verticalLayout->addWidget(AppendChildren(_topologyNodeModel.GetMemoryChildren(), fastestProcessor));
 		}
 
 		if (!_topologyNodeModel.GetChildren().empty())
 		{
-			_ui->verticalLayout->addWidget(AppendChildren(_topologyNodeModel.GetChildren()));
+			_ui->verticalLayout->addWidget(AppendChildren(_topologyNodeModel.GetChildren(), fastestProcessor));
 		}
 
 		_ui->lblName->setText(Names[(int)_topologyNodeModel.GetType()]);
@@ -153,7 +179,15 @@ namespace Elpida::Application
 			_ui->lblOsIndex->setVisible(false);
 		}
 
-		this->setStyleSheet(DefaultStyles[(int)_topologyNodeModel.GetType()]);
+		if (_fastest)
+		{
+			this->setStyleSheet(FastestCoreDefaultStyle);
+		}
+		else
+		{
+			this->setStyleSheet(DefaultStyles[(int)_topologyNodeModel.GetType()]);
+		}
+
 
 		if (_topologyNodeModel.GetType() != TopologyNodeType::ProcessingUnit)
 		{
@@ -199,24 +233,53 @@ namespace Elpida::Application
 
 	void TopologyNodeView::mousePressEvent(QMouseEvent* event)
 	{
-		setStyleSheet(ClickStyles[(int)_topologyNodeModel.GetType()]);
+		if (_fastest)
+		{
+			setStyleSheet(FastestCoreClickStyle);
+		}
+		else
+		{
+			setStyleSheet(ClickStyles[(int)_topologyNodeModel.GetType()]);
+		}
+
 	}
 
 	void TopologyNodeView::mouseReleaseEvent(QMouseEvent* event)
 	{
-		setStyleSheet(HoverStyles[(int)_topologyNodeModel.GetType()]);
+		if (_fastest)
+		{
+			setStyleSheet(FastestCoreHoverStyle);
+		}
+		else
+		{
+			setStyleSheet(HoverStyles[(int)_topologyNodeModel.GetType()]);
+		}
 
 		_topologyNodeModel.SetSelected(!_topologyNodeModel.IsSelected());
 	}
 
 	void TopologyNodeView::enterEvent(QEvent* event)
 	{
-		setStyleSheet(HoverStyles[(int)_topologyNodeModel.GetType()]);
+		if (_fastest)
+		{
+			setStyleSheet(FastestCoreHoverStyle);
+		}
+		else
+		{
+			setStyleSheet(HoverStyles[(int)_topologyNodeModel.GetType()]);
+		}
 	}
 
 	void TopologyNodeView::leaveEvent(QEvent* event)
 	{
-		setStyleSheet(DefaultStyles[(int)_topologyNodeModel.GetType()]);
+		if (_fastest)
+		{
+			setStyleSheet(FastestCoreDefaultStyle);
+		}
+		else
+		{
+			setStyleSheet(DefaultStyles[(int)_topologyNodeModel.GetType()]);
+		}
 	}
 
 	void TopologyNodeView::on_chkSelected_stateChanged(int state)

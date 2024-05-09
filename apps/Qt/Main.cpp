@@ -264,13 +264,12 @@ int main(int argc, char* argv[])
 		FullBenchmarkModel fullBenchmarkModel;
 		FullBenchmarkController fullBenchmarkController(fullBenchmarkModel,
 				builderJson.GetTimingModel(),
+				builderJson.GetTopologyInfoModel(),
 				benchmarkRunConfigurationModel,
 				executionService,
 				resultSerializer,
 				messageService,
 				benchmarkGroups);
-
-
 
 		MainWindow mainWindow(
 				builderJson.GetOsInfoModel(),

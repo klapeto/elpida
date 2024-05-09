@@ -107,7 +107,7 @@ namespace Elpida::Application
 	{
 		auto& topology = root.at("topology");
 
-		return TopologyModel(ParseTopologyNode(topology));
+		return TopologyModel(ParseTopologyNode(topology.at("root")), topology.at("fastestProcessor").get<unsigned int>());
 	}
 
 	static TaskModel ParseTask(const nlohmann::json& jTask)

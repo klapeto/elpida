@@ -19,6 +19,9 @@ namespace Elpida::Application
 		TopologyNodeModel& GetRoot();
 
 		[[nodiscard]]
+		unsigned int GetFastestProcessor() const;
+
+		[[nodiscard]]
 		const TopologyNodeModel& GetRoot() const;
 
 		const std::vector<std::reference_wrapper<const TopologyNodeModel>>& GetSelectedLeafNodes() const;
@@ -28,7 +31,7 @@ namespace Elpida::Application
 		const std::vector<std::reference_wrapper<TopologyNodeModel>>& GetLeafNodes();
 
 		TopologyModel() = default;
-		explicit TopologyModel(TopologyNodeModel root);
+		explicit TopologyModel(TopologyNodeModel root, unsigned int fastestProcessor);
 		TopologyModel(const TopologyModel&) = delete;
 		TopologyModel& operator=(const TopologyModel&) = delete;
 		TopologyModel(TopologyModel&&) noexcept;
@@ -39,6 +42,7 @@ namespace Elpida::Application
 		mutable std::vector<std::reference_wrapper<const TopologyNodeModel>> _selectedLeafNodes;
 		mutable std::vector<std::reference_wrapper<const TopologyNodeModel>> _leafNodes;
 		EventSubscription<> _rootDataChanged;
+		unsigned int _fastestProcessor;
 		void SetSelectedLeafNodes();
 	};
 

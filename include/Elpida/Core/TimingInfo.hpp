@@ -7,6 +7,7 @@
 
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/Iterations.hpp"
+#include <cstddef>
 
 namespace Elpida
 {
@@ -38,27 +39,38 @@ namespace Elpida
 			return _virtualCallOverhead;
 		}
 
+		[[nodiscard]]
+		unsigned int GetFastestProcessor() const
+		{
+			return _fastestProcessor;
+		}
+
 		TimingInfo() = default;
 		TimingInfo(const TimingInfo&) = default;
 		TimingInfo(TimingInfo&&) noexcept = default;
 		TimingInfo& operator=(const TimingInfo&) = default;
 		TimingInfo& operator=(TimingInfo&&) noexcept = default;
+
 		TimingInfo(const Duration& nowOverhead,
-			const Duration& loopOverhead,
-			const Duration& virtualCallOverhead,
-			Iterations iterationsPerSecond)
-			: _nowOverhead(nowOverhead),
-			  _loopOverhead(loopOverhead),
-			  _virtualCallOverhead(virtualCallOverhead),
-			  _iterationsPerSecond(iterationsPerSecond)
+				const Duration& loopOverhead,
+				const Duration& virtualCallOverhead,
+				Iterations iterationsPerSecond,
+				unsigned int fastestProcessor)
+				:_nowOverhead(nowOverhead),
+				 _loopOverhead(loopOverhead),
+				 _virtualCallOverhead(virtualCallOverhead),
+				 _iterationsPerSecond(iterationsPerSecond),
+				 _fastestProcessor(fastestProcessor)
 		{
 		}
+
 		~TimingInfo() = default;
 	private:
 		Duration _nowOverhead;
 		Duration _loopOverhead;
 		Duration _virtualCallOverhead;
 		Iterations _iterationsPerSecond;
+		unsigned int _fastestProcessor;
 	};
 
 } // Elpida

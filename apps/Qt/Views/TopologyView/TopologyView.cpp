@@ -15,7 +15,8 @@ namespace Elpida::Application
 		_ui->setupUi(this);
 		_ui->saContainer->setAlignment(Qt::AlignCenter);
 		_ui->saContainer->setWidgetResizable(false);
-		_ui->saContainer->setWidget(new TopologyNodeView(_model.GetRoot()));
+		std::optional<unsigned int> fastestProcessor =  _model.GetFastestProcessor();
+		_ui->saContainer->setWidget(new TopologyNodeView(_model.GetRoot(), fastestProcessor));
 	}
 
 	TopologyView::~TopologyView()

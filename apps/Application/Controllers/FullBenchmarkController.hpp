@@ -19,6 +19,7 @@ namespace Elpida::Application
 	class ResultSerializer;
 	class MessageService;
 	class BenchmarkRunConfigurationModel;
+	class TopologyModel;
 
 	class FullBenchmarkController : public Controller<FullBenchmarkModel>
 	{
@@ -28,7 +29,8 @@ namespace Elpida::Application
 		void ClearResults();
 		void SaveResults(const std::filesystem::path& filePath);
 		FullBenchmarkController(FullBenchmarkModel& model,
-				const TimingModel& overheadsModel,
+				const TimingModel& timingModel,
+				const TopologyModel& topologyModel,
 				const BenchmarkRunConfigurationModel& runConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService,
 				const ResultSerializer& resultSerializer,
@@ -37,7 +39,8 @@ namespace Elpida::Application
 
 		~FullBenchmarkController() override;
 	private:
-		const TimingModel& _overheadsModel;
+		const TimingModel& _timingModel;
+		const TopologyModel& _topologyModel;
 		const BenchmarkRunConfigurationModel& _runConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		const ResultSerializer& _resultSerializer;

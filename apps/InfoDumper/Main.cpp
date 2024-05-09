@@ -77,12 +77,18 @@ int main(int argC, char** argV)
 
 	try
 	{
+
+		auto topology = TopologyLoader::LoadTopology();
+
+		auto timing = TimingCalculator::CalculateTiming(topology);
+
 		json root;
 		root["cpu"] = JsonSerializer::Serialize(CpuInfoLoader::Load());
 		root["memory"] = JsonSerializer::Serialize(MemoryInfoLoader::Load());
 		root["os"] = JsonSerializer::Serialize(OsInfoLoader::Load());
-		root["topology"] = JsonSerializer::Serialize(TopologyLoader::LoadTopology());
-		root["timing"] = JsonSerializer::Serialize(TimingCalculator::CalculateTiming());
+		root["topology"] = JsonSerializer::Serialize(topology);
+		root["topology"]["fastestProcessor"] = timing.GetFastestProcessor();
+		root["timing"] = JsonSerializer::Serialize(timing);
 		root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarkPath);
 
 		std::cout << root.dump();

@@ -7,14 +7,27 @@
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/TimingUtilities.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
+#include "Elpida/Core/Topology/TopologyInfo.hpp"
 
 #include "Elpida/Core/DummyClass.hpp"
 #include <thread>
-#include <tuple>
 
 namespace Elpida
 {
 	const constexpr Duration DefaultTestDuration = Seconds(1);
+
+
+	static Duration CalculateLoopOverheadFast()
+	{
+		return Seconds(
+				1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(MilliSeconds(100),
+						Seconds(0),
+						Seconds(0),
+						[](auto x)
+						{
+							while (x-- > 0);
+						}));
+	}
 
 	static Duration CalculateLoopOverhead()
 	{
@@ -57,24 +70,48 @@ namespace Elpida
 		return duration;
 	}
 
-	TimingInfo TimingCalculator::CalculateTiming()
+	TimingInfo TimingCalculator::CalculateTiming(const TopologyInfo& topologyInfo)
 	{
-		Duration loopOverhead;
+		Duration loopOverhead = Seconds(6546513);
 		Duration nowOverhead;
 		Duration vCallOverhead;
 
-		std::thread([&]()
-		{
-		  //ProcessingUnitNode::PinThreadToProcessor(0);
+		unsigned int highestCore = 0;
 
-		  loopOverhead = CalculateLoopOverhead();
-		  nowOverhead = CalculateNowOverhead(loopOverhead);
-		  vCallOverhead = CalculateVCallOverhead(loopOverhead, nowOverhead);
+		std::thread([&]
+		{
+			ProcessingUnitNode::PinThreadToProcessor(0);
+			auto& cores = topologyInfo.GetAllCores();
+
+			for (auto& core : cores)
+			{
+				auto& pu = core.get().GetChildren().front();
+
+				Duration overhead;
+
+				ProcessingUnitNode::PinThreadToProcessor(pu.get()->GetOsIndex().value());
+				//std::this_thread::sleep_for(MilliSeconds(1));
+				overhead = CalculateLoopOverheadFast();
+
+				if (overhead < loopOverhead)
+				{
+					highestCore = pu->GetOsIndex().value();
+					loopOverhead = overhead;
+				}
+			}
+
+			ProcessingUnitNode::PinThreadToProcessor(highestCore);
+
+			loopOverhead = CalculateLoopOverhead();
+			nowOverhead = CalculateNowOverhead(loopOverhead);
+			vCallOverhead = CalculateVCallOverhead(loopOverhead, nowOverhead);
+
 		}).join();
 
 		return TimingInfo(nowOverhead,
-			loopOverhead,
-			vCallOverhead,
-			1.0 / loopOverhead.count());
+				loopOverhead,
+				vCallOverhead,
+				1.0 / loopOverhead.count(),
+				highestCore);
 	}
 } // Application

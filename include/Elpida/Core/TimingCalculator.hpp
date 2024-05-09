@@ -9,11 +9,12 @@
 
 namespace Elpida
 {
+	class TopologyInfo;
 
 	class TimingCalculator final
 	{
 	public:
-		static TimingInfo CalculateTiming();
+		static TimingInfo CalculateTiming(const TopologyInfo& topologyInfo);
 		TimingCalculator() = delete;
 	};
 

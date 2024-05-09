@@ -6,13 +6,13 @@
 
 namespace Elpida::Application
 {
-	TopologyModel::TopologyModel(TopologyNodeModel root)
-		: _root(std::move(root))
+	TopologyModel::TopologyModel(TopologyNodeModel root, unsigned int fastestProcessor)
+			:_root(std::move(root)), _fastestProcessor(fastestProcessor)
 	{
 		_rootDataChanged = _root.DataChanged().Subscribe([this]()
 		{
-		  SetSelectedLeafNodes();
-		  OnDataChanged();
+			SetSelectedLeafNodes();
+			OnDataChanged();
 		});
 	}
 
@@ -22,7 +22,8 @@ namespace Elpida::Application
 	}
 
 	static void
-	GetSelectedNodes(std::vector<std::reference_wrapper<const TopologyNodeModel>>& accumulator, const TopologyNodeModel& node)
+	GetSelectedNodes(std::vector<std::reference_wrapper<const TopologyNodeModel>>& accumulator,
+			const TopologyNodeModel& node)
 	{
 		if (node.IsSelected() && node.GetType() == TopologyNodeType::ProcessingUnit)
 		{
@@ -60,7 +61,8 @@ namespace Elpida::Application
 	}
 
 	static void
-	GetLeafNodesImpl(std::vector<std::reference_wrapper<const TopologyNodeModel>>& accumulator, const TopologyNodeModel& node)
+	GetLeafNodesImpl(std::vector<std::reference_wrapper<const TopologyNodeModel>>& accumulator,
+			const TopologyNodeModel& node)
 	{
 		if (node.GetType() == TopologyNodeType::ProcessingUnit)
 		{
@@ -98,12 +100,13 @@ namespace Elpida::Application
 	}
 
 	TopologyModel::TopologyModel(TopologyModel&& other) noexcept
-		: _root(std::move(other._root)), _selectedLeafNodes(std::move(other._selectedLeafNodes)), _leafNodes(std::move(other._leafNodes))
+			:_root(std::move(other._root)), _selectedLeafNodes(std::move(other._selectedLeafNodes)),
+			 _leafNodes(std::move(other._leafNodes)), _fastestProcessor(other._fastestProcessor)
 	{
 		_rootDataChanged = _root.DataChanged().Subscribe([this]()
 		{
-		  SetSelectedLeafNodes();
-		  OnDataChanged();
+			SetSelectedLeafNodes();
+			OnDataChanged();
 		});
 	}
 
@@ -112,10 +115,11 @@ namespace Elpida::Application
 		_root = std::move(other._root);
 		_selectedLeafNodes = std::move(other._selectedLeafNodes);
 		_leafNodes = std::move(other._leafNodes);
+		_fastestProcessor = other._fastestProcessor;
 		_rootDataChanged = _root.DataChanged().Subscribe([this]()
 		{
-		  SetSelectedLeafNodes();
-		  OnDataChanged();
+			SetSelectedLeafNodes();
+			OnDataChanged();
 		});
 		return *this;
 	}
@@ -123,5 +127,10 @@ namespace Elpida::Application
 	const TopologyNodeModel& TopologyModel::GetRoot() const
 	{
 		return _root;
+	}
+
+	unsigned int TopologyModel::GetFastestProcessor() const
+	{
+		return _fastestProcessor;
 	}
 } // Application

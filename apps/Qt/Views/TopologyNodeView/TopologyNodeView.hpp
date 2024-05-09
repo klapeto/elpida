@@ -2,6 +2,7 @@
 #define ELPIDA_TOPOLOGYNODEVIEW_HPP
 
 #include <QFrame>
+#include <optional>
 
 #include "Models/SystemInfo/TopologyNodeModel.hpp"
 #include "EventSubscription.hpp"
@@ -19,7 +20,7 @@ namespace Elpida::Application
 	{
 	Q_OBJECT
 	public:
-		explicit TopologyNodeView(TopologyNodeModel& topologyNodeModel, QWidget* parent = nullptr);
+		explicit TopologyNodeView(TopologyNodeModel& topologyNodeModel, std::optional<unsigned int>& fastestProcessor, QWidget* parent = nullptr);
 		~TopologyNodeView() override;
 	protected:
 		void mousePressEvent(QMouseEvent* event) override;
@@ -33,6 +34,7 @@ namespace Elpida::Application
 		TopologyNodeModel& _topologyNodeModel;
 		EventSubscription<> _dataChangedSubscription;
 		bool _uiUpdating;
+		bool _fastest;
 		void OnModelChanged();
 	};
 }

@@ -127,6 +127,7 @@ int main(int argC, char** argV)
 				TimingInfo(Seconds(helper.GetNowOverhead()),
 						Seconds(helper.GetLoopOverhead()),
 						Seconds(helper.GetVCallOverhead()),
+						0,
 						0));
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());
