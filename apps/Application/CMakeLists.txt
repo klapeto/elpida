@@ -58,6 +58,17 @@ set(ELPIDA_APPLICATION_SOURCES
         ModelBuilderJson.hpp
         ResultSerializer.cpp
         ResultSerializer.hpp
+        Controllers/FullBenchmarkInstance.cpp
+        Controllers/FullBenchmarkInstance.hpp
+        Core/BenchmarkScore.hpp
+        FullBenchmarkInstances/SvgRasterizationSingleThread.cpp
+        FullBenchmarkInstances/SvgRasterizationSingleThread.hpp
+        FullBenchmarkInstances/SvgRasterizationMultiThread.cpp
+        FullBenchmarkInstances/SvgRasterizationMultiThread.hpp
+        FullBenchmarkInstances/MemoryLatency.cpp
+        FullBenchmarkInstances/MemoryLatency.hpp
+        FullBenchmarkInstances/MemoryReadBandwidth.cpp
+        FullBenchmarkInstances/MemoryReadBandwidth.hpp
 )
 
 

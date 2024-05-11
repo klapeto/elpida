@@ -26,22 +26,22 @@ namespace Elpida::Application
 		return _benchmarkResults;
 	}
 
-	FullBenchmarkResultModel::Score FullBenchmarkResultModel::GetSingleCoreScore() const
+	Score FullBenchmarkResultModel::GetSingleCoreScore() const
 	{
 		return _singleCoreScore;
 	}
 
-	FullBenchmarkResultModel::Score FullBenchmarkResultModel::GetMultiCoreScore() const
+	Score FullBenchmarkResultModel::GetMultiCoreScore() const
 	{
 		return _multiCoreScore;
 	}
 
-	FullBenchmarkResultModel::Score FullBenchmarkResultModel::GetMemoryScore() const
+	Score FullBenchmarkResultModel::GetMemoryScore() const
 	{
 		return _memoryScore;
 	}
 
-	FullBenchmarkResultModel::Score FullBenchmarkResultModel::GetTotalScore() const
+	Score FullBenchmarkResultModel::GetTotalScore() const
 	{
 		return _totalScore;
 	}

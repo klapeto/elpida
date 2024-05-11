@@ -11,7 +11,7 @@ namespace Elpida::Application
 	using Vu = ValueUtilities;
 
 	static void
-	SetDelta(QLabel* label, FullBenchmarkResultModel::Score currentScore, FullBenchmarkResultModel::Score previousScore,
+	SetDelta(QLabel* label, Score currentScore, Score previousScore,
 			QTreeWidgetItem* treeItem = nullptr)
 	{
 		if (previousScore == 0.0) return;

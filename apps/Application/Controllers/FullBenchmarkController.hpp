@@ -7,10 +7,13 @@
 
 #include "Models/Full/FullBenchmarkModel.hpp"
 #include "Controller.hpp"
+#include "FullBenchmarkInstance.hpp"
 
 #include <thread>
 #include <atomic>
 #include <filesystem>
+#include <vector>
+#include <memory>
 
 namespace Elpida::Application
 {
@@ -49,9 +52,7 @@ namespace Elpida::Application
 		std::atomic<bool> _running;
 		std::atomic<bool> _cancelling;
 
-		const BenchmarkModel* _memoryLatency;
-		const BenchmarkModel* _memoryReadBandwidth;
-		const BenchmarkModel* _svgRasterization;
+		std::vector<std::unique_ptr<FullBenchmarkInstance>> _benchmarks;
 	};
 
 } // Elpida

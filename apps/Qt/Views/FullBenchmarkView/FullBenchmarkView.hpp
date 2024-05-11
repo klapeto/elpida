@@ -38,10 +38,10 @@ namespace Elpida::Application
 
 	private:
 		struct PreviousScores {
-			FullBenchmarkResultModel::Score _totalScore;
-			FullBenchmarkResultModel::Score _singleCoreScore;
-			FullBenchmarkResultModel::Score _multiCoreScore;
-			FullBenchmarkResultModel::Score _memoryScore;
+			Score _totalScore;
+			Score _singleCoreScore;
+			Score _multiCoreScore;
+			Score _memoryScore;
 		};
 		Ui::FullBenchmarkView* _ui;
 		const FullBenchmarkModel& _model;

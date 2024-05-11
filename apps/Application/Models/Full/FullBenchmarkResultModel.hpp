@@ -7,6 +7,7 @@
 
 #include "Models/Abstractions/Model.hpp"
 #include "Models/Benchmark/BenchmarkResultModel.hpp"
+#include "Core/BenchmarkScore.hpp"
 
 #include <vector>
 
@@ -16,7 +17,6 @@ namespace Elpida::Application
 	class FullBenchmarkResultModel : public Model
 	{
 	public:
-		using Score = double;
 
 		const std::vector<BenchmarkResultModel>& GetBenchmarkResults() const;
 		Score GetTotalScore() const;
