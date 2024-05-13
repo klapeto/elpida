@@ -71,9 +71,19 @@ namespace Elpida
 							stream.Next();
 							return NextNode::Cdata;
 						}
-						else
+						else if (stream.Current() == 'D')
 						{
-							throw ParseException("Unexpected character: expected '-' or '[CDATA['");
+							if (!stream.ConsumeNextChars("DOCTYPE"))
+							{
+								throw ParseException("Unexpected character: expected 'DOCTYPE'");
+							}
+							if (!stream.SkipUntilString(">"))
+							{
+								throw ParseException("Unexpected end of file: expected '>'");
+							}
+						}
+						else {
+							throw ParseException("Unexpected character: expected '-' or '[CDATA[' or 'DOCTYPE'");
 						}
 					}
 					else

@@ -25,9 +25,6 @@
 
 namespace Elpida::Application
 {
-	const double Divider = 1000000.0;
-	const std::size_t RasterizationSamplesBase = 8192;
-
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TimingModel& timingModel,
 			const TopologyModel& topologyModel,
