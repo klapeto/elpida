@@ -17,9 +17,8 @@ namespace Elpida
 	class PngDecodingTask final : public Task
 	{
 	 public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
-		UniquePtr<AbstractTaskData> Finalize() override;
-		bool CanBeMultiThreaded() const override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
+		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
 
 		PngDecodingTask();
@@ -29,8 +28,8 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 		TaskInfo DoGetInfo() const override;
 	 private:
-		UniquePtr<ImageTaskData> _outputData;
-		UniquePtr<AbstractTaskData> _inputData;
+		SharedPtr<ImageTaskData> _outputData;
+		SharedPtr<AbstractTaskData> _inputData;
 		png_image _pngImg;
 	};
 

@@ -11,7 +11,7 @@
 
 namespace Elpida
 {
-	void FileReadTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void FileReadTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		if (!std::filesystem::exists(_filePath))
 		{
@@ -27,7 +27,7 @@ namespace Elpida
 		_fileStream = std::fstream(path, std::ios::in | std::ios::binary);
 	}
 
-	UniquePtr<AbstractTaskData> FileReadTask::Finalize()
+	SharedPtr<AbstractTaskData> FileReadTask::Finalize()
 	{
 		if (_fileStream.is_open())
 		{
@@ -47,9 +47,10 @@ namespace Elpida
 			ScoreType::Throughput
 		};
 	}
-	bool FileReadTask::CanBeMultiThreaded() const
+
+	ConcurrencyMode FileReadTask::GetAllowedConcurrency() const
 	{
-		return false;
+		return ConcurrencyMode::None;
 	}
 
 	FileReadTask::FileReadTask(std::string filePath)

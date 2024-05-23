@@ -6,7 +6,11 @@ project("Elpida Web benchmarks" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_WEB_BENCHMARKS_SOURCES
         Plugin.cpp
         DataParseBenchmark.cpp
-        ParseJsonTask.cpp)
+        ParseJsonTask.cpp
+        XmlGenerationTask.cpp
+        XmlGenerationTask.hpp
+        JsonGenerationTask.cpp
+        JsonGenerationTask.hpp)
 
 add_library(elpida-web-benchmarks MODULE ${ELPIDA_WEB_BENCHMARKS_SOURCES})
 

@@ -14,30 +14,29 @@
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/EnvironmentInfo.hpp"
 #include "Elpida/Core/TaskConfiguration.hpp"
+#include "Elpida/Core/SharedPtr.hpp"
+#include "Elpida/Core/ConcurrencyMode.hpp"
 
 namespace Elpida
 {
 	class Task
 	{
 	public:
-		virtual void Prepare(UniquePtr<AbstractTaskData> inputData) = 0;
+		virtual void Prepare(SharedPtr<AbstractTaskData> inputData) = 0;
 
 		[[nodiscard]]
 		virtual Duration Run();
 
 		[[nodiscard]]
-		virtual UniquePtr<AbstractTaskData> Finalize() = 0;
+		virtual SharedPtr<AbstractTaskData> Finalize() = 0;
 
 		[[nodiscard]]
 		TaskInfo GetInfo() const
 		{
 			auto info = DoGetInfo();
 			info._isMeasured = _measured;
-			return std::move(info);
+			return info;
 		}
-
-		[[nodiscard]]
-		virtual bool CanBeMultiThreaded() const = 0;
 
 		[[nodiscard]]
 		virtual Size GetProcessedDataSize() const = 0;
@@ -49,6 +48,12 @@ namespace Elpida
 		{
 			_measured = measured;
 			return *this;
+		}
+
+		[[nodiscard]]
+		virtual ConcurrencyMode GetAllowedConcurrency() const
+		{
+			return static_cast<ConcurrencyMode>(static_cast<int>(ConcurrencyMode::CopyInput) | static_cast<int>(ConcurrencyMode::ShareInput));
 		}
 
 		[[nodiscard]]
@@ -77,9 +82,9 @@ namespace Elpida
 		virtual UniquePtr<Task> DoDuplicate() const = 0;
 
 		template<typename T, typename ... TArgs>
-		UniquePtr<T> CreateData(TArgs&& ... args)
+		SharedPtr<T> CreateData(TArgs&& ... args)
 		{
-			return std::make_unique<T>(std::forward<TArgs>(args)...);
+			return std::make_shared<T>(std::forward<TArgs>(args)...);
 		}
 	};
 

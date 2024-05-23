@@ -10,7 +10,7 @@
 
 namespace Elpida
 {
-	void PngDecodingTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void PngDecodingTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		if (inputData->GetSize() == 0)
 		{
@@ -32,7 +32,7 @@ namespace Elpida
 		}
 	}
 
-	UniquePtr<AbstractTaskData> PngDecodingTask::Finalize()
+	SharedPtr<AbstractTaskData> PngDecodingTask::Finalize()
 	{
 		return std::move(_outputData);
 	}
@@ -46,11 +46,6 @@ namespace Elpida
 			"The input amount of bytes processed per second",
 			ScoreType::Throughput
 		};
-	}
-
-	bool PngDecodingTask::CanBeMultiThreaded() const
-	{
-		return false;
 	}
 
 	void PngDecodingTask::DoRun()

@@ -11,6 +11,8 @@
 #include "Elpida/Core/Task.hpp"
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 #include "Elpida/Core/EnvironmentInfo.hpp"
+#include "Elpida/Core/ConcurrencyMode.hpp"
+#include "Elpida/Core/SharedPtr.hpp"
 
 namespace Elpida {
 
@@ -42,15 +44,26 @@ namespace Elpida {
 		[[nodiscard]]
 		virtual double CalculateScore(const Vector<TaskResult>& taskResults) const = 0;
 	 private:
-		static Duration ExecuteSingleThread(UniquePtr<AbstractTaskData>& data,
+		static Duration ExecuteSingleThread(SharedPtr<AbstractTaskData>& data,
 				UniquePtr<Task> task,
 				Size& processedDataSize);
-		static Duration ExecuteMultiThread(UniquePtr<AbstractTaskData>& data,
-			UniquePtr<Task> task,
-			const Vector<SharedPtr<Allocator>>& allocators,
-			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-			Size& processedDataSize,
-			bool pinThreads);
+		static Duration ExecuteMultiThread(
+				ConcurrencyMode concurrencyMode,
+				SharedPtr<AbstractTaskData>& data,
+				UniquePtr<Task> task,
+				const Vector<SharedPtr<Allocator>>& allocators,
+				const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+				Size& processedDataSize,
+				bool pinThreads);
+
+		static Duration ExecuteConcurrent(
+				ConcurrencyMode concurrencyMode,
+				UniquePtr<Task> task,
+				SharedPtr<AbstractTaskData>& data,
+				Vector<SharedPtr<AbstractTaskData>> inputData,
+				const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+				Size& processedDataSize,
+				bool pinThreads);
 
 		void ValidateConfiguration(const Vector<TaskConfiguration>& configuration) const;
 

@@ -28,7 +28,7 @@ namespace Elpida
 		ParseXmlTask parseXmlTask;
 		SvgParseTask svgParseTask;
 		SvgCalculateTask svgCalculateTask(1.0);
-		SvgRasterizationTask rasterization(16, false, false, false, nullptr);
+		SvgRasterizationTask rasterization(16);
 #ifdef ENABLE_OUTPUT
 		ConvertToUInt8Task convert;
 		PngEncodingTask pngEncodingTask;
@@ -59,9 +59,6 @@ namespace Elpida
 				TaskConfiguration("Shape count", ConfigurationType::Integer, "1"),
 				TaskConfiguration("SVG output scale", ConfigurationType::Float, "1.0"),
 				TaskConfiguration("SVG rasterization sub samples", ConfigurationType::Integer, "16"),
-				TaskConfiguration("Multi threaded shape processing", ConfigurationType::Boolean, "false"),
-				TaskConfiguration("Multi threaded Super Sampling", ConfigurationType::Boolean, "false"),
-				TaskConfiguration("Multi threaded Bit Blit", ConfigurationType::Boolean, "false"),
 #ifdef ENABLE_OUTPUT
 				TaskConfiguration("Output Png file", ConfigurationType::File, "./test-data-single.png"),
 #endif
@@ -78,17 +75,11 @@ namespace Elpida
 		returnTasks.push_back(CreateTask<ParseXmlTask>(false));
 		returnTasks.push_back(CreateTask<SvgParseTask>(false));
 		returnTasks.push_back(CreateTask<SvgCalculateTask>(false, configuration.at(1).AsFloat()));
-		returnTasks.push_back(CreateTask<SvgRasterizationTask>(true,
-				configuration.at(2).AsInteger(),
-				configuration.at(3).AsBoolean(),
-				configuration.at(4).AsBoolean(),
-				configuration.at(5).AsBoolean(),
-				&context.GetThreadPool()
-				));
+		returnTasks.push_back(CreateTask<SvgRasterizationTask>(true, configuration.at(2).AsInteger()));
 #ifdef ENABLE_OUTPUT
 		returnTasks.push_back(CreateTask<ConvertToUInt8Task>(false));
 		returnTasks.push_back(CreateTask<PngEncodingTask>(false));
-		returnTasks.push_back(CreateTask<FileWriteTask>(false, configuration.at(6).GetValue()));
+		returnTasks.push_back(CreateTask<FileWriteTask>(false, configuration.at(3).GetValue()));
 #endif
 
 		return returnTasks;

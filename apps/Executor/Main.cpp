@@ -23,6 +23,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <thread>
 
 #include "Elpida/Core/AllocatorFactory.hpp"
 #include "Elpida/Core/DefaultAllocatorFactory.hpp"
@@ -40,7 +41,6 @@
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
-#include "Elpida/Core/ThreadPool/ThreadPool.hpp"
 
 using namespace Elpida;
 
@@ -136,15 +136,12 @@ int main(int argC, char** argV)
 			ProcessingUnitNode::PinProcessToProcessors(targetProcessors);
 		}
 
-		auto targetProcessorCount = !targetProcessors.empty() ? targetProcessors.size() : std::thread::hardware_concurrency();
-
-		ThreadPool threadPool(targetProcessorCount * helper.GetDependentQueueRatio(), targetProcessorCount * helper.GetIndependentQueueRatio());
-
-		auto context = BenchmarkRunContext(targetProcessors, config, threadPool,
+		auto context = BenchmarkRunContext(targetProcessors, config,
 				helper.GetNumaAware() ?
 				UniquePtr<AllocatorFactory>(new NumaAllocatorFactory())
 									  : UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()),
 				environmentInfo,
+				helper.GetConcurrencyMode(),
 				helper.GetPinThreads());
 
 		auto result = benchmark->Run(context);

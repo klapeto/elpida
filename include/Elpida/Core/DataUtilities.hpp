@@ -25,18 +25,19 @@ namespace Elpida
 		static Size GetAccumulatedSizeOfChunks(const Vector<Ref<const AbstractTaskData>>& outputChunks)
 		{
 			Size outputTotalSize = 0;
-			for (const auto& data: outputChunks)
+			for (const auto& data : outputChunks)
 			{
 				outputTotalSize += data.get().GetSize();
 			}
 			return outputTotalSize;
 		}
 
-	 public:
+	public:
 		template<typename T, typename TReturn = T, typename TConstructor>
-		static Vector<UniquePtr<TReturn>> SplitChunksToChunks(const Vector<Ref<const AbstractTaskData>>& input,
-			const Vector<SharedPtr<Allocator>>& targetAllocators,
-			Size chunkDivisibleBy, TConstructor constructor){
+		static Vector<SharedPtr<TReturn>> SplitChunksToChunks(const Vector<Ref<const AbstractTaskData>>& input,
+				const Vector<SharedPtr<Allocator>>& targetAllocators,
+				Size chunkDivisibleBy, TConstructor constructor)
+		{
 			auto targetChunksCount = targetAllocators.size();
 			auto& outputChunks = input;
 
@@ -49,7 +50,7 @@ namespace Elpida
 				targetChunkSize++;
 			}
 
-			Vector<UniquePtr<TReturn>> targetChunksVec;
+			Vector<SharedPtr<TReturn>> targetChunksVec;
 			targetChunksVec.reserve(targetChunksCount);
 
 			if (outputTotalSize == 0)
@@ -66,7 +67,7 @@ namespace Elpida
 			Size currentChunkOffset = 0;
 			Size currentChunkSize = 0;
 			Size totalDataCopied = 0;
-			for (const auto& outChunk: outputChunks)
+			for (const auto& outChunk : outputChunks)
 			{
 				Size oChunkSize = outChunk.get().GetSize();
 				Size oChunkBytesCopied = 0;
@@ -102,8 +103,8 @@ namespace Elpida
 
 					// copy the data
 					std::memcpy(currentChunk->GetData() + currentChunkOffset,
-						outChunk.get().GetData() + oChunkBytesCopied,
-						actualReadSize);
+							outChunk.get().GetData() + oChunkBytesCopied,
+							actualReadSize);
 
 					// add offsets of the actual copied data
 					oChunkBytesCopied += actualReadSize;

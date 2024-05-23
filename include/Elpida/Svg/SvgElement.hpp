@@ -99,9 +99,10 @@ namespace Elpida
 
 		SvgElement();
 		explicit SvgElement(const XmlElement& element, SvgDocument& document);
-		SvgElement(const SvgElement&) = delete;
+		SvgElement(const SvgElement&) = default;
 		SvgElement(SvgElement&& other) noexcept = default;
 		SvgElement& operator=(SvgElement&&) noexcept = default;
+		SvgElement& operator=(const SvgElement&) = default;
 		virtual ~SvgElement() = default;
 
 	private:

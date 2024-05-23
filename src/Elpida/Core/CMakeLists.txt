@@ -39,10 +39,6 @@ set(ELPIDA_CORE_SOURCES
         DefaultAllocatorFactory.cpp
         Topology/ProcessingUnitNode.Unix.cpp
         Topology/ProcessingUnitNote.Windows.cpp
-        ThreadPool/Functor.cpp
-        ThreadPool/ThreadPool.cpp
-        ThreadPool/ThreadPoolThread.cpp
-        BlockingCollection.cpp
         BenchmarkRunContext.cpp
 )
 

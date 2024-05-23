@@ -33,9 +33,6 @@ namespace Elpida::Application
 		_benchmark.GetConfigurations()[0].SetValue(std::to_string(std::thread::hardware_concurrency()));
 		_benchmark.GetConfigurations()[1].SetValue("0.06");
 		_benchmark.GetConfigurations()[2].SetValue(std::to_string(targetSamples));
-		_benchmark.GetConfigurations()[3].SetValue("true");
-		_benchmark.GetConfigurations()[4].SetValue("true");
-		_benchmark.GetConfigurations()[5].SetValue("true");
 
 		auto svgRasterizationMulti = _executionService.Execute(
 				_benchmark,
@@ -43,10 +40,9 @@ namespace Elpida::Application
 				_timingModel.GetNowOverhead().count(),
 				_timingModel.GetLoopOverhead().count(),
 				_timingModel.GetVirtualCallOverhead().count(),
-				32.0,
-				32.0,
 				false,
-				false);
+				false,
+				ConcurrencyMode::CopyInput);
 
 		auto& taskResults = svgRasterizationMulti.GetTaskResults();
 

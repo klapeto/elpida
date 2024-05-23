@@ -7,19 +7,14 @@
 
 namespace Elpida
 {
-	void ParseJsonTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void ParseJsonTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
 	}
 
-	bool ParseJsonTask::CanBeMultiThreaded() const
+	SharedPtr<AbstractTaskData> ParseJsonTask::Finalize()
 	{
-		return false;
-	}
-
-	UniquePtr<AbstractTaskData> ParseJsonTask::Finalize()
-	{
-		return std::make_unique<SimpleTaskData<nlohmann::json>>(std::move(_parsedElement), _inputData->GetAllocator());
+		return std::make_shared<SimpleTaskData<nlohmann::json>>(std::move(_parsedElement), _inputData->GetAllocator());
 	}
 
 	TaskInfo ParseJsonTask::DoGetInfo() const

@@ -12,9 +12,8 @@ namespace Elpida
 	class SvgDocumentGenerationTask: public Task
 	{
 	public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
-		UniquePtr<AbstractTaskData> Finalize() override;
-		bool CanBeMultiThreaded() const override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
+		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
 
 		explicit SvgDocumentGenerationTask(std::size_t elementCount);
@@ -24,7 +23,7 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 		TaskInfo DoGetInfo() const override;
 	private:
-		std::unique_ptr<AbstractTaskData> _outputData;
+		std::shared_ptr<AbstractTaskData> _outputData;
 		std::size_t _elementCount;
 	};
 

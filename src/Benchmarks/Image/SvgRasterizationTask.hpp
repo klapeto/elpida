@@ -18,18 +18,15 @@ namespace Elpida
 	{
 	public:
 
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
 
 		[[nodiscard]]
-		bool CanBeMultiThreaded() const override;
-
-		[[nodiscard]]
-		UniquePtr<AbstractTaskData> Finalize() override;
+		SharedPtr<AbstractTaskData> Finalize() override;
 
 		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
-		explicit SvgRasterizationTask(std::size_t subSamples, bool multiThreadedShapes, bool multiThreadedSuperSampling, bool multiThreadedBitBlt, ThreadPool* threadPool);
+		explicit SvgRasterizationTask(std::size_t subSamples);
 		~SvgRasterizationTask() override = default;
 	protected:
 		void DoRun(Iterations iterations) override;
@@ -45,14 +42,10 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
-		UniquePtr<AbstractTaskData> _inputData;
+		SharedPtr<AbstractTaskData> _inputData;
 		SvgCalculatedDocument _inputDocument;
 		SvgBackDrop _rasterizedImage;
-		ThreadPool* _threadPool;
 		std::size_t _subSamples;
-		bool _multiThreadedShapes;
-		bool _multiThreadedSuperSampling;
-		bool _multiThreadedBitBlt;
 	};
 
 } // Elpida

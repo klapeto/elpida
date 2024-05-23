@@ -10,7 +10,7 @@
 
 namespace Elpida
 {
-	void PngEncodingTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void PngEncodingTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		auto ptr = dynamic_cast<ImageTaskData*>(inputData.get());
 
@@ -28,7 +28,7 @@ namespace Elpida
 
 		if (png_image_write_to_memory(&_pngImg, nullptr, &outputSize, 0, _inputData->GetData(), 0, nullptr))
 		{
-			_outputData = std::make_unique<RawTaskData>(_inputData->GetAllocator());
+			_outputData = std::make_shared<RawTaskData>(_inputData->GetAllocator());
 			_outputData->Allocate(outputSize);
 		}
 		else
@@ -37,7 +37,7 @@ namespace Elpida
 		}
 	}
 
-	UniquePtr<AbstractTaskData> PngEncodingTask::Finalize()
+	SharedPtr<AbstractTaskData> PngEncodingTask::Finalize()
 	{
 		return std::move(_outputData);
 	}
@@ -51,11 +51,6 @@ namespace Elpida
 			"The amount of pixels encoded.",
 			ScoreType::Throughput
 		};
-	}
-
-	bool PngEncodingTask::CanBeMultiThreaded() const
-	{
-		return false;
 	}
 
 	void PngEncodingTask::DoRun()

@@ -26,10 +26,9 @@ namespace Elpida::Application
 			double nowOverheadSeconds,
 			double loopOverheadSeconds,
 			double virtualCallSeconds,
-			double dependentQueueRatio,
-			double independentQueueRatio,
 			bool numaAware,
-			bool pinThreads)
+			bool pinThreads,
+			ConcurrencyMode concurrencyMode)
 	{
 
 		std::vector<std::string> configuration;
@@ -87,16 +86,7 @@ namespace Elpida::Application
 			arguments.emplace_back("--pin-threads");
 		}
 
-		if (dependentQueueRatio > 0.0)
-		{
-			arguments.emplace_back(std::string("--dependent-queue-ratio=").append(toString(dependentQueueRatio)));
-		}
-
-		if (independentQueueRatio > 0.0)
-		{
-			arguments.emplace_back(
-					std::string("--independent-queue-ratio=").append(toString(independentQueueRatio)));
-		}
+		arguments.emplace_back(std::string("--concurrency-mode=").append(std::to_string(static_cast<std::size_t>(concurrencyMode))));
 
 		_currentProcess = Process(OsUtilities::GetExecutableDirectory() / "elpida-executor", arguments, true, true);
 

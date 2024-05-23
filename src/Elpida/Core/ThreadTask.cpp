@@ -6,7 +6,7 @@
 
 namespace Elpida
 {
-	void ThreadTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void ThreadTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_taskToRun->Prepare(std::move(inputData));
 
@@ -20,17 +20,17 @@ namespace Elpida
 		WakeThread();
 		_thread.join();
 
+		if (_exception)
+		{
+			rethrow_exception(_exception);
+		}
+
 		return _taskRunDuration;
 	}
 
-	UniquePtr<AbstractTaskData> ThreadTask::Finalize()
+	SharedPtr<AbstractTaskData> ThreadTask::Finalize()
 	{
 		return _taskToRun->Finalize();
-	}
-
-	bool ThreadTask::CanBeMultiThreaded() const
-	{
-		return false;
 	}
 
 	ThreadTask::ThreadTask(UniquePtr<Task> taskToRun, Optional<Ref<const ProcessingUnitNode>> targetProcessor)
@@ -65,16 +65,23 @@ namespace Elpida
 
 	void ThreadTask::ThreadProcedure()
 	{
-		if (_targetProcessor.has_value())
+		try
 		{
-			_targetProcessor->get().PinThreadToThisProcessor();
+			if (_targetProcessor.has_value())
+			{
+				_targetProcessor->get().PinThreadToThisProcessor();
+			}
+			std::unique_lock<std::mutex> lock(_mutex);
+			_conditionVariable.wait(lock, [this]()
+			{
+				return _doStart;
+			});
+			_taskRunDuration = _taskToRun->Run();
 		}
-		std::unique_lock<std::mutex> lock(_mutex);
-		_conditionVariable.wait(lock, [this]()
+		catch (...)
 		{
-			return _doStart;
-		});
-		_taskRunDuration = _taskToRun->Run();
+			_exception = std::current_exception();
+		}
 	}
 
 	void ThreadTask::WakeThread()

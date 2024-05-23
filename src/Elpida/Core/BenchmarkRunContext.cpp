@@ -2,15 +2,15 @@
 // Created by klapeto on 9/4/2024.
 //
 
-#include "BenchmarkRunContext.hpp"
+#include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida
 {
 	BenchmarkRunContext::BenchmarkRunContext(const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-			const Vector<TaskConfiguration>& configuration, ThreadPool& threadPool,
-			UniquePtr<AllocatorFactory> allocatorFactory, const EnvironmentInfo& environmentInfo, bool pinThreads)
-			: _targetProcessors(targetProcessors), _configuration(configuration), _threadPool(threadPool),
-			  _environmentInfo(environmentInfo), _allocatorFactory(std::move(allocatorFactory)), _pinThreads(pinThreads)
+			const Vector<TaskConfiguration>& configuration,
+			UniquePtr<AllocatorFactory> allocatorFactory, const EnvironmentInfo& environmentInfo, ConcurrencyMode concurrencyMode, bool pinThreads)
+			: _targetProcessors(targetProcessors), _configuration(configuration),
+			  _environmentInfo(environmentInfo), _allocatorFactory(std::move(allocatorFactory)), _concurrencyMode(concurrencyMode), _pinThreads(pinThreads)
 	{
 	}
 
@@ -22,11 +22,6 @@ namespace Elpida
 	const Vector<TaskConfiguration>& BenchmarkRunContext::GetConfiguration() const
 	{
 		return _configuration;
-	}
-
-	ThreadPool& BenchmarkRunContext::GetThreadPool() const
-	{
-		return _threadPool;
 	}
 
 	const EnvironmentInfo& BenchmarkRunContext::GetEnvironmentInfo() const
@@ -42,5 +37,10 @@ namespace Elpida
 	bool BenchmarkRunContext::IsPinThreads() const
 	{
 		return _pinThreads;
+	}
+
+	ConcurrencyMode BenchmarkRunContext::GetConcurrencyMode() const
+	{
+		return _concurrencyMode;
 	}
 } // Elpida

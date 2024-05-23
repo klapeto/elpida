@@ -12,7 +12,7 @@
 
 namespace Elpida
 {
-	void ConvertToUInt8Task::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void ConvertToUInt8Task::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		auto ptr = dynamic_cast<ImageTaskData*>(inputData.get());
 
@@ -23,7 +23,7 @@ namespace Elpida
 
 		_inputData = std::move(inputData);
 
-		_outputData = std::make_unique<ImageTaskData>(
+		_outputData = std::make_shared<ImageTaskData>(
 			ptr->GetAllocator(),
 			ptr->GetWidth(),
 			ptr->GetHeight(),
@@ -36,7 +36,7 @@ namespace Elpida
 		_outPtr = static_cast<IntChannel*>(_outputData->GetData());
 	}
 
-	UniquePtr<AbstractTaskData> ConvertToUInt8Task::Finalize()
+	SharedPtr<AbstractTaskData> ConvertToUInt8Task::Finalize()
 	{
 		return std::move(_outputData);
 	}
@@ -50,10 +50,6 @@ namespace Elpida
 			"The amount of pixels processed per second.",
 			ScoreType::Throughput
 		};
-	}
-	bool ConvertToUInt8Task::CanBeMultiThreaded() const
-	{
-		return true;
 	}
 
 	ConvertToUInt8Task::ConvertToUInt8Task()

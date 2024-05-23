@@ -31,6 +31,8 @@ namespace Elpida
 
 		SvgDocument() = default;
 		explicit SvgDocument(const XmlElement& element);
+		SvgDocument(const SvgDocument&) = default;
+		SvgDocument& operator=(const SvgDocument& other) = default;
 		SvgDocument(SvgDocument&& other) noexcept = default;
 		SvgDocument& operator=(SvgDocument&& other) noexcept = default;
 		~SvgDocument() = default;

@@ -24,16 +24,22 @@ namespace Elpida
 		[[nodiscard]]
 		virtual Size GetSize() const = 0;
 
-		virtual void Merge(const Vector<UniquePtr<AbstractTaskData>>& data) = 0;
 		virtual void Allocate(Size size) = 0;
+
 		virtual void Deallocate() = 0;
 
 		[[nodiscard]]
 		virtual SharedPtr<Allocator> GetAllocator() const = 0;
 
 		[[nodiscard]]
-		virtual Vector<UniquePtr<AbstractTaskData>>
+		virtual Vector<SharedPtr<AbstractTaskData>>
+		Copy(const Vector<SharedPtr<Allocator>>& targetAllocators) const = 0;
+
+		[[nodiscard]]
+		virtual Vector<SharedPtr<AbstractTaskData>>
 		Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const = 0;
+
+		virtual void Merge(const Vector<SharedPtr<AbstractTaskData>>& data) = 0;
 
 		virtual ~AbstractTaskData() = default;
 	};

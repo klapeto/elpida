@@ -10,7 +10,7 @@
 
 namespace Elpida
 {
-	void ConvertToGrayscaleTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void ConvertToGrayscaleTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		auto ptr = dynamic_cast<ImageTaskData*>(inputData.get());
 
@@ -27,7 +27,7 @@ namespace Elpida
 		_inPtr = reinterpret_cast<FloatChannel*>(_inputData->GetData());
 	}
 
-	UniquePtr<AbstractTaskData> ConvertToGrayscaleTask::Finalize()
+	SharedPtr<AbstractTaskData> ConvertToGrayscaleTask::Finalize()
 	{
 		return std::move(_inputData);
 	}
@@ -41,10 +41,6 @@ namespace Elpida
 			"The amount of pixels processed per second.",
 			ScoreType::Throughput
 		};
-	}
-	bool ConvertToGrayscaleTask::CanBeMultiThreaded() const
-	{
-		return true;
 	}
 
 	ConvertToGrayscaleTask::ConvertToGrayscaleTask()

@@ -18,9 +18,9 @@ namespace Elpida
 	class FileReadTask : public Task
 	{
 	 public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
-		UniquePtr<AbstractTaskData> Finalize() override;
-		bool CanBeMultiThreaded() const override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
+		SharedPtr<AbstractTaskData> Finalize() override;
+		ConcurrencyMode GetAllowedConcurrency() const override;
 		Size GetProcessedDataSize() const override;
 
 		explicit FileReadTask(std::string filePath);
@@ -30,7 +30,7 @@ namespace Elpida
 		std::unique_ptr<Task> DoDuplicate() const override;
 		TaskInfo DoGetInfo() const override;
 	 private:
-		UniquePtr<AbstractTaskData> _outputData;
+		SharedPtr<AbstractTaskData> _outputData;
 		std::fstream _fileStream;
 		std::string _filePath;
 	};

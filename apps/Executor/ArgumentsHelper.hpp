@@ -13,6 +13,7 @@
 #include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 #include "Elpida/Core/Topology/TopologyInfo.hpp"
+#include "Elpida/Core/ConcurrencyMode.hpp"
 #include "ResultFormatter.hpp"
 
 namespace Elpida
@@ -52,10 +53,7 @@ namespace Elpida
 		bool GetPinThreads() const;
 
 		[[nodiscard]]
-		double GetDependentQueueRatio() const;
-
-		[[nodiscard]]
-		double GetIndependentQueueRatio() const;
+		ConcurrencyMode GetConcurrencyMode() const;
 
 		bool ParseAndGetExitText(int argC, char* argV[], std::string& returnText);
 
@@ -70,8 +68,7 @@ namespace Elpida
 		double _nowOverhead;
 		double _loopOverhead;
 		double _vCallOverhead;
-		double _dependentQueueRatio;
-		double _independentQueueRatio;
+		ConcurrencyMode _concurrencyMode;
 		bool _numaAware;
 		bool _pinThreads;
 

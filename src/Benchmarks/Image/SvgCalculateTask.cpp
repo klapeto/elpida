@@ -7,7 +7,7 @@
 
 namespace Elpida
 {
-	void SvgCalculateTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void SvgCalculateTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
 		auto ptr = dynamic_cast<SimpleTaskData<SvgDocument>*>(_inputData.get());
@@ -15,12 +15,7 @@ namespace Elpida
 		_inputDocument = std::move(ptr->GetUnderlyingData());
 	}
 
-	bool SvgCalculateTask::CanBeMultiThreaded() const
-	{
-		return false;
-	}
-
-	UniquePtr<AbstractTaskData> SvgCalculateTask::Finalize()
+	SharedPtr<AbstractTaskData> SvgCalculateTask::Finalize()
 	{
 		return CreateData<SimpleTaskData<SvgCalculatedDocument>>(std::move(_calculatedDocument),
 				_inputData->GetAllocator());

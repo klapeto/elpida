@@ -18,9 +18,8 @@ namespace Elpida
 	class ConvertToUInt8Task: public Task
 	{
 	 public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
-		UniquePtr<AbstractTaskData> Finalize() override;
-		bool CanBeMultiThreaded() const override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
+		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
 
 		ConvertToUInt8Task();
@@ -30,8 +29,8 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 		TaskInfo DoGetInfo() const override;
 	 private:
-		UniquePtr<AbstractTaskData> _outputData;
-		UniquePtr<AbstractTaskData> _inputData;
+		SharedPtr<AbstractTaskData> _outputData;
+		SharedPtr<AbstractTaskData> _inputData;
 		IntChannel* _outPtr;
 		FloatChannel* _inPtr;
 		Size _sizeInChannels;

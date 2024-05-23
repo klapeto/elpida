@@ -13,9 +13,8 @@ namespace Elpida
 	class MemoryReadBandwidthTask : public MicroTask
 	{
 	 public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
-		UniquePtr<AbstractTaskData> Finalize() override;
-		bool CanBeMultiThreaded() const override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
+		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
 		explicit MemoryReadBandwidthTask(Size size);
 		~MemoryReadBandwidthTask() override = default;
@@ -26,7 +25,7 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 		TaskInfo DoGetInfo() const override;
 	 private:
-		UniquePtr<AbstractTaskData> _data;
+		SharedPtr<AbstractTaskData> _data;
 		unsigned char* _ptr;
 		Size _size;
 	};
