@@ -28,4 +28,5 @@ docker-image:linux:amd64:
 docker-image:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
+  timeout: 3 hours
   extends: .docker-image:linux
