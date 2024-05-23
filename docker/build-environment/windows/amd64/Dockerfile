@@ -42,10 +42,13 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     sed \
     unzip \
     wget \
-    xz-utils && \
-    git clone -b elpida_updates https://github.com/klapeto/mxe.git && \
-    cd mxe && \
-    make -j 32 MXE_TARGETS='x86_64-w64-mingw32.shared' MXE_PLUGIN_DIRS=plugins/gcc9 cmake hwloc qtbase qtsvg gcc openssl
+    xz-utils
+
+RUN git clone -b elpida_updates https://github.com/klapeto/mxe.git
+WORKDIR mxe
+RUN make -j 32 MXE_TARGETS='x86_64-w64-mingw32.shared' MXE_PLUGIN_DIRS=plugins/gcc9 cmake hwloc qtbase qtsvg gcc openssl
+
+WORKDIR /
 
 ENV PATH=/mxe/usr/bin:$PATH
 
