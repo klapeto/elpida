@@ -119,6 +119,4 @@ endif()
 target_include_directories(elpida-application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 install(TARGETS elpida-application)
-install(FILES Assets/test-data.json DESTINATION bin/assets)
-install(FILES Assets/test-data.xml DESTINATION bin/assets)
 
