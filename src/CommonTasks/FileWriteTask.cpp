@@ -8,14 +8,14 @@
 
 namespace Elpida
 {
-	void FileWriteTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void FileWriteTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
 
 		_fileStream = std::fstream(std::filesystem::u8path(_filePath), std::ios::out | std::ios::binary);
 	}
 
-	UniquePtr<AbstractTaskData> FileWriteTask::Finalize()
+	SharedPtr<AbstractTaskData> FileWriteTask::Finalize()
 	{
 		return std::move(_inputData);
 	}
@@ -30,9 +30,10 @@ namespace Elpida
 			ScoreType::Throughput
 		};
 	}
-	bool FileWriteTask::CanBeMultiThreaded() const
+
+	ConcurrencyMode FileWriteTask::GetAllowedConcurrency() const
 	{
-		return false;
+		return ConcurrencyMode::None;
 	}
 
 	FileWriteTask::FileWriteTask(std::string filePath)

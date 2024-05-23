@@ -18,8 +18,6 @@ namespace Elpida
 	{
 	public:
 		static SvgBackDrop Rasterize(const SvgCalculatedDocument& document, std::size_t subSamples = 16);
-		static SvgBackDrop RasterizeCustom(const SvgCalculatedDocument& document, std::size_t subSamples, bool multiThreadedShapes, bool multiThreadedSuperSampling, bool multiThreadedBitBlit, ThreadPool& threadPool);
-		static SvgBackDrop RasterizeMultiThreaded(const SvgCalculatedDocument& document, ThreadPool& threadPool, std::size_t subSamples = 16);
 
 	};
 } // Elpida

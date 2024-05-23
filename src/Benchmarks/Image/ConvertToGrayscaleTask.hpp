@@ -17,9 +17,8 @@ namespace Elpida
 	class ConvertToGrayscaleTask : public Task
 	{
 	 public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
-		UniquePtr<AbstractTaskData> Finalize() override;
-		bool CanBeMultiThreaded() const override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
+		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
 
 		ConvertToGrayscaleTask();
@@ -29,7 +28,7 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 		TaskInfo DoGetInfo() const override;
 	 private:
-		UniquePtr<AbstractTaskData> _inputData;
+		SharedPtr<AbstractTaskData> _inputData;
 		FloatChannel* _inPtr;
 		Size _sizeInChannels;
 		unsigned int _channels;

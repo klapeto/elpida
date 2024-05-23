@@ -99,16 +99,14 @@ namespace Elpida
 		accumulator << R"("           The loop overhead in fractional seconds)" << std::endl;
 		accumulator << R"("       --virtual-overhead=SECONDS)" << std::endl;
 		accumulator << R"("           The virtual call overhead in fractional seconds)" << std::endl;
-		accumulator << R"("       --dependent-queue-ratio=VALUE)" << std::endl;
-		accumulator << R"("           Set the dependent thread pre-allocation ratio to the target processor count)" << std::endl;
-		accumulator << R"("       --independent-queue-ratio=VALUE)" << std::endl;
-		accumulator << R"("           Set the dependent thread pre-allocation ratio to the target processor count)" << std::endl;
 		accumulator << R"("       --numa-aware)" << std::endl;
 		accumulator << R"("           Enable numa aware allocations)" << std::endl;
 		accumulator << R"("       --pin-threads)" << std::endl;
 		accumulator
 				<< R"("           Enable thread pining. Threads will be pinned to target affinity and cannot jump to other processors)"
 				<< std::endl;
+		accumulator << R"("       --concurrency-mode=MODE)" << std::endl;
+		accumulator << R"("           The concurrency to use on tasks. Can be 'None' or '0' (default), 'CopyInput' or '1', 'ShareInput' or '2', 'ChunkInput' or '3')" << std::endl;
 
 		return accumulator.str();
 	}
@@ -143,6 +141,37 @@ namespace Elpida
 			str = str.substr(0, str.length() - 1);
 		}
 		return str;
+	}
+
+	static ConcurrencyMode ParseConcurrencyMode(const String& value)
+	{
+		if (value.empty())
+		{
+			throw ElpidaException("'--concurrency-mode' option cannot be empty");
+		}
+
+		try
+		{
+			auto actualValue = std::stol(value);
+			if (actualValue ==static_cast<std::size_t>(ConcurrencyMode::None)) return ConcurrencyMode::None;
+			if (actualValue ==static_cast<std::size_t>(ConcurrencyMode::CopyInput)) return ConcurrencyMode::CopyInput;
+			if (actualValue ==static_cast<std::size_t>(ConcurrencyMode::ShareInput)) return ConcurrencyMode::ShareInput;
+			if (actualValue ==static_cast<std::size_t>(ConcurrencyMode::ChunkInput)) return ConcurrencyMode::ChunkInput;
+			throw ElpidaException("'--concurrency-mode' option must be 'None' or '0' (default), 'CopyInput' or '1', 'ShareInput' or '2', 'ChunkInput' or '4'");
+		}
+		catch (const std::invalid_argument& e)
+		{
+		}
+		catch (const std::out_of_range& e)
+		{
+		}
+
+		if (value == "None") return ConcurrencyMode::None;
+		if (value == "CopyInput") return ConcurrencyMode::CopyInput;
+		if (value == "ShareInput") return ConcurrencyMode::ShareInput;
+		if (value == "ChunkInput") return ConcurrencyMode::ChunkInput;
+
+		throw ElpidaException("'--concurrency-mode' option must be 'None' or '0' (default), 'CopyInput' or '1', 'ShareInput' or '2', 'ChunkInput' or '4'");
 	}
 
 	double static ParseDouble(const String& value, const char* name)
@@ -187,8 +216,7 @@ namespace Elpida
 			VirtualOverhead,
 			NumaAware,
 			PinThreads,
-			DependentQueueRatio,
-			IndependentQueueRatio
+			ConcurrencyMode
 		};
 
 		struct option options[] = {
@@ -204,8 +232,7 @@ namespace Elpida
 				{ "virtual-overhead", required_argument, nullptr, VirtualOverhead },
 				{ "numa-aware",          no_argument,       nullptr, NumaAware },
 				{ "pin-threads",         no_argument,       nullptr, PinThreads },
-				{ "dependent-queue-ratio", required_argument, nullptr, DependentQueueRatio },
-				{ "independent-queue-ratio", required_argument, nullptr, IndependentQueueRatio },
+				{ "concurrency-mode", required_argument, nullptr, ConcurrencyMode },
 				{ nullptr, 0,                               nullptr, 0 }
 		};
 
@@ -253,11 +280,8 @@ namespace Elpida
 			case PinThreads:
 				_pinThreads = true;
 				break;
-			case DependentQueueRatio:
-				_dependentQueueRatio = ParseDouble(GetValueOrDefault(optarg), "dependent-queue-ratio");
-				break;
-			case IndependentQueueRatio:
-				_independentQueueRatio = ParseDouble(GetValueOrDefault(optarg), "independent-queue-ratio");
+			case ConcurrencyMode:
+				_concurrencyMode = ParseConcurrencyMode(GetValueOrDefault(optarg));
 				break;
 			case '?':
 				returnText = "Unknown option: " + std::string(GetValueOrDefault(optarg));
@@ -364,9 +388,9 @@ namespace Elpida
 	}
 
 	ArgumentsHelper::ArgumentsHelper()
-			: _benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0),
-			  _dependentQueueRatio(20.0), _independentQueueRatio(20.0),
-			  _numaAware(false), _pinThreads(false)
+			:_benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0),
+			 _concurrencyMode(ConcurrencyMode::None),
+			 _numaAware(false), _pinThreads(false)
 	{
 
 	}
@@ -381,14 +405,9 @@ namespace Elpida
 		return _pinThreads;
 	}
 
-	double ArgumentsHelper::GetDependentQueueRatio() const
+	ConcurrencyMode ArgumentsHelper::GetConcurrencyMode() const
 	{
-		return _dependentQueueRatio;
-	}
-
-	double ArgumentsHelper::GetIndependentQueueRatio() const
-	{
-		return _independentQueueRatio;
+		return _concurrencyMode;
 	}
 
 } // Elpida

@@ -33,7 +33,7 @@ namespace Elpida
 		other._size = 0;
 	}
 
-	void RawTaskData::Merge(const Vector<UniquePtr<AbstractTaskData>>& data)
+	void RawTaskData::Merge(const Vector<SharedPtr<AbstractTaskData>>& data)
 	{
 		if (data.empty())
 		{
@@ -55,7 +55,7 @@ namespace Elpida
 			1,
 			[](auto& allocator, auto chunkSize)
 		{
-			return std::make_unique<RawTaskData>(chunkSize, allocator);
+			return std::make_shared<RawTaskData>(chunkSize, allocator);
 		});
 
 		*this = std::move(*outputChunks.front());
@@ -76,17 +76,17 @@ namespace Elpida
 		_size = 0;
 	}
 
-	Vector<UniquePtr<AbstractTaskData>>
+	Vector<SharedPtr<AbstractTaskData>>
 	RawTaskData::Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const
 	{
 		if (_size == 0)
 		{
-			Vector<UniquePtr<AbstractTaskData>> returnVector;
+			Vector<SharedPtr<AbstractTaskData>> returnVector;
 			returnVector.reserve(targetAllocators.size());
 
 			for (auto& allocator: targetAllocators)
 			{
-				returnVector.push_back(std::make_unique<RawTaskData>(allocator));
+				returnVector.push_back(std::make_shared<RawTaskData>(allocator));
 			}
 			return returnVector;
 		}
@@ -94,7 +94,7 @@ namespace Elpida
 		return DataUtilities::SplitChunksToChunks<RawTaskData, AbstractTaskData>({ *this }, targetAllocators, 1,
 			[](auto& allocator, auto chunkSize)
 			{
-				return std::make_unique<RawTaskData>(chunkSize, allocator);
+				return std::make_shared<RawTaskData>(chunkSize, allocator);
 			});
 	}
 
@@ -117,5 +117,30 @@ namespace Elpida
 	SharedPtr<Allocator> RawTaskData::GetAllocator() const
 	{
 		return _allocator;
+	}
+
+	Vector<SharedPtr<AbstractTaskData>> RawTaskData::Copy(const Vector<SharedPtr<Allocator>>& targetAllocators) const
+	{
+		Vector<SharedPtr<AbstractTaskData>> returnVector;
+		returnVector.reserve(targetAllocators.size());
+
+		if (_size == 0)
+		{
+			for (auto& allocator: targetAllocators)
+			{
+				returnVector.push_back(std::make_shared<RawTaskData>(allocator));
+			}
+			return returnVector;
+		}
+
+		for (auto& allocator: targetAllocators)
+		{
+			auto data = std::make_shared<RawTaskData>(allocator);
+			data->Allocate(_size);
+			std::memcpy(data->GetData(), GetData(), _size);
+			returnVector.push_back(std::move(data));
+		}
+
+		return returnVector;
 	}
 } // Elpida

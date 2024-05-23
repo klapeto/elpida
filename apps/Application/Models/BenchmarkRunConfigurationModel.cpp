@@ -7,7 +7,7 @@
 namespace Elpida::Application
 {
 	BenchmarkRunConfigurationModel::BenchmarkRunConfigurationModel()
-			: _iterationsToRun(1),  _independentRatio(20.0), _dependentRatio(20.0), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false)
+			: _iterationsToRun(1), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false), _concurrencyMode(ConcurrencyMode::None)
 	{
 
 	}
@@ -25,12 +25,6 @@ namespace Elpida::Application
 	bool BenchmarkRunConfigurationModel::IsOpenResult() const
 	{
 		return _openResult;
-	}
-
-	void BenchmarkRunConfigurationModel::SetIterationsToRun(std::size_t iterations)
-	{
-		_iterationsToRun = iterations;
-		OnDataChanged();
 	}
 
 	void BenchmarkRunConfigurationModel::SetUploadResults(bool uploadResults)
@@ -66,23 +60,19 @@ namespace Elpida::Application
 		OnDataChanged();
 	}
 
-	double BenchmarkRunConfigurationModel::GetIndependentQueueRatio() const
+	ConcurrencyMode BenchmarkRunConfigurationModel::GetConcurrencyMode() const
 	{
-		return _independentRatio;
+		return _concurrencyMode;
 	}
 
-	void BenchmarkRunConfigurationModel::SetIndependentRatio(double independentRatio)
+	void BenchmarkRunConfigurationModel::SetConcurrencyMode(ConcurrencyMode concurrencyMode)
 	{
-		_independentRatio = independentRatio;
+		_concurrencyMode = concurrencyMode;
 	}
 
-	double BenchmarkRunConfigurationModel::GetDependentQueueRatio() const
+	void BenchmarkRunConfigurationModel::SetIterationsToRun(std::size_t iterations)
 	{
-		return _dependentRatio;
-	}
-
-	void BenchmarkRunConfigurationModel::SetDependentRatio(double dependentRatio)
-	{
-		_dependentRatio = dependentRatio;
+		_iterationsToRun = iterations;
+		OnDataChanged();
 	}
 } // Elpida

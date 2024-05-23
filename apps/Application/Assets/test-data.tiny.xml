@@ -1,0 +1,5 @@
+<topology version="2.0">
+    <info name="DMIProductName" value="Romley Platform"/>
+    <u64values length="18">65 65 65 65 50 10 </u64values>
+    <srv len="86"/>
+</topology>

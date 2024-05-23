@@ -7,6 +7,7 @@
 
 #include "Elpida/Platform/Process.hpp"
 #include "Models/Benchmark/BenchmarkResultModel.hpp"
+#include "Models/BenchmarkRunConfigurationModel.hpp"
 
 #include <string>
 #include <vector>
@@ -23,10 +24,9 @@ namespace Elpida::Application
 				double nowOverheadSeconds,
 				double loopOverheadSeconds,
 				double virtualCallSeconds,
-				double dependentQueueRatio,
-				double independentQueueRatio,
 				bool numaAware,
-				bool pinThreads);
+				bool pinThreads,
+				ConcurrencyMode concurrencyMode);
 
 		void StopCurrentExecution();
 

@@ -13,13 +13,10 @@ namespace Elpida
 	class ParseJsonTask: public MicroTask
 	{
 	public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
 
 		[[nodiscard]]
-		bool CanBeMultiThreaded() const override;
-
-		[[nodiscard]]
-		UniquePtr<AbstractTaskData> Finalize() override;
+		SharedPtr<AbstractTaskData> Finalize() override;
 
 		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
@@ -41,7 +38,7 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
-		UniquePtr<AbstractTaskData> _inputData;
+		SharedPtr<AbstractTaskData> _inputData;
 		nlohmann::json _parsedElement;
 	};
 } // Elpida

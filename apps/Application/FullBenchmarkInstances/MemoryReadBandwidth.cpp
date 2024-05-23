@@ -31,10 +31,9 @@ namespace Elpida::Application
 				_timingModel.GetNowOverhead().count(),
 				_timingModel.GetLoopOverhead().count(),
 				_timingModel.GetVirtualCallOverhead().count(),
-				1.0,
-				1.0,
 				false,
-				true);
+				true,
+				ConcurrencyMode::ShareInput);
 
 
 		Score memoryScore = bandwidthResult.GetScore() / std::giga::num;

@@ -19,10 +19,9 @@ namespace Elpida
 	class ConvertToFloatTask : public Task
 	{
 	 public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) override;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
 
-		UniquePtr<AbstractTaskData> Finalize() override;
-		bool CanBeMultiThreaded() const override;
+		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
 
 		ConvertToFloatTask();
@@ -32,8 +31,8 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 		TaskInfo DoGetInfo() const override;
 	 private:
-		UniquePtr<ImageTaskData> _outputData;
-		UniquePtr<AbstractTaskData> _inputData;
+		SharedPtr<ImageTaskData> _outputData;
+		SharedPtr<AbstractTaskData> _inputData;
 		IntChannel* _inPtr;
 		FloatChannel* _outPtr;
 		Size _sizeInChannels;

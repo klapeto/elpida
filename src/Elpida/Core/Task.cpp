@@ -23,6 +23,7 @@ namespace Elpida
 	UniquePtr<Task> Task::Duplicate() const
 	{
 		auto task = DoDuplicate();
+		task->SetMeasured(ShouldBeMeasured());
 		task->SetEnvironmentInfo(_environmentInfo->get());
 		return task;
 	}

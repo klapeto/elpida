@@ -111,7 +111,7 @@ namespace Elpida
 		}
 	}
 
-	void MemoryLatencyTask::Prepare(UniquePtr<AbstractTaskData> data)
+	void MemoryLatencyTask::Prepare(SharedPtr<AbstractTaskData> data)
 	{
 		// modified/modernized version of lmbech thrashing/latency algorithm
 		// Check the paper here:
@@ -170,7 +170,7 @@ namespace Elpida
 
 	}
 
-	UniquePtr<AbstractTaskData> MemoryLatencyTask::Finalize()
+	SharedPtr<AbstractTaskData> MemoryLatencyTask::Finalize()
 	{
 		return std::move(_data);
 	}
@@ -204,11 +204,6 @@ namespace Elpida
 	Duration MemoryLatencyTask::GetExecutionMinimumDuration()
 	{
 		return Seconds(10);
-	}
-
-	bool MemoryLatencyTask::CanBeMultiThreaded() const
-	{
-		return false;
 	}
 
 	UniquePtr<Task> MemoryLatencyTask::DoDuplicate() const

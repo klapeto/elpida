@@ -7,7 +7,7 @@
 
 namespace Elpida
 {
-	void SvgParseTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void SvgParseTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
 		auto ptr = dynamic_cast<SimpleTaskData<XmlElement>*>(_inputData.get());
@@ -15,14 +15,9 @@ namespace Elpida
 		_inputXmlElement = std::move(ptr->GetUnderlyingData());
 	}
 
-	bool SvgParseTask::CanBeMultiThreaded() const
+	SharedPtr<AbstractTaskData> SvgParseTask::Finalize()
 	{
-		return false;
-	}
-
-	UniquePtr<AbstractTaskData> SvgParseTask::Finalize()
-	{
-		return std::make_unique<SimpleTaskData<SvgDocument>>(std::move(_parsedElement), _inputData->GetAllocator());
+		return std::make_shared<SimpleTaskData<SvgDocument>>(std::move(_parsedElement), _inputData->GetAllocator());
 	}
 
 	TaskInfo SvgParseTask::DoGetInfo() const

@@ -8,7 +8,7 @@
 
 namespace Elpida
 {
-	void ConvertToFloatTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void ConvertToFloatTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		auto ptr = dynamic_cast<ImageTaskData*>(inputData.get());
 
@@ -19,7 +19,7 @@ namespace Elpida
 
 		_inputData = std::move(inputData);
 
-		_outputData = std::make_unique<ImageTaskData>(
+		_outputData = std::make_shared<ImageTaskData>(
 			ptr->GetAllocator(),
 			ptr->GetWidth(),
 			ptr->GetHeight(),
@@ -32,7 +32,7 @@ namespace Elpida
 		_outPtr = reinterpret_cast<FloatChannel*>(_outputData->GetData());
 	}
 
-	UniquePtr<AbstractTaskData> ConvertToFloatTask::Finalize()
+	SharedPtr<AbstractTaskData> ConvertToFloatTask::Finalize()
 	{
 		return std::move(_outputData);
 	}
@@ -45,11 +45,6 @@ namespace Elpida
 				 "The amount of pixels processed per second.",
 				 ScoreType::Throughput
 		};
-	}
-
-	bool ConvertToFloatTask::CanBeMultiThreaded() const
-	{
-		return true;
 	}
 
 	void ConvertToFloatTask::DoRun()

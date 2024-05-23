@@ -35,11 +35,15 @@ namespace Elpida
 		void Allocate(Size size) final;
 		void Deallocate() final;
 
-		void Merge(const Vector<UniquePtr<AbstractTaskData>>& data) override;
+		void Merge(const Vector<SharedPtr<AbstractTaskData>>& data) override;
 
 		[[nodiscard]]
-		Vector<UniquePtr<AbstractTaskData>>
+		Vector<SharedPtr<AbstractTaskData>>
 		Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const override;
+
+		[[nodiscard]]
+		Vector<SharedPtr<AbstractTaskData>>
+		Copy(const Vector<SharedPtr<Allocator>>& targetAllocators) const override;
 
 		explicit RawTaskData(SharedPtr<Allocator> allocator);
 		RawTaskData(Size size, SharedPtr<Allocator> allocator);

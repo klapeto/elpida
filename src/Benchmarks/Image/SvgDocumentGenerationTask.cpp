@@ -25,7 +25,7 @@ namespace Elpida
 		}
 	}
 
-	void SvgDocumentGenerationTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void SvgDocumentGenerationTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_outputData = std::make_unique<RawTaskData>(inputData->GetAllocator());
 
@@ -37,14 +37,9 @@ namespace Elpida
 		_outputData->Allocate(totalSize);
 	}
 
-	UniquePtr<AbstractTaskData> SvgDocumentGenerationTask::Finalize()
+	SharedPtr<AbstractTaskData> SvgDocumentGenerationTask::Finalize()
 	{
 		return std::move(_outputData);
-	}
-
-	bool SvgDocumentGenerationTask::CanBeMultiThreaded() const
-	{
-		return false;
 	}
 
 	Size SvgDocumentGenerationTask::GetProcessedDataSize() const

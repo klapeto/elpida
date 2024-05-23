@@ -28,9 +28,12 @@ namespace Elpida
 		unsigned int GetBytesPerChannel() const;
 
 		[[nodiscard]]
-		Vector<UniquePtr<AbstractTaskData>> Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const override;
+		Vector<SharedPtr<AbstractTaskData>> Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const override;
 
-		void Merge(const Vector<Elpida::UniquePtr<Elpida::AbstractTaskData>>& data) override;
+		[[nodiscard]]
+		Vector<SharedPtr<AbstractTaskData>> Copy(const Vector<SharedPtr<Allocator>>& targetAllocators) const override;
+
+		void Merge(const Vector<SharedPtr<AbstractTaskData>>& data) override;
 
 		ImageTaskData(SharedPtr<Allocator> allocator, Size width, Size height, unsigned channels, unsigned bytesPerChannel);
 		~ImageTaskData() override = default;

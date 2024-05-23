@@ -10,17 +10,23 @@
 
 namespace Elpida::Application
 {
+	enum class ConcurrencyMode
+	{
+		None = 0,
+		CopyInput = 1,
+		ShareInput = 1 << 1,
+		ChunkInput = 1 << 2
+	};
 
 	class BenchmarkRunConfigurationModel final : public Model
 	{
 	public:
-		void SetIterationsToRun(std::size_t  iterations);
+		void SetIterationsToRun(std::size_t iterations);
 		void SetUploadResults(bool uploadResults);
 		void SetOpenResult(bool openResult);
 		void SetNumaAware(bool numaAware);
 		void SetPinThreads(bool pinThreads);
-		void SetIndependentRatio(double independentRatio);
-		void SetDependentRatio(double dependentRatio);
+		void SetConcurrencyMode(ConcurrencyMode concurrencyMode);
 
 		[[nodiscard]]
 		bool IsPinThreads() const;
@@ -38,22 +44,18 @@ namespace Elpida::Application
 		bool IsNumaAware() const;
 
 		[[nodiscard]]
-		double GetIndependentQueueRatio() const;
-
-		[[nodiscard]]
-		double GetDependentQueueRatio() const;
+		ConcurrencyMode GetConcurrencyMode() const;
 
 		BenchmarkRunConfigurationModel();
 
 		~BenchmarkRunConfigurationModel() override = default;
 	private:
 		std::size_t _iterationsToRun;
-		double _independentRatio;
-		double _dependentRatio;
 		bool _uploadResults;
 		bool _openResult;
 		bool _numaAware;
 		bool _pinThreads;
+		ConcurrencyMode _concurrencyMode;
 	};
 
 } // Elpida

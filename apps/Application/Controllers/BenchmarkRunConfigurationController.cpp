@@ -48,24 +48,14 @@ namespace Elpida::Application
 			_model.SetPinThreads(value == "1");
 		}
 
-		value = settingsService.Get("DependentQueueRatio");
+		value = settingsService.Get("ConcurrencyMode");
 		if (!value.empty())
 		{
-			_model.SetDependentRatio(std::stod(value));
+			_model.SetConcurrencyMode(static_cast<ConcurrencyMode>(std::stoul(value)));
 		}
 		else
 		{
-			_model.SetDependentRatio(20.0);
-		}
-
-		value = settingsService.Get("IndependentQueueRatio");
-		if (!value.empty())
-		{
-			_model.SetIndependentRatio(std::stod(value));
-		}
-		else
-		{
-			_model.SetDependentRatio(20.0);
+			_model.SetConcurrencyMode(ConcurrencyMode::None);
 		}
 	}
 
@@ -99,16 +89,10 @@ namespace Elpida::Application
 		_settingsService.Set("PinThreads", pinThreads ? "1" : "0");
 	}
 
-	void BenchmarkRunConfigurationController::SetDependentQueueRatio(double ratio)
+	void BenchmarkRunConfigurationController::SetConcurrencyMode(ConcurrencyMode concurrencyMode)
 	{
-		_model.SetDependentRatio(ratio);
-		_settingsService.Set("DependentQueueRatio", ValueUtilities::DoubleToStringInvariant(ratio));
-	}
-
-	void BenchmarkRunConfigurationController::SetIndependentQueueRatio(double ratio)
-	{
-		_model.SetIndependentRatio(ratio);
-		_settingsService.Set("IndependentQueueRatio", ValueUtilities::DoubleToStringInvariant(ratio));
+		_model.SetConcurrencyMode(concurrencyMode);
+		_settingsService.Set("ConcurrencyMode", std::to_string(static_cast<std::size_t>(concurrencyMode)));
 	}
 } // Elpida
 // Application

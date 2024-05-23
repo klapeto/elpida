@@ -41,10 +41,9 @@ namespace Elpida::Application
 				_timingModel.GetNowOverhead().count(),
 				_timingModel.GetLoopOverhead().count(),
 				_timingModel.GetVirtualCallOverhead().count(),
-				1.0,
-				1.0,
 				false,
-				false);
+				false,
+				ConcurrencyMode::None);
 
 		auto& taskResults = svgRasterizationSingle.GetTaskResults();
 

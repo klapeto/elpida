@@ -7,7 +7,7 @@
 
 namespace Elpida
 {
-	Vector<UniquePtr<AbstractTaskData>>
+	Vector<SharedPtr<AbstractTaskData>>
 	ImageTaskData::Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const
 	{
 		auto stride = _width * _channels * _bytesPerChannel;
@@ -51,7 +51,7 @@ namespace Elpida
 		RawTaskData::Allocate(_width * _height * _channels * _bytesPerChannel);
 	}
 
-	void ImageTaskData::Merge(const Vector<UniquePtr<AbstractTaskData>>& data)
+	void ImageTaskData::Merge(const Vector<SharedPtr<AbstractTaskData>>& data)
 	{
 		Size totalHeight = 0;
 		for (auto& chunk: data)
@@ -67,5 +67,20 @@ namespace Elpida
 		_bytesPerChannel = first->GetBytesPerChannel();
 
 		RawTaskData::Merge(data);
+	}
+
+	Vector<SharedPtr<AbstractTaskData>> ImageTaskData::Copy(const Vector<SharedPtr<Allocator>>& targetAllocators) const
+	{
+		Vector<SharedPtr<AbstractTaskData>> returnVector;
+		returnVector.reserve(targetAllocators.size());
+
+		for (auto& allocator : targetAllocators)
+		{
+			auto ptr = std::shared_ptr<AbstractTaskData>(
+					new ImageTaskData(allocator, _width, _height, _channels, _bytesPerChannel));
+			std::memcpy(ptr->GetData(), GetData(), GetSize());
+			returnVector.push_back(std::move(ptr));
+		}
+		return returnVector;
 	}
 } // Elpida

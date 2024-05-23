@@ -6,6 +6,21 @@
 
 namespace Elpida::Application
 {
+	static int TranslateConcurrencyMode(ConcurrencyMode concurrencyMode){
+		switch (concurrencyMode)
+		{
+		case ConcurrencyMode::None:
+			return 0;
+		case ConcurrencyMode::CopyInput:
+			return 1;
+		case ConcurrencyMode::ShareInput:
+			return 2;
+		case ConcurrencyMode::ChunkInput:
+			return 3;
+		}
+		return 0;
+	}
+
 	BenchmarkRunConfigurationView::BenchmarkRunConfigurationView(const BenchmarkRunConfigurationModel& model,
 			BenchmarkRunConfigurationController& controller, QWidget* parent) :
 			QWidget(parent),
@@ -55,8 +70,7 @@ namespace Elpida::Application
 		_ui->chkPinThreads->setChecked(_model.IsPinThreads());
 		_ui->chkOpenResult->setEnabled(_model.IsUploadResults());
 		_ui->spnTimes->setValue(_model.GetIterationsToRun());
-		_ui->spnIndependentRatio->setValue(_model.GetIndependentQueueRatio());
-		_ui->spnDependentRatio->setValue(_model.GetDependentQueueRatio());
+		_ui->cmbConcurrencyMode->setCurrentIndex(TranslateConcurrencyMode(_model.GetConcurrencyMode()));
 		_uiUpdating = false;
 	}
 
@@ -77,15 +91,22 @@ namespace Elpida::Application
 		_ui->gbAdvanced->setVisible(false);
 	}
 
-	void BenchmarkRunConfigurationView::on_spnDependentRatio_valueChanged(double value)
+	void BenchmarkRunConfigurationView::on_cmbConcurrencyMode_currentIndexChanged(int value)
 	{
 		if (_uiUpdating) return;
-		_controller.SetDependentQueueRatio(value);
-	}
-
-	void BenchmarkRunConfigurationView::on_spnIndependentRatio_valueChanged(double value)
-	{
-		if (_uiUpdating) return;
-		_controller.SetIndependentQueueRatio(value);
+		switch (value)
+		{
+		case 1:
+			_controller.SetConcurrencyMode(ConcurrencyMode::CopyInput);
+			break;
+		case 2:
+			_controller.SetConcurrencyMode(ConcurrencyMode::ShareInput);
+			break;
+		case 3:
+			_controller.SetConcurrencyMode(ConcurrencyMode::ChunkInput);
+			break;
+		default:
+			_controller.SetConcurrencyMode(ConcurrencyMode::None);
+		}
 	}
 }

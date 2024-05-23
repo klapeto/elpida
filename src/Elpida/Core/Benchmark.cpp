@@ -22,17 +22,19 @@ namespace Elpida
 
 		Vector<TaskResult> taskResults;
 
-		auto allocators = context.GetAllocatorFactory()->Create({context.GetTargetProcessors()});
-		UniquePtr<AbstractTaskData> data = std::make_unique<RawTaskData>(allocators.front());
+		auto allocators = context.GetAllocatorFactory()->Create({ context.GetTargetProcessors() });
+		SharedPtr<AbstractTaskData> data = std::make_shared<RawTaskData>(allocators.front());
 		for (auto& task : tasks)
 		{
 			task->SetEnvironmentInfo(context.GetEnvironmentInfo());
 			Duration duration;
 			Size processedDataSize = 0;
 			bool shouldBeMeasured = task->ShouldBeMeasured();
-			if (task->CanBeMultiThreaded())
+			if (task->GetAllowedConcurrency() != ConcurrencyMode::None &&
+				context.GetConcurrencyMode() != ConcurrencyMode::None)
 			{
-				duration = ExecuteMultiThread(data, std::move(task), allocators, context.GetTargetProcessors(), processedDataSize, context.IsPinThreads());
+				duration = ExecuteMultiThread(context.GetConcurrencyMode(), data, std::move(task), allocators,
+						context.GetTargetProcessors(), processedDataSize, context.IsPinThreads());
 			}
 			else
 			{
@@ -47,15 +49,15 @@ namespace Elpida
 
 		auto score = CalculateScore(taskResults);
 		return {
-			score,
-			std::move(taskResults)
+				score,
+				std::move(taskResults)
 		};
 	}
 
 	Duration
-	Benchmark::ExecuteSingleThread(UniquePtr<AbstractTaskData>& data,
-		UniquePtr<Task> task,
-		Size& processedDataSize)
+	Benchmark::ExecuteSingleThread(SharedPtr<AbstractTaskData>& data,
+			UniquePtr<Task> task,
+			Size& processedDataSize)
 	{
 		auto allocator = data->GetAllocator();
 		task->Prepare(std::move(data));
@@ -70,26 +72,116 @@ namespace Elpida
 		return duration;
 	}
 
-	Duration
-	Benchmark::ExecuteMultiThread(UniquePtr<AbstractTaskData>& data,
-		UniquePtr<Task> task,
-		const Vector<SharedPtr<Allocator>>& allocators,
-		const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
-		Size& processedDataSize,
-		bool pinThreads)
+	static ConcurrencyMode DeduceConcurrencyMode(const UniquePtr<Task>& task, ConcurrencyMode concurrencyMode)
 	{
-		auto chunks = data->Split(allocators);
+		if ((static_cast<int>(task->GetAllowedConcurrency()) & static_cast<int>(concurrencyMode)) != 0)
+		{
+			return concurrencyMode;
+		}
+		return task->GetAllowedConcurrency();
+	}
 
-		data->Deallocate();    // Reduce memory footprint
+	Duration
+	Benchmark::ExecuteMultiThread(
+			ConcurrencyMode concurrencyMode,
+			SharedPtr<AbstractTaskData>& data,
+			UniquePtr<Task> task,
+			const Vector<SharedPtr<Allocator>>& allocators,
+			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			Size& processedDataSize,
+			bool pinThreads)
+	{
+		Vector<SharedPtr<AbstractTaskData>> inputData;
 
+		concurrencyMode = DeduceConcurrencyMode(task, concurrencyMode);
+
+		switch (concurrencyMode)
+		{
+		case ConcurrencyMode::None:
+			throw ElpidaException("Invalid operation: cannot call ExecuteMultiThread with ConcurrencyMode::None");
+		case ConcurrencyMode::CopyInput:
+			inputData = data->Copy(allocators);
+			data->Deallocate();    // Reduce memory footprint
+			break;
+		case ConcurrencyMode::ShareInput:
+			inputData.reserve(targetProcessors.size());
+			for (std::size_t i = 0; i < targetProcessors.size(); ++i)
+			{
+				inputData.push_back(data);
+			}
+			break;
+		case ConcurrencyMode::ChunkInput:
+			inputData = data->Split(allocators);
+			data->Deallocate();    // Reduce memory footprint
+			break;
+		}
+
+		return ExecuteConcurrent(concurrencyMode, std::move(task), data, std::move(inputData), targetProcessors,
+				processedDataSize, pinThreads);
+	}
+
+	void Benchmark::ValidateConfiguration(const Vector<TaskConfiguration>& configuration) const
+	{
+		auto expectedConfig = GetRequiredConfiguration();
+		if (configuration.size() != expectedConfig.size())
+		{
+			throw ElpidaException("Benchmark configuration size was not met. It was: ",
+					configuration.size(),
+					" but expected ",
+					expectedConfig.size());
+		}
+
+		for (Size i = 0; i < expectedConfig.size(); ++i)
+		{
+			auto expected = expectedConfig[i];
+			auto& actual = configuration[i];
+			if (actual.GetName() != expected.GetName())
+			{
+				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
+						i,
+						"should be '",
+						expected.GetName(),
+						"' but was '",
+						actual.GetName());
+			}
+
+			if (actual.GetType() != expected.GetType())
+			{
+				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
+						i,
+						"should be of type '",
+						(int)expected.GetType(),
+						"' but was '",
+						(int)actual.GetType());
+			}
+
+			if (actual.GetValue().empty())
+			{
+				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
+						i,
+						" has empty value");
+			}
+		}
+	}
+
+	Duration Benchmark::ExecuteConcurrent(
+			ConcurrencyMode concurrencyMode,
+			UniquePtr<Task> task,
+			SharedPtr<AbstractTaskData>& data,
+			Vector<SharedPtr<AbstractTaskData>> inputData,
+			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			Size& processedDataSize,
+			bool pinThreads)
+	{
 		Vector<UniquePtr<ThreadTask>> threadTasks;
 
-		for (std::size_t i = 0; i < chunks.size(); ++i)
+		for (std::size_t i = 0; i < inputData.size(); ++i)
 		{
-			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(), pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessors[i]): std::nullopt);
+			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(),
+					pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessors[i]) : std::nullopt);
 
-			auto  allocator = chunks[i]->GetAllocator();
-			threadTask->Prepare(std::move(chunks[i]));
+			auto allocator = inputData[i]->GetAllocator();
+			threadTask->Prepare(std::move(inputData[i]));
 
 			allocator->ResetStatistics();
 			threadTasks.push_back(std::move(threadTask));
@@ -106,61 +198,27 @@ namespace Elpida
 			totalDuration += thread->Run();
 		}
 
-		chunks.clear();
+		inputData.clear();
 
 		for (auto& chunkTask : threadTasks)
 		{
 			processedDataSize += chunkTask->GetProcessedDataSize();
-			chunks.push_back(chunkTask->Finalize());
+			inputData.push_back(chunkTask->Finalize());
 		}
 
-		data->Merge(chunks);
+		switch (concurrencyMode)
+		{
+		case ConcurrencyMode::None:
+			throw ElpidaException("Invalid operation: cannot call ExecuteMultiThread with ConcurrencyMode::None");
+		case ConcurrencyMode::CopyInput:
+		case ConcurrencyMode::ShareInput:
+			data = inputData[0];
+			break;
+		case ConcurrencyMode::ChunkInput:
+			data->Merge(inputData);
+			break;
+		}
 
 		return totalDuration / threadTasks.size();
-	}
-
-	void Benchmark::ValidateConfiguration(const Vector<TaskConfiguration>& configuration) const
-	{
-		auto expectedConfig = GetRequiredConfiguration();
-		if (configuration.size() != expectedConfig.size())
-		{
-			throw ElpidaException("Benchmark configuration size was not met. It was: ",
-				configuration.size(),
-				" but expected ",
-				expectedConfig.size());
-		}
-
-		for (Size i = 0; i < expectedConfig.size(); ++i)
-		{
-			auto expected = expectedConfig[i];
-			auto& actual = configuration[i];
-			if (actual.GetName() != expected.GetName())
-			{
-				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
-					i,
-					"should be '",
-					expected.GetName(),
-					"' but was '",
-					actual.GetName());
-			}
-
-			if (actual.GetType() != expected.GetType())
-			{
-				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
-					i,
-					"should be of type '",
-					(int)expected.GetType(),
-					"' but was '",
-					(int)actual.GetType());
-			}
-
-			if (actual.GetValue().empty())
-			{
-				throw ElpidaException("Benchmark configuration expectation was not met. The configuration at index ",
-					i,
-					" has empty value");
-			}
-		}
-
 	}
 } // Elpida

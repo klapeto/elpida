@@ -72,10 +72,9 @@ namespace Elpida::Application
 						_overheadsModel.GetNowOverhead().count(),
 						_overheadsModel.GetLoopOverhead().count(),
 						_overheadsModel.GetVirtualCallOverhead().count(),
-						_benchmarkRunConfigurationModel.GetDependentQueueRatio(),
-						_benchmarkRunConfigurationModel.GetIndependentQueueRatio(),
 						_benchmarkRunConfigurationModel.IsNumaAware(),
-						_benchmarkRunConfigurationModel.IsPinThreads()));
+						_benchmarkRunConfigurationModel.IsPinThreads(),
+						_benchmarkRunConfigurationModel.GetConcurrencyMode()));
 			}
 		}
 		catch (const ElpidaException& ex)

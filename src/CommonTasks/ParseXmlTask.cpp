@@ -8,10 +8,6 @@
 
 namespace Elpida
 {
-	bool ParseXmlTask::CanBeMultiThreaded() const
-	{
-		return false;
-	}
 
 	TaskInfo ParseXmlTask::DoGetInfo() const
 	{
@@ -27,14 +23,14 @@ namespace Elpida
 		return std::make_unique<ParseXmlTask>();
 	}
 
-	void ParseXmlTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void ParseXmlTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
 	}
 
-	UniquePtr<AbstractTaskData> ParseXmlTask::Finalize()
+	SharedPtr<AbstractTaskData> ParseXmlTask::Finalize()
 	{
-		return std::make_unique<SimpleTaskData<XmlElement>>(std::move(_parsedElement), _inputData->GetAllocator());
+		return std::make_shared<SimpleTaskData<XmlElement>>(std::move(_parsedElement), _inputData->GetAllocator());
 	}
 
 	Size ParseXmlTask::GetProcessedDataSize() const

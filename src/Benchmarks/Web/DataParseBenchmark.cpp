@@ -6,22 +6,25 @@
 #include "CommonTasks/FileReadTask.hpp"
 #include "CommonTasks/ParseXmlTask.hpp"
 #include "ParseJsonTask.hpp"
+#include "XmlGenerationTask.hpp"
+#include "JsonGenerationTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida
 {
 	BenchmarkInfo DataParseBenchmark::GetInfo() const
 	{
-		FileReadTask xmlRead("");
+		XmlGenerationTask xmlGenerate(1);
+		JsonGenerationTask jsonGenerate(1);
 		ParseXmlTask xmlParse;
 		ParseJsonTask jsonParse;
 		return BenchmarkInfo("Web Data Parsing",
 				"Measures the parsing speed of various web data exchange formats.",
 				"ParseMarks",
 				"The score of web parsing", {
-						xmlRead.SetMeasured(false).GetInfo(),
+						xmlGenerate.SetMeasured(false).GetInfo(),
 						xmlParse.GetInfo(),
-						xmlRead.SetMeasured(false).GetInfo(),
+						jsonGenerate.SetMeasured(false).GetInfo(),
 						jsonParse.GetInfo(),
 				});
 	}
@@ -29,8 +32,7 @@ namespace Elpida
 	Vector<TaskConfiguration> DataParseBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-				TaskConfiguration("Input XML file", ConfigurationType::File, "./test-data.xml"),
-				TaskConfiguration("Input JSON file", ConfigurationType::File, "./test-data.json"),
+				TaskConfiguration("File size", ConfigurationType::Integer, "128"),
 		};
 	}
 
@@ -40,9 +42,9 @@ namespace Elpida
 
 		auto& configuration = context.GetConfiguration();
 
-		returnTasks.push_back(CreateTask<FileReadTask>(false, configuration.at(0).GetValue()));
+		returnTasks.push_back(CreateTask<XmlGenerationTask>(false, configuration.at(0).AsInteger()));
 		returnTasks.push_back(CreateTask<ParseXmlTask>());
-		returnTasks.push_back(CreateTask<FileReadTask>(false, configuration.at(1).GetValue()));
+		returnTasks.push_back(CreateTask<JsonGenerationTask>(false, configuration.at(0).AsInteger()));
 		returnTasks.push_back(CreateTask<ParseJsonTask>());
 
 		return returnTasks;

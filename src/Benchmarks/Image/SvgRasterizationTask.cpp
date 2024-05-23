@@ -10,12 +10,8 @@
 
 namespace Elpida
 {
-	bool SvgRasterizationTask::CanBeMultiThreaded() const
-	{
-		return false;
-	}
 
-	void SvgRasterizationTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void SvgRasterizationTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
 
@@ -24,7 +20,7 @@ namespace Elpida
 		_inputDocument = std::move(ptr->GetUnderlyingData());
 	}
 
-	UniquePtr<AbstractTaskData> SvgRasterizationTask::Finalize()
+	SharedPtr<AbstractTaskData> SvgRasterizationTask::Finalize()
 	{
 		auto ptr = std::make_unique<ImageTaskData>(_inputData->GetAllocator(), _rasterizedImage.GetWidth(), _rasterizedImage.GetHeight(), 4, 4);
 
@@ -69,12 +65,12 @@ namespace Elpida
 	{
 		while (iterations-- > 0)
 		{
-			_rasterizedImage = SvgRasterizer::RasterizeCustom(_inputDocument, _subSamples, _multiThreadedShapes, _multiThreadedSuperSampling, _multiThreadedBitBlt, *_threadPool);
+			_rasterizedImage = SvgRasterizer::Rasterize(_inputDocument, _subSamples);
 		}
 	}
 
-	SvgRasterizationTask::SvgRasterizationTask(std::size_t subSamples,bool multiThreadedShapes, bool multiThreadedSuperSampling, bool multiThreadedBitBlt, ThreadPool* threadPool)
-			: _threadPool(threadPool), _subSamples(subSamples), _multiThreadedShapes(multiThreadedShapes), _multiThreadedSuperSampling(multiThreadedSuperSampling), _multiThreadedBitBlt(multiThreadedBitBlt)
+	SvgRasterizationTask::SvgRasterizationTask(std::size_t subSamples)
+			:  _subSamples(subSamples)
 	{
 
 	}
@@ -101,6 +97,6 @@ namespace Elpida
 
 	UniquePtr<Task> SvgRasterizationTask::DoDuplicate() const
 	{
-		return std::make_unique<SvgRasterizationTask>(_subSamples, _multiThreadedShapes, _multiThreadedSuperSampling, _multiThreadedBitBlt, _threadPool);
+		return std::make_unique<SvgRasterizationTask>(_subSamples);
 	}
 } // Elpida

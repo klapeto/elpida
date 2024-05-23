@@ -6,14 +6,14 @@
 
 namespace Elpida
 {
-	void MemoryReadBandwidthTask::Prepare(UniquePtr<AbstractTaskData> inputData)
+	void MemoryReadBandwidthTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_data = std::move(inputData);
 		_data->Allocate(_size);
 		_ptr = _data->GetData();
 	}
 
-	UniquePtr<AbstractTaskData> MemoryReadBandwidthTask::Finalize()
+	SharedPtr<AbstractTaskData> MemoryReadBandwidthTask::Finalize()
 	{
 		_data->Deallocate();
 		return std::move(_data);
@@ -89,11 +89,6 @@ namespace Elpida
 	Duration MemoryReadBandwidthTask::GetExecutionMinimumDuration()
 	{
 		return Seconds(5);
-	}
-
-	bool MemoryReadBandwidthTask::CanBeMultiThreaded() const
-	{
-		return true;
 	}
 
 	UniquePtr<Task> MemoryReadBandwidthTask::DoDuplicate() const

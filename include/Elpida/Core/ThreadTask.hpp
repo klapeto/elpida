@@ -21,16 +21,13 @@ namespace Elpida
 	class ThreadTask final : public Task
 	{
 	 public:
-		void Prepare(UniquePtr<AbstractTaskData> inputData) final;
+		void Prepare(SharedPtr<AbstractTaskData> inputData) final;
 
 		[[nodiscard]]
 		Duration Run() final;
 
 		[[nodiscard]]
-		UniquePtr<AbstractTaskData> Finalize() final;
-
-		[[nodiscard]]
-		bool CanBeMultiThreaded() const final;
+		SharedPtr<AbstractTaskData> Finalize() final;
 
 		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
@@ -51,6 +48,7 @@ namespace Elpida
 		std::mutex _mutex;
 		Optional<Ref<const ProcessingUnitNode>> _targetProcessor;
 		Duration _taskRunDuration;
+		std::exception_ptr _exception;
 		volatile bool _doStart;
 
 		void ThreadProcedure();
