@@ -43,7 +43,7 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
 		SharedPtr<AbstractTaskData> _inputData;
-		SvgCalculatedDocument _inputDocument;
+		SvgCalculatedDocument* _inputDocument;
 		SvgBackDrop _rasterizedImage;
 		std::size_t _subSamples;
 	};

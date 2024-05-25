@@ -24,28 +24,29 @@ namespace Elpida
 
 		auto& taskResults = result.GetTaskResults();
 		auto taskInfos = benchmark.GetInfo().GetTaskInfos();
-		for (std::size_t i = 0; i< taskResults.size(); ++i){
+		for (std::size_t i = 0; i < taskResults.size(); ++i)
+		{
 			auto& taskInfo = taskInfos[i];
 			auto& taskResult = taskResults[i];
 			if (taskInfo.GetScoreType() == Elpida::ScoreType::Throughput)
 			{
 				accumulator
-					<< taskInfo.GetName()
-					<< ": "
-					<< ValueUtilities::GetValueScaleStringSI(
-						(double)taskResult.GetDataSize() / taskResult.GetDuration().count())
-					<< taskInfo.GetScoreUnit()
-					<< "/s"
-					<< std::endl;
+						<< taskInfo.GetName()
+						<< ": "
+						<< ValueUtilities::GetValueScaleStringSI(
+								(double)taskResult.GetDataSize() / taskResult.GetDuration().count())
+						<< taskInfo.GetScoreUnit()
+						<< "/s"
+						<< std::endl;
 			}
 			else
 			{
 				accumulator
-					<< taskInfo.GetName()
-					<< ": "
-					<< ValueUtilities::GetValueScaleStringSI(taskResult.GetDuration().count())
-					<< "s"
-					<< std::endl;
+						<< taskInfo.GetName()
+						<< ": "
+						<< ValueUtilities::GetValueScaleStringSI(taskResult.GetDuration().count())
+						<< "s"
+						<< std::endl;
 			}
 		}
 		return accumulator.str();

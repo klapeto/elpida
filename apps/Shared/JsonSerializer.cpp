@@ -225,7 +225,7 @@ namespace Elpida
 		{
 			json resultJ;
 
-			resultJ["durationNanoseconds"] = std::chrono::duration_cast<NanoSeconds>(
+			resultJ["duration"] = std::chrono::duration_cast<Seconds>(
 					taskResult.GetDuration()).count();
 			resultJ["dataSize"] = taskResult.GetDataSize();
 
