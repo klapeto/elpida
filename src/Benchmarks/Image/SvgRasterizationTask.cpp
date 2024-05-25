@@ -17,7 +17,7 @@ namespace Elpida
 
 		auto ptr = dynamic_cast<SimpleTaskData<SvgCalculatedDocument>*>(_inputData.get());
 
-		_inputDocument = std::move(ptr->GetUnderlyingData());
+		_inputDocument = &ptr->GetUnderlyingData();
 	}
 
 	SharedPtr<AbstractTaskData> SvgRasterizationTask::Finalize()
@@ -58,14 +58,14 @@ namespace Elpida
 
 	Size SvgRasterizationTask::GetProcessedDataSize() const
 	{
-		return CalculateTotalPixelsRendered(_inputDocument.GetRootShape()) * _subSamples;
+		return CalculateTotalPixelsRendered(_inputDocument->GetRootShape()) * _subSamples;
 	}
 
 	void SvgRasterizationTask::DoRun(Iterations iterations)
 	{
 		while (iterations-- > 0)
 		{
-			_rasterizedImage = SvgRasterizer::Rasterize(_inputDocument, _subSamples);
+			_rasterizedImage = SvgRasterizer::Rasterize(*_inputDocument, _subSamples);
 		}
 	}
 

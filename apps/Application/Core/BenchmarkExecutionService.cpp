@@ -120,7 +120,7 @@ namespace Elpida::Application
 		for (auto& taskJ: taskResultsJ)
 		{
 			taskResults.emplace_back(
-					NanoSeconds(taskJ["durationNanoseconds"].template get<double>()),
+					Seconds(taskJ["duration"].template get<double>()),
 					taskJ["dataSize"].get<std::size_t>()
 			);
 		}
