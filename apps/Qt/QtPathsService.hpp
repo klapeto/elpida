@@ -17,10 +17,15 @@ namespace Elpida::Application
 		[[nodiscard]]
 		const std::filesystem::path& GetDownloadStoragePath() const override;
 
+		[[nodiscard]]
+		const std::filesystem::path& GetExecutablePath() const override;
+
 		QtPathsService();
 		~QtPathsService() override = default;
+
 	private:
 		std::filesystem::path _downloadPath;
+		std::filesystem::path _executablePath;
 	};
 
 } // Application

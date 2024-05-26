@@ -16,7 +16,7 @@ namespace Elpida::Application
 
 	void QtDesktopService::OpenFile(const std::filesystem::path& path) const
 	{
-		QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromStdString(path)));
+		QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromStdString(path.generic_string())));
 	}
 } // Application
 // Elpida
