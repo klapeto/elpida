@@ -69,6 +69,14 @@ set(ELPIDA_APPLICATION_SOURCES
         FullBenchmarkInstances/MemoryLatency.hpp
         FullBenchmarkInstances/MemoryReadBandwidth.cpp
         FullBenchmarkInstances/MemoryReadBandwidth.hpp
+        Core/ResultsHTMLReporter.cpp
+        Core/ResultsHTMLReporter.hpp
+        Core/PathsService.cpp
+        Core/PathsService.hpp
+        Core/DesktopService.cpp
+        Core/DesktopService.hpp
+        Core/BenchmarkStatisticsService.cpp
+        Core/BenchmarkStatisticsService.hpp
 )
 
 
@@ -120,4 +128,5 @@ target_include_directories(elpida-application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 
 install(TARGETS elpida-application)
 install(FILES Assets/placeholder DESTINATION bin/assets)
+install(FILES Assets/custom-report-template.html DESTINATION bin/assets/custom-report-template.html)
 

@@ -7,7 +7,7 @@
 namespace Elpida::Application
 {
 	BenchmarkRunConfigurationModel::BenchmarkRunConfigurationModel()
-			: _iterationsToRun(1), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false), _concurrencyMode(ConcurrencyMode::None)
+			: _iterationsToRun(1), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false), _generateHtmlReport(false), _concurrencyMode(ConcurrencyMode::None)
 	{
 
 	}
@@ -74,5 +74,15 @@ namespace Elpida::Application
 	{
 		_iterationsToRun = iterations;
 		OnDataChanged();
+	}
+
+	void BenchmarkRunConfigurationModel::SetGenerateHtmlReport(bool generateHtmlReport)
+	{
+		_generateHtmlReport = generateHtmlReport;
+	}
+
+	bool BenchmarkRunConfigurationModel::IsGenerateHtmlReport() const
+	{
+		return _generateHtmlReport;
 	}
 } // Elpida

@@ -13,6 +13,9 @@
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 
 #include "Core/BenchmarkExecutionService.hpp"
+#include "Core/ResultsHTMLReporter.hpp"
+#include "Core/PathsService.hpp"
+#include "Core/DesktopService.hpp"
 
 #include "ResultSerializer.hpp"
 
@@ -23,18 +26,21 @@
 namespace Elpida::Application
 {
 	CustomBenchmarkController::CustomBenchmarkController(CustomBenchmarkModel& model,
-		TopologyModel& topologyModel,
-		TimingModel& overheadsModel,
-		BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
-		BenchmarkExecutionService& benchmarkExecutionService,
-			const ResultSerializer& resultSerializer)
-		: Controller<CustomBenchmarkModel>(model),
-		  _topologyModel(topologyModel),
-		  _overheadsModel(overheadsModel),
-		  _benchmarkRunConfigurationModel(benchmarkRunConfigurationModel),
-		  _benchmarkExecutionService(benchmarkExecutionService),
-		  _resultSerializer(resultSerializer),
-		  _cancelling(false)
+			TopologyModel& topologyModel, TimingModel& overheadsModel,
+			BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
+			BenchmarkExecutionService& benchmarkExecutionService, const ResultSerializer& resultSerializer,
+			const ResultsHTMLReporter& resultsHtmlReporter, const PathsService& pathsService,
+			const DesktopService& desktopService)
+		:Controller<CustomBenchmarkModel>(model),
+		 _topologyModel(topologyModel),
+		 _overheadsModel(overheadsModel),
+		 _benchmarkRunConfigurationModel(benchmarkRunConfigurationModel),
+		 _benchmarkExecutionService(benchmarkExecutionService),
+		 _resultSerializer(resultSerializer),
+		 _resultsHTMLReporter(resultsHtmlReporter),
+		 _pathsService(pathsService),
+		 _desktopService(desktopService),
+		 _cancelling(false)
 	{
 
 	}
@@ -57,6 +63,7 @@ namespace Elpida::Application
 		{
 
 			std::vector<std::size_t> affinity;
+			std::vector<BenchmarkResultModel> thisRunResults;
 
 			affinity.reserve(_topologyModel.GetSelectedLeafNodes().size());
 			for (auto& node : _topologyModel.GetSelectedLeafNodes())
@@ -66,7 +73,7 @@ namespace Elpida::Application
 
 			for (std::size_t i = 0; i < _benchmarkRunConfigurationModel.GetIterationsToRun(); ++i)
 			{
-				_model.Add(_benchmarkExecutionService.Execute(
+				BenchmarkResultModel result = _benchmarkExecutionService.Execute(
 						*selectedBenchmark,
 						affinity,
 						_overheadsModel.GetNowOverhead().count(),
@@ -74,7 +81,28 @@ namespace Elpida::Application
 						_overheadsModel.GetVirtualCallOverhead().count(),
 						_benchmarkRunConfigurationModel.IsNumaAware(),
 						_benchmarkRunConfigurationModel.IsPinThreads(),
-						_benchmarkRunConfigurationModel.GetConcurrencyMode()));
+						_benchmarkRunConfigurationModel.GetConcurrencyMode());
+
+				if (_benchmarkRunConfigurationModel.IsGenerateHtmlReport())
+				{
+					thisRunResults.push_back(result);
+				}
+				_model.Add(std::move(result));
+			}
+			if (_benchmarkRunConfigurationModel.IsGenerateHtmlReport())
+			{
+				std::string fileName = "Custom ";
+				fileName
+					.append(selectedBenchmark->GetName())
+					.append(" ")
+					.append(std::to_string(time(nullptr)))
+					.append(".html");
+
+				auto path = _pathsService.GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
+
+				_resultsHTMLReporter.WriteCustomBenchmarkReport(thisRunResults, affinity, path);
+
+				_desktopService.OpenFile(path);
 			}
 		}
 		catch (const ElpidaException& ex)
@@ -100,5 +128,10 @@ namespace Elpida::Application
 	{
 		std::fstream file(filePath.c_str(), std::ios::trunc | std::fstream::out);
 		file << _resultSerializer.Serialize(_model);
+	}
+
+	void CustomBenchmarkController::GenerateReport(const std::filesystem::path& filePath)
+	{
+		//_ResultsHTMLReporter.WriteCustomBenchmarkReport()
 	}
 } // Application

@@ -70,6 +70,7 @@ namespace Elpida::Application
 		_ui->chkPinThreads->setChecked(_model.IsPinThreads());
 		_ui->chkOpenResult->setEnabled(_model.IsUploadResults());
 		_ui->spnTimes->setValue(_model.GetIterationsToRun());
+		_ui->chkGenerateReport->setChecked(_model.IsGenerateHtmlReport());
 		_ui->cmbConcurrencyMode->setCurrentIndex(TranslateConcurrencyMode(_model.GetConcurrencyMode()));
 		_uiUpdating = false;
 	}
@@ -108,5 +109,11 @@ namespace Elpida::Application
 		default:
 			_controller.SetConcurrencyMode(ConcurrencyMode::None);
 		}
+	}
+
+	void BenchmarkRunConfigurationView::on_chkGenerateReport_stateChanged(int state)
+	{
+		if (_uiUpdating) return;
+		_controller.SetGenerateHtmlReport(state == Qt::Checked);
 	}
 }

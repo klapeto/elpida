@@ -12,7 +12,7 @@ namespace Elpida::Application
 
 	BenchmarkRunConfigurationController::BenchmarkRunConfigurationController(BenchmarkRunConfigurationModel& model,
 			SettingsService& settingsService)
-			: Controller(model), _settingsService(settingsService)
+			:Controller(model), _settingsService(settingsService)
 	{
 		std::string value = settingsService.Get("UploadResults");
 		if (!value.empty())
@@ -57,6 +57,16 @@ namespace Elpida::Application
 		{
 			_model.SetConcurrencyMode(ConcurrencyMode::None);
 		}
+
+		value = settingsService.Get("GenerateHtmlReport");
+		if (!value.empty())
+		{
+			_model.SetGenerateHtmlReport(value == "1");
+		}
+		else
+		{
+			_model.SetGenerateHtmlReport(false);
+		}
 	}
 
 	void BenchmarkRunConfigurationController::SetUploadResults(bool uploadResults)
@@ -93,6 +103,12 @@ namespace Elpida::Application
 	{
 		_model.SetConcurrencyMode(concurrencyMode);
 		_settingsService.Set("ConcurrencyMode", std::to_string(static_cast<std::size_t>(concurrencyMode)));
+	}
+
+	void BenchmarkRunConfigurationController::SetGenerateHtmlReport(bool generateHtmlReport)
+	{
+		_model.SetGenerateHtmlReport(generateHtmlReport);
+		_settingsService.Set("GenerateHtmlReport", generateHtmlReport ? "1" : "0");
 	}
 } // Elpida
 // Application

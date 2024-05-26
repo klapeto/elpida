@@ -42,6 +42,8 @@
 #include "Models/Full/FullBenchmarkModel.hpp"
 
 #include "Core/BenchmarkExecutionService.hpp"
+#include "Core/BenchmarkStatisticsService.hpp"
+#include "Core/ResultsHTMLReporter.hpp"
 #include "Controllers/CustomBenchmarkController.hpp"
 #include "Controllers/BenchmarkRunConfigurationController.hpp"
 #include "Controllers/FullBenchmarkController.hpp"
@@ -52,6 +54,8 @@
 #include "Elpida/Platform/AsyncPipeReader.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "QtMessageService.hpp"
+#include "QtPathsService.hpp"
+#include "QtDesktopService.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -254,10 +258,22 @@ int main(int argc, char* argv[])
 		BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel,
 				settingsService);
 
+		BenchmarkStatisticsService benchmarkStatisticsService;
+
+		ResultsHTMLReporter htmlReporter(benchmarkRunConfigurationModel, benchmarkStatisticsService);
+		QtPathsService pathsService;
+		QtDesktopService desktopService;
+
 		CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
 		CustomBenchmarkController
-				customBenchmarkController(customBenchmarkModel, builderJson.GetTopologyInfoModel(), builderJson.GetTimingModel(),
-				benchmarkRunConfigurationModel, executionService, resultSerializer);
+				customBenchmarkController(customBenchmarkModel, builderJson.GetTopologyInfoModel(),
+				builderJson.GetTimingModel(),
+				benchmarkRunConfigurationModel,
+				executionService,
+				resultSerializer,
+				htmlReporter,
+				pathsService,
+				desktopService);
 
 		ConfigurationViewPool configurationViewPool(settingsService);
 
