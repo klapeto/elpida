@@ -260,9 +260,11 @@ int main(int argc, char* argv[])
 
 		BenchmarkStatisticsService benchmarkStatisticsService;
 
-		ResultsHTMLReporter htmlReporter(benchmarkRunConfigurationModel, benchmarkStatisticsService);
 		QtPathsService pathsService;
 		QtDesktopService desktopService;
+
+		ResultsHTMLReporter htmlReporter(benchmarkRunConfigurationModel, benchmarkStatisticsService, pathsService);
+
 
 		CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
 		CustomBenchmarkController

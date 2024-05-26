@@ -16,6 +16,9 @@ namespace Elpida::Application
 		[[nodiscard]]
 		virtual const std::filesystem::path& GetDownloadStoragePath() const = 0;
 
+		[[nodiscard]]
+		virtual const std::filesystem::path& GetExecutablePath() const = 0;
+
 		virtual ~PathsService() = default;
 	};
 

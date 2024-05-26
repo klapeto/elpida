@@ -14,6 +14,7 @@ namespace Elpida::Application
 	class BenchmarkRunConfigurationModel;
 	class BenchmarkConfigurationModel;
 	class BenchmarkStatisticsService;
+	class PathsService;
 
 	class ResultsHTMLReporter
 	{
@@ -24,10 +25,11 @@ namespace Elpida::Application
 				const std::filesystem::path& outputFile) const;
 
 		explicit ResultsHTMLReporter(const BenchmarkRunConfigurationModel& runConfigurationModel,
-				const BenchmarkStatisticsService& statisticsService);
+				const BenchmarkStatisticsService& statisticsService, const PathsService& pathsService);
 	private:
 		const BenchmarkRunConfigurationModel& _runConfigurationModel;
 		const BenchmarkStatisticsService& _statisticsService;
+		const PathsService& _pathsService;
 	};
 
 } // Application

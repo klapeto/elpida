@@ -9,14 +9,16 @@
 #include <ctime>
 
 #include "BenchmarkStatisticsService.hpp"
+#include "PathsService.hpp"
 #include "Models/Benchmark/BenchmarkModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 
 namespace Elpida::Application
 {
 	ResultsHTMLReporter::ResultsHTMLReporter(const BenchmarkRunConfigurationModel& runConfigurationModel,
-			const BenchmarkStatisticsService& statisticsService)
-			:_runConfigurationModel(runConfigurationModel), _statisticsService(statisticsService)
+			const BenchmarkStatisticsService& statisticsService, const PathsService& pathsService)
+			:_runConfigurationModel(runConfigurationModel), _statisticsService(statisticsService),
+			 _pathsService(pathsService)
 	{
 	}
 
@@ -70,7 +72,7 @@ namespace Elpida::Application
 		std::ostringstream stream;
 
 		stream << " <span>(";
-		stream << ValueUtilities::ToFixed((value / base) / 100.0, 2);
+		stream << ValueUtilities::ToFixed((value / base) * 100.0, 2);
 		stream << "%)</span>";
 		return stream.str();
 	}
@@ -80,15 +82,15 @@ namespace Elpida::Application
 		std::ostringstream stream;
 
 		stream << " <span";
-		if (value > base)
+		if (value < base)
 		{
 			stream << " class='positive'>(+";
-			stream << ValueUtilities::ToFixed((value / base) / 100.0, 2);
+			stream << ValueUtilities::ToFixed(100 - ((value / base) * 100.0), 2);
 		}
 		else
 		{
-			stream << " class='negative'>(+";
-			stream << ValueUtilities::ToFixed((base / value) / 100.0, 2);
+			stream << " class='negative'>(-";
+			stream << ValueUtilities::ToFixed(100 - ((base / value) * 100.0), 2);
 		}
 		stream << "%)</span>";
 		return stream.str();
@@ -115,9 +117,9 @@ namespace Elpida::Application
 	}
 
 
-	static std::string GetTemplateData()
+	static std::string GetTemplateData(const PathsService& pathsService)
 	{
-		std::ifstream file("/media/klapeto/Αρχεία/Code/elpida/apps/Application/Assets/custom-report-template.html",
+		std::ifstream file(pathsService.GetExecutablePath() / "assets" / "custom-report-template.html",
 				std::ios::binary);
 		if (!file.is_open())
 		{
@@ -137,7 +139,7 @@ namespace Elpida::Application
 			const std::vector<std::size_t>& affinity,
 			const std::filesystem::path& outputFile) const
 	{
-		auto templateData = GetTemplateData();
+		auto templateData = GetTemplateData(_pathsService);
 		auto directory = outputFile;
 		directory.remove_filename();
 		create_directories(directory);
