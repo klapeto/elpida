@@ -84,12 +84,12 @@ namespace Elpida::Application
 		stream << " <span";
 		if (value < base)
 		{
-			stream << " class='positive'>(+";
+			stream << " class='negative'>(-";
 			stream << ValueUtilities::ToFixed(100 - ((value / base) * 100.0), 2);
 		}
 		else
 		{
-			stream << " class='negative'>(-";
+			stream << " class='positive'>(+";
 			stream << ValueUtilities::ToFixed(100 - ((base / value) * 100.0), 2);
 		}
 		stream << "%)</span>";
