@@ -90,7 +90,11 @@ set(ELPIDA_QT_SOURCES
 		QtMessageService.cpp
 		QtThreadQueue.cpp
 		QtSettingsService.cpp
-		)
+		QtPathsService.cpp
+		QtPathsService.hpp
+		QtDesktopService.cpp
+        QtDesktopService.hpp
+)
 
 
 if (MSVC)

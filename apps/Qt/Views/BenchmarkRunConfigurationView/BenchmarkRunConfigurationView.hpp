@@ -46,6 +46,8 @@ namespace Elpida::Application
 
 		void on_chkPinThreads_stateChanged(int state);
 
+		void on_chkGenerateReport_stateChanged(int state);
+
 		void on_spnTimes_valueChanged(int value);
 
 		void on_cmbConcurrencyMode_currentIndexChanged(int value);

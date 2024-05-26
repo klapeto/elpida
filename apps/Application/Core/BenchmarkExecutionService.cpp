@@ -30,15 +30,15 @@ namespace Elpida::Application
 			bool pinThreads,
 			ConcurrencyMode concurrencyMode)
 	{
-
 		std::vector<std::string> configuration;
+		std::unordered_map<std::string, std::string> configurationMap;
 		configuration.reserve(benchmarkModel.GetConfigurations().size());
 
 		for (auto& config: benchmarkModel.GetConfigurations())
 		{
 			configuration.emplace_back(config.GetValue());
+			configurationMap.insert(std::make_pair(config.GetName(), config.GetValue()));
 		}
-
 
 		auto toString = [](double d)
 		{
@@ -124,7 +124,7 @@ namespace Elpida::Application
 					taskJ["dataSize"].get<std::size_t>()
 			);
 		}
-		return BenchmarkResultModel(benchmarkModel, score, std::move(taskResults));
+		return BenchmarkResultModel(benchmarkModel, score, std::move(taskResults), std::move(configurationMap));
 	}
 
 	void BenchmarkExecutionService::StopCurrentExecution()

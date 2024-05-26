@@ -206,6 +206,5 @@ namespace Elpida::Application
 			_fullBenchmarkController.ClearResults();
 		}
 	}
-
 }
 

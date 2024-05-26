@@ -26,6 +26,7 @@ namespace Elpida::Application
 		void SetOpenResult(bool openResult);
 		void SetNumaAware(bool numaAware);
 		void SetPinThreads(bool pinThreads);
+		void SetGenerateHtmlReport(bool generateHtmlReport);
 		void SetConcurrencyMode(ConcurrencyMode concurrencyMode);
 
 		[[nodiscard]]
@@ -44,6 +45,9 @@ namespace Elpida::Application
 		bool IsNumaAware() const;
 
 		[[nodiscard]]
+		bool IsGenerateHtmlReport() const;
+
+		[[nodiscard]]
 		ConcurrencyMode GetConcurrencyMode() const;
 
 		BenchmarkRunConfigurationModel();
@@ -55,6 +59,7 @@ namespace Elpida::Application
 		bool _openResult;
 		bool _numaAware;
 		bool _pinThreads;
+		bool _generateHtmlReport;
 		ConcurrencyMode _concurrencyMode;
 	};
 

@@ -22,6 +22,7 @@ namespace Elpida::Application
 		void SetPinThreads(bool pinThreads);
 		void SetIterationsToRun(std::size_t iterationsToRun);
 		void SetConcurrencyMode(ConcurrencyMode concurrencyMode);
+		void SetGenerateHtmlReport(bool generateHtmlReport);
 
 		explicit BenchmarkRunConfigurationController(BenchmarkRunConfigurationModel& model, SettingsService& settingsService);
 		~BenchmarkRunConfigurationController() override = default;

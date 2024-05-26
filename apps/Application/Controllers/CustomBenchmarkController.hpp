@@ -18,6 +18,9 @@ namespace Elpida::Application
 	class BenchmarkRunConfigurationModel;
 	class TimingModel;
 	class ResultSerializer;
+	class ResultsHTMLReporter;
+	class PathsService;
+	class DesktopService;
 
 	class CustomBenchmarkController : public Controller<CustomBenchmarkModel>
 	{
@@ -29,13 +32,14 @@ namespace Elpida::Application
 		void StopRunning();
 		void ClearResults();
 		void SaveResults(const std::filesystem::path& filePath);
+		void GenerateReport(const std::filesystem::path& filePath);
 
 		explicit CustomBenchmarkController(CustomBenchmarkModel& model,
-				TopologyModel& topologyModel,
-				TimingModel& overheadsModel,
+				TopologyModel& topologyModel, TimingModel& overheadsModel,
 				BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
-				BenchmarkExecutionService& benchmarkExecutionService,
-				const ResultSerializer& resultSerializer);
+				BenchmarkExecutionService& benchmarkExecutionService, const ResultSerializer& resultSerializer,
+				const ResultsHTMLReporter& resultsHtmlReporter, const PathsService& pathsService,
+				const DesktopService& desktopService);
 		~CustomBenchmarkController() override = default;
 	 private:
 		TopologyModel& _topologyModel;
@@ -43,6 +47,9 @@ namespace Elpida::Application
 		BenchmarkRunConfigurationModel& _benchmarkRunConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		const ResultSerializer& _resultSerializer;
+		const ResultsHTMLReporter& _resultsHTMLReporter;
+		const PathsService& _pathsService;
+		const DesktopService& _desktopService;
 		bool _cancelling;
 	};
 

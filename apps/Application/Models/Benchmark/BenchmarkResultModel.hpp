@@ -8,6 +8,7 @@
 #include "Models/Abstractions/Model.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "TaskResultModel.hpp"
+#include <unordered_map>
 
 namespace Elpida::Application
 {
@@ -33,19 +34,25 @@ namespace Elpida::Application
 			return *_benchmark;
 		}
 
-		BenchmarkResultModel(const BenchmarkModel& benchmark, double score, Vector<TaskResultModel>&& taskResults)
-			: _taskResults(std::move(taskResults)), _benchmark(&benchmark), _score(score)
+		const std::unordered_map<std::string, std::string>& GetConfiguration() const
+		{
+			return _configuration;
+		}
+
+		BenchmarkResultModel(const BenchmarkModel& benchmark, double score, Vector<TaskResultModel>&& taskResults, std::unordered_map<std::string, std::string>&& configuration)
+			: _taskResults(std::move(taskResults)), _configuration(std::move(configuration)), _benchmark(&benchmark), _score(score)
 		{
 
 		}
 
-		BenchmarkResultModel(const BenchmarkResultModel&) = delete;
+		BenchmarkResultModel(const BenchmarkResultModel&) = default;
 		BenchmarkResultModel(BenchmarkResultModel&&) noexcept = default;
-		BenchmarkResultModel& operator=(const BenchmarkResultModel&) = delete;
+		BenchmarkResultModel& operator=(const BenchmarkResultModel&) = default;
 		BenchmarkResultModel& operator=(BenchmarkResultModel&&) noexcept = default;
 		~BenchmarkResultModel() override = default;
 	private:
 		Vector<TaskResultModel> _taskResults;
+		std::unordered_map<std::string, std::string> _configuration;
 		const BenchmarkModel* _benchmark;
 		double _score;
 	};

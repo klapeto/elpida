@@ -31,8 +31,8 @@ namespace Elpida::Application
 		}
 
 		TaskResultModel(TaskResultModel&&) noexcept = default;
-		TaskResultModel(const TaskResultModel&) = delete;
-		TaskResultModel& operator=(const TaskResultModel&) = delete;
+		TaskResultModel(const TaskResultModel&) = default;
+		TaskResultModel& operator=(const TaskResultModel&) = default;
 		TaskResultModel& operator=(TaskResultModel&&) noexcept = default;
 		~TaskResultModel() override = default;
 	private:
