@@ -93,12 +93,6 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	}
 }
 
-static void LogOutput(const std::string& output)
-{
-	std::ofstream file("./executor.json", std::ios::app | std::ios::out);
-	file << output << std::endl;
-}
-
 int main(int argC, char** argV)
 {
 	try
@@ -154,7 +148,6 @@ int main(int argC, char** argV)
 		auto result = benchmark->Run(context);
 
 		auto output = helper.GetResultFormatter().ConvertToString(result, *benchmark.get());
-		LogOutput(output);
 		std::cout << output << std::endl;
 	}
 	catch (const std::exception& ex)
