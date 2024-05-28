@@ -34,7 +34,7 @@ namespace Elpida
 				context.GetConcurrencyMode() != ConcurrencyMode::None)
 			{
 				duration = ExecuteMultiThread(context.GetConcurrencyMode(), data, std::move(task), allocators,
-						context.GetTargetProcessors(), processedDataSize, context.IsPinThreads());
+						context.GetTargetProcessors(), context.GetEnvironmentInfo().GetTopologyInfo(), processedDataSize, context.IsPinThreads());
 			}
 			else
 			{
@@ -88,6 +88,7 @@ namespace Elpida
 			UniquePtr<Task> task,
 			const Vector<SharedPtr<Allocator>>& allocators,
 			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			const TopologyInfo& topologyInfo,
 			Size& processedDataSize,
 			bool pinThreads)
 	{
@@ -116,7 +117,7 @@ namespace Elpida
 			break;
 		}
 
-		return ExecuteConcurrent(concurrencyMode, std::move(task), data, std::move(inputData), targetProcessors,
+		return ExecuteConcurrent(concurrencyMode, std::move(task), data, std::move(inputData), targetProcessors, topologyInfo,
 				processedDataSize, pinThreads);
 	}
 
@@ -170,6 +171,7 @@ namespace Elpida
 			SharedPtr<AbstractTaskData>& data,
 			Vector<SharedPtr<AbstractTaskData>> inputData,
 			const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+			const TopologyInfo& topologyInfo,
 			Size& processedDataSize,
 			bool pinThreads)
 	{
@@ -178,7 +180,7 @@ namespace Elpida
 		for (std::size_t i = 0; i < inputData.size(); ++i)
 		{
 			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(),
-					pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessors[i]) : std::nullopt);
+					pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessors[i]) : std::nullopt, topologyInfo);
 
 			auto allocator = inputData[i]->GetAllocator();
 			threadTask->Prepare(std::move(inputData[i]));

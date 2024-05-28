@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <thread>
+#include <fstream>
 
 #include "Elpida/Core/AllocatorFactory.hpp"
 #include "Elpida/Core/DefaultAllocatorFactory.hpp"
@@ -53,10 +54,10 @@ ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const Topolo
 	returnVector.reserve(affinity.size());
 
 	auto& processors = topologyInfo.GetAllProcessingUnits();
-	for (auto index: affinity)
+	for (auto index : affinity)
 	{
 		bool found = false;
-		for (auto& processor: processors)
+		for (auto& processor : processors)
 		{
 			if (processor.get().GetOsIndex().value() == index)
 			{
@@ -90,6 +91,12 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	{
 		taskConfigurations[i].Parse(configurationValues[i]);
 	}
+}
+
+static void LogOutput(const std::string& output)
+{
+	std::ofstream file("./executor.json", std::ios::app | std::ios::out);
+	file << output << std::endl;
 }
 
 int main(int argC, char** argV)
@@ -133,7 +140,7 @@ int main(int argC, char** argV)
 
 		if (!helper.GetAffinity().empty())
 		{
-			ProcessingUnitNode::PinProcessToProcessors(targetProcessors);
+			environmentInfo.GetTopologyInfo().PinProcessToProcessors(targetProcessors);
 		}
 
 		auto context = BenchmarkRunContext(targetProcessors, config,
@@ -146,9 +153,9 @@ int main(int argC, char** argV)
 
 		auto result = benchmark->Run(context);
 
-		std::cout
-				<< helper.GetResultFormatter().ConvertToString(result, *benchmark.get())
-				<< std::endl;
+		auto output = helper.GetResultFormatter().ConvertToString(result, *benchmark.get());
+		LogOutput(output);
+		std::cout << output << std::endl;
 	}
 	catch (const std::exception& ex)
 	{

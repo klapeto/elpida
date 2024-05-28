@@ -33,8 +33,8 @@ namespace Elpida
 		return _taskToRun->Finalize();
 	}
 
-	ThreadTask::ThreadTask(UniquePtr<Task> taskToRun, Optional<Ref<const ProcessingUnitNode>> targetProcessor)
-			: _taskToRun(std::move(taskToRun)), _targetProcessor(targetProcessor), _taskRunDuration(0), _doStart(false)
+	ThreadTask::ThreadTask(UniquePtr<Task> taskToRun, Optional<Ref<const ProcessingUnitNode>> targetProcessor,const TopologyInfo& topologyInfo)
+			: _taskToRun(std::move(taskToRun)), _topologyInfo(topologyInfo), _targetProcessor(targetProcessor), _taskRunDuration(0), _doStart(false)
 	{
 
 	}
@@ -55,7 +55,7 @@ namespace Elpida
 
 	UniquePtr<Task> ThreadTask::DoDuplicate() const
 	{
-		return UniquePtr<Task>(new ThreadTask(_taskToRun->Duplicate(), _targetProcessor));
+		return UniquePtr<Task>(new ThreadTask(_taskToRun->Duplicate(), _targetProcessor, _topologyInfo));
 	}
 
 	TaskInfo ThreadTask::DoGetInfo() const
@@ -69,7 +69,7 @@ namespace Elpida
 		{
 			if (_targetProcessor.has_value())
 			{
-				_targetProcessor->get().PinThreadToThisProcessor();
+				_topologyInfo.PinThreadToProcessor(_targetProcessor->get().GetOsIndex().value());
 			}
 			std::unique_lock<std::mutex> lock(_mutex);
 			_conditionVariable.wait(lock, [this]()

@@ -80,7 +80,7 @@ int main(int argC, char** argV)
 
 		auto topology = TopologyLoader::LoadTopology();
 
-		ProcessingUnitNode::PinThreadToProcessor(0);
+		topology.PinThreadToProcessor(0);
 		auto& cores = topology.GetAllCores();
 
 		Duration loopOverhead = Seconds(6546513);
@@ -92,7 +92,7 @@ int main(int argC, char** argV)
 
 			Duration overhead;
 
-			ProcessingUnitNode::PinThreadToProcessor(pu.get()->GetOsIndex().value());
+			topology.PinThreadToProcessor(pu.get()->GetOsIndex().value());
 			overhead = TimingCalculator::CalculateLoopOverheadFast();
 
 			if (overhead < loopOverhead)
@@ -102,7 +102,7 @@ int main(int argC, char** argV)
 			}
 		}
 
-		ProcessingUnitNode::PinThreadToProcessor(highestCore);
+		topology.PinThreadToProcessor(highestCore);
 
 		auto timing = TimingCalculator::CalculateTiming();
 

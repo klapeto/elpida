@@ -53,6 +53,7 @@ namespace Elpida {
 				UniquePtr<Task> task,
 				const Vector<SharedPtr<Allocator>>& allocators,
 				const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+				const TopologyInfo& topologyInfo,
 				Size& processedDataSize,
 				bool pinThreads);
 
@@ -62,6 +63,7 @@ namespace Elpida {
 				SharedPtr<AbstractTaskData>& data,
 				Vector<SharedPtr<AbstractTaskData>> inputData,
 				const Vector<Ref<const ProcessingUnitNode>>& targetProcessors,
+				const TopologyInfo& topologyInfo,
 				Size& processedDataSize,
 				bool pinThreads);
 

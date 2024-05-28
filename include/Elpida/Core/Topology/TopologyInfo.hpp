@@ -39,17 +39,21 @@ namespace Elpida
 		[[nodiscard]]
 		const Vector<Ref<const TopologyNode>>& GetAllCores() const;
 
+		void PinProcessToProcessors(const std::vector<Ref<const ProcessingUnitNode>>& processors) const;
+		void PinThreadToProcessor(unsigned int processorId) const;
+
 		TopologyInfo(UniquePtr<TopologyNode> root,
 			Vector<CpuKind>&& cpuKinds,
 			Vector<Ref<const CpuCacheNode>>&& allCaches,
 			Vector<Ref<const NumaNode>>&& allNumaNodes,
 			Vector<Ref<const TopologyNode>>&& allCores,
-			Vector<Ref<const ProcessingUnitNode>> allProcessingUnits);
+			Vector<Ref<const ProcessingUnitNode>> allProcessingUnits,
+			void* topologyObj);
 		TopologyInfo(const TopologyInfo&) = delete;
-		TopologyInfo(TopologyInfo&&) noexcept = default;
+		TopologyInfo(TopologyInfo&&) noexcept ;
 		TopologyInfo& operator=(const TopologyInfo&) = delete;
-		TopologyInfo& operator=(TopologyInfo&&) noexcept = default;
-		~TopologyInfo() = default;
+		TopologyInfo& operator=(TopologyInfo&&) noexcept;
+		~TopologyInfo();
 	 private:
 		Vector<CpuKind> _cpuKinds;
 		Vector<Ref<const CpuCacheNode>> _allCaches;
@@ -57,6 +61,7 @@ namespace Elpida
 		Vector<Ref<const TopologyNode>> _allCores;
 		Vector<Ref<const ProcessingUnitNode>> _allProcessingUnits;
 		UniquePtr<TopologyNode> _root;
+		void* _topologyObj;
 	};
 
 } // Elpida
