@@ -58,6 +58,15 @@ if (UNIX)
     target_link_libraries(elpida-core numa ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
+if (MSVC)
+    include(FindHWLOC)
+    target_include_directories(elpida-core PUBLIC ${HWLOC_INCLUDE_DIRS})
+    target_link_directories(elpida-core PUBLIC ${HWLOC_LIBRARY_DIRS})
+    target_link_libraries(elpida-core libhwloc)
+else()
+    target_link_libraries(elpida-core hwloc)
+endif()
+
 target_link_libraries(elpida-core overheads-calculator)
 
 install(TARGETS elpida-core)
