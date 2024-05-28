@@ -10,7 +10,7 @@
 #ifdef ELPIDA_UNIX
 #include <threads.h>
 #else
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 #include <hwloc.h>
