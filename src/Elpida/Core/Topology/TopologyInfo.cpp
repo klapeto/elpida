@@ -5,8 +5,14 @@
 #include "Elpida/Core/Topology/TopologyInfo.hpp"
 #include "Elpida/Core/Map.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
+#include "Elpida/Core/Config.hpp"
 
+#ifdef ELPIDA_UNIX
 #include <threads.h>
+#else
+#include <Windows.h>
+#endif
+
 #include <hwloc.h>
 
 namespace Elpida
@@ -92,6 +98,15 @@ namespace Elpida
 		return *this;
 	}
 
+	static auto GetCurrentThreadId()
+	{
+#ifdef ELPIDA_UNIX
+		return thrd_current();
+#else
+		return GetCurrentThread();
+#endif
+	}
+
 	void TopologyInfo::PinThreadToProcessor(unsigned int processorId) const
 	{
 		auto set = hwloc_bitmap_alloc();
@@ -105,7 +120,7 @@ namespace Elpida
 			{
 				throw ElpidaException("Failed to set thread bitmap: ", strerror(errno));
 			}
-			if (hwloc_set_thread_cpubind((hwloc_topology_t)_topologyObj, thrd_current(), set, 0) == -1)
+			if (hwloc_set_thread_cpubind((hwloc_topology_t)_topologyObj, GetCurrentThreadId(), set, 0) == -1)
 			{
 				throw ElpidaException("Failed to set thread bind: ", strerror(errno));
 			}
