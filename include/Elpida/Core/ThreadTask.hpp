@@ -17,6 +17,7 @@
 
 namespace Elpida
 {
+	class TopologyInfo;
 
 	class ThreadTask final : public Task
 	{
@@ -34,7 +35,7 @@ namespace Elpida
 
 		void WakeThread();
 
-		ThreadTask(UniquePtr<Task> taskToRun, Optional<Ref<const ProcessingUnitNode>> targetProcessor);
+		ThreadTask(UniquePtr<Task> taskToRun, Optional<Ref<const ProcessingUnitNode>> targetProcessor, const TopologyInfo& topologyInfo);
 		~ThreadTask() final;
 	 protected:
 		void DoRun() final;
@@ -46,6 +47,7 @@ namespace Elpida
 		std::thread _thread;
 		std::condition_variable _conditionVariable;
 		std::mutex _mutex;
+		const TopologyInfo& _topologyInfo;
 		Optional<Ref<const ProcessingUnitNode>> _targetProcessor;
 		Duration _taskRunDuration;
 		std::exception_ptr _exception;

@@ -37,8 +37,6 @@ set(ELPIDA_CORE_SOURCES
         Topology/MemoryPageType.cpp
         AllocatorFactory.cpp
         DefaultAllocatorFactory.cpp
-        Topology/ProcessingUnitNode.Unix.cpp
-        Topology/ProcessingUnitNote.Windows.cpp
         BenchmarkRunContext.cpp
 )
 

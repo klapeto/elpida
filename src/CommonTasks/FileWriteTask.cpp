@@ -23,11 +23,11 @@ namespace Elpida
 	TaskInfo FileWriteTask::DoGetInfo() const
 	{
 		return {
-			"File write",
-			"Writes a file from the memory to filesystem.",
-			"B",
-			"The amount of bytes written per second",
-			ScoreType::Throughput
+				"File write",
+				"Writes a file from the memory to filesystem.",
+				"B",
+				"The amount of bytes written per second",
+				ScoreType::Throughput
 		};
 	}
 
@@ -37,7 +37,7 @@ namespace Elpida
 	}
 
 	FileWriteTask::FileWriteTask(std::string filePath)
-		: _filePath(std::move(filePath))
+			:_filePath(std::move(filePath))
 	{
 
 	}
@@ -45,6 +45,7 @@ namespace Elpida
 	void FileWriteTask::DoRun()
 	{
 		_fileStream.write((char*)_inputData->GetData(), _inputData->GetSize());
+		_fileStream.flush();
 	}
 
 	std::unique_ptr<Task> FileWriteTask::DoDuplicate() const
