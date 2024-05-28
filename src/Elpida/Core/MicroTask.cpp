@@ -8,19 +8,9 @@
 #include "Elpida/Core/TimingUtilities.hpp"
 
 #include <thread>
-#include <iostream>
-#include <sstream>
-#include <fstream>
 
 namespace Elpida
 {
-	static void LogOutput(const std::string& output)
-	{
-		std::ofstream file("./ERROR_.json", std::ios::app | std::ios::out);
-		file << output << std::endl;
-		file.flush();
-	}
-
 	Duration MicroTask::Run()
 	{
 		Duration minimumDuration = GetExecutionMinimumDuration();
@@ -28,15 +18,12 @@ namespace Elpida
 		Duration loopOverhead = _environmentInfo->get().GetOverheadsInfo().GetLoopOverhead();
 
 		Size iterations = ShouldBeMeasured() ? TimingUtilities::GetMinimumIterationsNeededForExecutionTime(
-				minimumDuration,
-				nowOverhead,
-				loopOverhead,
-				[this]()
-				{ OnBeforeRun(); },
-				[this](auto duration)
-				{ return PostProcessDuration(duration); },
-				[this](Size iterations)
-				{ DoRun(iterations); }) : 1;
+			minimumDuration,
+			nowOverhead,
+			loopOverhead,
+			[this](){OnBeforeRun();},
+			[this](auto duration){return PostProcessDuration(duration);},
+			[this](Size iterations){DoRun(iterations);}) : 1;
 
 		// Consider the previous run as 'warmups'
 		// now the real deal
@@ -48,30 +35,7 @@ namespace Elpida
 		auto currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
 
 		currentDuration = PostProcessDuration(currentDuration);
-		currentDuration =
-				currentDuration / static_cast<double>(iterations) / static_cast<double>(GetOperationsPerformedPerRun());
-
-		if (currentDuration.count() < 0.0)
-		{
-			// DEBUG
-			std::ostringstream stream;
-
-			stream
-					<< "Calculated duration: " << currentDuration.count()
-					<< "\nOriginal duration: "
-					<< (ToDuration(end - start) - nowOverhead - (loopOverhead * iterations)).count()
-					<< "\nStart: " << start.time_since_epoch().count()
-					<< "\nEnd: " << end.time_since_epoch().count()
-					<< "\nNowOverhead: " << nowOverhead.count()
-					<< "\nLoopOverhead: " << nowOverhead.count()
-					<< "\nIterations: " << iterations
-					<< std::endl;
-			auto str = stream.str();
-			std::cerr << str << std::endl;
-			LogOutput(str);
-			std::abort();
-		}
-		return currentDuration;
+		return currentDuration / static_cast<double>(iterations) / static_cast<double>(GetOperationsPerformedPerRun());
 	}
 
 	void MicroTask::DoRun()
