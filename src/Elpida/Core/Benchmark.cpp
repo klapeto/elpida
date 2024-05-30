@@ -13,8 +13,6 @@
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
-#include <fstream>
-
 namespace Elpida
 {
 	BenchmarkResult Benchmark::Run(BenchmarkRunContext& context) const
@@ -167,13 +165,6 @@ namespace Elpida
 		}
 	}
 
-	static void LogOutput(const std::string& output)
-	{
-		std::ofstream file("./BENCHMARK_.json", std::ios::app | std::ios::out);
-		file << output << std::endl;
-		file.flush();
-	}
-
 	Duration Benchmark::ExecuteConcurrent(
 			ConcurrencyMode concurrencyMode,
 			UniquePtr<Task> task,
@@ -230,8 +221,6 @@ namespace Elpida
 			break;
 		}
 
-		auto finalDuration = totalDuration / threadTasks.size();
-		LogOutput("Total: " + std::to_string(totalDuration.count()) + " | ThreadTasks: " + std::to_string(threadTasks.size()) + " | Final: " + std::to_string(finalDuration.count()));
-		return finalDuration;
+		return totalDuration / threadTasks.size();
 	}
 } // Elpida
