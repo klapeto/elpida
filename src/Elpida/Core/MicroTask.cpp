@@ -8,19 +8,10 @@
 #include "Elpida/Core/TimingUtilities.hpp"
 
 #include <thread>
-#include <iostream>
-#include <sstream>
-#include <fstream>
+
 
 namespace Elpida
 {
-	static void LogOutput(const std::string& output)
-	{
-		std::ofstream file("./MICROTASK_.json", std::ios::app | std::ios::out);
-		file << output << std::endl;
-		file.flush();
-	}
-
 	Duration MicroTask::Run()
 	{
 		Duration minimumDuration = GetExecutionMinimumDuration();
@@ -51,24 +42,6 @@ namespace Elpida
 		currentDuration =
 				currentDuration / static_cast<double>(iterations) / static_cast<double>(GetOperationsPerformedPerRun());
 
-		//if (currentDuration.count() < 0.0)
-		{
-			// DEBUG
-			std::ostringstream stream;
-
-			stream
-					<< "Calculated duration: " << currentDuration.count()
-					<< " | Original duration: "
-					<< (ToDuration(end - start) - nowOverhead - (loopOverhead * iterations)).count()
-					<< " | Start: " << start.time_since_epoch().count()
-					<< " | End: " << end.time_since_epoch().count()
-					<< " | NowOverhead: " << nowOverhead.count()
-					<< " | LoopOverhead: " << nowOverhead.count()
-					<< " | Iterations: " << iterations
-					<< std::endl;
-			auto str = stream.str();
-			LogOutput(str);
-		}
 		return currentDuration;
 	}
 

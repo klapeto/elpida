@@ -13,8 +13,18 @@
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
+
+#include <fstream>
+
 namespace Elpida
 {
+	static void LogOutput(const std::string& output)
+	{
+		std::ofstream file("./BENCHMARK_.json", std::ios::app | std::ios::out);
+		file << output << std::endl;
+		file.flush();
+	}
+
 	BenchmarkResult Benchmark::Run(BenchmarkRunContext& context) const
 	{
 		ValidateConfiguration(context.GetConfiguration());
@@ -40,6 +50,8 @@ namespace Elpida
 			{
 				duration = ExecuteSingleThread(data, std::move(task), processedDataSize);
 			}
+
+			LogOutput(std::to_string(duration.count()));
 
 			if (shouldBeMeasured)
 			{
