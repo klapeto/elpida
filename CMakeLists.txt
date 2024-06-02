@@ -7,7 +7,10 @@ if (MSVC AND ELPIDA_MSVC_STATIC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif ()
 
-#add_compile_options(-O3)
+#set(CMAKE_C_COMPILER /usr/bin/gcc-9)
+#set(CMAKE_CXX_COMPILER /usr/bin/g++-9)
+
+add_compile_options(-O2)
 
 include(cmake-modules/GetElpidaVersion.cmake)
 include(cmake-modules/generate_product_version.cmake)
