@@ -224,6 +224,6 @@ namespace Elpida
 			break;
 		}
 
-		return totalDuration / inputData.size();
+		return totalDuration / threadTasks.size();
 	}
 } // Elpida
