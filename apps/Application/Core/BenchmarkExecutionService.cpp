@@ -20,13 +20,6 @@
 
 namespace Elpida::Application
 {
-
-	static void LogOutput(const std::string& output)
-	{
-		std::ofstream file("./qt.json", std::ios::app | std::ios::out);
-		file << output << std::endl;
-	}
-
 	BenchmarkResultModel
 	BenchmarkExecutionService::Execute(const BenchmarkModel& benchmarkModel,
 			const std::vector<std::size_t>& affinity,
@@ -115,8 +108,6 @@ namespace Elpida::Application
 		stdErrReader.StopReading();
 
 		auto serializedResult = stdOutReader.GetString();
-
-		LogOutput(serializedResult);
 
 		nlohmann::json json = nlohmann::json::parse(serializedResult);
 

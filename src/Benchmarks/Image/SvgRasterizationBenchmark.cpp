@@ -37,8 +37,8 @@ namespace Elpida
 		return BenchmarkInfo(
 				"Svg Rasterization",
 				"Rasterizes a calculated Svg document.",
-				"samples",
-				"How many samples per second are rasterized on average.",
+				"shapes",
+				"How many shapes per second are rasterized on average.",
 				{
 						generationTask.SetMeasured(false).GetInfo(),
 						parseXmlTask.SetMeasured(false).GetInfo(),

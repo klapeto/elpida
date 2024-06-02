@@ -118,10 +118,10 @@ namespace Elpida
 		// https://www.usenix.org/legacy/publications/library/proceedings/sd96/full_papers/mcvoy.pdf
 
 		_data = std::move(data);
-		_data->Allocate(_size);
+		auto size = _data->GetSize();
 
 		const Size linesPerPage = std::max((double)_pageSize / (double)_cacheLineSize, 1.0);
-		const Size pagesCount = std::max((double)_size / (double)_pageSize, 1.0);
+		const Size pagesCount = std::max((double)size / (double)_pageSize, 1.0);
 
 		auto pages = calculatePages(pagesCount, _pageSize);
 		_ptr = (char*)_data->GetData();
@@ -154,7 +154,7 @@ namespace Elpida
 		}
 		else
 		{
-			auto lines = calculateLines(_size / _cacheLineSize, _cacheLineSize);
+			auto lines = calculateLines(size / _cacheLineSize, _cacheLineSize);
 			// Too small size, fits in a single page
 			auto pageIndexA = pages[0];
 			auto pageIndexB = pages[0];
@@ -164,8 +164,8 @@ namespace Elpida
 
 	}
 
-	MemoryLatencyTask::MemoryLatencyTask(Size size, Size cacheLineSize, Size pageSize)
-		: MicroTask(), _ptr(nullptr), _size(size), _cacheLineSize(cacheLineSize), _pageSize(pageSize)
+	MemoryLatencyTask::MemoryLatencyTask(Size cacheLineSize, Size pageSize)
+		: MicroTask(), _ptr(nullptr), _cacheLineSize(cacheLineSize), _pageSize(pageSize)
 	{
 
 	}
@@ -208,12 +208,12 @@ namespace Elpida
 
 	UniquePtr<Task> MemoryLatencyTask::DoDuplicate() const
 	{
-		return UniquePtr<Task>(new MemoryLatencyTask(_size, _cacheLineSize, _pageSize));
+		return UniquePtr<Task>(new MemoryLatencyTask(_cacheLineSize, _pageSize));
 	}
 
 	Size MemoryLatencyTask::GetProcessedDataSize() const
 	{
-		return _size;
+		return _data->GetSize();
 	}
 
 } // Elpida

@@ -24,7 +24,7 @@ namespace Elpida
 		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
-		MemoryLatencyTask(Size size, Size cacheLineSize, Size pageSize);
+		MemoryLatencyTask(Size cacheLineSize, Size pageSize);
 		~MemoryLatencyTask() override = default;
 	 protected:
 		void DoRun(Iterations iterations) override;
@@ -43,7 +43,6 @@ namespace Elpida
 	 private:
 		SharedPtr<AbstractTaskData> _data;
 		char* _ptr;
-		Size _size;
 		Size _cacheLineSize;
 		Size _pageSize;
 	};

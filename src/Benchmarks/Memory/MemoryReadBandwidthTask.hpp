@@ -16,7 +16,7 @@ namespace Elpida
 		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
 		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
-		explicit MemoryReadBandwidthTask(Size size);
+		explicit MemoryReadBandwidthTask();
 		~MemoryReadBandwidthTask() override = default;
 	 protected:
 		void DoRun(Iterations iterations) override;
@@ -27,7 +27,6 @@ namespace Elpida
 	 private:
 		SharedPtr<AbstractTaskData> _data;
 		unsigned char* _ptr;
-		Size _size;
 	};
 
 } // Elpida

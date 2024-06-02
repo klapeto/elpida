@@ -5,6 +5,7 @@
 #include "MemoryReadBandwidthBenchmark.hpp"
 #include "MemoryReadBandwidthTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
+#include "CommonTasks/AllocateMemoryTask.hpp"
 
 #include <algorithm>
 
@@ -12,13 +13,17 @@ namespace Elpida
 {
 	BenchmarkInfo MemoryReadBandwidthBenchmark::GetInfo() const
 	{
-		MemoryReadBandwidthTask task(0);
+		AllocateMemoryTask allocate(0);
+		MemoryReadBandwidthTask task;
 		return BenchmarkInfo(
 				"Memory read bandwidth",
 				"Calculates the peak memory read bandwidth by continuously reading a memory stream.",
 				"B/s",
 				"The peak read bandwidth.",
-				{ task.GetInfo() });
+				{
+					allocate.SetMeasured(false).GetInfo(),
+					task.GetInfo()
+				});
 	}
 
 	double MemoryReadBandwidthBenchmark::CalculateScore(const Vector<TaskResult>& taskResults) const
@@ -63,7 +68,8 @@ namespace Elpida
 		}
 
 		Vector<UniquePtr<Task>> tasks;
-		tasks.push_back(std::make_unique<MemoryReadBandwidthTask>(cacheSize * 8));
+		tasks.push_back(CreateTask<AllocateMemoryTask>(false, cacheSize * 8));
+		tasks.push_back(CreateTask<MemoryReadBandwidthTask>(true));
 		return tasks;
 	}
 } // Elpida

@@ -40,7 +40,7 @@ namespace Elpida
 
 		currentDuration = PostProcessDuration(currentDuration);
 		currentDuration =
-				currentDuration / static_cast<double>(iterations) / static_cast<double>(GetOperationsPerformedPerRun());
+				(currentDuration / static_cast<double>(iterations)) / static_cast<double>(GetOperationsPerformedPerRun());
 
 		return currentDuration;
 	}

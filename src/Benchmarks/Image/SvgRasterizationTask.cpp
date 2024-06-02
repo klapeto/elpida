@@ -40,25 +40,26 @@ namespace Elpida
 		return ptr;
 	}
 
-	static Size CalculateTotalPixelsRendered(const SvgCalculatedShape& shape)
+	static std::size_t CalculateShapeCount(const SvgCalculatedShape& shape)
 	{
-		Size size = 0;
+		std::size_t size = 0;
 		if (!shape.GetPaths().empty() && shape.GetOpacity() > 0.0 && (shape.GetFill().has_value() || shape.GetStroke().has_value()))
 		{
-			size = shape.GetBounds().GetHeight() * shape.GetBounds().GetWidth();
+			size++;
 		}
 
 		for (auto& child : shape.GetChildren())
 		{
-			size += CalculateTotalPixelsRendered(child);
+			size += CalculateShapeCount(child);
 		}
 
 		return size;
 	}
 
+
 	Size SvgRasterizationTask::GetProcessedDataSize() const
 	{
-		return CalculateTotalPixelsRendered(_inputDocument->GetRootShape()) * _subSamples;
+		return CalculateShapeCount(_inputDocument->GetRootShape());
 	}
 
 	void SvgRasterizationTask::DoRun(Iterations iterations)
@@ -70,7 +71,7 @@ namespace Elpida
 	}
 
 	SvgRasterizationTask::SvgRasterizationTask(std::size_t subSamples)
-			:  _subSamples(subSamples)
+			:  _inputDocument(nullptr), _subSamples(subSamples)
 	{
 
 	}
@@ -79,8 +80,8 @@ namespace Elpida
 	{
 		return { "Svg Rasterization",
 				 "Rasterizes a calculated Svg document",
-				 "samples",
-				 "How many samples per second are calculated on average",
+				 "shapes",
+				 "How many shapes per second are calculated on average",
 				 ScoreType::Throughput
 		};
 	}

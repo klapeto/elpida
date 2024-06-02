@@ -7,6 +7,7 @@ set(ELPIDA_COMMON_TASKS_SOURCES
         FileReadTask.cpp
         FileWriteTask.cpp
         ParseXmlTask.cpp
+        AllocateMemoryTask.cpp
 )
 
 add_library(elpida-common-tasks SHARED ${ELPIDA_COMMON_TASKS_SOURCES})

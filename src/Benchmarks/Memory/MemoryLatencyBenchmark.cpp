@@ -5,6 +5,7 @@
 #include "MemoryLatencyBenchmark.hpp"
 #include "MemoryLatencyTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
+#include "CommonTasks/AllocateMemoryTask.hpp"
 
 #include <algorithm>
 
@@ -31,7 +32,8 @@ namespace Elpida
 		}
 
 		Vector<UniquePtr<Task>> tasks;
-		tasks.push_back(std::make_unique<MemoryLatencyTask>(cacheSize * 8, cacheLineSize, pageSize));
+		tasks.push_back(CreateTask<AllocateMemoryTask>(false, cacheSize * 8));
+		tasks.push_back(CreateTask<MemoryLatencyTask>(true, cacheLineSize, pageSize));
 		return tasks;
 	}
 
@@ -42,13 +44,17 @@ namespace Elpida
 
 	BenchmarkInfo MemoryLatencyBenchmark::GetInfo() const
 	{
-		MemoryLatencyTask task(0, 0, 0);
+		AllocateMemoryTask allocateMemoryTask(1);
+		MemoryLatencyTask task(0, 0);
 		return BenchmarkInfo(
 			"Memory latency",
 			"Calculates the average memory access latency by randomly reading memory regions.",
 			"s",
 			"The average access time.",
-			{ task.GetInfo() });
+			{
+				allocateMemoryTask.SetMeasured(false).GetInfo(),
+				task.GetInfo()
+			});
 	}
 
 	Vector<TaskConfiguration> MemoryLatencyBenchmark::GetRequiredConfiguration() const

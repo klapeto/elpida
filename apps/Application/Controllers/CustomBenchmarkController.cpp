@@ -59,12 +59,12 @@ namespace Elpida::Application
 			throw ElpidaException("You have to select a benchmark first.");
 		}
 
+
+		std::vector<std::size_t> affinity;
+		std::vector<BenchmarkResultModel> thisRunResults;
+
 		try
 		{
-
-			std::vector<std::size_t> affinity;
-			std::vector<BenchmarkResultModel> thisRunResults;
-
 			affinity.reserve(_topologyModel.GetSelectedLeafNodes().size());
 			for (auto& node : _topologyModel.GetSelectedLeafNodes())
 			{
@@ -89,21 +89,6 @@ namespace Elpida::Application
 				}
 				_model.Add(std::move(result));
 			}
-			if (_benchmarkRunConfigurationModel.IsGenerateHtmlReport())
-			{
-				std::string fileName = "Custom ";
-				fileName
-					.append(selectedBenchmark->GetName())
-					.append(" ")
-					.append(std::to_string(time(nullptr)))
-					.append(".html");
-
-				auto path = _pathsService.GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
-
-				_resultsHTMLReporter.WriteCustomBenchmarkReport(thisRunResults, affinity, path);
-
-				_desktopService.OpenFile(path);
-			}
 		}
 		catch (const ElpidaException& ex)
 		{
@@ -111,6 +96,22 @@ namespace Elpida::Application
 			{
 				throw;
 			}
+		}
+
+		if (_benchmarkRunConfigurationModel.IsGenerateHtmlReport())
+		{
+			std::string fileName = "Custom ";
+			fileName
+					.append(selectedBenchmark->GetName())
+					.append(" ")
+					.append(std::to_string(time(nullptr)))
+					.append(".html");
+
+			auto path = _pathsService.GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
+
+			_resultsHTMLReporter.WriteCustomBenchmarkReport(thisRunResults, affinity, path);
+
+			_desktopService.OpenFile(path);
 		}
 	}
 	void CustomBenchmarkController::StopRunning()
