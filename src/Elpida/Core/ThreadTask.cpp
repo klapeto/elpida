@@ -86,6 +86,7 @@ namespace Elpida
 
 	void ThreadTask::WakeThread()
 	{
+		if (_doStart) return;
 		std::unique_lock<std::mutex> lock(_mutex);
 		_doStart = true;
 		_conditionVariable.notify_all();

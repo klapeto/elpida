@@ -101,8 +101,6 @@ namespace Elpida
 
 		switch (concurrencyMode)
 		{
-		case ConcurrencyMode::None:
-			throw ElpidaException("Invalid operation: cannot call ExecuteMultiThread with ConcurrencyMode::None");
 		case ConcurrencyMode::CopyInput:
 			inputData = data->Copy(allocators);
 			data->Deallocate();    // Reduce memory footprint
@@ -118,6 +116,8 @@ namespace Elpida
 			inputData = data->Split(allocators);
 			data->Deallocate();    // Reduce memory footprint
 			break;
+		default:
+			throw ElpidaException("Invalid operation: cannot call ExecuteMultiThread with ConcurrencyMode::None");
 		}
 
 		return ExecuteConcurrent(concurrencyMode, std::move(task), data, std::move(inputData), targetProcessors, topologyInfo,
@@ -213,8 +213,6 @@ namespace Elpida
 
 		switch (concurrencyMode)
 		{
-		case ConcurrencyMode::None:
-			throw ElpidaException("Invalid operation: cannot call ExecuteMultiThread with ConcurrencyMode::None");
 		case ConcurrencyMode::CopyInput:
 		case ConcurrencyMode::ShareInput:
 			data = inputData[0];
@@ -222,8 +220,14 @@ namespace Elpida
 		case ConcurrencyMode::ChunkInput:
 			data->Merge(inputData);
 			break;
+		default:
+			throw ElpidaException("Invalid operation: cannot call ExecuteMultiThread with ConcurrencyMode::None");
 		}
 
+		// this used to be threadTasks.size() but for some weird reason I haven't figured out yet, on CI generated
+		// builds it randomly returned huge random numbers when performing SVG Rast with shared input (it was like threadTasks.size() was 0 or something).
+		// Not reproed localy with -O2. Valgrind shows nothing memory wise. Even tried about same compiler ver (GCC 9.5, although CI
+		// has 9.3) and still not reproed. Putting something before (I tried logging that before returning it) seemed to fix that.
 		return totalDuration / inputData.size();
 	}
 } // Elpida
