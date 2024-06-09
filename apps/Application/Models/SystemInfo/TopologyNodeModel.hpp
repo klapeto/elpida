@@ -83,9 +83,15 @@ namespace Elpida::Application
 		std::optional<int> GetEfficiency() const;
 
 		[[nodiscard]]
+		const std::optional<std::reference_wrapper<TopologyNodeModel>>& GetLastCache() const;
+
+		[[nodiscard]]
+		const std::optional<std::reference_wrapper<TopologyNodeModel>>& GetParent() const;
+
+		[[nodiscard]]
 		bool IsSelected() const;
 
-		void SetParents();
+		void SetRelations();
 
 		TopologyNodeModel() = default;
 		TopologyNodeModel(
@@ -107,7 +113,8 @@ namespace Elpida::Application
 		std::optional<std::size_t> _osIndex;
 		std::optional<std::size_t> _size;
 		std::optional<int> _efficiency;
-		TopologyNodeModel* _parent;
+		std::optional<std::reference_wrapper<TopologyNodeModel>> _lastCache;
+		std::optional<std::reference_wrapper<TopologyNodeModel>> _parent;
 		bool _selected;
 
 		void SetSelectedInternal(bool selected);

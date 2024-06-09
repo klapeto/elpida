@@ -28,6 +28,7 @@ namespace Elpida::Application
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TimingModel& timingModel,
 			const TopologyModel& topologyModel,
+			const MemoryInfoModel& memoryInfoModel,
 			const BenchmarkRunConfigurationModel& runConfigurationModel,
 			BenchmarkExecutionService& benchmarkExecutionService,
 			const ResultSerializer& resultSerializer,
@@ -51,16 +52,23 @@ namespace Elpida::Application
 				auto& name = benchmark.GetName();
 				if (name == "Memory latency")
 				{
-					_benchmarks.push_back(std::make_unique<MemoryLatency>(benchmark, timingModel, topologyModel, benchmarkExecutionService));
+					_benchmarks.push_back(
+							std::make_unique<MemoryLatency>(benchmark, timingModel, topologyModel, memoryInfoModel,
+									benchmarkExecutionService));
 				}
 				else if (name == "Memory read bandwidth")
 				{
-					_benchmarks.push_back(std::make_unique<MemoryReadBandwidth>(benchmark, timingModel, topologyModel, benchmarkExecutionService));
+					_benchmarks.push_back(std::make_unique<MemoryReadBandwidth>(benchmark, timingModel, topologyModel,
+							memoryInfoModel, benchmarkExecutionService));
 				}
 				else if (name == "Svg Rasterization")
 				{
-					_benchmarks.push_back(std::make_unique<SvgRasterizationSingleThread>(benchmark, timingModel, topologyModel, benchmarkExecutionService));
-					_benchmarks.push_back(std::make_unique<SvgRasterizationMultiThread>(benchmark, timingModel, topologyModel, benchmarkExecutionService));
+					_benchmarks.push_back(
+							std::make_unique<SvgRasterizationSingleThread>(benchmark, timingModel, topologyModel,
+									memoryInfoModel, benchmarkExecutionService));
+					_benchmarks.push_back(
+							std::make_unique<SvgRasterizationMultiThread>(benchmark, timingModel, topologyModel,
+									memoryInfoModel, benchmarkExecutionService));
 				}
 			}
 		}

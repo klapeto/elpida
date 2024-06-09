@@ -14,8 +14,9 @@ namespace Elpida::Application
 	SvgRasterizationSingleThread::SvgRasterizationSingleThread(const BenchmarkModel& benchmark,
 			const TimingModel& timingModel,
 			const TopologyModel& topologyModel,
+			const MemoryInfoModel& memoryInfoModel,
 			BenchmarkExecutionService& executionService)
-			:FullBenchmarkInstance(benchmark, timingModel, topologyModel, executionService)
+			:FullBenchmarkInstance(benchmark, timingModel, topologyModel, memoryInfoModel, executionService)
 	{
 	}
 
@@ -26,14 +27,9 @@ namespace Elpida::Application
 
 	FullBenchmarkInstanceResult SvgRasterizationSingleThread::Run()
 	{
-		auto targetSamples = std::max((std::size_t)1,
-				(std::size_t)(8192 * ((double)_timingModel.GetIterationsPerSecond() / std::giga::num)));
 		_benchmark.GetConfigurations()[0].SetValue("1");
 		_benchmark.GetConfigurations()[1].SetValue("0.06");
-		_benchmark.GetConfigurations()[2].SetValue(std::to_string(targetSamples));
-		_benchmark.GetConfigurations()[3].SetValue("false");
-		_benchmark.GetConfigurations()[4].SetValue("false");
-		_benchmark.GetConfigurations()[5].SetValue("false");
+		_benchmark.GetConfigurations()[2].SetValue("32");
 
 		auto svgRasterizationSingle = _executionService.Execute(
 				_benchmark,
@@ -48,8 +44,7 @@ namespace Elpida::Application
 		auto& taskResults = svgRasterizationSingle.GetTaskResults();
 
 		auto& rasterizationResult = taskResults[0];
-		Score singleCoreScore =
-				(rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count()) / 1000000.0;
+		Score singleCoreScore = (rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count());
 
 		return FullBenchmarkInstanceResult(std::move(svgRasterizationSingle), singleCoreScore, 0, 0);
 	}

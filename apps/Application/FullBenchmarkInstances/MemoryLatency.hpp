@@ -18,6 +18,7 @@ namespace Elpida::Application
 		explicit MemoryLatency(const BenchmarkModel& benchmark,
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
+				const MemoryInfoModel& memoryInfoModel,
 				BenchmarkExecutionService& executionService);
 	};
 

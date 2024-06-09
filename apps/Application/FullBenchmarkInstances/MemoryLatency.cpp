@@ -9,11 +9,15 @@
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Core/BenchmarkExecutionService.hpp"
 
+#include <algorithm>
+
 namespace Elpida::Application
 {
 	MemoryLatency::MemoryLatency(const BenchmarkModel& benchmark, const TimingModel& timingModel,
-			const TopologyModel& topologyModel, BenchmarkExecutionService& executionService)
-			:FullBenchmarkInstance(benchmark, timingModel, topologyModel, executionService)
+			const TopologyModel& topologyModel,
+			const MemoryInfoModel& memoryInfoModel,
+			BenchmarkExecutionService& executionService)
+			:FullBenchmarkInstance(benchmark, timingModel, topologyModel, memoryInfoModel, executionService)
 	{
 
 	}
@@ -25,6 +29,16 @@ namespace Elpida::Application
 
 	FullBenchmarkInstanceResult MemoryLatency::Run()
 	{
+		std::size_t cacheSize = 16 * 1024 * 1024;
+
+		auto cache = _topologyModel.GetLeafNodes().at(0).get().GetLastCache();
+		if (cache.has_value())
+		{
+			cacheSize = std::max(cacheSize, cache->get().GetSize().value());
+		}
+
+		_benchmark.GetConfigurations()[0].SetValue(std::to_string(cacheSize * 8));
+
 		auto latencyResult = _executionService.Execute(
 				_benchmark,
 				{0},

@@ -17,6 +17,7 @@ namespace Elpida::Application
 		explicit SvgRasterizationSingleThread(const BenchmarkModel& benchmark,
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
+				const MemoryInfoModel& memoryInfoModel,
 				BenchmarkExecutionService& executionService);
 	};
 

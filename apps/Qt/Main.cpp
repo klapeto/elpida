@@ -283,6 +283,7 @@ int main(int argc, char* argv[])
 		FullBenchmarkController fullBenchmarkController(fullBenchmarkModel,
 				builderJson.GetTimingModel(),
 				builderJson.GetTopologyInfoModel(),
+				builderJson.GetMemoryInfoModel(),
 				benchmarkRunConfigurationModel,
 				executionService,
 				resultSerializer,

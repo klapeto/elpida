@@ -243,7 +243,7 @@ namespace Elpida::Application
 		_osInfoModel = ParseOsInfo(root);
 		_topologyInfoModel = ParseTopologyInfo(root);
 		_benchmarkGroups = ParseBenchmarkGroups(root);
-		_topologyInfoModel.GetRoot().SetParents();
+		_topologyInfoModel.GetRoot().SetRelations();
 		_timingModel = ParseTimingInfo(root);
 	}
 

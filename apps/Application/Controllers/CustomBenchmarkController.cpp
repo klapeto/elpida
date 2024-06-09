@@ -98,7 +98,7 @@ namespace Elpida::Application
 			}
 		}
 
-		if (_benchmarkRunConfigurationModel.IsGenerateHtmlReport())
+		if (_benchmarkRunConfigurationModel.IsGenerateHtmlReport() && !thisRunResults.empty())
 		{
 			std::string fileName = "Custom ";
 			fileName

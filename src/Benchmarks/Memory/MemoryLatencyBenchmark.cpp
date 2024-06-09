@@ -14,7 +14,6 @@ namespace Elpida
 	Vector<UniquePtr<Task>>
 	MemoryLatencyBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
-		Size cacheSize = 16 * 1024 * 1024;
 		Size cacheLineSize = 16;
 		Size pageSize = 32;
 
@@ -23,7 +22,6 @@ namespace Elpida
 			auto cache = processor.get().GetLastCache();
 			if (cache.has_value())
 			{
-				cacheSize = std::max(cacheSize, cache->get().GetSize());
 				cacheLineSize = std::max(cacheLineSize, cache->get().GetLineSize());
 			}
 
@@ -32,7 +30,7 @@ namespace Elpida
 		}
 
 		Vector<UniquePtr<Task>> tasks;
-		tasks.push_back(CreateTask<AllocateMemoryTask>(false, cacheSize * 8));
+		tasks.push_back(CreateTask<AllocateMemoryTask>(false, context.GetConfiguration().at(0).AsInteger()));
 		tasks.push_back(CreateTask<MemoryLatencyTask>(true, cacheLineSize, pageSize));
 		return tasks;
 	}
@@ -59,6 +57,8 @@ namespace Elpida
 
 	Vector<TaskConfiguration> MemoryLatencyBenchmark::GetRequiredConfiguration() const
 	{
-		return {};
+		return {
+				TaskConfiguration("Memory size", ConfigurationType::Integer, "64"),
+		};
 	}
 } // Elpida

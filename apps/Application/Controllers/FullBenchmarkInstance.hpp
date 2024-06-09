@@ -31,6 +31,7 @@ namespace Elpida::Application
 	class TimingModel;
 	class TopologyModel;
 	class BenchmarkExecutionService;
+	class MemoryInfoModel;
 
 	class FullBenchmarkInstance
 	{
@@ -44,14 +45,15 @@ namespace Elpida::Application
 		virtual ~FullBenchmarkInstance() = default;
 
 	protected:
-		FullBenchmarkInstance(const BenchmarkModel& benchmark,
-				const TimingModel& timingModel,
+		FullBenchmarkInstance(const BenchmarkModel& benchmark, const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
+				const MemoryInfoModel& memoryInfoModel,
 				BenchmarkExecutionService& executionService);
 
 		const BenchmarkModel& _benchmark;
 		const TimingModel& _timingModel;
 		const TopologyModel& _topologyModel;
+		const MemoryInfoModel& _memoryInfoModel;
 		BenchmarkExecutionService& _executionService;
 
 		const double Divider = 1000000.0;

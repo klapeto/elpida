@@ -7,8 +7,6 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "CommonTasks/AllocateMemoryTask.hpp"
 
-#include <algorithm>
-
 namespace Elpida
 {
 	BenchmarkInfo MemoryReadBandwidthBenchmark::GetInfo() const
@@ -21,8 +19,8 @@ namespace Elpida
 				"B/s",
 				"The peak read bandwidth.",
 				{
-					allocate.SetMeasured(false).GetInfo(),
-					task.GetInfo()
+						allocate.SetMeasured(false).GetInfo(),
+						task.GetInfo()
 				});
 	}
 
@@ -42,33 +40,17 @@ namespace Elpida
 
 	Vector<TaskConfiguration> MemoryReadBandwidthBenchmark::GetRequiredConfiguration() const
 	{
-		return {};
+		return {
+				TaskConfiguration("Memory size", ConfigurationType::Integer, "64"),
+		};
 	}
 
 	Vector<UniquePtr<Task>>
 	MemoryReadBandwidthBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
-		Size cacheSize = 16 * 1024 * 1024;
-
-		for (auto& processor : context.GetTargetProcessors())
-		{
-			auto cache = processor.get().GetLastCache();
-			if (cache.has_value())
-			{
-				cacheSize = std::max(cacheSize, cache->get().GetSize());
-			}
-		}
-
-		auto maxTotalSize = context.GetEnvironmentInfo().GetMemoryInfo().GetTotalSize() / 2;
-		auto currentTotalSize = context.GetTargetProcessors().size() * cacheSize * 8;
-
-		if (currentTotalSize > maxTotalSize)
-		{
-			cacheSize = maxTotalSize / context.GetTargetProcessors().size() / 8;
-		}
-
 		Vector<UniquePtr<Task>> tasks;
-		tasks.push_back(CreateTask<AllocateMemoryTask>(false, cacheSize * 8));
+
+		tasks.push_back(CreateTask<AllocateMemoryTask>(false, context.GetConfiguration().at(0).AsInteger()));
 		tasks.push_back(CreateTask<MemoryReadBandwidthTask>(true));
 		return tasks;
 	}

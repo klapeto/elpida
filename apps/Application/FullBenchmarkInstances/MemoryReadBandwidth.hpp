@@ -19,6 +19,7 @@ namespace Elpida::Application
 		explicit MemoryReadBandwidth(const BenchmarkModel& benchmark,
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
+				const MemoryInfoModel& memoryInfoModel,
 				BenchmarkExecutionService& executionService);
 	};
 

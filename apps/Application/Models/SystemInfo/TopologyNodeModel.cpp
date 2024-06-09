@@ -13,14 +13,13 @@ namespace Elpida::Application
 			std::optional<int> efficiency,
 			std::vector<TopologyNodeModel>&& children,
 			std::vector<TopologyNodeModel>&& memoryChildren)
-			: _children(std::move(children)),
-			  _memoryChildren(std::move(memoryChildren)),
-			  _type(type),
-			  _osIndex(osIndex),
-			  _size(size),
-			  _efficiency(efficiency),
-			  _parent(nullptr),
-			  _selected(false)
+			:_children(std::move(children)),
+			 _memoryChildren(std::move(memoryChildren)),
+			 _type(type),
+			 _osIndex(osIndex),
+			 _size(size),
+			 _efficiency(efficiency),
+			 _selected(false)
 	{
 
 	}
@@ -66,36 +65,66 @@ namespace Elpida::Application
 	void TopologyNodeModel::OnDataChanged() const
 	{
 		Model::OnDataChanged();
-		if (_parent != nullptr)
+		if (_parent.has_value())
 		{
-			_parent->OnDataChanged();
+			_parent.value().get().OnDataChanged();
 		}
 	}
 
-	void TopologyNodeModel::SetParents()
+	static std::optional<std::reference_wrapper<TopologyNodeModel>> GetLastCacheNode(TopologyNodeModel& topologyNode)
 	{
-		for (auto& child: _children)
+		std::optional<std::reference_wrapper<TopologyNodeModel>> lastNode;
+		std::optional<std::reference_wrapper<TopologyNodeModel>> currentNode = topologyNode;
+		while (currentNode.has_value())
 		{
-			child._parent = this;
-			child.SetParents();
+			switch (currentNode->get().GetType())
+			{
+			case TopologyNodeType::L1ICache:
+				case TopologyNodeType::L1DCache:
+				case TopologyNodeType::L2ICache:
+				case TopologyNodeType::L2DCache:
+				case TopologyNodeType::L3ICache:
+				case TopologyNodeType::L3DCache:
+				case TopologyNodeType::L4Cache:
+				case TopologyNodeType::L5Cache:
+					lastNode = currentNode;
+					break;
+			}
+			currentNode = currentNode->get().GetParent();
 		}
 
-		for (auto& child: _memoryChildren)
+		return lastNode;
+	}
+
+	void TopologyNodeModel::SetRelations()
+	{
+		for (auto& child : _children)
 		{
-			child._parent = this;
-			child.SetParents();
+			child._parent = *this;
+			child.SetRelations();
+		}
+
+		for (auto& child : _memoryChildren)
+		{
+			child._parent = *this;
+			child.SetRelations();
+		}
+
+		if (_type == TopologyNodeType::ProcessingUnit)
+		{
+			_lastCache = GetLastCacheNode(*this);
 		}
 	}
 
 	void TopologyNodeModel::SetSelectedInternal(bool selected)
 	{
 		_selected = selected;
-		for (auto& child: _children)
+		for (auto& child : _children)
 		{
 			child.SetSelectedInternal(selected);
 		}
 
-		for (auto& child: _memoryChildren)
+		for (auto& child : _memoryChildren)
 		{
 			child.SetSelectedInternal(selected);
 		}
@@ -115,5 +144,15 @@ namespace Elpida::Application
 	std::vector<TopologyNodeModel>& TopologyNodeModel::GetChildren()
 	{
 		return _children;
+	}
+
+	const std::optional<std::reference_wrapper<TopologyNodeModel>>& TopologyNodeModel::GetLastCache() const
+	{
+		return _lastCache;
+	}
+
+	const std::optional<std::reference_wrapper<TopologyNodeModel>>& TopologyNodeModel::GetParent() const
+	{
+		return _parent;
 	}
 } // Elpida::Application

@@ -23,6 +23,7 @@ namespace Elpida::Application
 	class MessageService;
 	class BenchmarkRunConfigurationModel;
 	class TopologyModel;
+	class MemoryInfoModel;
 
 	class FullBenchmarkController : public Controller<FullBenchmarkModel>
 	{
@@ -34,6 +35,7 @@ namespace Elpida::Application
 		FullBenchmarkController(FullBenchmarkModel& model,
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
+				const MemoryInfoModel& memoryInfoModel,
 				const BenchmarkRunConfigurationModel& runConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService,
 				const ResultSerializer& resultSerializer,
