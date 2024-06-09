@@ -24,6 +24,7 @@ set(ELPIDA_PLATFORM_SOURCES
 
         CpuInfoLoader.X86.cpp
         CpuInfoLoader.Arm.Unix.cpp
+        CpuInfoLoader.Arm64.Windows.cpp
 
         Process.cpp
         Process.Unix.cpp
@@ -34,6 +35,7 @@ set(ELPIDA_PLATFORM_SOURCES
         AnonymousPipe.Windows.cpp
         AsyncPipeReader.cpp
         NumaAllocatorFactory.cpp
+        CpuInfoLoader.Arm64.Windows.cpp
 )
 
 add_library(elpida-platform SHARED ${ELPIDA_PLATFORM_SOURCES})

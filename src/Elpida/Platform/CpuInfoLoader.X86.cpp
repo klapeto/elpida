@@ -7,7 +7,7 @@
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Vector.hpp"
 
-#if defined(__x86_64__) || defined(_M_X64) || defined(WIN32)
+#if defined(__x86_64__) || defined(_M_X64)
 
 #ifdef _MSC_VER
 #include <intrin.h>

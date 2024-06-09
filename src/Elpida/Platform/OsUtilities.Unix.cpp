@@ -36,7 +36,6 @@ namespace Elpida
 	{
 		return std::filesystem::canonical("/proc/self/exe").parent_path();
 	}
-
 } // Elpida
 
 
