@@ -287,6 +287,9 @@ int main(int argc, char* argv[])
 				benchmarkRunConfigurationModel,
 				executionService,
 				resultSerializer,
+				htmlReporter,
+				pathsService,
+				desktopService,
 				messageService,
 				benchmarkGroups);
 

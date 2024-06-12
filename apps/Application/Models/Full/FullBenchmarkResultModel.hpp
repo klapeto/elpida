@@ -26,9 +26,9 @@ namespace Elpida::Application
 
 		FullBenchmarkResultModel(std::vector<BenchmarkResultModel>&& benchmarkResults, Score totalScore, Score singleCoreScore, Score multiCoreScore, Score memoryScore);
 
-		FullBenchmarkResultModel(const FullBenchmarkResultModel&) = delete;
+		FullBenchmarkResultModel(const FullBenchmarkResultModel&) = default;
 		FullBenchmarkResultModel(FullBenchmarkResultModel&&) noexcept = default;
-		FullBenchmarkResultModel& operator=(const FullBenchmarkResultModel&) = delete;
+		FullBenchmarkResultModel& operator=(const FullBenchmarkResultModel&) = default;
 		FullBenchmarkResultModel& operator=(FullBenchmarkResultModel&&) noexcept = default;
 		~FullBenchmarkResultModel() override = default;
 	private:

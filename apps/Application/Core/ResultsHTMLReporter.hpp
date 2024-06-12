@@ -15,6 +15,7 @@ namespace Elpida::Application
 	class BenchmarkConfigurationModel;
 	class BenchmarkStatisticsService;
 	class PathsService;
+	class FullBenchmarkResultModel;
 
 	class ResultsHTMLReporter
 	{
@@ -22,6 +23,9 @@ namespace Elpida::Application
 
 		void WriteCustomBenchmarkReport(const std::vector<BenchmarkResultModel>& results,
 				const std::vector<std::size_t>& affinity,
+				const std::filesystem::path& outputFile) const;
+
+		void WriteFullBenchmarkReport(const std::vector<FullBenchmarkResultModel>& results,
 				const std::filesystem::path& outputFile) const;
 
 		explicit ResultsHTMLReporter(const BenchmarkRunConfigurationModel& runConfigurationModel,

@@ -20,7 +20,6 @@
 #include "ResultSerializer.hpp"
 
 #include <fstream>
-#include <future>
 #include <string>
 
 namespace Elpida::Application

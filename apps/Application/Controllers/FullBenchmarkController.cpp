@@ -10,6 +10,9 @@
 
 #include "Core/BenchmarkExecutionService.hpp"
 #include "Core/MessageService.hpp"
+#include "Core/ResultsHTMLReporter.hpp"
+#include "Core/PathsService.hpp"
+#include "Core/DesktopService.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "ResultSerializer.hpp"
 
@@ -32,6 +35,9 @@ namespace Elpida::Application
 			const BenchmarkRunConfigurationModel& runConfigurationModel,
 			BenchmarkExecutionService& benchmarkExecutionService,
 			const ResultSerializer& resultSerializer,
+			const ResultsHTMLReporter& resultsHTMLReporter,
+			const PathsService& pathsService,
+			const DesktopService& desktopService,
 			MessageService& messageService,
 			const std::vector<BenchmarkGroupModel>& benchmarkGroups)
 			:
@@ -41,6 +47,9 @@ namespace Elpida::Application
 			_runConfigurationModel(runConfigurationModel),
 			_benchmarkExecutionService(benchmarkExecutionService),
 			_resultSerializer(resultSerializer),
+			_resultsHTMLReporter(resultsHTMLReporter),
+			_pathsService(pathsService),
+			_desktopService(desktopService),
 			_messageService(messageService),
 			_running(false),
 			_cancelling(false)
@@ -97,6 +106,8 @@ namespace Elpida::Application
 		_runnerThread = std::thread([this]
 		{
 			_model.SetRunning(true);
+			std::vector<FullBenchmarkResultModel> thisResults;
+			thisResults.reserve(_runConfigurationModel.GetIterationsToRun());
 			try
 			{
 				for (std::size_t i = 0; i < _runConfigurationModel.GetIterationsToRun(); ++i)
@@ -119,18 +130,35 @@ namespace Elpida::Application
 					}
 
 					auto totalScore = singleCoreScore + multiCoreScore + multiCoreScore;
-					_model.Add(FullBenchmarkResultModel(std::move(benchmarkResults), totalScore, singleCoreScore,
-							multiCoreScore, memoryScore));
+
+					auto result = FullBenchmarkResultModel(std::move(benchmarkResults), totalScore, singleCoreScore,
+							multiCoreScore, memoryScore);
+					_model.Add(result);
+					thisResults.push_back(std::move(result));
 				}
+
 			}
 			catch (const ElpidaException& ex)
 			{
-				_model.SetRunning(false);
 				if (!_cancelling.load(std::memory_order_acquire))
 				{
 					_messageService.ShowError("Failed to run benchmark: " + std::string(ex.what()));
 				}
-				return;
+			}
+
+			if (_runConfigurationModel.IsGenerateHtmlReport() && !thisResults.empty())
+			{
+				std::string fileName = "Full Benchmark ";
+				fileName
+						.append(" ")
+						.append(std::to_string(time(nullptr)))
+						.append(".html");
+
+				auto path = _pathsService.GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
+
+				_resultsHTMLReporter.WriteFullBenchmarkReport(thisResults, path);
+
+				_desktopService.OpenFile(path);
 			}
 
 			_model.SetRunning(false);

@@ -24,6 +24,9 @@ namespace Elpida::Application
 	class BenchmarkRunConfigurationModel;
 	class TopologyModel;
 	class MemoryInfoModel;
+	class ResultsHTMLReporter;
+	class PathsService;
+	class DesktopService;
 
 	class FullBenchmarkController : public Controller<FullBenchmarkModel>
 	{
@@ -39,6 +42,9 @@ namespace Elpida::Application
 				const BenchmarkRunConfigurationModel& runConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService,
 				const ResultSerializer& resultSerializer,
+				const ResultsHTMLReporter& resultsHTMLReporter,
+				const PathsService& pathsService,
+				const DesktopService& desktopService,
 				MessageService& messageService,
 				const std::vector<BenchmarkGroupModel>& benchmarkGroups);
 
@@ -49,6 +55,9 @@ namespace Elpida::Application
 		const BenchmarkRunConfigurationModel& _runConfigurationModel;
 		BenchmarkExecutionService& _benchmarkExecutionService;
 		const ResultSerializer& _resultSerializer;
+		const ResultsHTMLReporter& _resultsHTMLReporter;
+		const PathsService& _pathsService;
+		const DesktopService& _desktopService;
 		MessageService& _messageService;
 		std::thread _runnerThread;
 		std::atomic<bool> _running;

@@ -213,5 +213,7 @@ namespace Elpida::Application
 		_ui->lblMemoryScoreValue->setText(_na);
 
 		_ui->twBenchmarkResults->clear();
+
+		_previousScores.reset();
 	}
 }
