@@ -148,22 +148,35 @@ namespace Elpida::Application
 
 			if (_runConfigurationModel.IsGenerateHtmlReport() && !thisResults.empty())
 			{
-				std::string fileName = "Full Benchmark ";
-				fileName
-						.append(" ")
-						.append(std::to_string(time(nullptr)))
-						.append(".html");
+				GenerateHtmlReport(thisResults);
 
-				auto path = _pathsService.GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
-
-				_resultsHTMLReporter.WriteFullBenchmarkReport(thisResults, path);
-
-				_desktopService.OpenFile(path);
 			}
 
 			_model.SetRunning(false);
 			_running.store(false, std::memory_order_release);
 		});
+	}
+
+	void FullBenchmarkController::GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults) const
+	{
+		try
+		{
+			std::string fileName = "Full Benchmark ";
+			fileName
+					.append(" ")
+					.append(std::to_string(time(nullptr)))
+					.append(".html");
+
+			auto path = _pathsService.GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
+
+			_resultsHTMLReporter.WriteFullBenchmarkReport(thisResults, path);
+
+			_desktopService.OpenFile(path);
+		}
+		catch (const std::exception& ex)
+		{
+			_messageService.ShowError("Failed to create report: " + std::string(ex.what()));
+		}
 	}
 
 	void FullBenchmarkController::StopRunning()

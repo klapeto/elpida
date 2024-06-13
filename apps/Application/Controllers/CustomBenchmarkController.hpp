@@ -39,7 +39,8 @@ namespace Elpida::Application
 				BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService, const ResultSerializer& resultSerializer,
 				const ResultsHTMLReporter& resultsHtmlReporter, const PathsService& pathsService,
-				const DesktopService& desktopService);
+				const DesktopService& desktopService,
+				MessageService& messageService);
 		~CustomBenchmarkController() override = default;
 	 private:
 		TopologyModel& _topologyModel;
@@ -50,7 +51,10 @@ namespace Elpida::Application
 		const ResultsHTMLReporter& _resultsHTMLReporter;
 		const PathsService& _pathsService;
 		const DesktopService& _desktopService;
+		MessageService& _messageService;
 		bool _cancelling;
+		void GenerateHtmlReport(const BenchmarkModel* selectedBenchmark, const std::vector<std::size_t>& affinity,
+				const std::vector<BenchmarkResultModel>& thisRunResults) const;
 	};
 
 } // Application

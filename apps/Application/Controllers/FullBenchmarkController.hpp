@@ -64,6 +64,7 @@ namespace Elpida::Application
 		std::atomic<bool> _cancelling;
 
 		std::vector<std::unique_ptr<FullBenchmarkInstance>> _benchmarks;
+		void GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults) const;
 	};
 
 } // Elpida

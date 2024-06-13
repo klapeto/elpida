@@ -129,4 +129,5 @@ target_include_directories(elpida-application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 install(TARGETS elpida-application)
 install(FILES Assets/placeholder DESTINATION bin/assets)
 install(FILES Assets/custom-report-template.html DESTINATION bin/assets)
+install(FILES Assets/full-report-template.html DESTINATION bin/assets)
 

@@ -12,6 +12,7 @@
 #include "Models/SystemInfo/TimingModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 
+#include "Core/MessageService.hpp"
 #include "Core/BenchmarkExecutionService.hpp"
 #include "Core/ResultsHTMLReporter.hpp"
 #include "Core/PathsService.hpp"
@@ -29,7 +30,8 @@ namespace Elpida::Application
 			BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			BenchmarkExecutionService& benchmarkExecutionService, const ResultSerializer& resultSerializer,
 			const ResultsHTMLReporter& resultsHtmlReporter, const PathsService& pathsService,
-			const DesktopService& desktopService)
+			const DesktopService& desktopService,
+			MessageService& messageService)
 		:Controller<CustomBenchmarkModel>(model),
 		 _topologyModel(topologyModel),
 		 _overheadsModel(overheadsModel),
@@ -39,6 +41,7 @@ namespace Elpida::Application
 		 _resultsHTMLReporter(resultsHtmlReporter),
 		 _pathsService(pathsService),
 		 _desktopService(desktopService),
+		 _messageService(messageService),
 		 _cancelling(false)
 	{
 
@@ -99,6 +102,15 @@ namespace Elpida::Application
 
 		if (_benchmarkRunConfigurationModel.IsGenerateHtmlReport() && !thisRunResults.empty())
 		{
+			GenerateHtmlReport(selectedBenchmark, affinity, thisRunResults);
+		}
+	}
+
+	void CustomBenchmarkController::GenerateHtmlReport(const BenchmarkModel* selectedBenchmark,
+			const std::vector<std::size_t>& affinity, const std::vector<BenchmarkResultModel>& thisRunResults) const
+	{
+		try
+		{
 			std::string fileName = "Custom ";
 			fileName
 					.append(selectedBenchmark->GetName())
@@ -112,7 +124,12 @@ namespace Elpida::Application
 
 			_desktopService.OpenFile(path);
 		}
+		catch (const std::exception& ex)
+		{
+			_messageService.ShowError("Failed to create report: " + std::string(ex.what()));
+		}
 	}
+
 	void CustomBenchmarkController::StopRunning()
 	{
 		_cancelling = true;

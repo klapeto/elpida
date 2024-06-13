@@ -275,7 +275,8 @@ int main(int argc, char* argv[])
 				resultSerializer,
 				htmlReporter,
 				pathsService,
-				desktopService);
+				desktopService,
+				messageService);
 
 		ConfigurationViewPool configurationViewPool(settingsService);
 
