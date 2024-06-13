@@ -41,7 +41,7 @@ namespace Elpida
 		AnonymousPipe(const AnonymousPipe&) = delete;
 		AnonymousPipe(AnonymousPipe&&) noexcept = default;
 		AnonymousPipe& operator=(const AnonymousPipe&) = delete;
-		AnonymousPipe& operator=(AnonymousPipe&&) noexcept = default;
+		AnonymousPipe& operator=(AnonymousPipe&&) noexcept;
 		~AnonymousPipe();
 	private:
 		std::any _readHandle;

@@ -11,4 +11,12 @@ namespace Elpida
 		Close();
 	}
 
+	AnonymousPipe& AnonymousPipe::operator=(AnonymousPipe&& other) noexcept
+	{
+		Close();
+		_readHandle = std::move(other._readHandle);
+		_writeHandle = std::move(other._writeHandle);
+		return *this;
+	}
+
 } // Elpida
