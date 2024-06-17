@@ -56,16 +56,19 @@ namespace Elpida
 		// (eg next sample will be (subSampleStep, 0), next (2 * subSampleStep, 0) etc).
 		// in the end we average the total channels we have got.
 
-		auto generator = std::mt19937(12345); // NOLINT(*-msc51-cpp)
-		auto distribution = std::uniform_real_distribution<>(-0.5, 0.5);
-
 		CalculateSample(polygon, x, y, paint, fillRule, SvgPoint(0, 0), r, g, b, a);
 
-		for (std::size_t i = 0; i < _subSamples - 1; ++i)
+		if (_subSamples > 1)
 		{
-			SvgPoint sampleOffset(distribution(generator), distribution(generator));
-			CalculateSample(polygon, x, y, paint, fillRule, sampleOffset, r, g, b, a);
+			auto generator = std::mt19937(12345); // NOLINT(*-msc51-cpp)
+			auto distribution = std::uniform_real_distribution<>(-0.5, 0.5);
+			for (std::size_t i = 0; i < _subSamples - 1; ++i)
+			{
+				SvgPoint sampleOffset(distribution(generator), distribution(generator));
+				CalculateSample(polygon, x, y, paint, fillRule, sampleOffset, r, g, b, a);
+			}
 		}
+
 
 		r /= subSamples;
 		g /= subSamples;

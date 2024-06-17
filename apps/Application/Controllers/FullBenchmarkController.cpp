@@ -149,7 +149,6 @@ namespace Elpida::Application
 			if (_runConfigurationModel.IsGenerateHtmlReport() && !thisResults.empty())
 			{
 				GenerateHtmlReport(thisResults);
-
 			}
 
 			_model.SetRunning(false);
