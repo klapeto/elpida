@@ -77,6 +77,12 @@ set(ELPIDA_APPLICATION_SOURCES
         Core/DesktopService.hpp
         Core/BenchmarkStatisticsService.cpp
         Core/BenchmarkStatisticsService.hpp
+        Models/MemoryOverhead/MemoryOverheadCalculationModel.cpp
+        Models/MemoryOverhead/MemoryOverheadCalculationModel.hpp
+        Models/MemoryOverhead/MemoryOverheadResultModel.cpp
+        Models/MemoryOverhead/MemoryOverheadResultModel.hpp
+        Controllers/MemoryOverheadCalculationController.cpp
+        Controllers/MemoryOverheadCalculationController.hpp
 )
 
 

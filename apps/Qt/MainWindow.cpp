@@ -25,6 +25,7 @@
 #include "Views/TopologyView/TopologyView.hpp"
 #include "Views/CustomBenchmarkView/CustomBenchmarkView.hpp"
 #include "Views/FullBenchmarkView/FullBenchmarkView.hpp"
+#include "Views/MemoryOverheadView/MemoryOverheadView.hpp"
 
 namespace Elpida::Application
 {
@@ -45,10 +46,12 @@ namespace Elpida::Application
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			const FullBenchmarkModel& fullBenchmarkModel,
 			const CustomBenchmarkModel& customBenchmarksModel,
+			const MemoryOverheadCalculationModel& memoryOverheadCalculationModel,
 			TopologyModel& topologyModel,
 			FullBenchmarkController& fullBenchmarkController,
 			CustomBenchmarkController& customBenchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
+			MemoryOverheadCalculationController& memoryOverheadCalculationController,
 			ConfigurationViewPool& configurationViewPool,
 			QWidget* parent)
 			:QMainWindow(parent),
@@ -87,6 +90,8 @@ namespace Elpida::Application
 		{
 		  OnTopologyModelChanged();
 		});
+
+		_ui->tabMemoryOverhead->layout()->addWidget(new MemoryOverheadView(memoryOverheadCalculationModel, memoryOverheadCalculationController, benchmarkRunConfigurationModel, benchmarkRunConfigurationController));
 
 		_ui->tabCustomBenchmark->layout()->addWidget(
 				new CustomBenchmarkView(customBenchmarksModel,

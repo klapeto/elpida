@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Elpida::Application::FloatConfigurationView</class>
  <widget class="QWidget" name="Elpida::Application::FloatConfigurationView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>138</width>
+    <height>43</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -14,7 +22,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QDoubleSpinBox" name="spnValue"/>
+    <widget class="QDoubleSpinBox" name="spnValue">
+     <property name="decimals">
+      <number>5</number>
+     </property>
+     <property name="maximum">
+      <double>999999.999990000040270</double>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

@@ -118,6 +118,12 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_5"/>
       </widget>
+      <widget class="QWidget" name="tabMemoryOverhead">
+       <attribute name="title">
+        <string>Memory overhead</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_6"/>
+      </widget>
       <widget class="QWidget" name="tabCustomBenchmark">
        <attribute name="title">
         <string>Custom Benchmark</string>

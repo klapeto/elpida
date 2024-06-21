@@ -56,6 +56,7 @@
 #include "QtMessageService.hpp"
 #include "QtPathsService.hpp"
 #include "QtDesktopService.hpp"
+#include "Controllers/MemoryOverheadCalculationController.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -294,6 +295,20 @@ int main(int argc, char* argv[])
 				messageService,
 				benchmarkGroups);
 
+		MemoryOverheadCalculationModel memoryOverheadCalculationModel;
+		MemoryOverheadCalculationController memoryOverheadCalculationController(memoryOverheadCalculationModel,
+				builderJson.GetTimingModel(),
+				builderJson.GetTopologyInfoModel(),
+				builderJson.GetMemoryInfoModel(),
+				benchmarkRunConfigurationModel,
+				executionService,
+				resultSerializer,
+				htmlReporter,
+				pathsService,
+				desktopService,
+				messageService,
+				benchmarkGroups);
+
 		MainWindow mainWindow(
 				builderJson.GetOsInfoModel(),
 				builderJson.GetMemoryInfoModel(),
@@ -302,10 +317,12 @@ int main(int argc, char* argv[])
 				benchmarkRunConfigurationModel,
 				fullBenchmarkModel,
 				customBenchmarkModel,
+				memoryOverheadCalculationModel,
 				builderJson.GetTopologyInfoModel(),
 				fullBenchmarkController,
 				customBenchmarkController,
 				benchmarkRunConfigurationController,
+				memoryOverheadCalculationController,
 				configurationViewPool);
 
 		mainWindow.resize(QSize(screenSize.width() / 2, screenSize.height() / 2));

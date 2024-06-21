@@ -116,4 +116,17 @@ namespace Elpida::Application
 		if (_uiUpdating) return;
 		_controller.SetGenerateHtmlReport(state == Qt::Checked);
 	}
+
+	void BenchmarkRunConfigurationView::DisableUpload()
+	{
+		_ui->chkOpenResult->setVisible(false);
+		_ui->chkUpload->setVisible(false);
+	}
+
+	void BenchmarkRunConfigurationView::DisableIterations()
+	{
+		_ui->lblRun->setVisible(false);
+		_ui->lblTimes->setVisible(false);
+		_ui->spnTimes->setVisible(false);
+	}
 }
