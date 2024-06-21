@@ -15,7 +15,7 @@ namespace Elpida::Application
 			MemoryOverheadCalculationController& controller,
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController, QWidget* parent)
-			:QWidget(parent), _ui(new Ui::MemoryOverheadView), _controller(controller), _model(model), _currentBenchmarkIndex(0), _maxBenchmarkIndex(0)
+			:QWidget(parent), _ui(new Ui::MemoryOverheadView), _controller(controller), _model(model), _updatingUi(false), _currentBenchmarkIndex(0),_maxBenchmarkIndex(0)
 	{
 		_ui->setupUi(this);
 
@@ -82,11 +82,15 @@ namespace Elpida::Application
 			});
 		});
 
-		_controller.SetInitialScale(_ui->spnInitialScale->value());
-		_controller.SetSubSamplesMultiplier(_ui->spnSubSamplesMultiplier->value());
-		_controller.SetScaleMultiplier(_ui->spnScaleMultiplier->value());
-		_controller.SetInitialSubSamples(_ui->spnInitialSubSamples->value());
-		_controller.SetIterations(_ui->spnIterations->value());
+		_updatingUi = true;
+
+		_ui->spnInitialScale->setValue(_model.GetInitialScale());
+		_ui->spnSubSamplesMultiplier->setValue(_model.GetSubSamplesMultiplier());
+		_ui->spnScaleMultiplier->setValue(_model.GetScaleMultiplier());
+		_ui->spnInitialSubSamples->setValue(_model.GetInitialSubSamples());
+		_ui->spnIterations->setValue(_model.GetIterations());
+
+		_updatingUi = false;
 	}
 
 	MemoryOverheadView::~MemoryOverheadView()
@@ -135,26 +139,31 @@ namespace Elpida::Application
 
 	void MemoryOverheadView::on_spnInitialScale_valueChanged(double value)
 	{
+		if (_updatingUi) return;
 		_controller.SetInitialScale(value);
 	}
 
 	void MemoryOverheadView::on_spnInitialSubSamples_valueChanged(int value)
 	{
+		if (_updatingUi) return;
 		_controller.SetInitialSubSamples(value);
 	}
 
 	void MemoryOverheadView::on_spnScaleMultiplier_valueChanged(double value)
 	{
+		if (_updatingUi) return;
 		_controller.SetScaleMultiplier(value);
 	}
 
 	void MemoryOverheadView::on_spnSubSamplesMultiplier_valueChanged(double value)
 	{
+		if (_updatingUi) return;
 		_controller.SetSubSamplesMultiplier(value);
 	}
 
 	void MemoryOverheadView::on_spnIterations_valueChanged(int value)
 	{
+		if (_updatingUi) return;
 		_controller.SetIterations(value);
 	}
 }

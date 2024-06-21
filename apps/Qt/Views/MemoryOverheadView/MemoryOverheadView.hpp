@@ -44,6 +44,8 @@ namespace Elpida::Application
 		EventSubscription<> _resultsCleared;
 		std::weak_ptr<ThreadQueue> _threadQueue;
 
+		bool _updatingUi;
+
 		int _currentBenchmarkIndex;
 		int _maxBenchmarkIndex;
 

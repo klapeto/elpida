@@ -28,7 +28,7 @@ namespace Elpida::Application
 	}
 
 	MemoryOverheadCalculationModel::MemoryOverheadCalculationModel()
-			:_totalBenchmarks(0), _running(false)
+			:_totalBenchmarks(0), _running(false), _initialScale(0.01), _scaleMultiplier(2.0), _initialSubSamples(32), _iterations(6), _subSamplesMultiplier(1.0)
 	{
 
 	}
