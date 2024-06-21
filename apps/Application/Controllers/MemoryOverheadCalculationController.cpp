@@ -23,7 +23,7 @@ namespace Elpida::Application
 
 	static std::size_t CalculateWorkingSetSize(double scale)
 	{
-		return ((std::pow(std::ceil(scale * 1024.0), 2.0) * 4.0) * 3.0) + 2840;
+		return ((std::pow(std::ceil(scale * 1024.0), 2.0) * 4.0) /** 3.0*/) + 2840;
 	}
 
 	static Score CalculateExpectedScore(Score initialScore, std::size_t initialSubSamples, std::size_t subSamples, double initialScale, double scale)

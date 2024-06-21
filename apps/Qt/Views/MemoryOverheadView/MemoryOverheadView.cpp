@@ -108,10 +108,10 @@ namespace Elpida::Application
 	void MemoryOverheadView::OnResultAdded(const MemoryOverheadResultModel& result)
 	{
 		auto workingSetSize = QString::fromStdString(ValueUtilities::ToIEC(result.GetWorkingSetSize(), 2) + "B");
-		auto scale = QString::fromStdString(ValueUtilities::ToFixed(result.GetScale(), 2));
+		auto scale = QString::fromStdString(ValueUtilities::ToFixed(result.GetScale(), 4));
 		auto subSamples = QString::fromStdString(std::to_string(result.GetSubSamples()));
-		auto expectedScore = QString::fromStdString(ValueUtilities::ToFixed(result.GetExpectedScore(), 2));
-		auto actualScore = QString::fromStdString(ValueUtilities::ToFixed(result.GetActualScore(), 2));
+		auto expectedScore = QString::fromStdString(ValueUtilities::ToFixed(result.GetExpectedScore(), 3));
+		auto actualScore = QString::fromStdString(ValueUtilities::ToFixed(result.GetActualScore(), 3));
 		auto overhead = QString::fromStdString((result.GetOverhead() >= 0.0 ? "+" : "") + ValueUtilities::ToFixed(result.GetOverhead(), 2) + "%");
 
 		auto root = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),QStringList({ workingSetSize, scale, subSamples, expectedScore, actualScore, overhead}));
