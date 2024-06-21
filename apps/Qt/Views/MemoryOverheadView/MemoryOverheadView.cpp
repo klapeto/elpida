@@ -108,7 +108,7 @@ namespace Elpida::Application
 	void MemoryOverheadView::OnResultAdded(const MemoryOverheadResultModel& result)
 	{
 		auto workingSetSize = QString::fromStdString(ValueUtilities::ToIEC(result.GetWorkingSetSize(), 2) + "B");
-		auto scale = QString::fromStdString(ValueUtilities::ToFixed(result.GetScale(), 4));
+		auto scale = QString::fromStdString(ValueUtilities::ToFixed(result.GetScale(), 6));
 		auto subSamples = QString::fromStdString(std::to_string(result.GetSubSamples()));
 		auto expectedScore = QString::fromStdString(ValueUtilities::ToFixed(result.GetExpectedScore(), 3));
 		auto actualScore = QString::fromStdString(ValueUtilities::ToFixed(result.GetActualScore(), 3));

@@ -23,7 +23,8 @@ namespace Elpida::Application
 
 	static std::size_t CalculateWorkingSetSize(double scale)
 	{
-		return ((std::pow(std::ceil(scale * 1024.0), 2.0) * 4.0) /** 3.0*/) + 2840;
+		// We calculated the additional size is around +24% of the framebuffer size
+		return ((std::pow(std::ceil(scale * 1024.0), 2.0) * 4.0) * 1.24) + 2840;
 	}
 
 	static Score CalculateExpectedScore(Score initialScore, std::size_t initialSubSamples, std::size_t subSamples, double initialScale, double scale)
@@ -123,7 +124,7 @@ namespace Elpida::Application
 					auto subSamples = _targetSubSamples[i];
 
 					auto subSamplesStr = std::to_string(subSamples);
-					auto scaleStr = ValueUtilities::ToFixed(scale, 2);
+					auto scaleStr = ValueUtilities::ToFixed(scale, 5);
 					_benchmark->GetConfigurations()[0].SetValue("1");
 					_benchmark->GetConfigurations()[1].SetValue(scaleStr);
 					_benchmark->GetConfigurations()[2].SetValue(subSamplesStr);
