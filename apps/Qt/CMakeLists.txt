@@ -157,7 +157,7 @@ if (ELPIDA_DEBUG_BUILD EQUAL 1)
 	add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
 endif()
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -189,7 +189,7 @@ if (MSYS OR MINGW)
 endif()
 
 target_include_directories(elpida-qt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(elpida-qt elpida-application elpida-shared Qt5::Core Qt5::Widgets)
+target_link_libraries(elpida-qt elpida-application elpida-shared Qt5::Core Qt5::Widgets Qt5::Charts)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION bin)
 install(FILES qt.conf DESTINATION bin)

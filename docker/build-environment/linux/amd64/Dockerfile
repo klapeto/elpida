@@ -56,7 +56,7 @@ RUN git clone -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git && \
 RUN echo 'deb http://archive.neon.kde.org/user/ focal main' > /etc/apt/sources.list.d/neon.list && \
     wget -qO - https://archive.neon.kde.org/public.key | apt-key add - && \
     apt-get update && \
-    apt-get install qtbase5-dev libqt5svg5 libqt5x11extras5 qt5-image-formats-plugins -y
+    apt-get install qtbase5-dev libqt5svg5 libqt5x11extras5 libqt5charts5-dev qt5-image-formats-plugins -y
 
 # install elpida build requirements
 RUN apt-get install libnuma-dev cmake libssl-dev -y
