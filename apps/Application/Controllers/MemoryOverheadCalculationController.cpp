@@ -13,6 +13,7 @@
 #include "Core/ResultsHTMLReporter.hpp"
 #include "Core/PathsService.hpp"
 #include "Core/DesktopService.hpp"
+#include "Core/SettingsService.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "ResultSerializer.hpp"
 
@@ -27,7 +28,8 @@ namespace Elpida::Application
 		return ((std::pow(std::ceil(scale * 1024.0), 2.0) * 4.0) * 1.24) + 2840;
 	}
 
-	static Score CalculateExpectedScore(Score initialScore, std::size_t initialSubSamples, std::size_t subSamples, double initialScale, double scale)
+	static Score CalculateExpectedScore(Score initialScore, std::size_t initialSubSamples, std::size_t subSamples,
+			double initialScale, double scale)
 	{
 		auto initialSize = std::ceil(1024 * initialScale);
 		auto initialLoad = std::pow(initialSize, 2.0) * initialSubSamples;
@@ -54,6 +56,7 @@ namespace Elpida::Application
 			const PathsService& pathsService,
 			const DesktopService& desktopService,
 			MessageService& messageService,
+			SettingsService& settingsService,
 			const std::vector<BenchmarkGroupModel>& benchmarkGroups)
 			:
 			Controller(model),
@@ -65,6 +68,7 @@ namespace Elpida::Application
 			_resultsHTMLReporter(resultsHTMLReporter),
 			_pathsService(pathsService),
 			_desktopService(desktopService),
+			_settingsService(settingsService),
 			_messageService(messageService),
 			_running(false),
 			_cancelling(false),
@@ -86,7 +90,71 @@ namespace Elpida::Application
 		{
 			throw ElpidaException("Missing Memory overhead benchmarks");
 		}
-		CalculateTargetScales();
+
+		auto str = _settingsService.Get("MemoryOverhead_SubSamplesMultiplier");
+		if (!str.empty())
+		{
+			try
+			{
+				_model.SetSubSamplesMultiplier(ValueUtilities::StringToDoubleInvariant(str));
+			}
+			catch (...)
+			{
+				// ignored
+			}
+		}
+
+		str = _settingsService.Get("MemoryOverhead_ScaleMultiplier");
+		if (!str.empty())
+		{
+			try
+			{
+				_model.SetScaleMultiplier(ValueUtilities::StringToDoubleInvariant(str));
+			}
+			catch (...)
+			{
+				// ignored
+			}
+		}
+
+		str = _settingsService.Get("MemoryOverhead_InitialSubSamples");
+		if (!str.empty())
+		{
+			try
+			{
+				_model.SetInitialSubSamples(std::stol(str));
+			}
+			catch (...)
+			{
+				// ignored
+			}
+		}
+
+		str = _settingsService.Get("MemoryOverhead_InitialScale");
+		if (!str.empty())
+		{
+			try
+			{
+				_model.SetInitialScale(ValueUtilities::StringToDoubleInvariant(str));
+			}
+			catch (...)
+			{
+				// ignored
+			}
+		}
+
+		str = _settingsService.Get("MemoryOverhead_Iterations");
+		if (!str.empty())
+		{
+			try
+			{
+				_model.SetIterations(std::stol(str));
+			}
+			catch (...)
+			{
+				// ignored
+			}
+		}
 	}
 
 	void MemoryOverheadCalculationController::StopRunning()
@@ -107,7 +175,7 @@ namespace Elpida::Application
 		_model.Clear();
 		_running.store(true, std::memory_order_release);
 		_cancelling.store(false, std::memory_order_release);
-		
+
 		_runnerThread = std::thread([this]
 		{
 			_model.SetRunning(true);
@@ -132,7 +200,8 @@ namespace Elpida::Application
 					auto workingSetSize = CalculateWorkingSetSize(scale);
 
 					_model.SetCurrentRunningBenchmark(std::string("Sub Samples: ")
-						.append(subSamplesStr).append(" Scale: ").append(scaleStr).append(" (").append(ValueUtilities::ToIEC(workingSetSize) + "B)"));
+							.append(subSamplesStr).append(" Scale: ").append(scaleStr).append(" (").append(
+							ValueUtilities::ToIEC(workingSetSize) + "B)"));
 					auto result = _benchmarkExecutionService.Execute(
 							*_benchmark,
 							_targetProcessors,
@@ -146,14 +215,16 @@ namespace Elpida::Application
 
 					if (initialScore == -1)
 					{
-						_model.Add(MemoryOverheadResultModel(workingSetSize, subSamples, scale, 0, result.GetScore(), 0));
+						_model.Add(
+								MemoryOverheadResultModel(workingSetSize, subSamples, scale, 0, result.GetScore(), 0));
 						initialScore = result.GetScore();
 					}
 					else
 					{
-						auto expectedScore = CalculateExpectedScore(initialScore, _targetSubSamples.at(0), subSamples, _targetScales.at(0), scale);
+						auto expectedScore = CalculateExpectedScore(initialScore, _targetSubSamples.at(0), subSamples,
+								_targetScales.at(0), scale);
 						_model.Add(
-								MemoryOverheadResultModel(workingSetSize,subSamples, scale, expectedScore,
+								MemoryOverheadResultModel(workingSetSize, subSamples, scale, expectedScore,
 										result.GetScore(), CalculateOverhead(expectedScore, result.GetScore())));
 					}
 				}
@@ -234,26 +305,31 @@ namespace Elpida::Application
 	void MemoryOverheadCalculationController::SetSubSamplesMultiplier(double subSamplesMultiplier)
 	{
 		_model.SetSubSamplesMultiplier(subSamplesMultiplier);
+		_settingsService.Set("MemoryOverhead_SubSamplesMultiplier", ValueUtilities::DoubleToStringInvariant(subSamplesMultiplier));
 	}
 
 	void MemoryOverheadCalculationController::SetInitialSubSamples(size_t initialSubSamples)
 	{
 		_model.SetInitialSubSamples(initialSubSamples);
+		_settingsService.Set("MemoryOverhead_InitialSubSamples", std::to_string(initialSubSamples));
 	}
 
 	void MemoryOverheadCalculationController::SetScaleMultiplier(double scaleMultiplier)
 	{
 		_model.SetScaleMultiplier(scaleMultiplier);
+		_settingsService.Set("MemoryOverhead_ScaleMultiplier", ValueUtilities::DoubleToStringInvariant(scaleMultiplier));
 	}
 
 	void MemoryOverheadCalculationController::SetInitialScale(double initialScale)
 	{
 		_model.SetInitialScale(initialScale);
+		_settingsService.Set("MemoryOverhead_InitialScale", ValueUtilities::DoubleToStringInvariant(initialScale));
 	}
 
 	void MemoryOverheadCalculationController::SetIterations(size_t iterations)
 	{
 		_model.SetIterations(iterations);
+		_settingsService.Set("MemoryOverhead_Iterations", std::to_string(iterations));
 	}
 } // Application
 // Elpida

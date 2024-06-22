@@ -307,6 +307,7 @@ int main(int argc, char* argv[])
 				pathsService,
 				desktopService,
 				messageService,
+				settingsService,
 				benchmarkGroups);
 
 		MainWindow mainWindow(

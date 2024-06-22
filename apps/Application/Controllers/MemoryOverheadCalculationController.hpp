@@ -25,6 +25,7 @@ namespace Elpida::Application
 	class PathsService;
 	class DesktopService;
 	class BenchmarkModel;
+	class SettingsService;
 
 	class MemoryOverheadCalculationController : public Controller<MemoryOverheadCalculationModel>
 	{
@@ -49,6 +50,7 @@ namespace Elpida::Application
 				const PathsService& pathsService,
 				const DesktopService& desktopService,
 				MessageService& messageService,
+				SettingsService& settingsService,
 				const std::vector<BenchmarkGroupModel>& benchmarkGroups);
 		~MemoryOverheadCalculationController();
 	private:
@@ -60,6 +62,7 @@ namespace Elpida::Application
 		const ResultsHTMLReporter& _resultsHTMLReporter;
 		const PathsService& _pathsService;
 		const DesktopService& _desktopService;
+		SettingsService& _settingsService;
 		MessageService& _messageService;
 		std::thread _runnerThread;
 		std::atomic<bool> _running;
