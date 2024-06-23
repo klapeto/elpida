@@ -55,6 +55,7 @@ add_library(elpida-svg SHARED
         SvgEllipse.cpp
         SvgLine.cpp
         SvgCalculatedDocument.cpp
+        SvgDirectRasterizer.cpp
 )
 
 target_link_libraries(elpida-svg PRIVATE elpida-core elpida-xml)

@@ -11,14 +11,33 @@ namespace Elpida::Application
 {
 	void QtMessageService::ShowMessage(const std::string& message)
 	{
-		QMessageBox::information(QApplication::activeWindow(), "Information", QString::fromStdString(message));
+		auto thread = _mainThreadQueue.lock();
+		thread->Enqueue([message]
+		{
+			QMessageBox::information(QApplication::activeWindow(), "Information", QString::fromStdString(message));
+		});
 	}
+
 	void QtMessageService::ShowWarning(const std::string& message)
 	{
-		QMessageBox::warning(QApplication::activeWindow(), "Warning", QString::fromStdString(message));
+		auto thread = _mainThreadQueue.lock();
+		thread->Enqueue([message]
+		{
+			QMessageBox::warning(QApplication::activeWindow(), "Warning", QString::fromStdString(message));
+		});
 	}
+
 	void QtMessageService::ShowError(const std::string& message)
 	{
-		QMessageBox::critical(QApplication::activeWindow(), "Error", QString::fromStdString(message));
+		auto thread = _mainThreadQueue.lock();
+		thread->Enqueue([message]
+		{
+			QMessageBox::critical(QApplication::activeWindow(), "Error", QString::fromStdString(message));
+		});
+	}
+
+	QtMessageService::QtMessageService()
+	{
+		_mainThreadQueue = ThreadQueue::Current();
 	}
 } // Application

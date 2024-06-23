@@ -2,24 +2,25 @@
 // Created by klapeto on 23/4/2024.
 //
 
-
 #include <fstream>
 #include <iostream>
 
 #include "Elpida/Svg/SvgColorConverter.hpp"
-#include "Elpida/Core/ThreadPool/ThreadPool.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "png.h"
 #include "Elpida/Svg/SvgRasterizer.hpp"
+#include "Elpida/Svg/SvgDirectRasterizer.hpp"
 #include "Elpida/Svg/SvgDocument.hpp"
 #include "Elpida/Xml/XmlParser.hpp"
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
 
 using namespace Elpida;
 
+#define NON_CONFORMING
+
 int main(int argC, char** argV)
 {
-	std::ifstream file("/media/klapeto/Αρχεία/Code/elpida/apps/Application/Assets/Art_Bot.svg",
+	std::ifstream file("/home/klapeto/Λήψεις/Art_Bot.svg",
 			std::ifstream::binary | std::ifstream::in);
 
 	file.seekg(0, std::ifstream::end);
@@ -37,15 +38,25 @@ int main(int argC, char** argV)
 
 	auto calculated = SvgCalculatedDocument(svgDocument, 1.0);
 
+#ifdef NON_CONFORMING
+	SvgDirectRasterizer rasterizer;
+#else
 	SvgRasterizer rasterizer;
+#endif
 
-	ThreadPool tp(32 * 20, 32 * 20);
-
+#ifdef NON_CONFORMING
+	SvgBackDrop backDrop(std::ceil(calculated.GetViewPort().GetWidth()), std::ceil(calculated.GetViewPort().GetHeight()));
+	SvgBackDrop tempBackDrop(std::ceil(calculated.GetViewPort().GetWidth()), std::ceil(calculated.GetViewPort().GetHeight()));
+#else
 	SvgBackDrop backDrop;
+#endif
 
 	auto a = std::chrono::high_resolution_clock::now();
-	backDrop = rasterizer.RasterizeMultiThreaded(calculated, tp, 16);
-	//auto backDrop = rasterizer.Rasterize(calculated, 16);
+#ifdef NON_CONFORMING
+	rasterizer.Rasterize(calculated, backDrop, tempBackDrop, 32);
+#else
+	backDrop = rasterizer.Rasterize(calculated, 16);
+#endif
 	auto b = std::chrono::high_resolution_clock::now();
 
 	std::cout << "Took: " << std::chrono::duration_cast<std::chrono::duration<double>>(b - a).count() << std::endl;

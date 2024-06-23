@@ -45,6 +45,11 @@ namespace Elpida
 			_stokes.push_back({ element.GetStroke(), _currentDepth });
 		}
 
+		if (element.GetOpacity() != 1.0)
+		{
+			_opacities.push_back({_opacities.back().value * element.GetOpacity(), _currentDepth});
+		}
+
 		if (element.GetName() == "svg")
 		{
 			SvgViewPort viewPort(element.GetProperties());
@@ -79,6 +84,7 @@ namespace Elpida
 		_viewPort.push({SvgCalculatedViewPort(0, 0, 300, 150), _currentDepth});
 		_fills.push_back({{}, _currentDepth});
 		_stokes.push_back({{}, _currentDepth});
+		_opacities.push_back({1.0, _currentDepth});
 	}
 
 	void SvgCalculationContext::Pop()
@@ -116,6 +122,11 @@ namespace Elpida
 		while (!_stokes.empty() && _stokes.back().index > _currentDepth)
 		{
 			_stokes.pop_back();
+		}
+
+		while (!_opacities.empty() && _opacities.back().index > _currentDepth)
+		{
+			_opacities.pop_back();
 		}
 	}
 
@@ -167,6 +178,11 @@ namespace Elpida
 
 	const SvgStroke& SvgCalculationContext::GetStroke() const
 	{
-		return _stokes.back().value;;
+		return _stokes.back().value;
+	}
+
+	double SvgCalculationContext::GetOpacity() const
+	{
+		return _opacities.back().value;
 	}
 } // Elpida

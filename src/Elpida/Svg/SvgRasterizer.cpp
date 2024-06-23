@@ -174,7 +174,7 @@ namespace Elpida
 				fillRasterization = futureGenerator.template Generate<RasterizedShape>([&]()
 				{
 					auto paint = shape.GetFill().value();
-					return RasterizePolygon(SvgShapePolygonizer::Polygonize(shape), paint,
+					return RasterizePolygon(shape.GetFillPolygon(), paint,
 							shape.GetFill()->GetFillRule(), superSampler, polyRasterize);
 				});
 			}
@@ -184,7 +184,7 @@ namespace Elpida
 				strokeRasterization = futureGenerator.template Generate<RasterizedShape>([&]()
 				{
 					auto paint = shape.GetStroke().value();
-					return RasterizePolygon(SvgShapePolygonizer::PolygonizeStroke(shape), paint,
+					return RasterizePolygon(shape.GetStrokePolygon(), paint,
 							SvgFillRule::NonZero, superSampler, polyRasterize);
 				});
 			}

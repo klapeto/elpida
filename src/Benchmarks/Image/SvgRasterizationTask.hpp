@@ -45,6 +45,7 @@ namespace Elpida
 		SharedPtr<AbstractTaskData> _inputData;
 		SvgCalculatedDocument* _inputDocument;
 		SvgBackDrop _rasterizedImage;
+		SvgBackDrop _tempBackdrop;
 		std::size_t _subSamples;
 	};
 

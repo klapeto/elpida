@@ -9,6 +9,7 @@
 #include "Elpida/Svg/SvgCalculatedPaint.hpp"
 #include "Elpida/Svg/SvgCalculatedStroke.hpp"
 #include "Elpida/Svg/SvgCalculatedFill.hpp"
+#include "Elpida/Svg/SvgPolygon.hpp"
 
 #include <vector>
 #include <optional>
@@ -24,6 +25,12 @@ namespace Elpida
 	class SvgCalculatedShape
 	{
 	public:
+
+		[[nodiscard]]
+		const SvgPolygon& GetFillPolygon() const;
+
+		[[nodiscard]]
+		const SvgPolygon& GetStrokePolygon() const;
 
 		[[nodiscard]]
 		const std::vector<SvgPathInstance>& GetPaths() const;
@@ -48,7 +55,6 @@ namespace Elpida
 
 		[[nodiscard]]
 		std::optional<SvgCalculatedStroke>& GetStroke();
-
 
 		[[nodiscard]]
 		double GetOpacity() const;
@@ -83,13 +89,15 @@ namespace Elpida
 		double _opacity;
 		SvgCompositingMode _compositingMode;
 		SvgBlendMode _blendMode;
+		SvgPolygon _fillPolygon;
+		SvgPolygon _strokePolygon;
 
-		void RecalculateBounds();
+		void Recalculate();
 
 		void AddChildren(std::vector<SvgCalculatedShape>&& children)
 		{
 			_children = std::move(children);
-			RecalculateBounds();
+			Recalculate();
 		}
 
 		friend class SvgElement;

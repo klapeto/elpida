@@ -11,6 +11,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <cstring>
 
 namespace Elpida
 {
@@ -49,9 +50,11 @@ namespace Elpida
 			const size_t width,
 			const size_t height)
 	{
-		for (std::size_t y = startY; y < height; ++y)
+		auto endY = std::min(_height, startY + height);
+		auto endX = std::min(_width, startX + width);
+		for (std::size_t y = startY; y < endY; ++y)
 		{
-			for (std::size_t x = startX; x < width; ++x)
+			for (std::size_t x = startX; x < endX; ++x)
 			{
 				auto calculatedColor = superSampler.CalculatePixelColor(polygon, x, y, paint, fillRule);
 
@@ -85,28 +88,30 @@ namespace Elpida
 
 		const auto startX = std::max(static_cast<std::size_t>(0), std::min(x, _width));
 		const auto startY = std::max(static_cast<std::size_t>(0), std::min(y, _height));
-		const auto width = std::min(_width, x + other.GetWidth());
-		const auto height = std::min(_height, y + other.GetHeight());
+		const auto endX = std::min(_width, x + other.GetWidth());
+		const auto endY = std::min(_height, y + other.GetHeight());
 
 		auto& colorData = other.GetColorData();
 		const auto sourceWidth = other.GetWidth();
 
-		DoDrawOther(opacity, blender, compositor, startX, startY, width, height, 0, colorData, sourceWidth);
+		DoDrawOther(opacity, blender, compositor, startX, startY, endX, endY, 0, 0, colorData, sourceWidth);
 	}
 
 	void SvgBackDrop::DoDrawOther(double opacity, const SvgBlender& blender, const SvgCompositor& compositor,
 			const size_t startX,
 			const size_t startY,
-			const size_t width,
-			const size_t height,
-			size_t sourceY,
-			const std::vector<SvgColor>& colorData, const size_t sourceWidth)
+			const size_t endX,
+			const size_t endY,
+			size_t otherX,
+			size_t otherY,
+			const std::vector<SvgColor>& colorData,
+			const size_t sourceWidth)
 	{
-		for (std::size_t targetY = startY; targetY < height; ++targetY, ++sourceY)
+		for (std::size_t targetY = startY; targetY < endY; ++targetY, ++otherY)
 		{
-			for (std::size_t targetX = startX, sourceX = 0; targetX < width; ++targetX, ++sourceX)
+			for (std::size_t targetX = startX, sourceX = otherX; targetX < endX; ++targetX, ++sourceX)
 			{
-				auto inputColor = colorData[sourceY * sourceWidth + sourceX].WithMultipliedAplha(opacity);
+				auto inputColor = colorData[otherY * sourceWidth + sourceX].WithMultipliedAplha(opacity);
 				auto& backdropColor = _colorData[targetY * _width + targetX];
 
 				auto color = blender.Blend(inputColor, backdropColor);
@@ -123,13 +128,13 @@ namespace Elpida
 	}
 
 	SvgBackDrop::SvgBackDrop(std::size_t width, std::size_t height)
-			: _width(width), _height(height)
+			:_width(width), _height(height)
 	{
 		_colorData.resize(width * height);
 	}
 
 	SvgBackDrop::SvgBackDrop(SvgBackDrop&& other) noexcept
-			: _colorData(std::move(other._colorData)), _width(other._width), _height(other._height)
+			:_colorData(std::move(other._colorData)), _width(other._width), _height(other._height)
 	{
 	}
 
@@ -142,7 +147,7 @@ namespace Elpida
 	}
 
 	SvgBackDrop::SvgBackDrop()
-			: _width(0), _height(0)
+			:_width(0), _height(0)
 	{
 	}
 
@@ -154,5 +159,39 @@ namespace Elpida
 	size_t SvgBackDrop::GetHeight() const
 	{
 		return _height;
+	}
+
+	void SvgBackDrop::Clear()
+	{
+		//TODO: Optimize
+		for (auto& i : _colorData)
+		{
+			i = {};
+		}
+	}
+
+	void SvgBackDrop::Draw(const SvgBackDrop& other,
+			std::size_t x,
+			std::size_t y,
+			std::size_t width,
+			std::size_t height,
+			double opacity,
+			SvgBlendMode blendMode,
+			SvgCompositingMode compositingMode)
+	{
+		if (x > _width || y > _height) return;
+
+		const SvgBlender blender(blendMode);
+		const SvgCompositor compositor(compositingMode);
+
+		const auto startX = std::max(static_cast<std::size_t>(0), std::min(x, _width));
+		const auto startY = std::max(static_cast<std::size_t>(0), std::min(y, _height));
+		const auto endX = std::min(_width, x + width);	// +1 Inclusive pixel because of the internal checks do not include the last
+		const auto endY = std::min(_height, y + height);
+
+		auto& colorData = other.GetColorData();
+		const auto sourceWidth = other.GetWidth();
+
+		DoDrawOther(opacity, blender, compositor, startX, startY, endX, endY, startX, startY, colorData, sourceWidth);
 	}
 } // Elpida

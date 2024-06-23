@@ -5,7 +5,8 @@
 #include "SvgRasterizationTask.hpp"
 
 #include "Elpida/Core/SimpleTaskData.hpp"
-#include "Elpida/Svg/SvgRasterizer.hpp"
+#include "Elpida/Svg/SvgDirectRasterizer.hpp"
+#include "Elpida/Svg/SvgCalculatedDocument.hpp"
 #include "ImageTaskData.hpp"
 
 namespace Elpida
@@ -18,6 +19,8 @@ namespace Elpida
 		auto ptr = dynamic_cast<SimpleTaskData<SvgCalculatedDocument>*>(_inputData.get());
 
 		_inputDocument = &ptr->GetUnderlyingData();
+		_rasterizedImage = SvgBackDrop(std::ceil(_inputDocument->GetViewPort().GetWidth()), std::ceil(_inputDocument->GetViewPort().GetHeight()));
+		_tempBackdrop = SvgBackDrop(_rasterizedImage.GetWidth(), _rasterizedImage.GetHeight());
 	}
 
 	SharedPtr<AbstractTaskData> SvgRasterizationTask::Finalize()
@@ -66,7 +69,7 @@ namespace Elpida
 	{
 		while (iterations-- > 0)
 		{
-			_rasterizedImage = SvgRasterizer::Rasterize(*_inputDocument, _subSamples);
+			 SvgDirectRasterizer::Rasterize(*_inputDocument, _rasterizedImage, _tempBackdrop, _subSamples);
 		}
 	}
 

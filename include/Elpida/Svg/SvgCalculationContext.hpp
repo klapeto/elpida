@@ -50,6 +50,9 @@ namespace Elpida
 		double GetDpi() const;
 
 		[[nodiscard]]
+		double GetOpacity() const;
+
+		[[nodiscard]]
 		double GetRootFontSize() const;
 
 		void Push(const SvgElement& element);
@@ -72,6 +75,7 @@ namespace Elpida
 		std::vector<StackedValue<SvgTransform>> _transforms;
 		std::vector<StackedValue<SvgFill>> _fills;
 		std::vector<StackedValue<SvgStroke>> _stokes;
+		std::vector<StackedValue<double>> _opacities;
 		std::unordered_map<std::string_view, std::stack<StackedValue<std::string>>> _stackedValues;
 		double _rootFontSize;
 		double _dpi;

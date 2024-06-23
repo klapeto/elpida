@@ -12,7 +12,6 @@
 namespace Elpida
 {
 	class SvgCalculatedDocument;
-	class ThreadPool;
 
 	class SvgRasterizer
 	{

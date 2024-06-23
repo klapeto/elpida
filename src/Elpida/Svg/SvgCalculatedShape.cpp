@@ -9,28 +9,32 @@
 #include "Elpida/Svg/SvgFill.hpp"
 #include "Elpida/Svg/SvgStroke.hpp"
 #include "Elpida/Svg/SvgCalculationContext.hpp"
+#include "Elpida/Svg/SvgShapePolygonizer.hpp"
 
 namespace Elpida
 {
-	void SvgCalculatedShape::RecalculateBounds()
+	void SvgCalculatedShape::Recalculate()
 	{
 		_bounds = SvgBounds::CreateMinimum();
 
-		for (auto& path: _paths)
-		{
-			_bounds.Merge(path.GetBounds());
-		}
-
-		for (auto& child: _children)
+		for (auto& child : _children)
 		{
 			_bounds.Merge(child.GetBounds());
 		}
+
+		if (_fill.has_value())
+		{
+			_fillPolygon = SvgShapePolygonizer::Polygonize(*this);
+			_bounds.Merge(_fillPolygon.GetBounds());
+		}
+
+		if (_stroke.has_value())
+		{
+			_strokePolygon = SvgShapePolygonizer::PolygonizeStroke(*this);
+			_bounds.Merge(_strokePolygon.GetBounds());
+		}
 	}
 
-	const std::vector<SvgPathInstance>& SvgCalculatedShape::GetPaths() const
-	{
-		return _paths;
-	}
 
 	const std::vector<SvgCalculatedShape>& SvgCalculatedShape::GetChildren() const
 	{
@@ -48,10 +52,10 @@ namespace Elpida
 			const SvgDocument& document,
 			double opacity,
 			const SvgCalculationContext& calculationContext)
-			: _paths(std::move(paths)), _opacity(opacity), _compositingMode(SvgCompositingMode::SourceOver),
-			  _blendMode(SvgBlendMode::Normal)
+			:_paths(std::move(paths)), _opacity(opacity), _compositingMode(SvgCompositingMode::SourceOver),
+			 _blendMode(SvgBlendMode::Normal)
 	{
-		RecalculateBounds();
+		Recalculate();
 
 		if (fill.IsSet())
 		{
@@ -82,13 +86,13 @@ namespace Elpida
 	}
 
 	SvgCalculatedShape::SvgCalculatedShape()
-			: _opacity(1.0)
+			:_opacity(1.0), _compositingMode(SvgCompositingMode::SourceOver), _blendMode(SvgBlendMode::Normal)
 	{
 	}
 
 	void SvgCalculatedShape::Transform(const SvgTransform& transform)
 	{
-		for (auto& path: _paths)
+		for (auto& path : _paths)
 		{
 			path.Transform(transform);
 		}
@@ -103,11 +107,11 @@ namespace Elpida
 			_stroke->Transform(transform);
 		}
 
-		for (auto& child: _children)
+		for (auto& child : _children)
 		{
 			child.Transform(transform);
 		}
-		RecalculateBounds();
+		Recalculate();
 	}
 
 	std::vector<SvgCalculatedShape>& SvgCalculatedShape::GetChildren()
@@ -124,4 +128,20 @@ namespace Elpida
 	{
 		return _stroke;
 	}
+
+	const SvgPolygon& SvgCalculatedShape::GetStrokePolygon() const
+	{
+		return _strokePolygon;
+	}
+
+	const SvgPolygon& SvgCalculatedShape::GetFillPolygon() const
+	{
+		return _fillPolygon;
+	}
+
+	const std::vector<SvgPathInstance>& SvgCalculatedShape::GetPaths() const
+	{
+		return _paths;
+	}
+
 } // Elpida

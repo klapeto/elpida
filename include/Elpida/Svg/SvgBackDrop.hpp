@@ -53,6 +53,17 @@ namespace Elpida
 		          SvgBlendMode blendMode = SvgBlendMode::Normal,
 		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
 
+		void Draw(const SvgBackDrop &other,
+				std::size_t x,
+				std::size_t y,
+				std::size_t width,
+				std::size_t height,
+				double opacity = 1.0,
+				SvgBlendMode blendMode = SvgBlendMode::Normal,
+				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
+
+		void Clear();
+
 		SvgBackDrop();
 		SvgBackDrop(std::size_t width, std::size_t height);
 		SvgBackDrop(const SvgBackDrop &) = delete;
@@ -90,9 +101,10 @@ namespace Elpida
 				const SvgCompositor& compositor,
 				size_t startX,
 				size_t startY,
-				size_t width,
-				size_t height,
-				size_t sourceY,
+				size_t endX,
+				size_t endY,
+				size_t otherX,
+				size_t otherY,
 				const std::vector<SvgColor>& colorData,
 				size_t sourceWidth);
 		void DoDrawOtherMultiThreaded(double opacity, const SvgBlender& blender, const SvgCompositor& compositor,

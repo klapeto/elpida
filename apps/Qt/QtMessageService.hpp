@@ -6,6 +6,10 @@
 #define ELPIDA_QTMESSAGESERVICE_HPP_
 
 #include "Core/MessageService.hpp"
+#include "Core/ThreadQueue.hpp"
+
+class QWidget;
+
 namespace Elpida::Application
 {
 
@@ -16,8 +20,10 @@ namespace Elpida::Application
 		void ShowWarning(const std::string& message) override;
 		void ShowError(const std::string& message) override;
 
-		QtMessageService() = default;
+		QtMessageService();
 		~QtMessageService() = default;
+	private:
+		std::weak_ptr<ThreadQueue> _mainThreadQueue;
 	};
 
 } // Application

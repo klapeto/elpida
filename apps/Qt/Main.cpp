@@ -266,7 +266,6 @@ int main(int argc, char* argv[])
 
 		ResultsHTMLReporter htmlReporter(benchmarkRunConfigurationModel, benchmarkStatisticsService, pathsService);
 
-
 		CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
 		CustomBenchmarkController
 				customBenchmarkController(customBenchmarkModel, builderJson.GetTopologyInfoModel(),
