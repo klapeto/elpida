@@ -22,7 +22,7 @@ namespace Elpida
 		 * @param backDrop
 		 * @param subSamples
 		 */
-		static void Rasterize(const SvgCalculatedDocument& document, SvgBackDrop& backDrop, SvgBackDrop& tempBackDrop,
+		static void Rasterize(const SvgCalculatedDocument& document, SvgBackDrop& backDrop,
 				std::size_t subSamples = 16);
 	};
 

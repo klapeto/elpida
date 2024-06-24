@@ -24,9 +24,7 @@ namespace Elpida::Application
 
 	static std::size_t CalculateWorkingSetSize(double scale)
 	{
-		// We calculated the additional size is around +24% of the framebuffer size
-
-		return ((std::pow(std::ceil(scale * 1024.0), 2.0) * 32) * 2) + 2024;
+		return (std::pow(std::ceil(scale * 1024.0), 2.0) * 32) + 1024;
 		//return ((std::pow(std::ceil(scale * 1024.0), 2.0) * 4.0) * 2) + 2840;
 	}
 

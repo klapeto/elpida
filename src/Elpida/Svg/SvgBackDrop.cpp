@@ -20,7 +20,8 @@ namespace Elpida
 			const SvgSuperSampler& superSampler,
 			SvgFillRule fillRule,
 			SvgBlendMode blendMode,
-			SvgCompositingMode compositingMode)
+			SvgCompositingMode compositingMode,
+			double opacity)
 	{
 		const SvgBlender blender(blendMode);
 		const SvgCompositor compositor(compositingMode);
@@ -35,7 +36,7 @@ namespace Elpida
 		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(bounds.GetWidth() + 0.5)));
 		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetHeight() + 0.5)));
 
-		DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height);
+		DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height, opacity);
 	}
 
 	void SvgBackDrop::DoDrawPolygon(
@@ -48,7 +49,8 @@ namespace Elpida
 			const size_t startY,
 			const size_t startX,
 			const size_t width,
-			const size_t height)
+			const size_t height,
+			double opacity)
 	{
 		auto endY = std::min(_height, startY + height);
 		auto endX = std::min(_width, startX + width);
@@ -56,7 +58,7 @@ namespace Elpida
 		{
 			for (std::size_t x = startX; x < endX; ++x)
 			{
-				auto calculatedColor = superSampler.CalculatePixelColor(polygon, x, y, paint, fillRule);
+				auto calculatedColor = superSampler.CalculatePixelColor(polygon, x, y, paint, fillRule).WithMultipliedAplha(opacity);
 
 				// See https://www.w3.org/TR/2015/CR-compositing-1-20150113/#generalformula
 				auto& backdropColor = _colorData[y * _width + x];

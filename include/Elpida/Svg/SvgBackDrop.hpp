@@ -44,7 +44,8 @@ namespace Elpida
 					const SvgSuperSampler& superSampler,
 		          SvgFillRule fillRule = SvgFillRule::NonZero,
 		          SvgBlendMode blendMode = SvgBlendMode::Normal,
-		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
+		          SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
+				  double opacity = 1.0);
 
 		void Draw(const SvgBackDrop &other,
 		          std::size_t x,
@@ -86,7 +87,8 @@ namespace Elpida
 				std::size_t startY,
 				std::size_t startX,
 				std::size_t width,
-				std::size_t height);
+				std::size_t height,
+				double opacity);
 
 		void DrawPolygonMultiThreaded(const SvgPolygon& polygon, const SvgCalculatedPaint& paint, SvgFillRule& fillRule,
 				const SvgBlender& blender, const SvgCompositor& compositor, const SvgSuperSampler& superSampler,
