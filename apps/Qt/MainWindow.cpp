@@ -25,7 +25,7 @@
 #include "Views/TopologyView/TopologyView.hpp"
 #include "Views/CustomBenchmarkView/CustomBenchmarkView.hpp"
 #include "Views/FullBenchmarkView/FullBenchmarkView.hpp"
-#include "Views/MemoryOverheadView/MemoryOverheadView.hpp"
+#include "Views/MemoryBenchmarkView/MemoryBenchmarkView.hpp"
 
 namespace Elpida::Application
 {
@@ -46,12 +46,12 @@ namespace Elpida::Application
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			const FullBenchmarkModel& fullBenchmarkModel,
 			const CustomBenchmarkModel& customBenchmarksModel,
-			const MemoryOverheadCalculationModel& memoryOverheadCalculationModel,
+			const MemoryBenchmarkModel& memoryOverheadCalculationModel,
 			TopologyModel& topologyModel,
 			FullBenchmarkController& fullBenchmarkController,
 			CustomBenchmarkController& customBenchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
-			MemoryOverheadCalculationController& memoryOverheadCalculationController,
+			MemoryBenchmarkController& memoryOverheadCalculationController,
 			ConfigurationViewPool& configurationViewPool,
 			QWidget* parent)
 			:QMainWindow(parent),
@@ -91,7 +91,7 @@ namespace Elpida::Application
 		  OnTopologyModelChanged();
 		});
 
-		_ui->tabMemoryOverhead->layout()->addWidget(new MemoryOverheadView(memoryOverheadCalculationModel, memoryOverheadCalculationController, benchmarkRunConfigurationModel, benchmarkRunConfigurationController));
+		_ui->tabMemoryBenchmark->layout()->addWidget(new MemoryBenchmarkView(memoryOverheadCalculationModel, memoryOverheadCalculationController, benchmarkRunConfigurationModel, benchmarkRunConfigurationController));
 
 		_ui->tabCustomBenchmark->layout()->addWidget(
 				new CustomBenchmarkView(customBenchmarksModel,
@@ -156,42 +156,6 @@ namespace Elpida::Application
 	void MainWindow::on_actionExit_triggered()
 	{
 		QApplication::quit();
-	}
-
-	void MainWindow::on_actionSave_results_as_triggered()
-	{
-		QFileDialog dialog(this);
-		dialog.setFileMode(QFileDialog::AnyFile);
-		dialog.setAcceptMode(QFileDialog::AcceptSave);
-
-		auto filter = QString::fromStdString("Json document (*.json)");
-		dialog.setNameFilter(filter);
-		dialog.selectNameFilter(filter);
-
-		auto targetFilename = _cpuInfoModel.GetModelName() + "-" + std::to_string(time(nullptr)) + ".json";
-		dialog.selectFile(QString::fromStdString(targetFilename));
-		dialog.setNameFilter(tr("Json document (*.json)"));
-
-		if (dialog.exec())
-		{
-			QStringList fileNames = dialog.selectedFiles();
-			const auto& filepath = std::filesystem::path(fileNames.at(0).toStdString());
-
-			if (_ui->tbBenchmark->currentIndex() == 2)
-			{
-				_customBenchmarkController.SaveResults(filepath);
-
-			}
-			else
-			{
-				_fullBenchmarkController.SaveResults(filepath);
-			}
-
-			auto uri = "file:///" + QString::fromStdString(canonical(filepath).string());
-			QMessageBox::information(this, "Save successful",
-					"Save was successful. Results were saved in: <a href='" + uri + "'>" + QString::fromStdString(filepath.filename().string()) + "</a>");
-
-		}
 	}
 
 	void MainWindow::on_actionAbout_triggered()

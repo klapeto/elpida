@@ -56,7 +56,7 @@
 #include "QtMessageService.hpp"
 #include "QtPathsService.hpp"
 #include "QtDesktopService.hpp"
-#include "Controllers/MemoryOverheadCalculationController.hpp"
+#include "Controllers/MemoryBenchmarkController.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -294,8 +294,8 @@ int main(int argc, char* argv[])
 				messageService,
 				benchmarkGroups);
 
-		MemoryOverheadCalculationModel memoryOverheadCalculationModel;
-		MemoryOverheadCalculationController memoryOverheadCalculationController(memoryOverheadCalculationModel,
+		MemoryBenchmarkModel memoryOverheadCalculationModel;
+		MemoryBenchmarkController memoryOverheadCalculationController(memoryOverheadCalculationModel,
 				builderJson.GetTimingModel(),
 				builderJson.GetTopologyInfoModel(),
 				builderJson.GetMemoryInfoModel(),

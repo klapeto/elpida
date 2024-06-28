@@ -25,8 +25,8 @@ namespace Elpida::Application
 	class FullBenchmarkModel;
 	class FullBenchmarkController;
 	class ConfigurationViewPool;
-	class MemoryOverheadCalculationModel;
-	class MemoryOverheadCalculationController;
+	class MemoryBenchmarkModel;
+	class MemoryBenchmarkController;
 
 	class MainWindow : public QMainWindow
 	{
@@ -40,12 +40,12 @@ namespace Elpida::Application
 			const BenchmarkRunConfigurationModel& benchmarkRunConfigurationModel,
 			const FullBenchmarkModel& fullBenchmarkModel,
 			const CustomBenchmarkModel& customBenchmarksModel,
-			const MemoryOverheadCalculationModel& memoryOverheadCalculationModel,
+			const MemoryBenchmarkModel& memoryOverheadCalculationModel,
 			TopologyModel& topologyModel,
 			FullBenchmarkController& fullBenchmarkController,
 			CustomBenchmarkController& customBenchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
-			MemoryOverheadCalculationController& memoryOverheadCalculationController,
+			MemoryBenchmarkController& memoryOverheadCalculationController,
 			ConfigurationViewPool& configurationViewPool,
 			QWidget* parent = nullptr);
 
@@ -65,7 +65,6 @@ namespace Elpida::Application
 
 	 private slots:
 		void on_actionExit_triggered();
-		void on_actionSave_results_as_triggered();
 		void on_actionClear_results_triggered();
 		void on_actionAbout_triggered();
 	};

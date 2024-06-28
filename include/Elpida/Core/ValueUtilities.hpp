@@ -115,7 +115,8 @@ namespace Elpida
 		}
 
 		template<typename T>
-		static String ToFixed(T value, int decimals){
+		static String ToFixed(T value, int decimals)
+		{
 			std::ostringstream returnString;
 			returnString << std::fixed << std::setprecision(decimals) << value;
 			return returnString.str();

@@ -129,4 +129,9 @@ namespace Elpida::Application
 		_ui->lblTimes->setVisible(false);
 		_ui->spnTimes->setVisible(false);
 	}
+
+	void BenchmarkRunConfigurationView::DisableHtmlReport()
+	{
+		_ui->chkGenerateReport->setVisible(false);
+	}
 }

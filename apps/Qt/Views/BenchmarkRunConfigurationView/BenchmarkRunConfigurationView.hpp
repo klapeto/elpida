@@ -23,6 +23,7 @@ namespace Elpida::Application
 		void DisableAdvancedSettings();
 		void DisableUpload();
 		void DisableIterations();
+		void DisableHtmlReport();
 
 		explicit BenchmarkRunConfigurationView(
 				const BenchmarkRunConfigurationModel& model,

@@ -2,12 +2,13 @@
 // Created by klapeto on 18/6/2024.
 //
 
-#ifndef ELPIDA_MEMORYOVERHEADCALCULATIONCONTROLLER_HPP
-#define ELPIDA_MEMORYOVERHEADCALCULATIONCONTROLLER_HPP
+#ifndef ELPIDA_MEMORYBENCHMARKCONTROLLER_HPP
+#define ELPIDA_MEMORYBENCHMARKCONTROLLER_HPP
 
 #include "Controller.hpp"
-#include "Models/MemoryOverhead/MemoryOverheadCalculationModel.hpp"
+#include "Models/MemoryBenchmark/MemoryBenchmarkModel.hpp"
 #include "Models/Benchmark/BenchmarkGroupModel.hpp"
+#include "Models/Benchmark/BenchmarkResultModel.hpp"
 #include <thread>
 #include <atomic>
 
@@ -27,19 +28,18 @@ namespace Elpida::Application
 	class BenchmarkModel;
 	class SettingsService;
 
-	class MemoryOverheadCalculationController : public Controller<MemoryOverheadCalculationModel>
+	class MemoryBenchmarkController : public Controller<MemoryBenchmarkModel>
 	{
 	public:
 		void StopRunning();
 		void RunAsync();
 
-		void SetSubSamplesMultiplier(double subSamplesMultiplier);
-		void SetInitialSubSamples(size_t initialSubSamples);
-		void SetScaleMultiplier(double scaleMultiplier);
-		void SetInitialScale(double initialScale);
+		void SetMultiplier(double multiplier);
+		void SetInitialBytes(size_t initialBytes);
 		void SetIterations(size_t iterations);
+		void SetBenchmarkType(MemoryBenchmarkType type);
 
-		explicit MemoryOverheadCalculationController(MemoryOverheadCalculationModel& model,
+		explicit MemoryBenchmarkController(MemoryBenchmarkModel& model,
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
 				const MemoryInfoModel& memoryInfoModel,
@@ -52,7 +52,7 @@ namespace Elpida::Application
 				MessageService& messageService,
 				SettingsService& settingsService,
 				const std::vector<BenchmarkGroupModel>& benchmarkGroups);
-		~MemoryOverheadCalculationController();
+		~MemoryBenchmarkController() override;
 	private:
 		const TimingModel& _timingModel;
 		const TopologyModel& _topologyModel;
@@ -67,17 +67,19 @@ namespace Elpida::Application
 		std::thread _runnerThread;
 		std::atomic<bool> _running;
 		std::atomic<bool> _cancelling;
-		std::vector<double> _targetScales;
-		std::vector<std::size_t> _targetSubSamples;
 		std::vector<std::size_t> _targetProcessors;
+		std::vector<std::size_t> _targetSizes;
 
-		const BenchmarkModel* _benchmark;
+		const BenchmarkModel* _memoryLatencyBenchmark;
+		const BenchmarkModel* _memoryReadBandwidthBenchmark;
 
-		void CalculateTargetScales();
-		void GenerateHtmlReport(const std::vector<MemoryOverheadResultModel>& thisResults) const;
+		void CalculateTargetSizesAndProcessors();
+		void GenerateHtmlReport(const std::vector<MemoryBenchmarkResultModel>& thisResults) const;
+		BenchmarkResultModel RunBenchmark(const BenchmarkModel* benchmark, std::size_t size) const;
+		const BenchmarkModel* GetBenchmarkToRun() const;
 	};
 
 } // Application
 // Elpida
 
-#endif //ELPIDA_MEMORYOVERHEADCALCULATIONCONTROLLER_HPP
+#endif //ELPIDA_MEMORYBENCHMARKCONTROLLER_HPP

@@ -118,9 +118,9 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_5"/>
       </widget>
-      <widget class="QWidget" name="tabMemoryOverhead">
+      <widget class="QWidget" name="tabMemoryBenchmark">
        <attribute name="title">
-        <string>Memory overhead</string>
+        <string>Memory benchmark</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_6"/>
       </widget>
@@ -147,7 +147,6 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionSave_results_as"/>
     <addaction name="actionClear_results"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>

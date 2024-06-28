@@ -84,9 +84,9 @@ set(ELPIDA_QT_SOURCES
 		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.cpp
 		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.ui
 
-		Views/MemoryOverheadView/MemoryOverheadView.hpp
-		Views/MemoryOverheadView/MemoryOverheadView.cpp
-		Views/MemoryOverheadView/MemoryOverheadView.ui
+        Views/MemoryBenchmarkView/MemoryBenchmarkView.hpp
+		Views/MemoryBenchmarkView/MemoryBenchmarkView.cpp
+		Views/MemoryBenchmarkView/MemoryBenchmarkView.ui
 
 		Images/Images.qrc
 
