@@ -5,7 +5,6 @@
 #ifndef ELPIDA_APPS_APPLICATION_DATAUPLOADER_HPP
 #define ELPIDA_APPS_APPLICATION_DATAUPLOADER_HPP
 
-
 #include <string>
 
 #include "Models/Full/FullBenchmarkResultModel.hpp"

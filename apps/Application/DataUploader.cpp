@@ -6,11 +6,11 @@
 
 #include "ResultSerializer.hpp"
 
-#include "httplib.hpp"
-
-#ifdef ELPIDA_WINDOWS
-#include <Windows.h>
+#if defined(ELPIDA_WINDOWS)
+#include <windows.h>
 #endif
+
+#include "httplib.hpp"
 
 namespace Elpida::Application
 {
