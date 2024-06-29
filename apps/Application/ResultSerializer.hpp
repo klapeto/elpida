@@ -10,6 +10,8 @@
 #include "Models/Benchmark/BenchmarkResultModel.hpp"
 #include "Models/Abstractions/ListModel/ListModel.hpp"
 
+#include "json.hpp"
+
 namespace Elpida::Application
 {
 	class CpuInfoModel;
@@ -23,7 +25,7 @@ namespace Elpida::Application
 	{
 	public:
 		[[nodiscard]]
-		std::string Serialize(const ListModel<FullBenchmarkResultModel>& fullBenchmarkResultModels) const;
+		std::string Serialize(const std::vector<FullBenchmarkResultModel>& fullBenchmarkResultModels) const;
 
 		[[nodiscard]]
 		std::string Serialize(const ListModel<BenchmarkResultModel>& benchmarkResultModels) const;
@@ -33,11 +35,8 @@ namespace Elpida::Application
 				const OsInfoModel& osInfoModel,
 				const TimingModel& timingModel);
 	private:
-		const CpuInfoModel& _cpuInfoModel;
-		const MemoryInfoModel& _memoryInfoModel;
-		const TopologyModel& _topologyModel;
-		const OsInfoModel& _osInfoModel;
-		const TimingModel& _timingModel;
+
+		nlohmann::json _systemInfo;
 	};
 
 } // Elpida

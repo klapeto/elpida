@@ -152,6 +152,7 @@ namespace Elpida::Application
 	{
 		_chart->setTitle("Memory read bandwidth");
 		_chart->axes(Qt::Vertical)[0]->setTitleText("Bandwidth (b/s)");
+		static_cast<QLogValueAxis*>(_chart->axes(Qt::Vertical)[0])->setLabelFormat("%.2f Gib/s");
 		_series->clear();
 	}
 
@@ -159,6 +160,7 @@ namespace Elpida::Application
 	{
 		_chart->setTitle("Memory latency");
 		_chart->axes(Qt::Vertical)[0]->setTitleText("Latency (ns)");
+		static_cast<QLogValueAxis*>(_chart->axes(Qt::Vertical)[0])->setLabelFormat("%.2f ns");
 		_series->clear();
 	}
 
@@ -280,9 +282,9 @@ namespace Elpida::Application
 	void MemoryBenchmarkView::OnMemoryBandwidthResultAdded(const MemoryBenchmarkResultModel& result,
 			QString& stringScore, Score& scoreToShow)
 	{
-		stringScore = QString::fromStdString(ValueUtilities::ToSI(result.GetScore(), 2) + "b/s");
+		stringScore = QString::fromStdString(ValueUtilities::ToIEC(result.GetScore(), 2) + "b/s");
 
-		scoreToShow = result.GetScore();
+		scoreToShow = result.GetScore() / std::giga::num;
 
 		_maxScore = std::max(_maxScore, scoreToShow);
 		_minScore = std::min(_minScore, scoreToShow);

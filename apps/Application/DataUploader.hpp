@@ -5,22 +5,54 @@
 #ifndef ELPIDA_APPS_APPLICATION_DATAUPLOADER_HPP
 #define ELPIDA_APPS_APPLICATION_DATAUPLOADER_HPP
 
-#include "Models/Benchmark/BenchmarkResultModel.hpp"
+
+#include <string>
+
+#include "Models/Full/FullBenchmarkResultModel.hpp"
+
+#include <Elpida/Core/Config.hpp>
+
+#ifdef ELPIDA_DEBUG
+#define ELPIDA_DEBUG_SERVER
+#endif
+
+#ifdef ELPIDA_DEBUG_SERVER
+#undef ELPIDA_WEBSITE_URL
+#define ELPIDA_WEBSITE_URL "https://localhost:44478"
+#endif
+
+#ifndef ELPIDA_WEB_API_KEY
+#define ELPIDA_WEB_API_KEY "Test API Key"
+#endif
+
+#ifndef ELPIDA_WEB_API_URL
+#define ELPIDA_WEB_API_URL "localhost"
+#endif
 
 namespace Elpida::Application
 {
-	class BenchmarkResultModel;
-	class OsInfo;
-	class CpuInfo;
-	class SystemTopology;
-	class MemoryInfo;
-	class TimingInfo;
-	class BenchmarkModel;
+	class ResultSerializer;
 
 	class DataUploader
 	{
 	public:
-		void UploadResult(const BenchmarkModel& benchmark, const BenchmarkResultModel& result);
+		std::string UploadResult(const std::vector<FullBenchmarkResultModel>& results) const;
+		explicit DataUploader(const ResultSerializer& resultSerializer);
+	private:
+		const ResultSerializer& _resultSerializer;
+
+#ifdef ELPIDA_DEBUG_SERVER
+		const int apiPort = 5000;
+		static inline const char* apiUrl = "localhost";
+#else
+		const int apiPort = 443;
+		static inline const char* apiUrl = ELPIDA_WEB_API_URL;
+#endif
+		static inline const char* resultPath = "/api/v1/benchmarkresult";
+		static inline const char* contentType = "application/json";
+		static inline const char* apiKey = ELPIDA_WEB_API_KEY;
+		static inline const char* apiKeyHeader = "api_key";
+		static inline const char* frontEndResultUrl = ELPIDA_WEBSITE_URL "/Database/Result/";
 	};
 
 } // Application

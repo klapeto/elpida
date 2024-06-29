@@ -27,6 +27,7 @@ namespace Elpida::Application
 	class ResultsHTMLReporter;
 	class PathsService;
 	class DesktopService;
+	class DataUploader;
 
 	class FullBenchmarkController : public Controller<FullBenchmarkModel>
 	{
@@ -45,6 +46,7 @@ namespace Elpida::Application
 				const ResultsHTMLReporter& resultsHTMLReporter,
 				const PathsService& pathsService,
 				const DesktopService& desktopService,
+				const DataUploader& dataUploader,
 				MessageService& messageService,
 				const std::vector<BenchmarkGroupModel>& benchmarkGroups);
 
@@ -58,6 +60,7 @@ namespace Elpida::Application
 		const ResultsHTMLReporter& _resultsHTMLReporter;
 		const PathsService& _pathsService;
 		const DesktopService& _desktopService;
+		const DataUploader& _dataUploader;
 		MessageService& _messageService;
 		std::thread _runnerThread;
 		std::atomic<bool> _running;
@@ -65,6 +68,7 @@ namespace Elpida::Application
 
 		std::vector<std::unique_ptr<FullBenchmarkInstance>> _benchmarks;
 		void GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults) const;
+		void PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults) const;
 	};
 
 } // Elpida

@@ -4,6 +4,8 @@
 
 #include "FullBenchmarkController.hpp"
 
+#include "Elpida/Platform/OsUtilities.hpp"
+
 #include "Models/SystemInfo/TimingModel.hpp"
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
@@ -13,8 +15,8 @@
 #include "Core/ResultsHTMLReporter.hpp"
 #include "Core/PathsService.hpp"
 #include "Core/DesktopService.hpp"
-#include "Elpida/Platform/OsUtilities.hpp"
 #include "ResultSerializer.hpp"
+#include "DataUploader.hpp"
 
 #include "FullBenchmarkInstances/SvgRasterizationSingleThread.hpp"
 #include "FullBenchmarkInstances/SvgRasterizationMultiThread.hpp"
@@ -38,6 +40,7 @@ namespace Elpida::Application
 			const ResultsHTMLReporter& resultsHTMLReporter,
 			const PathsService& pathsService,
 			const DesktopService& desktopService,
+			const DataUploader& dataUploader,
 			MessageService& messageService,
 			const std::vector<BenchmarkGroupModel>& benchmarkGroups)
 			:
@@ -50,6 +53,7 @@ namespace Elpida::Application
 			_resultsHTMLReporter(resultsHTMLReporter),
 			_pathsService(pathsService),
 			_desktopService(desktopService),
+			_dataUploader(dataUploader),
 			_messageService(messageService),
 			_running(false),
 			_cancelling(false)
@@ -146,14 +150,44 @@ namespace Elpida::Application
 				}
 			}
 
-			if (_runConfigurationModel.IsGenerateHtmlReport() && !thisResults.empty())
-			{
-				GenerateHtmlReport(thisResults);
-			}
+			PostHandleResults(thisResults);
 
 			_model.SetRunning(false);
 			_running.store(false, std::memory_order_release);
 		});
+	}
+
+	void FullBenchmarkController::PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults) const
+	{
+		if (!thisResults.empty())
+		{
+			if (_runConfigurationModel.IsGenerateHtmlReport())
+			{
+				try
+				{
+					GenerateHtmlReport(thisResults);
+				}
+				catch (const std::exception& ex)
+				{
+					_messageService.ShowError(std::string("Failed to crate report: ") + ex.what());
+				}
+			}
+			if (_runConfigurationModel.IsUploadResults())
+			{
+				try
+				{
+					auto url = _dataUploader.UploadResult(thisResults);
+					if (_runConfigurationModel.IsOpenResult())
+					{
+						_desktopService.OpenUri(url);
+					}
+				}
+				catch (const std::exception& ex)
+				{
+					_messageService.ShowError(ex.what());
+				}
+			}
+		}
 	}
 
 	void FullBenchmarkController::GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults) const
@@ -201,7 +235,14 @@ namespace Elpida::Application
 	void FullBenchmarkController::SaveResults(const std::filesystem::path& filePath)
 	{
 		std::fstream file(filePath.c_str(), std::ios::trunc | std::fstream::out);
-		file << _resultSerializer.Serialize(_model);
+
+		std::vector<FullBenchmarkResultModel> thisResults;
+		thisResults.reserve(_model.Size());
+		for (auto& result : _model.GetItems())
+		{
+			thisResults.push_back(result.GetValue());
+		}
+		file << _resultSerializer.Serialize(thisResults);
 	}
 } // Elpida
 // Application

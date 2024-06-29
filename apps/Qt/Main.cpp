@@ -49,6 +49,7 @@
 #include "Controllers/FullBenchmarkController.hpp"
 #include "ModelBuilderJson.hpp"
 #include "ResultSerializer.hpp"
+#include "DataUploader.hpp"
 
 #include "Elpida/Platform/Process.hpp"
 #include "Elpida/Platform/AsyncPipeReader.hpp"
@@ -278,6 +279,8 @@ int main(int argc, char* argv[])
 				desktopService,
 				messageService);
 
+		DataUploader uploader(resultSerializer);
+
 		ConfigurationViewPool configurationViewPool(settingsService);
 
 		FullBenchmarkModel fullBenchmarkModel;
@@ -291,6 +294,7 @@ int main(int argc, char* argv[])
 				htmlReporter,
 				pathsService,
 				desktopService,
+				uploader,
 				messageService,
 				benchmarkGroups);
 

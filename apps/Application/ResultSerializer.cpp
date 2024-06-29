@@ -155,21 +155,13 @@ namespace Elpida::Application
 		return outJson;
 	}
 
-
-	std::string ResultSerializer::Serialize(const ListModel<FullBenchmarkResultModel>& fullBenchmarkResultModels) const
+	std::string ResultSerializer::Serialize(const std::vector<FullBenchmarkResultModel>& fullBenchmarkResultModels) const
 	{
-		json outJson;
-
-		outJson["cpu"] = SerializeCpuInfo(_cpuInfoModel);
-		outJson["memory"] = SerializeMemoryInfo(_memoryInfoModel);
-		outJson["topology"] = SerializeTopologyNode(_topologyModel.GetRoot());
-		outJson["os"] = SerializeOsInfo(_osInfoModel);
-		outJson["timing"] = SerializeTimingInfo(_timingModel);
-
+		json outJson = _systemInfo;
 		json resultsJson = json::array();
-		for (auto& result : fullBenchmarkResultModels.GetItems())
+		for (auto& result : fullBenchmarkResultModels)
 		{
-			resultsJson.push_back(SerializeFullBenchmarkResult(result.GetValue()));
+			resultsJson.push_back(SerializeFullBenchmarkResult(result));
 		}
 
 		outJson["results"] = std::move(resultsJson);
@@ -181,20 +173,17 @@ namespace Elpida::Application
 	ResultSerializer::ResultSerializer(const CpuInfoModel& cpuInfoModel,
 			const MemoryInfoModel& memoryInfoModel, const TopologyModel& topologyModel, const OsInfoModel& osInfoModel,
 			const TimingModel& timingModel)
-			:_cpuInfoModel(cpuInfoModel), _memoryInfoModel(memoryInfoModel), _topologyModel(topologyModel),
-			 _osInfoModel(osInfoModel), _timingModel(timingModel)
 	{
+		_systemInfo["cpu"] = SerializeCpuInfo(cpuInfoModel);
+		_systemInfo["memory"] = SerializeMemoryInfo(memoryInfoModel);
+		_systemInfo["topology"] = SerializeTopologyNode(topologyModel.GetRoot());
+		_systemInfo["os"] = SerializeOsInfo(osInfoModel);
+		_systemInfo["timing"] = SerializeTimingInfo(timingModel);
 	}
 
 	std::string ResultSerializer::Serialize(const ListModel<BenchmarkResultModel>& benchmarkResultModels) const
 	{
-		json outJson;
-
-		outJson["cpu"] = SerializeCpuInfo(_cpuInfoModel);
-		outJson["memory"] = SerializeMemoryInfo(_memoryInfoModel);
-		outJson["topology"] = SerializeTopologyNode(_topologyModel.GetRoot());
-		outJson["os"] = SerializeOsInfo(_osInfoModel);
-		outJson["timing"] = SerializeTimingInfo(_timingModel);
+		json outJson = _systemInfo;
 
 		json resultsJson = json::array();
 		for (auto& result : benchmarkResultModels.GetItems())
@@ -203,7 +192,6 @@ namespace Elpida::Application
 		}
 
 		outJson["results"] = std::move(resultsJson);
-
 
 		return outJson.dump();
 	}

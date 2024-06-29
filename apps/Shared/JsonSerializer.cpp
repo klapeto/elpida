@@ -3,6 +3,7 @@
 //
 
 #include "JsonSerializer.hpp"
+
 #include "Elpida/Core/CpuInfo.hpp"
 #include "Elpida/Core/MemoryInfo.hpp"
 #include "Elpida/Core/OsInfo.hpp"
