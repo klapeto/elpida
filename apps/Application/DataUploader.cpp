@@ -6,17 +6,14 @@
 
 #include "ResultSerializer.hpp"
 
+#include "httplib.hpp"
+
 #if defined(ELPIDA_WINDOWS)
 #include <windows.h>
 #endif
 
-#include "httplib.hpp"
-
 namespace Elpida::Application
 {
-
-	using namespace httplib;
-
 	DataUploader::DataUploader(const ResultSerializer& resultSerializer)
 			:_resultSerializer(resultSerializer)
 	{
@@ -26,19 +23,19 @@ namespace Elpida::Application
 	{
 		auto serialized = _resultSerializer.Serialize(results);
 #ifdef ELPIDA_DEBUG_SERVER
-		Client cli(apiUrl, apiPort);
+		httplib::Client client(apiUrl, apiPort);
 #else
-		SSLClient cli(apiUrl, apiPort);
+		httplib::SSLClient client(apiUrl, apiPort);
 #endif
 
 		auto httpResponse =
-				cli.Post(resultPath,
+				client.Post(resultPath,
 						{{ apiKeyHeader, apiKey }},
 						serialized,
 						contentType);
 		if (httpResponse)
 		{
-			if (httpResponse->status != StatusCode::Created_201)
+			if (httpResponse->status != httplib::StatusCode::Created_201)
 			{
 				throw ElpidaException("Failed to upload the result. Unexpected status: ", httpResponse->status,
 						", Body: ", httpResponse->body);
