@@ -1,0 +1,33 @@
+.build:windows:
+  image: $CI_REGISTRY_IMAGE/build-environment/windows-$TARGET_ARCH
+  stage: build
+  tags:
+    - $TARGET_ARCH
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  script:
+    - git submodule update --init
+    - x86_64-w64-mingw32.shared-cmake -S .
+      -B "$BUILD_DIR"
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+      -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
+      -DELPIDA_WEB_API_URL="$ELPIDA_WEB_API_URL"
+      -DELPIDA_WEB_API_KEY="$ELPIDA_WEB_API_KEY"
+      -DELPIDA_VERSION_MAJOR=$ELPIDA_VERSION_MAJOR
+      -DELPIDA_VERSION_MINOR=$ELPIDA_VERSION_MINOR
+      -DELPIDA_VERSION_REVISION=$ELPIDA_VERSION_REVISION
+      -DELPIDA_VERSION_BUILD=$ELPIDA_VERSION_BUILD
+    - make -C "$BUILD_DIR" -j$(nproc) install
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $BUILD_DIR
+      - $INSTALL_DIR
+
+build:windows:amd64:
+  variables:
+    TARGET_ARCH: amd64
+  dependencies:
+    - docker-image:windows:amd64
+  extends: .build:windows
