@@ -22,11 +22,8 @@ namespace Elpida::Application
 	std::string DataUploader::UploadResult(const std::vector<FullBenchmarkResultModel>& results) const
 	{
 		auto serialized = _resultSerializer.Serialize(results);
-#ifdef ELPIDA_DEBUG_SERVER
-		httplib::Client client(apiUrl, apiPort);
-#else
-		httplib::SSLClient client(apiUrl, apiPort);
-#endif
+
+		httplib::Client client(apiUrl);
 
 		auto httpResponse =
 				client.Post(resultPath,

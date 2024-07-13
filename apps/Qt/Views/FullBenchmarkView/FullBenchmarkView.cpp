@@ -29,14 +29,14 @@ namespace Elpida::Application
 
 	static std::string GetTaskValue(const TaskModel& task, const TaskResultModel& taskResult)
 	{
-		auto type = task.GetScoreType();
-		if (type == ScoreType::Throughput)
+		auto type = task.GetResultType();
+		if (type == ResultType::Throughput)
 		{
 
 			return Elpida::ValueUtilities::GetValueScaleStringSI(
 					(double)taskResult.GetInputSize() / taskResult.GetDuration().count()) + task.GetUnit() + +"/s";
 		}
-		else if (type == ScoreType::Time)
+		else if (type == ResultType::Time)
 		{
 			return Elpida::ValueUtilities::GetValueScaleStringSI(taskResult.GetDuration().count()) + "s";
 		}
@@ -145,8 +145,8 @@ namespace Elpida::Application
 	void FullBenchmarkView::OnResultAdded(const FullBenchmarkResultModel& currentResult)
 	{
 		auto totalScore = QString::fromStdString(Vu::ToFixed(currentResult.GetTotalScore(), 2));
-		auto singleScore = QString::fromStdString(Vu::ToFixed(currentResult.GetSingleCoreScore(), 2));
-		auto multiScore = QString::fromStdString(Vu::ToFixed(currentResult.GetMultiCoreScore(), 2));
+		auto singleScore = QString::fromStdString(Vu::ToFixed(currentResult.GetSingleThreadScore(), 2));
+		auto multiScore = QString::fromStdString(Vu::ToFixed(currentResult.GetMultiThreadScore(), 2));
 		auto memoryScore = QString::fromStdString(Vu::ToFixed(currentResult.GetMemoryScore(), 2));
 
 		_ui->lblTotalScore->setText(totalScore);
@@ -161,8 +161,8 @@ namespace Elpida::Application
 		{
 			auto& previousResult = *_previousScores;
 			SetDelta(_ui->lblTotalScoreDelta, currentResult.GetTotalScore(), previousResult._totalScore, item);
-			SetDelta(_ui->lblSingleScoreDelta, currentResult.GetSingleCoreScore(), previousResult._singleCoreScore);
-			SetDelta(_ui->lblMultiCoreScoreDelta, currentResult.GetMultiCoreScore(),
+			SetDelta(_ui->lblSingleScoreDelta, currentResult.GetSingleThreadScore(), previousResult._singleCoreScore);
+			SetDelta(_ui->lblMultiCoreScoreDelta, currentResult.GetMultiThreadScore(),
 					previousResult._multiCoreScore);
 			SetDelta(_ui->lblMemoryScoreDelta, currentResult.GetMemoryScore(), previousResult._memoryScore);
 		}
@@ -175,27 +175,15 @@ namespace Elpida::Application
 			auto root = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
 					QStringList({ QString::fromStdString(benchmark.GetName()),
 								  QString::fromStdString(
-										  Elpida::ValueUtilities::GetValueScaleStringSI(benchmarkResult.GetScore())
-										  + benchmark.GetScoreUnit()) }));
-			auto& taskResults = benchmarkResult.GetTaskResults();
-			auto& tasks = benchmark.GetTasks();
-			for (std::size_t i = 0, j = 0; i < tasks.size(); ++i)
-			{
-				auto& task = tasks[i];
-				if (!task.IsMeasured()) continue;
-				auto& taskResult = taskResults[j++];
-				auto taskItem = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
-						QStringList({ QString::fromStdString(task.GetName()),
-									  QString::fromStdString(GetTaskValue(task, taskResult)) }));
-				root->addChild(taskItem);
-			}
+										  Elpida::ValueUtilities::GetValueScaleStringSI(benchmarkResult.GetResult())
+										  + benchmark.GetResultUnit()) }));
 			item->addChild(root);
 		}
 
 		_previousScores = {
 				currentResult.GetTotalScore(),
-				currentResult.GetSingleCoreScore(),
-				currentResult.GetMultiCoreScore(),
+				currentResult.GetSingleThreadScore(),
+				currentResult.GetMultiThreadScore(),
 				currentResult.GetMemoryScore(),
 		};
 	}

@@ -6,7 +6,7 @@ project("Elpida image benchmarks" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         PngEncodingTask.cpp
         PngDecodingTask.cpp
-        PngEncodingDecodingBenchmark.cpp
+        PngEncodingBenchmark.cpp
         ConvertToFloatTask.cpp
         ConvertToGrayscaleTask.cpp
         ConvertToUInt8Task.cpp

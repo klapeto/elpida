@@ -9,34 +9,6 @@
 
 namespace Elpida
 {
-	BenchmarkInfo MemoryReadBandwidthBenchmark::GetInfo() const
-	{
-		AllocateMemoryTask allocate(0);
-		MemoryReadBandwidthTask task;
-		return BenchmarkInfo(
-				"Memory read bandwidth",
-				"Calculates the peak memory read bandwidth by continuously reading a memory stream.",
-				"B/s",
-				"The peak read bandwidth.",
-				{
-						allocate.SetMeasured(false).GetInfo(),
-						task.GetInfo()
-				});
-	}
-
-	double MemoryReadBandwidthBenchmark::CalculateScore(const Vector<TaskResult>& taskResults) const
-	{
-		Size totalSize = 0;
-		Duration totalDuration = Seconds(0);
-
-		for (auto& result : taskResults)
-		{
-			totalSize += result.GetDataSize();
-			totalDuration += result.GetDuration();
-		}
-
-		return static_cast<double>(totalSize) / totalDuration.count();
-	}
 
 	Vector<TaskConfiguration> MemoryReadBandwidthBenchmark::GetRequiredConfiguration() const
 	{
@@ -50,8 +22,19 @@ namespace Elpida
 	{
 		Vector<UniquePtr<Task>> tasks;
 
-		tasks.push_back(CreateTask<AllocateMemoryTask>(false, context.GetConfiguration().at(0).AsInteger()));
-		tasks.push_back(CreateTask<MemoryReadBandwidthTask>(true));
+		tasks.push_back(CreateTask<AllocateMemoryTask>(context.GetConfiguration().at(0).AsInteger()));
+		tasks.push_back(CreateTask<MemoryReadBandwidthTask>());
 		return tasks;
+	}
+
+	void MemoryReadBandwidthBenchmark::DoGetBenchmarkInfo(String& name, String& description,
+			size_t& taskToUseAsScoreIndex, std::vector<TaskInfo>& taskInfos) const
+	{
+		name = "Memory read bandwidth";
+		description = "Calculates the peak memory read bandwidth by continuously reading a memory stream.";
+		taskToUseAsScoreIndex = 1;
+
+		taskInfos.push_back(AllocateMemoryTask(1).GetInfo());
+		taskInfos.push_back(MemoryReadBandwidthTask().GetInfo());
 	}
 } // Elpida

@@ -7,13 +7,14 @@
 namespace Elpida::Application
 {
 	TopologyModel::TopologyModel(TopologyNodeModel root, unsigned int fastestProcessor)
-			:_root(std::move(root)), _fastestProcessor(fastestProcessor)
+			:_root(std::move(root)), _fastestProcessor(fastestProcessor), _totalPackages(0), _totalNumaNodes(0), _totalPhysicalCores(0), _totalLogicalCores(0)
 	{
 		_rootDataChanged = _root.DataChanged().Subscribe([this]()
 		{
 			SetSelectedLeafNodes();
 			OnDataChanged();
 		});
+		CountNode(_root);
 	}
 
 	TopologyNodeModel& TopologyModel::GetRoot()
@@ -116,6 +117,10 @@ namespace Elpida::Application
 		_selectedLeafNodes = std::move(other._selectedLeafNodes);
 		_leafNodes = std::move(other._leafNodes);
 		_fastestProcessor = other._fastestProcessor;
+		_totalPackages = other._totalPackages;
+		_totalNumaNodes = other._totalNumaNodes;
+		_totalPhysicalCores = other._totalPhysicalCores;
+		_totalLogicalCores = other._totalLogicalCores;
 		_rootDataChanged = _root.DataChanged().Subscribe([this]()
 		{
 			SetSelectedLeafNodes();
@@ -132,5 +137,56 @@ namespace Elpida::Application
 	unsigned int TopologyModel::GetFastestProcessor() const
 	{
 		return _fastestProcessor;
+	}
+
+	void TopologyModel::CountNode(const TopologyNodeModel& node)
+	{
+		switch (node.GetType())
+		{
+		case TopologyNodeType::ProcessingUnit:
+			_totalLogicalCores++;
+			break;
+		case TopologyNodeType::Core:
+			_totalPhysicalCores++;
+			break;
+		case TopologyNodeType::NumaDomain:
+			_totalNumaNodes++;
+			break;
+		case TopologyNodeType::Package:
+			_totalPackages++;
+			break;
+		default:
+			break;
+		}
+
+		for (auto& child : node.GetMemoryChildren())
+		{
+			CountNode(child);
+		}
+
+		for (auto& child : node.GetChildren())
+		{
+			CountNode(child);
+		}
+	}
+
+	size_t TopologyModel::GetTotalLogicalCores() const
+	{
+		return _totalLogicalCores;
+	}
+
+	size_t TopologyModel::GetTotalPhysicalCores() const
+	{
+		return _totalPhysicalCores;
+	}
+
+	size_t TopologyModel::GetTotalNumaNodes() const
+	{
+		return _totalNumaNodes;
+	}
+
+	size_t TopologyModel::GetTotalPackages() const
+	{
+		return _totalPackages;
 	}
 } // Application

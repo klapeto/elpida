@@ -13,6 +13,7 @@
 #include "Models/Benchmark/BenchmarkGroupModel.hpp"
 
 #include <vector>
+#include <tuple>
 
 namespace Elpida::Application
 {
@@ -25,6 +26,8 @@ namespace Elpida::Application
 		TopologyModel& GetTopologyInfoModel();
 		TimingModel& GetTimingModel();
 		CpuInfoModel& GetCpuInfoModel();
+
+		const std::vector<std::tuple<std::string, std::string>>& GetFailedToLoadBenchmarkGroups() const;
 		std::vector<BenchmarkGroupModel>& GetBenchmarkGroups();
 		explicit ModelBuilderJson(const std::string& jsonData);
 	private:
@@ -34,6 +37,7 @@ namespace Elpida::Application
 		TimingModel _timingModel;
 		CpuInfoModel _cpuInfoModel;
 		std::vector<BenchmarkGroupModel> _benchmarkGroups;
+		std::vector<std::tuple<std::string, std::string>> _failedToLoadBenchmarkGroups;
 	};
 
 } // Elpida

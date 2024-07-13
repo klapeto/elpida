@@ -43,7 +43,7 @@ namespace Elpida
 				 "Converts RGBA pixels to float channels (0.0 - 1.0)",
 				 "Pixels",
 				 "The amount of pixels processed per second.",
-				 ScoreType::Throughput
+				 ResultType::Throughput
 		};
 	}
 

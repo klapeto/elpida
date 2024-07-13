@@ -68,7 +68,7 @@ namespace Elpida
 		virtual ~Task() = default;
 	protected:
 		Optional<Ref<const EnvironmentInfo>> _environmentInfo;
-		bool _measured = true;
+		bool _measured = false;
 
 		[[nodiscard]]
 		virtual TaskInfo DoGetInfo() const = 0;

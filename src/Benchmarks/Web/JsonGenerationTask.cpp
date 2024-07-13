@@ -58,7 +58,7 @@ namespace Elpida
 				"Generates a json file in memory with the provided size",
 				"B",
 				"The rate of generation",
-				ScoreType::Throughput);
+				ResultType::Throughput);
 	}
 
 	UniquePtr<Task> JsonGenerationTask::DoDuplicate() const

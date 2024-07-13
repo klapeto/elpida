@@ -14,27 +14,23 @@ namespace Elpida
 	class BenchmarkResult final
 	{
 	 public:
-		[[nodiscard]]
-		double GetScore() const
-		{
-			return _score;
-		}
 
 		[[nodiscard]]
-		const Vector<TaskResult>& GetTaskResults() const
+		double GetResult() const
 		{
-			return _taskResults;
+			return _result;
 		}
 
-		BenchmarkResult(double score, Vector<TaskResult>&& taskResults)
-			: _taskResults(std::move(taskResults)), _score(score)
+		explicit BenchmarkResult(double result)
+				: _result(result)
 		{
 		}
 
+		BenchmarkResult(const BenchmarkResult&) = delete;
+		BenchmarkResult(BenchmarkResult&&) = default;
 		~BenchmarkResult() = default;
 	 private:
-		Vector<TaskResult> _taskResults;
-		double _score;
+		double _result;
 	};
 
 } // Elpida

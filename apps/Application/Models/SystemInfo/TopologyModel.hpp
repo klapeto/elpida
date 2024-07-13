@@ -24,6 +24,18 @@ namespace Elpida::Application
 		[[nodiscard]]
 		const TopologyNodeModel& GetRoot() const;
 
+		[[nodiscard]]
+		std::size_t GetTotalLogicalCores() const;
+
+		[[nodiscard]]
+		std::size_t GetTotalPhysicalCores() const;
+
+		[[nodiscard]]
+		std::size_t GetTotalNumaNodes() const;
+
+		[[nodiscard]]
+		std::size_t GetTotalPackages() const;
+
 		const std::vector<std::reference_wrapper<const TopologyNodeModel>>& GetSelectedLeafNodes() const;
 		const std::vector<std::reference_wrapper<const TopologyNodeModel>>& GetLeafNodes() const;
 
@@ -43,7 +55,13 @@ namespace Elpida::Application
 		mutable std::vector<std::reference_wrapper<const TopologyNodeModel>> _leafNodes;
 		EventSubscription<> _rootDataChanged;
 		unsigned int _fastestProcessor;
+		std::size_t _totalPackages;
+		std::size_t _totalNumaNodes;
+		std::size_t _totalPhysicalCores;
+		std::size_t _totalLogicalCores;
 		void SetSelectedLeafNodes();
+
+		void CountNode(const TopologyNodeModel& node);
 	};
 
 } // Application

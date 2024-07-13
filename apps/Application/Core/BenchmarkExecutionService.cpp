@@ -34,7 +34,7 @@ namespace Elpida::Application
 		std::unordered_map<std::string, std::string> configurationMap;
 		configuration.reserve(benchmarkModel.GetConfigurations().size());
 
-		for (auto& config: benchmarkModel.GetConfigurations())
+		for (auto& config : benchmarkModel.GetConfigurations())
 		{
 			configuration.emplace_back(config.GetValue());
 			configurationMap.insert(std::make_pair(config.GetName(), config.GetValue()));
@@ -51,7 +51,7 @@ namespace Elpida::Application
 		std::vector<std::string> arguments
 				{
 						std::string("--module=") + "\"" + benchmarkModel.GetFilePath() + "\"",
-						"--index=" + std::to_string(benchmarkModel.GetIndex()),
+						"--index=" + std::to_string(benchmarkModel.GetBenchmarkIndex()),
 						"--now-overhead=" + toString(nowOverheadSeconds),
 						"--loop-overhead=" + toString(loopOverheadSeconds),
 						"--virtual-overhead=" + toString(virtualCallSeconds),
@@ -62,7 +62,7 @@ namespace Elpida::Application
 		{
 			std::ostringstream affinityAccumulator;
 			affinityAccumulator << "--affinity=";
-			for (auto processor: affinity)
+			for (auto processor : affinity)
 			{
 				affinityAccumulator << processor << ',';
 			}
@@ -71,7 +71,7 @@ namespace Elpida::Application
 			arguments.push_back(affinityStr.substr(0, affinityStr.size() - 1));
 		}
 
-		for (auto& value: configuration)
+		for (auto& value : configuration)
 		{
 			arguments.push_back(std::string("--config=\"").append(value).append("\""));
 		}
@@ -86,7 +86,8 @@ namespace Elpida::Application
 			arguments.emplace_back("--pin-threads");
 		}
 
-		arguments.emplace_back(std::string("--concurrency-mode=").append(std::to_string(static_cast<std::size_t>(concurrencyMode))));
+		arguments.emplace_back(
+				std::string("--concurrency-mode=").append(std::to_string(static_cast<std::size_t>(concurrencyMode))));
 
 		_currentProcess = Process(OsUtilities::GetExecutableDirectory() / "elpida-executor", arguments, true, true);
 
@@ -109,22 +110,14 @@ namespace Elpida::Application
 
 		auto serializedResult = stdOutReader.GetString();
 
-		nlohmann::json json = nlohmann::json::parse(serializedResult);
+		auto json = nlohmann::json::parse(serializedResult);
 
-		auto score = json["score"].template get<double>();
-		auto taskResultsJ = json["taskResults"];
+		auto isThroughput = benchmarkModel.GetResultType() == ResultType::Throughput;
+		auto result = json["result"].template get<double>();
 
-		std::vector<TaskResultModel> taskResults;
-		taskResults.reserve(taskResultsJ.size());
+		std::string resultUnit = isThroughput ? benchmarkModel.GetResultUnit() + "/s" : benchmarkModel.GetResultUnit();
 
-		for (auto& taskJ: taskResultsJ)
-		{
-			taskResults.emplace_back(
-					Seconds(taskJ["duration"].template get<double>()),
-					taskJ["dataSize"].get<std::size_t>()
-			);
-		}
-		return BenchmarkResultModel(benchmarkModel, score, std::move(taskResults), std::move(configurationMap));
+		return BenchmarkResultModel(benchmarkModel,result,std::move(configurationMap));
 	}
 
 	void BenchmarkExecutionService::StopCurrentExecution()

@@ -20,11 +20,11 @@ namespace Elpida
 	TaskInfo MemoryReadBandwidthTask::DoGetInfo() const
 	{
 		return {
-			"Memory read bandwidth",
-			"Continuously reads a stream a memory to determine th maximum memory read bandwidth.",
-			"B",
-			"The memory bandwidth throughput",
-			ScoreType::Throughput
+				"Memory read bandwidth",
+				"Continuously reads a stream a memory to determine th maximum memory read bandwidth.",
+				"B",
+				"The memory bandwidth throughput",
+				ResultType::Throughput
 		};
 	}
 

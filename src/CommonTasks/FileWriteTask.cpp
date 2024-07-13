@@ -27,7 +27,7 @@ namespace Elpida
 				"Writes a file from the memory to filesystem.",
 				"B",
 				"The amount of bytes written per second",
-				ScoreType::Throughput
+				ResultType::Throughput
 		};
 	}
 

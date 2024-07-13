@@ -31,11 +31,12 @@ namespace Elpida::Application
 		std::string Serialize(const ListModel<BenchmarkResultModel>& benchmarkResultModels) const;
 
 		explicit ResultSerializer(const CpuInfoModel& cpuInfoModel,
-				const MemoryInfoModel& memoryInfoModel, const TopologyModel& topologyModel,
+				const MemoryInfoModel& memoryInfoModel,
+				const TopologyModel& topologyModel,
 				const OsInfoModel& osInfoModel,
 				const TimingModel& timingModel);
 	private:
-
+		const TopologyModel& _topologyModel;
 		nlohmann::json _systemInfo;
 	};
 

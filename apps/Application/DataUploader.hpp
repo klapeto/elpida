@@ -41,11 +41,9 @@ namespace Elpida::Application
 		const ResultSerializer& _resultSerializer;
 
 #ifdef ELPIDA_DEBUG_SERVER
-		const int apiPort = 5000;
-		static inline const char* apiUrl = "localhost";
+		static inline const char* apiUrl = "http://localhost:5000";
 #else
-		const int apiPort = 443;
-		static inline const char* apiUrl = ELPIDA_WEB_API_URL;
+		static inline const char* apiUrl = "https://" ELPIDA_WEB_API_URL;
 #endif
 		static inline const char* resultPath = "/api/v1/benchmarkresult";
 		static inline const char* contentType = "application/json";

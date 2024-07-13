@@ -21,38 +21,6 @@
 
 namespace Elpida
 {
-
-	BenchmarkInfo SvgRasterizationBenchmark::GetInfo() const
-	{
-		SvgDocumentGenerationTask generationTask(1);
-		ParseXmlTask parseXmlTask;
-		SvgParseTask svgParseTask;
-		SvgCalculateTask svgCalculateTask(1.0);
-		SvgRasterizationTask rasterization(16);
-#ifdef ENABLE_OUTPUT
-		ConvertToUInt8Task convert;
-		PngEncodingTask pngEncodingTask;
-		FileWriteTask fileWriteTask("");
-#endif
-		return BenchmarkInfo(
-				"Svg Rasterization",
-				"Rasterizes a calculated Svg document.",
-				"shapes",
-				"How many shapes per second are rasterized on average.",
-				{
-						generationTask.SetMeasured(false).GetInfo(),
-						parseXmlTask.SetMeasured(false).GetInfo(),
-						svgParseTask.SetMeasured(false).GetInfo(),
-						svgCalculateTask.SetMeasured(false).GetInfo(),
-						rasterization.GetInfo(),
-#ifdef ENABLE_OUTPUT
-						convert.SetMeasured(false).GetInfo(),
-						pngEncodingTask.SetMeasured(false).GetInfo(),
-						fileWriteTask.SetMeasured(false).GetInfo(),
-#endif
-				});
-	}
-
 	std::vector<TaskConfiguration> SvgRasterizationBenchmark::GetRequiredConfiguration() const
 	{
 		return {
@@ -71,22 +39,39 @@ namespace Elpida
 
 		auto& configuration = context.GetConfiguration();
 
-		returnTasks.push_back(CreateTask<SvgDocumentGenerationTask>(false, configuration.at(0).AsInteger()));
-		returnTasks.push_back(CreateTask<ParseXmlTask>(false));
-		returnTasks.push_back(CreateTask<SvgParseTask>(false));
-		returnTasks.push_back(CreateTask<SvgCalculateTask>(false, configuration.at(1).AsFloat()));
-		returnTasks.push_back(CreateTask<SvgRasterizationTask>(true, configuration.at(2).AsInteger()));
+		returnTasks.push_back(CreateTask<SvgDocumentGenerationTask>(configuration.at(0).AsInteger()));
+		returnTasks.push_back(CreateTask<ParseXmlTask>());
+		returnTasks.push_back(CreateTask<SvgParseTask>());
+		returnTasks.push_back(CreateTask<SvgCalculateTask>(configuration.at(1).AsFloat()));
+		returnTasks.push_back(CreateTask<SvgRasterizationTask>(configuration.at(2).AsInteger()));
 #ifdef ENABLE_OUTPUT
-		returnTasks.push_back(CreateTask<ConvertToUInt8Task>(false));
-		returnTasks.push_back(CreateTask<PngEncodingTask>(false));
-		returnTasks.push_back(CreateTask<FileWriteTask>(false, configuration.at(3).GetValue()));
+		returnTasks.push_back(CreateTask<ConvertToUInt8Task>());
+		returnTasks.push_back(CreateTask<PngEncodingTask>());
+		returnTasks.push_back(CreateTask<FileWriteTask>(configuration.at(3).GetValue()));
 #endif
 
 		return returnTasks;
 	}
 
-	double SvgRasterizationBenchmark::CalculateScore(const std::vector<TaskResult>& taskResults) const
+	void SvgRasterizationBenchmark::DoGetBenchmarkInfo(
+			String& name,
+			String& description,
+			size_t& taskToUseAsScoreIndex,
+			std::vector<TaskInfo>& taskInfos) const
 	{
-		return taskResults[0].GetDataSize() / taskResults[0].GetDuration().count();
+		name = "Svg Rasterization";
+		description = "Rasterizes a calculated Svg document.";
+		taskToUseAsScoreIndex = 4;
+
+		taskInfos.push_back(SvgDocumentGenerationTask(1).GetInfo());
+		taskInfos.push_back(ParseXmlTask().GetInfo());
+		taskInfos.push_back(SvgParseTask().GetInfo());
+		taskInfos.push_back(SvgCalculateTask(1.0).GetInfo());
+		taskInfos.push_back(SvgRasterizationTask(16).GetInfo());
+#ifdef ENABLE_OUTPUT
+		taskInfos.push_back(ConvertToUInt8Task().GetInfo());
+		taskInfos.push_back(PngEncodingTask().GetInfo());
+		taskInfos.push_back(FileWriteTask("").GetInfo());
+#endif
 	}
 } // Elpida

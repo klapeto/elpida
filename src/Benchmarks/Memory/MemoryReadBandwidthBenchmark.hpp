@@ -16,8 +16,6 @@ namespace Elpida
 	class MemoryReadBandwidthBenchmark : public Benchmark
 	{
 	 public:
-		[[nodiscard]]
-		BenchmarkInfo GetInfo() const override;
 		Vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
 		MemoryReadBandwidthBenchmark() = default;
@@ -25,7 +23,8 @@ namespace Elpida
 	 protected:
 		[[nodiscard]]
 		Vector<UniquePtr<Task>> GetTasks(BenchmarkRunContext& context) const override;
-		double CalculateScore(const Vector<TaskResult>& taskResults) const override;
+		void DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
+				std::vector<TaskInfo>& taskInfos) const override;
 	};
 
 } // Elpida

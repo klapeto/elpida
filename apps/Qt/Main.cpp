@@ -92,7 +92,7 @@ static void setupPlatformSpecifics()
 static void SaveSelectedNodes(SettingsService& settingsService, TopologyModel& topologyModel)
 {
 	std::string selectedNodesStr;
-	for (auto& node: topologyModel.GetSelectedLeafNodes())
+	for (auto& node : topologyModel.GetSelectedLeafNodes())
 	{
 		selectedNodesStr += std::to_string(node.get().GetOsIndex().value()) + ',';
 	}
@@ -136,7 +136,7 @@ static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& t
 
 static std::string GetInfoData(const std::string& benchmarksPath)
 {
-	Process process(OsUtilities::GetExecutableDirectory() / "elpida-info-dumper", { benchmarksPath}, true, true);
+	Process process(OsUtilities::GetExecutableDirectory() / "elpida-info-dumper", { benchmarksPath }, true, true);
 	AsyncPipeReader stdOut(process.GetStdOut());
 	AsyncPipeReader stdErr(process.GetStdErr());
 
@@ -165,11 +165,11 @@ static std::string GetInfoData(const std::string& benchmarksPath)
 
 static void UpdateBenchmarkSettings(std::vector<BenchmarkGroupModel>& groups, SettingsService& settingsService)
 {
-	for (auto& group: groups)
+	for (auto& group : groups)
 	{
-		for (auto& benchmark: group.GetBenchmarks())
+		for (auto& benchmark : group.GetBenchmarks())
 		{
-			for (auto& config: benchmark.GetConfigurations())
+			for (auto& config : benchmark.GetConfigurations())
 			{
 				auto value = settingsService.Get(config.GetId());
 				if (value.empty()) continue;
@@ -179,8 +179,8 @@ static void UpdateBenchmarkSettings(std::vector<BenchmarkGroupModel>& groups, Se
 	}
 }
 
-
-static ModelBuilderJson GetBasicInfo(const std::string& benchmarksPath){
+static ModelBuilderJson GetBasicInfo(const std::string& benchmarksPath)
+{
 
 	std::string data;
 	std::string error;
@@ -233,14 +233,16 @@ int main(int argc, char* argv[])
 		QApplication application(argc, argv);
 
 		auto screenSize = QGuiApplication::primaryScreen()->size();
-		auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(QSize(screenSize.width() / 2, screenSize.height() / 2));
+		auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(
+				QSize(screenSize.width() / 2, screenSize.height() / 2));
 		QSplashScreen splash(pixmap);
 
 		splash.show();
 		splash.showMessage("Getting system info (it should take about 5 seconds)...");
 		QApplication::processEvents();
 
-		ModelBuilderJson builderJson = GetBasicInfo(argc > 1 ? argv[1] : (OsUtilities::GetExecutableDirectory() / "Benchmarks").string());
+		ModelBuilderJson builderJson = GetBasicInfo(
+				argc > 1 ? argv[1] : (OsUtilities::GetExecutableDirectory() / "Benchmarks").string());
 
 		QtMessageService messageService;
 
@@ -254,7 +256,8 @@ int main(int argc, char* argv[])
 
 		BenchmarkExecutionService executionService;
 
-		ResultSerializer resultSerializer(builderJson.GetCpuInfoModel(), builderJson.GetMemoryInfoModel(), builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(), builderJson.GetTimingModel());
+		ResultSerializer resultSerializer(builderJson.GetCpuInfoModel(), builderJson.GetMemoryInfoModel(),
+				builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(), builderJson.GetTimingModel());
 
 		BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
 		BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel,
@@ -333,6 +336,14 @@ int main(int argc, char* argv[])
 		mainWindow.show();
 
 		splash.finish(&mainWindow);
+
+		if (!builderJson.GetFailedToLoadBenchmarkGroups().empty())
+		{
+			for (auto& [file,reason] : builderJson.GetFailedToLoadBenchmarkGroups())
+			{
+				QMessageBox::critical(&mainWindow, "Failed to load benchmark group", QString::fromStdString("File: " + file + "\nReason:" + reason));
+			}
+		}
 
 		ThreadQueue::Current().lock()->Run();
 

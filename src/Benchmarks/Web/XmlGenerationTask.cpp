@@ -43,7 +43,7 @@ namespace Elpida
 				"Generates a xml file in memory with the provided size",
 				"B",
 				"The rate of generation",
-				ScoreType::Throughput);
+				ResultType::Throughput);
 	}
 
 	void XmlGenerationTask::DoRun()

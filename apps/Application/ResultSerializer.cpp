@@ -5,6 +5,8 @@
 #include "ResultSerializer.hpp"
 #include "json.hpp"
 
+#include <Elpida/Core/Config.hpp>
+
 #include "Models/SystemInfo/CpuInfoModel.hpp"
 #include "Models/SystemInfo/MemoryInfoModel.hpp"
 #include "Models/SystemInfo/TopologyModel.hpp"
@@ -13,7 +15,6 @@
 #include "Models/SystemInfo/TimingModel.hpp"
 #include "Models/Benchmark/BenchmarkModel.hpp"
 #include "Models/Full/FullBenchmarkResultModel.hpp"
-
 
 using namespace nlohmann;
 using namespace Elpida;
@@ -63,6 +64,17 @@ namespace Elpida::Application
 		jTiming["vCallOverhead"] = timingInfo.GetVirtualCallOverhead().count();
 
 		return jTiming;
+	}
+
+	static json SerializeElpida()
+	{
+		json jElpida;
+
+		jElpida["version"] = ELPIDA_VERSION;
+		jElpida["compilerName"] = ELPIDA_COMPILER_NAME;
+		jElpida["compilerVersion"] = ELPIDA_COMPILER_VERSION;
+
+		return jElpida;
 	}
 
 	static json SerializeTopologyNode(const TopologyNodeModel& topologyNode)
@@ -116,22 +128,8 @@ namespace Elpida::Application
 	{
 		json outJson;
 
-		outJson["name"] = resultModel.GetBenchmark().GetName();
-		outJson["score"] = resultModel.GetScore();
-
-		json taskResultsJson = json::array();
-
-		for (auto& taskResult : resultModel.GetTaskResults())
-		{
-			json resultJson = json();
-
-			resultJson["duration"] = taskResult.GetDuration().count();
-			resultJson["inputSize"] = taskResult.GetInputSize();
-
-			taskResultsJson.push_back(std::move(resultJson));
-		}
-
-		outJson["taskResults"] = std::move(taskResultsJson);
+		outJson["uuid"] = resultModel.GetUuid();
+		outJson["result"] = resultModel.GetResult();
 
 		return outJson;
 	}
@@ -141,8 +139,8 @@ namespace Elpida::Application
 		json outJson;
 
 		outJson["totalScore"] = fullBenchmarkResultModel.GetTotalScore();
-		outJson["singleCoreScore"] = fullBenchmarkResultModel.GetSingleCoreScore();
-		outJson["multiCoreScore"] = fullBenchmarkResultModel.GetMultiCoreScore();
+		outJson["singleThreadScore"] = fullBenchmarkResultModel.GetSingleThreadScore();
+		outJson["multiThreadScore"] = fullBenchmarkResultModel.GetMultiThreadScore();
 		outJson["memoryScore"] = fullBenchmarkResultModel.GetMemoryScore();
 
 		json resultsJson = json::array();
@@ -151,14 +149,28 @@ namespace Elpida::Application
 			resultsJson.push_back(SerializeResult(result));
 		}
 
-		outJson["results"] = std::move(resultsJson);
+		outJson["benchmarkResults"] = std::move(resultsJson);
 		return outJson;
 	}
 
-	std::string ResultSerializer::Serialize(const std::vector<FullBenchmarkResultModel>& fullBenchmarkResultModels) const
+	static json SerializeAffinity(const TopologyModel& topologyModel)
+	{
+		json outJson = json::array();
+
+		for (auto& model : topologyModel.GetSelectedLeafNodes())
+		{
+			outJson.push_back(model.get().GetOsIndex().value());
+		}
+
+		return outJson;
+	}
+
+	std::string ResultSerializer::Serialize(
+			const std::vector<FullBenchmarkResultModel>& fullBenchmarkResultModels) const
 	{
 		json outJson = _systemInfo;
 		json resultsJson = json::array();
+
 		for (auto& result : fullBenchmarkResultModels)
 		{
 			resultsJson.push_back(SerializeFullBenchmarkResult(result));
@@ -166,19 +178,33 @@ namespace Elpida::Application
 
 		outJson["results"] = std::move(resultsJson);
 
-
 		return outJson.dump();
+	}
+
+	static json SerializeTopology(const TopologyModel& topologyModel)
+	{
+		json outJson;
+
+		outJson["root"] = SerializeTopologyNode(topologyModel.GetRoot());
+		outJson["totalPackages"] = topologyModel.GetTotalPackages();
+		outJson["totalNumaNodes"] = topologyModel.GetTotalNumaNodes();
+		outJson["totalPhysicalCores"] = topologyModel.GetTotalPhysicalCores();
+		outJson["totalLogicalCores"] = topologyModel.GetTotalLogicalCores();
+
+		return outJson;
 	}
 
 	ResultSerializer::ResultSerializer(const CpuInfoModel& cpuInfoModel,
 			const MemoryInfoModel& memoryInfoModel, const TopologyModel& topologyModel, const OsInfoModel& osInfoModel,
 			const TimingModel& timingModel)
+			:_topologyModel(topologyModel)
 	{
 		_systemInfo["cpu"] = SerializeCpuInfo(cpuInfoModel);
 		_systemInfo["memory"] = SerializeMemoryInfo(memoryInfoModel);
-		_systemInfo["topology"] = SerializeTopologyNode(topologyModel.GetRoot());
+		_systemInfo["topology"] = SerializeTopology(topologyModel);
 		_systemInfo["os"] = SerializeOsInfo(osInfoModel);
 		_systemInfo["timing"] = SerializeTimingInfo(timingModel);
+		_systemInfo["elpidaVersion"] = SerializeElpida();
 	}
 
 	std::string ResultSerializer::Serialize(const ListModel<BenchmarkResultModel>& benchmarkResultModels) const
@@ -186,6 +212,7 @@ namespace Elpida::Application
 		json outJson = _systemInfo;
 
 		json resultsJson = json::array();
+
 		for (auto& result : benchmarkResultModels.GetItems())
 		{
 			resultsJson.push_back(SerializeResult(result.GetValue()));

@@ -6,7 +6,7 @@
 #define ELPIDA_APPS_APPLICATION_MODELS_TASKMODEL_HPP
 
 #include "Models/Abstractions/Model.hpp"
-#include "Elpida/Core/ScoreType.hpp"
+#include "Elpida/Core/ResultType.hpp"
 
 namespace Elpida::Application
 {
@@ -25,9 +25,9 @@ namespace Elpida::Application
 			return _unit;
 		}
 
-		ScoreType GetScoreType() const
+		ResultType GetResultType() const
 		{
-			return _scoreType;
+			return _resultType;
 		}
 
 		bool IsMeasured() const
@@ -35,8 +35,8 @@ namespace Elpida::Application
 			return _isMeasured;
 		}
 
-		TaskModel(std::string name, std::string unit, ScoreType scoreType, bool isMeasured)
-				: _name(std::move(name)), _unit(std::move(unit)), _scoreType(scoreType), _isMeasured(isMeasured)
+		TaskModel(std::string name, std::string unit, ResultType resultType, bool isMeasured)
+				:_name(std::move(name)), _unit(std::move(unit)), _resultType(resultType), _isMeasured(isMeasured)
 		{
 
 		}
@@ -49,7 +49,7 @@ namespace Elpida::Application
 	private:
 		std::string _name;
 		std::string _unit;
-		ScoreType _scoreType;
+		ResultType _resultType;
 		bool _isMeasured;
 	};
 

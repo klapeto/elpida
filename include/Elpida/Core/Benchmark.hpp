@@ -22,7 +22,7 @@ namespace Elpida {
 	class Benchmark {
 	public:
 		[[nodiscard]]
-		virtual BenchmarkInfo GetInfo() const = 0;
+		BenchmarkInfo GetInfo() const;
 
 		[[nodiscard]]
 		BenchmarkResult Run(BenchmarkRunContext& context) const;
@@ -40,9 +40,9 @@ namespace Elpida {
 
 		[[nodiscard]]
 		virtual Vector<UniquePtr<Task>> GetTasks(BenchmarkRunContext& context) const = 0;
-
-		[[nodiscard]]
-		virtual double CalculateScore(const Vector<TaskResult>& taskResults) const = 0;
+		virtual void DoGetResultInfo(std::size_t coreTaskIndex, const std::vector<TaskInfo>& taskInfos, String& unit, ResultType& type) const;
+		virtual void DoGetBenchmarkInfo(String& name, String& description, std::size_t& coreTaskIndex, std::vector<TaskInfo>& taskInfos) const = 0;
+		virtual double CalculateResult(const std::vector<TaskInfo>& taskInfos, const std::vector<TaskResult>& taskResults, std::size_t coreTaskIndex) const;
 	 private:
 		static Duration ExecuteSingleThread(SharedPtr<AbstractTaskData>& data,
 				UniquePtr<Task> task,
@@ -71,18 +71,16 @@ namespace Elpida {
 
 	protected:
 		template<typename T>
-		static UniquePtr<T> CreateTask(bool measured = true)
+		static UniquePtr<T> CreateTask()
 		{
 			auto task = std::make_unique<T>();
-			task->SetMeasured(measured);
 			return std::move(task);
 		}
 
 		template<typename T, typename ... TArgs>
-		static UniquePtr<T> CreateTask(bool measured, TArgs&& ... args)
+		static UniquePtr<T> CreateTask(TArgs&& ... args)
 		{
 			auto task = std::make_unique<T>(std::forward<TArgs>(args)...);
-			task->SetMeasured(measured);
 			return std::move(task);
 		}
 	};

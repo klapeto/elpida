@@ -45,11 +45,11 @@ namespace Elpida
 	TaskInfo PngEncodingTask::DoGetInfo() const
 	{
 		return {
-			"Png encoding",
-			"Encodes data to png format.",
-			"Pixels",
-			"The amount of pixels encoded.",
-			ScoreType::Throughput
+				"Png encoding",
+				"Encodes data to png format.",
+				"Pixels",
+				"The amount of pixels encoded.",
+				ResultType::Throughput
 		};
 	}
 

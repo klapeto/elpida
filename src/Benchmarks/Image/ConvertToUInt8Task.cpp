@@ -44,11 +44,11 @@ namespace Elpida
 	TaskInfo ConvertToUInt8Task::DoGetInfo() const
 	{
 		return {
-			"Convert to UInt8",
-			"Converts RGBA float pixels to uint8 channels (0 - 255)",
-			"Pixels",
-			"The amount of pixels processed per second.",
-			ScoreType::Throughput
+				"Convert to UInt8",
+				"Converts RGBA float pixels to uint8 channels (0 - 255)",
+				"Pixels",
+				"The amount of pixels processed per second.",
+				ResultType::Throughput
 		};
 	}
 

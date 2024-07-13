@@ -16,9 +16,6 @@ namespace Elpida
 	class MemoryLatencyBenchmark : public Benchmark
 	{
 	 public:
-		[[nodiscard]]
-		BenchmarkInfo GetInfo() const override;
-
 		MemoryLatencyBenchmark() = default;
 		Vector<TaskConfiguration> GetRequiredConfiguration() const override;
 		~MemoryLatencyBenchmark() override = default;
@@ -26,8 +23,8 @@ namespace Elpida
 		[[nodiscard]]
 		Vector<UniquePtr<Task>> GetTasks(BenchmarkRunContext& context) const override;
 
-		[[nodiscard]]
-		double CalculateScore(const Vector<TaskResult>& taskResults) const override;
+		void DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
+				std::vector<TaskInfo>& taskInfos) const override;
 	};
 
 } // Elpida

@@ -40,11 +40,11 @@ namespace Elpida
 	TaskInfo FileReadTask::DoGetInfo() const
 	{
 		return {
-			"File read",
-			"Reads a file from the filesystem to memory.",
-			"B",
-			"The amount of bytes read per second",
-			ScoreType::Throughput
+				"File read",
+				"Reads a file from the filesystem to memory.",
+				"B",
+				"The amount of bytes read per second",
+				ResultType::Throughput
 		};
 	}
 

@@ -15,7 +15,7 @@ namespace Elpida
 				 "Parses an XML document and measures the parsing throughput",
 				 "chars",
 				 "How many characters are processes in the time",
-				 ScoreType::Throughput};
+				 ResultType::Throughput};
 	}
 
 	UniquePtr<Task> ParseXmlTask::DoDuplicate() const

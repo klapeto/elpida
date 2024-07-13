@@ -11,30 +11,11 @@
 
 namespace Elpida
 {
-	BenchmarkInfo SvgParseBenchmark::GetInfo() const
-	{
-		FileReadTask read("");
-		ParseXmlTask parseXmlTask;
-		SvgParseTask svgParseTask;
-		SvgCalculateTask svgCalculateTask(1.0);
-		return BenchmarkInfo(
-				"Svg Parsing",
-				"Parses an xml parsed document to SVG Dom tree.",
-				"SvgMarks",
-				"The",
-				{
-						read.SetMeasured(false).GetInfo(),
-						parseXmlTask.SetMeasured(false).GetInfo(),
-						svgParseTask.GetInfo(),
-						svgCalculateTask.GetInfo(),
-				});
-	}
 
 	std::vector<TaskConfiguration> SvgParseBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-				TaskConfiguration("Input SVG file", ConfigurationType::File, "./test-data.svg"),
-				TaskConfiguration("SVG output scale", ConfigurationType::Float, "1.0")
+				TaskConfiguration("Input SVG file", ConfigurationType::File, "./test-data.svg")
 		};
 	}
 
@@ -45,18 +26,22 @@ namespace Elpida
 
 		auto& configuration = context.GetConfiguration();
 
-		returnTasks.push_back(CreateTask<FileReadTask>(false, configuration.at(0).GetValue()));
-		returnTasks.push_back(CreateTask<ParseXmlTask>(false));
+		returnTasks.push_back(CreateTask<FileReadTask>(configuration.at(0).GetValue()));
+		returnTasks.push_back(CreateTask<ParseXmlTask>());
 		returnTasks.push_back(CreateTask<SvgParseTask>());
-		returnTasks.push_back(CreateTask<SvgCalculateTask>(true, configuration.at(1).AsFloat()));
 
 		return returnTasks;
 	}
 
-	double SvgParseBenchmark::CalculateScore(const std::vector<TaskResult>& taskResults) const
+	void SvgParseBenchmark::DoGetBenchmarkInfo(String& name, String& description, size_t& coreTaskIndex,
+			std::vector<TaskInfo>& taskInfos) const
 	{
-		auto a = taskResults[0].GetDataSize() / taskResults[0].GetDuration().count();
-		auto b = taskResults[1].GetDataSize() / taskResults[1].GetDuration().count();
-		return (a + b);
+		name = "Svg Parsing";
+		description = "Parses an xml parsed document to SVG Dom tree.";
+		coreTaskIndex = 2;
+
+		taskInfos.push_back(FileReadTask("").GetInfo());
+		taskInfos.push_back(ParseXmlTask().GetInfo());
+		taskInfos.push_back(SvgParseTask().GetInfo());
 	}
 } // Elpida

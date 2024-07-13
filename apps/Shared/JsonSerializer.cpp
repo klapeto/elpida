@@ -135,9 +135,9 @@ namespace Elpida
 
 		jTask["name"] = taskInfo.GetName();
 		jTask["description"] = taskInfo.GetDescription();
-		jTask["scoreUnit"] = taskInfo.GetScoreUnit();
-		jTask["scoreDescription"] = taskInfo.GetScoreDescription();
-		jTask["scoreType"] = taskInfo.GetScoreType();
+		jTask["resultUnit"] = taskInfo.GetResultUnit();
+		jTask["resultDescription"] = taskInfo.GetResultDescription();
+		jTask["resultType"] = taskInfo.GetResultType();
 		jTask["isMeasured"] = taskInfo.IsMeasured();
 
 		return jTask;
@@ -149,18 +149,19 @@ namespace Elpida
 		auto info = benchmark.GetInfo();
 
 		//jBenchmark["index"] = index;
+		//jBenchmark["uuid"] = info.GetUuid();
 		jBenchmark["name"] = info.GetName();
 		jBenchmark["description"] = info.GetDescription();
-		jBenchmark["scoreUnit"] = info.GetScoreUnit();
-		jBenchmark["scoreDescription"] = info.GetScoreDescription();
+		jBenchmark["resultUnit"] = info.GetResultUnit();
+		jBenchmark["resultType"] = info.GetResultType();
 
-		json taskArray = json::array();
-		for (auto& task: info.GetTaskInfos())
-		{
-			taskArray.push_back(Serialize(task));
-		}
-
-		jBenchmark["tasks"] = std::move(taskArray);
+//		json taskArray = json::array();
+//		for (auto& task: info.GetTaskInfos())
+//		{
+//			taskArray.push_back(Serialize(task));
+//		}
+//
+//		jBenchmark["tasks"] = std::move(taskArray);
 
 
 		json jRequiredConfiguration = json::array();
@@ -215,25 +216,30 @@ namespace Elpida
 
 	nlohmann::json JsonSerializer::Serialize(const BenchmarkResult& result)
 	{
+
 		json rootJ;
 
-		rootJ["score"] = result.GetScore();
-
-		auto arrayJ = json::array();
-
-		auto& taskResults = result.GetTaskResults();
-		for (const auto& taskResult : taskResults)
-		{
-			json resultJ;
-
-			resultJ["duration"] = std::chrono::duration_cast<Seconds>(
-					taskResult.GetDuration()).count();
-			resultJ["dataSize"] = taskResult.GetDataSize();
-
-			arrayJ.push_back(std::move(resultJ));
-		}
-		rootJ["taskResults"] = std::move(arrayJ);
+		rootJ["result"] = result.GetResult();
 
 		return rootJ;
+		//json rootJ;
+
+//		auto arrayJ = json::array();
+//
+//		auto& taskResults = result.GetTaskResults();
+//		for (const auto& taskResult : taskResults)
+//		{
+//			json resultJ;
+//
+//			resultJ["duration"] = std::chrono::duration_cast<Seconds>(
+//					taskResult.GetDuration()).count();
+//			resultJ["dataSize"] = taskResult.GetDataSize();
+//
+//			arrayJ.push_back(std::move(resultJ));
+//		}
+		//rootJ["taskResults"] = std::move(arrayJ);
+
+		//return rootJ;
+		//return arrayJ;
 	}
 } // Elpida

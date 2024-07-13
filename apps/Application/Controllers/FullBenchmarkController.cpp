@@ -126,7 +126,7 @@ namespace Elpida::Application
 						_model.SetCurrentRunningBenchmark(benchmark->GetName());
 
 						auto result = benchmark->Run();
-
+						result.GetBenchmarkResult().SetUuid(benchmark->GetUuid());
 						singleCoreScore += result.GetSingleCoreScore();
 						multiCoreScore += result.GetMultiThreadScore();
 						memoryScore += result.GetMemoryScore();

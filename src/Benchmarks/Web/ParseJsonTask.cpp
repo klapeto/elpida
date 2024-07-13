@@ -23,7 +23,7 @@ namespace Elpida
 				 "Parses an JSON document and measures the parsing throughput",
 				 "chars",
 				 "How many characters are processes in the time",
-				 ScoreType::Throughput
+				 ResultType::Throughput
 		};
 	}
 

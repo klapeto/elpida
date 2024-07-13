@@ -166,7 +166,7 @@ namespace Elpida::Application
 					_model.SetCurrentRunningBenchmark(name.append(" ").append(ValueUtilities::ToIEC(size).append("B")));
 					auto result = RunBenchmark(benchmark, size);
 
-					_model.Add(MemoryBenchmarkResultModel(size, result.GetScore()));
+					_model.Add(MemoryBenchmarkResultModel(size, result.GetResult()));
 				}
 			}
 			catch (const ElpidaException& ex)

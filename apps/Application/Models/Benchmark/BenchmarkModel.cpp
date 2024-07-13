@@ -8,14 +8,21 @@
 
 namespace Elpida::Application
 {
-	BenchmarkModel::BenchmarkModel(std::string name,
-		std::string filePath,
-		std::size_t index,
-		std::string scoreUnit,
-		std::vector<TaskModel>&& tasks,
-		std::vector<BenchmarkConfigurationModel>&& configurations)
-		: _name(std::move(name)), _filePath(std::move(filePath)), _scoreUnit(std::move(scoreUnit)), _tasks(std::move(tasks)),
-		  _configurations(std::move(configurations)), _index(index)
+	BenchmarkModel::BenchmarkModel(
+			std::string name,
+			std::string description,
+			std::string resultUnit,
+			ResultType resultType,
+			std::string filePath,
+			std::size_t benchmarkIndex,
+			std::vector<BenchmarkConfigurationModel>&& configurations)
+			: _name(std::move(name)),
+			_description(std::move(description)),
+			_filePath(std::move(filePath)),
+			_resultUnit(std::move(resultUnit)),
+			_configurations(std::move(configurations)),
+			_benchmarkIndex(benchmarkIndex),
+			_resultType(resultType)
 	{
 	}
 
@@ -34,18 +41,23 @@ namespace Elpida::Application
 		return _filePath;
 	}
 
-	std::size_t BenchmarkModel::GetIndex() const
+	std::size_t BenchmarkModel::GetBenchmarkIndex() const
 	{
-		return _index;
+		return _benchmarkIndex;
 	}
 
-	const std::vector<TaskModel>& BenchmarkModel::GetTasks() const
+	const std::string& BenchmarkModel::GetDescription() const
 	{
-		return _tasks;
+		return _description;
 	}
 
-	const std::string& BenchmarkModel::GetScoreUnit() const
+	const std::string& BenchmarkModel::GetResultUnit() const
 	{
-		return _scoreUnit;
+		return _resultUnit;
+	}
+
+	ResultType BenchmarkModel::GetResultType() const
+	{
+		return _resultType;
 	}
 } // Application

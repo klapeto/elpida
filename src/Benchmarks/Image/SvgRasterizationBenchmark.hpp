@@ -14,9 +14,6 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		BenchmarkInfo GetInfo() const override;
-
-		[[nodiscard]]
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
 		SvgRasterizationBenchmark() = default;
@@ -26,8 +23,8 @@ namespace Elpida
 		[[nodiscard]]
 		std::vector<std::unique_ptr<Task>> GetTasks(BenchmarkRunContext& context) const override;
 
-		[[nodiscard]]
-		double CalculateScore(const std::vector<TaskResult>& taskResults) const override;
+		void DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
+				std::vector<TaskInfo>& taskInfos) const override;
 	};
 
 } // Elpida

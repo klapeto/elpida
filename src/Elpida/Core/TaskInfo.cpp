@@ -12,13 +12,13 @@ namespace Elpida
 			String description,
 			String scoreUnit,
 			String scoreDescription,
-			ScoreType scoreType) : _name(std::move(name)),
-							   _description(std::move(description)),
-							   _scoreUnit(std::move(scoreUnit)),
-							   _scoreDescription(
+			ResultType resultType) :_name(std::move(name)),
+									_description(std::move(description)),
+									_resultUnit(std::move(scoreUnit)),
+									_resultDescription(
 									   std::move(scoreDescription)),
-							   _scoreType(scoreType),
-							   _isMeasured(false)
+									_resultType(resultType),
+									_isMeasured(false)
 	{
 	}
 
@@ -26,14 +26,14 @@ namespace Elpida
 			String description,
 			String scoreUnit,
 			String scoreDescription,
-			ScoreType scoreType,
-			bool isMeasured) : _name(std::move(name)),
-							   _description(std::move(description)),
-							   _scoreUnit(std::move(scoreUnit)),
-							   _scoreDescription(
+			ResultType scoreType,
+			bool isMeasured) :_name(std::move(name)),
+							  _description(std::move(description)),
+							  _resultUnit(std::move(scoreUnit)),
+							  _resultDescription(
 									   std::move(scoreDescription)),
-							   _scoreType(scoreType),
-							   _isMeasured(isMeasured)
+							  _resultType(scoreType),
+							  _isMeasured(isMeasured)
 	{
 	}
 } // Elpida

@@ -62,7 +62,7 @@ namespace Elpida
 				 "Calculates lengths and transformations and scales the values to the desired scale",
 				 "Elements",
 				 "How many elements are processes in the time",
-				 ScoreType::Throughput
+				 ResultType::Throughput
 		};
 	}
 

@@ -30,29 +30,9 @@ namespace Elpida
 		}
 
 		Vector<UniquePtr<Task>> tasks;
-		tasks.push_back(CreateTask<AllocateMemoryTask>(false, context.GetConfiguration().at(0).AsInteger()));
-		tasks.push_back(CreateTask<MemoryLatencyTask>(true, cacheLineSize, pageSize));
+		tasks.push_back(CreateTask<AllocateMemoryTask>(context.GetConfiguration().at(0).AsInteger()));
+		tasks.push_back(CreateTask<MemoryLatencyTask>(cacheLineSize, pageSize));
 		return tasks;
-	}
-
-	double MemoryLatencyBenchmark::CalculateScore(const Vector<TaskResult>& taskResults) const
-	{
-		return taskResults.front().GetDuration().count();
-	}
-
-	BenchmarkInfo MemoryLatencyBenchmark::GetInfo() const
-	{
-		AllocateMemoryTask allocateMemoryTask(1);
-		MemoryLatencyTask task(0, 0);
-		return BenchmarkInfo(
-			"Memory latency",
-			"Calculates the average memory access latency by randomly reading memory regions.",
-			"s",
-			"The average access time.",
-			{
-				allocateMemoryTask.SetMeasured(false).GetInfo(),
-				task.GetInfo()
-			});
 	}
 
 	Vector<TaskConfiguration> MemoryLatencyBenchmark::GetRequiredConfiguration() const
@@ -60,5 +40,18 @@ namespace Elpida
 		return {
 				TaskConfiguration("Memory size", ConfigurationType::Integer, "64"),
 		};
+	}
+
+	void MemoryLatencyBenchmark::DoGetBenchmarkInfo(
+			String& name, String& description,
+			size_t& taskToUseAsScoreIndex,
+			std::vector<TaskInfo>& taskInfos) const
+	{
+		name = "Memory latency";
+		description = "Calculates the average memory access latency by randomly reading memory regions.";
+		taskToUseAsScoreIndex = 1;
+
+		taskInfos.push_back(AllocateMemoryTask(1).GetInfo());
+		taskInfos.push_back(MemoryLatencyTask(0,0).GetInfo());
 	}
 } // Elpida

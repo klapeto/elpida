@@ -84,7 +84,7 @@ namespace Elpida
 				 "Rasterizes a calculated Svg document",
 				 "shapes",
 				 "How many shapes per second are calculated on average",
-				 ScoreType::Throughput
+				 ResultType::Throughput
 		};
 	}
 

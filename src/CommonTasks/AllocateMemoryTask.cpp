@@ -49,7 +49,7 @@ namespace Elpida
 				"Allocates a chunk of memory to be used by other tasks.",
 				"B",
 				"The amount of bytes allocated per second",
-				ScoreType::Throughput
+				ResultType::Throughput
 		};
 	}
 } // Elpida

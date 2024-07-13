@@ -10,24 +10,21 @@
 namespace Elpida
 {
 
-	class PngEncodingDecodingBenchmark : public Benchmark
+	class PngEncodingBenchmark : public Benchmark
 	{
 	 public:
 		[[nodiscard]]
-		BenchmarkInfo GetInfo() const override;
-
-		[[nodiscard]]
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
-		PngEncodingDecodingBenchmark() = default;
-		~PngEncodingDecodingBenchmark() override = default;
+		PngEncodingBenchmark() = default;
+		~PngEncodingBenchmark() override = default;
 	 protected:
 
 		[[nodiscard]]
 		std::vector<std::unique_ptr<Task>> GetTasks(BenchmarkRunContext& context) const override;
 
-		[[nodiscard]]
-		double CalculateScore(const std::vector<TaskResult>& taskResults) const override;
+		void DoGetBenchmarkInfo(String& name, String& description, size_t& coreTaskIndex,
+				std::vector<TaskInfo>& taskInfos) const override;
 	};
 
 } // Elpida

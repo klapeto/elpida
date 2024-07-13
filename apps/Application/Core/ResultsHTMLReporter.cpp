@@ -11,6 +11,7 @@
 #include "BenchmarkStatisticsService.hpp"
 #include "PathsService.hpp"
 #include "Models/Benchmark/BenchmarkModel.hpp"
+#include "Models/Benchmark/TaskModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 #include "Models/Full/FullBenchmarkResultModel.hpp"
 
@@ -108,12 +109,14 @@ namespace Elpida::Application
 		return stream.str();
 	}
 
-	static std::string GetScoreDelta(double value, double base)
+	static std::string GetScoreDelta(double value, double base, bool lessIsBetter)
 	{
 		std::ostringstream stream;
 
+		auto isBetter = [&](){ return lessIsBetter ? value > base : value < base;};
+
 		stream << " <span";
-		if (value < base)
+		if (isBetter())
 		{
 			stream << " class='negative'>(-";
 			stream << ValueUtilities::ToFixed(100 - ((value / base) * 100.0), 2);
@@ -130,8 +133,12 @@ namespace Elpida::Application
 	static std::string GenerateStatistics(const std::vector<BenchmarkResultModel>& results,
 			const BenchmarkStatisticsService& statisticsService)
 	{
-		auto statistics = statisticsService.CalculateStatistics(results, [](auto& r){return r.GetScore();});
-		auto& scoreUnit = results.front().GetBenchmark().GetScoreUnit();
+		auto statistics = statisticsService.CalculateStatistics(results, [](auto& r){return r.GetResult();});
+
+		auto& scoreUnit = results.front().GetBenchmark().GetResultUnit();
+
+		auto lessIsBetter = results.front().GetBenchmark().GetResultType() != ResultType::Throughput;
+
 		std::ostringstream stream;
 
 		stream << "<table><tbody>";
@@ -140,9 +147,9 @@ namespace Elpida::Application
 			   << "</td></tr>";
 		stream << "<tr><td>Mean</td><td>" << GetScoreValue(statistics.mean, scoreUnit) << "</td></tr>";
 		stream << "<tr><td>Max</td><td>" << GetScoreValue(statistics.max, scoreUnit)
-			   << GetScoreDelta(statistics.max, statistics.mean) << "</td></tr>";
+			   << GetScoreDelta(statistics.max, statistics.mean, lessIsBetter) << "</td></tr>";
 		stream << "<tr><td>Min</td><td>" << GetScoreValue(statistics.min, scoreUnit)
-			   << GetScoreDelta(statistics.min, statistics.mean) << "</td></tr>";
+			   << GetScoreDelta(statistics.min, statistics.mean, lessIsBetter) << "</td></tr>";
 		stream << "<tr><td>Std Dev</td><td>" << GetScoreValue(statistics.standardDeviation, scoreUnit)
 			   << GetNormalDelta(statistics.standardDeviation, statistics.mean) << "</td></tr>";
 		stream << "<tr><td>Margin of error</td><td>" << GetScoreValue(statistics.marginOfError, scoreUnit)
@@ -187,16 +194,16 @@ namespace Elpida::Application
 			auto& result = results[i];
 			stream << "<tr>"
 				   << "<td>" << i + 1 << "</td>" << "<td>"
-				   << GetScoreValue(result.GetScore(), result.GetBenchmark().GetScoreUnit()) << "</td>";
+				   << GetScoreValue(result.GetResult(), result.GetBenchmark().GetResultUnit()) << "</td>";
 			stream << "<td>";
 
 			if (previousScore > -1.0)
 			{
-				stream << GetScoreDelta(result.GetScore(), previousScore);
+				stream << GetScoreDelta(result.GetResult(), previousScore, result.GetBenchmark().GetResultType() != ResultType::Throughput);
 			}
 
 			stream << "</td></tr>";
-			previousScore = result.GetScore();
+			previousScore = result.GetResult();
 		}
 
 		stream << "</table>";
@@ -216,9 +223,9 @@ namespace Elpida::Application
 			   << "</td></tr>";
 		stream << "<tr><td>Mean</td><td>" << GetScoreValue(statistics.mean, "") << "</td></tr>";
 		stream << "<tr><td>Max</td><td>" << GetScoreValue(statistics.max, "")
-			   << GetScoreDelta(statistics.max, statistics.mean) << "</td></tr>";
+			   << GetScoreDelta(statistics.max, statistics.mean, false) << "</td></tr>";
 		stream << "<tr><td>Min</td><td>" << GetScoreValue(statistics.min, "")
-			   << GetScoreDelta(statistics.min, statistics.mean) << "</td></tr>";
+			   << GetScoreDelta(statistics.min, statistics.mean, false) << "</td></tr>";
 		stream << "<tr><td>Std Dev</td><td>" << GetScoreValue(statistics.standardDeviation, "")
 			   << GetNormalDelta(statistics.standardDeviation, statistics.mean) << "</td></tr>";
 		stream << "<tr><td>Margin of error</td><td>" << GetScoreValue(statistics.marginOfError, "")
@@ -233,8 +240,8 @@ namespace Elpida::Application
 	{
 		std::ostringstream stream;
 
-		stream << GenerateFullStatistic(results, "Single core", statisticsService, [](auto& r){return r.GetSingleCoreScore();});
-		stream << GenerateFullStatistic(results, "Multi core", statisticsService, [](auto& r){return r.GetMultiCoreScore();});
+		stream << GenerateFullStatistic(results, "Single core", statisticsService, [](auto& r){return r.GetSingleThreadScore();});
+		stream << GenerateFullStatistic(results, "Multi core", statisticsService, [](auto& r){return r.GetMultiThreadScore();});
 		stream << GenerateFullStatistic(results, "Memory", statisticsService, [](auto& r){return r.GetMemoryScore();});
 
 		return stream.str();
@@ -257,27 +264,27 @@ namespace Elpida::Application
 
 			if (previousSingleScore > -1.0)
 			{
-
-
 				stream << "<tr>"
 					   << "<td>" << i + 1 << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetSingleCoreScore(), "") << GetScoreDelta(result.GetSingleCoreScore(), previousSingleScore) << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetMultiCoreScore(), "")<< GetScoreDelta(result.GetMultiCoreScore(), previousMultiScore) << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetMemoryScore(), "")<< GetScoreDelta(result.GetMemoryScore(), previousMemoryScore) << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetTotalScore(), "")<< GetScoreDelta(result.GetTotalScore(), previousTotalScore) << "</td></tr>";
+					   << "<td>" << GetScoreValue(result.GetSingleThreadScore(), "") << GetScoreDelta(
+						result.GetSingleThreadScore(), previousSingleScore, false) << "</td>"
+					   << "<td>" << GetScoreValue(result.GetMultiThreadScore(), "") << GetScoreDelta(
+						result.GetMultiThreadScore(), previousMultiScore, false) << "</td>"
+					   << "<td>"<< GetScoreValue(result.GetMemoryScore(), "")<< GetScoreDelta(result.GetMemoryScore(), previousMemoryScore, false) << "</td>"
+					   << "<td>"<< GetScoreValue(result.GetTotalScore(), "")<< GetScoreDelta(result.GetTotalScore(), previousTotalScore, false) << "</td></tr>";
 			}
 			else
 			{
 				stream << "<tr>"
 					   << "<td>" << i + 1 << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetSingleCoreScore(), "") << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetMultiCoreScore(), "") << "</td>"
+					   << "<td>" << GetScoreValue(result.GetSingleThreadScore(), "") << "</td>"
+					   << "<td>" << GetScoreValue(result.GetMultiThreadScore(), "") << "</td>"
 					   << "<td>"<< GetScoreValue(result.GetMemoryScore(), "") << "</td>"
 					   << "<td>"<< GetScoreValue(result.GetTotalScore(), "") << "</td></tr>";
 			}
 
-			previousSingleScore = result.GetSingleCoreScore();
-			previousMultiScore = result.GetMultiCoreScore();
+			previousSingleScore = result.GetSingleThreadScore();
+			previousMultiScore = result.GetMultiThreadScore();
 			previousMemoryScore = result.GetMemoryScore();
 			previousTotalScore = result.GetTotalScore();
 		}

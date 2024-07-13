@@ -4,6 +4,8 @@
 
 #include "Elpida/Core/Benchmark.hpp"
 
+#include <utility>
+
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/RawTaskData.hpp"
 #include "Elpida/Core/TaskResult.hpp"
@@ -12,9 +14,6 @@
 #include "Elpida/Core/TaskConfiguration.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
-
-
-#include <fstream>
 
 namespace Elpida
 {
@@ -25,36 +24,40 @@ namespace Elpida
 
 		Vector<TaskResult> taskResults;
 
+		auto info = GetInfo();
+
 		auto allocators = context.GetAllocatorFactory()->Create({ context.GetTargetProcessors() });
 		SharedPtr<AbstractTaskData> data = std::make_shared<RawTaskData>(allocators.front());
-		for (auto& task : tasks)
+		std::size_t coreTaskIndex = 0;
+		for (std::size_t i = 0; i < tasks.size(); ++i)
 		{
+			auto& task = tasks[i];
 			task->SetEnvironmentInfo(context.GetEnvironmentInfo());
 			Duration duration;
 			Size processedDataSize = 0;
-			bool shouldBeMeasured = task->ShouldBeMeasured();
+			bool shouldBeMeasured = info.GetTaskInfos()[i].IsMeasured();
+			task->SetMeasured(shouldBeMeasured);
 			if (task->GetAllowedConcurrency() != ConcurrencyMode::None &&
 				context.GetConcurrencyMode() != ConcurrencyMode::None)
 			{
 				duration = ExecuteMultiThread(context.GetConcurrencyMode(), data, std::move(task), allocators,
-						context.GetTargetProcessors(), context.GetEnvironmentInfo().GetTopologyInfo(), processedDataSize, context.IsPinThreads());
+						context.GetTargetProcessors(), context.GetEnvironmentInfo().GetTopologyInfo(),
+						processedDataSize, context.IsPinThreads());
 			}
 			else
 			{
 				duration = ExecuteSingleThread(data, std::move(task), processedDataSize);
 			}
 
+			taskResults.emplace_back(duration, processedDataSize);
+
 			if (shouldBeMeasured)
 			{
-				taskResults.emplace_back(duration, processedDataSize);
+				coreTaskIndex = i;
 			}
 		}
 
-		auto score = CalculateScore(taskResults);
-		return {
-				score,
-				std::move(taskResults)
-		};
+		return BenchmarkResult(CalculateResult(info.GetTaskInfos(), taskResults, coreTaskIndex));
 	}
 
 	Duration
@@ -120,7 +123,8 @@ namespace Elpida
 			throw ElpidaException("Invalid operation: cannot call ExecuteMultiThread with ConcurrencyMode::None");
 		}
 
-		return ExecuteConcurrent(concurrencyMode, std::move(task), data, std::move(inputData), targetProcessors, topologyInfo,
+		return ExecuteConcurrent(concurrencyMode, std::move(task), data, std::move(inputData), targetProcessors,
+				topologyInfo,
 				processedDataSize, pinThreads);
 	}
 
@@ -183,7 +187,8 @@ namespace Elpida
 		for (std::size_t i = 0; i < inputData.size(); ++i)
 		{
 			auto threadTask = std::make_unique<ThreadTask>(task->Duplicate(),
-					pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessors[i]) : std::nullopt, topologyInfo);
+					pinThreads ? Optional<Ref<const ProcessingUnitNode>>(targetProcessors[i]) : std::nullopt,
+					topologyInfo);
 
 			auto allocator = inputData[i]->GetAllocator();
 			threadTask->Prepare(std::move(inputData[i]));
@@ -229,5 +234,46 @@ namespace Elpida
 		// Not reproed localy with -O2. Valgrind shows nothing memory wise. Even tried about same compiler ver (GCC 9.5, although CI
 		// has 9.3) and still not reproed. Putting something before (I tried logging that before returning it) seemed to fix that.
 		return totalDuration / inputData.size();
+	}
+
+	BenchmarkInfo Benchmark::GetInfo() const
+	{
+		std::string name;
+		std::string description;
+		std::vector<TaskInfo> taskInfos;
+		std::size_t coreTaskIndex = 0;
+
+		DoGetBenchmarkInfo( name, description, coreTaskIndex, taskInfos);
+
+		if (coreTaskIndex >= taskInfos.size())
+		{
+			throw ElpidaException("Invalid benchmark configuration: index of task for score is not within tasks range");
+		}
+
+		auto& task = taskInfos[coreTaskIndex];
+		task.SetMeasured(true);
+
+		std::string resultUnit;
+		ResultType resultType = ResultType::Throughput;
+		DoGetResultInfo(coreTaskIndex, taskInfos, resultUnit, resultType);
+
+		return { std::move(name), std::move(description), resultUnit, resultType,
+				 std::move(taskInfos) };
+	}
+
+	void Benchmark::DoGetResultInfo(std::size_t coreTaskIndex, const std::vector<TaskInfo>& taskInfos, String& unit,
+			ResultType& type) const
+	{
+		unit = taskInfos[coreTaskIndex].GetResultUnit();
+		type = taskInfos[coreTaskIndex].GetResultType();
+	}
+
+	double Benchmark::CalculateResult(const std::vector<TaskInfo>& taskInfos,
+			const std::vector<TaskResult>& taskResults, std::size_t coreTaskIndex) const
+	{
+		auto& taskResult = taskResults[coreTaskIndex];
+		return taskInfos[coreTaskIndex].GetResultType() == ResultType::Throughput ? taskResult.GetDataSize() /
+																					taskResult.GetDuration().count()
+																				  : taskResult.GetDuration().count();
 	}
 } // Elpida

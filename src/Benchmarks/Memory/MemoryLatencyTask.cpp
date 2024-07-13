@@ -178,11 +178,11 @@ namespace Elpida
 	TaskInfo MemoryLatencyTask::DoGetInfo() const
 	{
 		return {
-			"Memory latency",
-			"Calculates the average access latency of memory.",
-			"",
-			"The average access time.",
-			ScoreType::Time
+				"Memory latency",
+				"Calculates the average access latency of memory.",
+				"s",
+				"The average access time.",
+				ResultType::Time
 		};
 	}
 

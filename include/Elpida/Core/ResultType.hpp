@@ -2,8 +2,8 @@
 // Created by klapeto on 27/2/2023.
 //
 
-#ifndef ELPIDA_SCORETYPE_HPP
-#define ELPIDA_SCORETYPE_HPP
+#ifndef ELPIDA_RESULTTYPE_HPP
+#define ELPIDA_RESULTTYPE_HPP
 
 namespace Elpida
 {
@@ -11,7 +11,7 @@ namespace Elpida
 	/**
 	 * @brief Defines what kind a score is.
 	 */
-	enum class ScoreType
+	enum class ResultType
 	{
 		/**
 		 * @brief The score it measured in units/s.
@@ -29,4 +29,4 @@ namespace Elpida
 		Custom
 	};
 }
-#endif //ELPIDA_SCORETYPE_HPP
+#endif //ELPIDA_RESULTTYPE_HPP

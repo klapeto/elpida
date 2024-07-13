@@ -10,16 +10,19 @@
 namespace Elpida::Application
 {
 
-	class MemoryLatency: public FullBenchmarkInstance
+	class MemoryLatency : public FullBenchmarkInstance
 	{
 	public:
 		std::string GetName() const override;
+		std::string GetUuid() const override;
 		FullBenchmarkInstanceResult Run() override;
 		explicit MemoryLatency(const BenchmarkModel& benchmark,
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
 				const MemoryInfoModel& memoryInfoModel,
 				BenchmarkExecutionService& executionService);
+
+		~MemoryLatency() override = default;
 	};
 
 } // Application

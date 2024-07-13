@@ -41,8 +41,8 @@ namespace Elpida::Application
 		auto& memory = root.at("memory");
 
 		return {
-				memory.at("pageSize").get<std::size_t>(),
-				memory.at("totalSize").get<std::size_t>()
+				memory.at("totalSize").get<std::size_t>(),
+				memory.at("pageSize").get<std::size_t>()
 		};
 	}
 
@@ -114,8 +114,8 @@ namespace Elpida::Application
 	{
 		return {
 				jTask.at("name").get<std::string>(),
-				jTask.at("scoreUnit").get<std::string>(),
-				jTask.at("scoreType").get<ScoreType>(),
+				jTask.at("resultUnit").get<std::string>(),
+				jTask.at("resultType").get<ResultType>(),
 				jTask.at("isMeasured").get<bool>(),
 		};
 	}
@@ -134,18 +134,6 @@ namespace Elpida::Application
 
 	static BenchmarkModel ParseBenchmark(const nlohmann::json& jBenchmark, const std::string& path)
 	{
-
-		std::vector<TaskModel> taskModels;
-		auto& jTasks = jBenchmark.at("tasks");
-
-		if (!jTasks.is_array()) throw ElpidaException("Invalid 'task' field for benchmark. expected array");
-
-		taskModels.reserve(jTasks.size());
-		for (auto& jTask: jTasks)
-		{
-			taskModels.push_back(ParseTask(jTask));
-		}
-
 		auto benchmarkName = jBenchmark.at("name").get<std::string>();
 
 		std::vector<BenchmarkConfigurationModel> configurationModels;
@@ -171,10 +159,11 @@ namespace Elpida::Application
 
 		return {
 				std::move(benchmarkName),
+				jBenchmark.at("description").get<std::string>(),
+				jBenchmark.at("resultUnit").get<std::string>(),
+				jBenchmark.at("resultType").get<ResultType>(),
 				path,
 				jBenchmark.at("index").get<std::size_t>(),
-				jBenchmark.at("scoreUnit").get<std::string>(),
-				std::move(taskModels),
 				std::move(configurationModels)
 		};
 	}
@@ -203,19 +192,32 @@ namespace Elpida::Application
 		};
 	}
 
-	std::vector<BenchmarkGroupModel> ParseBenchmarkGroups(const nlohmann::json& root)
+	std::vector<BenchmarkGroupModel> ParseBenchmarkGroups(const nlohmann::json& root, std::vector<std::tuple<std::string, std::string>>& failedGroups)
 	{
 		auto& jGroups = root.at("benchmarkGroups");
 		if (jGroups.is_null()) return {};
-		if (!jGroups.is_array()) throw ElpidaException("Unexpected info for 'benchmarkGroups'. expected array");
+		auto& loaded = jGroups["loaded"];
+
+		if (!loaded.is_array()) throw ElpidaException("Unexpected info for 'benchmarkGroups'. expected array");
 
 		std::vector<BenchmarkGroupModel> benchmarkGroups;
-		benchmarkGroups.reserve(jGroups.size());
+		benchmarkGroups.reserve(loaded.size());
 
-		for (auto& jGroup: jGroups)
+		for (auto& jGroup: loaded)
 		{
 			benchmarkGroups.push_back(ParseBenchmarkGroup(jGroup));
 		}
+
+		auto& failedToLoad = jGroups["failed"];
+
+		if (failedToLoad.is_array())
+		{
+			for (auto& jGroup: failedToLoad)
+			{
+				failedGroups.emplace_back(jGroup["file"].get<std::string>(), jGroup["reason"].get<std::string>());
+			}
+		}
+
 
 		return benchmarkGroups;
 	}
@@ -242,7 +244,7 @@ namespace Elpida::Application
 		_memoryInfoModel = ParseMemoryInfo(root);
 		_osInfoModel = ParseOsInfo(root);
 		_topologyInfoModel = ParseTopologyInfo(root);
-		_benchmarkGroups = ParseBenchmarkGroups(root);
+		_benchmarkGroups = ParseBenchmarkGroups(root, _failedToLoadBenchmarkGroups);
 		_topologyInfoModel.GetRoot().SetRelations();
 		_timingModel = ParseTimingInfo(root);
 	}
@@ -275,5 +277,10 @@ namespace Elpida::Application
 	std::vector<BenchmarkGroupModel>& ModelBuilderJson::GetBenchmarkGroups()
 	{
 		return _benchmarkGroups;
+	}
+
+	const std::vector<std::tuple<std::string, std::string>>& ModelBuilderJson::GetFailedToLoadBenchmarkGroups() const
+	{
+		return _failedToLoadBenchmarkGroups;
 	}
 } // Elpida

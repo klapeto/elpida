@@ -7,7 +7,7 @@
 
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ScoreComparisonType.hpp"
-#include "Elpida/Core/ScoreType.hpp"
+#include "Elpida/Core/ResultType.hpp"
 
 namespace Elpida
 {
@@ -28,21 +28,21 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const String& GetScoreUnit() const
+		const String& GetResultUnit() const
 		{
-			return _scoreUnit;
+			return _resultUnit;
 		}
 
 		[[nodiscard]]
-		const String& GetScoreDescription() const
+		const String& GetResultDescription() const
 		{
-			return _scoreDescription;
+			return _resultDescription;
 		}
 
 		[[nodiscard]]
-		ScoreType GetScoreType() const
+		ResultType GetResultType() const
 		{
-			return _scoreType;
+			return _resultType;
 		}
 
 		[[nodiscard]]
@@ -51,27 +51,32 @@ namespace Elpida
 			return _isMeasured;
 		}
 
+		void SetMeasured(bool measured)
+		{
+			_isMeasured = measured;
+		}
+
 		TaskInfo(String name,
 			String description,
 			String scoreUnit,
 			String scoreDescription,
-			ScoreType scoreType,
+			ResultType scoreType,
 			bool isMeasured);
 
 		TaskInfo(String name,
 				String description,
 				String scoreUnit,
 				String scoreDescription,
-				ScoreType scoreType);
+				ResultType resultType);
 		TaskInfo(const TaskInfo&) = default;
 		TaskInfo(TaskInfo&&) = default;
 		~TaskInfo() = default;
 	 private:
 		String _name;
 		String _description;
-		String _scoreUnit;
-		String _scoreDescription;
-		ScoreType _scoreType;
+		String _resultUnit;
+		String _resultDescription;
+		ResultType _resultType;
 		bool _isMeasured;
 
 		friend class Task;

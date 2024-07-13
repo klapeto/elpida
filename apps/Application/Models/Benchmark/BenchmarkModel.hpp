@@ -23,19 +23,31 @@ namespace Elpida::Application
 		const std::string& GetName() const;
 
 		[[nodiscard]]
+		const std::string& GetDescription() const;
+
+		[[nodiscard]]
 		const std::string& GetFilePath() const;
 
 		[[nodiscard]]
-		std::size_t GetIndex() const;
+		std::size_t GetBenchmarkIndex() const;
 
-		const std::string& GetScoreUnit() const;
+		[[nodiscard]]
+		const std::string& GetResultUnit() const;
 
-		const std::vector<TaskModel>& GetTasks() const;
+		[[nodiscard]]
+		ResultType GetResultType() const;
 
 		[[nodiscard]]
 		const std::vector<BenchmarkConfigurationModel>& GetConfigurations() const;
 
-		BenchmarkModel(std::string name, std::string filePath, std::size_t index, std::string scoreUnit, std::vector<TaskModel>&& tasks, std::vector<BenchmarkConfigurationModel>&& configurations);
+		BenchmarkModel(
+				std::string name,
+				std::string description,
+				std::string resultUnit,
+				ResultType resultType,
+				std::string filePath,
+				std::size_t benchmarkIndex,
+				std::vector<BenchmarkConfigurationModel>&& configurations);
 		BenchmarkModel(const BenchmarkModel&) = default;
 		BenchmarkModel(BenchmarkModel&&) noexcept = default;
 		BenchmarkModel& operator=(const BenchmarkModel&) = default;
@@ -43,12 +55,12 @@ namespace Elpida::Application
 		~BenchmarkModel() override = default;
 	 private:
 		std::string _name;
+		std::string _description;
 		std::string _filePath;
-		std::string _scoreUnit;
-		std::string _uuid;
-		std::vector<TaskModel> _tasks;
+		std::string _resultUnit;
 		std::vector<BenchmarkConfigurationModel> _configurations;
-		std::size_t _index;
+		std::size_t _benchmarkIndex;
+		ResultType _resultType;
 	};
 
 } // Application

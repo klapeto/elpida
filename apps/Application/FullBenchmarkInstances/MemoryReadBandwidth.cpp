@@ -60,9 +60,14 @@ namespace Elpida::Application
 				true,
 				ConcurrencyMode::ShareInput);
 
-		Score memoryScore = bandwidthResult.GetScore() / std::giga::num;
+		Score memoryScore = bandwidthResult.GetResult() / std::giga::num;
 
 		return FullBenchmarkInstanceResult(std::move(bandwidthResult), 0, 0, memoryScore);
+	}
+
+	std::string MemoryReadBandwidth::GetUuid() const
+	{
+		return "7cfa7e2e-70a5-4926-b1b2-14ce6304f930";
 	}
 } // Application
 // Elpida

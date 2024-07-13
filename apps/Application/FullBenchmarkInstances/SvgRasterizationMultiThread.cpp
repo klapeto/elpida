@@ -43,12 +43,14 @@ namespace Elpida::Application
 				false,
 				ConcurrencyMode::CopyInput);
 
-		auto& taskResults = svgRasterizationMulti.GetTaskResults();
-
-		auto& rasterizationResult = taskResults[0];
-		Score multiCoreScore = (rasterizationResult.GetInputSize() / rasterizationResult.GetDuration().count());
+		Score multiCoreScore = svgRasterizationMulti.GetResult();
 
 		return FullBenchmarkInstanceResult(std::move(svgRasterizationMulti), 0, multiCoreScore, 0);
+	}
+
+	std::string SvgRasterizationMultiThread::GetUuid() const
+	{
+		return "66087de6-f486-4d24-b58d-f90300458179";
 	}
 } // Application
 // Elpida

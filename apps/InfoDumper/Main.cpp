@@ -39,7 +39,9 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path)
 		return {};
 	}
 
-	json benchmarkGroups = json::array();
+	json rootJ;
+	json loaded = json::array();
+	json failedToLoad = json::array();
 
 	for (auto& entry: std::filesystem::directory_iterator(path))
 	{
@@ -50,16 +52,22 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path)
 				auto strPath = entry.path().string();
 				BenchmarkGroupModule module(strPath);
 
-				benchmarkGroups.push_back(SerializeBenchmarkGroup(module.GetBenchmarkGroup(), strPath));
+				loaded.push_back(SerializeBenchmarkGroup(module.GetBenchmarkGroup(), strPath));
 			}
 			catch (const std::exception& ex)
 			{
-				// invalid file
+				json failedGroup;
+				failedGroup["file"] = entry.path().string();
+				failedGroup["reason"] = ex.what();
+				failedToLoad.push_back(std::move(failedGroup));
 			}
 		}
 	}
 
-	return benchmarkGroups;
+	rootJ["loaded"] = std::move(loaded);
+	rootJ["failed"] = std::move(failedToLoad);
+
+	return rootJ;
 }
 
 int main(int argC, char** argV)

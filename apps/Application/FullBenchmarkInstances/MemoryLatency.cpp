@@ -49,9 +49,14 @@ namespace Elpida::Application
 				true,
 				ConcurrencyMode::ShareInput);
 
-		Score memoryScore = (1.0 / std::micro::den) / latencyResult.GetScore();
+		Score memoryScore = (1.0 / std::micro::den) / latencyResult.GetResult();
 
 		return FullBenchmarkInstanceResult(std::move(latencyResult), 0, 0, memoryScore);
+	}
+
+	std::string MemoryLatency::GetUuid() const
+	{
+		return "d4ca9ec5-4e68-4058-9407-a2fd7abc9a0b";
 	}
 } // Application
 // Elpida

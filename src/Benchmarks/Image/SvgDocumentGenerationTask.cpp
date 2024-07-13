@@ -75,7 +75,7 @@ namespace Elpida
 				"Generates a document with n amount of elements",
 				"B",
 				"How many bytes are generated",
-				ScoreType::Throughput
+				ResultType::Throughput
 		};
 	}
 } // Elpida

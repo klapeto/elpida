@@ -7,14 +7,14 @@
 
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/Vector.hpp"
-#include "Elpida/Core/ScoreType.hpp"
+#include "Elpida/Core/ResultType.hpp"
 #include "Elpida/Core/TaskInfo.hpp"
 
 namespace Elpida
 {
 	class BenchmarkInfo final
 	{
-	 public:
+	public:
 
 		[[nodiscard]]
 		const Vector<TaskInfo>& GetTaskInfos() const
@@ -35,29 +35,28 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const String& GetScoreUnit() const
+		const String& GetResultUnit() const
 		{
-			return _scoreUnit;
+			return _resultUnit;
 		}
 
 		[[nodiscard]]
-		const String& GetScoreDescription() const
+		ResultType GetResultType() const
 		{
-			return _scoreDescription;
+			return _resultType;
 		}
 
-		BenchmarkInfo(String name,
-			String description,
-			String scoreUnit,
-			String scoreDescription,
-			const Vector<TaskInfo>& taskInfos,
-			String uuid = String())
-			: _taskInfos(taskInfos),
-			  _name(std::move(name)),
-			  _description(std::move(description)),
-			  _scoreUnit(std::move(scoreUnit)),
-			  _scoreDescription(std::move(scoreDescription)),
-			  _uuid(std::move(uuid))
+		BenchmarkInfo(
+				String name,
+				String description,
+				String resultUnit,
+				ResultType resultType,
+				Vector<TaskInfo> taskInfos)
+				:_taskInfos(std::move(taskInfos)),
+				 _name(std::move(name)),
+				 _description(std::move(description)),
+				 _resultUnit(std::move(resultUnit)),
+				 _resultType(resultType)
 		{
 		}
 
@@ -66,13 +65,12 @@ namespace Elpida
 		BenchmarkInfo& operator=(const BenchmarkInfo&) = default;
 		BenchmarkInfo& operator=(BenchmarkInfo&&) noexcept = default;
 		~BenchmarkInfo() = default;
-	 private:
+	private:
 		Vector<TaskInfo> _taskInfos;
 		String _name;
 		String _description;
-		String _scoreUnit;
-		String _scoreDescription;
-		String _uuid;
+		String _resultUnit;
+		ResultType _resultType;
 	};
 
 } // Elpida

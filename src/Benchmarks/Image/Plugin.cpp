@@ -7,7 +7,7 @@
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/BenchmarkModule.hpp"
-#include "PngEncodingDecodingBenchmark.hpp"
+#include "PngEncodingBenchmark.hpp"
 #include "SvgParseBenchmark.hpp"
 #include "SvgRasterizationBenchmark.hpp"
 
@@ -17,7 +17,7 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 {
 	Vector<UniquePtr<Benchmark>> vec;
 
-	vec.emplace_back(new PngEncodingDecodingBenchmark());
+	vec.emplace_back(new PngEncodingBenchmark());
 	vec.emplace_back(new SvgParseBenchmark());
 	vec.emplace_back(new SvgRasterizationBenchmark());
 

@@ -40,6 +40,9 @@ namespace Elpida::Application
 		virtual std::string GetName() const = 0;
 
 		[[nodiscard]]
+		virtual std::string GetUuid() const = 0;
+
+		[[nodiscard]]
 		virtual FullBenchmarkInstanceResult Run() = 0;
 
 		virtual ~FullBenchmarkInstance() = default;
@@ -55,8 +58,6 @@ namespace Elpida::Application
 		const TopologyModel& _topologyModel;
 		const MemoryInfoModel& _memoryInfoModel;
 		BenchmarkExecutionService& _executionService;
-
-		const double Divider = 1000000.0;
 	};
 
 } // Application

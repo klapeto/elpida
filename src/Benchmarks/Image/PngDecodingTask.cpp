@@ -40,11 +40,11 @@ namespace Elpida
 	TaskInfo PngDecodingTask::DoGetInfo() const
 	{
 		return {
-			"PNG decoding",
-			"Decodes a stream of data from PNG decoded data to RGBA data.",
-			"B",
-			"The input amount of bytes processed per second",
-			ScoreType::Throughput
+				"PNG decoding",
+				"Decodes a stream of data from PNG decoded data to RGBA data.",
+				"B",
+				"The input amount of bytes processed per second",
+				ResultType::Throughput
 		};
 	}
 
