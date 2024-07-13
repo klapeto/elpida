@@ -1,0 +1,17 @@
+project("Elpida Web benchmarks" VERSION ${ELPIDA_VERSION}
+        DESCRIPTION "Elpida web benchmarks"
+        HOMEPAGE_URL ${ELPIDA_WEBSITE}
+        LANGUAGES CXX C)
+
+set(ELPIDA_WEB_BENCHMARKS_SOURCES
+        Plugin.cpp
+        XmlParseBenchmark.cpp
+        ParseJsonTask.cpp
+        XmlGenerationTask.cpp
+        JsonGenerationTask.cpp)
+
+add_library(elpida-web-benchmarks MODULE ${ELPIDA_WEB_BENCHMARKS_SOURCES})
+
+target_link_libraries(elpida-web-benchmarks PRIVATE elpida-core elpida-common-tasks)
+
+install(TARGETS elpida-web-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
