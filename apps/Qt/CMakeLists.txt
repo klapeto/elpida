@@ -1,6 +1,5 @@
 project("Elpida Qt"
 		DESCRIPTION "Elpida Qt Front End"
-		HOMEPAGE_URL ${ELPIDA_WEBSITE}
 		LANGUAGES CXX C)
 
 set(ELPIDA_QT_SOURCES

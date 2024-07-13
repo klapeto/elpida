@@ -14,7 +14,6 @@ include(cmake-modules/generate_product_version.cmake)
 
 project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
 set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
