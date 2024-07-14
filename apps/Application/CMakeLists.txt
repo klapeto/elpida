@@ -108,7 +108,7 @@ endif()
 
 if(MSYS OR MINGW OR MSVC)
     target_link_libraries(elpida-application ws2_32 crypt32)
-else()
+endif()
 
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
 include(FindOpenSSL)
