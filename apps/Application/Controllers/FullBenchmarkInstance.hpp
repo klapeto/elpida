@@ -17,14 +17,12 @@ namespace Elpida::Application
 		BenchmarkResultModel& GetBenchmarkResult();
 		Score GetSingleCoreScore() const;
 		Score GetMultiThreadScore() const;
-		Score GetMemoryScore() const;
 		FullBenchmarkInstanceResult(BenchmarkResultModel&& benchmarkResult, Score singleCoreScore,
-				Score multiThreadScore, Score memoryScore);
+				Score multiThreadScore);
 	private:
 		BenchmarkResultModel _benchmarkResult;
 		Score _singleCoreScore;
 		Score _multiThreadScore;
-		Score _memoryScore;
 	};
 
 	class BenchmarkModel;

@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>Elpida::Application::FullBenchmarkView</class>
  <widget class="QWidget" name="Elpida::Application::FullBenchmarkView">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1074</width>
-    <height>685</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -20,53 +12,15 @@
       <string>Score</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="0">
-       <widget class="QLabel" name="lblSingleCoreScore">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Single Core:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="lblMultiCoreScore">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Multi Core:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="lblMultiCoreScoreDelta">
-        <property name="text">
-         <string>+0%</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="2">
-       <widget class="QLabel" name="lblSingleScoreDelta">
+       <widget class="QLabel" name="lblSingleThreadScoreDelta">
         <property name="text">
          <string>+0%</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="lblTotalScoreDelta">
-        <property name="text">
-         <string>+0%</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="lblSingleCoreScoreValue">
+      <item row="2" column="1">
+       <widget class="QLabel" name="lblMultiThreadScoreValue">
         <property name="minimumSize">
          <size>
           <width>128</width>
@@ -78,6 +32,29 @@
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="lblSingleThreadScoreValue">
+        <property name="minimumSize">
+         <size>
+          <width>128</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>N/A</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="lblTotalScoreDelta">
+        <property name="text">
+         <string>+0%</string>
         </property>
        </widget>
       </item>
@@ -96,54 +73,34 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="lblMemoryScoreDelta">
+      <item row="2" column="2">
+       <widget class="QLabel" name="lblMultiThreadScoreDelta">
         <property name="text">
          <string>+0%</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="lblMemoryScoreValue">
-        <property name="minimumSize">
-         <size>
-          <width>128</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>N/A</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="lblMemoryScore">
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblMultiThreadScore">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
-         <string>Memory:</string>
+         <string>Multi thread:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="lblMultiCoreScoreValue">
-        <property name="minimumSize">
-         <size>
-          <width>128</width>
-          <height>0</height>
-         </size>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblSingleThreadScore">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
         </property>
         <property name="text">
-         <string>N/A</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <string>Single thread:</string>
         </property>
        </widget>
       </item>
@@ -268,17 +225,12 @@
         </column>
         <column>
          <property name="text">
-          <string>Single Core</string>
+          <string>Single thread</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Multi Core</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Memory</string>
+          <string>Multi thread</string>
          </property>
         </column>
         <column>

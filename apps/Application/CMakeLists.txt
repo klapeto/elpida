@@ -65,10 +65,6 @@ set(ELPIDA_APPLICATION_SOURCES
         FullBenchmarkInstances/SvgRasterizationSingleThread.hpp
         FullBenchmarkInstances/SvgRasterizationMultiThread.cpp
         FullBenchmarkInstances/SvgRasterizationMultiThread.hpp
-        FullBenchmarkInstances/MemoryLatency.cpp
-        FullBenchmarkInstances/MemoryLatency.hpp
-        FullBenchmarkInstances/MemoryReadBandwidth.cpp
-        FullBenchmarkInstances/MemoryReadBandwidth.hpp
         Core/ResultsHTMLReporter.cpp
         Core/ResultsHTMLReporter.hpp
         Core/PathsService.cpp

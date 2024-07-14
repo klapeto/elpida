@@ -44,7 +44,7 @@ namespace Elpida::Application
 		auto rasterizationResult = svgRasterizationSingle.GetResult();
 		Score singleCoreScore = rasterizationResult;
 
-		return FullBenchmarkInstanceResult(std::move(svgRasterizationSingle), singleCoreScore, 0, 0);
+		return FullBenchmarkInstanceResult(std::move(svgRasterizationSingle), singleCoreScore, 0);
 	}
 
 	std::string SvgRasterizationSingleThread::GetUuid() const

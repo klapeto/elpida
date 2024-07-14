@@ -20,8 +20,6 @@
 
 #include "FullBenchmarkInstances/SvgRasterizationSingleThread.hpp"
 #include "FullBenchmarkInstances/SvgRasterizationMultiThread.hpp"
-#include "FullBenchmarkInstances/MemoryLatency.hpp"
-#include "FullBenchmarkInstances/MemoryReadBandwidth.hpp"
 
 #include <sstream>
 #include <fstream>
@@ -63,18 +61,7 @@ namespace Elpida::Application
 			for (auto& benchmark : group.GetBenchmarks())
 			{
 				auto& name = benchmark.GetName();
-				if (name == "Memory latency")
-				{
-					_benchmarks.push_back(
-							std::make_unique<MemoryLatency>(benchmark, timingModel, topologyModel, memoryInfoModel,
-									benchmarkExecutionService));
-				}
-				else if (name == "Memory read bandwidth")
-				{
-					_benchmarks.push_back(std::make_unique<MemoryReadBandwidth>(benchmark, timingModel, topologyModel,
-							memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Svg Rasterization")
+				if (name == "Svg Rasterization")
 				{
 					_benchmarks.push_back(
 							std::make_unique<SvgRasterizationSingleThread>(benchmark, timingModel, topologyModel,
@@ -118,7 +105,6 @@ namespace Elpida::Application
 				{
 					Score singleCoreScore = 0.0;
 					Score multiCoreScore = 0.0;
-					Score memoryScore = 0.0;
 					std::vector<BenchmarkResultModel> benchmarkResults;
 
 					for (auto& benchmark : _benchmarks)
@@ -129,14 +115,13 @@ namespace Elpida::Application
 						result.GetBenchmarkResult().SetUuid(benchmark->GetUuid());
 						singleCoreScore += result.GetSingleCoreScore();
 						multiCoreScore += result.GetMultiThreadScore();
-						memoryScore += result.GetMemoryScore();
 						benchmarkResults.push_back(std::move(result.GetBenchmarkResult()));
 					}
 
-					auto totalScore = singleCoreScore + multiCoreScore + multiCoreScore;
+					auto totalScore = CalculateTotalScore(singleCoreScore, multiCoreScore);
 
 					auto result = FullBenchmarkResultModel(std::move(benchmarkResults), totalScore, singleCoreScore,
-							multiCoreScore, memoryScore);
+							multiCoreScore);
 					_model.Add(result);
 					thisResults.push_back(std::move(result));
 				}
@@ -155,6 +140,11 @@ namespace Elpida::Application
 			_model.SetRunning(false);
 			_running.store(false, std::memory_order_release);
 		});
+	}
+
+	Score FullBenchmarkController::CalculateTotalScore(Score singleCoreScore, Score multiCoreScore)
+	{
+		return (singleCoreScore * 4) + multiCoreScore;
 	}
 
 	void FullBenchmarkController::PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults) const

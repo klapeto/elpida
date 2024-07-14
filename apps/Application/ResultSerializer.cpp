@@ -141,7 +141,6 @@ namespace Elpida::Application
 		outJson["totalScore"] = fullBenchmarkResultModel.GetTotalScore();
 		outJson["singleThreadScore"] = fullBenchmarkResultModel.GetSingleThreadScore();
 		outJson["multiThreadScore"] = fullBenchmarkResultModel.GetMultiThreadScore();
-		outJson["memoryScore"] = fullBenchmarkResultModel.GetMemoryScore();
 
 		json resultsJson = json::array();
 		for (auto& result : fullBenchmarkResultModel.GetBenchmarkResults())

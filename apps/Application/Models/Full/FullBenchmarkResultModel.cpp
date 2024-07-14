@@ -10,13 +10,11 @@ namespace Elpida::Application
 	FullBenchmarkResultModel::FullBenchmarkResultModel(std::vector<BenchmarkResultModel>&& benchmarkResults,
 			Score totalScore,
 			Score singleThreadScore,
-			Score multiThreadScore,
-			Score memoryScore)
+			Score multiThreadScore)
 			:_benchmarkResults(std::move(benchmarkResults)),
 			 _totalScore(totalScore),
 			 _singleThreadScore(singleThreadScore),
-			 _multiThreadScore(multiThreadScore),
-			 _memoryScore(memoryScore)
+			 _multiThreadScore(multiThreadScore)
 	{
 
 	}
@@ -34,11 +32,6 @@ namespace Elpida::Application
 	Score FullBenchmarkResultModel::GetMultiThreadScore() const
 	{
 		return _multiThreadScore;
-	}
-
-	Score FullBenchmarkResultModel::GetMemoryScore() const
-	{
-		return _memoryScore;
 	}
 
 	Score FullBenchmarkResultModel::GetTotalScore() const

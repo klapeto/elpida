@@ -22,9 +22,8 @@ namespace Elpida::Application
 		Score GetTotalScore() const;
 		Score GetSingleThreadScore() const;
 		Score GetMultiThreadScore() const;
-		Score GetMemoryScore() const;
 
-		FullBenchmarkResultModel(std::vector<BenchmarkResultModel>&& benchmarkResults, Score totalScore, Score singleThreadScore, Score multiThreadScore, Score memoryScore);
+		FullBenchmarkResultModel(std::vector<BenchmarkResultModel>&& benchmarkResults, Score totalScore, Score singleThreadScore, Score multiThreadScore);
 
 		FullBenchmarkResultModel(const FullBenchmarkResultModel&) = default;
 		FullBenchmarkResultModel(FullBenchmarkResultModel&&) noexcept = default;
@@ -36,7 +35,6 @@ namespace Elpida::Application
 		Score _totalScore;
 		Score _singleThreadScore;
 		Score _multiThreadScore;
-		Score _memoryScore;
 	};
 
 } // Elpida

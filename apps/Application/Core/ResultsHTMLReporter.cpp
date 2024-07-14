@@ -81,19 +81,6 @@ namespace Elpida::Application
 		return stream.str();
 	}
 
-	static std::string GenerateFullStatistics(const FullBenchmarkResultModel& result)
-	{
-		std::ostringstream stream;
-
-		stream << "<table>";
-
-		stream << "<tr><td>Date</td><td>" << GetDateString() << "</td></tr>";
-
-		stream << "</table>";
-
-		return stream.str();
-	}
-
 	static std::string GetScoreValue(double value, const std::string& unit)
 	{
 		return ValueUtilities::GetValueScaleStringSI(value) + unit;
@@ -242,7 +229,6 @@ namespace Elpida::Application
 
 		stream << GenerateFullStatistic(results, "Single core", statisticsService, [](auto& r){return r.GetSingleThreadScore();});
 		stream << GenerateFullStatistic(results, "Multi core", statisticsService, [](auto& r){return r.GetMultiThreadScore();});
-		stream << GenerateFullStatistic(results, "Memory", statisticsService, [](auto& r){return r.GetMemoryScore();});
 
 		return stream.str();
 	}
@@ -256,7 +242,6 @@ namespace Elpida::Application
 
 		Score previousSingleScore = -1.0;
 		Score previousMultiScore = -1.0;
-		Score previousMemoryScore = -1.0;
 		Score previousTotalScore = -1.0;
 		for (std::size_t i = 0; i < results.size(); ++i)
 		{
@@ -270,7 +255,6 @@ namespace Elpida::Application
 						result.GetSingleThreadScore(), previousSingleScore, false) << "</td>"
 					   << "<td>" << GetScoreValue(result.GetMultiThreadScore(), "") << GetScoreDelta(
 						result.GetMultiThreadScore(), previousMultiScore, false) << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetMemoryScore(), "")<< GetScoreDelta(result.GetMemoryScore(), previousMemoryScore, false) << "</td>"
 					   << "<td>"<< GetScoreValue(result.GetTotalScore(), "")<< GetScoreDelta(result.GetTotalScore(), previousTotalScore, false) << "</td></tr>";
 			}
 			else
@@ -279,13 +263,11 @@ namespace Elpida::Application
 					   << "<td>" << i + 1 << "</td>"
 					   << "<td>" << GetScoreValue(result.GetSingleThreadScore(), "") << "</td>"
 					   << "<td>" << GetScoreValue(result.GetMultiThreadScore(), "") << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetMemoryScore(), "") << "</td>"
 					   << "<td>"<< GetScoreValue(result.GetTotalScore(), "") << "</td></tr>";
 			}
 
 			previousSingleScore = result.GetSingleThreadScore();
 			previousMultiScore = result.GetMultiThreadScore();
-			previousMemoryScore = result.GetMemoryScore();
 			previousTotalScore = result.GetTotalScore();
 		}
 

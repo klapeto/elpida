@@ -45,7 +45,7 @@ namespace Elpida::Application
 
 		Score multiCoreScore = svgRasterizationMulti.GetResult();
 
-		return FullBenchmarkInstanceResult(std::move(svgRasterizationMulti), 0, multiCoreScore, 0);
+		return FullBenchmarkInstanceResult(std::move(svgRasterizationMulti), 0, multiCoreScore);
 	}
 
 	std::string SvgRasterizationMultiThread::GetUuid() const

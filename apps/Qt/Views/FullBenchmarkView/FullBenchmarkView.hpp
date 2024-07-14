@@ -41,7 +41,6 @@ namespace Elpida::Application
 			Score _totalScore;
 			Score _singleCoreScore;
 			Score _multiCoreScore;
-			Score _memoryScore;
 		};
 		Ui::FullBenchmarkView* _ui;
 		const FullBenchmarkModel& _model;
