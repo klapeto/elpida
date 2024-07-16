@@ -40,7 +40,7 @@ namespace Elpida
 	}
 
 	SvgGradientStop::SvgGradientStop(const XmlElement& element, SvgDocument& document)
-		: SvgElement(element, document)
+		: SvgElement(element, document), _color(SvgColor::Black())
 	{
 		ConditionallyAssignProperty("stop-color", _color);
 

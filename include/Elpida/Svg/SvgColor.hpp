@@ -19,6 +19,11 @@ namespace Elpida
 		static constexpr double QuarterValue = HalfValue / 2.0;
 		static constexpr double MinValue = 0.0;
 
+		static SvgColor Black()
+		{
+			return { SvgColor::MinValue, SvgColor::MinValue, SvgColor::MinValue, SvgColor::MaxValue };
+		}
+
 		[[nodiscard]]
 		double R() const
 		{
@@ -53,16 +58,16 @@ namespace Elpida
 		}
 
 		SvgColor()
-			: _r(MinValue), _g(MinValue), _b(MinValue), _a(MinValue)
+				:_r(MinValue), _g(MinValue), _b(MinValue), _a(MinValue)
 		{
 
 		}
 
 		SvgColor(const double r, const double g, const double b, const double a)
-			: _r(r),
-			  _g(g),
-			  _b(b),
-			  _a(a)
+				:_r(r),
+				 _g(g),
+				 _b(b),
+				 _a(a)
 		{
 		}
 

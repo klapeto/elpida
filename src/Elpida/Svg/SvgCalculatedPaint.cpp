@@ -35,7 +35,7 @@ namespace Elpida
 			const SvgBounds& elementBounds,
 			const SvgDocument& document,
 			const SvgCalculationContext& calculationContext)
-			:_gradientType(SvgGradientType::Linear), _color(true)
+			: _state(SvgColor::Black()), _gradientType(SvgGradientType::Linear), _color(true)
 	{
 		if (paint.GetGradientId().empty())
 		{

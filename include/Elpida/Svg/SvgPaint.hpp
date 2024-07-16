@@ -41,7 +41,8 @@ namespace Elpida
 		}
 
 		SvgPaint()
-			: _opacity(1.0), _set(false)
+				:_color(SvgColor::Black()), _opacity(1.0),
+				 _set(false)
 		{
 		}
 

@@ -10,7 +10,7 @@
 #include "PngEncodingBenchmark.hpp"
 #include "SvgParseBenchmark.hpp"
 #include "SvgRasterizationBenchmark.hpp"
-
+#include "SvgRasterizationFromFileBenchmark.hpp"
 using namespace Elpida;
 
 ELPIDA_CREATE_BENCHMARK_GROUP_DECL
@@ -20,6 +20,7 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	vec.emplace_back(new PngEncodingBenchmark());
 	vec.emplace_back(new SvgParseBenchmark());
 	vec.emplace_back(new SvgRasterizationBenchmark());
+	vec.emplace_back(new SvgRasterizationFromFileBenchmark());
 
 	return new BenchmarkGroup("Image benchmarks", std::move(vec));
 }

@@ -11,9 +11,6 @@
 
 namespace Elpida
 {
-
-	class ThreadPool;
-
 	class SvgRasterizationTask: public MicroTask
 	{
 	public:
