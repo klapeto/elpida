@@ -5,6 +5,7 @@ LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
+    apt-get -y full-upgrade && \
     apt-get -yq install \
         breeze-icon-theme \
         desktop-file-utils \

@@ -3,7 +3,7 @@ LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y update && \
-    apt-get -y upgrade && \
+    apt-get -y full-upgrade && \
     apt-get -y install \
     autoconf \
     automake \
