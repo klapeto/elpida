@@ -12,6 +12,7 @@ namespace Elpida
 
 	class SvgCalculatedDocument;
 	class SvgBackDrop;
+	class SvgSuperSampler;
 
 	class SvgDirectRasterizer
 	{
@@ -24,6 +25,9 @@ namespace Elpida
 		 */
 		static void Rasterize(const SvgCalculatedDocument& document, SvgBackDrop& backDrop,
 				std::size_t subSamples = 16);
+
+		static void Rasterize(const SvgCalculatedDocument& document, SvgBackDrop& backDrop,
+				const SvgSuperSampler& superSampler);
 	};
 
 } // Elpida

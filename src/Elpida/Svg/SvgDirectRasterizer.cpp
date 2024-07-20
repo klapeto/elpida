@@ -37,6 +37,13 @@ namespace Elpida
 			std::size_t subSamples)
 	{
 		const SvgSuperSampler superSampler(subSamples);
+
+		Rasterize(document, backDrop, superSampler);
+	}
+
+	void SvgDirectRasterizer::Rasterize(const SvgCalculatedDocument& document, SvgBackDrop& backDrop,
+			const SvgSuperSampler& superSampler)
+	{
 		backDrop.Clear();
 		RasterizeShape(document.GetRootShape(), backDrop, superSampler);
 	}

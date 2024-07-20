@@ -68,14 +68,14 @@ namespace Elpida
 	{
 		while (iterations-- > 0)
 		{
-			 SvgDirectRasterizer::Rasterize(*_inputDocument, _rasterizedImage, _subSamples);
+			 SvgDirectRasterizer::Rasterize(*_inputDocument, _rasterizedImage, _superSampler);
 		}
 	}
 
 	SvgRasterizationTask::SvgRasterizationTask(std::size_t subSamples)
-			:  _inputDocument(nullptr), _subSamples(subSamples)
+			:  _inputDocument(nullptr)
 	{
-
+		_superSampler = SvgSuperSampler(subSamples);
 	}
 
 	TaskInfo SvgRasterizationTask::DoGetInfo() const
@@ -100,6 +100,6 @@ namespace Elpida
 
 	UniquePtr<Task> SvgRasterizationTask::DoDuplicate() const
 	{
-		return std::make_unique<SvgRasterizationTask>(_subSamples);
+		return std::make_unique<SvgRasterizationTask>(_superSampler.GetSampleCount());
 	}
 } // Elpida

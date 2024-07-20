@@ -7,6 +7,7 @@
 
 #include "Elpida/Core/MicroTask.hpp"
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
+#include "Elpida/Svg/SvgSuperSampler.hpp"
 #include "Elpida/Svg/SvgBackDrop.hpp"
 
 namespace Elpida
@@ -42,7 +43,7 @@ namespace Elpida
 		SharedPtr<AbstractTaskData> _inputData;
 		SvgCalculatedDocument* _inputDocument;
 		SvgBackDrop _rasterizedImage;
-		std::size_t _subSamples;
+		SvgSuperSampler _superSampler;
 	};
 
 } // Elpida

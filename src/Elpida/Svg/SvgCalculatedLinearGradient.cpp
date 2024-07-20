@@ -194,9 +194,6 @@ namespace Elpida
 			}
 		}
 
-		assert(normalA != nullptr);
-		assert(normalB != nullptr);
-
 		return CalculateColor(actualPoint, *stopA, *normalA, *stopB, *normalB);
 	}
 
@@ -276,8 +273,6 @@ namespace Elpida
 			}
 		}
 
-		assert(stopA != nullptr);
-		assert(stopB != nullptr);
 		return CalculateColor(actualPoint, *stopA, *normalA, *stopB, *normalB);
 	}
 } // Elpida
