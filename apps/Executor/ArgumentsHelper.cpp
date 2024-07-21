@@ -97,8 +97,6 @@ namespace Elpida
 		accumulator << R"("           The now overhead in fractional seconds)" << std::endl;
 		accumulator << R"("       --loop-overhead=SECONDS)" << std::endl;
 		accumulator << R"("           The loop overhead in fractional seconds)" << std::endl;
-		accumulator << R"("       --virtual-overhead=SECONDS)" << std::endl;
-		accumulator << R"("           The virtual call overhead in fractional seconds)" << std::endl;
 		accumulator << R"("       --numa-aware)" << std::endl;
 		accumulator << R"("           Enable numa aware allocations)" << std::endl;
 		accumulator << R"("       --pin-threads)" << std::endl;
@@ -213,7 +211,6 @@ namespace Elpida
 			Config,
 			NowOverhead,
 			LoopOverhead,
-			VirtualOverhead,
 			NumaAware,
 			PinThreads,
 			ConcurrencyMode
@@ -229,7 +226,6 @@ namespace Elpida
 				{ "config",              required_argument, nullptr, Config },
 				{ "now-overhead",     required_argument, nullptr, NowOverhead },
 				{ "loop-overhead",    required_argument, nullptr, LoopOverhead },
-				{ "virtual-overhead", required_argument, nullptr, VirtualOverhead },
 				{ "numa-aware",          no_argument,       nullptr, NumaAware },
 				{ "pin-threads",         no_argument,       nullptr, PinThreads },
 				{ "concurrency-mode", required_argument, nullptr, ConcurrencyMode },
@@ -270,9 +266,6 @@ namespace Elpida
 				break;
 			case LoopOverhead:
 				_loopOverhead = ParseDouble(GetValueOrDefault(optarg), "loop-overhead");
-				break;
-			case VirtualOverhead:
-				_vCallOverhead = ParseDouble(GetValueOrDefault(optarg), "virtual-overhead");
 				break;
 			case NumaAware:
 				_numaAware = true;
@@ -382,13 +375,8 @@ namespace Elpida
 		return _loopOverhead;
 	}
 
-	double ArgumentsHelper::GetVCallOverhead() const
-	{
-		return _vCallOverhead;
-	}
-
 	ArgumentsHelper::ArgumentsHelper()
-			:_benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _vCallOverhead(0),
+			:_benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0),
 			 _concurrencyMode(ConcurrencyMode::None),
 			 _numaAware(false), _pinThreads(false)
 	{

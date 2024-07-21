@@ -44,9 +44,6 @@ namespace Elpida
 		double GetLoopOverhead() const;
 
 		[[nodiscard]]
-		double GetVCallOverhead() const;
-
-		[[nodiscard]]
 		bool GetNumaAware() const;
 
 		[[nodiscard]]
@@ -67,7 +64,6 @@ namespace Elpida
 		Size _benchmarkIndex;
 		double _nowOverhead;
 		double _loopOverhead;
-		double _vCallOverhead;
 		ConcurrencyMode _concurrencyMode;
 		bool _numaAware;
 		bool _pinThreads;

@@ -209,7 +209,6 @@ namespace Elpida
 		jTiming["iterations"] = timingInfo.GetIterationsPerSecond();
 		jTiming["loopOverhead"] = timingInfo.GetLoopOverhead().count();
 		jTiming["nowOverhead"] = timingInfo.GetNowOverhead().count();
-		jTiming["vCallOverhead"] = timingInfo.GetVirtualCallOverhead().count();
 
 		return jTiming;
 	}

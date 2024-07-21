@@ -33,12 +33,6 @@ namespace Elpida
 			return _loopOverhead;
 		}
 
-		[[nodiscard]]
-		const Duration& GetVirtualCallOverhead() const
-		{
-			return _virtualCallOverhead;
-		}
-
 		TimingInfo() = default;
 		TimingInfo(const TimingInfo&) = default;
 		TimingInfo(TimingInfo&&) noexcept = default;
@@ -47,11 +41,9 @@ namespace Elpida
 
 		TimingInfo(const Duration& nowOverhead,
 				const Duration& loopOverhead,
-				const Duration& virtualCallOverhead,
 				Iterations iterationsPerSecond)
 				:_nowOverhead(nowOverhead),
 				 _loopOverhead(loopOverhead),
-				 _virtualCallOverhead(virtualCallOverhead),
 				 _iterationsPerSecond(iterationsPerSecond)
 		{
 		}
@@ -60,7 +52,6 @@ namespace Elpida
 	private:
 		Duration _nowOverhead;
 		Duration _loopOverhead;
-		Duration _virtualCallOverhead;
 		Iterations _iterationsPerSecond;
 	};
 

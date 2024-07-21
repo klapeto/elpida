@@ -38,7 +38,6 @@ namespace Elpida::Application
 				{},
 				_timingModel.GetNowOverhead().count(),
 				_timingModel.GetLoopOverhead().count(),
-				_timingModel.GetVirtualCallOverhead().count(),
 				false,
 				false,
 				ConcurrencyMode::CopyInput);

@@ -4,7 +4,10 @@
 
 #include "Elpida/Core/Config.hpp"
 
-#if defined(ELPIDA_WINDOWS) &&  defined(_M_ARM64)
+#if defined(ELPIDA_WINDOWS) && (defined(_M_ARM64) || defined(__aarch64__))
+
+#include "Elpida/Platform/CpuInfoLoader.hpp"
+#include "Elpida/Platform/OsUtilities.hpp"
 
 namespace Elpida{
 
@@ -13,7 +16,7 @@ namespace Elpida{
 		std::string vendor;
 		try
 		{
-			vendor = ReadRegistryKeyFromHKLM(R"(HARDWARE\DESCRIPTION\System\CentralProcessor\0)", "VendorIdentifier");
+			vendor = OsUtilities::ReadRegistryKeyFromHKLM(R"(HARDWARE\DESCRIPTION\System\CentralProcessor\0)", "VendorIdentifier");
 		}
 		catch (const std::exception&)
 		{
@@ -23,7 +26,7 @@ namespace Elpida{
 		std::string modelName;
 		try
 		{
-			modelName = ReadRegistryKeyFromHKLM(R"(HARDWARE\DESCRIPTION\System\CentralProcessor\0)", "ProcessorNameString");
+			modelName = OsUtilities::ReadRegistryKeyFromHKLM(R"(HARDWARE\DESCRIPTION\System\CentralProcessor\0)", "ProcessorNameString");
 		}
 		catch (const std::exception&)
 		{

@@ -6,6 +6,7 @@
 #define ELPIDA_XML_PARSEEXCEPTION_HPP
 
 #include <stdexcept>
+#include <string>
 
 namespace Elpida
 {

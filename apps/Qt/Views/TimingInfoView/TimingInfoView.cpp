@@ -19,8 +19,6 @@ namespace Elpida::Application
 			QString::fromStdString(Vu::Cs(Vu::GetValueScaleStringSI(model.GetNowOverhead().count()), "s")));
 		_ui->lblLoopOverheadValue->setText(QString::fromStdString(
 			Vu::Cs(Vu::GetValueScaleStringSI(model.GetLoopOverhead().count()), "s")));
-		_ui->lblVirtualOverheadValue->setText(QString::fromStdString(
-			Vu::Cs(Vu::GetValueScaleStringSI(model.GetVirtualCallOverhead().count()), "s")));
 
 		_ui->lblIpsValue->setText(QString::fromStdString(
 			Vu::Cs(Vu::GetValueScaleStringSI(model.GetIterationsPerSecond()), "ips")));

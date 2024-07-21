@@ -126,7 +126,6 @@ int main(int argC, char** argV)
 				TopologyLoader::LoadTopology(),
 				TimingInfo(Seconds(helper.GetNowOverhead()),
 						Seconds(helper.GetLoopOverhead()),
-						Seconds(helper.GetVCallOverhead()),
 						0));
 
 		auto targetProcessors = ValidateAndGetProcessingUnits(helper.GetAffinity(), environmentInfo.GetTopologyInfo());

@@ -36,7 +36,6 @@ namespace Elpida::Application
 				{ _topologyModel.GetFastestProcessor() },
 				_timingModel.GetNowOverhead().count(),
 				_timingModel.GetLoopOverhead().count(),
-				_timingModel.GetVirtualCallOverhead().count(),
 				false,
 				false,
 				ConcurrencyMode::None);

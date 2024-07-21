@@ -117,7 +117,7 @@ target_link_libraries(elpida-application OpenSSL::SSL)
 target_link_libraries(elpida-application elpida-core elpida-platform elpida-shared)
 
 if (UNIX OR MSYS OR MINGW)
-    if (${CMAKE_CXX_COMPILER_VERSION} STRLESS 9.3)
+    if (${CMAKE_CXX_COMPILER_VERSION} STRLESS 9.3 AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
         target_link_libraries(elpida-application stdc++fs)
     endif()
 

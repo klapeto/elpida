@@ -232,7 +232,6 @@ namespace Elpida::Application
 		return {
 			Seconds(jTiming.at("nowOverhead").get<double>()),
 			Seconds(jTiming.at("loopOverhead").get<double>()),
-			Seconds(jTiming.at("vCallOverhead").get<double>()),
 			jTiming.at("iterations").get<Iterations>(),
 		};
 	}

@@ -248,7 +248,6 @@ namespace Elpida::Application
 				_targetProcessors,
 				_timingModel.GetNowOverhead().count(),
 				_timingModel.GetLoopOverhead().count(),
-				_timingModel.GetVirtualCallOverhead().count(),
 				_runConfigurationModel.IsNumaAware(),
 				_runConfigurationModel.IsPinThreads(),
 				_runConfigurationModel.GetConcurrencyMode());

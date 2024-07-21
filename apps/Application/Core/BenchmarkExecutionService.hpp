@@ -23,7 +23,6 @@ namespace Elpida::Application
 				const std::vector<std::size_t>& affinity,
 				double nowOverheadSeconds,
 				double loopOverheadSeconds,
-				double virtualCallSeconds,
 				bool numaAware,
 				bool pinThreads,
 				ConcurrencyMode concurrencyMode);

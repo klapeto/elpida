@@ -80,7 +80,6 @@ namespace Elpida::Application
 						affinity,
 						_overheadsModel.GetNowOverhead().count(),
 						_overheadsModel.GetLoopOverhead().count(),
-						_overheadsModel.GetVirtualCallOverhead().count(),
 						_benchmarkRunConfigurationModel.IsNumaAware(),
 						_benchmarkRunConfigurationModel.IsPinThreads(),
 						_benchmarkRunConfigurationModel.GetConcurrencyMode());

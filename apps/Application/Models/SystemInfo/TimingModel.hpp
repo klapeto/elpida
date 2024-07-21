@@ -25,18 +25,14 @@ namespace Elpida::Application
 		const Duration& GetLoopOverhead() const;
 
 		[[nodiscard]]
-		const Duration& GetVirtualCallOverhead() const;
-
-		[[nodiscard]]
 		Iterations GetIterationsPerSecond() const;
 
 		TimingModel() = default;
-		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, const Duration& virtualCallOverhead, Iterations iterationsPerSecond);
+		TimingModel(const Duration& nowOverhead, const Duration& loopOverhead, Iterations iterationsPerSecond);
 		~TimingModel() override = default;
 	private:
 		Duration _nowOverhead;
 		Duration _loopOverhead;
-		Duration _virtualCallOverhead;
 		Size _iterationsPerSecond;
 	};
 
