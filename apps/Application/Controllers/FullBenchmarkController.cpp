@@ -25,9 +25,13 @@
 #include <fstream>
 #include <locale>
 #include <string>
+#include <cmath>
 
 namespace Elpida::Application
 {
+	static const double SingleCoreWeight = 1.2;
+	static const double MultiCoreWeight = 0.85;
+
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TimingModel& timingModel,
 			const TopologyModel& topologyModel,
@@ -144,7 +148,7 @@ namespace Elpida::Application
 
 	Score FullBenchmarkController::CalculateTotalScore(Score singleCoreScore, Score multiCoreScore)
 	{
-		return (singleCoreScore * 4) + multiCoreScore;
+		return std::pow(singleCoreScore, SingleCoreWeight) + std::pow(multiCoreScore, MultiCoreWeight);
 	}
 
 	void FullBenchmarkController::PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults) const

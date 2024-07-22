@@ -40,6 +40,7 @@ namespace Elpida::Application
 		_ui->glMain->addWidget(_resultsView, 0, 2, 2,1);
 
 		_runConfigurationView = new BenchmarkRunConfigurationView(benchmarkRunConfigurationModel, benchmarkRunConfigurationController);
+		_runConfigurationView->DisableUpload();
 
 		static_cast<QVBoxLayout*>(_ui->gbExecution->layout())->insertWidget(0, _runConfigurationView);
 		UpdateUi();
