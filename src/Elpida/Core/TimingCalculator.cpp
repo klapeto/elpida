@@ -18,7 +18,7 @@ namespace Elpida
 				1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(MilliSeconds(100),
 						Seconds(0),
 						Seconds(0),
-						[](volatile auto x)
+						[](auto x)
 						{
 							while (x-- > 0);
 						}));
@@ -30,7 +30,7 @@ namespace Elpida
 			1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(DefaultTestDuration,
 				Seconds(0),
 				Seconds(0),
-				[](volatile auto x)
+				[](auto x)
 				{
 				  while (x-- > 0);
 				}));
@@ -42,7 +42,7 @@ namespace Elpida
 			1.0 / (double)TimingUtilities::GetIterationsNeededForExecutionTime(DefaultTestDuration,
 				Seconds(0),
 				loopOverhead,
-				[](volatile auto x)
+				[](auto x)
 				{
 				  while (x-- > 0) std::chrono::high_resolution_clock::now();
 				}));

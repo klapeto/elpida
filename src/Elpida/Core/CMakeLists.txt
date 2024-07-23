@@ -38,12 +38,14 @@ set(ELPIDA_CORE_SOURCES
         AllocatorFactory.cpp
         DefaultAllocatorFactory.cpp
         BenchmarkRunContext.cpp
-        TimingCalculator.cpp
 )
 
 configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
 
 add_library(elpida-core SHARED ${ELPIDA_CORE_SOURCES})
+
+add_library(overheads-calculator TimingCalculator.cpp)
+target_compile_options(overheads-calculator PRIVATE -O3 -fno-dce -fno-tree-dce)
 
 target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/include)
 target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/src)
@@ -64,5 +66,7 @@ if (MSVC)
 else()
     target_link_libraries(elpida-core hwloc)
 endif()
+
+target_link_libraries(elpida-core overheads-calculator)
 
 install(TARGETS elpida-core)
