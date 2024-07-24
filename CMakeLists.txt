@@ -7,7 +7,18 @@ if (MSVC AND ELPIDA_MSVC_STATIC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif ()
 
-#add_compile_options(-O3)
+if (CMAKE_BUILD_TYPE STREQUAL "Release" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+    add_compile_options(-O3
+            -fno-stack-protector
+            -fno-stack-check
+            -fcf-protection=none
+            -fno-stack-clash-protection
+            -maccumulate-outgoing-args
+            -malign-double
+            -mfentry
+            -mms-bitfields
+            -mstackrealign)
+endif ()
 
 include(cmake-modules/GetElpidaVersion.cmake)
 include(cmake-modules/generate_product_version.cmake)

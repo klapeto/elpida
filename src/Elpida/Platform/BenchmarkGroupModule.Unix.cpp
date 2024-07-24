@@ -15,7 +15,7 @@ namespace Elpida
 {
 	void* BenchmarkGroupModule::LoadModule(const String& filePath)
 	{
-		auto ptr = dlopen(filePath.c_str(), RTLD_LAZY);
+		auto ptr = dlopen(filePath.c_str(), RTLD_NOW);
 		if (ptr == nullptr)
 		{
 			throw ElpidaException("Failed to load module: '", filePath, "': ", dlerror());
