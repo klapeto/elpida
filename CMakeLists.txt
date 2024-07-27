@@ -12,12 +12,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86
             -fno-stack-protector
             -fno-stack-check
             -fcf-protection=none
-            -fno-stack-clash-protection
-            -maccumulate-outgoing-args
-            -malign-double
-            -mfentry
-            -mms-bitfields
-            -mstackrealign)
+            -fno-stack-clash-protection)
 endif ()
 
 include(cmake-modules/GetElpidaVersion.cmake)
