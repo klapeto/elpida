@@ -80,7 +80,6 @@
 -fpartial-inlining
 -fpeephole2
 -freorder-blocks-algorithm=stc
--freorder-blocks-and-partition
 -freorder-functions
 -frerun-cse-after-loop
 -fschedule-insns
