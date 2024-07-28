@@ -29,7 +29,7 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		const SvgLength& GetOpacity() const
+		const SvgLength& GetGradientOpacity() const
 		{
 			return _opacity;
 		}

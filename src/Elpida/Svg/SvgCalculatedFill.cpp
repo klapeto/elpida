@@ -13,9 +13,4 @@ namespace Elpida
 	{
 
 	}
-
-	SvgFillRule SvgCalculatedFill::GetFillRule() const
-	{
-		return _fillRule;
-	}
 } // Elpida

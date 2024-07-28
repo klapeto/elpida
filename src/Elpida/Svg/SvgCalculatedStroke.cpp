@@ -27,36 +27,6 @@ namespace Elpida
 		_lineJoin = stroke.GetLineJoin();
 	}
 
-	const std::vector<double>& SvgCalculatedStroke::GetDashes() const
-	{
-		return _dashes;
-	}
-
-	SvgLineJoin SvgCalculatedStroke::GetLineJoin() const
-	{
-		return _lineJoin;
-	}
-
-	SvgLineCap SvgCalculatedStroke::GetLineCap() const
-	{
-		return _lineCap;
-	}
-
-	double SvgCalculatedStroke::GetDashOffset() const
-	{
-		return _dashOffset;
-	}
-
-	double SvgCalculatedStroke::GetWidth() const
-	{
-		return _width;
-	}
-
-	double SvgCalculatedStroke::GetMiterLimit() const
-	{
-		return _miterLimit;
-	}
-
 	void SvgCalculatedStroke::Transform(const SvgTransform& transform)
 	{
 		SvgCalculatedPaint::Transform(transform);

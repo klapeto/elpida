@@ -15,16 +15,28 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		const SvgLength& GetX() const;
+		const SvgLength& GetX() const
+		{
+			return _x;
+		}
 
 		[[nodiscard]]
-		const SvgLength& GetY() const;
+		const SvgLength& GetY() const
+		{
+			return _y;
+		}
 
 		[[nodiscard]]
-		const SvgLength& GetWidth() const;
+		const SvgLength& GetWidth() const
+		{
+			return _width;
+		}
 
 		[[nodiscard]]
-		const SvgLength& GetHeight() const;
+		const SvgLength& GetHeight() const
+		{
+			return _height;
+		}
 
 		SvgViewPort();
 		explicit SvgViewPort(const XmlMap& properties);

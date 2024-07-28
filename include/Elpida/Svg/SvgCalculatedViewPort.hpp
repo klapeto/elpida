@@ -14,16 +14,28 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		double GetX() const;
+		double GetX() const
+		{
+			return _x;
+		}
 
 		[[nodiscard]]
-		double GetY() const;
+		double GetY() const
+		{
+			return _y;
+		}
 
 		[[nodiscard]]
-		double GetWidth() const;
+		double GetWidth() const
+		{
+			return _width;
+		}
 
 		[[nodiscard]]
-		double GetHeight() const;
+		double GetHeight() const
+		{
+			return _height;
+		}
 
 		SvgCalculatedViewPort();
 		SvgCalculatedViewPort(double x, double y, double width, double height);

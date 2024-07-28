@@ -35,17 +35,6 @@ namespace Elpida
 		}
 	}
 
-
-	const std::vector<SvgCalculatedShape>& SvgCalculatedShape::GetChildren() const
-	{
-		return _children;
-	}
-
-	const SvgBounds& SvgCalculatedShape::GetBounds() const
-	{
-		return _bounds;
-	}
-
 	SvgCalculatedShape::SvgCalculatedShape(std::vector<SvgPathInstance>&& paths,
 			const SvgFill& fill,
 			const SvgStroke& stroke,
@@ -68,21 +57,6 @@ namespace Elpida
 		}
 
 		_blendMode = SvgBlendModeParser::Parse(calculationContext.GetValue("mix-blend-mode"));
-	}
-
-	const std::optional<SvgCalculatedFill>& SvgCalculatedShape::GetFill() const
-	{
-		return _fill;
-	}
-
-	const std::optional<SvgCalculatedStroke>& SvgCalculatedShape::GetStroke() const
-	{
-		return _stroke;
-	}
-
-	double SvgCalculatedShape::GetOpacity() const
-	{
-		return _opacity;
 	}
 
 	SvgCalculatedShape::SvgCalculatedShape()
@@ -112,36 +86,6 @@ namespace Elpida
 			child.Transform(transform);
 		}
 		Recalculate();
-	}
-
-	std::vector<SvgCalculatedShape>& SvgCalculatedShape::GetChildren()
-	{
-		return _children;
-	}
-
-	std::optional<SvgCalculatedFill>& SvgCalculatedShape::GetFill()
-	{
-		return _fill;
-	}
-
-	std::optional<SvgCalculatedStroke>& SvgCalculatedShape::GetStroke()
-	{
-		return _stroke;
-	}
-
-	const SvgPolygon& SvgCalculatedShape::GetStrokePolygon() const
-	{
-		return _strokePolygon;
-	}
-
-	const SvgPolygon& SvgCalculatedShape::GetFillPolygon() const
-	{
-		return _fillPolygon;
-	}
-
-	const std::vector<SvgPathInstance>& SvgCalculatedShape::GetPaths() const
-	{
-		return _paths;
 	}
 
 } // Elpida

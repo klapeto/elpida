@@ -16,30 +16,49 @@ namespace Elpida
 	class SvgStroke;
 	class SvgCalculationContext;
 
-	class SvgCalculatedStroke: public SvgCalculatedPaint
+	class SvgCalculatedStroke : public SvgCalculatedPaint
 	{
 	public:
 		[[nodiscard]]
-		const std::vector<double>& GetDashes() const;
+		const std::vector<double>& GetDashes() const
+		{
+			return _dashes;
+		}
 
 		[[nodiscard]]
-		SvgLineJoin GetLineJoin() const;
+		SvgLineJoin GetLineJoin() const
+		{
+			return _lineJoin;
+		}
 
 		[[nodiscard]]
-		SvgLineCap GetLineCap() const;
+		SvgLineCap GetLineCap() const
+		{
+			return _lineCap;
+		}
 
 		[[nodiscard]]
-		double GetDashOffset() const;
+		double GetDashOffset() const
+		{
+			return _dashOffset;
+		}
 
 		[[nodiscard]]
-		double GetWidth() const;
+		double GetWidth() const
+		{
+			return _width;
+		}
 
 		[[nodiscard]]
-		double GetMiterLimit() const;
+		double GetMiterLimit() const
+		{
+			return _miterLimit;
+		}
 
 		void Transform(const SvgTransform& transform) override;
 
-		SvgCalculatedStroke(const SvgStroke& stroke, const SvgBounds& elementBounds, const SvgDocument& document, const SvgCalculationContext& calculatingContext);
+		SvgCalculatedStroke(const SvgStroke& stroke, const SvgBounds& elementBounds, const SvgDocument& document,
+				const SvgCalculationContext& calculatingContext);
 		SvgCalculatedStroke(const SvgCalculatedStroke&) = default;
 		SvgCalculatedStroke& operator=(const SvgCalculatedStroke&) = default;
 		SvgCalculatedStroke(SvgCalculatedStroke&&) noexcept = default;

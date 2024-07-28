@@ -13,13 +13,22 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		const SvgColor& GetColor() const;
+		const SvgColor& GetColor() const
+		{
+			return _color;
+		}
 
 		[[nodiscard]]
-		double GetOffset() const;
+		double GetOffset() const
+		{
+			return _offset;
+		}
 
 		[[nodiscard]]
-		double GetOpacity() const;
+		double GetOpacity() const
+		{
+			return _opacity;
+		}
 
 		SvgCalculatedGradientStop(const SvgColor& color, double offset, double opacity);
 	private:
