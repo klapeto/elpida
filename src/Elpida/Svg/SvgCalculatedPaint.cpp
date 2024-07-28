@@ -89,7 +89,7 @@ namespace Elpida
 		{
 			calculatedStops.emplace_back(stop.GetColor(),
 					stop.GetOffset().CalculateValue(calculationContext, 1.0),
-					stop.GetOpacity().CalculateValue(calculationContext, 1.0));
+					stop.GetGradientOpacity().CalculateValue(calculationContext, 1.0));
 		}
 
 		return calculatedStops;

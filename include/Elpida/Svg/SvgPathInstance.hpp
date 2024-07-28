@@ -18,16 +18,28 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		const std::vector<SvgCubicBezierCurve>& GetCurves() const;
+		const std::vector<SvgCubicBezierCurve>& GetCurves() const
+		{
+			return _curves;
+		}
 
 		[[nodiscard]]
-		const SvgBounds& GetBounds() const;
+		const SvgBounds& GetBounds() const
+		{
+			return _bounds;
+		}
 
 		[[nodiscard]]
-		bool IsClosed() const;
+		bool IsClosed() const
+		{
+			return _closed;
+		}
 
 		[[nodiscard]]
-		const SvgPoint& GetStartPoint() const;
+		const SvgPoint& GetStartPoint() const
+		{
+			return _startPoint;
+		}
 
 		void Transform(const SvgTransform& transform);
 

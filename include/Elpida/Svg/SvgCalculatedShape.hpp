@@ -27,37 +27,70 @@ namespace Elpida
 	public:
 
 		[[nodiscard]]
-		const SvgPolygon& GetFillPolygon() const;
+		const SvgPolygon& GetFillPolygon() const
+		{
+			return _fillPolygon;
+		}
 
 		[[nodiscard]]
-		const SvgPolygon& GetStrokePolygon() const;
+		const SvgPolygon& GetStrokePolygon() const
+		{
+			return _strokePolygon;
+		}
 
 		[[nodiscard]]
-		const std::vector<SvgPathInstance>& GetPaths() const;
+		const std::vector<SvgPathInstance>& GetPaths() const
+		{
+			return _paths;
+		}
 
 		[[nodiscard]]
-		const std::vector<SvgCalculatedShape>& GetChildren() const;
+		const std::vector<SvgCalculatedShape>& GetChildren() const
+		{
+			return _children;
+		}
 
 		[[nodiscard]]
-		std::vector<SvgCalculatedShape>& GetChildren();
+		std::vector<SvgCalculatedShape>& GetChildren()
+		{
+			return _children;
+		}
 
 		[[nodiscard]]
-		const SvgBounds& GetBounds() const;
+		const SvgBounds& GetBounds() const
+		{
+			return _bounds;
+		}
 
 		[[nodiscard]]
-		const std::optional<SvgCalculatedFill>& GetFill() const;
+		const std::optional<SvgCalculatedFill>& GetFill() const
+		{
+			return _fill;
+		}
 
 		[[nodiscard]]
-		const std::optional<SvgCalculatedStroke>& GetStroke() const;
+		const std::optional<SvgCalculatedStroke>& GetStroke() const
+		{
+			return _stroke;
+		}
 
 		[[nodiscard]]
-		std::optional<SvgCalculatedFill>& GetFill();
+		std::optional<SvgCalculatedFill>& GetFill()
+		{
+			return _fill;
+		}
 
 		[[nodiscard]]
-		std::optional<SvgCalculatedStroke>& GetStroke();
+		std::optional<SvgCalculatedStroke>& GetStroke()
+		{
+			return _stroke;
+		}
 
 		[[nodiscard]]
-		double GetOpacity() const;
+		double GetOpacity() const
+		{
+			return _opacity;
+		}
 
 		[[nodiscard]]
 		SvgCompositingMode CompositingMode() const

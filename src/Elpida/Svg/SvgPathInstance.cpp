@@ -6,26 +6,6 @@
 
 namespace Elpida
 {
-	const std::vector<SvgCubicBezierCurve>& SvgPathInstance::GetCurves() const
-	{
-		return _curves;
-	}
-
-	const SvgBounds& SvgPathInstance::GetBounds() const
-	{
-		return _bounds;
-	}
-
-	bool SvgPathInstance::IsClosed() const
-	{
-		return _closed;
-	}
-
-	const SvgPoint& SvgPathInstance::GetStartPoint() const
-	{
-		return _startPoint;
-	}
-
 	void SvgPathInstance::Transform(const SvgTransform& transform)
 	{
 		_startPoint.Transform(transform);

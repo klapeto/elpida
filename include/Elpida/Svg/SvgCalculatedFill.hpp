@@ -17,7 +17,10 @@ namespace Elpida
 	public:
 
 		[[nodiscard]]
-		SvgFillRule GetFillRule() const;
+		SvgFillRule GetFillRule() const
+		{
+			return _fillRule;
+		}
 
 		SvgCalculatedFill(const SvgFill& paint,
 				const SvgBounds& elementBounds,

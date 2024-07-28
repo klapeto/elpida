@@ -92,7 +92,10 @@ namespace Elpida
 			return _visible;
 		}
 
-		SvgShapeType GetShapeType() const;
+		SvgShapeType GetShapeType() const
+		{
+			return _shapeType;
+		}
 
 		[[nodiscard]]
 		SvgCalculatedShape CalculateShape(const SvgDocument& document, SvgCalculationContext& calculationContext) const;

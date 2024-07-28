@@ -27,14 +27,19 @@ namespace Elpida
 	class SvgPreserveAspectRatio
 	{
 	public:
+		[[nodiscard]]
 		SvgAlignType GetType() const
 		{
 			return _type;
 		}
+
+		[[nodiscard]]
 		SvgAxisAlignType GetAlignX() const
 		{
 			return _alignX;
 		}
+
+		[[nodiscard]]
 		SvgAxisAlignType GetAlignY() const
 		{
 			return _alignY;

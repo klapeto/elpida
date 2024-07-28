@@ -160,9 +160,4 @@ namespace Elpida
 	{
 
 	}
-
-	SvgShapeType SvgElement::GetShapeType() const
-	{
-		return _shapeType;
-	}
 } // Elpida
