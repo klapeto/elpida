@@ -17,7 +17,6 @@
 -fif-conversion
 -fif-conversion2
 -finline-functions-called-once
--fipa-modref
 -fipa-profile
 -fipa-pure-const
 -fipa-reference
@@ -62,7 +61,6 @@
 -fdevirtualize
 -fdevirtualize-speculatively
 -fexpensive-optimizations
--ffinite-loops
 -fgcse
 -fgcse-lm
 -fhoist-adjacent-loads
@@ -99,7 +97,7 @@
 -ftree-switch-conversion
 -ftree-tail-merge
 -ftree-vrp
--fvect-cost-model=very-cheap
+-fvect-cost-model=cheap
 -fgcse-after-reload
 -fipa-cp-clone
 -floop-interchange
