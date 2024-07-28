@@ -1,4 +1,4 @@
--O
+-O3
 -mtune=generic
 -fno-stack-protector
 -fno-stack-check
@@ -89,7 +89,7 @@
 -fstore-merging
 -fstrict-aliasing
 -fthread-jumps
--fno-tree-builtin-call-dce
+-ftree-builtin-call-dce
 -ftree-loop-vectorize
 -ftree-pre
 -ftree-slp-vectorize
