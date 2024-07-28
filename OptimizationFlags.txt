@@ -1,5 +1,6 @@
 -O3
 -mtune=generic
+-fno-plt
 -fno-stack-protector
 -fno-stack-check
 -fcf-protection=none
