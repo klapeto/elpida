@@ -111,3 +111,5 @@
 -funswitch-loops
 -fvect-cost-model=dynamic
 -fversion-loops-for-strides
+-ftree-vectorize
+-funroll-loops

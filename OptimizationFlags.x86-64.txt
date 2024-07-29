@@ -18,7 +18,7 @@
 -mmovbe
 -mshstk
 -mcrc32
--mmwait
+-mmwaitx
 -mrecip
 -mrecip=all
 -maccumulate-outgoing-args
@@ -28,5 +28,4 @@
 -mindirect-branch=keep
 -mfunction-return=keep
 -mindirect-branch-register
--mharden-sls=none
 -freorder-blocks-and-partition

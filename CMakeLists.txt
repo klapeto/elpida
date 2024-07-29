@@ -2,20 +2,14 @@ cmake_minimum_required(VERSION 3.10)
 
 set(ELPIDA_MSVC_STATIC ON)
 
+# Force local compiler
+#set(CMAKE_C_COMPILER /usr/bin/gcc-9 CACHE PATH "" FORCE)
+#set(CMAKE_CXX_COMPILER /usr/bin/g++-9 CACHE PATH "" FORCE)
+
 if (MSVC AND ELPIDA_MSVC_STATIC)
     cmake_policy(SET CMP0091 NEW)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif ()
-
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    file (STRINGS "OptimizationFlags.txt" ELPIDA_OPTIMIZATION_FLAGS)
-    add_compile_options(${ELPIDA_OPTIMIZATION_FLAGS})
-
-    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-        file (STRINGS "OptimizationFlags.x86-64.txt" ELPIDA_OPTIMIZATION_X86_64_FLAGS)
-        add_compile_options(${ELPIDA_OPTIMIZATION_X86_64_FLAGS})
-    endif()
-endif()
 
 include(cmake-modules/GetElpidaVersion.cmake)
 include(cmake-modules/generate_product_version.cmake)
@@ -23,6 +17,15 @@ include(cmake-modules/generate_product_version.cmake)
 project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"
         LANGUAGES CXX C)
+
+if (ELPIDA_RELEASE STREQUAL TRUE)
+    file(STRINGS "OptimizationFlags.txt" ELPIDA_OPTIMIZATION_FLAGS)
+    add_compile_options(${ELPIDA_OPTIMIZATION_FLAGS})
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        file(STRINGS "OptimizationFlags.x86-64.txt" ELPIDA_OPTIMIZATION_X86_64_FLAGS)
+        add_compile_options(${ELPIDA_OPTIMIZATION_X86_64_FLAGS})
+    endif ()
+endif ()
 
 set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
 
@@ -54,9 +57,9 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # the RPATH to be used when installing, but only if it's not a system directory
 list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-if("${isSystemDir}" STREQUAL "-1")
+if ("${isSystemDir}" STREQUAL "-1")
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-endif("${isSystemDir}" STREQUAL "-1")
+endif ("${isSystemDir}" STREQUAL "-1")
 
 #====================
 
@@ -66,26 +69,26 @@ if (UNIX)
     set(ELPIDA_UNIX ON)
     add_compile_options(-Wextra)
     set(CMAKE_MODULE_LINKER_FLAGS -Wl,--no-undefined)
-elseif(MSYS OR MSVC OR MINGW)
+elseif (MSYS OR MSVC OR MINGW)
     set(ELPIDA_WINDOWS ON)
-endif()
+endif ()
 
 if (MSVC)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
-endif()
+endif ()
 
 # Enable debug stuff if we build debug
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(ELPIDA_DEBUG ON)
     set(ELPIDA_DEBUG_BUILD 1)
     add_definitions(-DELPIDA_DEBUG_BUILD=1)
-endif()
+endif ()
 
 set(ELPIDA_SHARED_LIBRARY_EXTENSION ${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "Local" FORCE)
-endif()
+endif ()
 
 if (MSYS OR MINGW OR MSVC)
     set(ELPIDA_BENCHMARK_INSTALL_DIR bin/Benchmarks)
@@ -95,12 +98,12 @@ if (MSYS OR MINGW OR MSVC)
     add_definitions(-DWIN32=1)
     add_definitions(-DWINVER=0x0600) # We support Vista and above
     add_definitions(-D_WIN32_WINNT=0x0600) # We support Vista and above
-else()
+else ()
     set(ELPIDA_BENCHMARK_INSTALL_DIR bin/Benchmarks)
     set(ELPIDA_HEADER_INSTALL_DIR include)
     set(ELPIDA_LIB_INSTALL_DIR lib)
     set(ELPIDA_APP_INSTALL_DIR bin)
-endif()
+endif ()
 
 include_directories(include)
 
