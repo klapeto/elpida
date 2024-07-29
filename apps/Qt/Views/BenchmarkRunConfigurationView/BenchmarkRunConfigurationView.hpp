@@ -23,6 +23,7 @@ namespace Elpida::Application
 		void DisableAdvancedSettings();
 		void DisableUpload();
 		void DisableIterations();
+		void DisableDelay();
 		void DisableHtmlReport();
 
 		explicit BenchmarkRunConfigurationView(
@@ -52,6 +53,8 @@ namespace Elpida::Application
 		void on_chkGenerateReport_stateChanged(int state);
 
 		void on_spnTimes_valueChanged(int value);
+
+		void on_spnDelay_valueChanged(int value);
 
 		void on_cmbConcurrencyMode_currentIndexChanged(int value);
 	};

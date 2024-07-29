@@ -30,6 +30,7 @@ namespace Elpida::Application
 				benchmarkRunConfigurationController);
 
 		_runConfigurationView->DisableIterations();
+		_runConfigurationView->DisableDelay();
 		_runConfigurationView->DisableUpload();
 		_runConfigurationView->DisableHtmlReport();
 		static_cast<QVBoxLayout*>(_ui->gbExecution->layout())->insertWidget(2, _runConfigurationView);

@@ -95,8 +95,11 @@ namespace Elpida::Application
 			thread->Enqueue([this, &benchmark]()
 			{
 				_ui->lblCurrentBenchmarkValue->setText(QString::fromStdString(benchmark));
-				UpdateProgress();
-				_currentBenchmarkIndex++;
+				if (benchmark != "Waiting..." && benchmark != "Uploading...")	//bad but will work for now
+				{
+					UpdateProgress();
+					_currentBenchmarkIndex++;
+				}
 			});
 		});
 	}

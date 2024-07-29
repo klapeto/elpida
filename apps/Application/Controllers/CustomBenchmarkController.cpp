@@ -22,6 +22,7 @@
 
 #include <fstream>
 #include <string>
+#include <thread>
 
 namespace Elpida::Application
 {
@@ -89,6 +90,22 @@ namespace Elpida::Application
 					thisRunResults.push_back(result);
 				}
 				_model.Add(std::move(result));
+
+				if (_cancelling)
+				{
+					break;
+				}
+
+				if (_benchmarkRunConfigurationModel.GetDelaySecondsBetweenRuns() > 0
+					&& _benchmarkRunConfigurationModel.GetIterationsToRun() > i + 1)
+				{
+					std::this_thread::sleep_for(Seconds(_benchmarkRunConfigurationModel.GetDelaySecondsBetweenRuns()));
+				}
+
+				if (_cancelling)
+				{
+					break;
+				}
 			}
 		}
 		catch (const ElpidaException& ex)

@@ -28,6 +28,10 @@ namespace Elpida::Application
 		void SetPinThreads(bool pinThreads);
 		void SetGenerateHtmlReport(bool generateHtmlReport);
 		void SetConcurrencyMode(ConcurrencyMode concurrencyMode);
+		void SetDelaySecondsBetweenRuns(std::size_t delaySecondsBetweenRuns);
+
+		[[nodiscard]]
+		std::size_t GetDelaySecondsBetweenRuns() const;
 
 		[[nodiscard]]
 		bool IsPinThreads() const;
@@ -55,6 +59,7 @@ namespace Elpida::Application
 		~BenchmarkRunConfigurationModel() override = default;
 	private:
 		std::size_t _iterationsToRun;
+		std::size_t _delaySecondsBetweenRuns;
 		bool _uploadResults;
 		bool _openResult;
 		bool _numaAware;

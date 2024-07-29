@@ -7,24 +7,17 @@
     <x>0</x>
     <y>0</y>
     <width>305</width>
-    <height>191</height>
+    <height>219</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0" colspan="3">
+   <item row="2" column="0" colspan="3">
     <widget class="QCheckBox" name="chkUpload">
      <property name="text">
       <string>Upload results anonymously to elpida website.</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QLabel" name="lblTimes">
-     <property name="text">
-      <string>times.</string>
      </property>
     </widget>
    </item>
@@ -35,7 +28,38 @@
      </property>
     </widget>
    </item>
+   <item row="0" column="1">
+    <widget class="QSpinBox" name="spnTimes">
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>999</number>
+     </property>
+    </widget>
+   </item>
    <item row="4" column="0" colspan="3">
+    <widget class="QCheckBox" name="chkGenerateReport">
+     <property name="text">
+      <string>Generate HTML report when complete</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="3">
+    <widget class="QCheckBox" name="chkOpenResult">
+     <property name="text">
+      <string>Open result in browser after upload.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="lblTimes">
+     <property name="text">
+      <string>times.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="3">
     <widget class="QGroupBox" name="gbAdvanced">
      <property name="title">
       <string>Advanced settings</string>
@@ -95,27 +119,24 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QSpinBox" name="spnTimes">
-     <property name="minimum">
-      <number>1</number>
+   <item row="1" column="0">
+    <widget class="QLabel" name="lblDelay">
+     <property name="text">
+      <string>Delay between runs</string>
      </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QSpinBox" name="spnDelay">
      <property name="maximum">
-      <number>999</number>
+      <number>9999</number>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="QCheckBox" name="chkGenerateReport">
+   <item row="1" column="2">
+    <widget class="QLabel" name="lblSeconds">
      <property name="text">
-      <string>Generate HTML report when complete</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="3">
-    <widget class="QCheckBox" name="chkOpenResult">
-     <property name="text">
-      <string>Open result in browser after upload.</string>
+      <string>seconds</string>
      </property>
     </widget>
    </item>

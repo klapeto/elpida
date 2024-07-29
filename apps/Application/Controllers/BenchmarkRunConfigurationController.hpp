@@ -23,6 +23,7 @@ namespace Elpida::Application
 		void SetIterationsToRun(std::size_t iterationsToRun);
 		void SetConcurrencyMode(ConcurrencyMode concurrencyMode);
 		void SetGenerateHtmlReport(bool generateHtmlReport);
+		void SetDelaySecondsBetweenRuns(std::size_t seconds);
 
 		explicit BenchmarkRunConfigurationController(BenchmarkRunConfigurationModel& model, SettingsService& settingsService);
 		~BenchmarkRunConfigurationController() override = default;

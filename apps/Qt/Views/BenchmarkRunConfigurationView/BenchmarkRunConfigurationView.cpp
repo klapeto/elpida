@@ -70,6 +70,7 @@ namespace Elpida::Application
 		_ui->chkPinThreads->setChecked(_model.IsPinThreads());
 		_ui->chkOpenResult->setEnabled(_model.IsUploadResults());
 		_ui->spnTimes->setValue(_model.GetIterationsToRun());
+		_ui->spnDelay->setValue(_model.GetDelaySecondsBetweenRuns());
 		_ui->chkGenerateReport->setChecked(_model.IsGenerateHtmlReport());
 		_ui->cmbConcurrencyMode->setCurrentIndex(TranslateConcurrencyMode(_model.GetConcurrencyMode()));
 		_uiUpdating = false;
@@ -133,5 +134,18 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationView::DisableHtmlReport()
 	{
 		_ui->chkGenerateReport->setVisible(false);
+	}
+
+	void BenchmarkRunConfigurationView::on_spnDelay_valueChanged(int value)
+	{
+		if (_uiUpdating) return;
+		_controller.SetDelaySecondsBetweenRuns(value);
+	}
+
+	void BenchmarkRunConfigurationView::DisableDelay()
+	{
+		_ui->spnDelay->setVisible(false);
+		_ui->lblDelay->setVisible(false);
+		_ui->lblSeconds->setVisible(false);
 	}
 }

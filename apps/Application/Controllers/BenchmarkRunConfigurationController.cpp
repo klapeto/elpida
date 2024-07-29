@@ -67,6 +67,12 @@ namespace Elpida::Application
 		{
 			_model.SetGenerateHtmlReport(false);
 		}
+
+		value = settingsService.Get("DelaySecondsBetweenRuns");
+		if (!value.empty())
+		{
+			_model.SetDelaySecondsBetweenRuns(static_cast<std::size_t>(std::stoul(value)));
+		}
 	}
 
 	void BenchmarkRunConfigurationController::SetUploadResults(bool uploadResults)
@@ -109,6 +115,12 @@ namespace Elpida::Application
 	{
 		_model.SetGenerateHtmlReport(generateHtmlReport);
 		_settingsService.Set("GenerateHtmlReport", generateHtmlReport ? "1" : "0");
+	}
+
+	void BenchmarkRunConfigurationController::SetDelaySecondsBetweenRuns(std::size_t seconds)
+	{
+		_model.SetDelaySecondsBetweenRuns(seconds);
+		_settingsService.Set("DelaySecondsBetweenRuns", std::to_string(seconds));
 	}
 } // Elpida
 // Application

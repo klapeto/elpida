@@ -128,6 +128,23 @@ namespace Elpida::Application
 							multiCoreScore);
 					_model.Add(result);
 					thisResults.push_back(std::move(result));
+
+					if (_cancelling.load(std::memory_order_acquire))
+					{
+						break;
+					}
+
+					if (_runConfigurationModel.GetDelaySecondsBetweenRuns() > 0
+						&& _runConfigurationModel.GetIterationsToRun() > i + 1)
+					{
+						_model.SetCurrentRunningBenchmark("Waiting...");
+						std::this_thread::sleep_for(Seconds(_runConfigurationModel.GetDelaySecondsBetweenRuns()));
+					}
+
+					if (_cancelling.load(std::memory_order_acquire))
+					{
+						break;
+					}
 				}
 
 			}
@@ -170,6 +187,7 @@ namespace Elpida::Application
 			{
 				try
 				{
+					_model.SetCurrentRunningBenchmark("Uploading...");
 					auto url = _dataUploader.UploadResult(thisResults);
 					if (_runConfigurationModel.IsOpenResult())
 					{

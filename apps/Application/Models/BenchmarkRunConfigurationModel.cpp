@@ -7,7 +7,7 @@
 namespace Elpida::Application
 {
 	BenchmarkRunConfigurationModel::BenchmarkRunConfigurationModel()
-			: _iterationsToRun(1), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false), _generateHtmlReport(false), _concurrencyMode(ConcurrencyMode::None)
+			: _iterationsToRun(1), _delaySecondsBetweenRuns(5), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false), _generateHtmlReport(false), _concurrencyMode(ConcurrencyMode::None)
 	{
 
 	}
@@ -84,5 +84,15 @@ namespace Elpida::Application
 	bool BenchmarkRunConfigurationModel::IsGenerateHtmlReport() const
 	{
 		return _generateHtmlReport;
+	}
+
+	size_t BenchmarkRunConfigurationModel::GetDelaySecondsBetweenRuns() const
+	{
+		return _delaySecondsBetweenRuns;
+	}
+
+	void BenchmarkRunConfigurationModel::SetDelaySecondsBetweenRuns(size_t delaySecondsBetweenRuns)
+	{
+		_delaySecondsBetweenRuns = delaySecondsBetweenRuns;
 	}
 } // Elpida
