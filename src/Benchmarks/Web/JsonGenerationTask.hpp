@@ -7,7 +7,6 @@
 
 #include "Elpida/Core/Task.hpp"
 
-
 namespace Elpida
 {
 

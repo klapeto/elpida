@@ -8,7 +8,9 @@ set(ELPIDA_WEB_BENCHMARKS_SOURCES
         XmlParseBenchmark.cpp
         ParseJsonTask.cpp
         XmlGenerationTask.cpp
-        JsonGenerationTask.cpp)
+        JsonGenerationTask.cpp
+        JsonParseBenchmark.cpp
+        JsonParseBenchmark.hpp)
 
 add_library(elpida-web-benchmarks MODULE ${ELPIDA_WEB_BENCHMARKS_SOURCES})
 

@@ -79,6 +79,10 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/MemoryBenchmark/MemoryBenchmarkResultModel.hpp
         Controllers/MemoryBenchmarkController.cpp
         Controllers/MemoryBenchmarkController.hpp
+        FullBenchmarkInstances/ParseJsonSingleThread.cpp
+        FullBenchmarkInstances/ParseJsonSingleThread.hpp
+        FullBenchmarkInstances/ParseJsonMultiThread.cpp
+        FullBenchmarkInstances/ParseJsonMultiThread.hpp
 )
 
 

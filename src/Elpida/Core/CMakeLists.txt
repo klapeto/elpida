@@ -38,6 +38,8 @@ set(ELPIDA_CORE_SOURCES
         AllocatorFactory.cpp
         DefaultAllocatorFactory.cpp
         BenchmarkRunContext.cpp
+        Memory.cpp
+        MemoryStream.cpp
 )
 
 configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")

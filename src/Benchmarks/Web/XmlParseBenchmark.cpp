@@ -3,11 +3,9 @@
 //
 
 #include "XmlParseBenchmark.hpp"
-#include "CommonTasks/FileReadTask.hpp"
+
 #include "CommonTasks/ParseXmlTask.hpp"
-#include "ParseJsonTask.hpp"
 #include "XmlGenerationTask.hpp"
-#include "JsonGenerationTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida

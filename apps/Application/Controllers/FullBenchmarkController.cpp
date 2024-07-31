@@ -4,8 +4,6 @@
 
 #include "FullBenchmarkController.hpp"
 
-#include "Elpida/Platform/OsUtilities.hpp"
-
 #include "Models/SystemInfo/TimingModel.hpp"
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
@@ -20,6 +18,8 @@
 
 #include "FullBenchmarkInstances/SvgRasterizationSingleThread.hpp"
 #include "FullBenchmarkInstances/SvgRasterizationMultiThread.hpp"
+#include "FullBenchmarkInstances/ParseJsonSingleThread.hpp"
+#include "FullBenchmarkInstances/ParseJsonMultiThread.hpp"
 
 #include <sstream>
 #include <fstream>
@@ -30,7 +30,7 @@
 namespace Elpida::Application
 {
 	static const double SingleCoreWeight = 1.2;
-	static const double MultiCoreWeight = 0.85;
+	static const double MultiCoreWeight = 1.0;
 
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TimingModel& timingModel,
@@ -73,7 +73,14 @@ namespace Elpida::Application
 					_benchmarks.push_back(
 							std::make_unique<SvgRasterizationMultiThread>(benchmark, timingModel, topologyModel,
 									memoryInfoModel, benchmarkExecutionService));
-				}
+				} /*else if (name == "Json Parsing"){
+					_benchmarks.push_back(
+							std::make_unique<ParseJsonSingleThread>(benchmark, timingModel, topologyModel,
+									memoryInfoModel, benchmarkExecutionService));
+					_benchmarks.push_back(
+							std::make_unique<ParseJsonMultiThread>(benchmark, timingModel, topologyModel,
+									memoryInfoModel, benchmarkExecutionService));
+				}*/
 			}
 		}
 

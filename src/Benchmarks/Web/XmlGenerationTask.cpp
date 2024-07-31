@@ -10,7 +10,7 @@
 namespace Elpida
 {
 	static const char Header[] = R"(<root>)";
-	static const char Element[] = R"(<element attr="test"><child id="a"/><child id="b"/></element>)";
+	static const char Element[] = R"(<element attr="test"><child id="a"/><child id="b"/><child id="c"><grandChild id="ca"/><grandChild id="cb"><grandChild id="cba">Test Data</grandChild></grandChild></child></element>)";
 	static const char Footer[] = R"(</root>)";
 
 	XmlGenerationTask::XmlGenerationTask(size_t xmlSize)

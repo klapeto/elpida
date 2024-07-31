@@ -13,6 +13,7 @@ add_executable(elpida-tests
         Svg/SvgBlendMode.Test.cpp
         Svg/SvgBounds.Test.cpp
         Svg/SvgPathGenerator.Test.cpp
+        Core/MemoryStream.Test.cpp
 )
 
 target_link_libraries(elpida-tests gtest gtest_main elpida-svg elpida-xml elpida-core)

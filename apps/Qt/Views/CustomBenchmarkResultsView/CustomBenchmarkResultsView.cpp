@@ -39,7 +39,7 @@ namespace Elpida::Application
 		  auto& result = item.GetValue();
 		  auto& benchmark = result.GetBenchmark();
 		  auto root = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
-			  QStringList({ QString::fromStdString(benchmark.GetName()), QString::fromStdString(Elpida::ValueUtilities::GetValueScaleStringSI(result.GetResult())+ benchmark.GetResultUnit()) }));
+			  QStringList({ QString::fromStdString(benchmark.GetName()), QString::fromStdString(Elpida::ValueUtilities::GetValueScaleStringSI(result.GetResult()) + benchmark.GetResultUnit() +(benchmark.GetResultType() == ResultType::Throughput ? "/s" : "")) }));
 		  _ui->twResults->addTopLevelItem(root);
 		});
 

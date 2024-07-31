@@ -19,6 +19,8 @@
 
 namespace Elpida
 {
+	class Memory;
+
 	class RawTaskData : public AbstractTaskData
 	{
 	 public:
@@ -46,6 +48,8 @@ namespace Elpida
 		Copy(const Vector<SharedPtr<Allocator>>& targetAllocators) const override;
 
 		explicit RawTaskData(SharedPtr<Allocator> allocator);
+		explicit RawTaskData(unsigned char* data, Size size, SharedPtr<Allocator> allocator);
+		explicit RawTaskData(Memory memory);
 		RawTaskData(Size size, SharedPtr<Allocator> allocator);
 		RawTaskData(const RawTaskData&) = delete;
 		RawTaskData(RawTaskData&& other) noexcept;
