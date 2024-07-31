@@ -15,8 +15,8 @@ namespace Elpida
 	Vector<TaskConfiguration> ZlibDecompressionBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-				TaskConfiguration("Input file", ConfigurationType::File, "./Assets/file.input"),
-				TaskConfiguration("Output file", ConfigurationType::File, "./file.out.input"),
+				TaskConfiguration("Input file", ConfigurationType::File, "./assets/lorem-ipsum.z"),
+				TaskConfiguration("Output file", ConfigurationType::File, "./lorem-ipsum.txt"),
 		};
 	}
 

@@ -136,4 +136,6 @@ install(TARGETS elpida-application)
 install(FILES Assets/placeholder DESTINATION bin/assets)
 install(FILES Assets/custom-report-template.html DESTINATION bin/assets)
 install(FILES Assets/full-report-template.html DESTINATION bin/assets)
+install(FILES Assets/lorem-ipsum.txt DESTINATION bin/assets)
+install(FILES Assets/lorem-ipsum.z DESTINATION bin/assets)
 
