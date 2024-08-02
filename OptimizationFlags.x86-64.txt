@@ -28,4 +28,3 @@
 -mindirect-branch=keep
 -mfunction-return=keep
 -mindirect-branch-register
--freorder-blocks-and-partition
