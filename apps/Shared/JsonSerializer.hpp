@@ -31,8 +31,6 @@ namespace Elpida
 		static nlohmann::json Serialize(const TimingInfo& timingInfo);
 		static nlohmann::json Serialize(const TaskInfo& taskInfo);
 		static nlohmann::json Serialize(const Benchmark& benchmark);
-		static nlohmann::json Serialize(const BenchmarkGroup& benchmarkGroup);
-		static nlohmann::json Serialize(const BenchmarkResult& result);
 
 		JsonSerializer() = delete;
 	};

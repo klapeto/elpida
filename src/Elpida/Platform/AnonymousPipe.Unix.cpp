@@ -25,13 +25,20 @@ namespace Elpida
 		_writeHandle = pipes[1];
 	}
 
-	void AnonymousPipe::Close()
+	void AnonymousPipe::CloseRead()
 	{
 		if (_readHandle.has_value())
 		{
 			close(std::any_cast<int>(_readHandle));
-			close(std::any_cast<int>(_writeHandle));
 			_readHandle = {};
+		}
+	}
+
+	void AnonymousPipe::CloseWrite()
+	{
+		if (_writeHandle.has_value())
+		{
+			close(std::any_cast<int>(_writeHandle));
 			_writeHandle = {};
 		}
 	}

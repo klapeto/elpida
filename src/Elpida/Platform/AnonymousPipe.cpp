@@ -19,4 +19,10 @@ namespace Elpida
 		return *this;
 	}
 
+	void AnonymousPipe::Close()
+	{
+		CloseRead();
+		CloseWrite();
+	}
+
 } // Elpida

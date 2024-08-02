@@ -54,6 +54,11 @@ namespace Elpida
 
 	std::filesystem::path OsUtilities::GetExecutableDirectory()
 	{
+		return GetExecutablePath().parent_path();
+	}
+
+	std::filesystem::path OsUtilities::GetExecutablePath()
+	{
 		WCHAR buffer[MAX_PATH];
 
 		auto lenght = GetModuleFileNameW(NULL, buffer, sizeof(buffer));
@@ -64,7 +69,7 @@ namespace Elpida
 
 		std::wstring pathStr(buffer, lenght);
 
-		return std::filesystem::path(pathStr).parent_path();
+		return std::filesystem::path(pathStr);
 	}
 
 	std::string OsUtilities::ReadRegistryKeyFromHKLM(const std::string& subKey, const std::string& key)

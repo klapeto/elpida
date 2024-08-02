@@ -9,11 +9,9 @@
 #include "Elpida/Core/OsInfo.hpp"
 #include "Elpida/Core/TimingInfo.hpp"
 #include "Elpida/Core/Benchmark.hpp"
-#include "Elpida/Core/BenchmarkGroup.hpp"
 #include "Elpida/Core/TaskInfo.hpp"
 #include "Elpida/Core/Topology/TopologyInfo.hpp"
 #include "Elpida/Core/Topology/TopologyNode.hpp"
-#include "Elpida/Core/BenchmarkResult.hpp"
 
 namespace Elpida
 {
@@ -148,21 +146,10 @@ namespace Elpida
 		json jBenchmark;
 		auto info = benchmark.GetInfo();
 
-		//jBenchmark["index"] = index;
-		//jBenchmark["uuid"] = info.GetUuid();
 		jBenchmark["name"] = info.GetName();
 		jBenchmark["description"] = info.GetDescription();
 		jBenchmark["resultUnit"] = info.GetResultUnit();
 		jBenchmark["resultType"] = info.GetResultType();
-
-//		json taskArray = json::array();
-//		for (auto& task: info.GetTaskInfos())
-//		{
-//			taskArray.push_back(Serialize(task));
-//		}
-//
-//		jBenchmark["tasks"] = std::move(taskArray);
-
 
 		json jRequiredConfiguration = json::array();
 
@@ -182,26 +169,6 @@ namespace Elpida
 		return jBenchmark;
 	}
 
-	nlohmann::json JsonSerializer::Serialize(const BenchmarkGroup& benchmarkGroup)
-	{
-		json jBenchmarkGroup;
-
-		jBenchmarkGroup["name"] = benchmarkGroup.GetName();
-		//jBenchmarkGroup["filePath"] = modulePath;
-
-		json benchmarkArray = json::array();
-
-		auto& benchmarks = benchmarkGroup.GetBenchmarks();
-		for (const auto & benchmark : benchmarks)
-		{
-			benchmarkArray.push_back(Serialize(*benchmark));
-		}
-
-		jBenchmarkGroup["benchmarks"] = std::move(benchmarkArray);
-
-		return jBenchmarkGroup;
-	}
-
 	nlohmann::json JsonSerializer::Serialize(const TimingInfo& timingInfo)
 	{
 		json jTiming;
@@ -211,34 +178,5 @@ namespace Elpida
 		jTiming["nowOverhead"] = timingInfo.GetNowOverhead().count();
 
 		return jTiming;
-	}
-
-	nlohmann::json JsonSerializer::Serialize(const BenchmarkResult& result)
-	{
-
-		json rootJ;
-
-		rootJ["result"] = result.GetResult();
-
-		return rootJ;
-		//json rootJ;
-
-//		auto arrayJ = json::array();
-//
-//		auto& taskResults = result.GetTaskResults();
-//		for (const auto& taskResult : taskResults)
-//		{
-//			json resultJ;
-//
-//			resultJ["duration"] = std::chrono::duration_cast<Seconds>(
-//					taskResult.GetDuration()).count();
-//			resultJ["dataSize"] = taskResult.GetDataSize();
-//
-//			arrayJ.push_back(std::move(resultJ));
-//		}
-		//rootJ["taskResults"] = std::move(arrayJ);
-
-		//return rootJ;
-		//return arrayJ;
 	}
 } // Elpida

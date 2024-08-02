@@ -59,14 +59,17 @@ namespace Elpida
 		return bytes;
 	}
 
-	void AnonymousPipe::Close()
+	void AnonymousPipe::CloseRead()
 	{
 		if (_readHandle.has_value())
 		{
 			CloseHandle(GetReadHandle<HANDLE>());
 			_readHandle = {};
 		}
+	}
 
+	void AnonymousPipe::CloseWrite()
+	{
 		if (_writeHandle.has_value())
 		{
 			CloseHandle(GetWriteHandle<HANDLE>());

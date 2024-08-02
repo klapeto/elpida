@@ -6,11 +6,12 @@
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/UniquePtr.hpp"
-#include "Elpida/Core/BenchmarkModule.hpp"
+#include "Elpida/Core/ModuleExports.hpp"
 #include "PngEncodingBenchmark.hpp"
 #include "SvgParseBenchmark.hpp"
 #include "SvgRasterizationBenchmark.hpp"
 #include "SvgRasterizationFromFileBenchmark.hpp"
+
 using namespace Elpida;
 
 ELPIDA_CREATE_BENCHMARK_GROUP_DECL
@@ -22,10 +23,5 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	vec.emplace_back(new SvgRasterizationBenchmark());
 	vec.emplace_back(new SvgRasterizationFromFileBenchmark());
 
-	return new BenchmarkGroup("Image benchmarks", std::move(vec));
-}
-
-ELPIDA_DESTROY_BENCHMARK_GROUP_DECL
-{
-	delete group;
+	return std::make_unique<BenchmarkGroup>("Image benchmarks", std::move(vec));
 }

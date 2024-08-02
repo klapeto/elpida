@@ -6,7 +6,6 @@ project("Elpida Information Dumper" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_INFO_DUMPER_SOURCES
         Main.cpp)
 
-
 add_executable(elpida-info-dumper ${ELPIDA_INFO_DUMPER_SOURCES})
 target_link_libraries(elpida-info-dumper elpida-core overheads-calculator elpida-platform elpida-shared)
 

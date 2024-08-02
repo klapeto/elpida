@@ -17,6 +17,7 @@ namespace Elpida
 	 public:
 		static String GetLastErrorString();
 		static std::filesystem::path GetExecutableDirectory();
+		static std::filesystem::path GetExecutablePath();
 		static unsigned int GetNumaNodeIdForProcessor(unsigned int processorId);
 #if defined(ELPIDA_WINDOWS)
 		static std::string ReadRegistryKeyFromHKLM(const std::string& subKey, const std::string& key);

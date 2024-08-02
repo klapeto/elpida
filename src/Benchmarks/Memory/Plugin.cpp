@@ -5,7 +5,7 @@
 #include "Elpida/Core/BenchmarkGroup.hpp"
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Vector.hpp"
-#include "Elpida/Core/BenchmarkModule.hpp"
+#include "Elpida/Core/ModuleExports.hpp"
 #include "MemoryLatencyBenchmark.hpp"
 #include "MemoryReadBandwidthBenchmark.hpp"
 
@@ -18,10 +18,5 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	vec.emplace_back(new MemoryReadBandwidthBenchmark());
 	vec.emplace_back(new MemoryLatencyBenchmark());
 
-	return new BenchmarkGroup("Memory benchmarks", std::move(vec));
-}
-
-ELPIDA_DESTROY_BENCHMARK_GROUP_DECL
-{
-	delete group;
+	return std::make_unique<BenchmarkGroup>("Memory benchmarks", std::move(vec));
 }

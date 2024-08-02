@@ -16,8 +16,8 @@ set(ELPIDA_COMPRESSION_BENCHMARKS_SOURCES
         ZlibDecompressionBenchmark.hpp
 )
 
-add_library(elpida-compression-benchmarks SHARED ${ELPIDA_COMPRESSION_BENCHMARKS_SOURCES})
+add_executable(elpida-compression-benchmarks ${ELPIDA_COMPRESSION_BENCHMARKS_SOURCES})
 
-target_link_libraries(elpida-compression-benchmarks PRIVATE elpida-core elpida-common-tasks zlib)
+target_link_libraries(elpida-compression-benchmarks PRIVATE elpida-core elpida-common-tasks zlib elpida-entry-point)
 
 install(TARGETS elpida-compression-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})

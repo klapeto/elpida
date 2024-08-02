@@ -29,6 +29,9 @@ namespace Elpida
 
 		void Close();
 
+		void CloseRead();
+		void CloseWrite();
+
 		void Open();
 
 		bool IsOpen() const;

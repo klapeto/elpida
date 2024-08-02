@@ -49,7 +49,6 @@ namespace Elpida::Application
 
 		std::vector<std::string> arguments
 				{
-						std::string("--module=") + "\"" + benchmarkModel.GetFilePath() + "\"",
 						"--index=" + std::to_string(benchmarkModel.GetBenchmarkIndex()),
 						"--now-overhead=" + toString(nowOverheadSeconds),
 						"--loop-overhead=" + toString(loopOverheadSeconds),
@@ -87,7 +86,7 @@ namespace Elpida::Application
 		arguments.emplace_back(
 				std::string("--concurrency-mode=").append(std::to_string(static_cast<std::size_t>(concurrencyMode))));
 
-		_currentProcess = Process(OsUtilities::GetExecutableDirectory() / "elpida-executor", arguments, true, true);
+		_currentProcess = Process(benchmarkModel.GetFilePath(), arguments, true, true);
 
 		AsyncPipeReader stdOutReader(_currentProcess.GetStdOut());
 		AsyncPipeReader stdErrReader(_currentProcess.GetStdErr());

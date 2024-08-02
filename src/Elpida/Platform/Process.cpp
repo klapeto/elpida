@@ -36,6 +36,8 @@ namespace Elpida
 			_errorPipe.Open();
 		}
 		_pid = DoStartProcess(std::filesystem::absolute(path), args, _outputPipe, _errorPipe);
+		_errorPipe.CloseWrite();
+		_outputPipe.CloseWrite();
 	}
 
 	void Process::WaitToExit() const
@@ -46,17 +48,15 @@ namespace Elpida
 	Process::~Process()
 	{
 		if (_pid < 0) return;
-		char buffer[1]{ 0 };
 		if (_outputPipe.IsOpen())
 		{
-			_outputPipe.Write(buffer, sizeof(buffer));
+			_outputPipe.Close();
 		}
 
 		if (_errorPipe.IsOpen())
 		{
-			_errorPipe.Write(buffer, sizeof(buffer));
+			_errorPipe.Close();
 		}
-
 
 		WaitToExitImpl(true);
 	}

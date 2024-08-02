@@ -50,6 +50,9 @@ namespace Elpida
 		bool GetPinThreads() const;
 
 		[[nodiscard]]
+		bool GetDumpInfo() const;
+
+		[[nodiscard]]
 		ConcurrencyMode GetConcurrencyMode() const;
 
 		bool ParseAndGetExitText(int argC, char* argV[], std::string& returnText);
@@ -67,6 +70,7 @@ namespace Elpida
 		ConcurrencyMode _concurrencyMode;
 		bool _numaAware;
 		bool _pinThreads;
+		bool _dumpInfo;
 
 		void ParseAffinity(const String& value);
 		void ParseFormat(const String& value);

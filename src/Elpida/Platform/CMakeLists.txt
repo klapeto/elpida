@@ -6,10 +6,6 @@ project("Elpida platform specific" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_PLATFORM_SOURCES
         TopologyLoader.cpp
 
-        BenchmarkGroupModule.cpp
-        BenchmarkGroupModule.Unix.cpp
-        BenchmarkGroupModule.Windows.cpp
-
         NumaAllocator.Unix.cpp
         NumaAllocator.Windows.cpp
 
@@ -38,7 +34,7 @@ set(ELPIDA_PLATFORM_SOURCES
         CpuInfoLoader.Arm64.Windows.cpp
 )
 
-add_library(elpida-platform SHARED ${ELPIDA_PLATFORM_SOURCES})
+add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 
 target_link_libraries(elpida-platform elpida-core)
 

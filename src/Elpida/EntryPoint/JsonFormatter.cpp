@@ -2,16 +2,17 @@
 // Created by klapeto on 24/4/2023.
 //
 
-#include "JsonFormatter.hpp"
-
-#include "JsonSerializer.hpp"
-
-using namespace nlohmann;
+#include "Elpida/EntryPoint/JsonFormatter.hpp"
+#include "json.hpp"
 
 namespace Elpida
 {
 	String JsonFormatter::ConvertToString(const BenchmarkResult& result, const Benchmark& benchmark) const
 	{
-		return JsonSerializer::Serialize(result).dump();
+		nlohmann::json rootJ;
+
+		rootJ["result"] = result.GetResult();
+
+		return rootJ.dump();
 	}
 } // Elpida

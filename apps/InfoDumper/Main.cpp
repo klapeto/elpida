@@ -14,22 +14,56 @@
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
 #include "Elpida/Core/TimingCalculator.hpp"
-#include "Elpida/Platform/BenchmarkGroupModule.hpp"
+#include "Elpida/Core/ElpidaException.hpp"
+#include "Elpida/Platform/Process.hpp"
+#include "Elpida/Platform/AsyncPipeReader.hpp"
 
 using namespace nlohmann;
 using namespace Elpida;
 
-static json SerializeBenchmarkGroup(const BenchmarkGroup& group, const std::string& modulePath)
+static std::string GetBenchmarkInfo(const std::filesystem::path& path)
 {
-	auto value = JsonSerializer::Serialize(group);
-	value["filePath"] = modulePath;
+	Process process(path.string(), { "--dump-info" }, true, true);
+	AsyncPipeReader outReader(process.GetStdOut());
+	AsyncPipeReader errReader(process.GetStdErr());
+	outReader.StartReading();
+	errReader.StartReading();
+	process.GetStdOut().CloseWrite();
+	process.GetStdErr().CloseWrite();
 
-	std::size_t i = 0;
-	for (auto& benchmark : value["benchmarks"])
+	try
 	{
-		benchmark["index"] = i++;
+		process.WaitToExit();
+		outReader.StopReading();
+		return outReader.GetString();
 	}
-	return value;
+	catch (...)
+	{
+		outReader.StopReading();
+		errReader.StopReading();
+		auto err = errReader.GetString();
+		if (!err.empty())
+		{
+			throw ElpidaException(err);
+		}
+		else
+		{
+			throw;
+		}
+	}
+}
+
+static bool IsExecutable(const std::filesystem::directory_entry& entry)
+{
+#if defined(ELPIDA_UNIX)
+	auto permissions = entry.status().permissions();
+	return (permissions & std::filesystem::perms::owner_exec) != std::filesystem::perms::none
+		   || (permissions & std::filesystem::perms::group_exec) != std::filesystem::perms::none
+		   || (permissions & std::filesystem::perms::others_exec) != std::filesystem::perms::none;
+#else
+	auto path = entry.path();
+	return path.has_extension() && path.extension().string() == ".exe";
+#endif
 }
 
 static json SerializeBenchmarkGroups(const std::filesystem::path& path)
@@ -43,16 +77,17 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path)
 	json loaded = json::array();
 	json failedToLoad = json::array();
 
-	for (auto& entry: std::filesystem::directory_iterator(path))
+	for (auto& entry : std::filesystem::directory_iterator(path))
 	{
-		if (!entry.is_directory() && entry.is_regular_file())
+		if (!entry.is_directory() && entry.is_regular_file() && IsExecutable(entry))
 		{
 			try
 			{
-				auto strPath = entry.path().string();
-				BenchmarkGroupModule module(strPath);
-
-				loaded.push_back(SerializeBenchmarkGroup(module.GetBenchmarkGroup(), strPath));
+				const auto& exePath = entry.path();
+				auto strOut = GetBenchmarkInfo(exePath);
+				auto json = json::parse(strOut);
+				json["filePath"] = exePath.string();
+				loaded.push_back(std::move(json));    //validation?
 			}
 			catch (const std::exception& ex)
 			{

@@ -2,7 +2,7 @@
 // Created by klapeto on 12/3/2023.
 //
 
-#include "ResultFormatter.hpp"
+#include "Elpida/EntryPoint/ResultFormatter.hpp"
 
 namespace Elpida
 {

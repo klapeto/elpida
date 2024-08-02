@@ -2,11 +2,11 @@
 // Created by klapeto on 12/3/2023.
 //
 
-#include "ArgumentsHelper.hpp"
+#include "Elpida/EntryPoint/ArgumentsHelper.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
-#include "DefaultFormatter.hpp"
-#include "JsonFormatter.hpp"
+#include "Elpida/EntryPoint/DefaultFormatter.hpp"
+#include "Elpida/EntryPoint/JsonFormatter.hpp"
 
 #include <filesystem>
 
@@ -105,6 +105,8 @@ namespace Elpida
 				<< std::endl;
 		accumulator << R"("       --concurrency-mode=MODE)" << std::endl;
 		accumulator << R"("           The concurrency to use on tasks. Can be 'None' or '0' (default), 'CopyInput' or '1', 'ShareInput' or '2', 'ChunkInput' or '3')" << std::endl;
+		accumulator << R"("       --dump-info)" << std::endl;
+		accumulator << R"("           Dumps the benchmark data of this benchmark)" << std::endl;
 
 		return accumulator.str();
 	}
@@ -213,7 +215,8 @@ namespace Elpida
 			LoopOverhead,
 			NumaAware,
 			PinThreads,
-			ConcurrencyMode
+			ConcurrencyMode,
+			DumpInfo
 		};
 
 		struct option options[] = {
@@ -229,6 +232,7 @@ namespace Elpida
 				{ "numa-aware",          no_argument,       nullptr, NumaAware },
 				{ "pin-threads",         no_argument,       nullptr, PinThreads },
 				{ "concurrency-mode", required_argument, nullptr, ConcurrencyMode },
+				{ "dump-info", no_argument, nullptr, DumpInfo },
 				{ nullptr, 0,                               nullptr, 0 }
 		};
 
@@ -273,6 +277,9 @@ namespace Elpida
 			case PinThreads:
 				_pinThreads = true;
 				break;
+			case DumpInfo:
+				_dumpInfo = true;
+				return true;
 			case ConcurrencyMode:
 				_concurrencyMode = ParseConcurrencyMode(GetValueOrDefault(optarg));
 				break;
@@ -378,7 +385,7 @@ namespace Elpida
 	ArgumentsHelper::ArgumentsHelper()
 			:_benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0),
 			 _concurrencyMode(ConcurrencyMode::None),
-			 _numaAware(false), _pinThreads(false)
+			 _numaAware(false), _pinThreads(false), _dumpInfo(false)
 	{
 
 	}
@@ -396,6 +403,11 @@ namespace Elpida
 	ConcurrencyMode ArgumentsHelper::GetConcurrencyMode() const
 	{
 		return _concurrencyMode;
+	}
+
+	bool ArgumentsHelper::GetDumpInfo() const
+	{
+		return _dumpInfo;
 	}
 
 } // Elpida

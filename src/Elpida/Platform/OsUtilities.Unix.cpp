@@ -34,7 +34,12 @@ namespace Elpida
 
 	std::filesystem::path OsUtilities::GetExecutableDirectory()
 	{
-		return std::filesystem::canonical("/proc/self/exe").parent_path();
+		return GetExecutablePath().parent_path();
+	}
+
+	std::filesystem::path OsUtilities::GetExecutablePath()
+	{
+		return std::filesystem::canonical("/proc/self/exe");
 	}
 } // Elpida
 

@@ -2,7 +2,7 @@
 // Created by klapeto on 12/3/2023.
 //
 
-#include "DefaultFormatter.hpp"
+#include "Elpida/EntryPoint/DefaultFormatter.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
 #include "Elpida/Core/BenchmarkInfo.hpp"
 

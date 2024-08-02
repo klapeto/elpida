@@ -43,8 +43,6 @@ namespace Elpida
 	{
 		auto expected = true;
 		if (!_running.compare_exchange_strong(expected, false)) return;
-		char buffer[1] = {0};
-		_pipe.Write(buffer, sizeof(buffer));
 		_readerThread.join();
 	}
 

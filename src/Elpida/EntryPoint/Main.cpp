@@ -32,17 +32,80 @@
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/String.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
-#include "Elpida/Platform/BenchmarkGroupModule.hpp"
 #include "Elpida/Platform/NumaAllocatorFactory.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
 
-#include "ArgumentsHelper.hpp"
 #include "Elpida/Platform/OsInfoLoader.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
+#include "Elpida/EntryPoint/ArgumentsHelper.hpp"
 
+#include "json.hpp"
+
+#include "Elpida/Core/ModuleExports.hpp"
+
+using namespace nlohmann;
 using namespace Elpida;
+
+static nlohmann::json Serialize(const Benchmark& benchmark)
+{
+	json jBenchmark;
+	auto info = benchmark.GetInfo();
+
+	jBenchmark["name"] = info.GetName();
+	jBenchmark["description"] = info.GetDescription();
+	jBenchmark["resultUnit"] = info.GetResultUnit();
+	jBenchmark["resultType"] = info.GetResultType();
+
+	json jRequiredConfiguration = json::array();
+
+	for (auto& config: benchmark.GetRequiredConfiguration())
+	{
+		json jConfig;
+
+		jConfig["name"] = config.GetName();
+		jConfig["type"] = config.GetType();
+		jConfig["defaultValue"] = config.GetValue();
+
+		jRequiredConfiguration.push_back(std::move(jConfig));
+	}
+
+	jBenchmark["requiredConfiguration"] = std::move(jRequiredConfiguration);
+
+	return jBenchmark;
+}
+
+static nlohmann::json Serialize(const BenchmarkGroup& benchmarkGroup)
+{
+	json jBenchmarkGroup;
+
+	jBenchmarkGroup["name"] = benchmarkGroup.GetName();
+
+	json benchmarkArray = json::array();
+
+	auto& benchmarks = benchmarkGroup.GetBenchmarks();
+	for (const auto & benchmark : benchmarks)
+	{
+		benchmarkArray.push_back(Serialize(*benchmark));
+	}
+
+	jBenchmarkGroup["benchmarks"] = std::move(benchmarkArray);
+
+	return jBenchmarkGroup;
+}
+
+static json SerializeBenchmarkGroup(const BenchmarkGroup& group)
+{
+	auto value = Serialize(group);
+
+	std::size_t i = 0;
+	for (auto& benchmark : value["benchmarks"])
+	{
+		benchmark["index"] = i++;
+	}
+	return value;
+}
 
 static Vector<Ref<const ProcessingUnitNode>>
 ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const TopologyInfo& topologyInfo)
@@ -92,6 +155,8 @@ ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector
 	}
 }
 
+ELPIDA_CREATE_BENCHMARK_GROUP_FUNC();
+
 int main(int argC, char** argV)
 {
 	try
@@ -107,13 +172,19 @@ int main(int argC, char** argV)
 				std::cout << returnText << std::endl;
 				return success ? EXIT_SUCCESS : EXIT_FAILURE;
 			}
+
+			if (success && helper.GetDumpInfo())
+			{
+				auto group = CreateBenchmarkGroup();
+
+				std::cout << SerializeBenchmarkGroup(*group).dump();
+				return EXIT_SUCCESS;
+			}
 		}
 
-		BenchmarkGroupModule module(helper.GetModulePath());
+		auto group = CreateBenchmarkGroup();
 
-		auto& benchmark = module
-				.GetBenchmarkGroup()
-				.GetBenchmarks()
+		auto& benchmark = group->GetBenchmarks()
 				.at(helper.GetBenchmarkIndex());
 
 		auto config = benchmark->GetRequiredConfiguration();
