@@ -1,6 +1,6 @@
 project("Elpida Svg")
 
-add_library(elpida-svg SHARED
+add_library(elpida-svg
         SvgBounds.cpp
         SvgColor.cpp
         SvgLength.cpp
