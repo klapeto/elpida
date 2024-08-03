@@ -8,15 +8,15 @@
     - stagingDir=$(mktemp -d -t ci-XXXXXXXXXX)
     - /mxe/tools/copydlldeps.sh -c
       -f "$INSTALL_DIR/bin/elpida-qt.exe"
-      -S "/mxe/usr/x86_64-w64-mingw32.shared/bin/ /mxe/usr/x86_64-w64-mingw32.shared/qt5/bin/"
+      -S "/mxe/usr/x86_64-w64-mingw32.static/bin/ /mxe/usr/x86_64-w64-mingw32.static/qt5/bin/"
       -R "$INSTALL_DIR  $BUILD_DIR"
       -d "$stagingDir"
-    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/iconengines "$stagingDir"
-    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/imageformats "$stagingDir"
-    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/platforms "$stagingDir"
-    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/platformthemes "$stagingDir"
-    - cp -r /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/styles "$stagingDir"
-    - cp /mxe/usr/x86_64-w64-mingw32.shared/qt5/bin/Qt5Svg.dll "$stagingDir"
+    - cp -r /mxe/usr/x86_64-w64-mingw32.static/qt5/plugins/iconengines "$stagingDir"
+    - cp -r /mxe/usr/x86_64-w64-mingw32.static/qt5/plugins/imageformats "$stagingDir"
+    - cp -r /mxe/usr/x86_64-w64-mingw32.static/qt5/plugins/platforms "$stagingDir"
+    - cp -r /mxe/usr/x86_64-w64-mingw32.static/qt5/plugins/platformthemes "$stagingDir"
+    - cp -r /mxe/usr/x86_64-w64-mingw32.static/qt5/plugins/styles "$stagingDir"
+    - cp /mxe/usr/x86_64-w64-mingw32.static/qt5/bin/Qt5Svg.dll "$stagingDir"
     - mkdir "$stagingDir/Benchmarks"
     - find "$BUILD_DIR/src/Benchmarks" -type f -name '*.dll' -exec cp "{}" "$stagingDir/Benchmarks" \;
     - cp "$INSTALL_DIR/bin/elpida-qt.exe" "$stagingDir"
