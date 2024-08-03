@@ -16,11 +16,9 @@
     - cp -r /mxe/usr/x86_64-w64-mingw32.static/qt5/plugins/platforms "$stagingDir"
     - cp -r /mxe/usr/x86_64-w64-mingw32.static/qt5/plugins/platformthemes "$stagingDir"
     - cp -r /mxe/usr/x86_64-w64-mingw32.static/qt5/plugins/styles "$stagingDir"
-    - cp /mxe/usr/x86_64-w64-mingw32.static/qt5/bin/Qt5Svg.dll "$stagingDir"
     - mkdir "$stagingDir/Benchmarks"
-    - find "$BUILD_DIR/src/Benchmarks" -type f -name '*.dll' -exec cp "{}" "$stagingDir/Benchmarks" \;
+    - find "$BUILD_DIR/src/Benchmarks" -type f -name '*.exe' -exec cp "{}" "$stagingDir/Benchmarks" \;
     - cp "$INSTALL_DIR/bin/elpida-qt.exe" "$stagingDir"
-    - cp "$INSTALL_DIR/bin/elpida-executor.exe" "$stagingDir"
     - cp "$INSTALL_DIR/bin/elpida-info-dumper.exe" "$stagingDir"
     - cp "$INSTALL_DIR/bin/qt.conf" "$stagingDir"
     - cp -r "$INSTALL_DIR/bin/assets" "$stagingDir"
