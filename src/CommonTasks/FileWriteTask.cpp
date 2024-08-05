@@ -2,7 +2,7 @@
 // Created by klapeto on 2/3/2023.
 //
 
-#include "FileWriteTask.hpp"
+#include "CommonTasks/FileWriteTask.hpp"
 
 #include <filesystem>
 

@@ -9,7 +9,6 @@
 #include "Elpida/Svg/SvgUtilities.hpp"
 
 #include <cmath>
-#include <cassert>
 
 namespace Elpida
 {

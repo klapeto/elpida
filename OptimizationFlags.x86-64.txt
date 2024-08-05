@@ -6,7 +6,7 @@
 -mieee-fp
 -malign-double
 -m128bit-long-double
--mlong-double-128
+-mlong-double-64
 -malign-data=cacheline
 -mpc80
 -mstackrealign

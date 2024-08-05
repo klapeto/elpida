@@ -111,7 +111,7 @@ if (ELPIDA_WEB_API_URL)
 endif()
 
 if(MSYS OR MINGW OR MSVC)
-    target_link_libraries(elpida-application ws2_32 crypto crypt32)
+    target_link_libraries(elpida-application crypto crypt32 ws2_32)
 endif()
 
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)

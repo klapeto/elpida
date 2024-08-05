@@ -1,8 +1,3 @@
-project("Elpida Benchmark Entry Point" VERSION ${ELPIDA_VERSION}
-        DESCRIPTION "Elpida Simple Benchmarking Framework"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
-        LANGUAGES CXX C)
-
 set(ELPIDA_ENTRY_POINT_SOURCES
         Main.cpp
         ArgumentsHelper.cpp

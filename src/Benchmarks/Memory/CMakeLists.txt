@@ -1,8 +1,3 @@
-project("Elpida memory benchmarks" VERSION ${ELPIDA_VERSION}
-        DESCRIPTION "Elpida memory benchmarks"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
-        LANGUAGES CXX C)
-
 set(ELPIDA_MEMORY_BENCHMARKS_SOURCES
         MemoryLatencyBenchmark.cpp
         MemoryLatencyTask.cpp

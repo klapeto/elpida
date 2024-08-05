@@ -1,8 +1,3 @@
-project("Elpida platform specific" VERSION ${ELPIDA_VERSION}
-        DESCRIPTION "Elpida platform specific library"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
-        LANGUAGES CXX C)
-
 set(ELPIDA_PLATFORM_SOURCES
         TopologyLoader.cpp
 
@@ -40,8 +35,8 @@ target_link_libraries(elpida-platform elpida-core)
 
 if (MSVC)
     include(FindHWLOC)
-    target_include_directories(elpida-platform PUBLIC ${HWLOC_INCLUDE_DIRS})
-    target_link_directories(elpida-platform PUBLIC ${HWLOC_LIBRARY_DIRS})
+    target_include_directories(elpida-platform PRIVATE ${HWLOC_INCLUDE_DIRS})
+    target_link_directories(elpida-platform PRIVATE ${HWLOC_LIBRARY_DIRS})
     target_link_libraries(elpida-platform libhwloc)
 else()
     target_link_libraries(elpida-platform hwloc)
@@ -50,5 +45,3 @@ endif()
 if (UNIX)
     target_link_libraries(elpida-platform numa)
 endif ()
-
-install(TARGETS elpida-platform)

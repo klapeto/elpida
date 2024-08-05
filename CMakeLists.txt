@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.10)
 set(ELPIDA_MSVC_STATIC ON)
 
 # Force local compiler
-#set(CMAKE_C_COMPILER /usr/bin/gcc-9 CACHE PATH "" FORCE)
-#set(CMAKE_CXX_COMPILER /usr/bin/g++-9 CACHE PATH "" FORCE)
+#set(CMAKE_C_COMPILER /usr/bin/gcc-11 CACHE PATH "" FORCE)
+#set(CMAKE_CXX_COMPILER /usr/bin/g++-11 CACHE PATH "" FORCE)
 
 if (MSVC AND ELPIDA_MSVC_STATIC)
     cmake_policy(SET CMP0091 NEW)
@@ -16,16 +16,16 @@ include(cmake-modules/generate_product_version.cmake)
 
 project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"
-        LANGUAGES CXX C)
+        LANGUAGES CXX C ASM)
 
-if (ELPIDA_RELEASE STREQUAL TRUE)
+#if (ELPIDA_RELEASE STREQUAL TRUE)
     file(STRINGS "OptimizationFlags.txt" ELPIDA_OPTIMIZATION_FLAGS)
     add_compile_options(${ELPIDA_OPTIMIZATION_FLAGS})
     if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
         file(STRINGS "OptimizationFlags.x86-64.txt" ELPIDA_OPTIMIZATION_X86_64_FLAGS)
         add_compile_options(${ELPIDA_OPTIMIZATION_X86_64_FLAGS})
     endif ()
-endif ()
+#endif()
 
 set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
 
@@ -106,6 +106,9 @@ else ()
 endif ()
 
 include_directories(include)
+
+add_subdirectory(src/Musl)
+link_libraries(-nolibc musl c)
 
 add_subdirectory(extern)
 add_subdirectory(src)

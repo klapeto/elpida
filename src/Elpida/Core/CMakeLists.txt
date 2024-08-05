@@ -1,8 +1,3 @@
-project("Elpida Core Library" VERSION ${ELPIDA_VERSION}
-        DESCRIPTION "Elpida Simple Benchmarking Framework"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
-        LANGUAGES CXX C)
-
 set(ELPIDA_CORE_SOURCES
         Benchmark.cpp
         BenchmarkResult.cpp
@@ -42,7 +37,7 @@ set(ELPIDA_CORE_SOURCES
         MemoryStream.cpp
 )
 
-configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
+configure_file("${CMAKE_CURRENT_LIST_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
 
 add_library(elpida-core ${ELPIDA_CORE_SOURCES})
 
@@ -50,25 +45,13 @@ add_library(overheads-calculator TimingCalculator.cpp)
 target_compile_options(overheads-calculator PRIVATE -O3 -fno-dce -fno-tree-dce -fno-unroll-loops)
 
 target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/include)
-target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/src)
 target_include_directories(elpida-core PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 if (UNIX)
     include(FindThreads)
     include(FindNUMA)
     find_package(Threads)
-    target_link_libraries(elpida-core numa ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-endif()
-
-if (MSVC)
-    include(FindHWLOC)
-    target_include_directories(elpida-core PUBLIC ${HWLOC_INCLUDE_DIRS})
-    target_link_directories(elpida-core PUBLIC ${HWLOC_LIBRARY_DIRS})
-    target_link_libraries(elpida-core libhwloc)
-else()
-    target_link_libraries(elpida-core hwloc)
+    target_link_libraries(elpida-core numa ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 target_link_libraries(elpida-core overheads-calculator)
-
-install(TARGETS elpida-core)

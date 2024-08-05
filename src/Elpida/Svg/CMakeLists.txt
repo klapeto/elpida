@@ -1,5 +1,3 @@
-project("Elpida Svg")
-
 add_library(elpida-svg
         SvgBounds.cpp
         SvgColor.cpp
@@ -59,6 +57,3 @@ add_library(elpida-svg
 )
 
 target_link_libraries(elpida-svg elpida-core elpida-xml)
-
-
-install(TARGETS elpida-svg)

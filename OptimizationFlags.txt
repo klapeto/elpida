@@ -113,3 +113,4 @@
 -fversion-loops-for-strides
 -ftree-vectorize
 -funroll-loops
+-fno-builtin

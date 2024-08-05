@@ -2,7 +2,7 @@
 // Created by klapeto on 2/6/2024.
 //
 
-#include "AllocateMemoryTask.hpp"
+#include "CommonTasks/AllocateMemoryTask.hpp"
 
 namespace Elpida
 {

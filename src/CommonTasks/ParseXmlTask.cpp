@@ -2,7 +2,7 @@
 // Created by klapeto on 7/4/2024.
 //
 
-#include "ParseXmlTask.hpp"
+#include "CommonTasks/ParseXmlTask.hpp"
 #include "Elpida/Core/SimpleTaskData.hpp"
 #include "Elpida/Xml/XmlParser.hpp"
 

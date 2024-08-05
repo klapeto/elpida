@@ -1,8 +1,3 @@
-project("Elpida Web benchmarks" VERSION ${ELPIDA_VERSION}
-        DESCRIPTION "Elpida web benchmarks"
-        HOMEPAGE_URL ${ELPIDA_WEBSITE}
-        LANGUAGES CXX C)
-
 set(ELPIDA_WEB_BENCHMARKS_SOURCES
         Plugin.cpp
         XmlParseBenchmark.cpp
