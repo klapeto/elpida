@@ -5,7 +5,6 @@
 #ifndef ELPIDA___INVTRIGL_H
 #define ELPIDA___INVTRIGL_H
 
-#include <features.h>
 #include "../hidden.h"
 
 /* shared by acosl, asinl and atan2l */

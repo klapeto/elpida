@@ -1,7 +1,5 @@
 .global memcpy
 .global __memcpy_fwd
-.hidden __memcpy_fwd
-.type memcpy,@function
 memcpy:
 __memcpy_fwd:
 	mov %rdi,%rax

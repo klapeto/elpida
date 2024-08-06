@@ -108,7 +108,6 @@ endif ()
 include_directories(include)
 
 add_subdirectory(src/Musl)
-link_libraries(-nolibc musl c)
 
 add_subdirectory(extern)
 add_subdirectory(src)

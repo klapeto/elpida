@@ -5,7 +5,6 @@
 #ifndef _POW_DATA_H
 #define _POW_DATA_H
 
-#include <features.h>
 #include "../hidden.h"
 
 #define POW_LOG_TABLE_BITS 7
