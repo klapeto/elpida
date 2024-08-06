@@ -5,7 +5,6 @@
 #ifndef _LOGF_DATA_H
 #define _LOGF_DATA_H
 
-#include <features.h>
 #include "../hidden.h"
 
 #define LOGF_TABLE_BITS 4
