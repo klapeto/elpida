@@ -9,7 +9,7 @@ if (${ARCH} STREQUAL "i386" OR ${ARCH} STREQUAL "i686")
 endif ()
 
 if (${ARCH} STREQUAL "aarch64")
-    file(GLOB MUSL_MATH_AARCH64_SOURCES i386/*.*)
+    file(GLOB MUSL_MATH_AARCH64_SOURCES aarch64/*.*)
 endif ()
 
 add_library(musl-string STATIC
