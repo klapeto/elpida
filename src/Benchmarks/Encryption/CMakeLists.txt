@@ -15,10 +15,10 @@ add_executable(elpida-encryption-benchmarks
 
 include(FindOpenSSL)
 
-target_link_libraries(elpida-encryption-benchmarks PRIVATE OpenSSL::SSL elpida-core elpida-platform elpida-common-tasks elpida-entry-point)
-
 if(MSYS OR MINGW OR MSVC)
     target_link_libraries(elpida-encryption-benchmarks PRIVATE ws2_32 crypto crypt32)
 endif()
+
+target_link_libraries(elpida-encryption-benchmarks PRIVATE OpenSSL::SSL elpida-core elpida-platform elpida-common-tasks elpida-entry-point)
 
 install(TARGETS elpida-encryption-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
