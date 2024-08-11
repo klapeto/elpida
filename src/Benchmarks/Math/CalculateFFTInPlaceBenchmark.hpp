@@ -1,23 +1,23 @@
 //
-// Created by klapeto on 11/8/2024.
+// Created by klapeto on 12/8/2024.
 //
 
-#ifndef ELPIDA_AESDECRYPTIONBENCHMARK_HPP
-#define ELPIDA_AESDECRYPTIONBENCHMARK_HPP
+#ifndef ELPIDA_CALCULATEFFTINPLACEBENCHMARK_HPP
+#define ELPIDA_CALCULATEFFTINPLACEBENCHMARK_HPP
 
 #include "Elpida/Core/Benchmark.hpp"
 
 namespace Elpida
 {
 
-	class AESDecryptionBenchmark: public Benchmark
+	class CalculateFFTInPlaceBenchmark: public Benchmark
 	{
 	public:
 		[[nodiscard]]
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
-		AESDecryptionBenchmark() = default;
-		~AESDecryptionBenchmark() override = default;
+		CalculateFFTInPlaceBenchmark() = default;
+		~CalculateFFTInPlaceBenchmark() override = default;
 	protected:
 
 		[[nodiscard]]
@@ -29,4 +29,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //ELPIDA_AESDECRYPTIONBENCHMARK_HPP
+#endif //ELPIDA_CALCULATEFFTINPLACEBENCHMARK_HPP
