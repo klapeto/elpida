@@ -13,6 +13,8 @@
 #include <openssl/core_names.h>
 #include <openssl/types.h>
 
+#include "OpenSslPtr.hpp"
+
 namespace Elpida
 {
 
@@ -22,16 +24,17 @@ namespace Elpida
 		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
 		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
-		explicit RSAEncryptTask();
+
+		explicit RSAEncryptTask() = default;
 		RSAEncryptTask(const RSAEncryptTask&) = delete;
 		RSAEncryptTask(RSAEncryptTask&&) noexcept = delete;
 		RSAEncryptTask& operator=(RSAEncryptTask&&) noexcept = delete;
 		RSAEncryptTask& operator=(const RSAEncryptTask&) = delete;
-		~RSAEncryptTask() override;
+		~RSAEncryptTask() override = default;
 	private:
 		SharedPtr<AbstractTaskData> _output;
-		EVP_PKEY_CTX* _context;
-		EVP_PKEY* _key;
+		EvpPKeyCtxPtr _context;
+		EvpPKeyPtr _key;
 	protected:
 		TaskInfo DoGetInfo() const override;
 		UniquePtr<Task> DoDuplicate() const override;

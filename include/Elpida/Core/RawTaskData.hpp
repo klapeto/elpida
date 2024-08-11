@@ -35,6 +35,7 @@ namespace Elpida
 		SharedPtr<Allocator> GetAllocator() const final;
 
 		void Allocate(Size size) final;
+		void ReAllocate(Size size) final;
 		void Deallocate() final;
 
 		void Merge(const Vector<SharedPtr<AbstractTaskData>>& data) override;

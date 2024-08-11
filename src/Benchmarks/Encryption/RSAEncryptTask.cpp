@@ -4,10 +4,8 @@
 
 #include "RSAEncryptTask.hpp"
 
-#include <utility>
-#include <fstream>
-#include <filesystem>
 #include "Elpida/Core/ElpidaException.hpp"
+#include "Utilities.hpp"
 
 namespace Elpida
 {
@@ -47,17 +45,16 @@ namespace Elpida
 
 	void RSAEncryptTask::DoRun(Iterations iterations)
 	{
+		auto context = _context.get();
 		while (iterations-- > 0)
 		{
 			auto outputSize = _output->GetSize();
 			auto output = _output->GetData();
 			auto inputSize = sizeof(messageToEncrypt);
 			auto input = messageToEncrypt;
-			if (EVP_PKEY_encrypt(_context, output, &outputSize, input, inputSize) <= 0)
+			if (EVP_PKEY_encrypt(context, output, &outputSize, input, inputSize) <= 0)
 			{
-				char buff[512];
-				ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-				throw ElpidaException("Failed encrypt: ", buff);
+				Utilities::ThrowOpenSSLError("Failed encrypt: ");
 			}
 		}
 	}
@@ -77,43 +74,36 @@ namespace Elpida
 		const unsigned char* data = publicKeyDer;
 		size_t data_len = sizeof(publicKeyDer);
 
-		auto context = OSSL_DECODER_CTX_new_for_pkey(&_key, "DER", nullptr, "RSA", EVP_PKEY_PUBLIC_KEY, nullptr, nullptr);
+		EVP_PKEY* key;
+
+		auto context = OSSL_DECODER_CTX_new_for_pkey(&key, "DER", nullptr, "RSA", EVP_PKEY_PUBLIC_KEY, nullptr, nullptr);
 
 		auto result = OSSL_DECODER_from_data(context, &data, &data_len);
 
+		_key = EvpPKeyPtr(key);
+
 		if (result == 0)
 		{
-			OSSL_DECODER_CTX_free(context);
-
-			char buff[512];
-			ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-			throw ElpidaException("Failed to decode key:", buff);
+			Utilities::ThrowOpenSSLError("Failed to decode key: ");
 		}
-		OSSL_DECODER_CTX_free(context);
 
 		const char* propertiesQuery = nullptr;
-		_context = EVP_PKEY_CTX_new_from_pkey(nullptr, _key, propertiesQuery);
+		_context = EvpPKeyCtxPtr(EVP_PKEY_CTX_new_from_pkey(nullptr, _key.get(), propertiesQuery));
 
 		if (_context == nullptr)
 		{
-			char buff[512];
-			ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-			throw ElpidaException("Failed to create Public key context: ", buff);
+			Utilities::ThrowOpenSSLError("Failed to create Public key context: ");
 		}
 
-		if (EVP_PKEY_encrypt_init_ex(_context, nullptr) <= 0)
+		if (EVP_PKEY_encrypt_init_ex(_context.get(), nullptr) <= 0)
 		{
-			char buff[512];
-			ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-			throw ElpidaException("Failed to init encryptor", buff);
+			Utilities::ThrowOpenSSLError("Failed to init encryptor: ");
 		}
 
 		std::size_t size = 0;
-		if (EVP_PKEY_encrypt(_context, nullptr, &size, messageToEncrypt, sizeof(messageToEncrypt)) <= 0)
+		if (EVP_PKEY_encrypt(_context.get(), nullptr, &size, messageToEncrypt, sizeof(messageToEncrypt)) <= 0)
 		{
-			char buff[512];
-			ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-			throw ElpidaException("Failed to get encryption size", buff);
+			Utilities::ThrowOpenSSLError("Failed to get encryption size: ");
 		}
 
 		_output = std::make_shared<RawTaskData>(inputData->GetAllocator());
@@ -144,25 +134,6 @@ namespace Elpida
 	UniquePtr<Task> RSAEncryptTask::DoDuplicate() const
 	{
 		return std::make_unique<RSAEncryptTask>();
-	}
-
-	RSAEncryptTask::RSAEncryptTask()
-			: _context(nullptr), _key(nullptr)
-	{
-	}
-
-	RSAEncryptTask::~RSAEncryptTask()
-	{
-		if (_context != nullptr)
-		{
-			EVP_PKEY_CTX_free(_context);
-		}
-
-		if (_key != nullptr)
-		{
-			EVP_PKEY_free(_key);
-			_key = nullptr;
-		}
 	}
 
 } // Elpida

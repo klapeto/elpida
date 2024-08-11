@@ -6,6 +6,7 @@
 #define ELPIDA_RSADECRYPTTASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
+#include "OpenSslPtr.hpp"
 
 #include <openssl/err.h>
 #include <openssl/evp.h>
@@ -21,16 +22,17 @@ namespace Elpida
 		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
 		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
-		explicit RSADecryptTask();
+
+		explicit RSADecryptTask() = default;
 		RSADecryptTask(const RSADecryptTask&) = delete;
 		RSADecryptTask(RSADecryptTask&&) noexcept = delete;
 		RSADecryptTask& operator=(RSADecryptTask&&) noexcept = delete;
 		RSADecryptTask& operator=(const RSADecryptTask&) = delete;
-		~RSADecryptTask() override;
+		~RSADecryptTask() override = default;
 	private:
 		SharedPtr<AbstractTaskData> _output;
-		EVP_PKEY_CTX* _context;
-		EVP_PKEY* _key;
+		EvpPKeyCtxPtr _context;
+		EvpPKeyPtr _key;
 	protected:
 		TaskInfo DoGetInfo() const override;
 		UniquePtr<Task> DoDuplicate() const override;

@@ -58,7 +58,7 @@ namespace Elpida
 		{
 			Vector<SharedPtr<AbstractTaskData>> returnVector;
 			returnVector.reserve(targetAllocators.size());
-			for (auto& allocator: targetAllocators)
+			for (auto& allocator : targetAllocators)
 			{
 				returnVector.push_back(std::make_shared<SimpleTaskData<T>>(_data, allocator));
 			}
@@ -76,6 +76,11 @@ namespace Elpida
 
 		}
 
+		void ReAllocate(Size size) override
+		{
+
+		}
+
 		[[nodiscard]]
 		SharedPtr<Allocator> GetAllocator() const override
 		{
@@ -88,7 +93,7 @@ namespace Elpida
 		{
 			Vector<SharedPtr<AbstractTaskData>> returnVector;
 			returnVector.reserve(targetAllocators.size());
-			for (auto& allocator: targetAllocators)
+			for (auto& allocator : targetAllocators)
 			{
 				returnVector.push_back(std::make_shared<SimpleTaskData<T>>(_data, allocator));
 			}
@@ -97,13 +102,13 @@ namespace Elpida
 		}
 
 		SimpleTaskData(const T& data, SharedPtr<Allocator> allocator)
-				: _data(data), _allocator(std::move(allocator))
+				:_data(data), _allocator(std::move(allocator))
 		{
 
 		}
 
 		SimpleTaskData(T&& data, SharedPtr<Allocator> allocator)
-				: _data(std::move(data)), _allocator(std::move(allocator))
+				:_data(std::move(data)), _allocator(std::move(allocator))
 		{
 
 		}

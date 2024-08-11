@@ -8,9 +8,12 @@ add_executable(elpida-encryption-benchmarks
         RSAEncryptTask.cpp
         RSADecryptTask.cpp
         RSAEncryptionBenchmark.cpp
-        RSAEncryptionBenchmark.hpp
         RSADecryptionBenchmark.cpp
-        RSADecryptionBenchmark.hpp
+        AESEncryptTask.cpp
+        Utilities.cpp
+        AESDecryptTask.cpp
+        AESEncryptionBenchmark.cpp
+        AESDecryptionBenchmark.cpp
 )
 
 include(FindOpenSSL)

@@ -162,4 +162,19 @@ namespace Elpida
 #pragma clang diagnostic pop
 	}
 
+	void RawTaskData::ReAllocate(Size size)
+	{
+		auto ptr = reinterpret_cast<void*>(_data.get());
+		ptr = _allocator->Reallocate(ptr, _size, size);
+		if (ptr == nullptr)
+		{
+			throw ElpidaException("Failed to reallocate size: ", std::to_string(size));
+		}
+		auto oldPtr = _data.release();
+		_size = size;
+		_data = UniquePtr<unsigned char, Deleter>(
+				reinterpret_cast<unsigned char*>(ptr),
+				Deleter(_allocator, size));
+	}
+
 } // Elpida

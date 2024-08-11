@@ -8,6 +8,7 @@
 #include <fstream>
 #include <filesystem>
 #include "Elpida/Core/ElpidaException.hpp"
+#include "Utilities.hpp"
 
 
 namespace Elpida
@@ -138,6 +139,7 @@ namespace Elpida
 
 	void RSADecryptTask::DoRun(Iterations iterations)
 	{
+		auto context = _context.get();
 		while (iterations-- > 0)
 		{
 			auto outputSize = _output->GetSize();
@@ -145,11 +147,9 @@ namespace Elpida
 
 			auto inputSize = sizeof(inputDataBinary);
 			auto input = reinterpret_cast<const unsigned char*>(inputDataBinary);
-			if (EVP_PKEY_decrypt(_context, output, &outputSize, input, inputSize) <= 0)
+			if (EVP_PKEY_decrypt(context, output, &outputSize, input, inputSize) <= 0)
 			{
-				char buff[512];
-				ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-				throw ElpidaException("Failed to decrypt: ", buff);
+				Utilities::ThrowOpenSSLError("Failed decrypt: ");
 			}
 		}
 	}
@@ -169,44 +169,36 @@ namespace Elpida
 		const unsigned char* data = privateKeyDer;
 		size_t data_len = sizeof(privateKeyDer);
 
-		auto context = OSSL_DECODER_CTX_new_for_pkey(&_key, "DER", nullptr, "RSA", EVP_PKEY_KEYPAIR, nullptr, nullptr);
+		EVP_PKEY* key = nullptr;
 
-		auto result = OSSL_DECODER_from_data(context, &data, &data_len);
+		auto context = OSslDecoderCtxPtr(OSSL_DECODER_CTX_new_for_pkey(&key, "DER", nullptr, "RSA", EVP_PKEY_KEYPAIR, nullptr, nullptr));
+
+		auto result = OSSL_DECODER_from_data(context.get(), &data, &data_len);
+
+		_key = EvpPKeyPtr(key);
 
 		if (result == 0)
 		{
-			OSSL_DECODER_CTX_free(context);
-
-			char buff[512];
-			ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-			throw ElpidaException("Failed to decode key:", buff);
+			Utilities::ThrowOpenSSLError("Failed decode key: ");
 		}
-		OSSL_DECODER_CTX_free(context);
-
 
 		const char* propertiesQuery = nullptr;
-		_context = EVP_PKEY_CTX_new_from_pkey(nullptr, _key, propertiesQuery);
+		_context = EvpPKeyCtxPtr(EVP_PKEY_CTX_new_from_pkey(nullptr, _key.get(), propertiesQuery));
 
 		if (_context == nullptr)
 		{
-			char buff[512];
-			ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-			throw ElpidaException("Failed to create Public key context: ", buff);
+			Utilities::ThrowOpenSSLError("Failed to create public key context: ");
 		}
 
-		if (EVP_PKEY_decrypt_init_ex(_context, nullptr) <= 0)
+		if (EVP_PKEY_decrypt_init_ex(_context.get(), nullptr) <= 0)
 		{
-			char buff[512];
-			ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-			throw ElpidaException("Failed to init decryptor: ", buff);
+			Utilities::ThrowOpenSSLError("Failed init decryptor: ");
 		}
 
 		std::size_t outputSize = 0;
-		if (EVP_PKEY_decrypt(_context, nullptr, &outputSize, reinterpret_cast<unsigned char*>(inputDataBinary), sizeof(inputDataBinary)) <= 0)
+		if (EVP_PKEY_decrypt(_context.get(), nullptr, &outputSize, reinterpret_cast<unsigned char*>(inputDataBinary), sizeof(inputDataBinary)) <= 0)
 		{
-			char buff[512];
-			ERR_error_string_n(ERR_get_error(), buff, sizeof(buff));
-			throw ElpidaException("Failed to get decryption size: ", buff);
+			Utilities::ThrowOpenSSLError("Failed to get decrypted size: ");
 		}
 
 		_output = std::make_shared<RawTaskData>(inputData->GetAllocator());
@@ -239,23 +231,5 @@ namespace Elpida
 		return std::make_unique<RSADecryptTask>();
 	}
 
-	RSADecryptTask::RSADecryptTask()
-			: _context(nullptr), _key(nullptr)
-	{
-	}
-
-	RSADecryptTask::~RSADecryptTask()
-	{
-		if (_context != nullptr)
-		{
-			EVP_PKEY_CTX_free(_context);
-		}
-
-		if (_key != nullptr)
-		{
-			EVP_PKEY_free(_key);
-			_key = nullptr;
-		}
-	}
 
 } // Elpida

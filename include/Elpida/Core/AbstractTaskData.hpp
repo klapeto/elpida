@@ -26,6 +26,8 @@ namespace Elpida
 
 		virtual void Allocate(Size size) = 0;
 
+		virtual void ReAllocate(Size size) = 0;
+
 		virtual void Deallocate() = 0;
 
 		[[nodiscard]]
