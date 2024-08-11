@@ -26,15 +26,12 @@ namespace Elpida
 
 		std::normal_distribution distribution(0.0, 1.0);
 
-		const std::size_t patternSize = 8;
-
-		std::complex<double> pattern[patternSize];
-		for (auto& i : pattern)
+		_values.resize(totalValues);
+		for (std::size_t i = 0; i < totalValues; ++i)
 		{
-			i = std::complex<double>(distribution(generator), distribution(generator));
+			_values[i] = std::complex<double>(distribution(generator), distribution(generator));
 		}
 
-		_values = std::valarray<std::complex<double>>(pattern, totalValues / patternSize);
 		_output = std::move(inputData);
 	}
 
