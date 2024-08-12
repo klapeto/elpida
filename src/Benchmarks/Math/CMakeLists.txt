@@ -8,7 +8,14 @@ add_executable(elpida-math-benchmarks
         FFTCalculator.cpp
         CalculateFFTInPlaceTask.cpp
         CalculateFFTInPlaceBenchmark.cpp
+        MatrixMultiplicationTask.cpp
+        MatrixMultiplicationTask.hpp
+        StaticMatrix.cpp
+        Matrix.cpp
+        MatrixMultiplicationBenchmark.cpp
 )
+
+#target_compile_options(elpida-math-benchmarks PRIVATE -O3)
 
 target_link_libraries(elpida-math-benchmarks PRIVATE elpida-core elpida-platform elpida-entry-point)
 
