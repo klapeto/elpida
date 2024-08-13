@@ -8,9 +8,10 @@ endif()
 
 add_subdirectory(math)
 add_subdirectory(string)
+add_subdirectory(stdlib)
 
 add_library(musl STATIC dummy.c)
 
-target_link_libraries(musl musl-math musl-string)
+target_link_libraries(musl musl-math musl-string musl-stdlib)
 
 target_compile_options(musl PRIVATE -nostartfiles)
