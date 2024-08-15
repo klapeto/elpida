@@ -14,7 +14,7 @@ namespace Elpida
 
 	SharedPtr<AbstractTaskData> ParseJsonTask::Finalize()
 	{
-		return std::make_shared<SimpleTaskData<nlohmann::json>>(std::move(_parsedElement), _inputData->GetAllocator());
+		return std::move(_inputData);
 	}
 
 	TaskInfo ParseJsonTask::DoGetInfo() const
@@ -35,10 +35,11 @@ namespace Elpida
 	void ParseJsonTask::DoRun(Iterations iterations)
 	{
 		const char* ptr = reinterpret_cast<char*>(_inputData.get()->GetData());
-		std::string_view str{ptr, _inputData->GetSize()};
+		auto size = _inputData->GetSize();
 		while (iterations-- > 0)
 		{
-			_parsedElement = nlohmann::json::parse(str);
+			_parsedElement.Parse(ptr, size);
+			_parsedElement = {};
 		}
 	}
 

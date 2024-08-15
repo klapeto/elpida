@@ -6,7 +6,7 @@
 #define ELPIDA_PARSEJSONTASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
-#include "json.hpp"
+#include "rapidjson/document.h"
 
 namespace Elpida
 {
@@ -39,7 +39,7 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
 		SharedPtr<AbstractTaskData> _inputData;
-		nlohmann::json _parsedElement;
+		rapidjson::Document _parsedElement;
 	};
 } // Elpida
 
