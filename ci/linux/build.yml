@@ -29,15 +29,11 @@
 build:linux:amd64:
   variables:
     TARGET_ARCH: amd64
-  dependencies:
-    - docker-image:linux:amd64
   extends: .build:linux
 
 build:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
-  dependencies:
-    - docker-image:linux:aarch64
   extends: .build:linux
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
