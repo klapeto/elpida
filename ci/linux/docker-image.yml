@@ -13,12 +13,13 @@
     - docker build --pull -t $IMAGE_NAME docker/build-environment/linux/$TARGET_ARCH
     - docker push $IMAGE_NAME
   rules:
-    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "push"
       changes:
         paths:
           - docker/build-environment/linux/$TARGET_ARCH/Dockerfile
           - ci/linux/docker-image.yml
-
+      when: manual
+    - when: never
 
 docker-image:linux:amd64:
   variables:
