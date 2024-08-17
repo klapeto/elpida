@@ -11,7 +11,8 @@ namespace Elpida
 	void* DefaultAllocator::Allocate(Size size)
 	{
 		auto a = Timer::now();
-		auto ptr = malloc(size);
+		auto ptr = aligned_alloc(16, size);
+		//auto ptr = malloc(size);
 		_totalAllocations++;
 		auto b = Timer::now();
 		_totalTime += b - a;
