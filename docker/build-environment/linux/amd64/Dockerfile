@@ -49,7 +49,8 @@ RUN apt-get install automake libtool pkg-config -y
 # install hwloc
 RUN git clone -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git && \
     cd hwloc && \
-    ./autogen.sh && ./configure && make -j$(nproc) && make install && \
+    ./autogen.sh && ./configure --enable-static --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-gl --disable-libudev && \
+    make -j$(nproc) && make install && \
     rm -rf /hwloc && \
     ldconfig
 
