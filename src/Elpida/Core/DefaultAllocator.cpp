@@ -11,7 +11,11 @@ namespace Elpida
 	void* DefaultAllocator::Allocate(Size size)
 	{
 		auto a = Timer::now();
-		auto ptr = aligned_alloc(16, size);
+#if false
+		auto ptr = _aligned_malloc(16, size);
+#else
+		auto ptr = malloc(size);
+#endif
 		//auto ptr = malloc(size);
 		_totalAllocations++;
 		auto b = Timer::now();
