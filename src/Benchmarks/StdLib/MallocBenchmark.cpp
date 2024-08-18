@@ -26,8 +26,8 @@ namespace Elpida
 	void MallocBenchmark::DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
 			std::vector<TaskInfo>& taskInfos) const
 	{
-		name = "Malloc Benchmark";
-		description = "Measures the performance of stdlib malloc";
+		name = "malloc()";
+		description = "Measures the malloc() throughput";
 		taskToUseAsScoreIndex = 0;
 
 		taskInfos.push_back(MallocTask().GetInfo());

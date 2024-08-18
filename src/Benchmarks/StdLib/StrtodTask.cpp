@@ -3,15 +3,6 @@
 
 namespace Elpida
 {
-
-	static const char* Numbers[] = {
-			"53215.1513123",
-			"46584.2315456",
-			"11345.1237488",
-			"94543.7348612",
-			"87331.2332564",
-	};
-
 	void StrtodTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
@@ -31,7 +22,7 @@ namespace Elpida
 	{
 		while (iterations-- > 0)
 		{
-			auto value = std::strtod(Numbers[iterations % std::size(Numbers)], nullptr);
+			auto value = std::strtod("53215.1513123", nullptr);
 		}
 	}
 

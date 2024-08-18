@@ -26,8 +26,8 @@ namespace Elpida
 	void StrtodBenchmark::DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
 			std::vector<TaskInfo>& taskInfos) const
 	{
-		name = "Strtod";
-		description = "Measures the strtod() performance";
+		name = "strtod()";
+		description = "Measures the strtod() throughput";
 		taskToUseAsScoreIndex = 0;
 
 		taskInfos.push_back(StrtodTask().GetInfo());

@@ -1,5 +1,7 @@
 #include "MemsetTask.hpp"
 
+#include <cstring>
+
 namespace Elpida
 {
 
@@ -15,14 +17,16 @@ namespace Elpida
 
 	Size MemsetTask::GetProcessedDataSize() const
 	{
-		return 1;
+		return _inputData->GetSize();
 	}
 
 	void MemsetTask::DoRun(Iterations iterations)
 	{
+		volatile auto data = _inputData->GetData();
+		auto size = _inputData->GetSize();
 		while (iterations-- > 0)
 		{
-			// Code
+			std::memset(data, 0, size);
 		}
 	}
 
