@@ -49,7 +49,7 @@ namespace Elpida
 	{
 		return { "ceil()",
 				 "Measures the ceil() performance",
-				 "number",
+				 "numbers",
 				 "The number process rate",
 				 ResultType::Throughput
 		};
