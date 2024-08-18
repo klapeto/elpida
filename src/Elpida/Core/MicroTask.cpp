@@ -22,8 +22,8 @@ namespace Elpida
 				minimumDuration,
 				nowOverhead,
 				loopOverhead,
-				[this]()
-				{ OnBeforeRun(); },
+				[this](Size iterations)
+				{ OnBeforeRun(iterations); },
 				[this](auto duration)
 				{ return PostProcessDuration(duration); },
 				[this](Size iterations)
@@ -31,7 +31,7 @@ namespace Elpida
 
 		// Consider the previous run as 'warmups'
 		// now the real deal
-		OnBeforeRun();
+		OnBeforeRun(iterations);
 		auto start = Timer::now();
 		DoRun(iterations);
 		auto end = Timer::now();
@@ -50,7 +50,7 @@ namespace Elpida
 
 	}
 
-	void MicroTask::OnBeforeRun()
+	void MicroTask::OnBeforeRun(Iterations iterations)
 	{
 
 	}

@@ -26,7 +26,7 @@ namespace Elpida
 		virtual void DoRun(Iterations iterations) = 0;
 		virtual Size GetOperationsPerformedPerRun() = 0;
 		virtual Duration GetExecutionMinimumDuration() = 0;
-		virtual void OnBeforeRun();
+		virtual void OnBeforeRun(Iterations iterations);
 	};
 
 } // Elpida

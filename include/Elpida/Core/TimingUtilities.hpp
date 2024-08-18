@@ -81,7 +81,7 @@ namespace Elpida
 
 			while (true)
 			{
-				prepare();
+				prepare(iterations);
 				auto start = Timer::now();
 				callable(iterations);
 				auto end = Timer::now();

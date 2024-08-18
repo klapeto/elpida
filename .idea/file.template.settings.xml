@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExportableFileTemplateSettings">
+    <default_templates>
+      <template name="Single MicroTask Benchmark.hpp" file-name="${NAME}Task" reformat="true" live-template-enabled="false">
+        <template name="Single MicroTask Benchmark.hpp.child.2.cpp" file-name="${NAME}Benchmark" reformat="true" live-template-enabled="false" />
+        <template name="Single MicroTask Benchmark.hpp.child.0.cpp" file-name="${NAME}Task" reformat="true" live-template-enabled="false" />
+        <template name="Single MicroTask Benchmark.hpp.child.1.hpp" file-name="${NAME}Benchmark" reformat="true" live-template-enabled="false" />
+      </template>
+      <template name="Single MicroTask Benchmark.hpp.child.0.cpp" file-name="${NAME}Task" reformat="true" live-template-enabled="false" />
+      <template name="Single MicroTask Benchmark.hpp.child.1.hpp" file-name="${NAME}Benchmark" reformat="true" live-template-enabled="false" />
+      <template name="Single MicroTask Benchmark.hpp.child.2.cpp" file-name="${NAME}Benchmark" reformat="true" live-template-enabled="false" />
+    </default_templates>
+  </component>
+</project>
