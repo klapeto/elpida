@@ -10,8 +10,8 @@ else()
     set(ARCH "generic")
 endif()
 
-file(GLOB MUSL_SOURCES src/errno/*.c src/internal/*.c src/math/*.c src/stdio/*.c src/stdlib/*.c src/string/*.c src/thread/*.c)
-file(GLOB MUSL_MATH_ARCH_SOURCES src/math/${ARCH}/*.c src/math/${ARCH}/*.s src/string/${ARCH}/*.c src/string/${ARCH}/*.s)
+file(GLOB MUSL_SOURCES src/internal/*.c src/math/*.c src/stdio/*.c src/stdlib/*.c src/string/*.c)
+file(GLOB MUSL_MATH_ARCH_SOURCES src/math/${ARCH}/*.c src/math/${ARCH}/*.s)
 
 add_library(musl STATIC ${MUSL_MATH_ARCH_SOURCES} ${MUSL_SOURCES})
 
