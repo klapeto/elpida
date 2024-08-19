@@ -20,7 +20,6 @@
 #define zva_val x5
 
 .global memset
-.type memset,%function
 memset:
 
 	dup     v0.16B, valw

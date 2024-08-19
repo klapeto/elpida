@@ -1,15 +1,12 @@
 .global ldexpf
-.type ldexpf,@function
 ldexpf:
 	nop
 
 .global scalblnf
-.type scalblnf,@function
 scalblnf:
 	nop
 
 .global scalbnf
-.type scalbnf,@function
 scalbnf:
 	mov 8(%esp),%eax
 	add $0x3fe,%eax

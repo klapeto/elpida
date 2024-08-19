@@ -1,5 +1,4 @@
 .global asin
-.type asin,@function
 asin:
 	fldl 4(%esp)
 	mov 8(%esp),%eax

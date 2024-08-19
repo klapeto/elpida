@@ -151,6 +151,9 @@ void *reallocarray (void *, size_t, size_t);
 void qsort_r (void *, size_t, size_t, int (*)(const void *, const void *, void *), void *);
 #endif
 
+typedef int (*cmpfun_q)(const void *, const void *, void *);
+hidden void __qsort_r(void *base, size_t nel, size_t width, cmpfun_q cmp, void *arg);
+
 #ifdef _GNU_SOURCE
 int ptsname_r(int, char *, size_t);
 char *ecvt(double, int, int *, int *);

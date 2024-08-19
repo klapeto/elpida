@@ -98,6 +98,9 @@ void *mempcpy(void *, const void *, size_t);
 #endif
 
 hidden char *__strchrnul(const char *s, int c);
+hidden char *__stpcpy(char *restrict d, const char *restrict s);
+hidden char *__stpncpy(char *restrict d, const char *restrict s, size_t n);
+hidden void *__memrchr(const void *m, int c, size_t n);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,4 @@
 .global asinl
-.type asinl,@function
 asinl:
 	fldt 4(%esp)
 	fld %st(0)

@@ -1,15 +1,12 @@
 .global ldexp
-.type ldexp,@function
 ldexp:
 	nop
 
 .global scalbln
-.type scalbln,@function
 scalbln:
 	nop
 
 .global scalbn
-.type scalbn,@function
 scalbn:
 	mov 12(%esp),%eax
 	add $0x3ffe,%eax

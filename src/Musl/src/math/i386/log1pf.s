@@ -1,5 +1,4 @@
 .global log1pf
-.type log1pf,@function
 log1pf:
 	mov 4(%esp),%eax
 	fldln2

@@ -1,5 +1,4 @@
 .global remquof
-.type remquof,@function
 remquof:
 	mov 12(%esp),%ecx
 	flds 8(%esp)
@@ -9,7 +8,6 @@ remquof:
 	jmp 1f
 
 .global remquol
-.type remquol,@function
 remquol:
 	mov 28(%esp),%ecx
 	fldt 16(%esp)
@@ -19,7 +17,6 @@ remquol:
 	jmp 1f
 
 .global remquo
-.type remquo,@function
 remquo:
 	mov 20(%esp),%ecx
 	fldl 12(%esp)

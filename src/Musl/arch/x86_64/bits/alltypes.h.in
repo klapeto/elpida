@@ -6,7 +6,11 @@
 #define __LONG_MAX 0x7fffffffffffffffL
 
 #ifndef __cplusplus
+#ifdef WIN32
+TYPEDEF unsigned short wchar_t;
+#else
 TYPEDEF int wchar_t;
+#endif
 #endif
 
 #if defined(__FLT_EVAL_METHOD__) && __FLT_EVAL_METHOD__ == 2

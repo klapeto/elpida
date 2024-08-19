@@ -1,5 +1,4 @@
 .global hypotf
-.type hypotf,@function
 hypotf:
 	mov 4(%esp),%eax
 	mov 8(%esp),%ecx

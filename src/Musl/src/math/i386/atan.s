@@ -1,5 +1,4 @@
 .global atan
-.type atan,@function
 atan:
 	fldl 4(%esp)
 	mov 8(%esp),%eax

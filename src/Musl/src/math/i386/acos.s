@@ -1,7 +1,6 @@
 # use acos(x) = atan2(fabs(sqrt((1-x)*(1+x))), x)
 
 .global acos
-.type acos,@function
 acos:
 	fldl 4(%esp)
 	fld %st(0)

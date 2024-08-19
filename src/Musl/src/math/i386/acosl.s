@@ -1,5 +1,4 @@
 .global acosl
-.type acosl,@function
 acosl:
 	fldt 4(%esp)
 	fld %st(0)

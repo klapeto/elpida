@@ -1,17 +1,14 @@
 .global floorf
-.type floorf,@function
 floorf:
 	flds 4(%esp)
 	jmp 1f
 
 .global floorl
-.type floorl,@function
 floorl:
 	fldt 4(%esp)
 	jmp 1f
 
 .global floor
-.type floor,@function
 floor:
 	fldl 4(%esp)
 1:	mov $0x7,%al
@@ -25,42 +22,36 @@ floor:
 	ret
 
 .global ceil
-.type ceil,@function
 ceil:
 	fldl 4(%esp)
 	mov $0xb,%al
 	jmp 1b
 
 .global ceilf
-.type ceilf,@function
 ceilf:
 	flds 4(%esp)
 	mov $0xb,%al
 	jmp 1b
 
 .global ceill
-.type ceill,@function
 ceill:
 	fldt 4(%esp)
 	mov $0xb,%al
 	jmp 1b
 
 .global trunc
-.type trunc,@function
 trunc:
 	fldl 4(%esp)
 	mov $0xf,%al
 	jmp 1b
 
 .global truncf
-.type truncf,@function
 truncf:
 	flds 4(%esp)
 	mov $0xf,%al
 	jmp 1b
 
 .global truncl
-.type truncl,@function
 truncl:
 	fldt 4(%esp)
 	mov $0xf,%al

@@ -1,5 +1,4 @@
 .global memset
-.type memset,@function
 memset:
 	mov 12(%esp),%ecx
 	cmp $62,%ecx

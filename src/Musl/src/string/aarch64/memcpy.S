@@ -51,7 +51,6 @@
 */
 
 .global memcpy
-.type memcpy,%function
 memcpy:
 	add     srcend, src, count
 	add     dstend, dstin, count
