@@ -18,14 +18,14 @@ project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"
         LANGUAGES CXX C)
 
-#if (ELPIDA_RELEASE STREQUAL TRUE)
-#    file(STRINGS "OptimizationFlags.txt" ELPIDA_OPTIMIZATION_FLAGS)
-#    add_compile_options(${ELPIDA_OPTIMIZATION_FLAGS})
-#    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-#        file(STRINGS "OptimizationFlags.x86-64.txt" ELPIDA_OPTIMIZATION_X86_64_FLAGS)
-#        add_compile_options(${ELPIDA_OPTIMIZATION_X86_64_FLAGS})
-#    endif ()
-#endif ()
+if (ELPIDA_RELEASE STREQUAL TRUE)
+    file(STRINGS "OptimizationFlags.txt" ELPIDA_OPTIMIZATION_FLAGS)
+    add_compile_options(${ELPIDA_OPTIMIZATION_FLAGS})
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        file(STRINGS "OptimizationFlags.x86-64.txt" ELPIDA_OPTIMIZATION_X86_64_FLAGS)
+        add_compile_options(${ELPIDA_OPTIMIZATION_X86_64_FLAGS})
+    endif ()
+endif ()
 
 set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
 

@@ -10,6 +10,8 @@ set(ELPIDA_STDLIB_BENCHMARKS_SOURCES
         StrtodBenchmark.cpp
         MemsetTask.cpp
         MemsetBenchmark.cpp
+        MemcpyTask.cpp
+        MemcpyBenchmark.cpp
         MemchrTask.cpp
         MemchrBenchmark.cpp
         StrtoulTask.cpp

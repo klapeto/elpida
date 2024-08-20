@@ -51,8 +51,8 @@ namespace Elpida
 
 	TaskInfo MemchrTask::DoGetInfo() const
 	{
-		return { "Memchr",
-				 "Memchr Description",
+		return { "memchr()",
+				 "Measures the memchr() performance",
 				 "B",
 				 "The process rate",
 				 ResultType::Throughput
