@@ -1,6 +1,7 @@
 #include "MemcpyTask.hpp"
 
-#include <cstring>
+#undef memcpy
+extern "C" void* memcpy(void* dest, const void* src, size_t n);
 
 namespace Elpida
 {
@@ -29,7 +30,7 @@ namespace Elpida
 		auto out = _outputData->GetData();
 		while (iterations-- > 0)
 		{
-			std::memcpy(out, data, size);
+			memcpy(out, data, size);
 		}
 	}
 

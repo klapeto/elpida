@@ -1,5 +1,7 @@
 #include "StrtoulTask.hpp"
 
+extern "C" unsigned long strtoul(const char *s, char **p, int base);
+
 namespace Elpida
 {
 
@@ -22,7 +24,7 @@ namespace Elpida
 	{
 		while (iterations-- > 0)
 		{
-			auto value = std::strtoul("1524515736", nullptr, 10);
+			auto value = strtoul("1524515736", nullptr, 10);
 		}
 	}
 

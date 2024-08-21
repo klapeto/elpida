@@ -1,6 +1,6 @@
 #include "MemsetTask.hpp"
 
-#include <cstring>
+extern "C" void *memset(void *dest, int c, size_t n);
 
 namespace Elpida
 {
@@ -26,7 +26,7 @@ namespace Elpida
 		auto size = _inputData->GetSize();
 		while (iterations-- > 0)
 		{
-			std::memset(data, 0, size);
+			memset(data, 0, size);
 		}
 	}
 

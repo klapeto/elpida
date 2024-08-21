@@ -141,7 +141,7 @@ ValidateAndGetProcessingUnits(const Vector<unsigned int>& affinity, const Topolo
 static void
 ValidateAndAssignConfiguration(const Vector<String>& configurationValues, Vector<TaskConfiguration>& taskConfigurations)
 {
-	if (configurationValues.size() != taskConfigurations.size())
+	if (configurationValues.size() < taskConfigurations.size())
 	{
 		throw ElpidaException("benchmark required ",
 				taskConfigurations.size(),

@@ -4,8 +4,6 @@ project("Elpida StdLib benchmarks" VERSION ${ELPIDA_VERSION}
         LANGUAGES CXX C)
 
 set(ELPIDA_STDLIB_BENCHMARKS_SOURCES
-        MallocTask.cpp
-        MallocBenchmark.cpp
         StrtodTask.cpp
         StrtodBenchmark.cpp
         MemsetTask.cpp

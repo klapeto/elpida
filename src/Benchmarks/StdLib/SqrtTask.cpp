@@ -1,7 +1,8 @@
 #include "SqrtTask.hpp"
 
-#include <cmath>
 #include "Elpida/Core/Repeat.hpp"
+
+extern "C" double sqrt(double x);
 
 namespace Elpida
 {
@@ -25,7 +26,7 @@ namespace Elpida
 		double x = 156113132146186435.1513123;
 		while (iterations-- > 0)
 		{
-			REPEAT_10000(x = std::sqrt(x));
+			REPEAT_10000(x = sqrt(x));
 		}
 	}
 

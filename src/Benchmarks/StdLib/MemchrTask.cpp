@@ -1,6 +1,7 @@
 #include "MemchrTask.hpp"
 
-#include <cstring>
+extern "C" void *memchr(void *dest, int c, size_t n);
+extern "C" void *memset(void *dest, int c, size_t n);
 
 namespace Elpida
 {
@@ -10,7 +11,7 @@ namespace Elpida
 	void MemchrTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
-		std::memset(_inputData->GetData(), 0, _inputData->GetSize());
+		memset(_inputData->GetData(), 0, _inputData->GetSize());
 		_inputData->GetData()[_inputData->GetSize() - 1] = Character;
 	}
 
@@ -30,7 +31,7 @@ namespace Elpida
 		auto size = _inputData->GetSize();
 		while (iterations-- > 0)
 		{
-			volatile auto x = std::memchr(data, Character, size);
+			volatile auto x = memchr(data, Character, size);
 		}
 	}
 

@@ -2,6 +2,8 @@
 
 #include "Elpida/Core/Repeat.hpp"
 
+extern "C" double floor(double x);
+
 namespace Elpida
 {
 
@@ -25,7 +27,7 @@ namespace Elpida
 		double y = 1561131321.1513123;
 		while (iterations-- > 0)
 		{
-			REPEAT_10000(y = std::floor(y));
+			REPEAT_10000(y = floor(y));
 		}
 	}
 

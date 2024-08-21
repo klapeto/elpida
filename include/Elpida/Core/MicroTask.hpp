@@ -5,7 +5,6 @@
 #ifndef ELPIDA_MICROTASK_HPP_
 #define ELPIDA_MICROTASK_HPP_
 
-#include <cmath>
 #include "Elpida/Core/Duration.hpp"
 #include "Elpida/Core/Task.hpp"
 #include "Elpida/Core/Size.hpp"

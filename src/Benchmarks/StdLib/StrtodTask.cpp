@@ -1,5 +1,6 @@
-#include <random>
 #include "StrtodTask.hpp"
+
+extern "C" double strtod(const char* s, char** p);
 
 namespace Elpida
 {
@@ -22,7 +23,7 @@ namespace Elpida
 	{
 		while (iterations-- > 0)
 		{
-			auto value = std::strtod("53215.1513123", nullptr);
+			auto value = strtod("53215.1513123", nullptr);
 		}
 	}
 
@@ -43,7 +44,7 @@ namespace Elpida
 
 	TaskInfo StrtodTask::DoGetInfo() const
 	{
-		return { "Strtod",
+		return { "strtod()",
 				 "Measures the strtod() performance",
 				 "chars",
 				 "The character process rate",
