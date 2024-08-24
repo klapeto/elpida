@@ -10,7 +10,11 @@
 #ifdef __WCHAR_TYPE__
 TYPEDEF __WCHAR_TYPE__ wchar_t;
 #else
+#ifdef WIN32
+TYPEDEF unsigned short wchar_t;
+#else
 TYPEDEF long wchar_t;
+#endif
 #endif
 #endif
 

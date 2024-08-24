@@ -16,7 +16,12 @@
 #endif
 
 #define __BYTE_ORDER 1234
-#define __LONG_MAX 0x7fffffffffffffffL
+
+#ifdef WIN32
+    #define __LONG_MAX 0x7fffffffL
+#else
+    #define __LONG_MAX 0x7fffffffffffffffL
+#endif
 
 #ifndef __cplusplus
 #ifdef WIN32

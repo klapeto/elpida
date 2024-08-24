@@ -18,6 +18,10 @@ project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"
         LANGUAGES CXX C)
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_compile_options(-fcf-protection=none -fno-plt)
+endif()
+
 #if (ELPIDA_RELEASE STREQUAL TRUE)
 #    file(STRINGS "OptimizationFlags.txt" ELPIDA_OPTIMIZATION_FLAGS)
 #    add_compile_options(${ELPIDA_OPTIMIZATION_FLAGS})
@@ -67,7 +71,6 @@ include(GNUInstallDirs)
 
 if (UNIX)
     set(ELPIDA_UNIX ON)
-    add_compile_options(-Wextra)
     set(CMAKE_MODULE_LINKER_FLAGS -Wl,--no-undefined)
 elseif (MSYS OR MSVC OR MINGW)
     set(ELPIDA_WINDOWS ON)
