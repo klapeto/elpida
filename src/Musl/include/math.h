@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <_mingw_mac.h>
 #include <features.h>
 
 #define __NEED_float_t
@@ -47,6 +48,31 @@ extern "C" {
 #ifdef __FP_FAST_FMAL
 #define FP_FAST_FMAL 1
 #endif
+
+typedef union __mingw_dbl_type_t {
+	double x;
+	unsigned long long val;
+	__C89_NAMELESS struct {
+		unsigned int low, high;
+	} lh;
+} __mingw_dbl_type_t;
+
+typedef union __mingw_flt_type_t {
+	float x;
+	unsigned int val;
+} __mingw_flt_type_t;
+
+typedef union __mingw_ldbl_type_t
+{
+	long double x;
+	__C89_NAMELESS struct {
+		unsigned int low, high;
+		int sign_exponent : 16;
+		int res1 : 16;
+		int res0 : 32;
+	} lh;
+} __mingw_ldbl_type_t;
+
 
 int __fpclassify(double);
 int __fpclassifyf(float);

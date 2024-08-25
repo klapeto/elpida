@@ -3,19 +3,21 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-long double fmodl (long double x, long double y);
+/*
+ * Written by J.T. Conklin <jtc@netbsd.org>.
+ * Changes for long double by Ulrich Drepper <drepper@cygnus.com>
+ * Public domain.
+ */
+
+#include <math.h>
 
 long double
-fmodl (long double x, long double y)
+logbl (long double x)
 {
   long double res = 0.0L;
 
   asm volatile (
-       "1:\tfprem\n\t"
-       "fstsw   %%ax\n\t"
-       "sahf\n\t"
-       "jp      1b\n\t"
-       "fstp    %%st(1)"
-       : "=t" (res) : "0" (x), "u" (y) : "ax", "st(1)");
+       "fxtract\n\t"
+       "fstp	%%st" : "=t" (res) : "0" (x));
   return res;
 }

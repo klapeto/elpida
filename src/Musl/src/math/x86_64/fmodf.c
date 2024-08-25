@@ -3,12 +3,20 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-long double fmodl (long double x, long double y);
+/*
+ * Written by J.T. Conklin <jtc@netbsd.org>.
+ * Public domain.
+ *
+ * Adapted for float type by Danny Smith
+ *  <dannysmith@users.sourceforge.net>.
+ */
 
-long double
-fmodl (long double x, long double y)
+#include <math.h>
+
+float
+fmodf (float x, float y)
 {
-  long double res = 0.0L;
+  float res = 0.0F;
 
   asm volatile (
        "1:\tfprem\n\t"

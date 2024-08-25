@@ -35,6 +35,12 @@
 #define _Noreturn
 #endif
 
+#ifdef WIN32
+#define ELPIDA_CDECL __cdecl
+#else
+#define ELPIDA_CDECL
+#endif
+
 #define __REDIR(x,y) __typeof__(x) x __asm__(#y)
 
 #endif
