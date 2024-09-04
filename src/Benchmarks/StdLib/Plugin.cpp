@@ -13,8 +13,6 @@
 
 using namespace Elpida;
 
-extern "C" double floor(double x);
-
 ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 {
 	Vector<UniquePtr<Benchmark>> vec;
@@ -27,8 +25,6 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	vec.push_back(std::make_unique<SqrtBenchmark>());
 	vec.push_back(std::make_unique<CeilBenchmark>());
 	vec.push_back(std::make_unique<FloorBenchmark>());
-
-	auto x = floor(1.3);
 
 	return std::make_unique<BenchmarkGroup>("StdLib Benchmarks", std::move(vec));
 }
