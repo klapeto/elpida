@@ -19,7 +19,7 @@ project(Elpida VERSION ${ELPIDA_VERSION}
         LANGUAGES CXX C)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options(-fcf-protection=none -fno-plt)
+    add_compile_options(-fcf-protection=none -fno-plt -fno-builtin)
 endif()
 
 #if (ELPIDA_RELEASE STREQUAL TRUE)

@@ -58,7 +58,7 @@ add_library(elpida-svg
         SvgDirectRasterizer.cpp
 )
 
-target_link_libraries(elpida-svg elpida-core elpida-xml)
+target_link_libraries(elpida-svg musl elpida-core elpida-xml)
 
 
 install(TARGETS elpida-svg)

@@ -13,7 +13,7 @@ endif()
 file(GLOB MUSL_SOURCES src/internal/*.c src/math/*.c src/stdio/*.c src/stdlib/*.c src/string/*.c)
 file(GLOB MUSL_MATH_ARCH_SOURCES src/math/${ARCH}/*.c src/math/${ARCH}/*.s src/string/${ARCH}/*.c src/string/${ARCH}/*.s)
 
-add_library(musl STATIC ${MUSL_MATH_ARCH_SOURCES} ${MUSL_SOURCES})
+add_library(musl STATIC ${MUSL_SOURCES})
 
 execute_process(COMMAND sed -f ${CMAKE_CURRENT_LIST_DIR}/tools/mkalltypes.sed ${CMAKE_CURRENT_LIST_DIR}/arch/${ARCH}/bits/alltypes.h.in ${CMAKE_CURRENT_LIST_DIR}/include/alltypes.h.in OUTPUT_FILE ${CMAKE_CURRENT_LIST_DIR}/arch/${ARCH}/bits/alltypes.h)
 execute_process(COMMAND sed -n -e s/__NR_/SYS_/p INPUT_FILE ${CMAKE_CURRENT_LIST_DIR}/arch/${ARCH}/bits/syscall.h.in OUTPUT_FILE ${CMAKE_CURRENT_LIST_DIR}/arch/${ARCH}/bits/syscall.h)
