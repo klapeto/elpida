@@ -18,7 +18,7 @@ namespace Elpida
 		Duration nowOverhead = _environmentInfo->get().GetOverheadsInfo().GetNowOverhead();
 		Duration loopOverhead = _environmentInfo->get().GetOverheadsInfo().GetLoopOverhead();
 
-		Size iterations = ShouldBeMeasured() ? TimingUtilities::GetMinimumIterationsNeededForExecutionTime(
+		auto minimum = ShouldBeMeasured() ? TimingUtilities::GetMinimumIterationsAndDurationNeededForExecutionTime(
 				minimumDuration,
 				nowOverhead,
 				loopOverhead,
@@ -27,20 +27,41 @@ namespace Elpida
 				[this](auto duration)
 				{ return PostProcessDuration(duration); },
 				[this](Size iterations)
-				{ DoRun(iterations); }) : 1;
+				{ DoRun(iterations); }) : std::tuple<Iterations, Duration>{ 1, 0 };
 
-		// Consider the previous run as 'warmups'
-		// now the real deal
-		OnBeforeRun(iterations);
-		auto start = Timer::now();
-		DoRun(iterations);
-		auto end = Timer::now();
+		Duration currentDuration;
+		auto iterations = std::get<0>(minimum);
+		if (iterations != 1)
+		{
+			// Consider the previous run as 'warmups'
+			// now the real deal
+			OnBeforeRun(iterations);
+			auto start = Timer::now();
+			DoRun(iterations);
+			auto end = Timer::now();
 
-		auto currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
+			currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
+		}
+		else
+		{
+			auto duration = std::get<1>(minimum);
+			if (duration.count() == 0)
+			{
+				// It was never run, so run it at least once
+				OnBeforeRun(iterations);
+				auto start = Timer::now();
+				DoRun(iterations);
+				auto end = Timer::now();
+				duration = ToDuration(end - start);
+			}
+			currentDuration = duration - nowOverhead - (loopOverhead * iterations);
+		}
+
 
 		currentDuration = PostProcessDuration(currentDuration);
 		currentDuration =
-				(currentDuration / static_cast<double>(iterations)) / static_cast<double>(GetOperationsPerformedPerRun());
+				(currentDuration / static_cast<double>(iterations)) /
+				static_cast<double>(GetOperationsPerformedPerRun());
 
 		return currentDuration;
 	}

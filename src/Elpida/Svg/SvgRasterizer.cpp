@@ -11,6 +11,7 @@
 #include "Elpida/Svg/SvgViewPort.hpp"
 
 #include <iostream>
+#include <future>
 
 namespace Elpida
 {
@@ -44,7 +45,7 @@ namespace Elpida
 		RasterizedShape() = default;
 
 		RasterizedShape(SvgBackDrop&& backDrop, std::size_t x, std::size_t y)
-				: _backdrop(std::move(backDrop)), _x(x), _y(y)
+				:_backdrop(std::move(backDrop)), _x(x), _y(y)
 		{
 
 		}
@@ -57,6 +58,54 @@ namespace Elpida
 		SvgBackDrop _backdrop;
 		std::size_t _x = 0;
 		std::size_t _y = 0;
+	};
+
+	class MultiThreadPolygonRasterizer
+	{
+	public:
+		explicit MultiThreadPolygonRasterizer() = default;
+
+		void operator()(SvgBackDrop& backDrop,
+				const SvgPolygon& polygon,
+				SvgCalculatedPaint& paint,
+				const SvgSuperSampler& superSampler,
+				SvgFillRule fillRule)
+		{
+			backDrop.DrawMultiThread(polygon, paint, superSampler, fillRule, SvgBlendMode::Normal,
+					SvgCompositingMode::SourceOver);
+		}
+	};
+
+	class MultiThreadFutureGenerator
+	{
+	public:
+		template<typename T>
+		using FutureType = std::future<T>;
+
+		MultiThreadFutureGenerator() = default;
+
+		template<typename T, typename TCallable>
+		FutureType<T> Generate(TCallable callable)
+		{
+			return std::async(callable);
+		}
+	};
+
+	class MultiThreadBackDropDrawer
+	{
+	public:
+		explicit MultiThreadBackDropDrawer() = default;
+
+		void operator()(SvgBackDrop& backDrop,
+				const SvgBackDrop& other,
+				std::size_t x,
+				std::size_t y,
+				double opacity,
+				SvgBlendMode blendMode,
+				SvgCompositingMode compositingMode)
+		{
+			backDrop.DrawMultiThread(other, x, y, opacity, blendMode, compositingMode);
+		}
 	};
 
 	template<typename T>
@@ -76,7 +125,7 @@ namespace Elpida
 		CompletedFuture() = default;
 
 		explicit CompletedFuture(T&& value)
-				: _value(std::move(value))
+				:_value(std::move(value))
 		{
 		}
 
@@ -245,7 +294,7 @@ namespace Elpida
 			std::vector<TFuture> rasterizationFutures;
 
 			rasterizationFutures.reserve(children.size());
-			for (auto& child: children)
+			for (auto& child : children)
 			{
 				rasterizationFutures.push_back(futureGenerator.template Generate<RasterizedShape>([&]()
 				{
@@ -253,7 +302,7 @@ namespace Elpida
 				}));
 			}
 
-			for (auto& future: rasterizationFutures)
+			for (auto& future : rasterizationFutures)
 			{
 				rasterizedChildren.push_back(std::move(future.get()));
 			}
@@ -279,7 +328,7 @@ namespace Elpida
 			maxY = std::max(maxY, rasterizedSelf.GetY() + rasterizedSelf.GetBackdrop().GetHeight());
 		}
 
-		for (auto& rasterizedChild: rasterizedChildren)
+		for (auto& rasterizedChild : rasterizedChildren)
 		{
 			minX = std::min(minX, rasterizedChild.GetX());
 			minY = std::min(minY, rasterizedChild.GetY());
@@ -322,7 +371,6 @@ namespace Elpida
 		return RasterizedShape(std::move(finalBackDrop), minX, minY);
 	}
 
-
 	template<typename TFutureGenerator, typename TPolyRasterize, typename TBackdropRasterize>
 	static void RasterizeRootShape(SvgBackDrop& backDrop,
 			const SvgCalculatedShape& shape,
@@ -344,19 +392,31 @@ namespace Elpida
 				shape.CompositingMode());
 	}
 
-	SvgBackDrop SvgRasterizer::Rasterize(const SvgCalculatedDocument& document, std::size_t subSamples)
+	SvgBackDrop SvgRasterizer::Rasterize(const SvgCalculatedDocument& document, const SvgSuperSampler& superSampler,
+			bool multiThread)
 	{
 		auto& viewPort = document.GetViewPort();
-		const SvgSuperSampler superSampler(subSamples);
 		SvgBackDrop backDrop(std::ceil(viewPort.GetWidth()), std::ceil(viewPort.GetHeight()));
 
-		RasterizeRootShape(backDrop,
-				document.GetRootShape(),
-				superSampler,
-				SingleThreadFutureGenerator(),
-				SingleThreadPolygonRasterizer(),
-				SingleThreadBackDropDrawer());
-
+		if (multiThread)
+		{
+			RasterizeRootShape(backDrop,
+					document.GetRootShape(),
+					superSampler,
+					MultiThreadFutureGenerator(),
+					MultiThreadPolygonRasterizer(),
+					MultiThreadBackDropDrawer());
+		}
+		else
+		{
+			RasterizeRootShape(backDrop,
+					document.GetRootShape(),
+					superSampler,
+					SingleThreadFutureGenerator(),
+					SingleThreadPolygonRasterizer(),
+					SingleThreadBackDropDrawer());
+		}
+		
 		return backDrop;
 	}
 

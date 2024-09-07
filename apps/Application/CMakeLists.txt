@@ -138,4 +138,6 @@ install(FILES Assets/custom-report-template.html DESTINATION bin/assets)
 install(FILES Assets/full-report-template.html DESTINATION bin/assets)
 install(FILES Assets/lorem-ipsum.txt DESTINATION bin/assets)
 install(FILES Assets/lorem-ipsum.z DESTINATION bin/assets)
+install(FILES Assets/Elpida_Background.svg DESTINATION bin/assets)
+install(FILES Assets/Elpida_Icon.svg DESTINATION bin/assets)
 

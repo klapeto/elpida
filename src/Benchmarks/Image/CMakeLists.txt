@@ -19,6 +19,8 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         SvgRasterizationBenchmark.cpp
         SvgDocumentGenerationTask.cpp
         SvgRasterizationFromFileBenchmark.cpp
+        SvgRasterization2Task.cpp
+        SvgRasterization2Benchmark.cpp
 )
 
 add_executable(elpida-image-benchmarks ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})

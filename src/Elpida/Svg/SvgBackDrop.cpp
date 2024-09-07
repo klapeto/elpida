@@ -12,6 +12,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstring>
+#include <future>
 
 namespace Elpida
 {
@@ -38,6 +39,93 @@ namespace Elpida
 
 		DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height, opacity);
 	}
+
+	void
+	SvgBackDrop::DrawMultiThread(const SvgPolygon& polygon,
+			const SvgCalculatedPaint& paint,
+			const SvgSuperSampler& superSampler,
+			SvgFillRule fillRule, SvgBlendMode blendMode, SvgCompositingMode compositingMode,
+			double opacity)
+	{
+		const SvgBlender blender(blendMode);
+		const SvgCompositor compositor(compositingMode);
+
+		auto& bounds = polygon.GetBounds();
+
+		const std::size_t startY = static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinY())));
+		const std::size_t startX = static_cast<std::size_t>(std::max(0.0, std::floor(bounds.GetMinX())));
+
+		// We add + 0.5 because here the (0,0) is at the "center" of the pixel (0,0) where in Svg coordinates it is at top left
+		// with this we ensure we have enough width for this case. See the super sample that starts eg. at x + 0.5
+		const std::size_t width = std::min(_width, static_cast<std::size_t>(std::ceil(bounds.GetWidth() + 0.5)));
+		const std::size_t height = std::min(_height, static_cast<std::size_t>(std::ceil(bounds.GetHeight() + 0.5)));
+
+		DrawPolygonMultiThreaded(polygon, paint, fillRule, blender, compositor, superSampler, startY, startX, width, height, opacity);
+	}
+
+	void
+	SvgBackDrop::DoDrawOtherMultiThreaded(double opacity,
+			const SvgBlender& blender,
+			const SvgCompositor& compositor,
+			const size_t startX,
+			const size_t startY,
+			const size_t width,
+			const size_t height,
+			const std::vector<SvgColor>& colorData,
+			const size_t sourceWidth)
+	{
+		auto threadCount = std::min(static_cast<std::size_t>(std::thread::hardware_concurrency()), height);
+		std::size_t linesPerThread = std::ceil(height / static_cast<double>(threadCount));
+
+		std::vector<std::future<void>> threads;
+		threads.reserve(threadCount);
+		for (std::size_t t = 0, h = startY, sourceY = 0; t < threadCount; ++t, h += linesPerThread, sourceY += linesPerThread)
+		{
+			auto thisEndLine = std::min(h + linesPerThread, height);
+			threads.emplace_back(std::async([&, thisStartY = h, thisEndY = thisEndLine, sourceY = sourceY]
+			{
+				DoDrawOther(opacity, blender, compositor, startX, thisStartY, width, thisEndY,0, sourceY, colorData, sourceWidth);
+			}));
+		}
+
+		for (auto& th: threads)
+		{
+			th.get();
+		}
+	}
+
+	void SvgBackDrop::DrawPolygonMultiThreaded(const SvgPolygon& polygon,
+			const SvgCalculatedPaint& paint,
+			SvgFillRule& fillRule,
+			const SvgBlender& blender,
+			const SvgCompositor& compositor,
+			const SvgSuperSampler& superSampler,
+			const size_t startY,
+			const size_t startX,
+			const size_t width,
+			const size_t height,
+			double opacity)
+	{
+		auto threadCount = std::min(static_cast<std::size_t>(std::thread::hardware_concurrency()), height);
+		std::size_t linesPerThread = std::ceil(height / static_cast<double>(threadCount));
+
+		std::vector<std::future<void>> threads;
+		threads.reserve(threadCount);
+		for (std::size_t t = 0, h = startY; t < threadCount; ++t, h += linesPerThread)
+		{
+			auto thisEndLine = std::min(h + linesPerThread, height);
+			threads.push_back(std::async([&, thisStartY = h, thisEndY = thisEndLine]()
+			{
+				DoDrawPolygon(polygon, paint, fillRule, blender, compositor, superSampler, thisStartY, startX, width, thisEndY - thisStartY, opacity);
+			}));
+		}
+
+		for (auto& th: threads)
+		{
+			th.get();
+		}
+	}
+
 
 	void SvgBackDrop::DoDrawPolygon(
 			const SvgPolygon& polygon,
@@ -195,5 +283,28 @@ namespace Elpida
 		const auto sourceWidth = other.GetWidth();
 
 		DoDrawOther(opacity, blender, compositor, startX, startY, endX, endY, startX, startY, colorData, sourceWidth);
+	}
+
+
+	void SvgBackDrop::DrawMultiThread(const SvgBackDrop& other,
+			std::size_t x,
+			std::size_t y,
+			double opacity,
+			SvgBlendMode blendMode, SvgCompositingMode compositingMode)
+	{
+		if (x > _width || y > _height) return;
+
+		const SvgBlender blender(blendMode);
+		const SvgCompositor compositor(compositingMode);
+
+		const auto startX = std::max(static_cast<std::size_t>(0), std::min(x, _width));
+		const auto startY = std::max(static_cast<std::size_t>(0), std::min(y, _height));
+		const auto endX = std::min(_width, x + other.GetWidth());
+		const auto endY = std::min(_height, y + other.GetHeight());
+
+		auto& colorData = other.GetColorData();
+		const auto sourceWidth = other.GetWidth();
+
+		DoDrawOtherMultiThreaded(opacity, blender, compositor, startX, startY, endX, endY, colorData, sourceWidth);
 	}
 } // Elpida
