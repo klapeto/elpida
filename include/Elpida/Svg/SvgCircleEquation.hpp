@@ -6,6 +6,7 @@
 #define ELPIDA_SVGCIRCLEEQUATION_HPP
 
 #include "Elpida/Svg/SvgPoint.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -19,12 +20,12 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetRadius() const
+		SvgFloat GetRadius() const
 		{
 			return _radius;
 		}
 
-		void ScaleBy(const double value)
+		void ScaleBy(const SvgFloat value)
 		{
 			_rightPoint = SvgPoint(_rightPoint.GetX() + value, _rightPoint.GetY());
 			Recalculate();
@@ -36,7 +37,7 @@ namespace Elpida
 			return _center.GetDistance(point) <= _radius;
 		}
 
-		SvgCircleEquation(const SvgPoint &center, double radius)
+		SvgCircleEquation(const SvgPoint &center, SvgFloat radius)
 			: _center(center),
 			  _radius(radius)
 		{
@@ -46,7 +47,7 @@ namespace Elpida
 	private:
 		SvgPoint _center;
 		SvgPoint _rightPoint;
-		double _radius;
+		SvgFloat _radius;
 
 		void Recalculate()
 		{

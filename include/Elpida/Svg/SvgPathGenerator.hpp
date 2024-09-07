@@ -15,7 +15,7 @@ namespace Elpida
 	class SvgPathGenerator final
 	{
 	public:
-		static constexpr double Kappa = 0.5522847493;	// Length proportional to radius of a cubic bezier handle for 90deg arcs.
+		static constexpr SvgFloat Kappa = 0.5522847493;	// Length proportional to radius of a cubic bezier handle for 90deg arcs.
 
 		std::vector<SvgPathInstance>& GetPaths()
 		{
@@ -32,13 +32,13 @@ namespace Elpida
 
 		void MoveTo(const SvgPoint& point, bool relative = false);
 		void LineTo(const SvgPoint& point, bool relative = false);
-		void HorizontalLineTo(double x, bool relative = false);
-		void VerticalLineTo(double y, bool relative = false);
+		void HorizontalLineTo(SvgFloat x, bool relative = false);
+		void VerticalLineTo(SvgFloat y, bool relative = false);
 		void CubicBezTo(SvgPoint controlPointA, SvgPoint controlPointB, SvgPoint endPoint, bool relative = false);
 		void CubicBezShortTo(SvgPoint controlPointB, SvgPoint endPoint, bool relative);
 		void QuadBezTo(SvgPoint controlPoint, SvgPoint endPoint, bool relative);
 		void QuadBezShortTo(SvgPoint endPoint, bool relative);
-		void ArcTo(double radiusX,double radiusY,double xAxisRotation,bool largeArc,bool sweep,SvgPoint endpoint, bool relative);
+		void ArcTo(SvgFloat radiusX,SvgFloat radiusY,SvgFloat xAxisRotation,bool largeArc,bool sweep,SvgPoint endpoint, bool relative);
 
 		void CommitPath(bool closed);
 

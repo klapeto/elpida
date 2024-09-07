@@ -9,6 +9,7 @@
 #include "Elpida/Svg/SvgLinearEquation.hpp"
 #include "Elpida/Svg/SvgCalculatedGradientStop.hpp"
 #include "Elpida/Svg/SvgCalculatedGradient.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -33,7 +34,7 @@ namespace Elpida
 		SvgLinearEquation _equation;
 		std::vector<SvgLinearEquation> _stopNormals;
 		SvgTransform _transform;
-		double _length;
+		SvgFloat _length;
 
 		[[nodiscard]]
 		SvgColor CalculatePad(const SvgPoint& point) const;

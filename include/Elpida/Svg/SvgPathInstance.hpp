@@ -10,6 +10,7 @@
 #include "Elpida/Svg/SvgBounds.hpp"
 #include "Elpida/Svg/SvgPoint.hpp"
 #include "Elpida/Svg/SvgCubicBezierCurve.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -50,8 +51,8 @@ namespace Elpida
 		SvgBounds _bounds;
 		bool _closed;
 
-		static double EvaluateBezier(double t, double p0, double p1, double p2, double p3);
-		static void AddBezierPoints(double aX, double bX, double cX, double dX, double& boundMin, double& boundMax);
+		static SvgFloat EvaluateBezier(SvgFloat t, SvgFloat p0, SvgFloat p1, SvgFloat p2, SvgFloat p3);
+		static void AddBezierPoints(SvgFloat aX, SvgFloat bX, SvgFloat cX, SvgFloat dX, SvgFloat& boundMin, SvgFloat& boundMax);
 		static SvgBounds CalculateBounds(const SvgPoint& a, const SvgPoint& b, const SvgPoint& c, const SvgPoint& d);
 
 		void ReCalculateBounds();

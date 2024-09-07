@@ -10,7 +10,7 @@
 
 namespace Elpida
 {
-	double SvgCalculationContext::GetDpi() const
+	SvgFloat SvgCalculationContext::GetDpi() const
 	{
 		return _dpi;
 	}
@@ -75,7 +75,7 @@ namespace Elpida
 		}
 	}
 
-	SvgCalculationContext::SvgCalculationContext(double rootFontSize, double dpi)
+	SvgCalculationContext::SvgCalculationContext(SvgFloat rootFontSize, SvgFloat dpi)
 			:_rootFontSize(rootFontSize), _dpi(dpi), _currentDepth(1)
 	{
 		auto& stack = _stackedValues["font-size"];
@@ -142,9 +142,9 @@ namespace Elpida
 		return "";
 	}
 
-	double SvgCalculationContext::GetNumber(const std::string_view& name) const
+	SvgFloat SvgCalculationContext::GetNumber(const std::string_view& name) const
 	{
-		double value = 0.0;
+		SvgFloat value = 0.0;
 		SvgNumber::TryParseNumber(GetValue(name), value);
 		return value;
 	}
@@ -154,7 +154,7 @@ namespace Elpida
 		return _viewPort.top().value;
 	}
 
-	double SvgCalculationContext::GetRootFontSize() const
+	SvgFloat SvgCalculationContext::GetRootFontSize() const
 	{
 		return _rootFontSize;
 	}
@@ -181,7 +181,7 @@ namespace Elpida
 		return _stokes.back().value;
 	}
 
-	double SvgCalculationContext::GetOpacity() const
+	SvgFloat SvgCalculationContext::GetOpacity() const
 	{
 		return _opacities.back().value;
 	}

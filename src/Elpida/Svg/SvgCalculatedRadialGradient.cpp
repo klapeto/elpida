@@ -67,7 +67,9 @@ namespace Elpida
 
 		auto actualPoint = point;
 		actualPoint.Transform(_transform);	// Transform the point to non transformed cicle space
-		for (std::size_t i = 0; i < _stops.size() - 1; i++)
+
+		auto size = _stops.size() - 1;
+		for (std::size_t i = 0; i < size; i++)
 		{
 			stopA = &_stops[i];
 			circleA = &_circles[i];
@@ -108,7 +110,7 @@ namespace Elpida
 		if (distanceFromPoint > lastCircle.GetRadius())
 		{
 			const int ratio = distanceFromPoint / lastCircle.GetRadius();
-			const auto rXToAdd = lastCircle.GetRadius() * ratio;
+			const auto rXToAdd = lastCircle.GetRadius() * SvgFloat(ratio);
 			for (auto& circle : circles)
 			{
 				circle.ScaleBy(rXToAdd);
@@ -121,7 +123,8 @@ namespace Elpida
 		const SvgCircleEquation *circleA = nullptr;
 		const SvgCircleEquation *circleB = nullptr;
 
-		for (std::size_t i = 0; i < _stops.size() - 1; i++)
+		auto size = _stops.size() - 1;
+		for (std::size_t i = 0; i < size; i++)
 		{
 			stopA = &_stops[i];
 			circleA = &circles[i];
@@ -170,7 +173,7 @@ namespace Elpida
 		if (distanceFromPoint > lastCircle.GetRadius())
 		{
 			const int ratio = distanceFromPoint / lastCircle.GetRadius();
-			const auto rXToAdd = lastCircle.GetRadius() * ratio;
+			const auto rXToAdd = lastCircle.GetRadius() * SvgFloat(ratio);
 
 			inverted = ratio % 2 != 0;
 			circles = inverted ? _inverseCircles : _circles;
@@ -193,7 +196,8 @@ namespace Elpida
 
 		if (inverted)
 		{
-			for (std::size_t i = _stops.size() - 1; i > 0 ; i--)
+			auto size = _stops.size() - 1;
+			for (std::size_t i = size; i > 0 ; i--)
 			{
 				stopA = &_stops[i];
 				circleA = &circles[i];
@@ -208,7 +212,8 @@ namespace Elpida
 		}
 		else
 		{
-			for (std::size_t i = 0; i < _stops.size() - 1; i++)
+			auto size = _stops.size() - 1;
+			for (std::size_t i = 0; i < size; i++)
 			{
 				stopA = &_stops[i];
 				circleA = &circles[i];

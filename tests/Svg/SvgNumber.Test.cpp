@@ -54,7 +54,7 @@ TEST(SvgNumberTests, ParseNumber_Fail)
 
 TEST(SvgNumberTests, TryParseNumber_Fail_Success)
 {
-	double v;
+	SvgFloat v;
 	EXPECT_FALSE(SvgNumber::TryParseNumber("-", v));
 	EXPECT_FALSE(SvgNumber::TryParseNumber("+", v));
 	EXPECT_FALSE(SvgNumber::TryParseNumber("+1.35e+", v));
@@ -64,7 +64,7 @@ TEST(SvgNumberTests, TryParseNumber_Fail_Success)
 
 TEST(SvgNumberTests, TryParseNumber_Success)
 {
-	double v;
+	SvgFloat v;
 	EXPECT_TRUE(SvgNumber::TryParseNumber("5", v));
 	EXPECT_EQ(v, 5);
 }

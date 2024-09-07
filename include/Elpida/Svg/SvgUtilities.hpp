@@ -5,12 +5,14 @@
 #ifndef ELPIDA_SVGUTILITIES_HPP
 #define ELPIDA_SVGUTILITIES_HPP
 
+#include "SvgConfig.hpp"
+
 namespace Elpida
 {
 	class SvgUtilities
 	{
 	public:
-		static inline constexpr double Pi = 3.141592653589793238462643383279502884;
+		static inline constexpr SvgFloat Pi = 3.141592653589793238462643383279502884;
 
 		template<typename T>
 		static constexpr T Lerp(T a, T b, T t) noexcept
@@ -33,9 +35,9 @@ namespace Elpida
 				   : (b > x ? x : b);  // monotonic near t=1
 		}
 
-		static constexpr double Lerp(double a, double b, double t) noexcept
+		static constexpr SvgFloat Lerp(SvgFloat a, SvgFloat b, SvgFloat t) noexcept
 		{
-			return Lerp<double>(a, b, t);
+			return Lerp<SvgFloat>(a, b, t);
 		}
 
 		SvgUtilities() = delete;

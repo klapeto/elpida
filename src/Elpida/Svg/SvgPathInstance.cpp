@@ -26,23 +26,23 @@ namespace Elpida
 		ReCalculateBounds();
 	}
 
-	double SvgPathInstance::EvaluateBezier(double t, double p0, double p1, double p2, double p3)
+	SvgFloat SvgPathInstance::EvaluateBezier(SvgFloat t, SvgFloat p0, SvgFloat p1, SvgFloat p2, SvgFloat p3)
 	{
-		const double it = 1.0 - t;
-		return it * it * it * p0 + 3.0 * it * it * t * p1 + 3.0 * it * t * t * p2 + t * t * t * p3;
+		const SvgFloat it = SvgFloat(1.0) - t;
+		return it * it * it * p0 + SvgFloat(3.0) * it * it * t * p1 + SvgFloat(3.0) * it * t * t * p2 + t * t * t * p3;
 	}
 
-	void SvgPathInstance::AddBezierPoints(const double aX, const double bX, const double cX, const double dX,
-			double& boundMin, double& boundMax)
+	void SvgPathInstance::AddBezierPoints(const SvgFloat aX, const SvgFloat bX, const SvgFloat cX, const SvgFloat dX,
+			SvgFloat& boundMin, SvgFloat& boundMax)
 	{
-		const auto a = -3.0 * aX + 9.0 * bX - 9.0 * cX + 3.0 * dX;
-		const auto b = 6.0 * aX - 12.0 * bX + 6.0 * cX;
-		const auto c = 3.0 * bX - 3.0 * aX;
+		const auto a = SvgFloat(-3.0) * aX + SvgFloat(9.0) * bX - SvgFloat(9.0) * cX + SvgFloat(3.0) * dX;
+		const auto b = SvgFloat(6.0) * aX - SvgFloat(12.0) * bX + SvgFloat(6.0) * cX;
+		const auto c = SvgFloat(3.0) * bX - SvgFloat(3.0) * aX;
 		std::size_t count = 0;
 
-		double roots[2];
+		SvgFloat roots[2];
 
-		constexpr auto epsilon = std::numeric_limits<double>::epsilon();
+		constexpr auto epsilon = std::numeric_limits<SvgFloat>::epsilon();
 
 		if (std::abs(a) < epsilon)
 		{
@@ -57,15 +57,15 @@ namespace Elpida
 		}
 		else
 		{
-			const auto b2ac = b * b - 4.0 * c * a;
+			const auto b2ac = b * b - SvgFloat(4.0) * c * a;
 			if (b2ac > epsilon)
 			{
-				auto t = (-b + std::sqrt(b2ac)) / (2.0 * a);
+				auto t = (-b + std::sqrt(b2ac)) / (SvgFloat(2.0) * a);
 				if (t > epsilon && t < 1.0 - epsilon)
 				{
 					roots[count++] = t;
 				}
-				t = (-b - std::sqrt(b2ac)) / (2.0 * a);
+				t = (-b - std::sqrt(b2ac)) / (SvgFloat(2.0) * a);
 				if (t > epsilon && t < 1.0 - epsilon)
 				{
 					roots[count++] = t;
@@ -93,10 +93,10 @@ namespace Elpida
 			return bounds;
 		}
 
-		double minX = bounds.GetMinX();
-		double minY = bounds.GetMinY();
-		double maxX = bounds.GetMaxX();
-		double maxY = bounds.GetMaxY();
+		SvgFloat minX = bounds.GetMinX();
+		SvgFloat minY = bounds.GetMinY();
+		SvgFloat maxX = bounds.GetMaxX();
+		SvgFloat maxY = bounds.GetMaxY();
 		// Add bezier curve inflection points in X and Y.
 		AddBezierPoints(a.GetX(), b.GetX(), c.GetX(), d.GetX(), minX, maxX);
 		AddBezierPoints(a.GetY(), b.GetY(), c.GetY(), d.GetY(), minY, maxY);

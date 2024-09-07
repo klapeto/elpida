@@ -32,7 +32,7 @@ namespace Elpida
 				_opacity,
 				[](const auto& s)
 				{
-					double v;
+					SvgFloat v;
 					return SvgNumber::TryParseNumber(s, v) ? v : 1.0;
 				});
 		ConditionallyAssignProperty<>("display",

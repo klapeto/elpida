@@ -40,7 +40,8 @@ namespace Elpida
 
 		_stopNormals.push_back(_equation.GetANormal());
 
-		for (std::size_t i = 1; i < _stops.size() - 1; ++i)
+		auto size = _stops.size() - 1;
+		for (std::size_t i = 1; i < size; ++i)
 		{
 			auto& stop = _stops[i];
 
@@ -90,7 +91,8 @@ namespace Elpida
 		auto actualPoint = point;
 		actualPoint.Transform(_transform);	// Transform the point to non transformed cicle space
 
-		for (std::size_t i = 0; i < _stops.size() - 1; i++)
+		auto size = _stops.size() - 1;
+		for (std::size_t i = 0; i < size; i++)
 		{
 			normalA = &_stopNormals[i];
 			normalB = &_stopNormals[i + 1];
@@ -160,13 +162,13 @@ namespace Elpida
 			{
 				const int ratio = 1 + distanceFromA / stopDistance;
 				const auto delta = _equation.GetP2() - _equation.GetP1();
-				transform.SetTranslation(-(delta.GetX() * ratio), -(delta.GetY() * ratio));
+				transform.SetTranslation(-(delta.GetX() * SvgFloat(ratio)), -(delta.GetY() * SvgFloat(ratio)));
 			}
 			else
 			{
 				const int ratio = 1 + distanceFromB / stopDistance;
 				const auto delta = _equation.GetP2() - _equation.GetP1();
-				transform.SetTranslation(delta.GetX() * ratio, delta.GetY() * ratio);
+				transform.SetTranslation(delta.GetX() * SvgFloat(ratio), delta.GetY() * SvgFloat(ratio));
 			}
 		}
 
@@ -180,7 +182,8 @@ namespace Elpida
 		const SvgLinearEquation* normalA = nullptr;
 		const SvgLinearEquation* normalB = nullptr;
 
-		for (std::size_t i = 0; i < _stops.size() - 1; i++)
+		auto size = _stops.size() - 1;
+		for (std::size_t i = 0; i < size; i++)
 		{
 			normalA = &stopNormals[i];
 			normalB = &stopNormals[i + 1];
@@ -218,14 +221,14 @@ namespace Elpida
 				const int ratio = 1 + distanceA / distance;
 				inverse = ratio % 2 != 0;
 				const auto delta = _equation.GetP2() - _equation.GetP1();
-				transform.SetTranslation(-(delta.GetX() * ratio), -(delta.GetY() * ratio));
+				transform.SetTranslation(-(delta.GetX() * SvgFloat(ratio)), -(delta.GetY() * SvgFloat(ratio)));
 			}
 			else
 			{
 				const int ratio = 1 + distanceB / distance;
 				const auto delta = _equation.GetP2() - _equation.GetP1();
 				inverse = ratio % 2 != 0;
-				transform.SetTranslation(delta.GetX() * ratio, delta.GetY() * ratio);
+				transform.SetTranslation(delta.GetX() * SvgFloat(ratio), delta.GetY() * SvgFloat(ratio));
 			}
 		}
 
@@ -234,9 +237,9 @@ namespace Elpida
 		{
 			SvgTransform flip;
 			auto dx = -std::min(_equation.GetP1().GetX(), _equation.GetP2().GetX()) - std::abs(
-					_equation.GetP1().GetX() - _equation.GetP2().GetX()) / 2.0;
+					_equation.GetP1().GetX() - _equation.GetP2().GetX()) / SvgFloat(2.0);
 			auto dy = -std::min(_equation.GetP1().GetY(), _equation.GetP2().GetY()) - std::abs(
-					_equation.GetP1().GetY() - _equation.GetP2().GetY()) / 2.0;
+					_equation.GetP1().GetY() - _equation.GetP2().GetY()) / SvgFloat(2.0);
 
 			// we need to move the gradient bound box to the center of the axis system
 			// before rotate and move it back
@@ -259,7 +262,8 @@ namespace Elpida
 		const SvgLinearEquation* normalA = nullptr;
 		const SvgLinearEquation* normalB = nullptr;
 
-		for (std::size_t i = 0; i < _stops.size() - 1; i++)
+		auto size = _stops.size() - 1;
+		for (std::size_t i = 0; i < size; i++)
 		{
 			normalA = &stopNormals[i];
 			normalB = &stopNormals[i + 1];

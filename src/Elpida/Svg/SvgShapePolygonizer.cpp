@@ -7,7 +7,6 @@
 #include <Elpida/Svg/SvgEdge.hpp>
 #include <Elpida/Svg/SvgLineCap.hpp>
 #include <Elpida/Svg/SvgLineJoin.hpp>
-#include <Elpida/Svg/SvgPathInstance.hpp>
 #include <Elpida/Svg/SvgStroke.hpp>
 #include <Elpida/Svg/SvgCalculatedShape.hpp>
 #include <Elpida/Svg/SvgCalculationContext.hpp>
@@ -23,7 +22,7 @@ namespace Elpida
 		LEFT = 0x04
 	};
 
-	static constexpr double tessTol = 0.25;
+	static constexpr SvgFloat tessTol = 0.25;
 
 	class SvgRasterizerPoint : public SvgPoint
 	{
@@ -79,7 +78,7 @@ namespace Elpida
 		{
 		}
 
-		SvgRasterizerPoint(const double x, const double y)
+		SvgRasterizerPoint(const SvgFloat x, const SvgFloat y)
 				:SvgPoint(x, y), _flags(NONE)
 		{
 		}
@@ -94,12 +93,12 @@ namespace Elpida
 		{
 		}
 
-		SvgRasterizerPoint(const double x,
-				const double y,
-				const double dx,
-				const double dy,
-				const double dmx,
-				const double dmy,
+		SvgRasterizerPoint(const SvgFloat x,
+				const SvgFloat y,
+				const SvgFloat dx,
+				const SvgFloat dy,
+				const SvgFloat dmx,
+				const SvgFloat dmy,
 				const PointFlags flags)
 				:SvgPoint(x, y),
 				 _direction(dx, dy),
@@ -119,9 +118,9 @@ namespace Elpida
 		PointFlags _flags;
 	};
 
-	static int CurveDivs(const double r, const double arc)
+	static int CurveDivs(const SvgFloat r, const SvgFloat arc)
 	{
-		const double da = std::acos(r / (r + tessTol)) * 2.0;
+		const SvgFloat da = std::acos(r / (r + tessTol)) * SvgFloat(2.0);
 		int divs = static_cast<int>(std::ceil(arc / da));
 		if (divs < 2) divs = 2;
 		return divs;
@@ -164,14 +163,14 @@ namespace Elpida
 			SvgPoint& right,
 			const SvgPoint& p0,
 			const SvgPoint& p1,
-			const double lineWidth)
+			const SvgFloat lineWidth)
 	{
-		const double w = lineWidth * 0.5;
+		const SvgFloat w = lineWidth * SvgFloat(0.5);
 
 		auto delta = p1 - p0;
 		const auto length = delta.Normalize();
 
-		const auto p = p0 + (delta * (length * 0.5));
+		const auto p = p0 + (delta * (length * SvgFloat(0.5)));
 
 		const auto inverseDelta = delta.GetInverse();
 
@@ -184,10 +183,10 @@ namespace Elpida
 			SvgPoint& right,
 			const SvgPoint& p,
 			const SvgPoint& delta,
-			const double lineWidth,
+			const SvgFloat lineWidth,
 			const bool connect)
 	{
-		const double w = lineWidth * 0.5;
+		const SvgFloat w = lineWidth * SvgFloat(0.5);
 
 		const auto inverseDelta = delta.GetInverse();
 
@@ -210,10 +209,10 @@ namespace Elpida
 			SvgPoint& right,
 			const SvgPoint& p,
 			const SvgPoint& delta,
-			const double lineWidth,
+			const SvgFloat lineWidth,
 			const bool connect)
 	{
-		const double w = lineWidth * 0.5f;
+		const SvgFloat w = lineWidth * SvgFloat(0.5);
 
 		const auto newPoint = p - delta * w;
 
@@ -238,11 +237,11 @@ namespace Elpida
 			SvgPoint& right,
 			const SvgPoint& p,
 			const SvgPoint& delta,
-			const double lineWidth,
+			const SvgFloat lineWidth,
 			const std::size_t ncap,
 			const bool connect)
 	{
-		const double w = lineWidth * 0.5;
+		const SvgFloat w = lineWidth * SvgFloat(0.5);
 
 		const auto inverseDelta = delta.GetInverse();
 
@@ -252,9 +251,9 @@ namespace Elpida
 
 		for (std::size_t i = 0; i < ncap; i++)
 		{
-			const double a = static_cast<double>(i) / static_cast<double>(ncap - 1) * SvgUtilities::Pi;
-			const double ax = cos(a) * w;
-			const double ay = sin(a) * w;
+			const SvgFloat a = static_cast<SvgFloat>(i) / static_cast<SvgFloat>(ncap - 1) * SvgUtilities::Pi;
+			const SvgFloat ax = std::cos(a) * w;
+			const SvgFloat ay = std::sin(a) * w;
 
 			auto currentPoint = p - (inverseDelta * ax) - (delta * ay);
 
@@ -290,9 +289,9 @@ namespace Elpida
 			SvgPoint& right,
 			const SvgRasterizerPoint& p0,
 			const SvgRasterizerPoint& p1,
-			const double lineWidth)
+			const SvgFloat lineWidth)
 	{
-		const double w = lineWidth * 0.5;
+		const SvgFloat w = lineWidth * SvgFloat(0.5);
 		const auto dl0 = p0.GetDirection().GetInverse();
 		const auto dl1 = p1.GetDirection().GetInverse();
 
@@ -317,9 +316,9 @@ namespace Elpida
 			SvgPoint& right,
 			const SvgRasterizerPoint& p0,
 			const SvgRasterizerPoint& p1,
-			const double lineWidth)
+			const SvgFloat lineWidth)
 	{
-		const double w = lineWidth * 0.5f;
+		const SvgFloat w = lineWidth * SvgFloat(0.5);
 
 		const auto dl0 = p0.GetDirection().GetInverse();
 		const auto dl1 = p1.GetDirection().GetInverse();
@@ -360,20 +359,20 @@ namespace Elpida
 			SvgPoint& right,
 			const SvgRasterizerPoint& p0,
 			const SvgRasterizerPoint& p1,
-			const double lineWidth,
+			const SvgFloat lineWidth,
 			const std::size_t ncap)
 	{
-		const double w = lineWidth * 0.5;
+		const SvgFloat w = lineWidth * SvgFloat(0.5);
 		const auto dl0 = p0.GetDirection().GetInverse();
 		const auto dl1 = p1.GetDirection().GetInverse();
-		const double a0 = atan2(dl0.GetY(), dl0.GetX());
-		const double a1 = atan2(dl1.GetY(), dl1.GetX());
-		double da = a1 - a0;
+		const SvgFloat a0 = std::atan2(dl0.GetY(), dl0.GetX());
+		const SvgFloat a1 = std::atan2(dl1.GetY(), dl1.GetX());
+		SvgFloat da = a1 - a0;
 
 		if (da < SvgUtilities::Pi) da += SvgUtilities::Pi * 2;
 		if (da > SvgUtilities::Pi) da -= SvgUtilities::Pi * 2;
 
-		auto nV = static_cast<int>(std::ceil((std::abs(da) / SvgUtilities::Pi) * static_cast<double>(ncap)));
+		auto nV = static_cast<int>(std::ceil((std::abs(da) / SvgUtilities::Pi) * static_cast<SvgFloat>(ncap)));
 		if (nV < 2) nV = 2;
 
 		std::size_t n = nV;
@@ -384,9 +383,9 @@ namespace Elpida
 
 		for (std::size_t i = 0; i < n; i++)
 		{
-			const double u = static_cast<double>(i) / static_cast<double>(n - 1);
-			const double a = a0 + u * da;
-			SvgPoint angle(cos(a) * w, sin(a) * w);
+			const SvgFloat u = static_cast<SvgFloat>(i) / static_cast<SvgFloat>(n - 1);
+			const SvgFloat a = a0 + u * da;
+			SvgPoint angle(std::cos(a) * w, std::sin(a) * w);
 
 			auto left1 = p1 - angle;
 			auto right1 = p1 + angle;
@@ -406,9 +405,9 @@ namespace Elpida
 			SvgPoint& left,
 			SvgPoint& right,
 			const SvgRasterizerPoint& p1,
-			const double lineWidth)
+			const SvgFloat lineWidth)
 	{
-		const double w = lineWidth * 0.5;
+		const SvgFloat w = lineWidth * SvgFloat(0.5);
 		const auto left0 = p1 - (p1.GetExtrusion() * w);
 		const auto right0 = p1 + (p1.GetExtrusion() * w);
 
@@ -432,10 +431,10 @@ namespace Elpida
 			return;
 		}
 
-		const double dx = end.GetX() - start.GetX();
-		const double dy = end.GetY() - start.GetY();
-		const double d2 = std::abs(((controlA.GetX() - end.GetX()) * dy) - ((controlA.GetY() - end.GetY()) * dx));
-		const double d3 = std::abs(((controlB.GetX() - end.GetX()) * dy) - ((controlB.GetY() - end.GetY()) * dx));
+		const SvgFloat dx = end.GetX() - start.GetX();
+		const SvgFloat dy = end.GetY() - start.GetY();
+		const SvgFloat d2 = std::abs(((controlA.GetX() - end.GetX()) * dy) - ((controlA.GetY() - end.GetY()) * dx));
+		const SvgFloat d3 = std::abs(((controlB.GetX() - end.GetX()) * dy) - ((controlB.GetY() - end.GetY()) * dx));
 
 		if ((d2 + d3) * (d2 + d3) < tessTol * (dx * dx + dy * dy))
 		{
@@ -460,9 +459,9 @@ namespace Elpida
 			bool closed,
 			const SvgLineJoin lineJoin,
 			const SvgLineCap lineCap,
-			double lineWidth)
+			SvgFloat lineWidth)
 	{
-		const auto ncap = CurveDivs(lineWidth * 0.5, SvgUtilities::Pi);
+		const auto ncap = CurveDivs(lineWidth * SvgFloat(0.5), SvgUtilities::Pi);
 		SvgRasterizerPoint left, right, firstLeft, firstRight;
 
 		std::vector<SvgRasterizerPoint>::iterator p0;
@@ -563,7 +562,7 @@ namespace Elpida
 	}
 
 	static void PrepareStroke(std::vector<SvgRasterizerPoint>& points,
-			const double miterLimit,
+			const SvgFloat miterLimit,
 			const SvgLineJoin lineJoin)
 	{
 		// TODO: index based
@@ -593,10 +592,10 @@ namespace Elpida
 			// Calculate extrusions
 			p1->SetExtrusion((dl0 + dl1) * 0.5);
 
-			const double dmr2 = p1->GetExtrusion().Product();
+			const SvgFloat dmr2 = p1->GetExtrusion().Product();
 			if (dmr2 > 0.000001)
 			{
-				double s2 = 1.0 / dmr2;
+				SvgFloat s2 = SvgFloat(1.0) / dmr2;
 				if (s2 > 600.0)
 				{
 					s2 = 600.0;
@@ -684,10 +683,10 @@ namespace Elpida
 
 		std::vector<SvgEdge> edges;
 
-		constexpr double scale = 1.0;
+		constexpr SvgFloat scale = 1.0;
 
 		auto& stroke = shape.GetStroke().value();
-		const double lineWidth = stroke.GetWidth() * scale;
+		const SvgFloat lineWidth = stroke.GetWidth() * scale;
 		for (auto& path : shape.GetPaths())
 		{
 			auto& curves = path.GetCurves();
@@ -745,7 +744,7 @@ namespace Elpida
 				points.push_back(current);
 
 				// Figure out dash offset.
-				double allDashLength = 0.0;
+				SvgFloat allDashLength = 0.0;
 				for (const auto dash : calculatedDashes)
 				{
 					allDashLength += dash;
@@ -771,16 +770,16 @@ namespace Elpida
 				}
 
 				auto dashLength = (calculatedDashes[dashIndex] - dashOffset) * scale;
-				double totalDistance = 0.0;
+				SvgFloat totalDistance = 0.0;
 				for (std::size_t j = 1; j < points2.size();)
 				{
 					auto delta = points2[j] - current;
-					const double distance = sqrt((delta.GetX() * delta.GetX()) + (delta.GetY() * delta.GetY()));
+					const SvgFloat distance = std::sqrt((delta.GetX() * delta.GetX()) + (delta.GetY() * delta.GetY()));
 
 					if ((totalDistance + distance) > dashLength)
 					{
 						// Calculate intermediate point
-						const double d = (dashLength - totalDistance) / distance;
+						const SvgFloat d = (dashLength - totalDistance) / distance;
 
 						auto point = current + (delta * d);
 

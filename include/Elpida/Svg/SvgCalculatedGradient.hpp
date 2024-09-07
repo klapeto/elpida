@@ -26,7 +26,7 @@ namespace Elpida
 
 		static SvgColor InterpolateColor(const SvgCalculatedGradientStop& stopA,
 				const SvgCalculatedGradientStop& stopB,
-				double ratio);
+				SvgFloat ratio);
 	};
 
 } // Elpida

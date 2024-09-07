@@ -8,6 +8,7 @@
 #include <cmath>
 #include <string_view>
 #include <Elpida/Svg/SvgUtilities.hpp>
+#include <Elpida/Svg/SvgConfig.hpp>
 
 namespace Elpida
 {
@@ -35,7 +36,7 @@ namespace Elpida
 			       && t[F] == 0.0;
 		}
 
-		SvgTransform &Translate(const double tx, const double ty)
+		SvgTransform &Translate(const SvgFloat tx, const SvgFloat ty)
 		{
 			SvgTransform transform;
 			transform.SetTranslation(tx, ty);
@@ -43,7 +44,7 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform &Scale(const double sx, const double sy)
+		SvgTransform &Scale(const SvgFloat sx, const SvgFloat sy)
 		{
 			SvgTransform transform;
 			transform.SetScale(sx, sy);
@@ -51,7 +52,7 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform &RotateRadians(const double radians)
+		SvgTransform &RotateRadians(const SvgFloat radians)
 		{
 			SvgTransform transform;
 			transform.SetRotation(radians);
@@ -59,12 +60,12 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform &RotateDegrees(const double degrees)
+		SvgTransform &RotateDegrees(const SvgFloat degrees)
 		{
-			return RotateRadians(degrees / 180 * SvgUtilities::Pi);
+			return RotateRadians(degrees / SvgFloat(180.0) * SvgUtilities::Pi);
 		}
 
-		SvgTransform &SkewX(const double angle)
+		SvgTransform &SkewX(const SvgFloat angle)
 		{
 			SvgTransform transform;
 			transform.SetSkewX(angle);
@@ -72,7 +73,7 @@ namespace Elpida
 			return *this;
 		}
 
-		SvgTransform &SkewY(const double angle)
+		SvgTransform &SkewY(const SvgFloat angle)
 		{
 			SvgTransform transform;
 			transform.SetSkewY(angle);
@@ -80,7 +81,7 @@ namespace Elpida
 			return *this;
 		}
 
-		double operator[](const std::size_t i) const
+		SvgFloat operator[](const std::size_t i) const
 		{
 			return t[i];
 		}
@@ -95,7 +96,7 @@ namespace Elpida
 			t[F] = 0.0;
 		}
 
-		void SetTranslation(const double tx, const double ty)
+		void SetTranslation(const SvgFloat tx, const SvgFloat ty)
 		{
 			t[A] = 1.0;
 			t[B] = 0.0;
@@ -105,7 +106,7 @@ namespace Elpida
 			t[F] = ty;
 		}
 
-		void SetScale(const double sx, const double sy)
+		void SetScale(const SvgFloat sx, const SvgFloat sy)
 		{
 			t[A] = sx;
 			t[B] = 0.0;
@@ -115,30 +116,30 @@ namespace Elpida
 			t[F] = 0.0;
 		}
 
-		void SetSkewX(const double a)
+		void SetSkewX(const SvgFloat a)
 		{
 			t[A] = 1.0;
 			t[B] = 0.0;
-			t[C] = tan(a);
+			t[C] = std::tan(a);
 			t[D] = 1.0;
 			t[E] = 0.0;
 			t[F] = 0.0;
 		}
 
-		void SetSkewY(const double a)
+		void SetSkewY(const SvgFloat a)
 		{
 			t[A] = 1.0;
-			t[B] = tan(a);
+			t[B] = std::tan(a);
 			t[C] = 0.0;
 			t[D] = 1.0;
 			t[E] = 0.0;
 			t[F] = 0.0;
 		}
 
-		void SetRotation(const double a)
+		void SetRotation(const SvgFloat a)
 		{
-			const double cs = cos(a);
-			const double sn = sin(a);
+			const SvgFloat cs = std::cos(a);
+			const SvgFloat sn = std::sin(a);
 
 			t[A] = cs;
 			t[B] = sn;
@@ -177,13 +178,13 @@ namespace Elpida
 
 		void Inverse(const SvgTransform &other)
 		{
-			const double det = other.t[0] * other.t[3] - other.t[2] * other.t[1];
+			const SvgFloat det = other.t[0] * other.t[3] - other.t[2] * other.t[1];
 			if (det > -1e-6 && det < 1e-6)
 			{
 				AsIdentity();
 				return;
 			}
-			const double invdet = 1.0 / det;
+			const SvgFloat invdet = SvgFloat(1.0) / det;
 			t[0] = other.t[3] * invdet;
 			t[2] = -other.t[2] * invdet;
 			t[4] = (other.t[2] * other.t[5] - other.t[3] * other.t[4]) * invdet;
@@ -192,7 +193,7 @@ namespace Elpida
 			t[5] = (other.t[1] * other.t[4] - other.t[0] * other.t[5]) * invdet;
 		}
 
-		void ApplyToPoint(double &x, double &y) const
+		void ApplyToPoint(SvgFloat &x, SvgFloat &y) const
 		{
 			const auto tx = t[A] * x + t[C] * y + t[E];
 			const auto ty = t[B] * x + t[D] * y + t[F];
@@ -200,13 +201,13 @@ namespace Elpida
 			y = ty;
 		}
 
-		void ApplyToPoint(double &dx, double &dy, const double x, const double y) const
+		void ApplyToPoint(SvgFloat &dx, SvgFloat &dy, const SvgFloat x, const SvgFloat y) const
 		{
 			dx = x * t[0] + y * t[2] + t[4];
 			dy = x * t[1] + y * t[3] + t[5];
 		}
 
-		void ApplyToVector(double &dx, double &dy, const double x, const double y) const
+		void ApplyToVector(SvgFloat &dx, SvgFloat &dy, const SvgFloat x, const SvgFloat y) const
 		{
 			dx = x * t[0] + y * t[2];
 			dy = x * t[1] + y * t[3];
@@ -217,13 +218,13 @@ namespace Elpida
 		{
 		}
 
-		explicit SvgTransform(double values[6])
+		explicit SvgTransform(SvgFloat values[6])
 			: t{values[0], values[1], values[2], values[3], values[4], values[5]}
 		{
 		}
 
-		explicit SvgTransform(const double a, const double b, const double c, const double d, const double e,
-		                      const double f)
+		explicit SvgTransform(const SvgFloat a, const SvgFloat b, const SvgFloat c, const SvgFloat d, const SvgFloat e,
+		                      const SvgFloat f)
 			: t{a, b, c, d, e, f}
 		{
 		}
@@ -235,7 +236,7 @@ namespace Elpida
 		~SvgTransform() = default;
 
 	private:
-		double t[6];
+		SvgFloat t[6];
 	};
 } // Elpida
 

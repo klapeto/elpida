@@ -10,6 +10,7 @@
 #include "Elpida/Svg/SvgCalculatedStroke.hpp"
 #include "Elpida/Svg/SvgCalculatedFill.hpp"
 #include "Elpida/Svg/SvgPolygon.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 
 #include <vector>
 #include <optional>
@@ -87,7 +88,7 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetOpacity() const
+		SvgFloat GetOpacity() const
 		{
 			return _opacity;
 		}
@@ -111,7 +112,7 @@ namespace Elpida
 				const SvgFill& fill,
 				const SvgStroke& stroke,
 				const SvgDocument& document,
-				double opacity,
+				SvgFloat opacity,
 				const SvgCalculationContext& calculationContext);
 	private:
 		std::vector<SvgPathInstance> _paths;
@@ -119,7 +120,7 @@ namespace Elpida
 		std::optional<SvgCalculatedFill> _fill;
 		std::optional<SvgCalculatedStroke> _stroke;
 		SvgBounds _bounds;
-		double _opacity;
+		SvgFloat _opacity;
 		SvgCompositingMode _compositingMode;
 		SvgBlendMode _blendMode;
 		SvgPolygon _fillPolygon;

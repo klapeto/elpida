@@ -81,7 +81,7 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetOpacity() const
+		SvgFloat GetOpacity() const
 		{
 			return _opacity;
 		}
@@ -116,7 +116,7 @@ namespace Elpida
 		std::vector<SvgElement> _children;
 		SvgFill _fill;
 		SvgStroke _stroke;
-		double _opacity;
+		SvgFloat _opacity;
 		bool _visible;
 		SvgShapeType _shapeType;
 		std::variant<std::monostate, SvgPath, SvgRectangle, SvgCircle, SvgEllipse, SvgLine> _shape;

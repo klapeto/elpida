@@ -12,7 +12,7 @@
 namespace Elpida
 {
 	template <std::size_t N>
-	static void ParseTransformationValues(CharacterStream& stream, double (&values)[N])
+	static void ParseTransformationValues(CharacterStream& stream, SvgFloat (&values)[N])
 	{
 		std::size_t i = 0;
 		while (!stream.Eof())
@@ -40,7 +40,7 @@ namespace Elpida
 		}
 	}
 
-	static bool ParseNextNumber(CharacterStream& stream, double& value)
+	static bool ParseNextNumber(CharacterStream& stream, SvgFloat& value)
 	{
 		while (!stream.Eof())
 		{
@@ -84,12 +84,12 @@ namespace Elpida
 						throw ParseException("Unexpected character: expected 'matrix'");
 					}
 					{
-						double angle;
+						SvgFloat angle;
 						if (!ParseNextNumber(stream, angle))
 						{
 							throw ParseException("Unexpected Eof: Expected rotate(angle)");
 						}
-						double x, y;
+						SvgFloat x, y;
 						bool translate = ParseNextNumber(stream, x) && ParseNextNumber(stream, y);
 						if (translate)
 						{
@@ -114,7 +114,7 @@ namespace Elpida
 						throw ParseException("Unexpected character: expected 'matrix'");
 					}
 					{
-						double t[6];
+						SvgFloat t[6];
 						ParseTransformationValues(stream, t);
 						transform = SvgTransform(t);
 					}
@@ -125,7 +125,7 @@ namespace Elpida
 						throw ParseException("Unexpected character: expected 'translate'");
 					}
 					{
-						double tx, ty;
+						SvgFloat tx, ty;
 						if (!ParseNextNumber(stream, tx))
 						{
 							throw ParseException("Unexpected Eof: Expected translate(sx,sy)");
@@ -155,7 +155,7 @@ namespace Elpida
 							throw ParseException("Unexpected character: expected 'scale'");
 						}
 
-						double sx, sy;
+						SvgFloat sx, sy;
 						if (!ParseNextNumber(stream, sx))
 						{
 							throw ParseException("Unexpected Eof: Expected scale(sx,sy)");
@@ -182,7 +182,7 @@ namespace Elpida
 						case 'X':
 							{
 								stream.Next();
-								double t[1];
+								SvgFloat t[1];
 								ParseTransformationValues(stream, t);
 								transform.SetSkewX(t[0]);
 							}
@@ -190,7 +190,7 @@ namespace Elpida
 						case 'Y':
 							{
 								stream.Next();
-								double t[1];
+								SvgFloat t[1];
 								ParseTransformationValues(stream, t);
 								transform.SetSkewY(t[0]);
 							}

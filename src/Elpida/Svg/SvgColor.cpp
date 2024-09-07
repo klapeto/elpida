@@ -11,15 +11,18 @@
 
 namespace Elpida
 {
-	static constexpr std::tuple<double, double, double> RgbToInt(const unsigned char r, const unsigned char g,
+	constexpr SvgFloat ColorMaxValue = 255.0;
+
+	static constexpr std::tuple<SvgFloat, SvgFloat, SvgFloat> RgbToInt(const unsigned char r, const unsigned char g,
 			const unsigned char b)
 	{
-		return { r / 255.0, g / 255.0, b / 255.0 };
+		return { r / ColorMaxValue, g / ColorMaxValue, b / ColorMaxValue };
 	}
 
 	SvgColor::SvgColor(const std::string_view view)
 			:_r(MinValue), _g(MinValue), _b(MinValue), _a(1.0)
 	{
+
 		CharacterStream stream(view);
 		try
 		{
@@ -28,7 +31,7 @@ namespace Elpida
 			  std::string v;
 			  stream.Next();
 			  v += stream.Current();
-			  return SvgNumber::StrTol16(v);
+			  return SvgFloat(SvgNumber::StrTol16(v));
 			};
 
 			auto valueParser2 = [&]
@@ -38,12 +41,12 @@ namespace Elpida
 			  v += stream.Current();
 			  stream.Next();
 			  v += stream.Current();
-			  return SvgNumber::StrTol16(v);
+			  return SvgFloat(SvgNumber::StrTol16(v));
 			};
 
-			auto nameParse = [](const std::string_view& name) -> const std::tuple<double, double, double>&
+			auto nameParse = [](const std::string_view& name) -> const std::tuple<SvgFloat, SvgFloat, SvgFloat>&
 			{
-			  static std::unordered_map<std::string_view, std::tuple<double, double, double>> map
+			  static std::unordered_map<std::string_view, std::tuple<SvgFloat, SvgFloat, SvgFloat>> map
 					  {
 							  { "red", RgbToInt(255, 0, 0) },
 							  { "green", RgbToInt(0, 128, 0) },
@@ -199,7 +202,7 @@ namespace Elpida
 			  {
 				  return itr->second;
 			  }
-			  static std::tuple<double, double, double> defaultColor = { MinValue, MinValue, MinValue};
+			  static std::tuple<SvgFloat, SvgFloat, SvgFloat> defaultColor = { MinValue, MinValue, MinValue};
 			  return defaultColor;
 			};
 
@@ -211,14 +214,14 @@ namespace Elpida
 				switch (stream.AvailableCharacters())
 				{
 				case 3:
-					_r = (valueParser() * 17) / 255.0;
-					_g = (valueParser() * 17) / 255.0;
-					_b = (valueParser() * 17) / 255.0;
+					_r = (valueParser() * 17) / ColorMaxValue;
+					_g = (valueParser() * 17) / ColorMaxValue;
+					_b = (valueParser() * 17) / ColorMaxValue;
 					break;
 				case 6:
-					_r = valueParser2() / 255.0;
-					_g = valueParser2() / 255.0;
-					_b = valueParser2() / 255.0;
+					_r = valueParser2() / ColorMaxValue;
+					_g = valueParser2() / ColorMaxValue;
+					_b = valueParser2() / ColorMaxValue;
 				default:
 					break;
 				}
@@ -234,7 +237,7 @@ namespace Elpida
 					{
 						throw ParseException("Unexpected character: expected digit");
 					}
-					_r = SvgNumber::StrTol(value) / 255.0;
+					_r = SvgFloat(SvgNumber::StrTol(value)) / ColorMaxValue;
 					stream.Next();
 					value = stream.GetStringViewWhile([](auto c)
 					{ return c != ','; });
@@ -242,7 +245,7 @@ namespace Elpida
 					{
 						throw ParseException("Unexpected character: expected digit");
 					}
-					_g = SvgNumber::StrTol(value) / 255.0;
+					_g = SvgFloat(SvgNumber::StrTol(value)) / ColorMaxValue;
 					stream.Next();
 					value = stream.GetStringViewWhile([](auto c)
 					{ return c != ')'; });
@@ -250,7 +253,7 @@ namespace Elpida
 					{
 						throw ParseException("Unexpected character: expected digit");
 					}
-					_b = SvgNumber::StrTol(value) / 255.0;
+					_b = SvgFloat(SvgNumber::StrTol(value)) / ColorMaxValue;
 				}
 				else
 				{

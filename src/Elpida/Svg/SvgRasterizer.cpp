@@ -100,7 +100,7 @@ namespace Elpida
 				const SvgBackDrop& other,
 				std::size_t x,
 				std::size_t y,
-				double opacity,
+				SvgFloat opacity,
 				SvgBlendMode blendMode,
 				SvgCompositingMode compositingMode)
 		{
@@ -167,7 +167,7 @@ namespace Elpida
 				const SvgBackDrop& other,
 				std::size_t x,
 				std::size_t y,
-				double opacity,
+				SvgFloat opacity,
 				SvgBlendMode blendMode,
 				SvgCompositingMode compositingMode)
 		{
@@ -185,19 +185,19 @@ namespace Elpida
 	{
 		auto bounds = polygon.GetBounds();
 
-		auto offsetX = std::floor(std::max(0.0, bounds.GetMinX()));
-		auto offsetY = std::floor(std::max(0.0, bounds.GetMinY()));
+		auto offsetX = std::floor(std::max(SvgFloat(0.0), bounds.GetMinX()));
+		auto offsetY = std::floor(std::max(SvgFloat(0.0), bounds.GetMinY()));
 		std::size_t x = offsetX;
 		std::size_t y = offsetY;
 
 		SvgTransform transform;
-		transform.Translate(-(static_cast<double>(offsetX)), -(static_cast<double>(offsetY)));
+		transform.Translate(-(static_cast<SvgFloat>(offsetX)), -(static_cast<SvgFloat>(offsetY)));
 
 		polygon.Transform(transform);
 		paint.Transform(transform);
 
 		// +0.5 because backdrop pixels are actually drawn at + 0.5 due to 0.0 is at the center of the first pixel
-		SvgBackDrop backDrop(std::ceil(bounds.GetWidth() + 0.5), std::ceil(bounds.GetHeight() + 0.5));
+		SvgBackDrop backDrop(std::ceil(bounds.GetWidth() + SvgFloat(0.5)), std::ceil(bounds.GetHeight() + SvgFloat(0.5)));
 
 		rasterize(backDrop, polygon, paint, superSampler, fillRule);
 

@@ -7,6 +7,7 @@
 
 #include "Elpida/Svg/SvgBlendMode.hpp"
 #include "Elpida/Svg/SvgColor.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -15,15 +16,15 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		double Blend(const double Cb, const double Cs) const
+		SvgFloat Blend(const SvgFloat Cb, const SvgFloat Cs) const
 		{
 			return _blender(Cb, Cs);
 		}
 
 		[[nodiscard]]
-		double Blend(const double Cs, const double Cb, const double ab) const
+		SvgFloat Blend(const SvgFloat Cs, const SvgFloat Cb, const SvgFloat ab) const
 		{
-			return (1.0 - ab) * Cs + ab * Blend(Cb, Cs);
+			return (SvgFloat(1.0) - ab) * Cs + ab * Blend(Cb, Cs);
 		}
 
 		[[nodiscard]]
@@ -40,7 +41,7 @@ namespace Elpida
 		explicit SvgBlender(SvgBlendMode mode);
 
 	private:
-		using Blender = double (*)(double, double);
+		using Blender = SvgFloat (*)(SvgFloat, SvgFloat);
 		Blender _blender;
 	};
 

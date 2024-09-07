@@ -32,7 +32,7 @@ namespace Elpida
 			   point.GetY() <= _max.GetY();
 	}
 
-	SvgBounds::SvgBounds(const double minX, const double minY, const double maxX, const double maxY)
+	SvgBounds::SvgBounds(const SvgFloat minX, const SvgFloat minY, const SvgFloat maxX, const SvgFloat maxY)
 			:_min(minX, minY), _max(maxX, maxY)
 	{
 	}
@@ -40,10 +40,10 @@ namespace Elpida
 	SvgBounds SvgBounds::CreateMinimum()
 	{
 		return {
-				std::numeric_limits<double>::max(),
-				std::numeric_limits<double>::max(),
-				std::numeric_limits<double>::lowest(),
-				std::numeric_limits<double>::lowest()
+				std::numeric_limits<SvgFloat>::max(),
+				std::numeric_limits<SvgFloat>::max(),
+				std::numeric_limits<SvgFloat>::lowest(),
+				std::numeric_limits<SvgFloat>::lowest()
 		};
 	}
 } // Elpida

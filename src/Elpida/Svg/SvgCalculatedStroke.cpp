@@ -31,10 +31,10 @@ namespace Elpida
 	{
 		SvgCalculatedPaint::Transform(transform);
 
-		auto value= (transform[SvgTransform::A] + transform[SvgTransform::D]) / 2.0;
+		auto value= (transform[SvgTransform::A] + transform[SvgTransform::D]) / SvgFloat(2.0);
 		_width *=  value;
 
-		for (double & dash : _dashes)
+		for (SvgFloat & dash : _dashes)
 		{
 			dash *= value;
 		}

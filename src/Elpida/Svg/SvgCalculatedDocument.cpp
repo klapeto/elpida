@@ -58,7 +58,7 @@ namespace Elpida
 
 		if (alignX == SvgAxisAlignType::Mid)
 		{
-			translateX += (eWidth - vbWidth * scaleX) / 2.0;
+			translateX += (eWidth - vbWidth * scaleX) / SvgFloat(2.0);
 		}
 		else if (alignX == SvgAxisAlignType::Max)
 		{
@@ -67,7 +67,7 @@ namespace Elpida
 
 		if (alignY == SvgAxisAlignType::Mid)
 		{
-			translateY += (eHeight - vbHeight * scaleY) / 2.0;
+			translateY += (eHeight - vbHeight * scaleY) / SvgFloat(2.0);
 		}
 		else if (alignY == SvgAxisAlignType::Max)
 		{
@@ -81,7 +81,7 @@ namespace Elpida
 		return transform;
 	}
 
-	SvgCalculatedDocument::SvgCalculatedDocument(const SvgDocument& document, double scale): _viewPort(0,0,0,0)
+	SvgCalculatedDocument::SvgCalculatedDocument(const SvgDocument& document, SvgFloat scale): _viewPort(0,0,0,0)
 	{
 		auto& rootSvgElement = document.GetElement();
 		auto& viewBox = rootSvgElement.GetViewBox();

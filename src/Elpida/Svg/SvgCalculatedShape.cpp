@@ -39,7 +39,7 @@ namespace Elpida
 			const SvgFill& fill,
 			const SvgStroke& stroke,
 			const SvgDocument& document,
-			double opacity,
+			SvgFloat opacity,
 			const SvgCalculationContext& calculationContext)
 			:_paths(std::move(paths)), _opacity(opacity), _compositingMode(SvgCompositingMode::SourceOver),
 			 _blendMode(SvgBlendMode::Normal)

@@ -6,72 +6,72 @@
 
 namespace Elpida
 {
-	static double Composite(const double as, const double Cs, const double ab, const double Cb, const double Fa, const double Fb)
+	static SvgFloat Composite(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb, const SvgFloat Fa, const SvgFloat Fb)
 	{
 		return (as * Fa * Cs) + (ab * Fb * Cb);
 	}
 
-	static double Clear(double as, double Cs, double ab, double Cb)
+	static SvgFloat Clear(SvgFloat as, SvgFloat Cs, SvgFloat ab, SvgFloat Cb)
 	{
 		return 0.0;
 	}
 
-	static double Copy(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat Copy(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0, 0.0);
 	}
 
-	static double Destination(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat Destination(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 0.0, 1.0);
 	}
 
-	static double SourceOver(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat SourceOver(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
-		return Composite(as, Cs, ab, Cb, 1.0, 1.0 - as);
+		return Composite(as, Cs, ab, Cb, 1.0, SvgFloat(1.0) - as);
 	}
 
-	static double DestinationOver(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat DestinationOver(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
-		return Composite(as, Cs, ab, Cb, 1.0 - ab, 1.0);
+		return Composite(as, Cs, ab, Cb, SvgFloat(1.0) - ab, 1.0);
 	}
 
-	static double SourceIn(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat SourceIn(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
 		return Composite(as, Cs, ab, Cb,  ab, 0.0);
 	}
 
-	static double DestinationIn(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat DestinationIn(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 0.0, as);
 	}
 
-	static double SourceOut(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat SourceOut(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
-		return Composite(as, Cs, ab, Cb, 1.0 - ab, 0.0);
+		return Composite(as, Cs, ab, Cb, SvgFloat(1.0) - ab, 0.0);
 	}
 
-	static double DestinationOut(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat DestinationOut(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
-		return Composite(as, Cs, ab, Cb, 0.0, 1.0 - as);
+		return Composite(as, Cs, ab, Cb, 0.0, SvgFloat(1.0) - as);
 	}
 
-	static double SourceAtop(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat SourceAtop(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
-		return Composite(as, Cs, ab, Cb, ab, 1.0 - as);
+		return Composite(as, Cs, ab, Cb, ab, SvgFloat(1.0) - as);
 	}
 
-	static double DestinationAtop(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat DestinationAtop(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
-		return Composite(as, Cs, ab, Cb, 1.0 - ab, as);
+		return Composite(as, Cs, ab, Cb, SvgFloat(1.0) - ab, as);
 	}
 
-	static double Xor(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat Xor(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
-		return Composite(as, Cs, ab, Cb, 1.0 - ab, 1.0 - as);
+		return Composite(as, Cs, ab, Cb, SvgFloat(1.0) - ab, SvgFloat(1.0) - as);
 	}
 
-	static double Lighter(const double as, const double Cs, const double ab, const double Cb)
+	static SvgFloat Lighter(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb)
 	{
 		return Composite(as, Cs, ab, Cb, 1.0, 1.0);
 	}

@@ -50,7 +50,7 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetMiterLimit() const
+		SvgFloat GetMiterLimit() const
 		{
 			return _miterLimit;
 		}
@@ -66,7 +66,7 @@ namespace Elpida
 		SvgLineCap _lineCap;
 		SvgLength _dashOffset;
 		SvgLength _width;
-		double _miterLimit;
+		SvgFloat _miterLimit;
 
 		void ParseDashArray(const std::string& value);
 		void ParseWidth(const std::string& value);

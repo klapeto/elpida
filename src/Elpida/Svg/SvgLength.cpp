@@ -97,8 +97,8 @@ namespace Elpida
 		}
 	}
 
-	double SvgLength::CalculateValue(const SvgCalculationContext& calculationContext, double orig,
-			double length) const
+	SvgFloat SvgLength::CalculateValue(const SvgCalculationContext& calculationContext, SvgFloat orig,
+			SvgFloat length) const
 	{
 		switch (_units)
 		{
@@ -106,21 +106,21 @@ namespace Elpida
 		case SvgUnits::Px:
 			return _value;
 		case SvgUnits::Pt:
-			return _value / 72.0 * calculationContext.GetDpi();
+			return _value / SvgFloat(72.0) * calculationContext.GetDpi();
 		case SvgUnits::Pc:
-			return _value / 6.0 * calculationContext.GetDpi();
+			return _value / SvgFloat(6.0) * calculationContext.GetDpi();
 		case SvgUnits::Mm:
-			return _value / 25.4 * calculationContext.GetDpi();
+			return _value / SvgFloat(25.4) * calculationContext.GetDpi();
 		case SvgUnits::Cm:
-			return _value / 2.54 * calculationContext.GetDpi();
+			return _value / SvgFloat(2.54) * calculationContext.GetDpi();
 		case SvgUnits::In:
 			return _value * calculationContext.GetDpi();
 		case SvgUnits::Percent:
-			return orig + (_value / 100.0 * length);
+			return orig + (_value / SvgFloat(100.0) * length);
 		case SvgUnits::Em:
 			return _value * calculationContext.GetNumber("font-size");
 		case SvgUnits::Ex:
-			return _value * calculationContext.GetNumber("font-size") * 0.52;
+			return _value * calculationContext.GetNumber("font-size") * SvgFloat(0.52);
 		default:
 			return _value;
 		}

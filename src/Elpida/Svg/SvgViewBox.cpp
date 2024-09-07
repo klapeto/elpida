@@ -76,10 +76,10 @@ namespace Elpida
 
 	void SvgViewBox::CalculateLength()
 	{
-		_length = std::sqrt(_width * _width + _height * _height) / std::sqrt(2.0);
+		_length = std::sqrt(_width * _width + _height * _height) / std::sqrt(SvgFloat(2.0));
 	}
 
-	SvgViewBox::SvgViewBox(const double minX, const double minY, const double width, const double height)
+	SvgViewBox::SvgViewBox(const SvgFloat minX, const SvgFloat minY, const SvgFloat width, const SvgFloat height)
 			:_min(minX, minY),
 			 _width(width),
 			 _height(height),

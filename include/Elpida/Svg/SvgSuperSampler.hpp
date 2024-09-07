@@ -8,6 +8,7 @@
 #include "Elpida/Svg/SvgColor.hpp"
 #include "Elpida/Svg/SvgFillRule.hpp"
 #include "Elpida/Svg/SvgPoint.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 #include <vector>
 
 namespace Elpida
@@ -20,8 +21,8 @@ namespace Elpida
 	public:
 		[[nodiscard]]
 		SvgColor CalculatePixelColor(const SvgPolygon& polygon,
-				double x,
-				double y,
+				SvgFloat x,
+				SvgFloat y,
 				const SvgCalculatedPaint& paint,
 				SvgFillRule fillRule) const;
 

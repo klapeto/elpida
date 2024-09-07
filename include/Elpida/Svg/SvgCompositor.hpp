@@ -7,6 +7,7 @@
 
 #include "SvgColor.hpp"
 #include "SvgCompositingMode.hpp"
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -14,7 +15,7 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		double Composite(const double as, const double Cs, const double ab, const double Cb) const
+		SvgFloat Composite(const SvgFloat as, const SvgFloat Cs, const SvgFloat ab, const SvgFloat Cb) const
 		{
 			return _compositor(as, Cs, ab, Cb);
 		}
@@ -33,7 +34,7 @@ namespace Elpida
 		explicit SvgCompositor(SvgCompositingMode mode);
 
 	private:
-		using Compositor = double (*)(double, double, double, double);
+		using Compositor = SvgFloat (*)(SvgFloat, SvgFloat, SvgFloat, SvgFloat);
 		Compositor _compositor;
 	};
 } // Elpida

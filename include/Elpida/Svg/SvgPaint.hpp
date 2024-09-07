@@ -8,6 +8,7 @@
 #include <string>
 
 #include "SvgColor.hpp"
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -35,7 +36,7 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetOpacity() const
+		SvgFloat GetOpacity() const
 		{
 			return _opacity;
 		}
@@ -49,7 +50,7 @@ namespace Elpida
 	protected:
 		std::string _gradientId;
 		SvgColor _color;
-		double _opacity;
+		SvgFloat _opacity;
 
 		bool _set;
 

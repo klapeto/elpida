@@ -6,7 +6,7 @@
 
 namespace Elpida
 {
-	SvgCalculatedViewPort::SvgCalculatedViewPort(double x, double y, double width, double height)
+	SvgCalculatedViewPort::SvgCalculatedViewPort(SvgFloat x, SvgFloat y, SvgFloat width, SvgFloat height)
 			:_x(x), _y(y), _width(width), _height(height)
 	{
 	}

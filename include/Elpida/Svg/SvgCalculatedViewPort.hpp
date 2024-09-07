@@ -6,6 +6,7 @@
 #define ELPIDA_SVGCALCULATEDVIEWPORT_HPP
 
 #include "SvgPoint.hpp"
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -14,36 +15,36 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		double GetX() const
+		SvgFloat GetX() const
 		{
 			return _x;
 		}
 
 		[[nodiscard]]
-		double GetY() const
+		SvgFloat GetY() const
 		{
 			return _y;
 		}
 
 		[[nodiscard]]
-		double GetWidth() const
+		SvgFloat GetWidth() const
 		{
 			return _width;
 		}
 
 		[[nodiscard]]
-		double GetHeight() const
+		SvgFloat GetHeight() const
 		{
 			return _height;
 		}
 
 		SvgCalculatedViewPort();
-		SvgCalculatedViewPort(double x, double y, double width, double height);
+		SvgCalculatedViewPort(SvgFloat x, SvgFloat y, SvgFloat width, SvgFloat height);
 	public:
-		double _x;
-		double _y;
-		double _width;
-		double _height;
+		SvgFloat _x;
+		SvgFloat _y;
+		SvgFloat _width;
+		SvgFloat _height;
 	};
 
 } // Elpida

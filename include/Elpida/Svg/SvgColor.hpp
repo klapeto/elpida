@@ -7,6 +7,7 @@
 
 #include <string_view>
 #include <algorithm>
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -14,10 +15,10 @@ namespace Elpida
 	{
 	public:
 
-		static constexpr double MaxValue = 1.0;
-		static constexpr double HalfValue = MaxValue / 2.0;
-		static constexpr double QuarterValue = HalfValue / 2.0;
-		static constexpr double MinValue = 0.0;
+		static constexpr SvgFloat MaxValue = 1.0;
+		static constexpr SvgFloat HalfValue = MaxValue / 2.0;
+		static constexpr SvgFloat QuarterValue = HalfValue / 2.0;
+		static constexpr SvgFloat MinValue = 0.0;
 
 		static SvgColor Black()
 		{
@@ -25,33 +26,33 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double R() const
+		SvgFloat R() const
 		{
 			return _r;
 		}
 
 		[[nodiscard]]
-		double G() const
+		SvgFloat G() const
 		{
 			return _g;
 		}
 
 		[[nodiscard]]
-		double B() const
+		SvgFloat B() const
 		{
 			return _b;
 		}
 
 		[[nodiscard]]
-		double A() const
+		SvgFloat A() const
 		{
 			return _a;
 		}
 
 		[[nodiscard]]
-		SvgColor WithMultipliedAplha(const double alpha) const
+		SvgColor WithMultipliedAplha(const SvgFloat alpha) const
 		{
-			double a = _a * alpha;
+			SvgFloat a = _a * alpha;
 			a = std::max(MinValue, std::min(MaxValue, a));
 
 			return SvgColor(_r, _g, _b, a);
@@ -63,7 +64,7 @@ namespace Elpida
 
 		}
 
-		SvgColor(const double r, const double g, const double b, const double a)
+		SvgColor(const SvgFloat r, const SvgFloat g, const SvgFloat b, const SvgFloat a)
 				:_r(r),
 				 _g(g),
 				 _b(b),
@@ -74,10 +75,10 @@ namespace Elpida
 		explicit SvgColor(std::string_view view);
 
 	private:
-		double _r;
-		double _g;
-		double _b;
-		double _a;
+		SvgFloat _r;
+		SvgFloat _g;
+		SvgFloat _b;
+		SvgFloat _a;
 	};
 } // Elpida
 

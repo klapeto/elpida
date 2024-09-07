@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "SvgTransform.hpp"
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -15,28 +16,28 @@ namespace Elpida
 	{
 	public:
 
-		constexpr static double Tolerance = 0.000001;
+		constexpr static SvgFloat Tolerance = 0.000001;
 
 		[[nodiscard]]
-		double GetX() const
+		SvgFloat GetX() const
 		{
 			return _x;
 		}
 
 		[[nodiscard]]
-		double GetY() const
+		SvgFloat GetY() const
 		{
 			return _y;
 		}
 
 		[[nodiscard]]
-		double& GetRefX()
+		SvgFloat& GetRefX()
 		{
 			return _x;
 		}
 
 		[[nodiscard]]
-		double& GetRefY()
+		SvgFloat& GetRefY()
 		{
 			return _y;
 		}
@@ -53,7 +54,7 @@ namespace Elpida
 			_y -= other._y;
 		}
 
-		SvgPoint operator*(const double value) const
+		SvgPoint operator*(const SvgFloat value) const
 		{
 			return { _x * value, _y * value };
 		}
@@ -68,14 +69,14 @@ namespace Elpida
 			return { _x - other._x, _y - other._y };
 		}
 
-		SvgPoint& operator*=(const double value)
+		SvgPoint& operator*=(const SvgFloat value)
 		{
 			_x *= value;
 			_y *= value;
 			return *this;
 		}
 
-		SvgPoint& operator/=(const double value)
+		SvgPoint& operator/=(const SvgFloat value)
 		{
 			_x /= value;
 			_y /= value;
@@ -87,7 +88,7 @@ namespace Elpida
 			return { -_x, -_y };
 		}
 
-		SvgPoint operator/(const double x) const
+		SvgPoint operator/(const SvgFloat x) const
 		{
 			return { _x / x, _y / x };
 		}
@@ -110,15 +111,15 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double Product() const
+		SvgFloat Product() const
 		{
 			return _x * _x + _y * _y;
 		}
 
 		[[nodiscard]]
-		double Length() const
+		SvgFloat Length() const
 		{
-			return sqrt(Product());
+			return std::sqrt(Product());
 		}
 
 		[[nodiscard]]
@@ -127,12 +128,12 @@ namespace Elpida
 			return { _y, -_x };
 		}
 
-		double Normalize()
+		SvgFloat Normalize()
 		{
-			const double length = Length();
+			const SvgFloat length = Length();
 			if (length > Tolerance)
 			{
-				const double id = 1.0 / length;
+				const SvgFloat id = SvgFloat(1.0) / length;
 				_x *= id;
 				_y *= id;
 			}
@@ -142,24 +143,24 @@ namespace Elpida
 		bool operator==(const SvgPoint& other) const
 		{
 			constexpr auto distanceTolerance = Tolerance * Tolerance;
-			const double dx = _x - other._x;
-			const double dy = _y - other._y;
+			const SvgFloat dx = _x - other._x;
+			const SvgFloat dy = _y - other._y;
 			return dx * dx + dy * dy < distanceTolerance;
 		}
 
 		[[nodiscard]]
-		double GetDistance(const SvgPoint& other) const
+		SvgFloat GetDistance(const SvgPoint& other) const
 		{
-			const double dx = _x - other._x;
-			const double dy = _y - other._y;
+			const SvgFloat dx = _x - other._x;
+			const SvgFloat dy = _y - other._y;
 			return std::sqrt(dx * dx + dy * dy);
 		}
 
 		[[nodiscard]]
-		double GetSlope(const SvgPoint& to) const
+		SvgFloat GetSlope(const SvgPoint& to) const
 		{
-			const double dx = to._x - _x;
-			const double dy = to._y - _y;
+			const SvgFloat dx = to._x - _x;
+			const SvgFloat dy = to._y - _y;
 			return dy / dx;
 		}
 
@@ -168,7 +169,7 @@ namespace Elpida
 		{
 		}
 
-		SvgPoint(const double x, const double y)
+		SvgPoint(const SvgFloat x, const SvgFloat y)
 				:_x(x),
 				 _y(y)
 		{
@@ -180,8 +181,8 @@ namespace Elpida
 		SvgPoint& operator=(SvgPoint&&) noexcept = default;
 		~SvgPoint() = default;
 	private:
-		double _x;
-		double _y;
+		SvgFloat _x;
+		SvgFloat _y;
 	};
 } // Elpida
 

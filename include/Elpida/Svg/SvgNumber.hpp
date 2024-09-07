@@ -8,6 +8,7 @@
 #include <cmath>
 #include <string_view>
 
+#include "Elpida/Svg/SvgConfig.hpp"
 #include <Elpida/Xml/CharacterStream.hpp>
 #include <Elpida/Xml/ParseException.hpp>
 
@@ -66,10 +67,10 @@ namespace Elpida
 			return value;
 		}
 
-		static double ParseNumber(CharacterStream& stream)
+		static SvgFloat ParseNumber(CharacterStream& stream)
 		{
 			stream.SkipSpace();
-			double sign;
+			SvgFloat sign;
 
 			switch (stream.Current())
 			{
@@ -106,7 +107,7 @@ namespace Elpida
 				throw ParseException("No integer or float parts");
 			}
 
-			double expSign = 1.0;
+			SvgFloat expSign = 1.0;
 
 			std::string_view expPart;
 			auto c = stream.Current();
@@ -129,26 +130,26 @@ namespace Elpida
 				}
 			}
 
-			double value = StrTol(integerPart);
+			SvgFloat value = StrTol(integerPart);
 
-			value += (double)(StrTol(floatPart)) / pow(10.0, floatPart.length());
+			value += (SvgFloat)(StrTol(floatPart)) / std::pow(SvgFloat(10.0), floatPart.length());
 
 			if (!expPart.empty())
 			{
-				double expValue = StrTol(expPart);
-				value *= pow(10.0, expValue * expSign);
+				SvgFloat expValue = StrTol(expPart);
+				value *= std::pow(SvgFloat(10.0), expValue * expSign);
 			}
 
 			return value * sign;
 		}
 
-		static double ParseNumber(const std::string_view& view)
+		static SvgFloat ParseNumber(const std::string_view& view)
 		{
 			CharacterStream stream(view);
 			return ParseNumber(stream);
 		}
 
-		static bool TryParseNumber(const std::string_view& view, double& value)
+		static bool TryParseNumber(const std::string_view& view, SvgFloat& value)
 		{
 			try
 			{
@@ -162,7 +163,7 @@ namespace Elpida
 			}
 		}
 
-		operator double() const
+		operator SvgFloat() const
 		{
 			return _value;
 		}
@@ -173,7 +174,7 @@ namespace Elpida
 		}
 
 	private:
-		double _value;
+		SvgFloat _value;
 	};
 } // Elpida
 

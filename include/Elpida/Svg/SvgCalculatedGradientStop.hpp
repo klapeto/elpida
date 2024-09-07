@@ -19,22 +19,22 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetOffset() const
+		SvgFloat GetOffset() const
 		{
 			return _offset;
 		}
 
 		[[nodiscard]]
-		double GetOpacity() const
+		SvgFloat GetOpacity() const
 		{
 			return _opacity;
 		}
 
-		SvgCalculatedGradientStop(const SvgColor& color, double offset, double opacity);
+		SvgCalculatedGradientStop(const SvgColor& color, SvgFloat offset, SvgFloat opacity);
 	private:
 		SvgColor _color;
-		double _offset;
-		double _opacity;
+		SvgFloat _offset;
+		SvgFloat _opacity;
 	};
 
 } // Elpida

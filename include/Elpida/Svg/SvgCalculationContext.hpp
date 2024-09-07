@@ -9,6 +9,7 @@
 #include "Elpida/Svg/SvgFill.hpp"
 #include "Elpida/Svg/SvgStroke.hpp"
 #include "Elpida/Svg/SvgCalculatedViewPort.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 
 #include <stack>
 #include <vector>
@@ -41,25 +42,25 @@ namespace Elpida
 		std::string_view GetValue(const std::string_view& name) const;
 
 		[[nodiscard]]
-		double GetNumber(const std::string_view& name) const;
+		SvgFloat GetNumber(const std::string_view& name) const;
 
 		[[nodiscard]]
 		SvgTransform CalculateTransform() const;
 
 		[[nodiscard]]
-		double GetDpi() const;
+		SvgFloat GetDpi() const;
 
 		[[nodiscard]]
-		double GetOpacity() const;
+		SvgFloat GetOpacity() const;
 
 		[[nodiscard]]
-		double GetRootFontSize() const;
+		SvgFloat GetRootFontSize() const;
 
 		void Push(const SvgElement& element);
 
 		void Pop();
 
-		SvgCalculationContext(double rootFontSize, double dpi);
+		SvgCalculationContext(SvgFloat rootFontSize, SvgFloat dpi);
 	private:
 
 		template<typename T>
@@ -75,10 +76,10 @@ namespace Elpida
 		std::vector<StackedValue<SvgTransform>> _transforms;
 		std::vector<StackedValue<SvgFill>> _fills;
 		std::vector<StackedValue<SvgStroke>> _stokes;
-		std::vector<StackedValue<double>> _opacities;
+		std::vector<StackedValue<SvgFloat>> _opacities;
 		std::unordered_map<std::string_view, std::stack<StackedValue<std::string>>> _stackedValues;
-		double _rootFontSize;
-		double _dpi;
+		SvgFloat _rootFontSize;
+		SvgFloat _dpi;
 		std::size_t _currentDepth;
 	};
 

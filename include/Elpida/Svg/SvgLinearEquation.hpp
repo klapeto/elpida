@@ -6,6 +6,7 @@
 #define ELPIDA_SVG_SVGLINEAREQUATION_HPP
 
 #include "SvgPoint.hpp"
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -20,30 +21,30 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetA() const
+		SvgFloat GetA() const
 		{
 			return _a;
 		}
 
 		[[nodiscard]]
-		double GetB() const
+		SvgFloat GetB() const
 		{
 			return _b;
 		}
 
 		[[nodiscard]]
-		double CalculateY(const double x) const
+		SvgFloat CalculateY(const SvgFloat x) const
 		{
 			return _a * x + _b;
 		}
 
 		[[nodiscard]]
-		double GetDistanceFromPoint(const SvgPoint& point) const
+		SvgFloat GetDistanceFromPoint(const SvgPoint& point) const
 		{
 			const auto dx = _p2.GetX() - _p1.GetX();
 			const auto dy = _p2.GetY() - _p1.GetY();
-			return std::abs(dx * (_p1.GetY() - point.GetY()) - (_p1.GetX() - point.GetX()) * dy) / sqrt(
-					dx * dx + dy * dy);
+			return std::abs(dx * (_p1.GetY() - point.GetY()) - (_p1.GetX() - point.GetX()) * dy)
+					/ std::sqrt(dx * dx + dy * dy);
 		}
 
 		[[nodiscard]]
@@ -63,7 +64,7 @@ namespace Elpida
 
 			// See https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 			const auto a = -_a;
-			constexpr auto b = 1.0;
+			constexpr SvgFloat b = 1.0;
 			const auto c = -_b;
 			const auto x0 = point.GetX();
 			const auto y0 = point.GetY();
@@ -90,9 +91,9 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double CalculateAngle() const
+		SvgFloat CalculateAngle() const
 		{
-			return atan2(_direction.GetY(), _direction.GetX());
+			return std::atan2(_direction.GetY(), _direction.GetX());
 		}
 
 		[[nodiscard]]
@@ -173,7 +174,7 @@ namespace Elpida
 			Recalculate();
 		}
 
-		SvgLinearEquation(const double a, const double b)
+		SvgLinearEquation(const SvgFloat a, const SvgFloat b)
 				:_a(a),
 				 _b(b)
 		{
@@ -182,18 +183,18 @@ namespace Elpida
 	private:
 		SvgPoint _p1;
 		SvgPoint _p2;
-		double _a;
-		double _b;
+		SvgFloat _a;
+		SvgFloat _b;
 		SvgPoint _direction;
 
 		void Recalculate()
 		{
 			_direction = _p2 - _p1;
-			_a = std::abs(_direction.GetX()) > SvgPoint::Tolerance ? (_direction.GetY()) / (_direction.GetX()) : 0.0;
+			_a = std::abs(_direction.GetX()) > SvgPoint::Tolerance ? (_direction.GetY()) / (_direction.GetX()) : SvgFloat(0.0);
 			_b = _p1.GetY() - _a * _p1.GetX();
 		}
 
-		static int GetSign(const double v)
+		static int GetSign(const SvgFloat v)
 		{
 			if (std::abs(v) < SvgPoint::Tolerance) return 0;
 			if (v == 0.0) return 0;

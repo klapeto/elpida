@@ -8,6 +8,7 @@
 #include "Elpida/Svg/SvgCalculatedShape.hpp"
 #include "Elpida/Svg/SvgViewBox.hpp"
 #include "Elpida/Svg/SvgCalculatedViewPort.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -36,7 +37,7 @@ namespace Elpida
 		}
 
 		SvgCalculatedDocument() = default;
-		explicit SvgCalculatedDocument(const SvgDocument& document, double scale = 1.0);
+		explicit SvgCalculatedDocument(const SvgDocument& document, SvgFloat scale = 1.0);
 	private:
 		SvgCalculatedShape _rootShape;
 		SvgCalculatedViewPort _viewPort;

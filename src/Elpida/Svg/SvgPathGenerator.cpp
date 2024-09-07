@@ -11,7 +11,7 @@
 
 namespace Elpida
 {
-	static double Square(const double x)
+	static SvgFloat Square(const SvgFloat x)
 	{
 		return x * x;
 	}
@@ -21,22 +21,22 @@ namespace Elpida
 		return SvgNumber::IsNumber(c) || c == '+' || c == '-' || c == '.';
 	}
 
-	static double VectorMagnitude(const double x, const double y)
+	static SvgFloat VectorMagnitude(const SvgFloat x, const SvgFloat y)
 	{
 		return std::sqrt(x * x + y * y);
 	}
 
-	static double VectorCosTheta(const double ux, const double uy, const double vx, const double vy)
+	static SvgFloat VectorCosTheta(const SvgFloat ux, const SvgFloat uy, const SvgFloat vx, const SvgFloat vy)
 	{
 		return (ux * vx + uy * vy) / (VectorMagnitude(ux, uy) * VectorMagnitude(vx, vy));
 	}
 
-	static double VectorAngle(const double ux, const double uy, const double vx, const double vy)
+	static SvgFloat VectorAngle(const SvgFloat ux, const SvgFloat uy, const SvgFloat vx, const SvgFloat vy)
 	{
-		double res = VectorCosTheta(ux, uy, vx, vy);
+		SvgFloat res = VectorCosTheta(ux, uy, vx, vy);
 		if (res < -1.0) res = -1.0;
 		if (res > 1.0) res = 1.0;
-		return ((ux * vy < uy * vx) ? -1.0 : 1.0) * std::acos(res);
+		return ((ux * vy < uy * vx) ? SvgFloat(-1.0) : SvgFloat(1.0)) * std::acos(res);
 	}
 
 	static std::string_view GetNextNumberView(CharacterStream& stream)
@@ -130,7 +130,7 @@ namespace Elpida
 		return stream.GetStringView(begin, end);
 	}
 
-	static void ParseAllNumbers(CharacterStream& stream, std::vector<double>& currentNumbers)
+	static void ParseAllNumbers(CharacterStream& stream, std::vector<SvgFloat>& currentNumbers)
 	{
 		currentNumbers.clear();
 		stream.Next();
@@ -161,7 +161,7 @@ namespace Elpida
 
 		try
 		{
-			std::vector<double> currentArguments;
+			std::vector<SvgFloat> currentArguments;
 			currentArguments.reserve(8);
 
 			while (!stream.Eof())
@@ -441,12 +441,12 @@ namespace Elpida
 
 		// Convert to cubic bezier
 		const SvgPoint controlPointA(
-				_currentPoint.GetX() + 2.0 / 3.0 * (controlPoint.GetX() - _currentPoint.GetX()),
-				_currentPoint.GetY() + 2.0 / 3.0 * (controlPoint.GetY() - _currentPoint.GetY()));
+				_currentPoint.GetX() + SvgFloat(2.0) / SvgFloat(3.0) * (controlPoint.GetX() - _currentPoint.GetX()),
+				_currentPoint.GetY() + SvgFloat(2.0) / SvgFloat(3.0) * (controlPoint.GetY() - _currentPoint.GetY()));
 
 		const SvgPoint controlPointB(
-				endPoint.GetX() + 2.0 / 3.0 * (controlPoint.GetX() - endPoint.GetX()),
-				endPoint.GetY() + 2.0 / 3.0 * (controlPoint.GetY() - endPoint.GetY()));
+				endPoint.GetX() + SvgFloat(2.0) / SvgFloat(3.0) * (controlPoint.GetX() - endPoint.GetX()),
+				endPoint.GetY() + SvgFloat(2.0) / SvgFloat(3.0) * (controlPoint.GetY() - endPoint.GetY()));
 
 		_curves.emplace_back(controlPointA, controlPointB, endPoint);
 
@@ -461,17 +461,17 @@ namespace Elpida
 			endPoint += _currentPoint;
 		}
 
-		const double cx = 2 * _currentPoint.GetX() - _previousControlPointB.GetX();
-		const double cy = 2 * _currentPoint.GetY() - _previousControlPointB.GetY();
+		const SvgFloat cx = 2 * _currentPoint.GetX() - _previousControlPointB.GetX();
+		const SvgFloat cy = 2 * _currentPoint.GetY() - _previousControlPointB.GetY();
 
 		const SvgPoint controlPointA(
-				_currentPoint.GetX() + 2.0 / 3.0 * (cx - _currentPoint.GetX()),
-				_currentPoint.GetY() + 2.0 / 3.0 * (cy - _currentPoint.GetY())
+				_currentPoint.GetX() + SvgFloat(2.0) / SvgFloat(3.0) * (cx - _currentPoint.GetX()),
+				_currentPoint.GetY() + SvgFloat(2.0) / SvgFloat(3.0) * (cy - _currentPoint.GetY())
 		);
 
 		const SvgPoint controlPointB(
-				endPoint.GetX() + 2.0 / 3.0 * (cx - endPoint.GetX()),
-				endPoint.GetY() + 2.0 / 3.0 * (cy - endPoint.GetY())
+				endPoint.GetX() + SvgFloat(2.0) / SvgFloat(3.0) * (cx - endPoint.GetX()),
+				endPoint.GetY() + SvgFloat(2.0) / SvgFloat(3.0) * (cy - endPoint.GetY())
 		);
 
 		_curves.emplace_back(controlPointA, controlPointB, endPoint);
@@ -481,9 +481,9 @@ namespace Elpida
 	}
 
 	void SvgPathGenerator::ArcTo(
-			const double radiusX,
-			const double radiusY,
-			const double xAxisRotation,
+			const SvgFloat radiusX,
+			const SvgFloat radiusY,
+			const SvgFloat xAxisRotation,
 			const bool largeArc,
 			const bool sweep,
 			SvgPoint endpoint,
@@ -491,7 +491,7 @@ namespace Elpida
 	{
 		auto rx = std::abs(radiusX); // y radius
 		auto ry = std::abs(radiusY); // x radius
-		const auto rotx = xAxisRotation / 180.0 * SvgUtilities::Pi; // x rotation angle
+		const SvgFloat rotx = xAxisRotation / SvgFloat(180.0) * SvgUtilities::Pi; // x rotation angle
 		const auto fa = largeArc; // Large arc
 		const auto fs = sweep; // Sweep direction
 
@@ -500,9 +500,9 @@ namespace Elpida
 			endpoint += _currentPoint;
 		}
 
-		double dx = _currentPoint.GetX() - endpoint.GetX();
-		double dy = _currentPoint.GetY() - endpoint.GetY();
-		double distance = std::sqrt(dx * dx + dy * dy);
+		SvgFloat dx = _currentPoint.GetX() - endpoint.GetX();
+		SvgFloat dy = _currentPoint.GetY() - endpoint.GetY();
+		SvgFloat distance = std::sqrt(dx * dx + dy * dy);
 		if (distance < 1e-6 || rx < 1e-6 || ry < 1e-6)
 		{
 			// The arc degenerates to a line
@@ -518,8 +518,8 @@ namespace Elpida
 		// Convert to center point parameterization.
 		// http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
 		// 1) Compute x1', y1'
-		const double x1p = cosrx * dx / 2.0 + sinrx * dy / 2.0;
-		const double y1p = -sinrx * dx / 2.0 + cosrx * dy / 2.0;
+		const SvgFloat x1p = cosrx * dx / SvgFloat(2.0) + sinrx * dy / SvgFloat(2.0);
+		const SvgFloat y1p = -sinrx * dx / SvgFloat(2.0) + cosrx * dy / SvgFloat(2.0);
 		distance = Square(x1p) / Square(rx) + Square(y1p) / Square(ry);
 		if (distance > 1)
 		{
@@ -529,9 +529,9 @@ namespace Elpida
 		}
 
 		// 2) Compute cx', cy'
-		double s = 0.0;
-		double sa = Square(rx) * Square(ry) - Square(rx) * Square(y1p) - Square(ry) * Square(x1p);
-		const double sb = Square(rx) * Square(y1p) + Square(ry) * Square(x1p);
+		SvgFloat s = 0.0;
+		SvgFloat sa = Square(rx) * Square(ry) - Square(rx) * Square(y1p) - Square(ry) * Square(x1p);
+		const SvgFloat sb = Square(rx) * Square(y1p) + Square(ry) * Square(x1p);
 		if (sa < 0.0)
 		{
 			sa = 0.0;
@@ -547,20 +547,20 @@ namespace Elpida
 			s = -s;
 		}
 
-		const double cxp = s * rx * y1p / ry;
-		const double cyp = s * -ry * x1p / rx;
+		const SvgFloat cxp = s * rx * y1p / ry;
+		const SvgFloat cyp = s * -ry * x1p / rx;
 
 		// 3) Compute cx,cy from cx',cy'
-		const double cx = (_currentPoint.GetX() + endpoint.GetX()) / 2.0 + cosrx * cxp - sinrx * cyp;
-		const double cy = (_currentPoint.GetY() + endpoint.GetY()) / 2.0 + sinrx * cxp + cosrx * cyp;
+		const SvgFloat cx = (_currentPoint.GetX() + endpoint.GetX()) / SvgFloat(2.0) + cosrx * cxp - sinrx * cyp;
+		const SvgFloat cy = (_currentPoint.GetY() + endpoint.GetY()) / SvgFloat(2.0) + sinrx * cxp + cosrx * cyp;
 
 		// 4) Calculate theta1, and delta theta.
-		const double ux = (x1p - cxp) / rx;
-		const double uy = (y1p - cyp) / ry;
-		const double vx = (-x1p - cxp) / rx;
-		const double vy = (-y1p - cyp) / ry;
-		const double a1 = VectorAngle(1.0, 0.0, ux, uy); // Initial angle
-		double da = VectorAngle(ux, uy, vx, vy); // Delta angle
+		const SvgFloat ux = (x1p - cxp) / rx;
+		const SvgFloat uy = (y1p - cyp) / ry;
+		const SvgFloat vx = (-x1p - cxp) / rx;
+		const SvgFloat vy = (-y1p - cyp) / ry;
+		const SvgFloat a1 = VectorAngle(1.0, 0.0, ux, uy); // Initial angle
+		SvgFloat da = VectorAngle(ux, uy, vx, vy); // Delta angle
 
 		//	if (vecrat(ux,uy,vx,vy) <= -1.0f) da = NSVG_PI;
 		//	if (vecrat(ux,uy,vx,vy) >= 1.0f) da = 0;
@@ -580,7 +580,7 @@ namespace Elpida
 		// Split arc into max 90 degree segments.
 		// The loop assumes an iteration per end point (including start and end), this +1.
 		const auto ndivs = static_cast<std::size_t>(std::abs(da) / (SvgUtilities::Pi * 0.5) + 1.0);
-		auto hda = (da / static_cast<double>(ndivs)) / 2.0;
+		auto hda = (da / SvgFloat(ndivs)) / SvgFloat(2.0);
 
 		// Fix for ticket #179: division by 0: avoid cotangens around 0 (infinite)
 		if (hda < 1e-3 && hda > -1e-3)
@@ -589,27 +589,27 @@ namespace Elpida
 		}
 		else
 		{
-			hda = (1.0 - std::cos(hda)) / std::sin(hda);
+			hda = (SvgFloat(1.0) - std::cos(hda)) / std::sin(hda);
 		}
 
-		double kappa = std::abs(4.0 / 3.0 * hda);
+		SvgFloat kappa = std::abs(SvgFloat(4.0) / SvgFloat(3.0) * hda);
 
 		if (da < 0.0)
 		{
 			kappa = -kappa;
 		}
 
-		double tanx;
-		double tany;
-		double x;
-		double y;
-		double px = 0;
-		double py = 0;
-		double ptanx = 0;
-		double ptany = 0;
+		SvgFloat tanx;
+		SvgFloat tany;
+		SvgFloat x;
+		SvgFloat y;
+		SvgFloat px = 0;
+		SvgFloat py = 0;
+		SvgFloat ptanx = 0;
+		SvgFloat ptany = 0;
 		for (std::size_t i = 0; i <= ndivs; i++)
 		{
-			const double a = a1 + da * (static_cast<double>(i) / static_cast<double>(ndivs));
+			const SvgFloat a = a1 + da * (static_cast<SvgFloat>(i) / static_cast<SvgFloat>(ndivs));
 
 			dx = std::cos(a);
 			dy = std::sin(a);
@@ -649,7 +649,7 @@ namespace Elpida
 		_previousControlPointB = _currentPoint;
 	}
 
-	void SvgPathGenerator::HorizontalLineTo(const double x, const bool relative)
+	void SvgPathGenerator::HorizontalLineTo(const SvgFloat x, const bool relative)
 	{
 		const auto initialStartPoint = _currentPoint;
 		if (relative)
@@ -664,7 +664,7 @@ namespace Elpida
 		_previousControlPointB = _currentPoint;
 	}
 
-	void SvgPathGenerator::VerticalLineTo(const double a, const bool relative)
+	void SvgPathGenerator::VerticalLineTo(const SvgFloat a, const bool relative)
 	{
 		const auto initialStartPoint = _currentPoint;
 		if (relative)
@@ -681,14 +681,14 @@ namespace Elpida
 
 	void SvgPathGenerator::LineTo(const SvgPoint& start, const SvgPoint& end)
 	{
-		const double px = start.GetX();
-		const double py = start.GetY();
-		const double x = end.GetX();
-		const double y = end.GetY();
-		const double dx = x - px;
-		const double dy = y - py;
-		_curves.emplace_back(SvgPoint(px + dx / 3.0, py + dy / 3.0),
-				SvgPoint(x - dx / 3.0, y - dy / 3.0),
+		const SvgFloat px = start.GetX();
+		const SvgFloat py = start.GetY();
+		const SvgFloat x = end.GetX();
+		const SvgFloat y = end.GetY();
+		const SvgFloat dx = x - px;
+		const SvgFloat dy = y - py;
+		_curves.emplace_back(SvgPoint(px + dx / SvgFloat(3.0), py + dy / SvgFloat(3.0)),
+				SvgPoint(x - dx / SvgFloat(3.0), y - dy / SvgFloat(3.0)),
 				end);
 	}
 

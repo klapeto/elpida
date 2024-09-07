@@ -16,6 +16,7 @@
 #include "Elpida/Svg/SvgSpreadType.hpp"
 #include "SvgCalculatedLinearGradient.hpp"
 #include "SvgCalculatedRadialGradient.hpp"
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -35,7 +36,7 @@ namespace Elpida
 		virtual void Transform(const SvgTransform& transform);
 
 		[[nodiscard]]
-		double Opacity() const
+		SvgFloat Opacity() const
 		{
 			return _opacity;
 		}
@@ -54,7 +55,7 @@ namespace Elpida
 		std::variant<SvgColor, SvgCalculatedLinearGradient, SvgCalculatedRadialGradient> _state;
 		SvgGradientType _gradientType;
 		bool _color;
-		double _opacity;
+		SvgFloat _opacity;
 
 		void AsGradient(const SvgPaint& paint, const SvgBounds& elementBounds, const SvgDocument& document,
 				const SvgCalculationContext& calculationContext);

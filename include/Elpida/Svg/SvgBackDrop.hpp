@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "SvgConfig.hpp"
 #include "SvgBlendMode.hpp"
 #include "SvgColor.hpp"
 #include "SvgCompositingMode.hpp"
@@ -21,7 +22,6 @@ namespace Elpida
 	class SvgPolygon;
 
 	class SvgCalculatedPaint;
-	class ThreadPool;
 	class SvgSuperSampler;
 
 	class SvgBackDrop final
@@ -45,7 +45,7 @@ namespace Elpida
 				SvgFillRule fillRule = SvgFillRule::NonZero,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
-				double opacity = 1.0);
+				SvgFloat opacity = 1.0);
 
 		void DrawMultiThread(const SvgPolygon& polygon,
 				const SvgCalculatedPaint& paint,
@@ -53,19 +53,19 @@ namespace Elpida
 				SvgFillRule fillRule = SvgFillRule::NonZero,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver,
-				double opacity = 1.0);
+				SvgFloat opacity = 1.0);
 
 		void Draw(const SvgBackDrop& other,
 				std::size_t x,
 				std::size_t y,
-				double opacity = 1.0,
+				SvgFloat opacity = 1.0,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
 
 		void DrawMultiThread(const SvgBackDrop& other,
 				std::size_t x,
 				std::size_t y,
-				double opacity = 1.0,
+				SvgFloat opacity = 1.0,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
 
@@ -74,7 +74,7 @@ namespace Elpida
 				std::size_t y,
 				std::size_t width,
 				std::size_t height,
-				double opacity = 1.0,
+				SvgFloat opacity = 1.0,
 				SvgBlendMode blendMode = SvgBlendMode::Normal,
 				SvgCompositingMode compositingMode = SvgCompositingMode::SourceOver);
 
@@ -103,7 +103,7 @@ namespace Elpida
 				std::size_t startX,
 				std::size_t width,
 				std::size_t height,
-				double opacity);
+				SvgFloat opacity);
 
 		void DrawPolygonMultiThreaded(const SvgPolygon& polygon,
 				const SvgCalculatedPaint& paint,
@@ -115,9 +115,9 @@ namespace Elpida
 				size_t startX,
 				size_t width,
 				size_t height,
-				double opacity);
+				SvgFloat opacity);
 
-		void DoDrawOther(double opacity,
+		void DoDrawOther(SvgFloat opacity,
 				const SvgBlender& blender,
 				const SvgCompositor& compositor,
 				size_t startX,
@@ -129,7 +129,7 @@ namespace Elpida
 				const std::vector<SvgColor>& colorData,
 				size_t sourceWidth);
 
-		void DoDrawOtherMultiThreaded(double opacity,
+		void DoDrawOtherMultiThreaded(SvgFloat opacity,
 				const SvgBlender& blender,
 				const SvgCompositor& compositor,
 				size_t startX,

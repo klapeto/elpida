@@ -9,6 +9,7 @@
 
 #include "SvgLinearEquation.hpp"
 #include "SvgPoint.hpp"
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -33,28 +34,28 @@ namespace Elpida
 			return _rightPoint;
 		}
 
-		void Expand(const double rX, const double rY, double angle)
+		void Expand(const SvgFloat rX, const SvgFloat rY, SvgFloat angle)
 		{
 			// the angle of the top point is the angle of the right point + 90 degrees
-			_topPoint += SvgPoint(rY * cos(angle + SvgUtilities::Pi / 2.0), rY * sin(angle + SvgUtilities::Pi / 2.0));
-			_rightPoint -= SvgPoint(rX * cos(angle), rX * sin(angle));
+			_topPoint += SvgPoint(rY * std::cos(angle + SvgUtilities::Pi / 2), rY * std::sin(angle + SvgUtilities::Pi / 2));
+			_rightPoint -= SvgPoint(rX * std::cos(angle), rX * std::sin(angle));
 			Recalculate();
 		}
 
 		[[nodiscard]]
-		double GetAngle() const
+		SvgFloat GetAngle() const
 		{
 			return _angle;
 		}
 
 		[[nodiscard]]
-		double GetA() const
+		SvgFloat GetA() const
 		{
 			return _a;
 		}
 
 		[[nodiscard]]
-		double GetB() const
+		SvgFloat GetB() const
 		{
 			return _b;
 		}
@@ -108,7 +109,7 @@ namespace Elpida
 				return point;
 			}
 
-			double x1, x2;
+			SvgFloat x1, x2;
 			CalculateRoots(a, b, c, x1, x2);
 
 			// revert translating
@@ -136,7 +137,7 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double CalculateNormalDistance(const SvgPoint& point) const
+		SvgFloat CalculateNormalDistance(const SvgPoint& point) const
 		{
 			if (_b == 0.0 || _a == 0.0) return point.GetDistance(_center);
 			auto delta = point - _center;
@@ -150,7 +151,7 @@ namespace Elpida
 			return (d1 / (_a * _a)) + (d2 / (_b * _b));
 		}
 
-		SvgEllipseEquation(const double cX, const double cY, const double rX, const double rY)
+		SvgEllipseEquation(const SvgFloat cX, const SvgFloat cY, const SvgFloat rX, const SvgFloat rY)
 		{
 			_center = SvgPoint(cX, cY);
 			_rightPoint = SvgPoint(cX + rX, cY);
@@ -170,15 +171,15 @@ namespace Elpida
 		SvgPoint _center;
 		SvgPoint _rightPoint;
 		SvgPoint _topPoint;
-		double _angle;
-		double _a;
-		double _b;
-		double _sinA;
-		double _cosA;
+		SvgFloat _angle;
+		SvgFloat _a;
+		SvgFloat _b;
+		SvgFloat _sinA;
+		SvgFloat _cosA;
 
 		[[nodiscard]]
-		SvgPoint CalculateClosestPointVertical(const SvgPoint& point, double n2, double h2, double cosA, double sinA,
-		                                       double cosA2, double sinA2) const
+		SvgPoint CalculateClosestPointVertical(const SvgPoint& point, SvgFloat n2, SvgFloat h2, SvgFloat cosA, SvgFloat sinA,
+		                                       SvgFloat cosA2, SvgFloat sinA2) const
 		{
 			auto x = point.GetX() - _center.GetX();
 
@@ -186,7 +187,7 @@ namespace Elpida
 			auto b = 2 * x * cosA * sinA * (n2 - h2);
 			auto c = x * x * (n2 * cosA2 + h2 * sinA2) - h2 * n2;
 
-			double y1, y2;
+			SvgFloat y1, y2;
 			CalculateRoots(a, b, c, y1, y2);
 
 			// revert translating
@@ -199,15 +200,15 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		SvgPoint CalculateClosestPointHorizontal(const SvgPoint& point, double n2, double h2, double cosA, double sinA,
-		                                         double cosA2, double sinA2) const
+		SvgPoint CalculateClosestPointHorizontal(const SvgPoint& point, SvgFloat n2, SvgFloat h2, SvgFloat cosA, SvgFloat sinA,
+		                                         SvgFloat cosA2, SvgFloat sinA2) const
 		{
 			auto y = point.GetY() - _center.GetY();
 			auto a = n2 * cosA2 + h2 * sinA2;
 			auto b = 2 * y * cosA * sinA * (n2 - h2);
 			auto c = y * y * (n2 * sinA2 + h2 * cosA2) - h2 * n2;
 
-			double x1, x2;
+			SvgFloat x1, x2;
 			CalculateRoots(a, b, c, x1, x2);
 
 			x1 += _center.GetY();
@@ -218,7 +219,7 @@ namespace Elpida
 				       : SvgPoint(x1, point.GetY());
 		}
 
-		static void CalculateRoots(const double a, const double b, const double c, double& r1, double& r2)
+		static void CalculateRoots(const SvgFloat a, const SvgFloat b, const SvgFloat c, SvgFloat& r1, SvgFloat& r2)
 		{
 			if (a == 0.0)
 			{
@@ -236,7 +237,7 @@ namespace Elpida
 			}
 			auto delta = b * b - 4 * a * c;
 
-			auto sqr = sqrt(delta);
+			auto sqr = std::sqrt(delta);
 			r1 = (-b + sqr) / (2 * a);
 			r2 = (-b - sqr) / (2 * a);
 		}
@@ -247,11 +248,11 @@ namespace Elpida
 			_b = _center.GetDistance(_topPoint);
 
 			auto delta = _center - _rightPoint;
-			_angle = atan2(delta.GetY(), delta.GetX());
+			_angle = std::atan2(delta.GetY(), delta.GetX());
 			_sinA = std::sin(_angle);
 			_cosA = std::cos(_angle);
 		}
 	};
 } // Elpida
 
-#endif //SVGELLIPSE_HPP
+#endif //ELPIDA_SVG_SVGELLIPSE_HPP

@@ -9,6 +9,7 @@
 #include "Elpida/Svg/SvgLineCap.hpp"
 #include "Elpida/Svg/SvgLineJoin.hpp"
 #include "Elpida/Svg/SvgCalculatedPaint.hpp"
+#include "Elpida/Svg/SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -20,7 +21,7 @@ namespace Elpida
 	{
 	public:
 		[[nodiscard]]
-		const std::vector<double>& GetDashes() const
+		const std::vector<SvgFloat>& GetDashes() const
 		{
 			return _dashes;
 		}
@@ -38,19 +39,19 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetDashOffset() const
+		SvgFloat GetDashOffset() const
 		{
 			return _dashOffset;
 		}
 
 		[[nodiscard]]
-		double GetWidth() const
+		SvgFloat GetWidth() const
 		{
 			return _width;
 		}
 
 		[[nodiscard]]
-		double GetMiterLimit() const
+		SvgFloat GetMiterLimit() const
 		{
 			return _miterLimit;
 		}
@@ -65,12 +66,12 @@ namespace Elpida
 		SvgCalculatedStroke& operator=(SvgCalculatedStroke&&) noexcept = default;
 		~SvgCalculatedStroke() override = default;
 	private:
-		std::vector<double> _dashes;
+		std::vector<SvgFloat> _dashes;
 		SvgLineJoin _lineJoin;
 		SvgLineCap _lineCap;
-		double _dashOffset;
-		double _width;
-		double _miterLimit;
+		SvgFloat _dashOffset;
+		SvgFloat _width;
+		SvgFloat _miterLimit;
 	};
 
 } // Svg

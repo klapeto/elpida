@@ -9,29 +9,29 @@
 
 namespace Elpida
 {
-	static double ClampColor(double color)
+	static SvgFloat ClampColor(SvgFloat color)
 	{
 		if (color > 1.0) color = 1.0;
 		if (color < 0.0) color = 0.0;
 		return color;
 	}
 
-	static double Normal(double Cb, double Cs)
+	static SvgFloat Normal(SvgFloat Cb, SvgFloat Cs)
 	{
 		return ClampColor(Cs);
 	}
 
-	static double Multiply(double Cb, double Cs)
+	static SvgFloat Multiply(SvgFloat Cb, SvgFloat Cs)
 	{
 		return ClampColor(Cb * Cs);
 	}
 
-	static double Screen(double Cb, double Cs)
+	static SvgFloat Screen(SvgFloat Cb, SvgFloat Cs)
 	{
 		return ClampColor(Cb + Cs - (Cb * Cs));
 	}
 
-	static double HardLight(double Cb, double Cs)
+	static SvgFloat HardLight(SvgFloat Cb, SvgFloat Cs)
 	{
 		if (Cs <= 0.5)
 		{
@@ -39,26 +39,26 @@ namespace Elpida
 		}
 		else
 		{
-			return Screen(Cb, (2 * Cs) - 1.0);
+			return Screen(Cb, (2 * Cs) - SvgFloat(1.0));
 		}
 	}
 
-	static double Overlay(double Cb, double Cs)
+	static SvgFloat Overlay(SvgFloat Cb, SvgFloat Cs)
 	{
 		return HardLight(Cs, Cb);
 	}
 
-	static double Darken(double Cb, double Cs)
+	static SvgFloat Darken(SvgFloat Cb, SvgFloat Cs)
 	{
 		return ClampColor(std::min(Cs, Cb));
 	}
 
-	static double Lighten(double Cb, double Cs)
+	static SvgFloat Lighten(SvgFloat Cb, SvgFloat Cs)
 	{
 		return ClampColor(std::max(Cs, Cb));
 	}
 
-	static double ColorDodge(double Cb, double Cs)
+	static SvgFloat ColorDodge(SvgFloat Cb, SvgFloat Cs)
 	{
 		if (Cb == 0.0)
 		{
@@ -70,11 +70,11 @@ namespace Elpida
 		}
 		else
 		{
-			return ClampColor(std::min(1.0, Cb / (1.0 - Cs)));
+			return ClampColor(std::min(SvgFloat(1.0), Cb / (SvgFloat(1.0) - Cs)));
 		}
 	}
 
-	static double ColorBurn(double Cb, double Cs)
+	static SvgFloat ColorBurn(SvgFloat Cb, SvgFloat Cs)
 	{
 		if (Cb == 1.0)
 		{
@@ -86,13 +86,13 @@ namespace Elpida
 		}
 		else
 		{
-			return ClampColor(1.0 - std::min(1.0, (1.0 - Cb) / Cs));
+			return ClampColor(SvgFloat(1.0) - std::min(SvgFloat(1.0), (SvgFloat(1.0) - Cb) / Cs));
 		}
 	}
 
-	static double SoftLight(double Cb, double Cs)
+	static SvgFloat SoftLight(SvgFloat Cb, SvgFloat Cs)
 	{
-		auto d = [](double c)
+		auto d = [](SvgFloat c)
 		{
 		  if (c <= 0.25)
 		  {
@@ -106,20 +106,20 @@ namespace Elpida
 
 		if (Cs <= 0.5)
 		{
-			return ClampColor(Cb - (1.0 - 2 * Cs) * Cb * (1.0 - Cb));
+			return ClampColor(Cb - (SvgFloat(1.0) - 2 * Cs) * Cb * (SvgFloat(1.0) - Cb));
 		}
 		else
 		{
-			return ClampColor(Cb + (2 * Cs - 1.0) * (d(Cb) - Cb));
+			return ClampColor(Cb + (2 * Cs - SvgFloat(1.0)) * (d(Cb) - Cb));
 		}
 	}
 
-	static double Difference(double Cb, double Cs)
+	static SvgFloat Difference(SvgFloat Cb, SvgFloat Cs)
 	{
 		return ClampColor(std::abs(Cb - Cs));
 	}
 
-	static double Exclusion(double Cb, double Cs)
+	static SvgFloat Exclusion(SvgFloat Cb, SvgFloat Cs)
 	{
 		return ClampColor(Cb + Cs - 2 * Cb * Cs);
 	}

@@ -28,43 +28,43 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double GetMinX() const
+		SvgFloat GetMinX() const
 		{
 			return _min.GetX();
 		}
 
 		[[nodiscard]]
-		double GetMinY() const
+		SvgFloat GetMinY() const
 		{
 			return _min.GetY();
 		}
 
 		[[nodiscard]]
-		double GetWidth() const
+		SvgFloat GetWidth() const
 		{
 			return _width;
 		}
 
 		[[nodiscard]]
-		double GetHeight() const
+		SvgFloat GetHeight() const
 		{
 			return _height;
 		}
 
 		[[nodiscard]]
-		double GetLength() const
+		SvgFloat GetLength() const
 		{
 			return _length;
 		}
 
 		SvgViewBox();
-		SvgViewBox(double minX, double minY, double width, double height);
+		SvgViewBox(SvgFloat minX, SvgFloat minY, SvgFloat width, SvgFloat height);
 		explicit SvgViewBox(std::string_view view);
 	private:
 		SvgPoint _min;
-		double _width;
-		double _height;
-		double _length;
+		SvgFloat _width;
+		SvgFloat _height;
+		SvgFloat _length;
 
 		void CalculateLength();
 	};

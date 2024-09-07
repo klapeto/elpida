@@ -6,6 +6,7 @@
 #define ELPIDA_SVG_SVGCOORDINATE_HPP
 
 #include <string_view>
+#include "SvgConfig.hpp"
 
 namespace Elpida
 {
@@ -31,7 +32,7 @@ namespace Elpida
 	public:
 
 		[[nodiscard]]
-		constexpr double GetValue() const
+		constexpr SvgFloat GetValue() const
 		{
 			return _value;
 		}
@@ -43,19 +44,19 @@ namespace Elpida
 		}
 
 		[[nodiscard]]
-		double CalculateValue(const SvgCalculationContext& calculationContext, double orig, double length) const;
+		SvgFloat CalculateValue(const SvgCalculationContext& calculationContext, SvgFloat orig, SvgFloat length) const;
 
 		[[nodiscard]]
-		double CalculateValue(const SvgCalculationContext& calculationContext, double length) const
+		SvgFloat CalculateValue(const SvgCalculationContext& calculationContext, SvgFloat length) const
 		{
-			return CalculateValue(calculationContext, 0.0, length);
+			return CalculateValue(calculationContext, 0, length);
 		}
 
 		constexpr SvgLength()
 			: _value(0), _units(SvgUnits::Raw)
 		{
 		}
-		constexpr explicit SvgLength(const double value, const SvgUnits units)
+		constexpr explicit SvgLength(const SvgFloat value, const SvgUnits units)
 			: _value(value), _units(units)
 		{
 		}
@@ -64,7 +65,7 @@ namespace Elpida
 
 		~SvgLength() = default;
 	private:
-		double _value;
+		SvgFloat _value;
 		SvgUnits _units;
 	};
 

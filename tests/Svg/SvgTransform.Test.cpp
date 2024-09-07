@@ -127,7 +127,7 @@ TEST(SvgTransformTests, Rotate_Invalid_RevertsToIdentity)
 
 TEST(SvgTransformTests, Matrix_Valid_Success)
 {
-	double values[] = {5.35,813.4,-91.2,466.1,-13.2, -0.05};
+	SvgFloat values[] = {5.35,813.4,-91.2,466.1,-13.2, -0.05};
 	SvgTransform calculated(values);
 	const SvgTransform transform("  matrix  (5.35  , 813.4  ,  -91.2 , 466.1  ,  -13.2,   -0.05  )  ");
 	AssertTransformsEqual(transform, calculated);
@@ -135,7 +135,7 @@ TEST(SvgTransformTests, Matrix_Valid_Success)
 
 TEST(SvgTransformTests, Matrix_ValidWithSpaces_Success)
 {
-	double values[] = {5.35,813.4,-91.2,466.1,-13.2, -0.05};
+	SvgFloat values[] = {5.35,813.4,-91.2,466.1,-13.2, -0.05};
 	SvgTransform calculated(values);
 	const SvgTransform transform("  matrix  (5.35   813.4   -91.2 , 466.1   -13.2,   -0.05  )  ");
 	AssertTransformsEqual(transform, calculated);

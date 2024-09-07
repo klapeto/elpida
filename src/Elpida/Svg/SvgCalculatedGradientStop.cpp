@@ -6,7 +6,7 @@
 
 namespace Elpida
 {
-	SvgCalculatedGradientStop::SvgCalculatedGradientStop(const SvgColor& color, double offset, double opacity)
+	SvgCalculatedGradientStop::SvgCalculatedGradientStop(const SvgColor& color, SvgFloat offset, SvgFloat opacity)
 			:_color(color), _offset(offset), _opacity(opacity)
 	{
 	}

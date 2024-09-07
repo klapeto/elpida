@@ -16,7 +16,7 @@ namespace Elpida
 		_length = SvgLength(view);
 		if (_length.GetValue() <= 0.0)
 		{
-			static std::unordered_map<std::string_view, double> transformers
+			static std::unordered_map<std::string_view, SvgFloat> transformers
 			{
 				{"xx-small", 3.0 / 5.0},
 				{"x-small ", 3.0 / 4.0},

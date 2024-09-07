@@ -51,8 +51,8 @@ namespace Elpida
 			height = 0.0;
 		}
 
-		double rx = -1.0f; // marks not set
-		double ry = -1.0f;
+		SvgFloat rx = -1.0; // marks not set
+		SvgFloat ry = -1.0;
 
 		if (_rX.has_value())
 		{
@@ -69,8 +69,8 @@ namespace Elpida
 		if (ry < 0.0 && rx > 0.0) ry = rx;
 		if (rx < 0.0) rx = 0.0;
 		if (ry < 0.0) ry = 0.0;
-		if (rx > width / 2.0) rx = width / 2.0;
-		if (ry > height / 2.0) ry = height / 2.0;
+		if (rx > width / 2.0) rx = width / SvgFloat(2.0);
+		if (ry > height / 2.0) ry = height / SvgFloat(2.0);
 
 		if (width != 0.0 && height != 0.0)
 		{
