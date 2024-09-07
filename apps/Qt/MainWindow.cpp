@@ -12,6 +12,7 @@
 #include "Elpida/Core/Config.hpp"
 
 #include "Controllers/FullBenchmarkController.hpp"
+#include "Controllers/MemoryBenchmarkController.hpp"
 #include "Controllers/CustomBenchmarkController.hpp"
 
 #include "Models/SystemInfo/TopologyModel.hpp"
@@ -58,6 +59,7 @@ namespace Elpida::Application
 			 _topologyModel(topologyModel),
 			 _cpuInfoModel(cpuInfoModel),
 			 _customBenchmarkController(customBenchmarksController),
+			 _memoryBenchmarkController(memoryOverheadCalculationController),
 			 _fullBenchmarkController(fullBenchmarkController),
 			 _ui(new Ui::MainWindow)
 	{
@@ -165,14 +167,20 @@ namespace Elpida::Application
 
 	void MainWindow::on_actionClear_results_triggered()
 	{
-		if (_ui->tbBenchmark->currentIndex() == 2)
+		auto index =_ui->tbBenchmark->currentIndex();
+		switch (index)
 		{
-			_customBenchmarkController.ClearResults();
-
-		}
-		else
-		{
+		case 1:
 			_fullBenchmarkController.ClearResults();
+			break;
+		case 2:
+			_memoryBenchmarkController.ClearResults();
+			break;
+		case 3:
+			_customBenchmarkController.ClearResults();
+			break;
+		default:
+			break;
 		}
 	}
 }

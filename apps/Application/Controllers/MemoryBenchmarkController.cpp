@@ -271,5 +271,10 @@ namespace Elpida::Application
 		_model.SetBenchmarkType(type);
 		_settingsService.Set("MemoryBenchmark_Type", std::to_string(static_cast<int>(type)));
 	}
+
+	void MemoryBenchmarkController::ClearResults()
+	{
+		_model.Clear();
+	}
 } // Application
 // Elpida

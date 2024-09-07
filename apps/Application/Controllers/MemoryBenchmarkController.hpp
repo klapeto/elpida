@@ -34,6 +34,8 @@ namespace Elpida::Application
 		void StopRunning();
 		void RunAsync();
 
+		void ClearResults();
+
 		void SetMultiplier(double multiplier);
 		void SetInitialBytes(size_t initialBytes);
 		void SetIterations(size_t iterations);

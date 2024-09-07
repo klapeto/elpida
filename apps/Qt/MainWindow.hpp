@@ -56,6 +56,7 @@ namespace Elpida::Application
 		QLabel* _selectedNodesLabel;
 		const CpuInfoModel& _cpuInfoModel;
 		CustomBenchmarkController& _customBenchmarkController;
+		MemoryBenchmarkController& _memoryBenchmarkController;
 		FullBenchmarkController& _fullBenchmarkController;
 		Ui::MainWindow* _ui;
 
