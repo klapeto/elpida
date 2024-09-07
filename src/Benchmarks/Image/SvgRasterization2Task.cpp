@@ -8,6 +8,7 @@
 #include "Elpida/Svg/SvgRasterizer.hpp"
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
 #include "ImageTaskData.hpp"
+#include "Utilities.hpp"
 
 namespace Elpida
 {
@@ -42,26 +43,10 @@ namespace Elpida
 		return ptr;
 	}
 
-	static std::size_t CalculateShapeCount(const SvgCalculatedShape& shape)
-	{
-		std::size_t size = 0;
-		if (!shape.GetPaths().empty() && shape.GetOpacity() > 0.0 &&
-			(shape.GetFill().has_value() || shape.GetStroke().has_value()))
-		{
-			size++;
-		}
-
-		for (auto& child : shape.GetChildren())
-		{
-			size += CalculateShapeCount(child);
-		}
-
-		return size;
-	}
 
 	Size SvgRasterization2Task::GetProcessedDataSize() const
 	{
-		return CalculateShapeCount(_inputDocument->GetRootShape());
+		return Utilities::CalculateTotalPixelsRendered(_inputDocument->GetRootShape());
 	}
 
 	void SvgRasterization2Task::DoRun(Iterations iterations)
@@ -82,8 +67,8 @@ namespace Elpida
 	{
 		return { "Svg Rasterization 2",
 				 "Rasterizes a calculated Svg document. Uses multiple buffers instead of a single.",
-				 "shapes",
-				 "How many shapes per second are calculated on average",
+				 "pixels",
+				 "How many pixels per second are calculated on average",
 				 ResultType::Throughput
 		};
 	}
