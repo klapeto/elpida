@@ -8,8 +8,6 @@
 #include <valarray>
 #include <complex>
 
-#include "ValueArray.hpp"
-
 namespace Elpida
 {
 
