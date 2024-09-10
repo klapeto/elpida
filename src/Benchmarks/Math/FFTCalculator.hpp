@@ -8,13 +8,15 @@
 #include <valarray>
 #include <complex>
 
+#include "ValueArray.hpp"
+
 namespace Elpida
 {
 
 	class FFTCalculator
 	{
 	public:
-		static void CalculateFFTInPlace(std::valarray<std::complex<double>>& input);
+		static void CalculateFFTInPlace(std::vector<std::complex<double>>& input);
 	};
 
 } // Elpida

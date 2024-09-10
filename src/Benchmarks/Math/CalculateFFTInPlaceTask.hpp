@@ -6,7 +6,7 @@
 #define ELPIDA_CALCULATEFFTINPLACETASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
-#include <valarray>
+#include <vector>
 #include <complex>
 
 namespace Elpida
@@ -26,7 +26,7 @@ namespace Elpida
 		CalculateFFTInPlaceTask& operator=(const CalculateFFTInPlaceTask&) = delete;
 		~CalculateFFTInPlaceTask() override = default;
 	private:
-		std::valarray<std::complex<double>> _values;
+		std::vector<std::complex<double>> _values;
 		SharedPtr<AbstractTaskData> _output;
 		std::size_t _size;
 	protected:
