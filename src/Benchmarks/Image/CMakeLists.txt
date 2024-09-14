@@ -21,10 +21,13 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         SvgRasterizationFromFileBenchmark.cpp
         SvgRasterization2Task.cpp
         SvgRasterization2Benchmark.cpp
+        RayTracingTask.cpp
+        RayTracingBenchmark.cpp
+        SceneCreator.cpp
 )
 
 add_executable(elpida-image-benchmarks ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
 
-target_link_libraries(elpida-image-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-xml elpida-svg png elpida-entry-point)
+target_link_libraries(elpida-image-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-xml elpida-svg png elpida-entry-point elpida-math elpida-graphics)
 
 install(TARGETS elpida-image-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})

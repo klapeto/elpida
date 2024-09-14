@@ -12,6 +12,7 @@
 #include "SvgRasterizationBenchmark.hpp"
 #include "SvgRasterization2Benchmark.hpp"
 #include "SvgRasterizationFromFileBenchmark.hpp"
+#include "RayTracingBenchmark.hpp"
 
 using namespace Elpida;
 
@@ -24,6 +25,7 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	vec.emplace_back(new SvgRasterizationBenchmark());
 	vec.emplace_back(new SvgRasterization2Benchmark());
 	vec.emplace_back(new SvgRasterizationFromFileBenchmark());
+	vec.emplace_back(new RayTracingBenchmark());
 
 	return std::make_unique<BenchmarkGroup>("Image benchmarks", std::move(vec));
 }

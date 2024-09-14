@@ -1,6 +1,7 @@
 add_subdirectory(Core)
 add_subdirectory(Platform)
 add_subdirectory(EntryPoint)
+add_subdirectory(Math)
 add_subdirectory(Graphics)
 add_subdirectory(Xml)
 add_subdirectory(Svg)
