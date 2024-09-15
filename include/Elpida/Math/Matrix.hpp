@@ -33,6 +33,18 @@ namespace Elpida::Math
 		static_assert(C > 0);
 	public:
 
+		[[nodiscard]]
+		constexpr std::size_t GetRows() const
+		{
+			return R;
+		}
+
+		[[nodiscard]]
+		constexpr std::size_t GetColumns() const
+		{
+			return C;
+		}
+
 		T operator[](std::size_t i) const
 		{
 			return _values[i];
@@ -45,6 +57,21 @@ namespace Elpida::Math
 
 			auto adJoint = CalculateCofactors().CalculateTranspose();
 			return adJoint * (1.0 / det);
+		}
+
+		void CalculateInverse(Matrix<T, R, C>& out) const
+		{
+			auto det = CalculateDeterminant();
+			if (det < 1e-8)
+			{
+				out = Identity();
+				return;
+			}
+
+			Matrix<T, R, C> tmp;
+			CalculateCofactors(tmp);
+			tmp.CalculateTranspose(out);
+			out *= (1.0 / det);
 		}
 
 		Matrix<T, R, C> CalculateMinor() const
@@ -61,6 +88,19 @@ namespace Elpida::Math
 			return out;
 		}
 
+		void CalculateMinor(Matrix<T, R, C>& out) const
+		{
+			Matrix<T, R - 1, C - 1> tmp;
+			for (std::size_t i = 0; i < R; ++i)
+			{
+				for (std::size_t j = 0; j < C; ++j)
+				{
+					CalculateRemovedRowColumn(i, j, tmp);
+					out.Get(i, j) = tmp.CalculateDeterminant();
+				}
+			}
+		}
+
 		Matrix<T, R, C> CalculateCofactors() const
 		{
 			auto minor = CalculateMinor();
@@ -73,6 +113,19 @@ namespace Elpida::Math
 				}
 			}
 			return minor;
+		}
+
+		void CalculateCofactors(Matrix<T, R, C>& out) const
+		{
+			CalculateMinor(out);
+
+			for (std::size_t i = 0, s = 1; i < R; ++i, ++s)
+			{
+				for (std::size_t j = s % 2; j < C; j += 2)
+				{
+					out.Get(i, j) = -out.Get(i, j);
+				}
+			}
 		}
 
 		Matrix<T, R, C> CalculateTranspose() const
@@ -92,9 +145,22 @@ namespace Elpida::Math
 			return out;
 		}
 
-		Matrix<T, R - 1, C - 1> CalculateRemovedRowColumn(std::size_t row, std::size_t column) const
+		void CalculateTranspose(Matrix<T, R, C>& out) const
 		{
-			Matrix<T, R - 1, C - 1> out;
+			static_assert(R == C);
+
+			for (std::size_t i = 0; i < R; ++i)
+			{
+				for (std::size_t j = i; j < C; ++j)
+				{
+					out.Get(i, j) = Get(j, i);
+					out.Get(j, i) = Get(i, j);
+				}
+			}
+		}
+
+		void CalculateRemovedRowColumn(std::size_t row, std::size_t column, Matrix<T, R - 1, C - 1>& out) const
+		{
 			for (std::size_t i = 0, io = 0; i < R; ++i)
 			{
 				if (i == row) continue;
@@ -108,7 +174,12 @@ namespace Elpida::Math
 				}
 				io++;
 			}
+		}
 
+		Matrix<T, R - 1, C - 1> CalculateRemovedRowColumn(std::size_t row, std::size_t column) const
+		{
+			Matrix<T, R - 1, C - 1> out;
+			CalculateRemovedRowColumn(row, column, out);
 			return out;
 		}
 
@@ -118,13 +189,14 @@ namespace Elpida::Math
 
 			if constexpr (R > 2)
 			{
+				Matrix<T, R - 1, C - 1> tmp;
 				T det = 0.0;
 				T sign = 1.0;
 				for (std::size_t i = 0; i < C; ++i)
 				{
-					auto sub = CalculateRemovedRowColumn(0, i);
+					CalculateRemovedRowColumn(0, i, tmp);
 
-					det += sign * Get(0, i) * sub.CalculateDeterminant();
+					det += sign * Get(0, i) * tmp.CalculateDeterminant();
 
 					sign = -sign;
 				}

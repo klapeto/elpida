@@ -20,6 +20,6 @@
 
 #include "Elpida/Math/Matrix.hpp"
 
-namespace Elpida
+namespace Elpida::Math
 {
 } // Elpida

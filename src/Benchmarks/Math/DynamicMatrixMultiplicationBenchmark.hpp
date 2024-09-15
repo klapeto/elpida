@@ -2,22 +2,22 @@
 // Created by klapeto on 13/8/2024.
 //
 
-#ifndef ELPIDA_MATRIXMULTIPLICATIONBENCHMARK_HPP
-#define ELPIDA_MATRIXMULTIPLICATIONBENCHMARK_HPP
+#ifndef ELPIDA_DYNAMICMATRIXMULTIPLICATIONBENCHMARK_HPP
+#define ELPIDA_DYNAMICMATRIXMULTIPLICATIONBENCHMARK_HPP
 
 #include "Elpida/Core/Benchmark.hpp"
 
 namespace Elpida
 {
 
-	class MatrixMultiplicationBenchmark: public Benchmark
+	class DynamicMatrixMultiplicationBenchmark: public Benchmark
 	{
 	public:
 		[[nodiscard]]
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
-		MatrixMultiplicationBenchmark() = default;
-		~MatrixMultiplicationBenchmark() override = default;
+		DynamicMatrixMultiplicationBenchmark() = default;
+		~DynamicMatrixMultiplicationBenchmark() override = default;
 	protected:
 
 		[[nodiscard]]
@@ -29,4 +29,4 @@ namespace Elpida
 
 } // Elpida
 
-#endif //ELPIDA_MATRIXMULTIPLICATIONBENCHMARK_HPP
+#endif //ELPIDA_DYNAMICMATRIXMULTIPLICATIONBENCHMARK_HPP

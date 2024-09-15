@@ -8,7 +8,10 @@
 #include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/ModuleExports.hpp"
 #include "CalculateFFTInPlaceBenchmark.hpp"
-#include "MatrixMultiplicationBenchmark.hpp"
+#include "DynamicMatrixMultiplicationBenchmark.hpp"
+#include "MatrixMultiplication32Benchmark.hpp"
+#include "MatrixInverse4Benchmark.hpp"
+
 
 using namespace Elpida;
 
@@ -17,7 +20,9 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	Vector<UniquePtr<Benchmark>> vec;
 
 	vec.push_back(std::make_unique<CalculateFFTInPlaceBenchmark>());
-	vec.push_back(std::make_unique<MatrixMultiplicationBenchmark>());
+	vec.push_back(std::make_unique<DynamicMatrixMultiplicationBenchmark>());
+	vec.push_back(std::make_unique<MatrixMultiplication32Benchmark>());
+	vec.push_back(std::make_unique<MatrixInverse4Benchmark>());
 
 	return std::make_unique<BenchmarkGroup>("Math benchmarks", std::move(vec));
 }

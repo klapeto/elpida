@@ -8,15 +8,14 @@ add_executable(elpida-math-benchmarks
         FFTCalculator.cpp
         CalculateFFTInPlaceTask.cpp
         CalculateFFTInPlaceBenchmark.cpp
-        MatrixMultiplicationTask.cpp
-        MatrixMultiplicationTask.hpp
-        StaticMatrix.cpp
-        Matrix.cpp
-        MatrixMultiplicationBenchmark.cpp
+        DynamicMatrixMultiplicationTask.cpp
+        DynamicMatrixMultiplicationBenchmark.cpp
+        MatrixMultiplication32Task.cpp
+        MatrixMultiplication32Benchmark.cpp
+        MatrixInverse4Task.cpp
+        MatrixInverse4Benchmark.cpp
 )
 
-#target_compile_options(elpida-math-benchmarks PRIVATE -O3)
-
-target_link_libraries(elpida-math-benchmarks PRIVATE elpida-core elpida-platform elpida-entry-point)
+target_link_libraries(elpida-math-benchmarks PRIVATE elpida-core elpida-platform elpida-entry-point elpida-math)
 
 install(TARGETS elpida-math-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
