@@ -10,7 +10,12 @@ set(ELPIDA_WEB_BENCHMARKS_SOURCES
         XmlGenerationTask.cpp
         JsonGenerationTask.cpp
         JsonParseBenchmark.cpp
-        JsonParseBenchmark.hpp)
+        Base64.cpp
+        Base64EncodeTask.cpp
+        Base64EncodeBenchmark.cpp
+        Base64DecodeTask.cpp
+        Base64DecodeBenchmark.cpp
+)
 
 add_executable(elpida-web-benchmarks ${ELPIDA_WEB_BENCHMARKS_SOURCES})
 

@@ -14,6 +14,10 @@ add_executable(elpida-math-benchmarks
         MatrixMultiplication32Benchmark.cpp
         MatrixInverse4Task.cpp
         MatrixInverse4Benchmark.cpp
+        Body.cpp
+        NBodySystem.cpp
+        NBodyBenchmark.cpp
+        NBodyTask.cpp
 )
 
 target_link_libraries(elpida-math-benchmarks PRIVATE elpida-core elpida-platform elpida-entry-point elpida-math)

@@ -11,7 +11,7 @@
 #include "DynamicMatrixMultiplicationBenchmark.hpp"
 #include "MatrixMultiplication32Benchmark.hpp"
 #include "MatrixInverse4Benchmark.hpp"
-
+#include "NBodyBenchmark.hpp"
 
 using namespace Elpida;
 
@@ -23,6 +23,7 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	vec.push_back(std::make_unique<DynamicMatrixMultiplicationBenchmark>());
 	vec.push_back(std::make_unique<MatrixMultiplication32Benchmark>());
 	vec.push_back(std::make_unique<MatrixInverse4Benchmark>());
+	vec.push_back(std::make_unique<NBodyBenchmark>());
 
 	return std::make_unique<BenchmarkGroup>("Math benchmarks", std::move(vec));
 }

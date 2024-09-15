@@ -10,6 +10,7 @@
 #include "SqrtBenchmark.hpp"
 #include "CeilBenchmark.hpp"
 #include "FloorBenchmark.hpp"
+#include "RegexBenchmark.hpp"
 
 using namespace Elpida;
 
@@ -25,6 +26,7 @@ ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 	vec.push_back(std::make_unique<SqrtBenchmark>());
 	vec.push_back(std::make_unique<CeilBenchmark>());
 	vec.push_back(std::make_unique<FloorBenchmark>());
+	vec.push_back(std::make_unique<RegexBenchmark>());
 
 	return std::make_unique<BenchmarkGroup>("StdLib Benchmarks", std::move(vec));
 }
