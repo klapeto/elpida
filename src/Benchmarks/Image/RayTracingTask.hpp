@@ -48,9 +48,6 @@ namespace Elpida
 		Size GetOperationsPerformedPerRun() override;
 
 		[[nodiscard]]
-		Duration GetExecutionMinimumDuration() override;
-
-		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
 		Graphics::FrameBuffer<double> _frameBuffer;

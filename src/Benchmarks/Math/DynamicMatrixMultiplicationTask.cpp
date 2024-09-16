@@ -73,9 +73,4 @@ namespace Elpida
 	{
 		return 1;
 	}
-
-	Duration DynamicMatrixMultiplicationTask::GetExecutionMinimumDuration()
-	{
-		return Seconds(5);
-	}
 } // Elpida

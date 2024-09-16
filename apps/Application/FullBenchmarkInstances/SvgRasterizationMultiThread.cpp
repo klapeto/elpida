@@ -13,6 +13,8 @@
 
 namespace Elpida::Application
 {
+	const Score BaseScore = 587.76 * std::kilo::num;
+
 	SvgRasterizationMultiThread::SvgRasterizationMultiThread(const BenchmarkModel& benchmark,
 			const TimingModel& timingModel, const TopologyModel& topologyModel,
 			const MemoryInfoModel& memoryInfoModel,
@@ -42,7 +44,7 @@ namespace Elpida::Application
 				false,
 				ConcurrencyMode::CopyInput);
 
-		Score multiCoreScore = svgRasterizationMulti.GetResult();
+		Score multiCoreScore = svgRasterizationMulti.GetResult() / BaseScore;
 
 		return FullBenchmarkInstanceResult(std::move(svgRasterizationMulti), 0, multiCoreScore);
 	}

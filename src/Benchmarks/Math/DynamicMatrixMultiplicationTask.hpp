@@ -54,7 +54,6 @@ namespace Elpida
 		UniquePtr<Task> DoDuplicate() const override;
 		void DoRun(Iterations iterations) override;
 		Size GetOperationsPerformedPerRun() override;
-		Duration GetExecutionMinimumDuration() override;
 	};
 
 } // Elpida

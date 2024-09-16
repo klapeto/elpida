@@ -60,11 +60,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration SvgParseTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> SvgParseTask::DoDuplicate() const
 	{
 		return std::make_unique<SvgParseTask>();

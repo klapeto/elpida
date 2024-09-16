@@ -11,6 +11,8 @@
 
 namespace Elpida::Application
 {
+	const Score BaseScore = 255.29 * std::kilo::num;
+
 	SvgRasterizationSingleThread::SvgRasterizationSingleThread(const BenchmarkModel& benchmark,
 			const TimingModel& timingModel,
 			const TopologyModel& topologyModel,
@@ -40,7 +42,7 @@ namespace Elpida::Application
 				false,
 				ConcurrencyMode::None);
 
-		auto rasterizationResult = svgRasterizationSingle.GetResult();
+		auto rasterizationResult = svgRasterizationSingle.GetResult() / BaseScore;
 		Score singleCoreScore = rasterizationResult;
 
 		return FullBenchmarkInstanceResult(std::move(svgRasterizationSingle), singleCoreScore, 0);

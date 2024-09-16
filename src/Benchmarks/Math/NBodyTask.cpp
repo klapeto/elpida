@@ -107,11 +107,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration NBodyTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> NBodyTask::DoDuplicate() const
 	{
 		return std::make_unique<NBodyTask>();

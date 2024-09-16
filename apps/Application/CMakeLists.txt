@@ -61,10 +61,6 @@ set(ELPIDA_APPLICATION_SOURCES
         Controllers/FullBenchmarkInstance.cpp
         Controllers/FullBenchmarkInstance.hpp
         Core/BenchmarkScore.hpp
-        FullBenchmarkInstances/SvgRasterizationSingleThread.cpp
-        FullBenchmarkInstances/SvgRasterizationSingleThread.hpp
-        FullBenchmarkInstances/SvgRasterizationMultiThread.cpp
-        FullBenchmarkInstances/SvgRasterizationMultiThread.hpp
         Core/ResultsHTMLReporter.cpp
         Core/ResultsHTMLReporter.hpp
         Core/PathsService.cpp
@@ -79,11 +75,9 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/MemoryBenchmark/MemoryBenchmarkResultModel.hpp
         Controllers/MemoryBenchmarkController.cpp
         Controllers/MemoryBenchmarkController.hpp
-        FullBenchmarkInstances/ParseJsonSingleThread.cpp
-        FullBenchmarkInstances/ParseJsonSingleThread.hpp
-        FullBenchmarkInstances/ParseJsonMultiThread.cpp
-        FullBenchmarkInstances/ParseJsonMultiThread.hpp
 )
+
+file(GLOB ELPIDA_BENCHMARK_INSTANCES FullBenchmarkInstances/*.cpp)
 
 
 if (MSYS OR MINGW OR MSVC)
@@ -100,7 +94,7 @@ if (MSYS OR MINGW OR MSVC)
     )
 endif()
 
-add_library(elpida-application ${ELPIDA_APPLICATION_SOURCES})
+add_library(elpida-application ${ELPIDA_APPLICATION_SOURCES} ${ELPIDA_BENCHMARK_INSTANCES})
 
 if (ELPIDA_WEB_API_KEY)
     add_definitions(-DELPIDA_WEB_API_KEY="${ELPIDA_WEB_API_KEY}")
@@ -138,6 +132,7 @@ install(FILES Assets/custom-report-template.html DESTINATION bin/assets)
 install(FILES Assets/full-report-template.html DESTINATION bin/assets)
 install(FILES Assets/lorem-ipsum.txt DESTINATION bin/assets)
 install(FILES Assets/lorem-ipsum.z DESTINATION bin/assets)
+install(FILES Assets/lorem-ipsum.enc DESTINATION bin/assets)
 install(FILES Assets/Elpida_Background.svg DESTINATION bin/assets)
 install(FILES Assets/Elpida_Icon.svg DESTINATION bin/assets)
 

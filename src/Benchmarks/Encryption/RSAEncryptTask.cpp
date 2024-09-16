@@ -64,11 +64,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration RSAEncryptTask::GetExecutionMinimumDuration()
-	{
-		return Seconds(5);
-	}
-
 	void RSAEncryptTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		const unsigned char* data = publicKeyDer;

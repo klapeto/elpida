@@ -72,9 +72,4 @@ namespace Elpida
 	{
 		return 1;
 	}
-
-	Duration CalculateFFTInPlaceTask::GetExecutionMinimumDuration()
-	{
-		return Seconds(5);
-	}
 } // Elpida

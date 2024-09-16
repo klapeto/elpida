@@ -47,9 +47,6 @@ namespace Elpida
 		Size GetOperationsPerformedPerRun() override;
 
 		[[nodiscard]]
-		Duration GetExecutionMinimumDuration() override;
-
-		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
 		Matrix<double, 32, 32> _matrix;

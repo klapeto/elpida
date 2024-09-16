@@ -1717,11 +1717,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration RegexTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> RegexTask::DoDuplicate() const
 	{
 		return std::make_unique<RegexTask>();

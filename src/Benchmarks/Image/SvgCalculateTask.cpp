@@ -71,11 +71,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration SvgCalculateTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> SvgCalculateTask::DoDuplicate() const
 	{
 		return std::make_unique<SvgCalculateTask>(_scale);

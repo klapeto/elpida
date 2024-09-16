@@ -52,9 +52,4 @@ namespace Elpida
 	{
 		return 1;
 	}
-
-	Duration ParseXmlTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
 } // Elpida

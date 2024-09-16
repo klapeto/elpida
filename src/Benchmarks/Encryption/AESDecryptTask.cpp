@@ -95,9 +95,4 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration AESDecryptTask::GetExecutionMinimumDuration()
-	{
-		return Seconds(5);
-	}
-
 } // Elpida

@@ -47,11 +47,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration ParseJsonTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> ParseJsonTask::DoDuplicate() const
 	{
 		return std::make_unique<ParseJsonTask>();

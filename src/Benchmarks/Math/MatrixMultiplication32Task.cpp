@@ -63,11 +63,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration MatrixMultiplication32Task::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> MatrixMultiplication32Task::DoDuplicate() const
 	{
 		return std::make_unique<MatrixMultiplication32Task>();

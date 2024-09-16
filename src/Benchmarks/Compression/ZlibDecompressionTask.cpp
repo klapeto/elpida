@@ -48,11 +48,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration ZlibDecompressionTask::GetExecutionMinimumDuration()
-	{
-		return Seconds(5);
-	}
-
 	UniquePtr<Task> ZlibDecompressionTask::DoDuplicate() const
 	{
 		return std::make_unique<ZlibDecompressionTask>();

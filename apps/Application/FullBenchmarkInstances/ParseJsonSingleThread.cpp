@@ -11,6 +11,8 @@
 
 namespace Elpida::Application
 {
+	const Score BaseScore = 18.17 * std::mega::num;
+
 	ParseJsonSingleThread::ParseJsonSingleThread(const BenchmarkModel& benchmark, const TimingModel& timingModel,
 			const TopologyModel& topologyModel, const MemoryInfoModel& memoryInfoModel,
 			BenchmarkExecutionService& executionService)
@@ -32,7 +34,7 @@ namespace Elpida::Application
 				false,
 				ConcurrencyMode::None);
 
-		auto rasterizationResult = svgRasterizationSingle.GetResult() / std::mega::num;
+		auto rasterizationResult = svgRasterizationSingle.GetResult() / BaseScore;
 		Score singleCoreScore = rasterizationResult;
 
 		return FullBenchmarkInstanceResult(std::move(svgRasterizationSingle), singleCoreScore, 0);
@@ -45,7 +47,7 @@ namespace Elpida::Application
 
 	std::string ParseJsonSingleThread::GetName() const
 	{
-		return "Json Parsing";
+		return "Json Parsing (Single Thread)";
 	}
 } // Application
 // Elpida

@@ -75,4 +75,9 @@ namespace Elpida
 	{
 
 	}
+
+	Duration MicroTask::GetExecutionMinimumDuration()
+	{
+		return Seconds(3);
+	}
 } // Elpida

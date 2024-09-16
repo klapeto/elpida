@@ -56,11 +56,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration MatrixInverse4Task::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> MatrixInverse4Task::DoDuplicate() const
 	{
 		return std::make_unique<MatrixInverse4Task>();

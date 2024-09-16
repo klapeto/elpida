@@ -15,7 +15,7 @@ namespace Elpida
 		_output.reset();
 		_input = std::move(inputData);
 		_output = MemoryStream(_input->GetAllocator());
-		ZlibCompressor::Compress(_input->GetData(), _input->GetSize(), _output.value());
+		//ZlibCompressor::Compress(_input->GetData(), _input->GetSize(), _output.value());
 	}
 
 	SharedPtr<AbstractTaskData> ZlibCompressionTask::Finalize()
@@ -49,11 +49,6 @@ namespace Elpida
 	Size ZlibCompressionTask::GetOperationsPerformedPerRun()
 	{
 		return 1;
-	}
-
-	Duration ZlibCompressionTask::GetExecutionMinimumDuration()
-	{
-		return Seconds(5);
 	}
 
 	UniquePtr<Task> ZlibCompressionTask::DoDuplicate() const

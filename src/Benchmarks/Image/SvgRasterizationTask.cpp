@@ -77,11 +77,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration SvgRasterizationTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> SvgRasterizationTask::DoDuplicate() const
 	{
 		return std::make_unique<SvgRasterizationTask>(_superSampler.GetSampleCount());

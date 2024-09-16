@@ -11,42 +11,44 @@
 #include "Core/BenchmarkExecutionService.hpp"
 
 namespace Elpida::Application
+{
+	const Score BaseScore = 38.38 * std::mega::num;
+
+	std::string ParseJsonMultiThread::GetName() const
 	{
-		std::string ParseJsonMultiThread::GetName() const
-		{
-			return "Svg parsing (Multi Thread)";
-		}
+		return "Svg parsing (Multi Thread)";
+	}
 
-		std::string ParseJsonMultiThread::GetUuid() const
-		{
-			return "35f22cbc-16e7-4c35-aebf-029dac328e46";
-		}
+	std::string ParseJsonMultiThread::GetUuid() const
+	{
+		return "35f22cbc-16e7-4c35-aebf-029dac328e46";
+	}
 
-		FullBenchmarkInstanceResult ParseJsonMultiThread::Run()
-		{
-			_benchmark.GetConfigurations()[0].SetValue("4096");
+	FullBenchmarkInstanceResult ParseJsonMultiThread::Run()
+	{
+		_benchmark.GetConfigurations()[0].SetValue("4096");
 
-			auto svgRasterizationSingle = _executionService.Execute(
-					_benchmark,
-					{},
-					_timingModel.GetNowOverhead().count(),
-					_timingModel.GetLoopOverhead().count(),
-					false,
-					false,
-					ConcurrencyMode::CopyInput);
+		auto svgRasterizationSingle = _executionService.Execute(
+				_benchmark,
+				{},
+				_timingModel.GetNowOverhead().count(),
+				_timingModel.GetLoopOverhead().count(),
+				false,
+				false,
+				ConcurrencyMode::CopyInput);
 
-			auto rasterizationResult = svgRasterizationSingle.GetResult() / std::mega::num;
-			Score multiThreadScore = rasterizationResult;
+		auto rasterizationResult = svgRasterizationSingle.GetResult() / BaseScore;
+		Score multiThreadScore = rasterizationResult;
 
-			return FullBenchmarkInstanceResult(std::move(svgRasterizationSingle), 0, multiThreadScore);
-		}
+		return FullBenchmarkInstanceResult(std::move(svgRasterizationSingle), 0, multiThreadScore);
+	}
 
-		ParseJsonMultiThread::ParseJsonMultiThread(const BenchmarkModel& benchmark, const TimingModel& timingModel,
-				const TopologyModel& topologyModel, const MemoryInfoModel& memoryInfoModel,
-				BenchmarkExecutionService& executionService)
-				:FullBenchmarkInstance(benchmark, timingModel, topologyModel, memoryInfoModel, executionService)
-		{
+	ParseJsonMultiThread::ParseJsonMultiThread(const BenchmarkModel& benchmark, const TimingModel& timingModel,
+			const TopologyModel& topologyModel, const MemoryInfoModel& memoryInfoModel,
+			BenchmarkExecutionService& executionService)
+			:FullBenchmarkInstance(benchmark, timingModel, topologyModel, memoryInfoModel, executionService)
+	{
 
-		}
-	} // Application
+	}
+} // Application
 // Elpida

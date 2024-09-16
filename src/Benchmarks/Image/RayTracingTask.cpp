@@ -72,11 +72,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration RayTracingTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> RayTracingTask::DoDuplicate() const
 	{
 		return std::make_unique<RayTracingTask>(_size);

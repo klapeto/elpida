@@ -55,11 +55,6 @@ namespace Elpida
 		return 1;
 	}
 
-	Duration Base64EncodeTask::GetExecutionMinimumDuration()
-	{
-		return Elpida::Seconds(5);
-	}
-
 	UniquePtr<Task> Base64EncodeTask::DoDuplicate() const
 	{
 		return std::make_unique<Base64EncodeTask>();
