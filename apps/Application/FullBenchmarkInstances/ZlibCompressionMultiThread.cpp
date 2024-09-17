@@ -40,7 +40,7 @@ namespace Elpida::Application
 
 	FullBenchmarkInstanceResult ZlibCompressionMultiThread::Run()
 	{
-		_benchmark.GetConfigurations()[0].SetValue(OsUtilities::GetExecutableDirectory() / "assets/lorem-ipsum.txt");
+		_benchmark.GetConfigurations()[0].SetValue((OsUtilities::GetExecutableDirectory() / "assets" / "lorem-ipsum.txt").string());
 		_benchmark.GetConfigurations()[1].SetValue("./lorem-ipsum.z");
 
 		auto svgRasterizationSingle = _executionService.Execute(

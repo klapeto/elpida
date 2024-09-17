@@ -5,7 +5,7 @@
 #ifndef ELPIDA_FFTCALCULATOR_HPP
 #define ELPIDA_FFTCALCULATOR_HPP
 
-#include <valarray>
+#include <vector>
 #include <complex>
 
 namespace Elpida

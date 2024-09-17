@@ -40,7 +40,7 @@ namespace Elpida::Application
 
 	FullBenchmarkInstanceResult ZlibDecompressionSingleThread::Run()
 	{
-		_benchmark.GetConfigurations()[0].SetValue(OsUtilities::GetExecutableDirectory() / "assets/lorem-ipsum.z");
+		_benchmark.GetConfigurations()[0].SetValue((OsUtilities::GetExecutableDirectory() / "assets" / "lorem-ipsum.z").string());
 		_benchmark.GetConfigurations()[1].SetValue("./lorem-ipsum.txt");
 
 		auto benchmarkResult = _executionService.Execute(

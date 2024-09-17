@@ -40,7 +40,7 @@ namespace Elpida::Application
 
 	FullBenchmarkInstanceResult AESEncryptionMultiThread::Run()
 	{
-		_benchmark.GetConfigurations()[0].SetValue(OsUtilities::GetExecutableDirectory() / "assets" / "lorem-ipsum.txt");
+		_benchmark.GetConfigurations()[0].SetValue((OsUtilities::GetExecutableDirectory() / "assets" / "lorem-ipsum.txt").string());
 		_benchmark.GetConfigurations()[1].SetValue("ab909b43d4cc43388ed2c98d261b082");
 		_benchmark.GetConfigurations()[2].SetValue("./lorem-ipsum.enc");
 

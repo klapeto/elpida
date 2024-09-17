@@ -113,24 +113,24 @@ namespace Elpida::Application
 							std::make_unique<ParseJsonMultiThread>(benchmark, timingModel, topologyModel,
 									memoryInfoModel, benchmarkExecutionService));
 				}
-//				else if (name == "Zlib compression")
-//				{
-//					_benchmarks.push_back(
-//							std::make_unique<ZlibCompressionSingleThread>(benchmark, timingModel, topologyModel,
-//									memoryInfoModel, benchmarkExecutionService));
-//					_benchmarks.push_back(
-//							std::make_unique<ZlibCompressionMultiThread>(benchmark, timingModel, topologyModel,
-//									memoryInfoModel, benchmarkExecutionService));
-//				}
-//				else if (name == "Zlib decompression")
-//				{
-//					_benchmarks.push_back(
-//							std::make_unique<ZlibDecompressionSingleThread>(benchmark, timingModel, topologyModel,
-//									memoryInfoModel, benchmarkExecutionService));
-//					_benchmarks.push_back(
-//							std::make_unique<ZlibDecompressionMultiThread>(benchmark, timingModel, topologyModel,
-//									memoryInfoModel, benchmarkExecutionService));
-//				}
+				else if (name == "Zlib compression")
+				{
+					_benchmarks.push_back(
+							std::make_unique<ZlibCompressionSingleThread>(benchmark, timingModel, topologyModel,
+									memoryInfoModel, benchmarkExecutionService));
+					_benchmarks.push_back(
+							std::make_unique<ZlibCompressionMultiThread>(benchmark, timingModel, topologyModel,
+									memoryInfoModel, benchmarkExecutionService));
+				}
+				else if (name == "Zlib decompression")
+				{
+					_benchmarks.push_back(
+							std::make_unique<ZlibDecompressionSingleThread>(benchmark, timingModel, topologyModel,
+									memoryInfoModel, benchmarkExecutionService));
+					_benchmarks.push_back(
+							std::make_unique<ZlibDecompressionMultiThread>(benchmark, timingModel, topologyModel,
+									memoryInfoModel, benchmarkExecutionService));
+				}
 				else if (name == "RSA Encryption")
 				{
 					_benchmarks.push_back(
