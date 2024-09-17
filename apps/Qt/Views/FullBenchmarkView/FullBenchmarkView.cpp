@@ -10,20 +10,43 @@ namespace Elpida::Application
 {
 	using Vu = ValueUtilities;
 
+	QString GetDeltaString(Score delta)
+	{
+		return QString::fromStdString((delta >= 0.0 ? "+" : "") + Vu::ToFixed(delta, 2) + "%");
+	}
+
+	Score GetDelta(Score previousScore, Score currentScore)
+	{
+		return (currentScore / previousScore * 100.0) - 100.0;
+	}
+
+	static void
+	SetTreeItemDelta(Score currentScore, Score previousScore,
+			QTreeWidgetItem* treeItem)
+	{
+		if (previousScore == 0.0) return;
+		auto delta = GetDelta(previousScore, currentScore);
+		auto deltaStr = GetDeltaString(delta);
+
+		treeItem->setText(3, deltaStr);
+		treeItem->setForeground(3, QBrush(QColor(delta >= 0.0 ? "green" : "red")));
+	}
+
 	static void
 	SetDelta(QLabel* label, Score currentScore, Score previousScore,
 			QTreeWidgetItem* treeItem = nullptr)
 	{
 		if (previousScore == 0.0) return;
-		auto delta = (currentScore / previousScore * 100.0) - 100.0;
-		auto deltaStr = QString::fromStdString((delta >= 0.0 ? "+" : "") + Vu::ToFixed(delta, 2) + "%");
+		auto delta = GetDelta(previousScore, currentScore);
+
+		auto deltaStr = GetDeltaString(delta);
 		label->setText(deltaStr);
 		label->setStyleSheet(delta >= 0.0 ? "color: green" : "color: red");
 
 		if (treeItem != nullptr)
 		{
-			treeItem->setText(4, deltaStr);
-			treeItem->setForeground(4, QBrush(QColor(delta >= 0.0 ? "green" : "red")));
+			treeItem->setText(3, deltaStr);
+			treeItem->setForeground(3, QBrush(QColor(delta >= 0.0 ? "green" : "red")));
 		}
 	}
 
@@ -95,7 +118,7 @@ namespace Elpida::Application
 			thread->Enqueue([this, &benchmark]()
 			{
 				_ui->lblCurrentBenchmarkValue->setText(QString::fromStdString(benchmark));
-				if (benchmark != "Waiting..." && benchmark != "Uploading...")	//bad but will work for now
+				if (benchmark != "Waiting..." && benchmark != "Uploading...")    //bad but will work for now
 				{
 					UpdateProgress();
 					_currentBenchmarkIndex++;
@@ -141,33 +164,39 @@ namespace Elpida::Application
 		auto item = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
 				QStringList({ totalScore, singleScore, multiScore }));
 
-		if (_previousScores.has_value())
+		if (_previousScore.has_value())
 		{
-			auto& previousResult = *_previousScores;
-			SetDelta(_ui->lblTotalScoreDelta, currentResult.GetTotalScore(), previousResult._totalScore, item);
-			SetDelta(_ui->lblSingleThreadScoreDelta, currentResult.GetSingleThreadScore(), previousResult._singleCoreScore);
+			auto& previousResult = *_previousScore;
+			SetDelta(_ui->lblTotalScoreDelta, currentResult.GetTotalScore(), previousResult.GetTotalScore(), item);
+			SetDelta(_ui->lblSingleThreadScoreDelta, currentResult.GetSingleThreadScore(),
+					previousResult.GetSingleThreadScore());
 			SetDelta(_ui->lblMultiThreadScoreDelta, currentResult.GetMultiThreadScore(),
-					previousResult._multiCoreScore);
+					previousResult.GetMultiThreadScore());
 		}
 
 		_ui->twBenchmarkResults->addTopLevelItem(item);
 
-		for (auto& benchmarkResult : currentResult.GetBenchmarkResults())
+		auto& currentBenchmarkResults = currentResult.GetBenchmarkResults();
+		for (std::size_t i = 0; i < currentBenchmarkResults.size(); ++i)
 		{
+			auto& benchmarkResult = currentBenchmarkResults[i];
 			auto& benchmark = benchmarkResult.GetBenchmark();
 			auto root = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
-					QStringList({ QString::fromStdString(benchmark.GetName()),
-								  QString::fromStdString(
-										  Elpida::ValueUtilities::GetValueScaleStringSI(benchmarkResult.GetResult())
-										  + benchmark.GetResultUnit()) }));
+					QStringList({
+							QString::fromStdString(benchmark.GetName()),
+							QString::fromStdString(
+									Elpida::ValueUtilities::GetValueScaleStringSI(benchmarkResult.GetResult())
+									+ benchmark.GetResultUnit() + (benchmark.GetResultType() == ResultType::Throughput ? "/s" : ""))
+					}));
+			if (_previousScore.has_value())
+			{
+				auto& previousScore = _previousScore.value().GetBenchmarkResults()[i];
+				SetTreeItemDelta(benchmarkResult.GetResult(), previousScore.GetResult(), root);
+			}
 			item->addChild(root);
 		}
 
-		_previousScores = {
-				currentResult.GetTotalScore(),
-				currentResult.GetSingleThreadScore(),
-				currentResult.GetMultiThreadScore(),
-		};
+		_previousScore = currentResult;
 	}
 
 	void FullBenchmarkView::OnResultsCleared()
@@ -182,6 +211,6 @@ namespace Elpida::Application
 
 		_ui->twBenchmarkResults->clear();
 
-		_previousScores.reset();
+		_previousScore.reset();
 	}
 }

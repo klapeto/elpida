@@ -26,7 +26,7 @@
 
 namespace Elpida::Application
 {
-	const Score BaseScore = 11.47 * std::mega::num;
+	const Score BaseScore = 29.9 * std::mega::num;
 
 	std::string ZlibCompressionMultiThread::GetName() const
 	{

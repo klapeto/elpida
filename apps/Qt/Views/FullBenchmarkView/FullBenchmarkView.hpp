@@ -37,11 +37,11 @@ namespace Elpida::Application
 		~FullBenchmarkView() override;
 
 	private:
-		struct PreviousScores {
-			Score _totalScore;
-			Score _singleCoreScore;
-			Score _multiCoreScore;
-		};
+//		struct PreviousScores {
+//			Score _totalScore;
+//			Score _singleCoreScore;
+//			Score _multiCoreScore;
+//		};
 		Ui::FullBenchmarkView* _ui;
 		const FullBenchmarkModel& _model;
 		FullBenchmarkController& _controller;
@@ -50,7 +50,7 @@ namespace Elpida::Application
 		EventSubscription<const CollectionItem<FullBenchmarkResultModel>&> _itemAdded;
 		EventSubscription<const std::string&> _currentBenchmarkChanged;
 		EventSubscription<> _resultsCleared;
-		std::optional<PreviousScores> _previousScores;
+		std::optional<FullBenchmarkResultModel> _previousScore;
 		std::weak_ptr<ThreadQueue> _threadQueue;
 		int _currentBenchmarkIndex;
 		int _maxBenchmarkIndex;
