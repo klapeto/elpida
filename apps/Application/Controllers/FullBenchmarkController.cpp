@@ -16,40 +16,7 @@
 #include "ResultSerializer.hpp"
 #include "DataUploader.hpp"
 
-#include "FullBenchmarkInstances/SvgRasterizationSingleThread.hpp"
-#include "FullBenchmarkInstances/SvgRasterizationMultiThread.hpp"
-#include "FullBenchmarkInstances/ParseJsonSingleThread.hpp"
-#include "FullBenchmarkInstances/ParseJsonMultiThread.hpp"
-#include "FullBenchmarkInstances/ZlibCompressionSingleThread.hpp"
-#include "FullBenchmarkInstances/ZlibCompressionMultiThread.hpp"
-#include "FullBenchmarkInstances/ZlibDecompressionSingleThread.hpp"
-#include "FullBenchmarkInstances/ZlibDecompressionMultiThread.hpp"
-#include "FullBenchmarkInstances/RSADecryptionMultiThread.hpp"
-#include "FullBenchmarkInstances/RSADecryptionSingleThread.hpp"
-#include "FullBenchmarkInstances/RSAEncryptionMultiThread.hpp"
-#include "FullBenchmarkInstances/RSAEncryptionSingleThread.hpp"
-#include "FullBenchmarkInstances/AESDecryptionMultiThread.hpp"
-#include "FullBenchmarkInstances/AESDecryptionSingleThread.hpp"
-#include "FullBenchmarkInstances/AESEncryptionMultiThread.hpp"
-#include "FullBenchmarkInstances/AESEncryptionSingleThread.hpp"
-#include "FullBenchmarkInstances/Base64EncodeMultiThread.hpp"
-#include "FullBenchmarkInstances/Base64EncodeSingleThread.hpp"
-#include "FullBenchmarkInstances/Base64DecodeMultiThread.hpp"
-#include "FullBenchmarkInstances/Base64DecodeSingleThread.hpp"
-#include "FullBenchmarkInstances/FFTMultiThread.hpp"
-#include "FullBenchmarkInstances/FFTSingleThread.hpp"
-#include "FullBenchmarkInstances/MatrixMultiplicationMultiThread.hpp"
-#include "FullBenchmarkInstances/MatrixMultiplicationSingleThread.hpp"
-#include "FullBenchmarkInstances/MatrixInverseMultiThread.hpp"
-#include "FullBenchmarkInstances/MatrixInverseSingleThread.hpp"
-#include "FullBenchmarkInstances/NBodyMultiThread.hpp"
-#include "FullBenchmarkInstances/NBodySingleThread.hpp"
-#include "FullBenchmarkInstances/RayTracingMultiThread.hpp"
-#include "FullBenchmarkInstances/RayTracingSingleThread.hpp"
-#include "FullBenchmarkInstances/RegexMultiThread.hpp"
-#include "FullBenchmarkInstances/RegexSingleThread.hpp"
-#include "FullBenchmarkInstances/XmlParsingMultiThread.hpp"
-#include "FullBenchmarkInstances/XmlParsingSingleThread.hpp"
+#include "FullBenchmarkInstancesLoader.hpp"
 
 #include <sstream>
 #include <fstream>
@@ -90,166 +57,7 @@ namespace Elpida::Application
 			_running(false),
 			_cancelling(false)
 	{
-		for (auto& group : benchmarkGroups)
-		{
-			for (auto& benchmark : group.GetBenchmarks())
-			{
-				auto& name = benchmark.GetName();
-				if (name == "Svg Rasterization")
-				{
-					_benchmarks.push_back(
-							std::make_unique<SvgRasterizationSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<SvgRasterizationMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Json Parsing")
-				{
-					_benchmarks.push_back(
-							std::make_unique<ParseJsonSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<ParseJsonMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Zlib compression")
-				{
-					_benchmarks.push_back(
-							std::make_unique<ZlibCompressionSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<ZlibCompressionMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Zlib decompression")
-				{
-					_benchmarks.push_back(
-							std::make_unique<ZlibDecompressionSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<ZlibDecompressionMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "RSA Encryption")
-				{
-					_benchmarks.push_back(
-							std::make_unique<RSAEncryptionSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<RSAEncryptionMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "RSA Decryption")
-				{
-					_benchmarks.push_back(
-							std::make_unique<RSADecryptionSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<RSADecryptionMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "AES Encryption")
-				{
-					_benchmarks.push_back(
-							std::make_unique<AESEncryptionSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<AESEncryptionMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "AES Decryption")
-				{
-					_benchmarks.push_back(
-							std::make_unique<AESDecryptionSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<AESDecryptionMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Base64 Encode")
-				{
-					_benchmarks.push_back(
-							std::make_unique<Base64EncodeSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<Base64EncodeMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Base64 Decode")
-				{
-					_benchmarks.push_back(
-							std::make_unique<Base64DecodeSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<Base64DecodeMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "FFT calculation in place")
-				{
-					_benchmarks.push_back(
-							std::make_unique<FFTSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<FFTMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Matrix multiplication (32x32)")
-				{
-					_benchmarks.push_back(
-							std::make_unique<MatrixMultiplicationSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<MatrixMultiplicationMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Matrix inverse (4x4)")
-				{
-					_benchmarks.push_back(
-							std::make_unique<MatrixInverseSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<MatrixInverseMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "NBody Simulation")
-				{
-					_benchmarks.push_back(
-							std::make_unique<NBodySingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<NBodyMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "3D Ray Tracing")
-				{
-					_benchmarks.push_back(
-							std::make_unique<RayTracingSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<RayTracingMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "Regex")
-				{
-					_benchmarks.push_back(
-							std::make_unique<RegexSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<RegexMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-				else if (name == "XML Parsing")
-				{
-					_benchmarks.push_back(
-							std::make_unique<XmlParsingSingleThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-					_benchmarks.push_back(
-							std::make_unique<XmlParsingMultiThread>(benchmark, timingModel, topologyModel,
-									memoryInfoModel, benchmarkExecutionService));
-				}
-			}
-		}
+		_benchmarks = FullBenchmarkInstancesLoader::Load(benchmarkGroups, timingModel, topologyModel, memoryInfoModel, benchmarkExecutionService);
 
 		if (_benchmarks.empty())
 		{
@@ -274,6 +82,7 @@ namespace Elpida::Application
 		_model.SetTotalBenchmarks(_benchmarks.size() * _runConfigurationModel.GetIterationsToRun());
 		_runnerThread = std::thread([this]
 		{
+			auto start = Timer::now();
 			_model.SetRunning(true);
 			std::vector<FullBenchmarkResultModel> thisResults;
 			thisResults.reserve(_runConfigurationModel.GetIterationsToRun());
@@ -291,6 +100,7 @@ namespace Elpida::Application
 
 						auto result = benchmark->Run();
 						result.GetBenchmarkResult().SetUuid(benchmark->GetUuid());
+						result.GetBenchmarkResult().SetInstanceName(benchmark->GetName());
 						singleCoreScore += result.GetSingleCoreScore();
 						multiCoreScore += result.GetMultiThreadScore();
 						benchmarkResults.push_back(std::move(result.GetBenchmarkResult()));
@@ -330,7 +140,8 @@ namespace Elpida::Application
 				}
 			}
 
-			PostHandleResults(thisResults);
+			auto end = Timer::now();
+			PostHandleResults(thisResults, end - start);
 
 			_model.SetRunning(false);
 			_running.store(false, std::memory_order_release);
@@ -342,7 +153,7 @@ namespace Elpida::Application
 		return std::pow(singleCoreScore, SingleCoreWeight) + std::pow(multiCoreScore, MultiCoreWeight);
 	}
 
-	void FullBenchmarkController::PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults) const
+	void FullBenchmarkController::PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const
 	{
 		if (!thisResults.empty())
 		{
@@ -350,7 +161,7 @@ namespace Elpida::Application
 			{
 				try
 				{
-					GenerateHtmlReport(thisResults);
+					GenerateHtmlReport(thisResults, duration);
 				}
 				catch (const std::exception& ex)
 				{
@@ -376,7 +187,7 @@ namespace Elpida::Application
 		}
 	}
 
-	void FullBenchmarkController::GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults) const
+	void FullBenchmarkController::GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const
 	{
 		try
 		{
@@ -388,7 +199,7 @@ namespace Elpida::Application
 
 			auto path = _pathsService.GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
 
-			_resultsHTMLReporter.WriteFullBenchmarkReport(thisResults, path);
+			_resultsHTMLReporter.WriteFullBenchmarkReport(thisResults, duration, path);
 
 			_desktopService.OpenFile(path);
 		}

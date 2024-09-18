@@ -16,6 +16,8 @@ namespace Elpida::Application
 	class BenchmarkStatisticsService;
 	class PathsService;
 	class FullBenchmarkResultModel;
+	class CpuInfoModel;
+	class OsInfoModel;
 
 	class ResultsHTMLReporter
 	{
@@ -26,14 +28,21 @@ namespace Elpida::Application
 				const std::filesystem::path& outputFile) const;
 
 		void WriteFullBenchmarkReport(const std::vector<FullBenchmarkResultModel>& results,
+				Duration totalRunDuration,
 				const std::filesystem::path& outputFile) const;
 
 		explicit ResultsHTMLReporter(const BenchmarkRunConfigurationModel& runConfigurationModel,
-				const BenchmarkStatisticsService& statisticsService, const PathsService& pathsService);
+				const CpuInfoModel& cpuInfoModel,
+				const OsInfoModel& osInfoModel,
+				const BenchmarkStatisticsService& statisticsService,
+				const PathsService& pathsService);
 	private:
 		const BenchmarkRunConfigurationModel& _runConfigurationModel;
 		const BenchmarkStatisticsService& _statisticsService;
 		const PathsService& _pathsService;
+		std::string _osInfo;
+		std::string _cpuInfo;
+		std::string _year;
 	};
 
 } // Application

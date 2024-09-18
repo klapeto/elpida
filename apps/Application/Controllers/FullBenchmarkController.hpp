@@ -67,8 +67,8 @@ namespace Elpida::Application
 		std::atomic<bool> _cancelling;
 
 		std::vector<std::unique_ptr<FullBenchmarkInstance>> _benchmarks;
-		void GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults) const;
-		void PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults) const;
+		void GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const;
+		void PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const;
 		static Score CalculateTotalScore(Score singleCoreScore, Score multiCoreScore) ;
 	};
 

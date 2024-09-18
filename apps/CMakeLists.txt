@@ -1,4 +1,5 @@
 add_subdirectory(Shared)
 add_subdirectory(Application)
 add_subdirectory(InfoDumper)
+add_subdirectory(BackEndInfoDumper)
 add_subdirectory(Qt)

@@ -268,7 +268,7 @@ int main(int argc, char* argv[])
 		QtPathsService pathsService;
 		QtDesktopService desktopService;
 
-		ResultsHTMLReporter htmlReporter(benchmarkRunConfigurationModel, benchmarkStatisticsService, pathsService);
+		ResultsHTMLReporter htmlReporter(benchmarkRunConfigurationModel, builderJson.GetCpuInfoModel(), builderJson.GetOsInfoModel(), benchmarkStatisticsService, pathsService);
 
 		CustomBenchmarkModel customBenchmarkModel(benchmarkGroups);
 		CustomBenchmarkController

@@ -75,6 +75,8 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/MemoryBenchmark/MemoryBenchmarkResultModel.hpp
         Controllers/MemoryBenchmarkController.cpp
         Controllers/MemoryBenchmarkController.hpp
+        FullBenchmarkInstancesLoader.cpp
+        FullBenchmarkInstancesLoader.hpp
 )
 
 file(GLOB ELPIDA_BENCHMARK_INSTANCES FullBenchmarkInstances/*.cpp)

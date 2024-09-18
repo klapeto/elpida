@@ -35,6 +35,16 @@ namespace Elpida::Application
 			_uuid = uuid;
 		}
 
+		const std::string& GetInstanceName() const
+		{
+			return _instanceName;
+		}
+
+		void SetInstanceName(const std::string& instanceName)
+		{
+			_instanceName = instanceName;
+		}
+
 		const BenchmarkModel& GetBenchmark() const
 		{
 			return *_benchmark;
@@ -61,6 +71,7 @@ namespace Elpida::Application
 		~BenchmarkResultModel() override = default;
 	private:
 		std::unordered_map<std::string, std::string> _configuration;
+		std::string _instanceName;
 		std::string _uuid;
 		double _result;
 		const BenchmarkModel* _benchmark;

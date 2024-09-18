@@ -35,7 +35,6 @@
         }
 
         h3 {
-            border-bottom: 1px gray solid;
             margin-top: 0;
         }
 
@@ -45,8 +44,16 @@
             align-items: center;
         }
 
+        caption {
+            font-weight: bold;
+        }
+
         .positive {
             color: green;
+        }
+
+        .neutral {
+            color: #916d02;
         }
 
         .negative {
@@ -85,8 +92,17 @@
 <section>
     <div class="info-container">
         <section>
+            <h3>CPU information</h3>
+            <!--CPU-->
+        </section>
+
+        <section>
+            <h3>Os information</h3>
+            <!--OS-->
+        </section>
+        <section>
             <h3>Execution information</h3>
-            <!--INFO-->
+            <!--EXECUTION-->
         </section>
 
         <section>
@@ -99,12 +115,25 @@
 </section>
 
 
+<div class="info-container">
+    <section>
+        <h3>Results Summary</h3>
+        <!--RESULTS-->
+    </section>
+
+    <section>
+        <h3>Benchmark statistics</h3>
+        <!--BENCHMARK_STATISTICS-->
+    </section>
+</div>
+
+
 <section>
-    <h3>Results Summary</h3>
-    <!--RESULTS-->
+    <h3>All benchmark results</h3>
+    <!--ALL_BENCHMARK_RESULTS-->
 </section>
 
 <hr/>
-<footer>Elpida Copyright (C) 2024 Ioannis Panagiotopoulos</footer>
+<footer>Elpida Copyright (C) <!--YEAR--> Ioannis Panagiotopoulos</footer>
 </body>
 </html>

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <ctime>
+#include <chrono>
 
 #include "BenchmarkStatisticsService.hpp"
 #include "PathsService.hpp"
@@ -14,14 +15,65 @@
 #include "Models/Benchmark/TaskModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 #include "Models/Full/FullBenchmarkResultModel.hpp"
+#include "Models/SystemInfo/CpuInfoModel.hpp"
+#include "Models/SystemInfo/OsInfoModel.hpp"
 
 namespace Elpida::Application
 {
+	static const char* GetDeviationClass(double deviationPercent)
+	{
+		if (deviationPercent > 1.0) return "negative";
+		if (deviationPercent > 0.5) return "neutral";
+		return "positive";
+	}
+
+	static std::string GenerateCpuInfo(const CpuInfoModel& cpuInfoModel)
+	{
+		std::ostringstream stream;
+
+		stream << "<table>";
+
+		stream << "<tr><td>Architecture</td><td><b>" << cpuInfoModel.GetArchitecture() << "</b></td></tr>";
+		stream << "<tr><td>Vendor</td><td><b>" << cpuInfoModel.GetVendorName() << "</b></td></tr>";
+		stream << "<tr><td>Model</td><td><b>" << cpuInfoModel.GetModelName() << "</b></td></tr>";
+
+		stream << "</table>";
+
+		return stream.str();
+	}
+
+	static std::string GenerateOsInfo(const OsInfoModel& osInfoModel)
+	{
+		std::ostringstream stream;
+
+		stream << "<table>";
+
+		stream << "<tr><td>Category</td><td><b>" << osInfoModel.GetCategory() << "</b></td></tr>";
+		stream << "<tr><td>Name</td><td><b>" << osInfoModel.GetName() << "</b></td></tr>";
+		stream << "<tr><td>Version</td><td><b>" << osInfoModel.GetVersion() << "</b></td></tr>";
+
+		stream << "</table>";
+
+		return stream.str();
+	}
+
+	static std::string GetYear()
+	{
+		auto time = std::time(nullptr);
+		return std::to_string(std::localtime(&time)->tm_year + 1900);
+	}
+
 	ResultsHTMLReporter::ResultsHTMLReporter(const BenchmarkRunConfigurationModel& runConfigurationModel,
-			const BenchmarkStatisticsService& statisticsService, const PathsService& pathsService)
+			const CpuInfoModel& cpuInfoModel,
+			const OsInfoModel& osInfoModel,
+			const BenchmarkStatisticsService& statisticsService,
+			const PathsService& pathsService)
 			:_runConfigurationModel(runConfigurationModel), _statisticsService(statisticsService),
 			 _pathsService(pathsService)
 	{
+		_cpuInfo = GenerateCpuInfo(cpuInfoModel);
+		_osInfo = GenerateOsInfo(osInfoModel);
+		_year = GetYear();
 	}
 
 	static std::string GetDateString()
@@ -68,13 +120,20 @@ namespace Elpida::Application
 		return stream.str();
 	}
 
-	static std::string GenerateFullInfo()
+	static std::string GenerateExecutionInfo(Duration duration)
 	{
 		std::ostringstream stream;
 
 		stream << "<table>";
 
-		stream << "<tr><td>Date</td><td>" << GetDateString() << "</td></tr>";
+		auto hours = std::chrono::duration_cast<std::chrono::hours>(duration);
+		auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration) - hours;
+		auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration) - hours - minutes;
+
+		stream << "<tr><td>Date generated</td><td>" << GetDateString() << "</td></tr>";
+		stream << "<tr><td>Run duration</td><td>"
+			   << hours.count() << "h " << minutes.count() << "m " << seconds.count() << "s"
+			   << "</td></tr>";
 
 		stream << "</table>";
 
@@ -96,11 +155,24 @@ namespace Elpida::Application
 		return stream.str();
 	}
 
+	static std::string GetDeviationDelta(double value, double base)
+	{
+		std::ostringstream stream;
+
+		auto percent = (value / base) * 100.0;
+
+		stream << " <span class='" << GetDeviationClass(percent) << "'>(";
+		stream << ValueUtilities::ToFixed(percent, 2);
+		stream << "%)</span>";
+		return stream.str();
+	}
+
 	static std::string GetScoreDelta(double value, double base, bool lessIsBetter)
 	{
 		std::ostringstream stream;
 
-		auto isBetter = [&](){ return lessIsBetter ? value > base : value < base;};
+		auto isBetter = [&]()
+		{ return lessIsBetter ? value > base : value < base; };
 
 		stream << " <span";
 		if (isBetter())
@@ -120,7 +192,8 @@ namespace Elpida::Application
 	static std::string GenerateStatistics(const std::vector<BenchmarkResultModel>& results,
 			const BenchmarkStatisticsService& statisticsService)
 	{
-		auto statistics = statisticsService.CalculateStatistics(results, [](auto& r){return r.GetResult();});
+		auto statistics = statisticsService.CalculateStatistics(results, [](auto& r)
+		{ return r.GetResult(); });
 
 		auto& scoreUnit = results.front().GetBenchmark().GetResultUnit();
 
@@ -132,17 +205,121 @@ namespace Elpida::Application
 
 		stream << "<tr><td>Sample size</td><td>" << ValueUtilities::GetValueScaleStringSI(statistics.sampleSize)
 			   << "</td></tr>";
-		stream << "<tr><td>Mean</td><td>" << GetScoreValue(statistics.mean, scoreUnit) << "</td></tr>";
+		stream << "<tr><td>Mean</td><td><b>" << GetScoreValue(statistics.mean, scoreUnit) << "</b></td></tr>";
 		stream << "<tr><td>Max</td><td>" << GetScoreValue(statistics.max, scoreUnit)
 			   << GetScoreDelta(statistics.max, statistics.mean, lessIsBetter) << "</td></tr>";
 		stream << "<tr><td>Min</td><td>" << GetScoreValue(statistics.min, scoreUnit)
 			   << GetScoreDelta(statistics.min, statistics.mean, lessIsBetter) << "</td></tr>";
 		stream << "<tr><td>Std Dev</td><td>" << GetScoreValue(statistics.standardDeviation, scoreUnit)
-			   << GetNormalDelta(statistics.standardDeviation, statistics.mean) << "</td></tr>";
+			   << GetDeviationDelta(statistics.standardDeviation, statistics.mean) << "</td></tr>";
 		stream << "<tr><td>Margin of error</td><td>" << GetScoreValue(statistics.marginOfError, scoreUnit)
 			   << GetNormalDelta(statistics.marginOfError, statistics.mean) << "</td></tr>";
 
 		stream << "</tbody></table>";
+
+		return stream.str();
+	}
+
+	static std::string GenerateAllBenchmarkResults(const std::vector<FullBenchmarkResultModel>& results)
+	{
+		std::ostringstream stream;
+
+		for (std::size_t i = 0; i < results.size(); ++i)
+		{
+			auto& result = results[i];
+			stream << "<h3>Iteration #" << i + 1
+				   << " Single: " << ValueUtilities::ToFixed(result.GetSingleThreadScore(), 2)
+				   << " Multi: " << ValueUtilities::ToFixed(result.GetMultiThreadScore(), 2)
+				   << " Total: " << ValueUtilities::ToFixed(result.GetTotalScore(), 2)
+				   << "</h3>";
+
+			stream << "<table><thead><tr><th>Name</th><th>Score</th><th>Delta</th></tr></thead>";
+			stream << "<tbody>";
+
+			auto& benchmarkResults = result.GetBenchmarkResults();
+			for (std::size_t j = 0; j < benchmarkResults.size(); ++j)
+			{
+				auto& benchmarkResult = benchmarkResults[j];
+				auto& benchmark = benchmarkResult.GetBenchmark();
+				stream << "<tr>"
+					   << "<td>" << benchmarkResult.GetInstanceName() << "</td>"
+					   << "<td>" << GetScoreValue(benchmarkResult.GetResult(), benchmark.GetResultUnit()) << "</td>";
+
+				if (i > 0)
+				{
+					auto& previousResult = results[i - 1].GetBenchmarkResults()[j];
+					stream << "<td>"
+						   << GetScoreDelta(benchmarkResult.GetResult(), previousResult.GetResult(),
+								   benchmark.GetResultType() != ResultType::Throughput)
+						   << "</td>";
+				}
+				else
+				{
+					stream << "<td></td>";
+				}
+
+				stream << "</tr>";
+			}
+
+			stream << "</tbody></table>";
+
+			if (i + 1 < results.size())
+			{
+				stream << "<hr>";
+			}
+		}
+
+		return stream.str();
+	}
+
+	static std::string GenerateBenchmarkStatistics(const std::vector<FullBenchmarkResultModel>& results,
+			const BenchmarkStatisticsService& statisticsService)
+	{
+
+		std::ostringstream stream;
+
+		stream << "<table>"
+				  "<thead>"
+				  "<tr>"
+				  "<th>Name</th>"
+				  "<th>Mean</th>"
+				  "<th>Max</th>"
+				  "<th>Min</th>"
+				  "<th>Std Dev</th>"
+				  "<th>Margin of error</th>"
+				  "</tr>"
+				  "</thead>";
+
+		if (!results.empty())
+		{
+			auto totalBenchmarks = results.front().GetBenchmarkResults().size();
+
+			for (std::size_t i = 0; i < totalBenchmarks; ++i)
+			{
+				auto statistics = statisticsService.CalculateStatistics(results,
+						[i](auto& r)
+						{ return r.GetBenchmarkResults()[i].GetResult(); });
+
+				auto& benchmarkResult = results.front().GetBenchmarkResults()[i];
+				auto& benchmark = benchmarkResult.GetBenchmark();
+
+
+				stream << "<tr>"
+					   << "<td>" << benchmarkResult.GetInstanceName() << "</td>"
+					   << "<td><b>" << GetScoreValue(statistics.mean, benchmark.GetResultUnit()) << "</b></td>"
+					   << "<td>" << GetScoreValue(statistics.max, benchmark.GetResultUnit()) << "</td>"
+					   << "<td>" << GetScoreValue(statistics.min, benchmark.GetResultUnit()) << "</td>"
+					   << "<td>" << GetScoreValue(statistics.standardDeviation, benchmark.GetResultUnit())
+					   << GetDeviationDelta(statistics.standardDeviation, statistics.mean) << "</span>"
+					   << "</td>"
+					   << "<td>" << GetScoreValue(statistics.marginOfError, benchmark.GetResultUnit())
+					   << GetNormalDelta(statistics.marginOfError, statistics.mean) << "</td>"
+					   << "</tr>";
+			}
+		}
+
+
+		stream << "</table>";
 
 		return stream.str();
 	}
@@ -186,7 +363,8 @@ namespace Elpida::Application
 
 			if (previousScore > -1.0)
 			{
-				stream << GetScoreDelta(result.GetResult(), previousScore, result.GetBenchmark().GetResultType() != ResultType::Throughput);
+				stream << GetScoreDelta(result.GetResult(), previousScore,
+						result.GetBenchmark().GetResultType() != ResultType::Throughput);
 			}
 
 			stream << "</td></tr>";
@@ -199,22 +377,24 @@ namespace Elpida::Application
 	}
 
 	template<typename TCallable>
-	static std::string GenerateFullStatistic(const std::vector<FullBenchmarkResultModel>& results, const std::string& name, const BenchmarkStatisticsService& statisticsService, TCallable getter)
+	static std::string GenerateFullStatistic(const std::vector<FullBenchmarkResultModel>& results,
+			const std::string& name, const BenchmarkStatisticsService& statisticsService, TCallable getter)
 	{
 		auto statistics = statisticsService.CalculateStatistics(results, getter);
 		std::ostringstream stream;
 
 		stream << "<table><caption>";
 		stream << name;
-		stream << "</caption><tbody><tr><td>Sample size</td><td>" << ValueUtilities::GetValueScaleStringSI(statistics.sampleSize)
+		stream << "</caption><tbody><tr><td>Sample size</td><td>"
+			   << ValueUtilities::GetValueScaleStringSI(statistics.sampleSize)
 			   << "</td></tr>";
-		stream << "<tr><td>Mean</td><td>" << GetScoreValue(statistics.mean, "") << "</td></tr>";
+		stream << "<tr><td>Mean</td><td><b>" << GetScoreValue(statistics.mean, "") << "</b></td></tr>";
 		stream << "<tr><td>Max</td><td>" << GetScoreValue(statistics.max, "")
 			   << GetScoreDelta(statistics.max, statistics.mean, false) << "</td></tr>";
 		stream << "<tr><td>Min</td><td>" << GetScoreValue(statistics.min, "")
 			   << GetScoreDelta(statistics.min, statistics.mean, false) << "</td></tr>";
 		stream << "<tr><td>Std Dev</td><td>" << GetScoreValue(statistics.standardDeviation, "")
-			   << GetNormalDelta(statistics.standardDeviation, statistics.mean) << "</td></tr>";
+			   << GetDeviationDelta(statistics.standardDeviation, statistics.mean) << "</td></tr>";
 		stream << "<tr><td>Margin of error</td><td>" << GetScoreValue(statistics.marginOfError, "")
 			   << GetNormalDelta(statistics.marginOfError, statistics.mean) << "</td></tr>";
 
@@ -223,12 +403,17 @@ namespace Elpida::Application
 		return stream.str();
 	}
 
-	static std::string GenerateFullStatistics(const std::vector<FullBenchmarkResultModel>& results, const BenchmarkStatisticsService& statisticsService)
+	static std::string GenerateFullStatistics(const std::vector<FullBenchmarkResultModel>& results,
+			const BenchmarkStatisticsService& statisticsService)
 	{
 		std::ostringstream stream;
 
-		stream << GenerateFullStatistic(results, "Single core", statisticsService, [](auto& r){return r.GetSingleThreadScore();});
-		stream << GenerateFullStatistic(results, "Multi core", statisticsService, [](auto& r){return r.GetMultiThreadScore();});
+		stream << GenerateFullStatistic(results, "Single core", statisticsService, [](auto& r)
+		{ return r.GetSingleThreadScore(); });
+		stream << GenerateFullStatistic(results, "Multi core", statisticsService, [](auto& r)
+		{ return r.GetMultiThreadScore(); });
+		stream << GenerateFullStatistic(results, "Total core", statisticsService, [](auto& r)
+		{ return r.GetTotalScore(); });
 
 		return stream.str();
 	}
@@ -238,7 +423,8 @@ namespace Elpida::Application
 		if (results.empty()) return "";
 		std::ostringstream stream;
 
-		stream << "<table><thead><tr><th>Iteration</th><th>Single core score</th><th>Multi core score</th><th>Memory score</th><th>Total score</th></tr></thead>";
+		stream
+				<< "<table><thead><tr><th>Iteration</th><th>Single core score</th><th>Multi core score</th><th>Total score</th></tr></thead>";
 
 		Score previousSingleScore = -1.0;
 		Score previousMultiScore = -1.0;
@@ -251,11 +437,12 @@ namespace Elpida::Application
 			{
 				stream << "<tr>"
 					   << "<td>" << i + 1 << "</td>"
-					   << "<td>" << GetScoreValue(result.GetSingleThreadScore(), "") << GetScoreDelta(
-						result.GetSingleThreadScore(), previousSingleScore, false) << "</td>"
-					   << "<td>" << GetScoreValue(result.GetMultiThreadScore(), "") << GetScoreDelta(
-						result.GetMultiThreadScore(), previousMultiScore, false) << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetTotalScore(), "")<< GetScoreDelta(result.GetTotalScore(), previousTotalScore, false) << "</td></tr>";
+					   << "<td>" << GetScoreValue(result.GetSingleThreadScore(), "")
+					   << GetScoreDelta(result.GetSingleThreadScore(), previousSingleScore, false) << "</td>"
+					   << "<td>" << GetScoreValue(result.GetMultiThreadScore(), "")
+					   << GetScoreDelta(result.GetMultiThreadScore(), previousMultiScore, false) << "</td>"
+					   << "<td>" << GetScoreValue(result.GetTotalScore(), "")
+					   << GetScoreDelta(result.GetTotalScore(), previousTotalScore, false) << "</td></tr>";
 			}
 			else
 			{
@@ -263,7 +450,7 @@ namespace Elpida::Application
 					   << "<td>" << i + 1 << "</td>"
 					   << "<td>" << GetScoreValue(result.GetSingleThreadScore(), "") << "</td>"
 					   << "<td>" << GetScoreValue(result.GetMultiThreadScore(), "") << "</td>"
-					   << "<td>"<< GetScoreValue(result.GetTotalScore(), "") << "</td></tr>";
+					   << "<td>" << GetScoreValue(result.GetTotalScore(), "") << "</td></tr>";
 			}
 
 			previousSingleScore = result.GetSingleThreadScore();
@@ -363,6 +550,14 @@ namespace Elpida::Application
 
 		templateData.insert(index, GenerateResults(results));
 
+		index = templateData.find("<!--RESULTS-->");
+		if (index == std::string::npos)
+		{
+			throw ElpidaException("Invalid HTML template. Missing '<!--RESULTS-->'");
+		}
+
+		templateData.insert(index, GenerateResults(results));
+
 		std::ofstream outFile(outputFile);
 		if (!outFile)
 		{
@@ -373,6 +568,7 @@ namespace Elpida::Application
 	}
 
 	void ResultsHTMLReporter::WriteFullBenchmarkReport(const std::vector<FullBenchmarkResultModel>& results,
+			Duration totalRunDuration,
 			const std::filesystem::path& outputFile) const
 	{
 		auto templateData = GetTemplateData("full-report-template.html", _pathsService);
@@ -380,13 +576,29 @@ namespace Elpida::Application
 		directory.remove_filename();
 		create_directories(directory);
 
-		auto index = templateData.find("<!--INFO-->");
+		auto index = templateData.find("<!--EXECUTION-->");
 		if (index == std::string::npos)
 		{
 			throw ElpidaException("Invalid HTML template. Missing '<!--INFO-->'");
 		}
 
-		templateData.insert(index, GenerateFullInfo());
+		templateData.insert(index, GenerateExecutionInfo(totalRunDuration));
+
+		index = templateData.find("<!--CPU-->");
+		if (index == std::string::npos)
+		{
+			throw ElpidaException("Invalid HTML template. Missing '<!--CPU-->'");
+		}
+
+		templateData.insert(index, _cpuInfo);
+
+		index = templateData.find("<!--OS-->");
+		if (index == std::string::npos)
+		{
+			throw ElpidaException("Invalid HTML template. Missing '<!--OS-->'");
+		}
+
+		templateData.insert(index, _osInfo);
 
 		index = templateData.find("<!--STATISTICS-->");
 		if (index == std::string::npos)
@@ -403,6 +615,32 @@ namespace Elpida::Application
 		}
 
 		templateData.insert(index, GenerateFullResults(results));
+
+		index = templateData.find("<!--BENCHMARK_STATISTICS-->");
+		if (index == std::string::npos)
+		{
+			throw ElpidaException("Invalid HTML template. Missing '<!--BENCHMARK_STATISTICS-->'");
+		}
+
+		templateData.insert(index, GenerateBenchmarkStatistics(results, _statisticsService));
+
+
+		index = templateData.find("<!--ALL_BENCHMARK_RESULTS-->");
+		if (index == std::string::npos)
+		{
+			throw ElpidaException("Invalid HTML template. Missing '<!--ALL_BENCHMARK_RESULTS-->'");
+		}
+
+		templateData.insert(index, GenerateAllBenchmarkResults(results));
+
+
+		index = templateData.find("<!--YEAR-->");
+		if (index == std::string::npos)
+		{
+			throw ElpidaException("Invalid HTML template. Missing '<!--YEAR-->'");
+		}
+
+		templateData.insert(index, _year);
 
 		std::ofstream outFile(outputFile);
 		if (!outFile)

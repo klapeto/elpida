@@ -43,6 +43,12 @@ namespace Elpida::Application
 		[[nodiscard]]
 		virtual FullBenchmarkInstanceResult Run() = 0;
 
+		[[nodiscard]]
+		const BenchmarkModel& GetBenchmark() const
+		{
+			return _benchmark;
+		}
+
 		virtual ~FullBenchmarkInstance() = default;
 
 	protected:
