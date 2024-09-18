@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 #include "Models/Benchmark/BenchmarkResultModel.hpp"
 
@@ -77,17 +78,20 @@ namespace Elpida::Application
 				j <<= 1;
 			}
 		}
+
 	public:
 
 		template<typename T, typename TCallable>
 		BenchmarkStatistics CalculateStatistics(const std::vector<T>& results, TCallable getter) const
 		{
+			if (results.empty()) return { 0, 0, 0, 0, 0, 0 };
+
 			double mean = 0.0;
 			double max = std::numeric_limits<double>::min();
 			double min = std::numeric_limits<double>::max();
 			size_t n = results.size();
 
-			for (auto& x: results)
+			for (auto& x : results)
 			{
 				auto value = getter(x);
 				mean += value;
@@ -97,12 +101,15 @@ namespace Elpida::Application
 			mean /= n;
 
 			double deviation = 0.0;
-			for (auto& x : results)
+			if (n > 1)
 			{
-				deviation += std::pow(getter(x) - mean, 2.0);
-			}
+				for (auto& x : results)
+				{
+					deviation += std::pow(getter(x) - mean, 2.0);
+				}
 
-			deviation = std::sqrt(deviation / n);
+				deviation = std::sqrt(deviation / (n - 1));
+			}
 
 			return {
 					n,
@@ -113,6 +120,7 @@ namespace Elpida::Application
 					deviation
 			};
 		}
+
 		BenchmarkStatisticsService() = default;
 	};
 
