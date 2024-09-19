@@ -168,11 +168,13 @@ int main(int argC, char** argV)
 		ModelBuilderJson builderJson(GetJsonWithOnlyBenchmarks(benchmarkPath).dump());
 
 		BenchmarkExecutionService service;
+		BenchmarkRunConfigurationModel runConfigurationModel;
 
 		auto instances = FullBenchmarkInstancesLoader::Load(builderJson.GetBenchmarkGroups(),
 				builderJson.GetTimingModel(),
 				builderJson.GetTopologyInfoModel(),
 				builderJson.GetMemoryInfoModel(),
+				runConfigurationModel,
 				service);
 
 		json root = json::array();

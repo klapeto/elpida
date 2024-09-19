@@ -31,6 +31,7 @@ namespace Elpida::Application
 	class TimingModel;
 	class TopologyModel;
 	class MemoryInfoModel;
+	class BenchmarkRunConfigurationModel;
 	class BenchmarkExecutionService;
 
 	class FullBenchmarkInstancesLoader
@@ -41,6 +42,7 @@ namespace Elpida::Application
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
 				const MemoryInfoModel& memoryInfoModel,
+				const BenchmarkRunConfigurationModel& runConfigurationModel,
 				BenchmarkExecutionService& benchmarkExecutionService);
 	};
 

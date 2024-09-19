@@ -212,7 +212,7 @@ int main(int argC, char** argV)
 									  : UniquePtr<AllocatorFactory>(new DefaultAllocatorFactory()),
 				environmentInfo,
 				helper.GetConcurrencyMode(),
-				helper.GetPinThreads());
+				helper.GetPinThreads(), Seconds(helper.GetMicroTaskDuration()));
 
 		auto result = benchmark->Run(context);
 

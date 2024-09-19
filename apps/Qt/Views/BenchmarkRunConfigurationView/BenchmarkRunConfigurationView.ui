@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>305</width>
-    <height>219</height>
+    <height>247</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,13 +21,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="lblRun">
-     <property name="text">
-      <string>Run it </string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="1">
     <widget class="QSpinBox" name="spnTimes">
      <property name="minimum">
@@ -38,37 +31,29 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="3">
-    <widget class="QCheckBox" name="chkGenerateReport">
-     <property name="text">
-      <string>Generate HTML report when complete</string>
+   <item row="1" column="1">
+    <widget class="QSpinBox" name="spnDelay">
+     <property name="suffix">
+      <string>s</string>
+     </property>
+     <property name="maximum">
+      <number>9999</number>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="QCheckBox" name="chkOpenResult">
-     <property name="text">
-      <string>Open result in browser after upload.</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QLabel" name="lblTimes">
-     <property name="text">
-      <string>times.</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="3">
+   <item row="6" column="0" colspan="3">
     <widget class="QGroupBox" name="gbAdvanced">
      <property name="title">
       <string>Advanced settings</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="lblConcurrencyMode">
+      <item row="3" column="0" colspan="2">
+       <widget class="QCheckBox" name="chkPinThreads">
+        <property name="toolTip">
+         <string>Pin each thread to the target processors defined in topology. Pining happens in orderly matter. E.g. if a task is single threaded, it will be pinned on the first processor definned in the topology tab. Only affects automatically multithreaded tasks.</string>
+        </property>
         <property name="text">
-         <string>Concurrency mode:</string>
+         <string>Pin threads for automatically multithreaded tasks</string>
         </property>
        </widget>
       </item>
@@ -96,7 +81,7 @@
         </item>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
+      <item row="2" column="0" colspan="2">
        <widget class="QCheckBox" name="chkNumaAware">
         <property name="toolTip">
          <string>Use NUMA aware allocator where possible. Only makes a difference in NUMA systems.</string>
@@ -106,17 +91,42 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QCheckBox" name="chkPinThreads">
-        <property name="toolTip">
-         <string>Pin each thread to the target processors defined in topology. Pining happens in orderly matter. E.g. if a task is single threaded, it will be pinned on the first processor definned in the topology tab. Only affects automatically multithreaded tasks.</string>
-        </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblConcurrencyMode">
         <property name="text">
-         <string>Pin threads for automatically multithreaded tasks</string>
+         <string>Concurrency mode:</string>
         </property>
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="3">
+    <widget class="QCheckBox" name="chkOpenResult">
+     <property name="text">
+      <string>Open result in browser after upload.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="lblTimes">
+     <property name="text">
+      <string>times.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="3">
+    <widget class="QCheckBox" name="chkGenerateReport">
+     <property name="text">
+      <string>Generate HTML report when complete</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="lblRun">
+     <property name="text">
+      <string>Run it </string>
+     </property>
     </widget>
    </item>
    <item row="1" column="0">
@@ -126,17 +136,20 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QSpinBox" name="spnDelay">
-     <property name="maximum">
-      <number>9999</number>
+   <item row="5" column="0">
+    <widget class="QLabel" name="lblMinimumMicroTaskTime">
+     <property name="text">
+      <string>Minimum micro task duration</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="lblSeconds">
-     <property name="text">
-      <string>seconds</string>
+   <item row="5" column="1">
+    <widget class="QDoubleSpinBox" name="spnMinimumMicroTaskTime">
+     <property name="suffix">
+      <string>s</string>
+     </property>
+     <property name="minimum">
+      <double>0.100000000000000</double>
      </property>
     </widget>
    </item>

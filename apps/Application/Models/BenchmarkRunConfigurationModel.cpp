@@ -1,4 +1,20 @@
 //
+//  Copyright (c) 2024  Ioannis Panagiotopoulos
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 19/10/2023.
 //
 
@@ -7,7 +23,12 @@
 namespace Elpida::Application
 {
 	BenchmarkRunConfigurationModel::BenchmarkRunConfigurationModel()
-			: _iterationsToRun(1), _delaySecondsBetweenRuns(5), _uploadResults(true), _openResult(false), _numaAware(false), _pinThreads(false), _generateHtmlReport(false), _concurrencyMode(ConcurrencyMode::None)
+			:_iterationsToRun(1),
+			 _delaySecondsBetweenRuns(0),
+			 _minimumMicroTaskDuration(1.0),
+			 _uploadResults(true),
+			 _openResult(false), _numaAware(false), _pinThreads(false), _generateHtmlReport(false),
+			 _concurrencyMode(ConcurrencyMode::None)
 	{
 
 	}
@@ -94,5 +115,15 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationModel::SetDelaySecondsBetweenRuns(size_t delaySecondsBetweenRuns)
 	{
 		_delaySecondsBetweenRuns = delaySecondsBetweenRuns;
+	}
+
+	void BenchmarkRunConfigurationModel::SetMinimumMicroTaskDuration(Duration seconds)
+	{
+		_minimumMicroTaskDuration = seconds;
+	}
+
+	Duration BenchmarkRunConfigurationModel::GetMinimumMicroTaskDuration() const
+	{
+		return _minimumMicroTaskDuration;
 	}
 } // Elpida

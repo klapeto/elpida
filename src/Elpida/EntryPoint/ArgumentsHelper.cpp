@@ -1,4 +1,20 @@
 //
+//  Copyright (c) 2024  Ioannis Panagiotopoulos
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 12/3/2023.
 //
 
@@ -81,8 +97,6 @@ namespace Elpida
 		accumulator << R"("           Prints the version and exits)" << std::endl;
 		accumulator << R"("       -h, --help)" << std::endl;
 		accumulator << R"("           Prints this help and exits)" << std::endl;
-		accumulator << R"("       --module="MODULE_PATH")" << std::endl;
-		accumulator << R"("           The library that contains the benchmark group)" << std::endl;
 		accumulator << R"("       --index=BENCHMARK_INDEX)" << std::endl;
 		accumulator << R"("           The index of the benchmark in the benchmark group)" << std::endl;
 		accumulator << R"("       --affinity=AFFINITY)" << std::endl;
@@ -105,6 +119,8 @@ namespace Elpida
 				<< std::endl;
 		accumulator << R"("       --concurrency-mode=MODE)" << std::endl;
 		accumulator << R"("           The concurrency to use on tasks. Can be 'None' or '0' (default), 'CopyInput' or '1', 'ShareInput' or '2', 'ChunkInput' or '3')" << std::endl;
+		accumulator << R"("       --microtask-duration=SECONDS)" << std::endl;
+		accumulator << R"("           The minimum microtask duration to run. It affected only measured tasks. If a task requires higher than the argument provided, the higher will be used.)" << std::endl;
 		accumulator << R"("       --dump-info)" << std::endl;
 		accumulator << R"("           Dumps the benchmark data of this benchmark)" << std::endl;
 
@@ -206,7 +222,6 @@ namespace Elpida
 		{
 			Version,
 			Help,
-			Module,
 			Index,
 			Affinity,
 			Format,
@@ -216,13 +231,13 @@ namespace Elpida
 			NumaAware,
 			PinThreads,
 			ConcurrencyMode,
-			DumpInfo
+			DumpInfo,
+			MicroTaskDuration
 		};
 
 		struct option options[] = {
 				{ "version",             no_argument,       nullptr, Version },
 				{ "help",                no_argument,       nullptr, Help },
-				{ "module",              required_argument, nullptr, Module },
 				{ "index",               required_argument, nullptr, Index },
 				{ "affinity",            required_argument, nullptr, Affinity },
 				{ "format",              required_argument, nullptr, Format },
@@ -233,6 +248,7 @@ namespace Elpida
 				{ "pin-threads",         no_argument,       nullptr, PinThreads },
 				{ "concurrency-mode", required_argument, nullptr, ConcurrencyMode },
 				{ "dump-info", no_argument, nullptr, DumpInfo },
+				{ "microtask-duration", required_argument, nullptr, MicroTaskDuration },
 				{ nullptr, 0,                               nullptr, 0 }
 		};
 
@@ -250,9 +266,6 @@ namespace Elpida
 			case Help:
 				returnText = GetHelpString();
 				return true;
-			case Module:
-				ParseModulePath(GetValueOrDefault(optarg));
-				break;
 			case Index:
 				ParseIndex(GetValueOrDefault(optarg));
 				break;
@@ -282,6 +295,9 @@ namespace Elpida
 				return true;
 			case ConcurrencyMode:
 				_concurrencyMode = ParseConcurrencyMode(GetValueOrDefault(optarg));
+				break;
+			case MicroTaskDuration:
+				_microTaskDuration = ParseDouble(GetValueOrDefault(optarg), "microtask-duration");
 				break;
 			case '?':
 				returnText = "Unknown option: " + std::string(GetValueOrDefault(optarg));
@@ -341,27 +357,6 @@ namespace Elpida
 		_benchmarkIndex = ParseUnsigned(value, "index");
 	}
 
-	void ArgumentsHelper::ParseModulePath(const String& value)
-	{
-		if (value.empty())
-		{
-			throw ElpidaException("'--module' option cannot be empty");
-		}
-		auto actualPath = ValueUtilities::Trim(value, '"');
-
-		if (!std::filesystem::exists(actualPath))
-		{
-			throw ElpidaException("module '", value, "' does not exist");
-		}
-
-		_modulePath = actualPath;
-	}
-
-	const String& ArgumentsHelper::GetModulePath() const
-	{
-		return _modulePath;
-	}
-
 	const Vector<unsigned int>& ArgumentsHelper::GetAffinity() const
 	{
 		return _affinity;
@@ -383,7 +378,7 @@ namespace Elpida
 	}
 
 	ArgumentsHelper::ArgumentsHelper()
-			:_benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0),
+			:_benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _microTaskDuration(0.1),
 			 _concurrencyMode(ConcurrencyMode::None),
 			 _numaAware(false), _pinThreads(false), _dumpInfo(false)
 	{
@@ -408,6 +403,11 @@ namespace Elpida
 	bool ArgumentsHelper::GetDumpInfo() const
 	{
 		return _dumpInfo;
+	}
+
+	double ArgumentsHelper::GetMicroTaskDuration() const
+	{
+		return _microTaskDuration;
 	}
 
 } // Elpida

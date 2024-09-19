@@ -73,6 +73,7 @@ namespace Elpida::Application
 		_ui->spnDelay->setValue(_model.GetDelaySecondsBetweenRuns());
 		_ui->chkGenerateReport->setChecked(_model.IsGenerateHtmlReport());
 		_ui->cmbConcurrencyMode->setCurrentIndex(TranslateConcurrencyMode(_model.GetConcurrencyMode()));
+		_ui->spnMinimumMicroTaskTime->setValue(_model.GetMinimumMicroTaskDuration().count());
 		_uiUpdating = false;
 	}
 
@@ -146,6 +147,11 @@ namespace Elpida::Application
 	{
 		_ui->spnDelay->setVisible(false);
 		_ui->lblDelay->setVisible(false);
-		_ui->lblSeconds->setVisible(false);
+	}
+
+	void BenchmarkRunConfigurationView::on_spnMinimumMicroTaskTime_valueChanged(double value)
+	{
+		if (_uiUpdating) return;
+		_controller.SetMinimumMicroTaskDuration(Duration (value));
 	}
 }

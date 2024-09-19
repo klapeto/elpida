@@ -3,21 +3,30 @@
 
 #[[#include]]# "Controllers/FullBenchmarkInstance.hpp"
 
-namespace Elpida::Application 
+namespace Elpida::Application
 {
-    class ${NAME}SingleThread : public FullBenchmarkInstance
+	class ${NAME} : public FullBenchmarkInstance
 	{
 	public:
-		std::string GetName() const override;
-		std::string GetUuid() const override;
-		FullBenchmarkInstanceResult Run() override;
-		explicit ${NAME}SingleThread(const BenchmarkModel& benchmark,
+		${NAME}(const std::string& uuid,
+				Score baseScore,
+				bool multiThreaded,
+				const BenchmarkModel& benchmark,
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
 				const MemoryInfoModel& memoryInfoModel,
+				const BenchmarkRunConfigurationModel& runConfigurationModel,
 				BenchmarkExecutionService& executionService);
-		~${NAME}SingleThread() override = default;
-    };
-}
+	
+		${NAME}(const ${NAME}&) = delete;
+		${NAME}(${NAME}&&) noexcept = default;
+		${NAME}& operator=(const ${NAME}&) = delete;
+		${NAME}& operator=(${NAME}&&) noexcept = delete;
+		~${NAME}() override = default;
+	protected:
+		void Configure() override;
+	};
+
+} // Elpida::Application
 
 #[[#endif]]# //${INCLUDE_GUARD}

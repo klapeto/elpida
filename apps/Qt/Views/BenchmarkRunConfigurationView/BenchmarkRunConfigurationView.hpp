@@ -54,6 +54,8 @@ namespace Elpida::Application
 
 		void on_spnTimes_valueChanged(int value);
 
+		void on_spnMinimumMicroTaskTime_valueChanged(double value);
+
 		void on_spnDelay_valueChanged(int value);
 
 		void on_cmbConcurrencyMode_currentIndexChanged(int value);
