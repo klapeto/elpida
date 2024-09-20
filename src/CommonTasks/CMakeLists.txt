@@ -8,6 +8,8 @@ set(ELPIDA_COMMON_TASKS_SOURCES
         FileWriteTask.cpp
         ParseXmlTask.cpp
         AllocateMemoryTask.cpp
+        GenerateRandomDataTask.cpp
+        GenerateLoremIpsum.cpp
 )
 
 add_library(elpida-common-tasks ${ELPIDA_COMMON_TASKS_SOURCES})

@@ -378,7 +378,7 @@ namespace Elpida
 	}
 
 	ArgumentsHelper::ArgumentsHelper()
-			:_benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _microTaskDuration(0.1),
+			:_benchmarkIndex(0), _nowOverhead(0), _loopOverhead(0), _microTaskDuration(5),
 			 _concurrencyMode(ConcurrencyMode::None),
 			 _numaAware(false), _pinThreads(false), _dumpInfo(false)
 	{

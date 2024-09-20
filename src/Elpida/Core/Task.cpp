@@ -34,7 +34,12 @@ namespace Elpida
 
 		auto b = Timer::now();
 
-		return PostProcessDuration(b - a - _benchmarkRunContext->get().GetEnvironmentInfo().GetOverheadsInfo().GetNowOverhead());
+		if (_benchmarkRunContext.has_value())
+		{
+			return PostProcessDuration(
+					b - a - _benchmarkRunContext->get().GetEnvironmentInfo().GetOverheadsInfo().GetNowOverhead());
+		}
+		return PostProcessDuration(b - a);
 	}
 
 	UniquePtr<Task> Task::Duplicate() const

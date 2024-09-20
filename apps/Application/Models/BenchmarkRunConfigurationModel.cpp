@@ -68,6 +68,7 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationModel::SetNumaAware(bool numaAware)
 	{
 		_numaAware = numaAware;
+		OnDataChanged();
 	}
 
 	bool BenchmarkRunConfigurationModel::IsPinThreads() const
@@ -89,6 +90,7 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationModel::SetConcurrencyMode(ConcurrencyMode concurrencyMode)
 	{
 		_concurrencyMode = concurrencyMode;
+		OnDataChanged();
 	}
 
 	void BenchmarkRunConfigurationModel::SetIterationsToRun(std::size_t iterations)
@@ -100,6 +102,7 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationModel::SetGenerateHtmlReport(bool generateHtmlReport)
 	{
 		_generateHtmlReport = generateHtmlReport;
+		OnDataChanged();
 	}
 
 	bool BenchmarkRunConfigurationModel::IsGenerateHtmlReport() const
@@ -115,11 +118,13 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationModel::SetDelaySecondsBetweenRuns(size_t delaySecondsBetweenRuns)
 	{
 		_delaySecondsBetweenRuns = delaySecondsBetweenRuns;
+		OnDataChanged();
 	}
 
 	void BenchmarkRunConfigurationModel::SetMinimumMicroTaskDuration(Duration seconds)
 	{
 		_minimumMicroTaskDuration = seconds;
+		OnDataChanged();
 	}
 
 	Duration BenchmarkRunConfigurationModel::GetMinimumMicroTaskDuration() const

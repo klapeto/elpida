@@ -19,7 +19,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "Base64DecodeTask.hpp"
 #include "Base64EncodeTask.hpp"
-#include "XmlGenerationTask.hpp"
+#include "CommonTasks/GenerateLoremIpsum.hpp"
 
 namespace Elpida
 {
@@ -36,7 +36,7 @@ namespace Elpida
 
 		auto& configuration = context.GetConfiguration();
 
-		returnTasks.push_back(CreateTask<XmlGenerationTask>(configuration.at(0).AsInteger()));
+		returnTasks.push_back(CreateTask<GenerateLoremIpsum>(configuration.at(0).AsInteger()));
 		returnTasks.push_back(CreateTask<Base64EncodeTask>());
 		returnTasks.push_back(CreateTask<Base64DecodeTask>());
 
@@ -50,7 +50,7 @@ namespace Elpida
 		description = "Decodes base64 encoded data";
 		taskToUseAsScoreIndex = 2;
 
-		taskInfos.push_back(XmlGenerationTask(1).GetInfo());
+		taskInfos.push_back(GenerateLoremIpsum(1).GetInfo());
 		taskInfos.push_back(Base64EncodeTask().GetInfo());
 		taskInfos.push_back(Base64DecodeTask().GetInfo());
 	}

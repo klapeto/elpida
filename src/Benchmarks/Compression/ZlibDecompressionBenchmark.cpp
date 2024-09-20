@@ -1,12 +1,27 @@
 //
+//  Copyright (c) 2024  Ioannis Panagiotopoulos
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 31/7/2024.
 //
 
 #include "ZlibDecompressionBenchmark.hpp"
 
 #include "Elpida/Core/BenchmarkRunContext.hpp"
-#include "CommonTasks/FileReadTask.hpp"
-#include "CommonTasks/FileWriteTask.hpp"
+#include "CommonTasks/GenerateLoremIpsum.hpp"
 #include "ZlibDecompressionTask.hpp"
 
 namespace Elpida
@@ -15,8 +30,7 @@ namespace Elpida
 	Vector<TaskConfiguration> ZlibDecompressionBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-				TaskConfiguration("Input file", ConfigurationType::File, "./assets/lorem-ipsum.z"),
-				TaskConfiguration("Output file", ConfigurationType::File, "./lorem-ipsum.txt"),
+				TaskConfiguration("Data size", ConfigurationType::Integer, "32768")
 		};
 	}
 
@@ -25,9 +39,8 @@ namespace Elpida
 	{
 		Vector<UniquePtr<Task>> tasks;
 
-		tasks.push_back(CreateTask<FileReadTask>(context.GetConfiguration().at(0).GetValue()));
+		tasks.push_back(CreateTask<GenerateLoremIpsum>(context.GetConfiguration().at(0).AsInteger()));
 		tasks.push_back(CreateTask<ZlibDecompressionTask>());
-		tasks.push_back(CreateTask<FileWriteTask>(context.GetConfiguration().at(1).GetValue()));
 		return tasks;
 	}
 
@@ -35,11 +48,10 @@ namespace Elpida
 			size_t& taskToUseAsScoreIndex, std::vector<TaskInfo>& taskInfos) const
 	{
 		name = "Zlib decompression";
-		description = "Decompresses a file with zlib";
+		description = "Decompresses a data with zlib";
 		taskToUseAsScoreIndex = 1;
 
-		taskInfos.push_back(FileReadTask("").GetInfo());
+		taskInfos.push_back(GenerateLoremIpsum(4).GetInfo());
 		taskInfos.push_back(ZlibDecompressionTask().GetInfo());
-		taskInfos.push_back(FileWriteTask("").GetInfo());
 	}
 } // Elpida

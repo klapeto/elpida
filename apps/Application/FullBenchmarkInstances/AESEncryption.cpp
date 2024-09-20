@@ -39,8 +39,6 @@ namespace Elpida::Application
 
 	void AESEncryption::Configure()
 	{
-		_benchmark.GetConfigurations()[0].SetValue((OsUtilities::GetExecutableDirectory() / "assets" / "lorem-ipsum.txt").string());
-		_benchmark.GetConfigurations()[1].SetValue("ab909b43d4cc43388ed2c98d261b082");
-		_benchmark.GetConfigurations()[2].SetValue("./lorem-ipsum.enc");
+		_benchmark.GetConfigurations()[0].SetValue("131072");
 	}
 } // Elpida::Application

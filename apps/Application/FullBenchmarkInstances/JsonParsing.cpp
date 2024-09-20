@@ -39,6 +39,6 @@ namespace Elpida::Application
 
 	void JsonParsing::Configure()
 	{
-		_benchmark.GetConfigurations()[0].SetValue("4096");
+		_benchmark.GetConfigurations()[0].SetValue("2048");
 	}
 } // Elpida::Application

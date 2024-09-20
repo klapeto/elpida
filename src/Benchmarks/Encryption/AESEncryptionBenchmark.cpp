@@ -1,12 +1,27 @@
 //
+//  Copyright (c) 2024  Ioannis Panagiotopoulos
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 11/8/2024.
 //
 
 #include "AESEncryptionBenchmark.hpp"
 
 #include "Elpida/Core/BenchmarkRunContext.hpp"
-#include "CommonTasks/FileReadTask.hpp"
-#include "CommonTasks/FileWriteTask.hpp"
+#include "CommonTasks/GenerateLoremIpsum.hpp"
 #include "AESEncryptTask.hpp"
 
 namespace Elpida
@@ -14,9 +29,7 @@ namespace Elpida
 	std::vector<TaskConfiguration> AESEncryptionBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-				TaskConfiguration("Input file", ConfigurationType::File, "./assets/lorem-ipsum.txt"),
-				TaskConfiguration("Encryption key", ConfigurationType::String, "ab909b43d4cc43388ed2c98d261b082"),
-				TaskConfiguration("Output file", ConfigurationType::File, "./lorem-ipsum.enc"),
+				TaskConfiguration("Data size", ConfigurationType::Integer, "131072")
 		};
 	}
 
@@ -24,9 +37,8 @@ namespace Elpida
 	{
 		std::vector<std::unique_ptr<Task>> returnTasks;
 
-		returnTasks.push_back(CreateTask<FileReadTask>(context.GetConfiguration().at(0).GetValue()));
-		returnTasks.push_back(CreateTask<AESEncryptTask>(context.GetConfiguration().at(1).GetValue()));
-		returnTasks.push_back(CreateTask<FileWriteTask>(context.GetConfiguration().at(2).GetValue()));
+		returnTasks.push_back(CreateTask<GenerateLoremIpsum>(context.GetConfiguration().at(0).AsInteger()));
+		returnTasks.push_back(CreateTask<AESEncryptTask>("ab909b43d4cc43388ed2c98d261b082"));
 
 		return returnTasks;
 	}
@@ -41,8 +53,7 @@ namespace Elpida
 		description = "Encrypts data with a AES.";
 		taskToUseAsScoreIndex = 1;
 
-		taskInfos.push_back(FileReadTask("").GetInfo());
+		taskInfos.push_back(GenerateLoremIpsum(15).GetInfo());
 		taskInfos.push_back(AESEncryptTask("").GetInfo());
-		taskInfos.push_back(FileWriteTask("").GetInfo());
 	}
 } // Elpida
