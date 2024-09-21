@@ -23,6 +23,7 @@
 
 #include "Core/BenchmarkScore.hpp"
 #include "Models/Benchmark/BenchmarkResultModel.hpp"
+#include "Models/BenchmarkRunConfigurationModel.hpp"
 
 namespace Elpida::Application
 {
@@ -97,6 +98,11 @@ namespace Elpida::Application
 		bool _multiThread;
 
 		virtual void Configure() = 0;
+
+		virtual ConcurrencyMode GetMultiThreadConcurrencyMode() const
+		{
+			return ConcurrencyMode::ShareInput;
+		}
 	private:
 		[[nodiscard]]
 		FullBenchmarkInstanceResult RunSingleThread() const;

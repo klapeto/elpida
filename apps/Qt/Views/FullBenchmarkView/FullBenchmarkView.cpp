@@ -183,7 +183,7 @@ namespace Elpida::Application
 			auto& benchmark = benchmarkResult.GetBenchmark();
 			auto root = new QTreeWidgetItem(static_cast<QTreeWidget*>(nullptr),
 					QStringList({
-							QString::fromStdString(benchmark.GetName()),
+							QString::fromStdString(benchmarkResult.GetInstanceName()),
 							QString::fromStdString(
 									Elpida::ValueUtilities::GetValueScaleStringSI(benchmarkResult.GetResult())
 									+ benchmark.GetResultUnit() + (benchmark.GetResultType() == ResultType::Throughput ? "/s" : ""))

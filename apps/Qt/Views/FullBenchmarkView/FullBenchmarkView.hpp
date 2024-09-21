@@ -37,11 +37,6 @@ namespace Elpida::Application
 		~FullBenchmarkView() override;
 
 	private:
-//		struct PreviousScores {
-//			Score _totalScore;
-//			Score _singleCoreScore;
-//			Score _multiCoreScore;
-//		};
 		Ui::FullBenchmarkView* _ui;
 		const FullBenchmarkModel& _model;
 		FullBenchmarkController& _controller;

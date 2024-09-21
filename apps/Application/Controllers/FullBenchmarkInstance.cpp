@@ -115,7 +115,7 @@ namespace Elpida::Application
 				_timingModel.GetLoopOverhead().count(),
 				false,
 				false,
-				ConcurrencyMode::ShareInput,
+				GetMultiThreadConcurrencyMode(),
 				_runConfigurationModel.GetMinimumMicroTaskDuration().count());
 
 		auto thisResult = benchmarkResult.GetResult() / _baseScore;

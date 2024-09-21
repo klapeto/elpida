@@ -43,4 +43,9 @@ namespace Elpida::Application
 	{
 		_benchmark.GetConfigurations()[0].SetValue("131072");
 	}
+
+	ConcurrencyMode AESDecryption::GetMultiThreadConcurrencyMode() const
+	{
+		return ConcurrencyMode::CopyInput;
+	}
 } // Elpida::Application

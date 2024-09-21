@@ -46,6 +46,7 @@ namespace Elpida::Application
 		~AESDecryption() override = default;
 	protected:
 		void Configure() override;
+		ConcurrencyMode GetMultiThreadConcurrencyMode() const override;
 	};
 
 } // Elpida::Application
