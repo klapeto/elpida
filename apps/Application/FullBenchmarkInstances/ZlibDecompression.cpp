@@ -41,9 +41,4 @@ namespace Elpida::Application
 	{
 		_benchmark.GetConfigurations()[0].SetValue("16384");
 	}
-
-	ConcurrencyMode ZlibDecompression::GetMultiThreadConcurrencyMode() const
-	{
-		return ConcurrencyMode::CopyInput;
-	}
 } // Elpida::Application
