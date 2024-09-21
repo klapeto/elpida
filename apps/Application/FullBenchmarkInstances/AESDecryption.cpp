@@ -46,6 +46,7 @@ namespace Elpida::Application
 
 	ConcurrencyMode AESDecryption::GetMultiThreadConcurrencyMode() const
 	{
+		// AES has locks that hurts mulithread performance when used with shared.
 		return ConcurrencyMode::CopyInput;
 	}
 } // Elpida::Application

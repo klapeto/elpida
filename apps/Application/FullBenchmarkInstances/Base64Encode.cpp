@@ -41,4 +41,9 @@ namespace Elpida::Application
 	{
 		_benchmark.GetConfigurations()[0].SetValue("2048");
 	}
+
+	ConcurrencyMode Base64Encode::GetMultiThreadConcurrencyMode() const
+	{
+		return ConcurrencyMode::ShareInput;
+	}
 } // Elpida::Application

@@ -41,6 +41,7 @@ namespace Elpida::Application
 		~JsonParsing() override = default;
 	protected:
 		void Configure() override;
+		ConcurrencyMode GetMultiThreadConcurrencyMode() const override;
 	};
 
 } // Elpida::Application

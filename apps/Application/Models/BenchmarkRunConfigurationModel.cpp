@@ -25,7 +25,7 @@ namespace Elpida::Application
 	BenchmarkRunConfigurationModel::BenchmarkRunConfigurationModel()
 			:_iterationsToRun(1),
 			 _delaySecondsBetweenRuns(0),
-			 _minimumMicroTaskDuration(1.0),
+			 _minimumMicroTaskDuration(5.0),
 			 _uploadResults(true),
 			 _openResult(false), _numaAware(false), _pinThreads(false), _generateHtmlReport(false),
 			 _concurrencyMode(ConcurrencyMode::None)

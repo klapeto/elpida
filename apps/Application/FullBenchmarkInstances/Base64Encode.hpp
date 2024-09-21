@@ -41,6 +41,7 @@ namespace Elpida::Application
 		~Base64Encode() override = default;
 	protected:
 		void Configure() override;
+		ConcurrencyMode GetMultiThreadConcurrencyMode() const override;
 	};
 
 } // Elpida::Application
