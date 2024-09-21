@@ -23,6 +23,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "CommonTasks/GenerateLoremIpsum.hpp"
 #include "ZlibDecompressionTask.hpp"
+#include "ZlibCompressionTask.hpp"
 
 namespace Elpida
 {
@@ -40,6 +41,7 @@ namespace Elpida
 		Vector<UniquePtr<Task>> tasks;
 
 		tasks.push_back(CreateTask<GenerateLoremIpsum>(context.GetConfiguration().at(0).AsInteger()));
+		tasks.push_back(CreateTask<ZlibCompressionTask>());
 		tasks.push_back(CreateTask<ZlibDecompressionTask>());
 		return tasks;
 	}
@@ -49,9 +51,10 @@ namespace Elpida
 	{
 		name = "Zlib decompression";
 		description = "Decompresses a data with zlib";
-		taskToUseAsScoreIndex = 1;
+		taskToUseAsScoreIndex = 2;
 
 		taskInfos.push_back(GenerateLoremIpsum(4).GetInfo());
+		taskInfos.push_back(ZlibCompressionTask().GetInfo());
 		taskInfos.push_back(ZlibDecompressionTask().GetInfo());
 	}
 } // Elpida
