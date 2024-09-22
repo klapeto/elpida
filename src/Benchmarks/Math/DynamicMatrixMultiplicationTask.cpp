@@ -61,12 +61,12 @@ namespace Elpida
 		return std::make_unique<DynamicMatrixMultiplicationTask>(_rows, _columns);
 	}
 
-	void DynamicMatrixMultiplicationTask::DoRun(Iterations iterations)
+	void DynamicMatrixMultiplicationTask::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([this]()
 		{
 			_matrix = _a.Multiply(_b);
-		}
+		});
 	}
 
 	Size DynamicMatrixMultiplicationTask::GetOperationsPerformedPerRun()

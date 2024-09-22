@@ -46,13 +46,13 @@ namespace Elpida
 		return GetElementCount(_inputXmlElement);
 	}
 
-	void SvgParseTask::DoRun(Iterations iterations)
+	void SvgParseTask::DoRunImpl()
 	{
 		auto& element = _inputXmlElement;
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			_parsedElement = SvgDocument(element);
-		}
+		});
 	}
 
 	Size SvgParseTask::GetOperationsPerformedPerRun()

@@ -25,6 +25,9 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
 #include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <iostream>
 
 namespace Elpida
 {
@@ -37,50 +40,67 @@ namespace Elpida
 		Duration nowOverhead = overheads.GetNowOverhead();
 		Duration loopOverhead = overheads.GetLoopOverhead();
 
-		auto minimum = ShouldBeMeasured() ? TimingUtilities::GetMinimumIterationsAndDurationNeededForExecutionTime(
-				minimumDuration,
-				nowOverhead,
-				loopOverhead,
-				[this](Size iterations)
-				{ OnBeforeRun(iterations); },
-				[this](auto duration)
-				{ return PostProcessDuration(duration); },
-				[this](Size iterations)
-				{ DoRun(iterations); }) : std::tuple<Iterations, Duration>{ 1, 0 };
-
 		Duration currentDuration;
-		auto iterations = std::get<0>(minimum);
-		if (iterations != 1)
+
+		if (ShouldBeMeasured())
 		{
-			// Consider the previous run as 'warmups'
-			// now the real deal
-			OnBeforeRun(iterations);
+			bool doContinue = false;
+			std::mutex mutex;
+			std::condition_variable conditionVariable;
+
+			auto th = std::thread([&]()
+			{
+				// avoid forced schedule to the same thread
+				context.GetEnvironmentInfo().GetTopologyInfo().ClearThreadPinning();
+				{
+					// wait until measure thread tells us to sleep.
+					std::unique_lock<std::mutex> lock(mutex);
+					while (!doContinue)
+					{
+						conditionVariable.wait(lock);
+					}
+				}
+
+				std::this_thread::sleep_for(minimumDuration);
+
+				_keepGoing = false;
+			});
+
+			// Warmup
+			_keepGoing = false;
+			DoRunImpl();
+			_keepGoing = true;
+
+			{
+				// Tell control thread to continue and go to sleep
+				std::unique_lock<std::mutex> lock(mutex);
+				doContinue = true;
+				conditionVariable.notify_all();
+			}
+
+			_iterations = 0;
 			auto start = Timer::now();
-			DoRun(iterations);
+			DoRunImpl();
 			auto end = Timer::now();
 
-			currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
+			th.join();
+
+			currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * _iterations);
+			currentDuration = PostProcessDuration(currentDuration);
 		}
 		else
 		{
-			auto duration = std::get<1>(minimum);
-			if (duration.count() == 0)
-			{
-				// It was never run, so run it at least once
-				OnBeforeRun(iterations);
-				auto start = Timer::now();
-				DoRun(iterations);
-				auto end = Timer::now();
-				duration = ToDuration(end - start);
-			}
-			currentDuration = duration - nowOverhead - (loopOverhead * iterations);
+			_keepGoing = false;
+			auto start = Timer::now();
+			DoRunImpl();
+			auto end = Timer::now();
+
+			currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * _iterations);
+			currentDuration = PostProcessDuration(currentDuration);
 		}
 
-
-		currentDuration = PostProcessDuration(currentDuration);
-		currentDuration =
-				(currentDuration / static_cast<double>(iterations)) /
-				static_cast<double>(GetOperationsPerformedPerRun());
+		currentDuration = (currentDuration / static_cast<double>(_iterations)) /
+						  static_cast<double>(GetOperationsPerformedPerRun());
 
 		return currentDuration;
 	}
@@ -90,13 +110,15 @@ namespace Elpida
 
 	}
 
-	void MicroTask::OnBeforeRun(Iterations iterations)
-	{
-
-	}
-
 	Duration MicroTask::GetExecutionMinimumDuration()
 	{
 		return Seconds(0.1);
 	}
+
+	MicroTask::MicroTask()
+			:_iterations(0), _keepGoing(false)
+	{
+
+	}
+
 } // Elpida

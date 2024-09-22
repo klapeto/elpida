@@ -63,6 +63,47 @@ namespace Elpida
 		}
 
 		template<typename TCallable, typename TPrepare, typename TAdditionalOffset>
+		static std::tuple<Iterations, Duration> ExecuteMinimumTime(
+				Duration minimumDuration,
+				Duration nowOverhead,
+				Duration loopOverhead,
+				TPrepare prepare,
+				TAdditionalOffset additionalTimeOffset,
+				TCallable callable)
+		{
+			const double marginOfError = 0.05;
+			Iterations iterations = 1;
+
+			auto currentDuration = Duration::zero();
+
+			while (true)
+			{
+				prepare(iterations);
+				auto start = Timer::now();
+				callable(iterations);
+				auto end = Timer::now();
+
+				currentDuration = additionalTimeOffset(ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
+
+				if (currentDuration > minimumDuration)
+				{
+					break;
+				}
+				if (currentDuration.count() < minimumDuration.count() / 10.0)
+				{
+					iterations *= 10;
+					continue;
+				}
+
+				auto ratio = minimumDuration.count() / currentDuration.count();
+
+				iterations = std::ceil(iterations * ratio * (1.0 + (marginOfError / 2.0)));
+			}
+
+			return {iterations, currentDuration};
+		}
+
+		template<typename TCallable, typename TPrepare, typename TAdditionalOffset>
 		static std::tuple<Iterations, Duration> GetMinimumIterationsAndDurationNeededForExecutionTime(
 				Duration targetDuration,
 				Duration nowOverhead,

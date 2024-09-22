@@ -60,12 +60,12 @@ namespace Elpida
 		return std::make_unique<CalculateFFTInPlaceTask>(_size);
 	}
 
-	void CalculateFFTInPlaceTask::DoRun(Iterations iterations)
+	void CalculateFFTInPlaceTask::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([this]()
 		{
 			FFTCalculator::CalculateFFTInPlace(_values);
-		}
+		});
 	}
 
 	Size CalculateFFTInPlaceTask::GetOperationsPerformedPerRun()

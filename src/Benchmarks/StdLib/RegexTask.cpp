@@ -1704,12 +1704,12 @@ namespace Elpida
 		return _data.size();
 	}
 
-	void RegexTask::DoRun(Iterations iterations)
+	void RegexTask::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			std::regex_search(_data, _regex);
-		}
+		});
 	}
 
 	Size RegexTask::GetOperationsPerformedPerRun()

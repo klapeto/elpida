@@ -36,7 +36,7 @@ namespace Elpida
 	protected:
 		TaskInfo DoGetInfo() const override;
 		UniquePtr<Task> DoDuplicate() const override;
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 		Size GetOperationsPerformedPerRun() override;
 	};
 

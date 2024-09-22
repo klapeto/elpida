@@ -43,12 +43,12 @@ namespace Elpida
 		return _matrix.GetRows() * _matrix.GetColumns();
 	}
 
-	void MatrixInverse4Task::DoRun(Iterations iterations)
+	void MatrixInverse4Task::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([this]()
 		{
 			_matrix = _input.CalculateInverse();
-		}
+		});
 	}
 
 	Size MatrixInverse4Task::GetOperationsPerformedPerRun()

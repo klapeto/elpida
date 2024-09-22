@@ -40,14 +40,15 @@ namespace Elpida
 		return _inputData->GetSize();
 	}
 
-	void Base64EncodeTask::DoRun(Iterations iterations)
+	void Base64EncodeTask::DoRunImpl()
 	{
 		auto data = _inputData->GetData();
 		auto size = _inputData->GetSize();
-		while (iterations-- > 0)
+
+		Exec([&]()
 		{
 			_outputData = Base64::Encode(data, size);
-		}
+		});
 	}
 
 	Size Base64EncodeTask::GetOperationsPerformedPerRun()

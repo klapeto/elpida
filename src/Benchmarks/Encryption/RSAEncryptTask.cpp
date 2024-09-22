@@ -43,20 +43,21 @@ namespace Elpida
 			"The slings and arrowes of outragious fortune,\n"
 			"Or to take Armes again in a sea of troubles";
 
-	void RSAEncryptTask::DoRun(Iterations iterations)
+	void RSAEncryptTask::DoRunImpl()
 	{
 		auto context = _context.get();
-		while (iterations-- > 0)
+
+		auto outputSize = _output->GetSize();
+		auto output = _output->GetData();
+		auto inputSize = sizeof(messageToEncrypt);
+		auto input = messageToEncrypt;
+		Exec([&]()
 		{
-			auto outputSize = _output->GetSize();
-			auto output = _output->GetData();
-			auto inputSize = sizeof(messageToEncrypt);
-			auto input = messageToEncrypt;
 			if (EVP_PKEY_encrypt(context, output, &outputSize, input, inputSize) <= 0)
 			{
 				Utilities::ThrowOpenSSLError("Failed encrypt: ");
 			}
-		}
+		});
 	}
 
 	Size RSAEncryptTask::GetOperationsPerformedPerRun()

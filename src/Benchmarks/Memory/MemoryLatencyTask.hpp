@@ -27,7 +27,7 @@ namespace Elpida
 		MemoryLatencyTask(Size cacheLineSize, Size pageSize);
 		~MemoryLatencyTask() override = default;
 	 protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		[[nodiscard]]
 		TaskInfo DoGetInfo() const override;

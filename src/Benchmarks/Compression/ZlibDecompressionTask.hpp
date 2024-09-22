@@ -8,6 +8,8 @@
 #include "Elpida/Core/MicroTask.hpp"
 #include "Elpida/Core/MemoryStream.hpp"
 
+#include "zlib.h"
+
 #include <optional>
 
 namespace Elpida
@@ -24,10 +26,10 @@ namespace Elpida
 		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
-		ZlibDecompressionTask() = default;
-		~ZlibDecompressionTask() override = default;
+		ZlibDecompressionTask();
+		~ZlibDecompressionTask() override ;
 	protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		[[nodiscard]]
 		TaskInfo DoGetInfo() const override;
@@ -38,6 +40,7 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
+		z_stream _zStream;
 		SharedPtr<AbstractTaskData> _input;
 		std::optional<MemoryStream> _output;
 	};

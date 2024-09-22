@@ -38,7 +38,7 @@ namespace Elpida
 		Base64DecodeTask() = default;
 		~Base64DecodeTask() override = default;
 	protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		[[nodiscard]]
 		TaskInfo DoGetInfo() const override;

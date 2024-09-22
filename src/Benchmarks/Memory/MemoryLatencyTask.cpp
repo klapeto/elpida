@@ -91,11 +91,11 @@ namespace Elpida
 	}
 
 	static void assignPointers(char* basePtr,
-		const Vector<Size>& lines,
-		Size pageA,
-		Size pageB,
-		Size lineIndexOffsetA,
-		Size lineIndexOffsetB)
+			const Vector<Size>& lines,
+			Size pageA,
+			Size pageB,
+			Size lineIndexOffsetA,
+			Size lineIndexOffsetB)
 	{
 		const auto linesCount = lines.size();
 		for (Size i = 0; i < linesCount; ++i)
@@ -165,7 +165,7 @@ namespace Elpida
 	}
 
 	MemoryLatencyTask::MemoryLatencyTask(Size cacheLineSize, Size pageSize)
-		: MicroTask(), _ptr(nullptr), _cacheLineSize(cacheLineSize), _pageSize(pageSize)
+			:MicroTask(), _ptr(nullptr), _cacheLineSize(cacheLineSize), _pageSize(pageSize)
 	{
 
 	}
@@ -186,14 +186,14 @@ namespace Elpida
 		};
 	}
 
-	void MemoryLatencyTask::DoRun(Iterations iterations)
+	void MemoryLatencyTask::DoRunImpl()
 	{
 		volatile auto* ptr = (char**)_ptr;
 
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			REPEAT_1000(ptr = (char**)*ptr);
-		}
+		});
 	}
 
 	std::size_t MemoryLatencyTask::GetOperationsPerformedPerRun()

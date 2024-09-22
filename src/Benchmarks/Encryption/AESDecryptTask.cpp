@@ -56,15 +56,14 @@ namespace Elpida
 		return std::make_unique<AESDecryptTask>(_key);
 	}
 
-	void AESDecryptTask::DoRun(Iterations iterations)
+	void AESDecryptTask::DoRunImpl()
 	{
-
 		std::size_t inputSize = _input->GetSize();
 		auto input = _input->GetData();
 
 		auto out = _output->GetData();
 		auto outputCapacity = _output->GetSize();
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			auto context = EvpCipherCtxPtr(EVP_CIPHER_CTX_new());
 
@@ -87,7 +86,7 @@ namespace Elpida
 				Utilities::ThrowOpenSSLError("Failed to decrypt: ");
 			}
 			_finalSize = outSize + outSize2;
-		}
+		});
 	}
 
 	Size AESDecryptTask::GetOperationsPerformedPerRun()

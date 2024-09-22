@@ -37,14 +37,14 @@ namespace Elpida
 		return GetElementCount(_inputDocument.GetElement());
 	}
 
-	void SvgCalculateTask::DoRun(Iterations iterations)
+	void SvgCalculateTask::DoRunImpl()
 	{
 		auto& document = _inputDocument;
 		auto scale = _scale;
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			_calculatedDocument = SvgCalculatedDocument(document, scale);
-		}
+		});
 	}
 
 	SvgCalculateTask::SvgCalculateTask(double scale)

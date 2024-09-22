@@ -19,16 +19,50 @@
 //
 
 #include "ZlibDecompressionTask.hpp"
-#include "ZlibCompressor.hpp"
 
 namespace Elpida
 {
+	static voidpf Allocate(voidpf opaque, uInt items, uInt size)
+	{
+		auto* allocator = static_cast<Allocator*>(opaque);
+
+		auto totalSize = items * size;
+		auto* ptr = allocator->Allocate(totalSize + sizeof(std::size_t));
+
+		if (ptr == nullptr) return ptr;
+
+		*static_cast<std::size_t*>(ptr) = totalSize;
+		return reinterpret_cast<void*>(reinterpret_cast<std::size_t>(ptr) + sizeof(std::size_t));
+	}
+
+	static void Free(voidpf opaque, voidpf address)
+	{
+		auto* allocator = static_cast<Allocator*>(opaque);
+
+		auto realAddress = reinterpret_cast<void*>(reinterpret_cast<std::size_t>(address) - sizeof(std::size_t));
+		auto size = *reinterpret_cast<std::size_t*>(realAddress);
+
+		allocator->Deallocate(realAddress, size);
+	}
+
 	void ZlibDecompressionTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_output.reset();
 		_input = std::move(inputData);
 		_output = MemoryStream(_input->GetAllocator());
-		//ZlibCompressor::Decompress(_input->GetData(), _input->GetSize(), _output.value());
+
+		std::memset(&_zStream, 0, sizeof(z_stream));
+
+		_zStream.zalloc = Allocate;
+		_zStream.zfree = Free;
+		_zStream.opaque = _output->GetAllocator().get();
+
+		auto result = inflateInit(&_zStream);
+		if (result != Z_OK)
+		{
+			throw ElpidaException("Failed to initialize zlib inflate: ", _zStream.msg);
+		}
+
 	}
 
 	SharedPtr<AbstractTaskData> ZlibDecompressionTask::Finalize()
@@ -41,13 +75,40 @@ namespace Elpida
 		return _input->GetSize();
 	}
 
-	void ZlibDecompressionTask::DoRun(Iterations iterations)
+	void ZlibDecompressionTask::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		auto input = _input->GetData();
+		auto size = _input->GetSize();
+		auto& output = _output.value();
+
+		const int ChunkSize = 1024;
+
+		Exec([&]()
 		{
-			_output->Reset();
-			ZlibCompressor::Decompress(_input->GetData(), _input->GetSize(), _output.value());
-		}
+			output.Reset();
+
+			inflateReset(&_zStream);
+			_zStream.next_in = reinterpret_cast<Bytef*>(input);
+			_zStream.avail_in = size;
+
+			unsigned char buffer[ChunkSize];
+
+			do
+			{
+				_zStream.next_out = buffer;
+				_zStream.avail_out = ChunkSize;
+				auto result = inflate(&_zStream, Z_FINISH);
+
+				if (result == Z_STREAM_ERROR)
+				{
+					throw ElpidaException("Failed to inflate zlib: ", _zStream.msg);
+				}
+
+				auto written = ChunkSize - _zStream.avail_out;
+
+				output.Write(buffer, written);
+			} while (_zStream.avail_out == 0);
+		});
 	}
 
 	TaskInfo ZlibDecompressionTask::DoGetInfo() const
@@ -67,6 +128,19 @@ namespace Elpida
 	UniquePtr<Task> ZlibDecompressionTask::DoDuplicate() const
 	{
 		return std::make_unique<ZlibDecompressionTask>();
+	}
+
+	ZlibDecompressionTask::~ZlibDecompressionTask()
+	{
+		if (_zStream.zalloc != nullptr)
+		{
+			inflateEnd(&_zStream);
+		}
+	}
+
+	ZlibDecompressionTask::ZlibDecompressionTask()
+	{
+		std::memset(&_zStream, 0, sizeof(z_stream));
 	}
 
 } // Elpida

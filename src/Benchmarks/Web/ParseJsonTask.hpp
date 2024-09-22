@@ -24,7 +24,7 @@ namespace Elpida
 		ParseJsonTask() = default;
 		~ParseJsonTask() override = default;
 	protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		[[nodiscard]]
 		TaskInfo DoGetInfo() const override;

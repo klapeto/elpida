@@ -52,14 +52,14 @@ namespace Elpida
 		return std::make_unique<AESEncryptTask>(_key);
 	}
 
-	void AESEncryptTask::DoRun(Iterations iterations)
+	void AESEncryptTask::DoRunImpl()
 	{
 		const std::size_t inputSize = _input->GetSize();
 		const auto input = _input->GetData();
 
 		const auto out = _output->GetData();
 		const auto outputCapacity = _output->GetSize();
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			auto context = EvpCipherCtxPtr(EVP_CIPHER_CTX_new());
 
@@ -82,7 +82,7 @@ namespace Elpida
 				Utilities::ThrowOpenSSLError("Failed to encrypt: ");
 			}
 			_finalSize = outSize + outSize2;
-		}
+		});
 	}
 
 	Size AESEncryptTask::GetOperationsPerformedPerRun()

@@ -32,14 +32,15 @@ namespace Elpida
 		return _inputData->GetSize();
 	}
 
-	void ParseJsonTask::DoRun(Iterations iterations)
+	void ParseJsonTask::DoRunImpl()
 	{
 		const char* ptr = reinterpret_cast<char*>(_inputData.get()->GetData());
-		std::string_view str{ptr, _inputData->GetSize()};
-		while (iterations-- > 0)
+		std::string_view str{ ptr, _inputData->GetSize() };
+
+		Exec([&]()
 		{
 			_parsedElement = nlohmann::json::parse(str);
-		}
+		});
 	}
 
 	Size ParseJsonTask::GetOperationsPerformedPerRun()

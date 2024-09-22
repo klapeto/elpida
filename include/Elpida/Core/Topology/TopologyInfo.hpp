@@ -41,6 +41,7 @@ namespace Elpida
 
 		void PinProcessToProcessors(const std::vector<Ref<const ProcessingUnitNode>>& processors) const;
 		void PinThreadToProcessor(unsigned int processorId) const;
+		void ClearThreadPinning() const;
 
 		TopologyInfo(UniquePtr<TopologyNode> root,
 			Vector<CpuKind>&& cpuKinds,

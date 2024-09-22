@@ -59,12 +59,12 @@ namespace Elpida
 		return _size * _size;
 	}
 
-	void RayTracingTask::DoRun(Iterations iterations)
+	void RayTracingTask::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			_camera.Render(_scene, _frameBuffer);
-		}
+		});
 	}
 
 	Size RayTracingTask::GetOperationsPerformedPerRun()

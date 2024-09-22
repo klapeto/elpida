@@ -165,4 +165,33 @@ namespace Elpida
 		hwloc_bitmap_free(set);
 	}
 
+	void TopologyInfo::ClearThreadPinning() const
+	{
+		auto set = hwloc_bitmap_alloc();
+		if (set == nullptr)
+		{
+			throw ElpidaException("Failed to allocate for thread hwloc bitmap");
+		}
+		try
+		{
+			for (auto& processor : _allProcessingUnits)
+			{
+				if (hwloc_bitmap_set(set, processor.get().GetOsIndex().value()) == -1)
+				{
+					throw ElpidaException("Failed to set process bitmap: ", strerror(errno));
+				}
+			}
+			if (hwloc_set_thread_cpubind((hwloc_topology_t)_topologyObj, GetCurrentThreadId(), set, 0) == -1)
+			{
+				throw ElpidaException("Failed to set thread bind: ", strerror(errno));
+			}
+		}
+		catch (...)
+		{
+			hwloc_bitmap_free(set);
+			throw;
+		}
+		hwloc_bitmap_free(set);
+	}
+
 } // Elpida

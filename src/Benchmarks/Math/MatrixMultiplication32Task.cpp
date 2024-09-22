@@ -50,12 +50,12 @@ namespace Elpida
 		return _matrix.GetColumns() * _matrix.GetRows() * 2;
 	}
 
-	void MatrixMultiplication32Task::DoRun(Iterations iterations)
+	void MatrixMultiplication32Task::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([this]()
 		{
 			_matrix = _a * _b;
-		}
+		});
 	}
 
 	Size MatrixMultiplication32Task::GetOperationsPerformedPerRun()

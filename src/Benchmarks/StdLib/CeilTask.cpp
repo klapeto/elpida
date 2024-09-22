@@ -21,13 +21,13 @@ namespace Elpida
 		return 1;
 	}
 
-	void CeilTask::DoRun(Iterations iterations)
+	void CeilTask::DoRunImpl()
 	{
 		double y = 1561131321.1513123;
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			REPEAT_10000(y = std::ceil(y));
-		}
+		});
 	}
 
 	Size CeilTask::GetOperationsPerformedPerRun()

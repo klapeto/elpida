@@ -20,13 +20,13 @@ namespace Elpida
 		return 1;
 	}
 
-	void SqrtTask::DoRun(Iterations iterations)
+	void SqrtTask::DoRunImpl()
 	{
 		double x = 156113132146186435.1513123;
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			REPEAT_10000(x = std::sqrt(x));
-		}
+		});
 	}
 
 	Size SqrtTask::GetOperationsPerformedPerRun()

@@ -24,14 +24,14 @@ namespace Elpida
 		return _inputData->GetSize();
 	}
 
-	void MemchrTask::DoRun(Iterations iterations)
+	void MemchrTask::DoRunImpl()
 	{
 		auto data = _inputData->GetData();
 		auto size = _inputData->GetSize();
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			volatile auto x = std::memchr(data, Character, size);
-		}
+		});
 	}
 
 	Size MemchrTask::GetOperationsPerformedPerRun()

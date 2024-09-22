@@ -18,12 +18,12 @@ namespace Elpida
 		return sizeof("53215.1513123");
 	}
 
-	void StrtodTask::DoRun(Iterations iterations)
+	void StrtodTask::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			auto value = std::strtod("53215.1513123", nullptr);
-		}
+		});
 	}
 
 	Size StrtodTask::GetOperationsPerformedPerRun()

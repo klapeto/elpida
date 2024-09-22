@@ -14,44 +14,37 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef ELPIDA_NBODYTASK_HPP
-#define ELPIDA_NBODYTASK_HPP
+//
+// Created by klapeto on 22/9/2024.
+//
 
-#include "Elpida/Core/MicroTask.hpp"
-#include "NBodySystem.hpp"
+#ifndef ELPIDA_ITERATIONMICROTASK_HPP
+#define ELPIDA_ITERATIONMICROTASK_HPP
+
+#include <cmath>
+#include "Elpida/Core/Duration.hpp"
+#include "Elpida/Core/Task.hpp"
+#include "Elpida/Core/Size.hpp"
+#include "Elpida/Core/Iterations.hpp"
 
 namespace Elpida
 {
 
-	class NBodyTask : public MicroTask
+	class IterationMicroTask: public Task
 	{
 	public:
-		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
+		Duration Run() final;
 
-		[[nodiscard]]
-		SharedPtr<AbstractTaskData> Finalize() override;
-
-		[[nodiscard]]
-		Size GetProcessedDataSize() const override;
-
-		NBodyTask() = default;
-		~NBodyTask() override = default;
+		IterationMicroTask() = default;
+		~IterationMicroTask() override = default;
 	protected:
-		void DoRunImpl() override;
-
-		[[nodiscard]]
-		TaskInfo DoGetInfo() const override;
-
-		[[nodiscard]]
-		Size GetOperationsPerformedPerRun() override;
-
-		[[nodiscard]]
-		UniquePtr<Task> DoDuplicate() const override;
-	private:
-		NBodySystem<double> _system;
-		SharedPtr<AbstractTaskData> _inputData;
+		void DoRun() final;
+		virtual void DoRun(Iterations iterations) = 0;
+		virtual Size GetOperationsPerformedPerRun() = 0;
+		virtual Duration GetExecutionMinimumDuration();
+		virtual void OnBeforeRun(Iterations iterations);
 	};
 
-}
+} // Elpida
 
-#endif //ELPIDA_NBODYTASK_HPP
+#endif //ELPIDA_ITERATIONMICROTASK_HPP

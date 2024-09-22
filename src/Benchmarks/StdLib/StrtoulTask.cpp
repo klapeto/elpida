@@ -15,15 +15,15 @@ namespace Elpida
 
 	Size StrtoulTask::GetProcessedDataSize() const
 	{
-		return sizeof("5321515131");
+		return sizeof("1524515736");
 	}
 
-	void StrtoulTask::DoRun(Iterations iterations)
+	void StrtoulTask::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			auto value = std::strtoul("1524515736", nullptr, 10);
-		}
+		});
 	}
 
 	Size StrtoulTask::GetOperationsPerformedPerRun()

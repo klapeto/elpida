@@ -6,8 +6,6 @@ project("Elpida Compression benchmarks" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_COMPRESSION_BENCHMARKS_SOURCES
         Plugin.cpp
         ZlibCompressionTask.cpp
-        ZlibCompressor.cpp
-        ZlibCompressor.hpp
         ZlibCompressionBenchmark.cpp
         ZlibCompressionBenchmark.hpp
         ZlibDecompressionTask.cpp

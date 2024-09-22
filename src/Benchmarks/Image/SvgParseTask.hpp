@@ -27,7 +27,7 @@ namespace Elpida
 		SvgParseTask() = default;
 		~SvgParseTask() override = default;
 	protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		TaskInfo DoGetInfo() const override;
 

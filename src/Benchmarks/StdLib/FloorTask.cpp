@@ -20,13 +20,13 @@ namespace Elpida
 		return 1;
 	}
 
-	void FloorTask::DoRun(Iterations iterations)
+	void FloorTask::DoRunImpl()
 	{
 		double y = 1561131321.1513123;
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			REPEAT_10000(y = std::floor(y));
-		}
+		});
 	}
 
 	Size FloorTask::GetOperationsPerformedPerRun()

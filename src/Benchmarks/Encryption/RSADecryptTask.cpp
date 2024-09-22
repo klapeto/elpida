@@ -136,22 +136,24 @@ namespace Elpida
 			0x8fbc, 0xee77, 0xe15f, 0x2fda, 0x0c3d, 0xcb42, 0x7bb5, 0xa916
 	};
 
-
-	void RSADecryptTask::DoRun(Iterations iterations)
+	void RSADecryptTask::DoRunImpl()
 	{
 		auto context = _context.get();
-		while (iterations-- > 0)
-		{
-			auto outputSize = _output->GetSize();
-			auto output = _output->GetData();
 
-			auto inputSize = sizeof(inputDataBinary);
-			auto input = reinterpret_cast<const unsigned char*>(inputDataBinary);
+		const auto outputSizeC = _output->GetSize();
+		auto output = _output->GetData();
+		auto inputSize = sizeof(inputDataBinary);
+		auto input = reinterpret_cast<const unsigned char*>(inputDataBinary);
+
+		Exec([&]()
+		{
+			auto outputSize = outputSizeC;
+
 			if (EVP_PKEY_decrypt(context, output, &outputSize, input, inputSize) <= 0)
 			{
 				Utilities::ThrowOpenSSLError("Failed decrypt: ");
 			}
-		}
+		});
 	}
 
 	Size RSADecryptTask::GetOperationsPerformedPerRun()
@@ -166,7 +168,8 @@ namespace Elpida
 
 		EVP_PKEY* key = nullptr;
 
-		auto context = OSslDecoderCtxPtr(OSSL_DECODER_CTX_new_for_pkey(&key, "DER", nullptr, "RSA", EVP_PKEY_KEYPAIR, nullptr, nullptr));
+		auto context = OSslDecoderCtxPtr(
+				OSSL_DECODER_CTX_new_for_pkey(&key, "DER", nullptr, "RSA", EVP_PKEY_KEYPAIR, nullptr, nullptr));
 
 		auto result = OSSL_DECODER_from_data(context.get(), &data, &data_len);
 
@@ -191,7 +194,8 @@ namespace Elpida
 		}
 
 		std::size_t outputSize = 0;
-		if (EVP_PKEY_decrypt(_context.get(), nullptr, &outputSize, reinterpret_cast<unsigned char*>(inputDataBinary), sizeof(inputDataBinary)) <= 0)
+		if (EVP_PKEY_decrypt(_context.get(), nullptr, &outputSize, reinterpret_cast<unsigned char*>(inputDataBinary),
+				sizeof(inputDataBinary)) <= 0)
 		{
 			Utilities::ThrowOpenSSLError("Failed to get decrypted size: ");
 		}

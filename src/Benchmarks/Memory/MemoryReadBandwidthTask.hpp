@@ -6,11 +6,11 @@
 #define _MEMORYREADBANDWIDTHTASK_HPP_
 
 #include "Elpida/Core/UniquePtr.hpp"
-#include "Elpida/Core/MicroTask.hpp"
+#include "Elpida/Core/IterationMicroTask.hpp"
 
 namespace Elpida
 {
-	class MemoryReadBandwidthTask : public MicroTask
+	class MemoryReadBandwidthTask : public IterationMicroTask
 	{
 	 public:
 		void Prepare(SharedPtr<AbstractTaskData> inputData) override;

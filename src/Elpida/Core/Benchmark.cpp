@@ -218,7 +218,7 @@ namespace Elpida
 			thread->WakeThread();
 		}
 
-		Duration totalDuration;
+		Duration totalDuration = Duration(0);
 		for (auto& thread : threadTasks)
 		{
 			totalDuration += thread->Run();

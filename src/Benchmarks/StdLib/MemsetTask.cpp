@@ -20,14 +20,14 @@ namespace Elpida
 		return _inputData->GetSize();
 	}
 
-	void MemsetTask::DoRun(Iterations iterations)
+	void MemsetTask::DoRunImpl()
 	{
 		volatile auto data = _inputData->GetData();
 		auto size = _inputData->GetSize();
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			std::memset(data, 0, size);
-		}
+		});
 	}
 
 	Size MemsetTask::GetOperationsPerformedPerRun()

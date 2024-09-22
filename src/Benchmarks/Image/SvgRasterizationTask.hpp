@@ -27,7 +27,7 @@ namespace Elpida
 		explicit SvgRasterizationTask(std::size_t subSamples);
 		~SvgRasterizationTask() override = default;
 	protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		TaskInfo DoGetInfo() const override;
 

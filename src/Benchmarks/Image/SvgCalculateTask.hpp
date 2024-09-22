@@ -29,7 +29,7 @@ namespace Elpida
 	private:
 		double _scale;
 	protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		TaskInfo DoGetInfo() const override;
 

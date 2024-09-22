@@ -94,12 +94,12 @@ namespace Elpida
 		return 5;
 	}
 
-	void NBodyTask::DoRun(Iterations iterations)
+	void NBodyTask::DoRunImpl()
 	{
-		for (std::size_t i = 0; i < iterations; ++i)
+		Exec([this]()
 		{
 			_system.Advance(0.01);
-		}
+		});
 	}
 
 	Size NBodyTask::GetOperationsPerformedPerRun()

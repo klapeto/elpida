@@ -48,12 +48,12 @@ namespace Elpida
 		return Utilities::CalculateTotalPixelsRendered(_inputDocument->GetRootShape());
 	}
 
-	void SvgRasterizationTask::DoRun(Iterations iterations)
+	void SvgRasterizationTask::DoRunImpl()
 	{
-		while (iterations-- > 0)
+		Exec([&]()
 		{
 			 SvgDirectRasterizer::Rasterize(*_inputDocument, _rasterizedImage, _superSampler);
-		}
+		});
 	}
 
 	SvgRasterizationTask::SvgRasterizationTask(std::size_t subSamples)

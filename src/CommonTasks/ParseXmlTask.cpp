@@ -38,14 +38,15 @@ namespace Elpida
 		return _inputData->GetSize();
 	}
 
-	void ParseXmlTask::DoRun(Iterations iterations)
+	void ParseXmlTask::DoRunImpl()
 	{
 		const char* ptr = reinterpret_cast<char*>(_inputData.get()->GetData());
 		auto size = _inputData->GetSize();
-		while (iterations-- > 0)
+
+		Exec([&]()
 		{
 			_parsedElement = XmlParser::Parse(ptr, size);
-		}
+		});
 	}
 
 	Size ParseXmlTask::GetOperationsPerformedPerRun()

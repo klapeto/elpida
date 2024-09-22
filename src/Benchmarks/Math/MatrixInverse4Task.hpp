@@ -37,7 +37,7 @@ namespace Elpida
 		MatrixInverse4Task() = default;
 		~MatrixInverse4Task() override = default;
 	protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		[[nodiscard]]
 		TaskInfo DoGetInfo() const override;
