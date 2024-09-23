@@ -51,7 +51,7 @@ namespace Elpida
 			auto th = std::thread([&]()
 			{
 				// avoid forced schedule to the same thread
-				context.GetEnvironmentInfo().GetTopologyInfo().ClearThreadPinning();
+				//context.GetEnvironmentInfo().GetTopologyInfo().ClearThreadPinning();
 				{
 					// wait until measure thread tells us to sleep.
 					std::unique_lock<std::mutex> lock(mutex);
