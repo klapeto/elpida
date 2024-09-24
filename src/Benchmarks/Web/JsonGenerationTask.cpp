@@ -9,7 +9,7 @@
 namespace Elpida
 {
 	static const char Header[] = R"([)";
-	static const char Element[] = R"({"test":5,"obj":{"a":true,"b":"random"},"arr":[5.56,6.5,3.04]},)";
+	static const char Element[] = R"({"test":"data","obj":{"a":true,"b":"random"},"arr":["a","b","c"]},)";
 	static const char Footer[] = R"(])";
 
 	JsonGenerationTask::JsonGenerationTask(std::size_t jsonSize)
