@@ -27,6 +27,7 @@
 #include "Models/Benchmark/BenchmarkResultModel.hpp"
 #include <thread>
 #include <atomic>
+#include <filesystem>
 
 namespace Elpida::Application
 {
@@ -50,6 +51,7 @@ namespace Elpida::Application
 		void StopRunning();
 		void RunAsync();
 
+		void SaveResults(const std::filesystem::path& filePath);
 		void ClearResults();
 
 		void SetMultiplier(double multiplier);

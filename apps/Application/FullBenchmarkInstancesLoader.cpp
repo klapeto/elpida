@@ -23,6 +23,7 @@
 #include <vector>
 #include <unordered_map>
 #include <functional>
+#include <algorithm>
 
 #include "FullBenchmarkInstances/AESDecryption.hpp"
 #include "FullBenchmarkInstances/AESEncryption.hpp"

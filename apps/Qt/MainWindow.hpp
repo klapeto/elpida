@@ -68,6 +68,7 @@ namespace Elpida::Application
 		void on_actionExit_triggered();
 		void on_actionClear_results_triggered();
 		void on_actionAbout_triggered();
+		void on_actionSave_results_as_triggered();
 	};
 }
 #endif // MAINWINDOW_HPP

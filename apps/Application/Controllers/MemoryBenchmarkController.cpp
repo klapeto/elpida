@@ -34,6 +34,7 @@
 #include "ResultSerializer.hpp"
 
 #include <cmath>
+#include <fstream>
 
 namespace Elpida::Application
 {
@@ -292,6 +293,13 @@ namespace Elpida::Application
 	void MemoryBenchmarkController::ClearResults()
 	{
 		_model.Clear();
+	}
+
+	void MemoryBenchmarkController::SaveResults(const std::filesystem::path& filePath)
+	{
+		std::fstream file(filePath.c_str(), std::ios::trunc | std::fstream::out);
+
+		file << _resultSerializer.Serialize(_model);
 	}
 } // Application
 // Elpida

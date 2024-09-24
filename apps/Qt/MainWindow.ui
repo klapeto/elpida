@@ -147,6 +147,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="actionSave_results_as"/>
     <addaction name="actionClear_results"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -161,11 +162,6 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionSave_results_as">
-   <property name="text">
-    <string>&amp;Save results as...</string>
-   </property>
-  </action>
   <action name="actionClear_results">
    <property name="text">
     <string>&amp;Clear results</string>
@@ -179,6 +175,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionSave_results_as">
+   <property name="text">
+    <string>&amp;Save results as..</string>
    </property>
   </action>
  </widget>

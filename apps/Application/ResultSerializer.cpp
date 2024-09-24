@@ -22,6 +22,16 @@ using namespace Elpida;
 namespace Elpida::Application
 {
 
+	static nlohmann::json SerializeResult(const MemoryBenchmarkResultModel& resultModel)
+	{
+		json outJson;
+
+		outJson["size"] = resultModel.GetWorkingSetSize();
+		outJson["score"] = resultModel.GetScore();
+
+		return outJson;
+	}
+
 	static json SerializeCpuInfo(const CpuInfoModel& cpuInfo)
 	{
 		json cpu;
@@ -206,6 +216,22 @@ namespace Elpida::Application
 	}
 
 	std::string ResultSerializer::Serialize(const ListModel<BenchmarkResultModel>& benchmarkResultModels) const
+	{
+		json outJson = _systemInfo;
+
+		json resultsJson = json::array();
+
+		for (auto& result : benchmarkResultModels.GetItems())
+		{
+			resultsJson.push_back(SerializeResult(result.GetValue()));
+		}
+
+		outJson["results"] = std::move(resultsJson);
+
+		return outJson.dump();
+	}
+
+	std::string ResultSerializer::Serialize(const ListModel<MemoryBenchmarkResultModel>& benchmarkResultModels) const
 	{
 		json outJson = _systemInfo;
 

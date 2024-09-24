@@ -183,5 +183,26 @@ namespace Elpida::Application
 			break;
 		}
 	}
+
+	void MainWindow::on_actionSave_results_as_triggered()
+	{
+		auto filename = QFileDialog::getSaveFileName(this,
+				tr("Save results"), "", tr("JSON File (*.json)"));
+		auto index =_ui->tbBenchmark->currentIndex();
+		switch (index)
+		{
+		case 1:
+			_fullBenchmarkController.SaveResults(filename.toStdString());
+			break;
+		case 2:
+			_memoryBenchmarkController.SaveResults(filename.toStdString());
+			break;
+		case 3:
+			_customBenchmarkController.SaveResults(filename.toStdString());
+			break;
+		default:
+			break;
+		}
+	}
 }
 

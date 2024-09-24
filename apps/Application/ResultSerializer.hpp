@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include "Models/Benchmark/BenchmarkResultModel.hpp"
+#include "Models/Full/FullBenchmarkResultModel.hpp"
+#include "Models/MemoryBenchmark/MemoryBenchmarkResultModel.hpp"
 #include "Models/Abstractions/ListModel/ListModel.hpp"
 
 #include "json.hpp"
@@ -29,6 +31,9 @@ namespace Elpida::Application
 
 		[[nodiscard]]
 		std::string Serialize(const ListModel<BenchmarkResultModel>& benchmarkResultModels) const;
+
+		[[nodiscard]]
+		std::string Serialize(const ListModel<MemoryBenchmarkResultModel>& benchmarkResultModels) const;
 
 		explicit ResultSerializer(const CpuInfoModel& cpuInfoModel,
 				const MemoryInfoModel& memoryInfoModel,
