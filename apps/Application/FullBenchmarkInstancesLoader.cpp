@@ -153,9 +153,9 @@ namespace Elpida::Application
 						},
 						{ "Json Parsing", {
 								"cc53b078-75aa-41c0-8885-b381bc1a4bda",
-								20.62 * std::mega::num,
+								20.24 * std::mega::num,
 								"35f22cbc-16e7-4c35-aebf-029dac328e46",
-								36.28 * std::mega::num,
+								40.76 * std::mega::num,
 								Generate<JsonParsing>
 							}
 						},
