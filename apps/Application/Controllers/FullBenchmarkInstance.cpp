@@ -28,9 +28,8 @@ namespace Elpida::Application
 {
 
 	FullBenchmarkInstanceResult::FullBenchmarkInstanceResult(BenchmarkResultModel&& benchmarkResult,
-			Score singleCoreScore, Score multiThreadScore)
-			:_benchmarkResult(std::move(benchmarkResult)), _singleCoreScore(singleCoreScore),
-			 _multiThreadScore(multiThreadScore)
+			Score score)
+			:_benchmarkResult(std::move(benchmarkResult)), _score(score)
 	{
 	}
 
@@ -39,14 +38,9 @@ namespace Elpida::Application
 		return _benchmarkResult;
 	}
 
-	Score FullBenchmarkInstanceResult::GetSingleCoreScore() const
+	Score FullBenchmarkInstanceResult::GetScore() const
 	{
-		return _singleCoreScore;
-	}
-
-	Score FullBenchmarkInstanceResult::GetMultiThreadScore() const
-	{
-		return _multiThreadScore;
+		return _score;
 	}
 
 	FullBenchmarkInstance::FullBenchmarkInstance(
@@ -98,12 +92,12 @@ namespace Elpida::Application
 				false,
 				false,
 				ConcurrencyMode::None,
-				_runConfigurationModel.GetMinimumMicroTaskDuration().count()
+				Seconds(5).count()
 		);
 
 		auto thisResult = benchmarkResult.GetResult() / _baseScore;
 
-		return FullBenchmarkInstanceResult(std::move(benchmarkResult), thisResult, 0);
+		return FullBenchmarkInstanceResult(std::move(benchmarkResult), thisResult);
 	}
 
 	FullBenchmarkInstanceResult FullBenchmarkInstance::RunMultiThread() const
@@ -116,11 +110,12 @@ namespace Elpida::Application
 				false,
 				false,
 				GetMultiThreadConcurrencyMode(),
-				_runConfigurationModel.GetMinimumMicroTaskDuration().count());
+				Seconds(5).count()
+				);
 
 		auto thisResult = benchmarkResult.GetResult() / _baseScore;
 
-		return FullBenchmarkInstanceResult(std::move(benchmarkResult), 0, thisResult);
+		return FullBenchmarkInstanceResult(std::move(benchmarkResult),thisResult);
 
 	}
 
@@ -132,6 +127,11 @@ namespace Elpida::Application
 	const std::string& FullBenchmarkInstance::GetUuid() const
 	{
 		return _uuid;
+	}
+
+	bool FullBenchmarkInstance::IsMultiThread() const
+	{
+		return _multiThread;
 	}
 } // Application
 // Elpida

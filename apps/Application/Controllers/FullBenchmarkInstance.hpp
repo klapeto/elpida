@@ -32,14 +32,11 @@ namespace Elpida::Application
 	{
 	public:
 		BenchmarkResultModel& GetBenchmarkResult();
-		Score GetSingleCoreScore() const;
-		Score GetMultiThreadScore() const;
-		FullBenchmarkInstanceResult(BenchmarkResultModel&& benchmarkResult, Score singleCoreScore,
-				Score multiThreadScore);
+		Score GetScore() const;
+		FullBenchmarkInstanceResult(BenchmarkResultModel&& benchmarkResult, Score score);
 	private:
 		BenchmarkResultModel _benchmarkResult;
-		Score _singleCoreScore;
-		Score _multiThreadScore;
+		Score _score;
 	};
 
 	class BenchmarkModel;
@@ -67,6 +64,8 @@ namespace Elpida::Application
 			return _benchmark;
 		}
 
+		[[nodiscard]]
+		bool IsMultiThread() const;
 
 		FullBenchmarkInstance(const FullBenchmarkInstance&) = delete;
 		FullBenchmarkInstance(FullBenchmarkInstance&&) noexcept = default;
@@ -99,6 +98,7 @@ namespace Elpida::Application
 
 		virtual void Configure() = 0;
 
+		[[nodiscard]]
 		virtual ConcurrencyMode GetMultiThreadConcurrencyMode() const
 		{
 			return ConcurrencyMode::ShareInput;

@@ -80,7 +80,7 @@ namespace Elpida::Application
 			throw ElpidaException("Missing benchmarks");
 		}
 
-		_model.SetTotalBenchmarks(4);
+		_model.SetTotalBenchmarks(_benchmarks.size());
 	}
 
 	void FullBenchmarkController::RunAsync()
@@ -106,8 +106,10 @@ namespace Elpida::Application
 			{
 				for (std::size_t i = 0; i < _runConfigurationModel.GetIterationsToRun(); ++i)
 				{
-					Score singleCoreScore = 0.0;
-					Score multiCoreScore = 0.0;
+					Score singleThreadScore = 0.0;
+					Score multiThreadScore = 0.0;
+					std::size_t singleThreadScoresCount = 0;
+					std::size_t multiThreadScoresCount = 0;
 					std::vector<BenchmarkResultModel> benchmarkResults;
 
 					for (auto& benchmark : _benchmarks)
@@ -117,15 +119,28 @@ namespace Elpida::Application
 						auto result = benchmark->Run();
 						result.GetBenchmarkResult().SetUuid(benchmark->GetUuid());
 						result.GetBenchmarkResult().SetInstanceName(benchmark->GetName());
-						singleCoreScore += result.GetSingleCoreScore();
-						multiCoreScore += result.GetMultiThreadScore();
+
+						if (benchmark->IsMultiThread())
+						{
+							multiThreadScore += result.GetScore();
+							multiThreadScoresCount++;
+						}
+						else
+						{
+							singleThreadScore += result.GetScore();
+							singleThreadScoresCount++;
+						}
+
 						benchmarkResults.push_back(std::move(result.GetBenchmarkResult()));
 					}
 
-					auto totalScore = CalculateTotalScore(singleCoreScore, multiCoreScore);
+					singleThreadScore /= singleThreadScoresCount;
+					multiThreadScore /= multiThreadScoresCount;
 
-					auto result = FullBenchmarkResultModel(std::move(benchmarkResults), totalScore, singleCoreScore,
-							multiCoreScore);
+					auto totalScore = CalculateTotalScore(singleThreadScore, multiThreadScore);
+
+					auto result = FullBenchmarkResultModel(std::move(benchmarkResults), totalScore, singleThreadScore,
+							multiThreadScore);
 					_model.Add(result);
 					thisResults.push_back(std::move(result));
 

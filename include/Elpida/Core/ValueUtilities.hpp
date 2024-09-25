@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iomanip>
 #include <locale>
+#include <limits>
 
 namespace Elpida
 {
@@ -134,6 +135,7 @@ namespace Elpida
 
 		static String GetValueScaleStringSI(double value, int decimals = 2)
 		{
+			if (value <= std::numeric_limits<double>::epsilon()) return "0";
 			return GetValueScaleStringImpl(value, ScaleValuesSI, PrefixesSI, GetArrayLength(PrefixesSI), decimals);
 		}
 
