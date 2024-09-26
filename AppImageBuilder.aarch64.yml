@@ -35,7 +35,7 @@ AppDir:
       - libqt5x11extras5
       - libqt5charts5
       - libssl1.1
-      - libssl3
+      - openssl
       - qt5-image-formats-plugins
   files:
     include:
