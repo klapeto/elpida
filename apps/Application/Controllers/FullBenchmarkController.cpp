@@ -122,20 +122,25 @@ namespace Elpida::Application
 
 						if (benchmark->IsMultiThread())
 						{
-							multiThreadScore += result.GetScore();
+							//multiThreadScore += result.GetScore();
+							multiThreadScore += 1.0 / result.GetScore();
 							multiThreadScoresCount++;
 						}
 						else
 						{
-							singleThreadScore += result.GetScore();
+							//singleThreadScore += result.GetScore();
+							singleThreadScore += 1.0 / result.GetScore();
 							singleThreadScoresCount++;
 						}
 
 						benchmarkResults.push_back(std::move(result.GetBenchmarkResult()));
 					}
 
-					singleThreadScore /= singleThreadScoresCount;
-					multiThreadScore /= multiThreadScoresCount;
+					// harmonic mean since we are averaging performance ratios
+					singleThreadScore = singleThreadScoresCount / singleThreadScore;
+					multiThreadScore = multiThreadScoresCount / multiThreadScore;
+					//singleThreadScore /= singleThreadScoresCount;
+					//multiThreadScore /= multiThreadScoresCount;
 
 					auto totalScore = CalculateTotalScore(singleThreadScore, multiThreadScore);
 
