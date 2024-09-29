@@ -111,8 +111,14 @@ if(MSYS OR MINGW OR MSVC)
 endif()
 
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
-include(FindOpenSSL)
-target_link_libraries(elpida-application OpenSSL::SSL)
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+find_package(OpenSSL REQUIRED)
+
+if (UNIX OR MSYS OR MINGW)
+    target_link_libraries(elpida-application libssl.a libcrypto.a)
+elseif (MSVC)
+    target_link_libraries(elpida-application libssl.lib libcrypto.lib)
+endif()
 
 target_link_libraries(elpida-application elpida-core elpida-platform elpida-shared)
 
