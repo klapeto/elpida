@@ -25,6 +25,7 @@ namespace Elpida::Application
 
 		httplib::Client client(apiUrl);
 
+		client.set_write_timeout(Seconds(30));
 		auto httpResponse =
 				client.Post(resultPath,
 						{{ apiKeyHeader, apiKey }},

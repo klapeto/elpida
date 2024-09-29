@@ -18,17 +18,13 @@
 
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "RayTracingTask.hpp"
-#include "CommonTasks/FileWriteTask.hpp"
-#include "ConvertToUInt8Task.hpp"
-#include "PngEncodingTask.hpp"
 
 namespace Elpida
 {
 	Vector<TaskConfiguration> RayTracingBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-			TaskConfiguration("Render size", ConfigurationType::Integer, "100"),
-			TaskConfiguration("Output file", ConfigurationType::File, "./Ray-traced.png"),
+			TaskConfiguration("Render size", ConfigurationType::Integer, "100")
 		};
 	}
 
@@ -39,9 +35,6 @@ namespace Elpida
 		auto& configuration = context.GetConfiguration();
 
 		returnTasks.push_back(CreateTask<RayTracingTask>(configuration.at(0).AsInteger()));
-		returnTasks.push_back(CreateTask<ConvertToUInt8Task>());
-		returnTasks.push_back(CreateTask<PngEncodingTask>());
-		returnTasks.push_back(CreateTask<FileWriteTask>(configuration.at(1).GetValue()));
 
 		return returnTasks;
 	}
@@ -54,7 +47,5 @@ namespace Elpida
 		taskToUseAsScoreIndex = 0;
 
 		taskInfos.push_back(RayTracingTask(100).GetInfo());
-		taskInfos.push_back(ConvertToUInt8Task().GetInfo());
-		taskInfos.push_back(PngEncodingTask().GetInfo());
-		taskInfos.push_back(FileWriteTask("").GetInfo());	}
+	}
 } // Elpida

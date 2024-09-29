@@ -40,6 +40,5 @@ namespace Elpida::Application
 	void RayTracing::Configure()
 	{
 		_benchmark.GetConfigurations()[0].SetValue("32");
-		_benchmark.GetConfigurations()[1].SetValue("./raytracing.png");
 	}
 } // Elpida::Application

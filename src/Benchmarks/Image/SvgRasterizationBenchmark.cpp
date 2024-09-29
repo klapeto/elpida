@@ -1,4 +1,20 @@
 //
+//  Copyright (c) 2024  Ioannis Panagiotopoulos
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 9/4/2024.
 //
 
@@ -9,10 +25,7 @@
 #include "SvgCalculateTask.hpp"
 #include "SvgDocumentGenerationTask.hpp"
 #include "SvgRasterizationTask.hpp"
-#include "ConvertToUInt8Task.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
-#include "CommonTasks/FileWriteTask.hpp"
-#include "PngEncodingTask.hpp"
 
 namespace Elpida
 {
@@ -21,8 +34,7 @@ namespace Elpida
 		return {
 				TaskConfiguration("Shape count", ConfigurationType::Integer, "1"),
 				TaskConfiguration("SVG output scale", ConfigurationType::Float, "1.0"),
-				TaskConfiguration("SVG rasterization sub samples", ConfigurationType::Integer, "16"),
-				TaskConfiguration("Output Png file", ConfigurationType::File, "./test-data-single.png"),
+				TaskConfiguration("SVG rasterization sub samples", ConfigurationType::Integer, "16")
 		};
 	}
 
@@ -37,9 +49,6 @@ namespace Elpida
 		returnTasks.push_back(CreateTask<SvgParseTask>());
 		returnTasks.push_back(CreateTask<SvgCalculateTask>(configuration.at(1).AsFloat()));
 		returnTasks.push_back(CreateTask<SvgRasterizationTask>(configuration.at(2).AsInteger()));
-		returnTasks.push_back(CreateTask<ConvertToUInt8Task>());
-		returnTasks.push_back(CreateTask<PngEncodingTask>());
-		returnTasks.push_back(CreateTask<FileWriteTask>(configuration.at(3).GetValue()));
 
 		return returnTasks;
 	}
@@ -59,8 +68,5 @@ namespace Elpida
 		taskInfos.push_back(SvgParseTask().GetInfo());
 		taskInfos.push_back(SvgCalculateTask(1.0).GetInfo());
 		taskInfos.push_back(SvgRasterizationTask(16).GetInfo());
-		taskInfos.push_back(ConvertToUInt8Task().GetInfo());
-		taskInfos.push_back(PngEncodingTask().GetInfo());
-		taskInfos.push_back(FileWriteTask("").GetInfo());
 	}
 } // Elpida
