@@ -17,8 +17,9 @@
 #ifndef ELPIDA_REGEXTASK_HPP
 #define ELPIDA_REGEXTASK_HPP
 
+
 #include "Elpida/Core/MicroTask.hpp"
-#include <regex>
+#include "boost/regex.hpp"
 
 namespace Elpida
 {
@@ -48,9 +49,9 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
-		std::regex _regex;
-		std::smatch _matches;
 		SharedPtr<AbstractTaskData> _inputData;
+		boost::regex _regex;
+		bool _found = false;
 	};
 
 }

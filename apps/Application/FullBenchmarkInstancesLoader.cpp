@@ -214,7 +214,7 @@ namespace Elpida::Application
 								Generate<RayTracing>
 						}
 						},
-						{ "Regex", {
+						{ "Regex (Boost)", {
 								"bd0d8849-b988-40ac-9961-5e3528327da3",
 								19.33 * std::mega::num,
 								"142291f8-3c83-4f1b-ab02-ad1914e08885",

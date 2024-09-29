@@ -1,33 +1,51 @@
-#[[#include]]# "${NAME}Benchmark.hpp"
-
-#[[#include]]# "Elpida/Core/BenchmarkRunContext.hpp"
 #[[#include]]# "${NAME}Task.hpp"
 
-namespace Elpida
-{
-	Vector<TaskConfiguration> ${NAME}Benchmark::GetRequiredConfiguration() const
+namespace Elpida {
+
+	void ${NAME}Task::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
-		return {};
+		_inputData = std::move(inputData);
 	}
 
-	Vector<UniquePtr<Task>> ${NAME}Benchmark::GetTasks(BenchmarkRunContext& context) const
+	SharedPtr<AbstractTaskData> ${NAME}Task::Finalize()
 	{
-		std::vector<std::unique_ptr<Task>> returnTasks;
-
-		auto& configuration = context.GetConfiguration();
-
-		returnTasks.push_back(CreateTask<${NAME}Task>());
-
-		return returnTasks;
+		return std::move(_inputData);
 	}
 
-	void ${NAME}Benchmark::DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
-			std::vector<TaskInfo>& taskInfos) const
+	Size ${NAME}Task::GetProcessedDataSize() const
 	{
-		name = "${NAME}";
-		description = "${NAME} Description";
-		taskToUseAsScoreIndex = 0;
-
-		taskInfos.push_back(${NAME}Task().GetInfo());
+		return _inputData->GetSize();
 	}
-} // Elpida
+
+	void ${NAME}Task::DoRunImpl()
+	{
+		auto data = _inputData->GetData();
+		auto size = _inputData->GetSize();
+
+		Exec([&]()
+		{
+			// Code
+		});
+	}
+
+	Size ${NAME}Task::GetOperationsPerformedPerRun()
+	{
+		return 1;
+	}
+
+	UniquePtr<Task> ${NAME}Task::DoDuplicate() const
+	{
+		return std::make_unique<${NAME}Task>();
+	}
+
+	TaskInfo ${NAME}Task::DoGetInfo() const
+	{
+		return { "${NAME}",
+				 "${NAME} Description",
+				 "B",
+				 "The process rate",
+				 ResultType::Throughput
+		};
+	}
+
+}

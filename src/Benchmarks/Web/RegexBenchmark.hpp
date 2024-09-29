@@ -14,45 +14,29 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef ELPIDA_REGEXTASK_HPP
-#define ELPIDA_REGEXTASK_HPP
+#ifndef ELPIDA_REGEXBENCHMARK_HPP
+#define ELPIDA_REGEXBENCHMARK_HPP
 
-#include "Elpida/Core/MicroTask.hpp"
-#include <regex>
+#include "Elpida/Core/Benchmark.hpp"
 
 namespace Elpida
 {
 
-	class RegexTask : public MicroTask
+	class RegexBenchmark: public Benchmark
 	{
 	public:
-		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
+	    [[nodiscard]]
+		Vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
-		[[nodiscard]]
-		SharedPtr<AbstractTaskData> Finalize() override;
-
-		[[nodiscard]]
-		Size GetProcessedDataSize() const override;
-
-		RegexTask() = default;
-		~RegexTask() override = default;
+		RegexBenchmark() = default;
+		~RegexBenchmark() override = default;
 	protected:
-		void DoRunImpl() override;
-
 		[[nodiscard]]
-		TaskInfo DoGetInfo() const override;
-
-		[[nodiscard]]
-		Size GetOperationsPerformedPerRun() override;
-
-		[[nodiscard]]
-		UniquePtr<Task> DoDuplicate() const override;
-	private:
-		std::regex _regex;
-		std::smatch _matches;
-		SharedPtr<AbstractTaskData> _inputData;
+		Vector<UniquePtr<Task>> GetTasks(BenchmarkRunContext& context) const override;
+		void DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
+				std::vector<TaskInfo>& taskInfos) const override;
 	};
 
-}
+} // Elpida
 
-#endif //ELPIDA_REGEXTASK_HPP
+#endif //ELPIDA_REGEXBENCHMARK_HPP

@@ -19,16 +19,13 @@ class ${NAME}Task : public MicroTask
 		${NAME}Task() = default;
 		~${NAME}Task() override = default;
 	protected:
-		void DoRun(Iterations iterations) override;
+		void DoRunImpl() override;
 
 		[[nodiscard]]
 		TaskInfo DoGetInfo() const override;
 
 		[[nodiscard]]
 		Size GetOperationsPerformedPerRun() override;
-
-		[[nodiscard]]
-		Duration GetExecutionMinimumDuration() override;
 
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;

@@ -7,3 +7,6 @@
 [submodule "extern/google-test"]
 	path = extern/google-test
 	url = https://github.com/google/googletest.git
+[submodule "extern/boost-regex"]
+	path = extern/boost-regex
+	url = https://github.com/boostorg/regex.git

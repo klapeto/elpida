@@ -17,7 +17,6 @@
 #include "RegexBenchmark.hpp"
 
 #include "Elpida/Core/BenchmarkRunContext.hpp"
-#include "CommonTasks/FileReadTask.hpp"
 #include "RegexTask.hpp"
 
 namespace Elpida
@@ -41,7 +40,7 @@ namespace Elpida
 	void RegexBenchmark::DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
 			std::vector<TaskInfo>& taskInfos) const
 	{
-		name = "Regex";
+		name = "Regex (Boost)";
 		description = "Searches text with regex";
 		taskToUseAsScoreIndex = 0;
 

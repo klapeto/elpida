@@ -15,8 +15,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "RegexTask.hpp"
-
-#include <regex>
+#include <cstring>
 
 namespace Elpida
 {
@@ -1694,6 +1693,14 @@ namespace Elpida
 							   "\n"
 							   "gagatacctttgcaattttt\\n";
 
+	void RegexTask::Prepare(SharedPtr<AbstractTaskData> inputData)
+	{
+		_regex = boost::regex("cttt[ga][gc][ag]attttt", boost::regex::ECMAScript | boost::regex::icase);
+		_inputData = std::make_unique<RawTaskData>(inputData->GetAllocator());
+		_inputData->Allocate(sizeof(Data));
+		std::memcpy(_inputData->GetData(), Data, sizeof(Data));
+	}
+
 	SharedPtr<AbstractTaskData> RegexTask::Finalize()
 	{
 		return std::move(_inputData);
@@ -1706,12 +1713,12 @@ namespace Elpida
 
 	void RegexTask::DoRunImpl()
 	{
-		auto data = reinterpret_cast<const char*>(_inputData->GetData());
+		auto data = _inputData->GetData();
 		auto size = sizeof(Data);
 
 		Exec([&]()
 		{
-			std::regex_search(data, data + size, _regex);
+			_found = boost::regex_search(data, data + size, _regex);
 		});
 	}
 
@@ -1727,20 +1734,12 @@ namespace Elpida
 
 	TaskInfo RegexTask::DoGetInfo() const
 	{
-		return { "Regex (StdLib)",
+		return { "Regex (Boost)",
 				 "Searches text with regex",
 				 "Chars",
 				 "The character process rate",
 				 ResultType::Throughput
 		};
-	}
-
-	void RegexTask::Prepare(SharedPtr<AbstractTaskData> inputData)
-	{
-		_regex = std::regex("cttt[ga][gc][ag]attttt", std::regex::ECMAScript | std::regex::icase);
-		_inputData = std::make_unique<RawTaskData>(inputData->GetAllocator());
-		_inputData->Allocate(sizeof(Data));
-		std::memcpy(_inputData->GetData(), Data, sizeof(Data));
 	}
 
 }

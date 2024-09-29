@@ -102,3 +102,6 @@ target_include_directories(zlib INTERFACE ${ZLIB_INCLUDE_DIRS})
 target_include_directories(png INTERFACE ${LIBPNG_INCLUDE_DIRS})
 
 add_subdirectory(google-test)
+
+set(BOOST_REGEX_STANDALONE TRUE)
+add_subdirectory(boost-regex)
