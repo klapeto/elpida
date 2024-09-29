@@ -16,17 +16,10 @@ add_executable(elpida-encryption-benchmarks
         AESDecryptionBenchmark.cpp
 )
 
-set(OPENSSL_USE_STATIC_LIBS TRUE)
-find_package(OpenSSL REQUIRED)
-
 if(MSYS OR MINGW OR MSVC)
     target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto crypt32 ws2_32 zlibstatic)
-endif()
-
-if (UNIX OR MSYS OR MINGW)
-    target_link_libraries(elpida-encryption-benchmarks PRIVATE libcrypto.a)
-elseif (MSVC)
-    target_link_libraries(elpida-encryption-benchmarks PRIVATE libcrypto.lib)
+else()
+    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto)
 endif()
 
 target_link_libraries(elpida-encryption-benchmarks PRIVATE elpida-core elpida-platform elpida-common-tasks elpida-entry-point)

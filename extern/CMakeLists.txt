@@ -105,3 +105,7 @@ add_subdirectory(google-test)
 
 set(BOOST_REGEX_STANDALONE TRUE)
 add_subdirectory(boost-regex)
+
+set(BUILD_OPENSSL ON)
+set(OPENSSL_BUILD_VERSION 3.3.2)
+add_subdirectory(openssl-cmake)

@@ -106,18 +106,12 @@ if (ELPIDA_WEB_API_URL)
     add_definitions(-DELPIDA_WEB_API_URL="${ELPIDA_WEB_API_URL}")
 endif()
 
-if(MSYS OR MINGW OR MSVC)
-    target_link_libraries(elpida-application ws2_32 crypto crypt32)
-endif()
-
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
-set(OPENSSL_USE_STATIC_LIBS TRUE)
-find_package(OpenSSL REQUIRED)
 
-if (UNIX OR MSYS OR MINGW)
-    target_link_libraries(elpida-application libssl.a libcrypto.a)
-elseif (MSVC)
-    target_link_libraries(elpida-application libssl.lib libcrypto.lib)
+if(MSYS OR MINGW OR MSVC)
+    target_link_libraries(elpida-application ws2_32 ssl crypto crypt32)
+else()
+    target_link_libraries(elpida-application ssl crypto)
 endif()
 
 target_link_libraries(elpida-application elpida-core elpida-platform elpida-shared)
