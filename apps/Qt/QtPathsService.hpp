@@ -18,6 +18,9 @@ namespace Elpida::Application
 		const std::filesystem::path& GetDownloadStoragePath() const override;
 
 		[[nodiscard]]
+		std::filesystem::path GetFullReportOutputPath() const override;
+
+		[[nodiscard]]
 		const std::filesystem::path& GetExecutablePath() const override;
 
 		QtPathsService();

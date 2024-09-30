@@ -43,7 +43,8 @@ namespace Elpida::Application
 				const TopologyModel& topologyModel,
 				const MemoryInfoModel& memoryInfoModel,
 				const BenchmarkRunConfigurationModel& runConfigurationModel,
-				BenchmarkExecutionService& benchmarkExecutionService);
+				BenchmarkExecutionService& benchmarkExecutionService,
+				std::vector<std::string>& missingBenchmarks);
 	};
 
 } // Application

@@ -170,12 +170,14 @@ int main(int argC, char** argV)
 		BenchmarkExecutionService service;
 		BenchmarkRunConfigurationModel runConfigurationModel;
 
+		std::vector<std::string> missingBenchmarks;
 		auto instances = FullBenchmarkInstancesLoader::Load(builderJson.GetBenchmarkGroups(),
 				builderJson.GetTimingModel(),
 				builderJson.GetTopologyInfoModel(),
 				builderJson.GetMemoryInfoModel(),
 				runConfigurationModel,
-				service);
+				service,
+				missingBenchmarks);
 
 		json root = json::array();
 

@@ -25,5 +25,16 @@ namespace Elpida::Application
 		return _executablePath;
 	}
 
+	std::filesystem::path QtPathsService::GetFullReportOutputPath() const
+	{
+		std::string fileName = "Full Benchmark ";
+		fileName
+				.append(" ")
+				.append(std::to_string(time(nullptr)))
+				.append(".html");
+
+		return GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
+	}
+
 } // Application
 // Elpida

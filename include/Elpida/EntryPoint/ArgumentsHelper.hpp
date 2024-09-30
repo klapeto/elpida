@@ -91,7 +91,6 @@ namespace Elpida
 		void ParseAffinity(const String& value);
 		void ParseFormat(const String& value);
 		void ParseIndex(const String& value);
-		void ParseModulePath(const String& value);
 
 		void ValidateAffinity();
 		static String GetHelpString();

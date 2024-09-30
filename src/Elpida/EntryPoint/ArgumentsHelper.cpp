@@ -89,9 +89,9 @@ namespace Elpida
 	String ArgumentsHelper::GetHelpString()
 	{
 		std::ostringstream accumulator;
-		accumulator << R"("Elpida Benchmark Executor: )" << ELPIDA_VERSION << std::endl;
+		accumulator << R"("Elpida Benchmark: )" << ELPIDA_VERSION << std::endl;
 		accumulator
-				<< R"(Example usage: elpida-executor --module="./dir/benchmark.so" --index=0 --affinity=0,1,5,32 --format=json --config="Config A" --config="Config B" ...)"
+				<< R"(Example usage: elpida-benchmark --index=0 --affinity=0,1,5,32 --format=json --config="Config A" --config="Config B" ...)"
 				<< std::endl;
 		accumulator << R"("       -v, --version)" << std::endl;
 		accumulator << R"("           Prints the version and exits)" << std::endl;
@@ -254,7 +254,7 @@ namespace Elpida
 
 		int option_index = 0;
 		int c;
-		while ((c = getopt_long(argC, argV, "vhm:i:a:f:c:", options, &option_index)) != -1)
+		while ((c = getopt_long(argC, argV, "vhi:a:f:c:", options, &option_index)) != -1)
 		{
 			switch (c)
 			{

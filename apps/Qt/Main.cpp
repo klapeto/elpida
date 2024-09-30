@@ -27,6 +27,7 @@
 #include <QMessageBox>
 
 #include <iostream>
+#include <sstream>
 #include <cctype>
 #include <filesystem>
 #include <string>
@@ -58,6 +59,7 @@
 #include "QtPathsService.hpp"
 #include "QtDesktopService.hpp"
 #include "Controllers/MemoryBenchmarkController.hpp"
+#include "InfoGetter.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -134,35 +136,6 @@ static void LoadSelectedNodes(SettingsService& settingsService, TopologyModel& t
 	}
 }
 
-static std::string GetInfoData(const std::string& benchmarksPath)
-{
-	Process process(OsUtilities::GetExecutableDirectory() / "elpida-info-dumper", { benchmarksPath }, true, true);
-	AsyncPipeReader stdOut(process.GetStdOut());
-	AsyncPipeReader stdErr(process.GetStdErr());
-
-	stdOut.StartReading();
-	stdErr.StartReading();
-	try
-	{
-		process.WaitToExit();
-		stdOut.StopReading();
-		return stdOut.GetString();
-	}
-	catch (...)
-	{
-		stdErr.StopReading();
-		auto err = stdErr.GetString();
-		if (err.empty())
-		{
-			throw;
-		}
-		else
-		{
-			throw ElpidaException("Info dumper process failed with error: ", err);
-		}
-	}
-}
-
 static void UpdateBenchmarkSettings(std::vector<BenchmarkGroupModel>& groups, SettingsService& settingsService)
 {
 	for (auto& group : groups)
@@ -181,7 +154,6 @@ static void UpdateBenchmarkSettings(std::vector<BenchmarkGroupModel>& groups, Se
 
 static ModelBuilderJson GetBasicInfo(const std::string& benchmarksPath)
 {
-
 	std::string data;
 	std::string error;
 	std::atomic<bool> done = false;
@@ -189,7 +161,7 @@ static ModelBuilderJson GetBasicInfo(const std::string& benchmarksPath)
 	{
 		try
 		{
-			data = GetInfoData(benchmarksPath);
+			data = InfoGetter::GetInfoData(benchmarksPath);
 		}
 		catch (const std::exception& ex)
 		{
@@ -300,6 +272,18 @@ int main(int argc, char* argv[])
 				uploader,
 				messageService,
 				benchmarkGroups);
+
+		if (!fullBenchmarkController.GetMissingBenchmarks().empty())
+		{
+			std::ostringstream message;
+			message << "The following benchmarks are missing: ";
+			for (auto& benchmark: fullBenchmarkController.GetMissingBenchmarks())
+			{
+				message << benchmark << ", ";
+			}
+			message << ". Upload is disabled.";
+			QMessageBox::warning(QApplication::activeWindow(), "Missing benchmarks", QString::fromStdString(message.str()));
+		}
 
 		MemoryBenchmarkModel memoryOverheadCalculationModel;
 		MemoryBenchmarkController memoryOverheadCalculationController(memoryOverheadCalculationModel,

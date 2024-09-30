@@ -65,6 +65,7 @@ namespace Elpida::Application
 		std::string multiThreadUuid;
 		Score multiThreadBaseScore;
 		GeneratorSignature* generator;
+		bool loaded;
 	};
 
 	template<typename T>
@@ -113,25 +114,28 @@ namespace Elpida::Application
 			const TopologyModel& topologyModel,
 			const MemoryInfoModel& memoryInfoModel,
 			const BenchmarkRunConfigurationModel& runConfigurationModel,
-			BenchmarkExecutionService& benchmarkExecutionService)
+			BenchmarkExecutionService& benchmarkExecutionService,
+			std::vector<std::string>& missingBenchmarks)
 	{
 
 		std::unordered_map<std::string, GeneratorData> generators =
 				{
 						{ "AES Decryption", {
 								"9a44b227-39b1-41d6-b8fc-18243d9c9744",
-								205.50 * std::mega::num,
+								206.31 * std::mega::num,
 								"eb8aa408-5d7f-4d8e-8a37-e57edc011c63",
-								408.41 * std::mega::num,
-								Generate<AESDecryption>
+								411.75 * std::mega::num,
+								Generate<AESDecryption>,
+								false
 						}
 						},
 						{ "AES Encryption", {
 								"59248a7c-5d7f-4f1e-b01f-3c3cbe2e7437",
-								158.88 * std::mega::num,
+								158.87 * std::mega::num,
 								"9e2fb41c-146f-4725-8ca0-1e19503b03c7",
-								316.86 * std::mega::num,
-								Generate<AESEncryption>
+								313.54 * std::mega::num,
+								Generate<AESEncryption>,
+								false
 						}
 						},
 						{ "Base64 Decode", {
@@ -139,7 +143,8 @@ namespace Elpida::Application
 								38.81 * std::mega::num,
 								"060af447-f649-4a5b-b60a-0579616cada0",
 								77.29 * std::mega::num,
-								Generate<Base64Decode>
+								Generate<Base64Decode>,
+								false
 						}
 						},
 						{ "Base64 Encode", {
@@ -147,7 +152,8 @@ namespace Elpida::Application
 								149.16 * std::mega::num,
 								"00a8b5a5-eb3e-45b5-bced-f90895103f7d",
 								339.79 * std::mega::num,
-								Generate<Base64Encode>
+								Generate<Base64Encode>,
+								false
 						}
 						},
 						{ "FFT calculation in place", {
@@ -155,7 +161,8 @@ namespace Elpida::Application
 								10.70 * std::mega::num,
 								"554f2321-95df-43c0-af46-90554e26c8cd",
 								21.29 * std::mega::num,
-								Generate<FFT>
+								Generate<FFT>,
+								false
 						}
 						},
 						{ "Json Parsing", {
@@ -163,7 +170,8 @@ namespace Elpida::Application
 								20.24 * std::mega::num,
 								"35f22cbc-16e7-4c35-aebf-029dac328e46",
 								40.76 * std::mega::num,
-								Generate<JsonParsing>
+								Generate<JsonParsing>,
+								false
 						}
 						},
 						{ "Matrix inverse (4x4)", {
@@ -171,7 +179,8 @@ namespace Elpida::Application
 								52.71 * std::mega::num,
 								"3faca5e9-d9ac-47a5-a8d4-c331666c6e6a",
 								105.30 * std::mega::num,
-								Generate<MatrixInverse>
+								Generate<MatrixInverse>,
+								false
 						}
 						},
 						{ "Matrix multiplication (32x32)", {
@@ -179,7 +188,8 @@ namespace Elpida::Application
 								73.33 * std::mega::num,
 								"a28c475e-4541-4dcb-80d4-14583c325a7c",
 								145.58 * std::mega::num,
-								Generate<MatrixMultiplication>
+								Generate<MatrixMultiplication>,
+								false
 						}
 						},
 						{ "NBody Simulation", {
@@ -187,23 +197,26 @@ namespace Elpida::Application
 								19.98 * std::mega::num,
 								"6b01f47a-4f41-4f13-96e9-836baf6bed90",
 								39.92 * std::mega::num,
-								Generate<NBody>
+								Generate<NBody>,
+								false
 						}
 						},
 						{ "RSA Decryption", {
 								"4a4e3a1d-df8b-48d8-8a86-b49fafea79fc",
-								96.84 * std::kilo::num,
+								96.91 * std::kilo::num,
 								"bae420c9-3297-456c-bbc2-6b884af15bb7",
-								193.68 * std::kilo::num,
-								Generate<RSADecryption>
+								192.6 * std::kilo::num,
+								Generate<RSADecryption>,
+								false
 						}
 						},
 						{ "RSA Encryption", {
 								"32e5628d-aa9a-4ddc-84d0-17779647e22b",
-								2.06 * std::mega::num,
+								2.09 * std::mega::num,
 								"021876da-05b4-4408-8d9a-7637035927c2",
-								4.10 * std::mega::num,
-								Generate<RSAEncryption>
+								4.19 * std::mega::num,
+								Generate<RSAEncryption>,
+								false
 						}
 						},
 						{ "3D Ray Tracing", {
@@ -211,15 +224,17 @@ namespace Elpida::Application
 								940.20 * std::kilo::num,
 								"5c888135-bab1-4651-9407-2d7187f54381",
 								1.87 * std::mega::num,
-								Generate<RayTracing>
+								Generate<RayTracing>,
+								false
 						}
 						},
 						{ "Regex (Boost)", {
 								"bd0d8849-b988-40ac-9961-5e3528327da3",
-								19.33 * std::mega::num,
+								76.66 * std::mega::num,
 								"142291f8-3c83-4f1b-ab02-ad1914e08885",
-								37.79 * std::mega::num,
-								Generate<Regex>
+								152.57 * std::mega::num,
+								Generate<Regex>,
+								false
 						}
 						},
 						{ "Svg Rasterization", {
@@ -227,7 +242,8 @@ namespace Elpida::Application
 								268.78 * std::kilo::num,
 								"66087de6-f486-4d24-b58d-f90300458179",
 								533.83 * std::kilo::num,
-								Generate<SvgRasterization>
+								Generate<SvgRasterization>,
+								false
 						}
 						},
 						{ "XML Parsing", {
@@ -235,7 +251,8 @@ namespace Elpida::Application
 								39.37 * std::mega::num,
 								"2ac01731-f3de-4fb1-adfc-35937d009097",
 								70.12 * std::mega::num,
-								Generate<XmlParsing>
+								Generate<XmlParsing>,
+								false
 						}
 						},
 						{ "Zlib compression", {
@@ -243,7 +260,8 @@ namespace Elpida::Application
 								21.38 * std::mega::num,
 								"1b4532fd-14f0-41af-ab33-5e4e3803f79b",
 								42.53 * std::mega::num,
-								Generate<ZlibCompression>
+								Generate<ZlibCompression>,
+								false
 						}
 						},
 						{ "Zlib decompression", {
@@ -251,7 +269,8 @@ namespace Elpida::Application
 								45.30 * std::mega::num,
 								"39d94225-34aa-479b-b9cb-b6e104fb17b9",
 								90.34 * std::mega::num,
-								Generate<ZlibDecompression>
+								Generate<ZlibDecompression>,
+								false
 						}
 						}
 				};
@@ -279,6 +298,7 @@ namespace Elpida::Application
 							memoryInfoModel,
 							runConfigurationModel,
 							benchmarkExecutionService, false), itr->second, &benchmark);
+					data.loaded = true;
 				}
 			}
 		}
@@ -317,6 +337,15 @@ namespace Elpida::Application
 					memoryInfoModel,
 					runConfigurationModel,
 					benchmarkExecutionService, true));
+		}
+
+		missingBenchmarks.clear();
+		for (auto& generator : generators)
+		{
+			if (!generator.second.loaded)
+			{
+				missingBenchmarks.push_back(generator.first);
+			}
 		}
 
 		return benchmarks;

@@ -3,10 +3,10 @@ project("Elpida Shared" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-add_library(elpida-shared JsonSerializer.cpp)
+add_library(elpida-shared
+        JsonSerializer.cpp
+        InfoGetter.cpp)
 
-target_link_libraries(elpida-shared PRIVATE elpida-core)
+target_link_libraries(elpida-shared PRIVATE elpida-core elpida-platform)
 
 target_include_directories(elpida-shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
-install(TARGETS elpida-shared)

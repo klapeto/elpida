@@ -52,6 +52,15 @@ namespace Elpida::Application
 		void StopRunning();
 		void ClearResults();
 		void SaveResults(const std::filesystem::path& filePath);
+
+		void WaitToCompleteRun();
+
+		[[nodiscard]]
+		const std::vector<std::string>& GetMissingBenchmarks() const;
+
+		[[nodiscard]]
+		const std::vector<std::unique_ptr<FullBenchmarkInstance>> & GetBenchmarks() const;
+
 		FullBenchmarkController(FullBenchmarkModel& model,
 				const TimingModel& timingModel,
 				const TopologyModel& topologyModel,
@@ -81,11 +90,12 @@ namespace Elpida::Application
 		std::thread _runnerThread;
 		std::atomic<bool> _running;
 		std::atomic<bool> _cancelling;
+		std::vector<std::string> _missingBenchmarks;
 
 		std::vector<std::unique_ptr<FullBenchmarkInstance>> _benchmarks;
 		void GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const;
 		void PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const;
-		static Score CalculateTotalScore(Score singleCoreScore, Score multiCoreScore) ;
+		static Score CalculateTotalScore(Score singleCoreScore, Score multiCoreScore);
 	};
 
 } // Elpida

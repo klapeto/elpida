@@ -2,8 +2,10 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/extern/boost-regex" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/extern/google-test" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/extern/libpng" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/extern/openssl-cmake" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/extern/zlib" vcs="Git" />
   </component>
 </project>

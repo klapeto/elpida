@@ -73,7 +73,7 @@ namespace Elpida::Application
 			_running(false),
 			_cancelling(false)
 	{
-		_benchmarks = FullBenchmarkInstancesLoader::Load(benchmarkGroups, timingModel, topologyModel, memoryInfoModel, runConfigurationModel, benchmarkExecutionService);
+		_benchmarks = FullBenchmarkInstancesLoader::Load(benchmarkGroups, timingModel, topologyModel, memoryInfoModel, runConfigurationModel, benchmarkExecutionService, _missingBenchmarks);
 
 		if (_benchmarks.empty())
 		{
@@ -200,7 +200,7 @@ namespace Elpida::Application
 					_messageService.ShowError(std::string("Failed to crate report: ") + ex.what());
 				}
 			}
-			if (_runConfigurationModel.IsUploadResults())
+			if (_runConfigurationModel.IsUploadResults() && _missingBenchmarks.empty())
 			{
 				try
 				{
@@ -223,13 +223,7 @@ namespace Elpida::Application
 	{
 		try
 		{
-			std::string fileName = "Full Benchmark ";
-			fileName
-					.append(" ")
-					.append(std::to_string(time(nullptr)))
-					.append(".html");
-
-			auto path = _pathsService.GetDownloadStoragePath() / "Elpida Exported Reports" / fileName;
+			auto path = _pathsService.GetFullReportOutputPath();
 
 			_resultsHTMLReporter.WriteFullBenchmarkReport(thisResults, duration, path);
 
@@ -272,6 +266,26 @@ namespace Elpida::Application
 			thisResults.push_back(result.GetValue());
 		}
 		file << _resultSerializer.Serialize(thisResults);
+	}
+
+	const std::vector<std::string>& FullBenchmarkController::GetMissingBenchmarks() const
+	{
+		return _missingBenchmarks;
+	}
+
+	void FullBenchmarkController::WaitToCompleteRun()
+	{
+		if (!_running.load(std::memory_order_acquire)) return;
+
+		if (_runnerThread.joinable())
+		{
+			_runnerThread.join();
+		}
+	}
+
+	const std::vector<std::unique_ptr<FullBenchmarkInstance>>& FullBenchmarkController::GetBenchmarks() const
+	{
+		return _benchmarks;
 	}
 } // Elpida
 // Application
