@@ -14,5 +14,3 @@ add_library(elpida-graphics
 )
 
 target_link_libraries(elpida-graphics PRIVATE elpida-math)
-
-install(TARGETS elpida-graphics)

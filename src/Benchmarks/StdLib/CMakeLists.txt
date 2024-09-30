@@ -26,7 +26,12 @@ set(ELPIDA_STDLIB_BENCHMARKS_SOURCES
 
 add_executable(elpida-stdlib-benchmarks ${ELPIDA_STDLIB_BENCHMARKS_SOURCES})
 
-target_compile_options(elpida-stdlib-benchmarks PRIVATE -fno-builtin -fno-tree-builtin-call-dce -fno-dse -fno-tree-dse -fno-dce -fno-tree-dce -fno-plt)
 target_link_libraries(elpida-stdlib-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-entry-point)
+
+if (ELPIDA_COMPILER_GCC)
+    target_compile_options(elpida-stdlib-benchmarks PRIVATE -fno-builtin -fno-tree-builtin-call-dce -fno-dse -fno-tree-dse -fno-dce -fno-tree-dce -fno-plt)
+else()
+    message(WARNING "Compiler flags for No dead code elimination are not implemented for this compiler")
+endif()
 
 install(TARGETS elpida-stdlib-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})

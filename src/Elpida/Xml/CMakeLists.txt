@@ -6,5 +6,3 @@ add_library(elpida-xml
         XmlElement.cpp
         XmlParser.cpp
         XmlMap.cpp)
-
-install(TARGETS elpida-xml)

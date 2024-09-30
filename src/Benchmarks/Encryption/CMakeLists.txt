@@ -17,9 +17,9 @@ add_executable(elpida-encryption-benchmarks
 )
 
 if(MSYS OR MINGW OR MSVC)
-    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto crypt32 ws2_32 zlibstatic)
+    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto ws2_32 crypt32 zlibstatic)
 else()
-    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto)
+    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto zlibstatic)
 endif()
 
 target_link_libraries(elpida-encryption-benchmarks PRIVATE elpida-core elpida-platform elpida-common-tasks elpida-entry-point)

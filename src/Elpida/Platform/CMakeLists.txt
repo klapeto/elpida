@@ -36,19 +36,17 @@ set(ELPIDA_PLATFORM_SOURCES
 
 add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
 
-target_link_libraries(elpida-platform elpida-core)
+target_link_libraries(elpida-platform PUBLIC elpida-core)
 
 if (MSVC)
     include(FindHWLOC)
     target_include_directories(elpida-platform PUBLIC ${HWLOC_INCLUDE_DIRS})
     target_link_directories(elpida-platform PUBLIC ${HWLOC_LIBRARY_DIRS})
-    target_link_libraries(elpida-platform libhwloc)
+    target_link_libraries(elpida-platform PUBLIC libhwloc)
 else()
-    target_link_libraries(elpida-platform hwloc)
+    target_link_libraries(elpida-platform PUBLIC hwloc)
 endif()
 
 if (UNIX)
-    target_link_libraries(elpida-platform numa)
+    target_link_libraries(elpida-platform PUBLIC numa)
 endif ()
-
-install(TARGETS elpida-platform)

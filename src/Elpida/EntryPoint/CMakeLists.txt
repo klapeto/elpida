@@ -13,4 +13,4 @@ set(ELPIDA_ENTRY_POINT_SOURCES
 
 add_library(elpida-entry-point ${ELPIDA_ENTRY_POINT_SOURCES})
 
-target_link_libraries(elpida-entry-point elpida-core elpida-platform)
+target_link_libraries(elpida-entry-point PUBLIC elpida-core elpida-platform)

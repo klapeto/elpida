@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 set(ELPIDA_MSVC_STATIC ON)
 
-# Force local compiler
-#set(CMAKE_C_COMPILER /usr/bin/gcc-9 CACHE PATH "" FORCE)
-#set(CMAKE_CXX_COMPILER /usr/bin/g++-9 CACHE PATH "" FORCE)
-
 if (MSVC AND ELPIDA_MSVC_STATIC)
     cmake_policy(SET CMP0091 NEW)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -18,15 +14,6 @@ project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"
         LANGUAGES CXX C)
 
-#if (ELPIDA_RELEASE STREQUAL TRUE)
-#    file(STRINGS "OptimizationFlags.txt" ELPIDA_OPTIMIZATION_FLAGS)
-#    add_compile_options(${ELPIDA_OPTIMIZATION_FLAGS})
-#    if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-#        file(STRINGS "OptimizationFlags.x86-64.txt" ELPIDA_OPTIMIZATION_X86_64_FLAGS)
-#        add_compile_options(${ELPIDA_OPTIMIZATION_X86_64_FLAGS})
-#    endif ()
-#endif ()
-
 set(GenerateProductVersionCurrentDir ${CMAKE_CURRENT_LIST_DIR}/resources)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -37,7 +24,22 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 set(ELPIDA_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake-modules")
 
-message(${CMAKE_MODULE_PATH})
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(ELPIDA_COMPILER_GCC TRUE) #most flags work here
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(ELPIDA_COMPILER_GCC TRUE)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    set(ELPIDA_COMPILER_INTEL TRUE)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(ELPIDA_COMPILER_MSVC TRUE)
+endif()
+
+# static link stdlib
+if (ELPIDA_COMPILER_GCC)
+    add_link_options(-static-libstdc++ -static-libgcc)
+else()
+    message(WARNING "Compiler flags for static linking are not implemented for this compiler")
+endif()
 
 #====================
 # RPATH Config

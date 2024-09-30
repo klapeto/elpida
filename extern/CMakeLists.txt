@@ -99,7 +99,9 @@ set(LIBPNG_INCLUDE_DIRS ${LIBPNG_DIR} ${LIBPNG_BUILD_DIR})
 
 # unless you install them, they do not expose the header includes
 target_include_directories(zlib INTERFACE ${ZLIB_INCLUDE_DIRS})
+target_include_directories(zlibstatic INTERFACE ${ZLIB_INCLUDE_DIRS})
 target_include_directories(png INTERFACE ${LIBPNG_INCLUDE_DIRS})
+target_include_directories(png_static INTERFACE ${LIBPNG_INCLUDE_DIRS})
 
 add_subdirectory(google-test)
 
