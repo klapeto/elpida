@@ -109,16 +109,16 @@ endif()
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
 
 if(MSYS OR MINGW OR MSVC)
-    target_link_libraries(elpida-application ws2_32 ssl crypto crypt32)
+    target_link_libraries(elpida-application INTERFACE ssl crypto ws2_32 crypt32 zlibstatic)
 else()
-    target_link_libraries(elpida-application ssl crypto)
+    target_link_libraries(elpida-application INTERFACE ssl crypto zlibstatic)
 endif()
 
-target_link_libraries(elpida-application elpida-core elpida-platform elpida-shared)
+target_link_libraries(elpida-application PUBLIC elpida-core elpida-platform elpida-shared)
 
 if (UNIX OR MSYS OR MINGW)
     if (${CMAKE_CXX_COMPILER_VERSION} STRLESS 9.3 AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-        target_link_libraries(elpida-application stdc++fs)
+        target_link_libraries(elpida-application PUBLIC stdc++fs)
     endif()
 
     if (CXX_STANDARD GREATER_EQUAL 20)
