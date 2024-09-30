@@ -109,9 +109,9 @@ endif()
 add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
 
 if(MSYS OR MINGW OR MSVC)
-    target_link_libraries(elpida-application INTERFACE ssl crypto ws2_32 crypt32 zlibstatic)
+    target_link_libraries(elpida-application PUBLIC ssl crypto ws2_32 crypt32 zlibstatic)
 else()
-    target_link_libraries(elpida-application INTERFACE ssl crypto zlibstatic)
+    target_link_libraries(elpida-application PUBLIC ssl crypto zlibstatic)
 endif()
 
 target_link_libraries(elpida-application PUBLIC elpida-core elpida-platform elpida-shared)

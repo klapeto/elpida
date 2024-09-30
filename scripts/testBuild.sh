@@ -31,8 +31,7 @@ export PACKAGE_QT_SUFFIX="Qt"
 export PACKAGE_CLI_SUFFIX="Cli"
 export DEPLOY_ENVIRONMENT="development"
 
-if [! -f "./appimage-builder"]
-then
+if [ ! -f ./appimage-builder ]; then
   wget -O appimage-builder https://github.com/AppImageCrafters/appimage-builder/releases/download/v1.1.0/appimage-builder-1.1.0-x86_64.AppImage
   chmod +x appimage-builder
 fi
@@ -50,8 +49,8 @@ cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/usr/share/icons/default/apps/32/elp
 cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
 cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
 cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
-./appimage-builder --skip-tests --recipe AppImageBuilder.qt.$TARGET_ARCH.yml
 ./appimage-builder --skip-tests --recipe AppImageBuilder.cli.$TARGET_ARCH.yml
+./appimage-builder --skip-tests --recipe AppImageBuilder.qt.$TARGET_ARCH.yml
 sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
 sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
 cp "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage"

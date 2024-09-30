@@ -50,6 +50,12 @@ add_library(elpida-core ${ELPIDA_CORE_SOURCES})
 add_library(overheads-calculator TimingCalculator.cpp)
 target_compile_options(overheads-calculator PRIVATE -O3 -fno-dce -fno-tree-dce -fno-unroll-loops)
 
+if (UNIX)
+    include(FindThreads)
+    find_package(Threads)
+    target_link_libraries(elpida-core PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+endif()
+
 target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/include)
 target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/src)
 target_include_directories(elpida-core PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
