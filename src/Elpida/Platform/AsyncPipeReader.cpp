@@ -55,4 +55,9 @@ namespace Elpida
 	{
 		StopReading();
 	}
+
+	void AsyncPipeReader::WaitForDrain()
+	{
+		_readerThread.join();
+	}
 } // Elpida

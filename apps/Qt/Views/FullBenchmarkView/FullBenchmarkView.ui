@@ -192,6 +192,13 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QLabel" name="lblETA">
+          <property name="text">
+           <string>Estimated execution time: 2.8 minutes</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>

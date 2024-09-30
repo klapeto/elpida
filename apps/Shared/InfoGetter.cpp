@@ -38,12 +38,12 @@ namespace Elpida
 		try
 		{
 			process.WaitToExit();
-			stdOut.StopReading();
+			stdOut.WaitForDrain();
 			return stdOut.GetString();
 		}
 		catch (...)
 		{
-			stdErr.StopReading();
+			stdErr.WaitForDrain();
 			auto err = stdErr.GetString();
 			if (err.empty())
 			{

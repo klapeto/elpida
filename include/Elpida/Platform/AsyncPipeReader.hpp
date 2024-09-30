@@ -21,6 +21,7 @@ namespace Elpida
 	public:
 		void StartReading();
 		void StopReading();
+		void WaitForDrain();
 		std::string GetString();
 
 		explicit AsyncPipeReader(AnonymousPipe& pipe);
