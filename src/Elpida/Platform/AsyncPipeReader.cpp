@@ -43,7 +43,10 @@ namespace Elpida
 	{
 		auto expected = true;
 		if (!_running.compare_exchange_strong(expected, false)) return;
-		_readerThread.join();
+		if (_readerThread.joinable())
+		{
+			_readerThread.join();
+		}
 	}
 
 	std::string AsyncPipeReader::GetString()
@@ -58,6 +61,9 @@ namespace Elpida
 
 	void AsyncPipeReader::WaitForDrain()
 	{
-		_readerThread.join();
+		if (_readerThread.joinable())
+		{
+			_readerThread.join();
+		}
 	}
 } // Elpida
