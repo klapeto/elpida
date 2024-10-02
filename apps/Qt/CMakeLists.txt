@@ -156,7 +156,12 @@ if (ELPIDA_DEBUG_BUILD EQUAL 1)
 	add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
 endif()
 
-find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Charts)
+
+if (NOT Qt5Core_FOUND)
+	message("Disabling QT front end because Qt5 libraries (Core/Widgets/Charts) were not found")
+	return()
+endif()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -165,7 +170,6 @@ set(CMAKE_AUTOUIC ON)
 if (CMAKE_VERSION VERSION_LESS "3.7.0")
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif ()
-
 
 if (MSYS OR MINGW OR MSVC)
 	generate_product_version(

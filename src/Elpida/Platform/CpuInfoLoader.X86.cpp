@@ -1,4 +1,20 @@
 //
+//  Copyright (c) 2024  Ioannis Panagiotopoulos
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 14/3/2023.
 //
 
@@ -7,12 +23,16 @@
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Vector.hpp"
 
+#include <sstream>
+
 #if defined(__x86_64__) || defined(_M_X64)
 
 #ifdef _MSC_VER
 #include <intrin.h>
 #else
+
 #include <cpuid.h>
+
 #endif
 
 namespace Elpida
@@ -31,21 +51,47 @@ namespace Elpida
 #endif
 	}
 
-
-	static String SanitizeModelName(String& modelName)
+	static String SanitizeModelName(const String& modelName)
 	{
-		size_t index = modelName.size();
+		std::size_t finalChar = modelName.size();
 		for (auto itr = modelName.rbegin(); itr != modelName.rend(); ++itr)
 		{
 			if (iscntrl(*itr) || isspace(*itr))
 			{
-				index--;
+				finalChar--;
 				continue;
 			}
 			break;
 		}
 
-		return modelName.substr(0, index);
+		std::ostringstream stream;
+
+		std::size_t lastSpace = 0;
+		std::size_t lastChar = 0;
+		for (std::size_t i = 0; i < finalChar; ++i)
+		{
+			auto c = modelName[i];
+
+			// only single spaces allowed
+			if (c == ' ')
+			{
+				if (((int)(lastChar - lastSpace)) > 0)
+				{
+					stream << c;
+				}
+				lastSpace = i;
+				continue;
+			}
+
+			if (iscntrl(c) || isspace(c))
+			{
+				continue;
+			}
+			stream << c;
+			lastChar = i;
+		}
+
+		return stream.str();
 	}
 
 	CpuInfo CpuInfoLoader::Load()
@@ -73,9 +119,9 @@ namespace Elpida
 		}
 
 		return {
-			"x86_64",
-			vendorName,
-			SanitizeModelName(modelName)
+				"x86_64",
+				vendorName,
+				SanitizeModelName(modelName)
 		};
 	}
 
