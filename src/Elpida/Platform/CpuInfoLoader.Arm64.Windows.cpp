@@ -33,7 +33,7 @@ namespace Elpida{
 			modelName = "Unknown Model";
 		}
 
-		return CpuInfo("AArch64", std::move(vendor), std::move(modelName));
+		return CpuInfo("aarch64", std::move(vendor), std::move(modelName));
 	}
 }
 

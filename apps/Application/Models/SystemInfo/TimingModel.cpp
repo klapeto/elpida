@@ -26,7 +26,7 @@ namespace Elpida::Application
 		return _loopOverhead;
 	}
 
-	Size TimingModel::GetIterationsPerSecond() const
+	Iterations TimingModel::GetIterationsPerSecond() const
 	{
 		return _iterationsPerSecond;
 	}
