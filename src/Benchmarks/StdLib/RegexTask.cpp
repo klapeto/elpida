@@ -17,6 +17,7 @@
 #include "RegexTask.hpp"
 
 #include <regex>
+#include <cstring>
 
 namespace Elpida
 {

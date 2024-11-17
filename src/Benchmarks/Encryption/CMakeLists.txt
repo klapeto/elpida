@@ -17,9 +17,11 @@ add_executable(elpida-encryption-benchmarks
 )
 
 if(MSYS OR MINGW OR MSVC)
-    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto ws2_32 crypt32 zlibstatic)
+    # hack to make sure it is linked correctly. Cmake messes the order when crypto is defined and links ws2_32 before crypto
+    # `crypto` target is used to ensure is is built before building this
+    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto ${CRYPTO_CUSTOM_LIB_PATH} ws2_32 crypt32 zlibstatic)
 else()
-    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto zlibstatic)
+    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto ${CRYPTO_CUSTOM_LIB_PATH} zlibstatic)
 endif()
 
 target_link_libraries(elpida-encryption-benchmarks PRIVATE elpida-core elpida-platform elpida-common-tasks elpida-entry-point)
