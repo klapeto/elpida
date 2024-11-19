@@ -58,7 +58,7 @@ namespace Elpida::Application
 			QWidget* parent)
 			:
 			QWidget(parent),
-			_ui(new Ui::FullBenchmarkView), _model(model), _controller(controller), _currentBenchmarkIndex(0),
+			_ui(new Ui::FullBenchmarkView), _benchmarkRunConfigurationModel(benchmarkRunConfigurationModel), _model(model), _controller(controller), _currentBenchmarkIndex(0),
 			_maxBenchmarkIndex(0), _cancel(false)
 	{
 		_ui->setupUi(this);
@@ -125,6 +125,16 @@ namespace Elpida::Application
 				}
 			});
 		});
+
+		_iterationsChanged = _benchmarkRunConfigurationModel.IterationsChanged().Subscribe([this](const auto& x){UpdateETA();});
+
+		UpdateETA();
+	}
+
+	void FullBenchmarkView::UpdateETA()
+	{
+		auto value = ValueUtilities::GetTimeScaleValue(Seconds(5.0 * _benchmarkRunConfigurationModel.GetIterationsToRun() * _model.GetTotalBenchmarks()));
+		_ui->lblETAValue->setText(QString::fromStdString(value));
 	}
 
 	FullBenchmarkView::~FullBenchmarkView()

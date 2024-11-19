@@ -36,28 +36,28 @@ namespace Elpida::Application
 	String ArgumentsHelper::GetHelpString()
 	{
 		std::ostringstream accumulator;
-		accumulator << R"("Elpida CLI: )" << ELPIDA_VERSION << std::endl;
+		accumulator << R"(Elpida CLI: )" << ELPIDA_VERSION << std::endl;
 		accumulator << R"(Example usage: elpida-cli --format=json --upload ...)"<< std::endl;
-		accumulator << R"("       -v, --version)" << std::endl;
-		accumulator << R"("           Prints the version and exits)" << std::endl;
-		accumulator << R"("       -h, --help)" << std::endl;
-		accumulator << R"("           Prints this help and exits)" << std::endl;
-		accumulator << R"("       --format=FORMAT)" << std::endl;
-		accumulator << R"("           The result output format. Accepted values (default, json))" << std::endl;
-		accumulator << R"("       --delay-seconds=SECONDS)" << std::endl;
-		accumulator << R"("           The delay in seconds between runs (Default is 0))" << std::endl;
-		accumulator << R"("       --upload)" << std::endl;
-		accumulator << R"("           Enable uploading the result to elpida website (disabled by default))" << std::endl;
-		accumulator << R"("       --generate-report=[OUTPUT_FILE])" << std::endl;
-		accumulator << R"("           Whether to generate an HTML report. If no path is specified it is output to 'Elpida-Report.html')" << std::endl;
-		accumulator << R"("       --iterations=N)" << std::endl;
-		accumulator << R"("           How many iterations to run (Default is 1))" << std::endl;
-		accumulator << R"("       --benchmarks-directory=DIRECTORY)" << std::endl;
-		accumulator << R"("           Where to find the benchmarks (Default is './Benchmarks'))" << std::endl;
-		accumulator << R"("       --output=FILE)" << std::endl;
-		accumulator << R"("           Output the results on a file instead of STDOUT)" << std::endl;
-		accumulator << R"("       --quiet)" << std::endl;
-		accumulator << R"("           Output only the results on STDOUT)" << std::endl;
+		accumulator << R"(       -v, --version)" << std::endl;
+		accumulator << R"(           Prints the version and exits)" << std::endl;
+		accumulator << R"(       -h, --help)" << std::endl;
+		accumulator << R"(           Prints this help and exits)" << std::endl;
+		accumulator << R"(       --format=FORMAT)" << std::endl;
+		accumulator << R"(           The result output format. Accepted values (default, json))" << std::endl;
+		accumulator << R"(       --delay-seconds=SECONDS)" << std::endl;
+		accumulator << R"(           The delay in seconds between runs (Default is 0))" << std::endl;
+		accumulator << R"(       --upload)" << std::endl;
+		accumulator << R"(           Enable uploading the result to elpida website (disabled by default))" << std::endl;
+		accumulator << R"(       --generate-report=[OUTPUT_FILE])" << std::endl;
+		accumulator << R"(           Whether to generate an HTML report. If no path is specified it is output to 'Elpida-Report.html')" << std::endl;
+		accumulator << R"(       --iterations=N)" << std::endl;
+		accumulator << R"(           How many iterations to run (Default is 1))" << std::endl;
+		accumulator << R"(       --benchmarks-directory=DIRECTORY)" << std::endl;
+		accumulator << R"(           Where to find the benchmarks (Default is './Benchmarks'))" << std::endl;
+		accumulator << R"(       --output=FILE)" << std::endl;
+		accumulator << R"(           Output the results on a file instead of STDOUT)" << std::endl;
+		accumulator << R"(       --quiet)" << std::endl;
+		accumulator << R"(           Output only the results on STDOUT)" << std::endl;
 
 		return accumulator.str();
 	}

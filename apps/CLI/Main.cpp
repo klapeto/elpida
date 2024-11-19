@@ -176,7 +176,7 @@ int main(int argC, char** argV)
 		}
 
 		std::size_t i = 0;
-		std::size_t total = fullBenchmarkController.GetBenchmarks().size();
+		std::size_t total = fullBenchmarkController.GetBenchmarks().size() * helper.GetIterationsToRun();
 		EventSubscription<const std::string&> progressSubscription;
 		if (!helper.IsQuiet())
 		{
@@ -188,7 +188,7 @@ int main(int argC, char** argV)
 		}
 
 		OUT(std::cout << "Starting benchmarking. Estimated execution time: " << std::setprecision(2)
-					  << (total * 5.0) / 60.0 << " minutes" << std::endl);
+					  << ValueUtilities::GetTimeScaleValue(Seconds(5.0 * total)) << std::endl);
 
 		fullBenchmarkController.RunAsync();
 		fullBenchmarkController.WaitToCompleteRun();

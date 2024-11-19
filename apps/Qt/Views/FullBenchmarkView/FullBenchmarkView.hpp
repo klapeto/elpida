@@ -39,10 +39,12 @@ namespace Elpida::Application
 	private:
 		Ui::FullBenchmarkView* _ui;
 		const FullBenchmarkModel& _model;
+		const BenchmarkRunConfigurationModel& _benchmarkRunConfigurationModel;
 		FullBenchmarkController& _controller;
 
 		EventSubscription<bool> _runningChanged;
 		EventSubscription<const CollectionItem<FullBenchmarkResultModel>&> _itemAdded;
+		EventSubscription<std::size_t> _iterationsChanged;
 		EventSubscription<const std::string&> _currentBenchmarkChanged;
 		EventSubscription<> _resultsCleared;
 		std::optional<FullBenchmarkResultModel> _previousScore;
@@ -56,9 +58,11 @@ namespace Elpida::Application
 		void UpdateProgress();
 		void OnResultAdded(const FullBenchmarkResultModel& result);
 		void OnResultsCleared();
+		void UpdateETA();
 
 	private slots:
 		void on_bpStart_clicked(bool checked);
+
 	};
 }
 

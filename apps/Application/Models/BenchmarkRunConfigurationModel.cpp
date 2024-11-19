@@ -96,6 +96,7 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationModel::SetIterationsToRun(std::size_t iterations)
 	{
 		_iterationsToRun = iterations;
+		_iterationsChanged.Raise(_iterationsToRun);
 		OnDataChanged();
 	}
 

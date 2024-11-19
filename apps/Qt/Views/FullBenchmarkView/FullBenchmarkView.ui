@@ -195,7 +195,25 @@
         <item>
          <widget class="QLabel" name="lblETA">
           <property name="text">
-           <string>Estimated execution time: 2.8 minutes</string>
+           <string>Estimated execution time:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblETAValue">
+          <property name="minimumSize">
+           <size>
+            <width>90</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <underline>true</underline>
+           </font>
+          </property>
+          <property name="lineWidth">
+           <number>2</number>
           </property>
          </widget>
         </item>

@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <locale>
 #include <limits>
+#include <chrono>
 
 namespace Elpida
 {
@@ -53,6 +54,20 @@ namespace Elpida
 			Yobi
 		};
 
+		enum class TimeValues
+		{
+			PicoSeconds,
+			NanoSeconds,
+			MicroSeconds,
+			MilliSeconds,
+			Seconds,
+			Minutes,
+			Hours,
+			Days,
+			Months,
+			Years
+		};
+
 		static inline const char* PrefixesSI[(int)SIPrefixes::Yotta + 1] = {
 				"p",
 				"n",
@@ -81,6 +96,19 @@ namespace Elpida
 				"Yi"
 		};
 
+		static inline const char* TimeSuffixes[(int)TimeValues::Years + 1] = {
+				"ps",
+				"ns",
+				"μs",
+				"ms",
+				"seconds",
+				"minutes",
+				"hours",
+				"days",
+				"months",
+				"years"
+		};
+
 		static inline const double ScaleValuesSI[] = {
 				1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0,
 				1.0 / 1000.0 / 1000.0 / 1000.0,
@@ -107,6 +135,19 @@ namespace Elpida
 				1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
 				1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
 				1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0
+		};
+
+		static inline const double TimeValues[] = {
+				1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0,
+				1.0 / 1000.0 / 1000.0 / 1000.0,
+				1.0 / 1000.0 / 1000.0,
+				1.0 / 1000.0,
+				1.0,
+				60.0,
+				60.0 * 60.0,
+				60.0 * 60.0 * 24.0,
+				60.0 * 60.0 * 24.0 * 30.0,
+				60.0 * 60.0 * 24.0 * 365
 		};
 
 		template<class T, Size N>
@@ -142,6 +183,12 @@ namespace Elpida
 		static String GetValueScaleStringIEC(double value, int decimals = 2)
 		{
 			return GetValueScaleStringImpl(value, ScaleValuesIEC, PrefixesIEC, GetArrayLength(PrefixesIEC), decimals);
+		}
+
+		template<typename T>
+		static std::string GetTimeScaleValue(std::chrono::duration<T> duration, int decimals = 2)
+		{
+			return GetValueScaleStringImpl(duration.count(), TimeValues, TimeSuffixes, GetArrayLength(TimeSuffixes), decimals);
 		}
 
 		template<typename ... TArgs>

@@ -38,6 +38,11 @@ namespace Elpida::Application
 	class BenchmarkRunConfigurationModel final : public Model
 	{
 	public:
+		Event<std::size_t>& IterationsChanged() const
+		{
+			return _iterationsChanged;
+		}
+
 		void SetIterationsToRun(std::size_t iterations);
 		void SetUploadResults(bool uploadResults);
 		void SetOpenResult(bool openResult);
@@ -79,6 +84,7 @@ namespace Elpida::Application
 
 		~BenchmarkRunConfigurationModel() override = default;
 	private:
+		mutable Event<std::size_t> _iterationsChanged;
 		std::size_t _iterationsToRun;
 		std::size_t _delaySecondsBetweenRuns;
 		Duration _minimumMicroTaskDuration;
