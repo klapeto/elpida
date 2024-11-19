@@ -122,153 +122,153 @@ namespace Elpida::Application
 				{
 						{ "AES Decryption", {
 								"9a44b227-39b1-41d6-b8fc-18243d9c9744",
-								206.31 * std::mega::num,
+								93.46 * std::mega::num,
 								"eb8aa408-5d7f-4d8e-8a37-e57edc011c63",
-								411.75 * std::mega::num,
+								186.48 * std::mega::num,
 								Generate<AESDecryption>,
 								false
 						}
 						},
 						{ "AES Encryption", {
 								"59248a7c-5d7f-4f1e-b01f-3c3cbe2e7437",
-								158.87 * std::mega::num,
+								88.36 * std::mega::num,
 								"9e2fb41c-146f-4725-8ca0-1e19503b03c7",
-								313.54 * std::mega::num,
+								176.56 * std::mega::num,
 								Generate<AESEncryption>,
 								false
 						}
 						},
 						{ "Base64 Decode", {
 								"0a48078b-b924-43a9-97d9-6a9fcb2ebb45",
-								38.81 * std::mega::num,
+								39.31 * std::mega::num,
 								"060af447-f649-4a5b-b60a-0579616cada0",
-								77.29 * std::mega::num,
+								78.46 * std::mega::num,
 								Generate<Base64Decode>,
 								false
 						}
 						},
 						{ "Base64 Encode", {
 								"b793d108-7603-4aa7-b2ae-4c2f8eba98a7",
-								149.16 * std::mega::num,
+								142.62 * std::mega::num,
 								"00a8b5a5-eb3e-45b5-bced-f90895103f7d",
-								339.79 * std::mega::num,
+								336.69 * std::mega::num,
 								Generate<Base64Encode>,
 								false
 						}
 						},
 						{ "FFT calculation in place", {
 								"a8946ba5-049f-4626-9b1a-d5d31211cea1",
-								10.70 * std::mega::num,
+								11.14 * std::mega::num,
 								"554f2321-95df-43c0-af46-90554e26c8cd",
-								21.29 * std::mega::num,
+								22.23 * std::mega::num,
 								Generate<FFT>,
 								false
 						}
 						},
 						{ "Json Parsing", {
 								"cc53b078-75aa-41c0-8885-b381bc1a4bda",
-								20.24 * std::mega::num,
+								20.18 * std::mega::num,
 								"35f22cbc-16e7-4c35-aebf-029dac328e46",
-								40.76 * std::mega::num,
+								40.37 * std::mega::num,
 								Generate<JsonParsing>,
 								false
 						}
 						},
 						{ "Matrix inverse (4x4)", {
 								"7930adf1-fd99-420a-9a39-b4e147f1bdf2",
-								52.71 * std::mega::num,
+								53.51 * std::mega::num,
 								"3faca5e9-d9ac-47a5-a8d4-c331666c6e6a",
-								105.30 * std::mega::num,
+								106.83 * std::mega::num,
 								Generate<MatrixInverse>,
 								false
 						}
 						},
 						{ "Matrix multiplication (32x32)", {
 								"56834364-d449-4d3e-bc50-197c697c6c6f",
-								73.33 * std::mega::num,
+								74.15 * std::mega::num,
 								"a28c475e-4541-4dcb-80d4-14583c325a7c",
-								145.58 * std::mega::num,
+								147.89 * std::mega::num,
 								Generate<MatrixMultiplication>,
 								false
 						}
 						},
 						{ "NBody Simulation", {
 								"9196f126-391f-452b-9ca0-0dd39d7f70ae",
-								19.98 * std::mega::num,
+								19.19 * std::mega::num,
 								"6b01f47a-4f41-4f13-96e9-836baf6bed90",
-								39.92 * std::mega::num,
+								38.38 * std::mega::num,
 								Generate<NBody>,
 								false
 						}
 						},
 						{ "RSA Decryption", {
 								"4a4e3a1d-df8b-48d8-8a86-b49fafea79fc",
-								96.91 * std::kilo::num,
+								31.80 * std::kilo::num,
 								"bae420c9-3297-456c-bbc2-6b884af15bb7",
-								192.6 * std::kilo::num,
+								63.85 * std::kilo::num,
 								Generate<RSADecryption>,
 								false
 						}
 						},
 						{ "RSA Encryption", {
 								"32e5628d-aa9a-4ddc-84d0-17779647e22b",
-								2.09 * std::mega::num,
+								839.06 * std::kilo::num,
 								"021876da-05b4-4408-8d9a-7637035927c2",
-								4.19 * std::mega::num,
+								1.67 * std::mega::num,
 								Generate<RSAEncryption>,
 								false
 						}
 						},
 						{ "3D Ray Tracing", {
 								"ad8da8ff-a1f3-4a21-9234-43b6aff8eea4",
-								940.20 * std::kilo::num,
+								903.69 * std::kilo::num,
 								"5c888135-bab1-4651-9407-2d7187f54381",
-								1.87 * std::mega::num,
+								1.80 * std::mega::num,
 								Generate<RayTracing>,
 								false
 						}
 						},
 						{ "Regex (Boost)", {
 								"bd0d8849-b988-40ac-9961-5e3528327da3",
-								76.66 * std::mega::num,
+								74.06 * std::mega::num,
 								"142291f8-3c83-4f1b-ab02-ad1914e08885",
-								152.57 * std::mega::num,
+								145.79 * std::mega::num,
 								Generate<Regex>,
 								false
 						}
 						},
 						{ "Svg Rasterization", {
 								"e7ab603e-6c05-428b-9851-1e0a3729e022",
-								268.78 * std::kilo::num,
+								253.48 * std::kilo::num,
 								"66087de6-f486-4d24-b58d-f90300458179",
-								533.83 * std::kilo::num,
+								510.45 * std::kilo::num,
 								Generate<SvgRasterization>,
 								false
 						}
 						},
 						{ "XML Parsing", {
 								"70b7048f-face-4976-b68a-d8cd1004ad33",
-								39.37 * std::mega::num,
+								31.67 * std::mega::num,
 								"2ac01731-f3de-4fb1-adfc-35937d009097",
-								70.12 * std::mega::num,
+								63.98 * std::mega::num,
 								Generate<XmlParsing>,
 								false
 						}
 						},
 						{ "Zlib compression", {
 								"895ff7fd-257d-411f-a8a6-de547b0f6485",
-								21.38 * std::mega::num,
+								21.05 * std::mega::num,
 								"1b4532fd-14f0-41af-ab33-5e4e3803f79b",
-								42.53 * std::mega::num,
+								42.38 * std::mega::num,
 								Generate<ZlibCompression>,
 								false
 						}
 						},
 						{ "Zlib decompression", {
 								"d40517b1-b39f-4b82-8dc4-b440dd11da1b",
-								45.30 * std::mega::num,
+								43.53 * std::mega::num,
 								"39d94225-34aa-479b-b9cb-b6e104fb17b9",
-								90.34 * std::mega::num,
+								87.42 * std::mega::num,
 								Generate<ZlibDecompression>,
 								false
 						}
