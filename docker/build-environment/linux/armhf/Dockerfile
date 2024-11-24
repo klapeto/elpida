@@ -39,7 +39,7 @@ RUN apt-get update && \
 
 # install rust, needed by some wheels
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="$PATH:$HOME/.cargo/env"
+RUN . "$HOME/.cargo/env"
 
 WORKDIR /opt
 RUN git clone https://github.com/AppImageCrafters/appimage-builder.git
