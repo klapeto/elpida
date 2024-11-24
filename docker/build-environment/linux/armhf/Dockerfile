@@ -36,6 +36,9 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9 && \
     apt-get -yq autoclean
 
+# install rust, needed by some wheels
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
 WORKDIR /opt
 RUN git clone https://github.com/AppImageCrafters/appimage-builder.git
 
