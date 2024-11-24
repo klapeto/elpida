@@ -40,3 +40,12 @@ package:linux:aarch64:
   dependencies:
     - build:linux:aarch64
   extends: .package:linux
+
+package:linux:armhf:
+  variables:
+    TARGET_ARCH: armhf
+    TARGET_ARCH_APPIMAGE_RUNTIME: gnueabihf
+    TARGET_ARCH_APPIMAGE_APT: armhf
+  dependencies:
+    - build:linux:armhf
+  extends: .package:linux
