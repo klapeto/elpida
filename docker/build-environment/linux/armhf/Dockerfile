@@ -24,6 +24,7 @@ RUN apt-get update && \
         python3-setuptools \
         strace \
         wget \
+        curl \
         squashfs-tools \
         software-properties-common \
         zsync && \
@@ -38,6 +39,7 @@ RUN apt-get update && \
 
 # install rust, needed by some wheels
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="$PATH:$HOME/.cargo/env"
 
 WORKDIR /opt
 RUN git clone https://github.com/AppImageCrafters/appimage-builder.git
