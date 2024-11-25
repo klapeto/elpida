@@ -14,6 +14,7 @@ RUN apt-get update && \
         file \
         git \
         gnupg2 \
+        cmake \
         gtk-update-icon-cache \
         libgdk-pixbuf2.0-dev \
         libglib2.0-bin \
@@ -39,7 +40,7 @@ RUN apt-get update && \
 
 # install rust, needed by some wheels
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN . "$HOME/.cargo/env"
+ENV PATH="$PATH:/root/.cargo/bin"
 
 WORKDIR /opt
 RUN git clone https://github.com/AppImageCrafters/appimage-builder.git
@@ -74,6 +75,6 @@ RUN echo 'deb http://archive.neon.kde.org/user/ focal main' > /etc/apt/sources.l
     apt-get install qtbase5-dev libqt5svg5 libqt5x11extras5 libqt5charts5-dev qt5-image-formats-plugins -y
 
 # install elpida build requirements
-RUN apt-get install libnuma-dev cmake -y
+RUN apt-get install libnuma-dev -y
 
 CMD ["/bin/bash"]
