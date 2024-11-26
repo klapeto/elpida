@@ -31,8 +31,8 @@ docker-image:linux:aarch64:
   timeout: 3 hours
   extends: .docker-image:linux
 
-docker-image:linux:armhf:
-  variables:
-    TARGET_ARCH: armhf
-  timeout: 3 hours
-  extends: .docker-image:linux
+#docker-image:linux:armhf:
+#  variables:
+#    TARGET_ARCH: armhf
+#  timeout: 3 hours
+#  extends: .docker-image:linux

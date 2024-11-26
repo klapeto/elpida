@@ -40,9 +40,9 @@ build:linux:aarch64:
     - docker-image:linux:aarch64
   extends: .build:linux
 
-build:linux:armhf:
-  variables:
-    TARGET_ARCH: armhf
-  dependencies:
-    - docker-image:linux:armhf
-  extends: .build:linux
+#build:linux:armhf:
+#  variables:
+#    TARGET_ARCH: armhf
+#  dependencies:
+#    - docker-image:linux:armhf
+#  extends: .build:linux

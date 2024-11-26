@@ -37,9 +37,9 @@ deploy:linux:aarch64:
     - package:linux:aarch64
   extends: .deploy:linux
 
-deploy:linux:armhf:
-  variables:
-    TARGET_ARCH: armhf
-  dependencies:
-    - package:linux:armhf
-  extends: .deploy:linux
+#deploy:linux:armhf:
+#  variables:
+#    TARGET_ARCH: armhf
+#  dependencies:
+#    - package:linux:armhf
+#  extends: .deploy:linux
