@@ -8,7 +8,6 @@
   services:
     - docker:dind
   before_script:
-    - unset DOCKER_HOST
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - docker build --pull -t $IMAGE_NAME docker/build-environment/linux/$TARGET_ARCH

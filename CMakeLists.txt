@@ -69,7 +69,7 @@ include(GNUInstallDirs)
 
 if (UNIX)
     set(ELPIDA_UNIX ON)
-    add_compile_options(-Wextra)
+    add_compile_options(-Wextra -O3)
     set(CMAKE_MODULE_LINKER_FLAGS -Wl,--no-undefined)
 elseif (MSYS OR MSVC OR MINGW)
     set(ELPIDA_WINDOWS ON)
