@@ -3,14 +3,12 @@
   stage: build-containers
   tags:
     - $TARGET_ARCH
-  variables:
-    IMAGE_NAME: "$CI_REGISTRY_IMAGE/build-environment/linux-$TARGET_ARCH:latest"
   services:
     - docker:dind
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - docker build --pull -t $IMAGE_NAME docker/build-environment/linux/$TARGET_ARCH
+    - docker build -t $IMAGE_NAME docker/build-environment/linux/$TARGET_ARCH
     - docker push $IMAGE_NAME
   rules:
     - if: $CI_COMMIT_BRANCH
@@ -23,16 +21,19 @@
 docker-image:linux:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: linux
   extends: .docker-image:linux
 
 docker-image:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
+    TARGET_OS: linux
   timeout: 3 hours
   extends: .docker-image:linux
 
 #docker-image:linux:armhf:
 #  variables:
 #    TARGET_ARCH: armhf
+#    TARGET_OS: linux
 #  timeout: 3 hours
 #  extends: .docker-image:linux

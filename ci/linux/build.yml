@@ -1,5 +1,5 @@
 .build:linux:
-  image: $CI_REGISTRY_IMAGE/build-environment/linux-$TARGET_ARCH
+  image: $IMAGE_NAME
   stage: build
   tags:
     - $TARGET_ARCH
@@ -29,6 +29,7 @@
 build:linux:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: linux
   dependencies:
     - docker-image:linux:amd64
   extends: .build:linux
@@ -36,6 +37,7 @@ build:linux:amd64:
 build:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
+    TARGET_OS: linux
   dependencies:
     - docker-image:linux:aarch64
   extends: .build:linux
@@ -43,6 +45,7 @@ build:linux:aarch64:
 #build:linux:armhf:
 #  variables:
 #    TARGET_ARCH: armhf
+#    TARGET_OS: linux
 #  dependencies:
 #    - docker-image:linux:armhf
 #  extends: .build:linux

@@ -4,14 +4,12 @@
   tags:
     - $TARGET_ARCH
     - powerful  # very resource heavy build, use local vms only
-  variables:
-    IMAGE_NAME: "$CI_REGISTRY_IMAGE/build-environment/windows-$TARGET_ARCH:latest"
   services:
     - docker:dind
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - docker build --pull -t $IMAGE_NAME docker/build-environment/windows/$TARGET_ARCH
+    - docker build -t $IMAGE_NAME docker/build-environment/windows/$TARGET_ARCH
     - docker push $IMAGE_NAME
   rules:
     - if: $CI_COMMIT_BRANCH
@@ -23,4 +21,5 @@
 docker-image:windows:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: windows
   extends: .docker-image:windows

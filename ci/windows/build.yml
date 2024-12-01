@@ -1,5 +1,5 @@
 .build:windows:
-  image: $CI_REGISTRY_IMAGE/build-environment/windows-$TARGET_ARCH
+  image: $IMAGE_NAME
   stage: build
   tags:
     - $TARGET_ARCH
@@ -29,6 +29,7 @@
 build:windows:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: windows
   dependencies:
     - docker-image:windows:amd64
   extends: .build:windows

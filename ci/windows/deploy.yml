@@ -19,6 +19,7 @@
 deploy:windows:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: windows
   dependencies:
     - package:windows:amd64
   extends: .deploy:windows

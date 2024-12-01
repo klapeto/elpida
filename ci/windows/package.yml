@@ -1,5 +1,5 @@
 .package:windows:
-  image: $CI_REGISTRY_IMAGE/build-environment/windows-$TARGET_ARCH
+  image: $IMAGE_NAME
   stage: package
   tags:
     - $TARGET_ARCH
@@ -36,6 +36,7 @@
 package:windows:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: windows
   dependencies:
     - build:windows:amd64
   extends: .package:windows
