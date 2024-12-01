@@ -17,6 +17,7 @@
         paths:
           - docker/build-environment/windows/$TARGET_ARCH/Dockerfile
           - ci/windows/docker-image.yml
+    - when: manual
 
 docker-image:windows:amd64:
   variables:
