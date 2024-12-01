@@ -26,6 +26,7 @@
 deploy:linux:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: linux
   dependencies:
     - package:linux:amd64
   extends: .deploy:linux
@@ -33,6 +34,7 @@ deploy:linux:amd64:
 deploy:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
+    TARGET_OS: linux
   dependencies:
     - package:linux:aarch64
   extends: .deploy:linux
@@ -40,6 +42,7 @@ deploy:linux:aarch64:
 #deploy:linux:armhf:
 #  variables:
 #    TARGET_ARCH: armhf
+#    TARGET_OS: linux
 #  dependencies:
 #    - package:linux:armhf
 #  extends: .deploy:linux

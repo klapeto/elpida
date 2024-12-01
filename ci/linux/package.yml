@@ -26,6 +26,7 @@
 package:linux:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: linux
     TARGET_ARCH_APPIMAGE_RUNTIME: x86_64
     TARGET_ARCH_APPIMAGE_APT: amd64
   dependencies:
@@ -35,6 +36,7 @@ package:linux:amd64:
 package:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
+    TARGET_OS: linux
     TARGET_ARCH_APPIMAGE_RUNTIME: aarch64
     TARGET_ARCH_APPIMAGE_APT: arm64
   dependencies:
@@ -44,6 +46,7 @@ package:linux:aarch64:
 #package:linux:armhf:
 #  variables:
 #    TARGET_ARCH: armhf
+#    TARGET_OS: linux
 #    TARGET_ARCH_APPIMAGE_RUNTIME: gnueabihf
 #    TARGET_ARCH_APPIMAGE_APT: armhf
 #  dependencies:

@@ -17,6 +17,7 @@ variables:
   PACKAGE_QT_SUFFIX: 'Qt'
   PACKAGE_CLI_SUFFIX: 'Cli'
   DEPLOY_ENVIRONMENT: "development"
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE/build-environment/$DEPLOY_ENVIRONMENT/$TARGET_OS-$TARGET_ARCH:latest"
 
 workflow:
   rules:

@@ -29,6 +29,7 @@
 build:windows:amd64:
   variables:
     TARGET_ARCH: amd64
+    TARGET_OS: windows
   dependencies:
     - docker-image:windows:amd64
   extends: .build:windows
