@@ -1,5 +1,5 @@
 .build:windows:
-  image: $CI_REGISTRY_IMAGE/build-environment/windows-$TARGET_ARCH
+  image: $IMAGE_NAME
   stage: build
   tags:
     - $TARGET_ARCH

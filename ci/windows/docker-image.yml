@@ -4,8 +4,6 @@
   tags:
     - $TARGET_ARCH
     - powerful  # very resource heavy build, use local vms only
-  variables:
-    IMAGE_NAME: "$CI_REGISTRY_IMAGE/build-environment/windows-$TARGET_ARCH:latest"
   services:
     - docker:dind
   before_script:

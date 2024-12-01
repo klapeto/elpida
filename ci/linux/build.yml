@@ -1,5 +1,5 @@
 .build:linux:
-  image: $CI_REGISTRY_IMAGE/build-environment/linux-$TARGET_ARCH
+  image: $IMAGE_NAME
   stage: build
   tags:
     - $TARGET_ARCH

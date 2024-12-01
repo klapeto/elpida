@@ -1,3 +1,5 @@
+variables:
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE/build-environment/$DEPLOY_ENVIRONMENT/linux-$TARGET_ARCH:latest"
 include:
   - local: '/ci/linux/docker-image.yml'
   - local: '/ci/linux/build.yml'
