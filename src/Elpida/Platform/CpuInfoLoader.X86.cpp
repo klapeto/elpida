@@ -25,7 +25,7 @@
 
 #include <sstream>
 
-#if defined(__x86_64__) || defined(_M_X64)
+#if defined(__x86_64__) || defined(_M_X64) || defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
 
 #ifdef _MSC_VER
 #include <intrin.h>

@@ -19,7 +19,18 @@
 deploy:windows:amd64:
   variables:
     TARGET_ARCH: amd64
+    MINGW_ARCH: x86_64
     TARGET_OS: windows
   dependencies:
     - package:windows:amd64
+  extends: .deploy:windows
+
+deploy:windows:i686:
+  image: $IMAGE_PART_NAME-amd64:$IMAGE_TAG
+  variables:
+    TARGET_ARCH: i686
+    MINGW_ARCH: i686
+    TARGET_OS: windows
+  dependencies:
+    - package:windows:i686
   extends: .deploy:windows
