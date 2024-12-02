@@ -10,7 +10,7 @@
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - docker build -t $IMAGE_NAME -t $IMAGE_PART_NAME-i686:$IMAGE_TAG docker/build-environment/windows/$TARGET_ARCH
-    - docker push $IMAGE_NAME
+    - docker push --all-tags $IMAGE_NAME
   rules:
     - if: $CI_COMMIT_BRANCH
       changes:
@@ -19,7 +19,6 @@
           - ci/windows/docker-image.yml
 
 docker-image:windows:amd64:
-  image: $IMAGE_PART_NAME-amd64:$IMAGE_TAG
   variables:
     TARGET_ARCH: amd64
     MINGW_ARCH: x86_64
