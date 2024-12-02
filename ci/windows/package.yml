@@ -4,31 +4,35 @@
   tags:
     - $TARGET_ARCH
   script:
-    - currentDir=$(pwd)
-    - stagingDir=$(mktemp -d -t ci-XXXXXXXXXX)
-    - /mxe/tools/copydlldeps.sh -c
-      -f "$INSTALL_DIR/bin/elpida-qt.exe"
-      -S "/mxe/usr/$MINGW_ARCH-w64-mingw32.static/bin/ /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/bin/"
-      -R "$INSTALL_DIR  $BUILD_DIR"
-      -d "$stagingDir"
-    - cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/iconengines "$stagingDir"
-    - cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/imageformats "$stagingDir"
-    - cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/platforms "$stagingDir"
-    - cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/platformthemes "$stagingDir"
-    - cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/styles "$stagingDir"
-    - mkdir "$stagingDir/Benchmarks"
-    - find "$BUILD_DIR/src/Benchmarks" -type f -name '*.exe' -exec cp "{}" "$stagingDir/Benchmarks" \;
-    - cp "$INSTALL_DIR/bin/elpida-qt.exe" "$stagingDir"
-    - cp "$INSTALL_DIR/bin/elpida-cli.exe" "$stagingDir"
-    - cp "$INSTALL_DIR/bin/elpida-info-dumper.exe" "$stagingDir"
-    - cp "$INSTALL_DIR/bin/qt.conf" "$stagingDir"
-    - cp -r "$INSTALL_DIR/bin/assets" "$stagingDir"
-    - cd "$stagingDir"
-    - zip z -r .
-    - cp ./z.zip "$currentDir/$PACKAGE_FILENAME.zip"
-    - cd "$currentDir"
-    - sha256sum "$PACKAGE_FILENAME.zip" > SHA256SUMS
-    - rm -rf "$stagingDir"
+    - |
+      currentDir=$(pwd)
+      stagingDir=$(mktemp -d -t ci-XXXXXXXXXX)
+      /mxe/tools/copydlldeps.sh -c
+        -f "$INSTALL_DIR/bin/elpida-qt.exe"
+        -S "/mxe/usr/$MINGW_ARCH-w64-mingw32.static/bin/ /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/bin/"
+        -R "$INSTALL_DIR  $BUILD_DIR"
+        -d "$stagingDir"
+      if [[ -e "$INSTALL_DIR/bin/elpida-qt.exe" ]]; then
+        cp "$INSTALL_DIR/bin/elpida-qt.exe" "$stagingDir"
+        cp "$INSTALL_DIR/bin/qt.conf"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/iconengines "$stagingDir"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/iconengines "$stagingDi
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/imageformats "$stagingD
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/platforms "$stagingDir"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/platformthemes "$stagin
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/styles "$stagingDir"
+      fi
+      mkdir "$stagingDir/Benchmarks"
+      find "$BUILD_DIR/src/Benchmarks" -type f -name '*.exe' -exec cp "{}" "$stagingDir/Benchmarks" \;
+      cp "$INSTALL_DIR/bin/elpida-cli.exe" "$stagingDir"
+      cp "$INSTALL_DIR/bin/elpida-info-dumper.exe" "$stagingDir"
+      cp -r "$INSTALL_DIR/bin/assets" "$stagingDir"
+      cd "$stagingDir"
+      zip z -r .
+      cp ./z.zip "$currentDir/$PACKAGE_FILENAME.zip"
+      cd "$currentDir"
+      sha256sum "$PACKAGE_FILENAME.zip" > SHA256SUMS
+      rm -rf "$stagingDir"
   artifacts:
     paths:
       - $PACKAGE_FILENAME.zip
@@ -44,7 +48,6 @@ package:windows:amd64:
   extends: .package:windows
 
 package:windows:i686:
-  image: $IMAGE_PART_NAME-amd64:$IMAGE_TAG
   variables:
     TARGET_ARCH: i686
     MINGW_ARCH: i686
