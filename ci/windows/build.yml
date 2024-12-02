@@ -36,6 +36,7 @@ build:windows:amd64:
   extends: .build:windows
 
 build:windows:i686:
+  image: $IMAGE_PART_NAME-amd64:$IMAGE_TAG
   variables:
     TARGET_ARCH: i686
     MINGW_ARCH: i686

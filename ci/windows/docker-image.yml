@@ -19,6 +19,7 @@
           - ci/windows/docker-image.yml
 
 docker-image:windows:amd64:
+  image: $IMAGE_PART_NAME-amd64:$IMAGE_TAG
   variables:
     TARGET_ARCH: amd64
     MINGW_ARCH: x86_64
