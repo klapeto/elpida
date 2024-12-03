@@ -17,13 +17,25 @@ namespace Elpida
 {
 	class TimingUtilities
 	{
+	private:
+		static Iterations CalculateNextIterations(Iterations previousIterations, double ratio, double marginOfError)
+		{
+			std::uint64_t thisIterations = std::ceil(previousIterations * ratio * (1.0 + (marginOfError / 2.0)));
+			Iterations returnIterations = thisIterations;
+
+			if (returnIterations != thisIterations)
+			{
+				throw ElpidaException("Iteration overflow detected! Please report this to Elpida and mention your system specs.");
+			}
+			return returnIterations;
+		}
 	public:
 		template<typename TCallable>
 		static Iterations GetIterationsNeededForExecutionTime(
-			Duration targetDuration,
-			Duration nowOverhead,
-			Duration loopOverhead,
-			TCallable callable)
+				Duration targetDuration,
+				Duration nowOverhead,
+				Duration loopOverhead,
+				TCallable callable)
 		{
 			const double marginOfError = 0.02;
 			const Duration lowerBound = Duration(targetDuration * (1.0 - marginOfError));
@@ -56,7 +68,7 @@ namespace Elpida
 				}
 				auto ratio = targetDuration.count() / currentDuration.count();
 
-				iterations = std::ceil(iterations * ratio * (1.0 + (marginOfError / 2.0)));
+				iterations = CalculateNextIterations(iterations, ratio, marginOfError);
 			}
 
 			return iterations;
@@ -83,7 +95,8 @@ namespace Elpida
 				callable(iterations);
 				auto end = Timer::now();
 
-				currentDuration = additionalTimeOffset(ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
+				currentDuration = additionalTimeOffset(
+						ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
 
 				if (currentDuration > minimumDuration)
 				{
@@ -97,10 +110,10 @@ namespace Elpida
 
 				auto ratio = minimumDuration.count() / currentDuration.count();
 
-				iterations = std::ceil(iterations * ratio * (1.0 + (marginOfError / 2.0)));
+				iterations = CalculateNextIterations(iterations, ratio, marginOfError);
 			}
 
-			return {iterations, currentDuration};
+			return { iterations, currentDuration };
 		}
 
 		template<typename TCallable, typename TPrepare, typename TAdditionalOffset>
@@ -127,7 +140,8 @@ namespace Elpida
 				callable(iterations);
 				auto end = Timer::now();
 
-				currentDuration = additionalTimeOffset(ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
+				currentDuration = additionalTimeOffset(
+						ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
 
 				if (currentDuration >= targetDuration)
 				{
@@ -149,20 +163,20 @@ namespace Elpida
 				}
 				auto ratio = targetDuration.count() / currentDuration.count();
 
-				iterations = std::ceil(iterations * ratio * (1.0 + (marginOfError / 2.0)));
+				iterations = CalculateNextIterations(iterations, ratio, marginOfError);
 			}
 
-			return {iterations, currentDuration};
+			return { iterations, currentDuration };
 		}
 
 		template<typename TCallable, typename TPrepare, typename TAdditionalOffset>
 		static Iterations GetMinimumIterationsNeededForExecutionTime(
-			Duration targetDuration,
-			Duration nowOverhead,
-			Duration loopOverhead,
-			TPrepare prepare,
-			TAdditionalOffset additionalTimeOffset,
-			TCallable callable)
+				Duration targetDuration,
+				Duration nowOverhead,
+				Duration loopOverhead,
+				TPrepare prepare,
+				TAdditionalOffset additionalTimeOffset,
+				TCallable callable)
 		{
 			const double marginOfError = 0.05;
 			const Duration lowerBound = Duration(targetDuration * (1.0 - marginOfError));
@@ -179,7 +193,8 @@ namespace Elpida
 				callable(iterations);
 				auto end = Timer::now();
 
-				currentDuration = additionalTimeOffset(ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
+				currentDuration = additionalTimeOffset(
+						ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
 
 				if (currentDuration >= targetDuration)
 				{
@@ -201,7 +216,7 @@ namespace Elpida
 				}
 				auto ratio = targetDuration.count() / currentDuration.count();
 
-				iterations = std::ceil(iterations * ratio * (1.0 + (marginOfError / 2.0)));
+				iterations = CalculateNextIterations(iterations, ratio, marginOfError);
 			}
 
 			return iterations;
