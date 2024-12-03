@@ -37,41 +37,48 @@ namespace Elpida
 				Duration loopOverhead,
 				TCallable callable)
 		{
-			const double marginOfError = 0.02;
-			const Duration lowerBound = Duration(targetDuration * (1.0 - marginOfError));
-			const Duration upperBound = Duration(targetDuration * (1.0 + marginOfError));
-
 			Iterations iterations = 1;
 
-			auto currentDuration = Duration::zero();
-
-			while (true)
+			// Attempt 5 times to get the iterations
+			for (int i = 1; i <= 5; ++i)
 			{
-				auto start = Timer::now();
-				callable(iterations);
-				auto end = Timer::now();
+				double marginOfError = 0.02 * i;
+				Duration lowerBound = Duration(targetDuration * (1.0 - marginOfError));
+				Duration upperBound = Duration(targetDuration * (1.0 + marginOfError));
 
-				currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
-				if (currentDuration.count() < targetDuration.count() / 10.0)
-				{
-					iterations *= 10;
-					continue;
-				}
+				auto currentDuration = Duration::zero();
 
-				if (currentDuration > lowerBound && currentDuration < upperBound)
-				{
-					break;
-				}
-				if (iterations == 1 && currentDuration > targetDuration)
-				{
-					break;
-				}
-				auto ratio = targetDuration.count() / currentDuration.count();
+				auto attempts = 4;
 
-				iterations = CalculateNextIterations(iterations, ratio, marginOfError);
+				while (attempts > 0)
+				{
+					auto start = Timer::now();
+					callable(iterations);
+					auto end = Timer::now();
+
+					currentDuration = ToDuration(end - start) - nowOverhead - (loopOverhead * iterations);
+					if (currentDuration.count() < targetDuration.count() / 10.0)
+					{
+						iterations = CalculateNextIterations(iterations, 10.0, marginOfError);
+						continue;
+					}
+
+					if (currentDuration > lowerBound && currentDuration < upperBound)
+					{
+						return iterations;
+					}
+					if (iterations == 1 && currentDuration > targetDuration)
+					{
+						return iterations;
+					}
+					attempts--;
+					auto ratio = targetDuration.count() / currentDuration.count();
+
+					iterations = CalculateNextIterations(iterations, ratio, marginOfError);
+				}
 			}
 
-			return iterations;
+			throw ElpidaException("This system has too unstable timing! Elpida cannot get consistent timing within 1% margin.");
 		}
 
 		template<typename TCallable, typename TPrepare, typename TAdditionalOffset>
@@ -104,7 +111,7 @@ namespace Elpida
 				}
 				if (currentDuration.count() < minimumDuration.count() / 10.0)
 				{
-					iterations *= 10;
+					iterations = CalculateNextIterations(iterations, 10.0, marginOfError);
 					continue;
 				}
 
@@ -125,45 +132,48 @@ namespace Elpida
 				TAdditionalOffset additionalTimeOffset,
 				TCallable callable)
 		{
-			const double marginOfError = 0.05;
-			const Duration lowerBound = Duration(targetDuration * (1.0 - marginOfError));
-			const Duration upperBound = Duration(targetDuration * (1.0 + marginOfError));
-
 			Iterations iterations = 1;
-
 			auto currentDuration = Duration::zero();
 
-			while (true)
+			// Attempt 5 times to get the iterations
+			for (int i = 1; i <= 5; ++i)
 			{
-				prepare(iterations);
-				auto start = Timer::now();
-				callable(iterations);
-				auto end = Timer::now();
+				double marginOfError = 0.05 * i;
+				Duration lowerBound = Duration(targetDuration * (1.0 - marginOfError));
+				Duration upperBound = Duration(targetDuration * (1.0 + marginOfError));
 
-				currentDuration = additionalTimeOffset(
-						ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
+				while (true)
+				{
+					prepare(iterations);
+					auto start = Timer::now();
+					callable(iterations);
+					auto end = Timer::now();
 
-				if (currentDuration >= targetDuration)
-				{
-					break;
-				}
-				if (currentDuration.count() < targetDuration.count() / 10.0)
-				{
-					iterations *= 10;
-					continue;
-				}
+					currentDuration = additionalTimeOffset(
+							ToDuration(end - start) - nowOverhead - (loopOverhead * iterations));
 
-				if (currentDuration > lowerBound && currentDuration < upperBound)
-				{
-					break;
-				}
-				if (iterations == 1 && currentDuration >= targetDuration)
-				{
-					break;
-				}
-				auto ratio = targetDuration.count() / currentDuration.count();
+					if (currentDuration >= targetDuration)
+					{
+						break;
+					}
+					if (currentDuration.count() < targetDuration.count() / 10.0)
+					{
+						iterations = CalculateNextIterations(iterations, 10.0, marginOfError);
+						continue;
+					}
 
-				iterations = CalculateNextIterations(iterations, ratio, marginOfError);
+					if (currentDuration > lowerBound && currentDuration < upperBound)
+					{
+						break;
+					}
+					if (iterations == 1 && currentDuration >= targetDuration)
+					{
+						break;
+					}
+					auto ratio = targetDuration.count() / currentDuration.count();
+
+					iterations = CalculateNextIterations(iterations, ratio, marginOfError);
+				}
 			}
 
 			return { iterations, currentDuration };
@@ -202,7 +212,7 @@ namespace Elpida
 				}
 				if (currentDuration.count() < targetDuration.count() / 10.0)
 				{
-					iterations *= 10;
+					iterations = CalculateNextIterations(iterations, 10.0, marginOfError);
 					continue;
 				}
 

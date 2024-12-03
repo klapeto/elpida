@@ -8,7 +8,7 @@
       currentDir=$(pwd)
       stagingDir=$(mktemp -d -t ci-XXXXXXXXXX)
       if [[ -e "$INSTALL_DIR/bin/elpida-qt.exe" ]]; then
-        /mxe/tools/copydlldeps.sh -c -f "$INSTALL_DIR/bin/elpida-qt.exe" -S "/mxe/usr/$MINGW_ARCH-w64-mingw32.static/bin/" "/mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/bin/" -R "$INSTALL_DIR"  "$BUILD_DIR" -d "$stagingDir"
+        /mxe/tools/copydlldeps.sh -c -f "$INSTALL_DIR/bin/elpida-qt.exe" -S "/mxe/usr/$MINGW_ARCH-w64-mingw32.static/bin/ /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/bin/" -R "$INSTALL_DIR"  "$BUILD_DIR" -d "$stagingDir"
         cp "$INSTALL_DIR/bin/elpida-qt.exe" "$stagingDir"
         cp "$INSTALL_DIR/bin/qt.conf"
         cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/iconengines "$stagingDir"
