@@ -28,10 +28,29 @@ namespace Elpida
 			name = "Unknown Windows";
 		}
 
+		try
+		{
+			auto secondaryName = OsUtilities::ReadRegistryKeyFromHKLM(R"(SOFTWARE\Microsoft\Windows NT\CurrentVersion)", "DisplayVersion");
+			name += " " + secondaryName;
+		}
+		catch (const std::exception&)
+		{
+			// Older windows
+			try
+			{
+				auto secondaryName = OsUtilities::ReadRegistryKeyFromHKLM(R"(SOFTWARE\Microsoft\Windows NT\CurrentVersion)", "CSDVersion");
+				name += " " + secondaryName;
+			}
+			catch (const std::exception&)
+			{
+				// give up on secondary
+			}
+		}
+
 		String version;
 		try
 		{
-			version = OsUtilities::ReadRegistryKeyFromHKLM(R"(SOFTWARE\Microsoft\Windows NT\CurrentVersion)", "ReleaseId");
+			version = OsUtilities::ReadRegistryKeyFromHKLM(R"(SOFTWARE\Microsoft\Windows NT\CurrentVersion)", "CurrentVersion");
 		}
 		catch (const std::exception&)
 		{
@@ -40,11 +59,12 @@ namespace Elpida
 
 		try
 		{
-			version  += "." + OsUtilities::ReadRegistryKeyFromHKLM(R"(SOFTWARE\Microsoft\Windows NT\CurrentVersion)", "CurrentBuild");
+			auto build = OsUtilities::ReadRegistryKeyFromHKLM(R"(SOFTWARE\Microsoft\Windows NT\CurrentVersion)", "CurrentBuildNumber");
+			version  += "." + build;
 		}
 		catch (const std::exception&)
 		{
-			version = "Unknown Build";
+			// Its ok
 		}
 
 		return {

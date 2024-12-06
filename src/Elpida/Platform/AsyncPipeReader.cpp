@@ -10,24 +10,20 @@
 namespace Elpida
 {
 	AsyncPipeReader::AsyncPipeReader(AnonymousPipe& pipe)
-		: _pipe(pipe), _running(false)
+		: _pipe(pipe)
 	{
 
 	}
 
 	void AsyncPipeReader::StartReading()
 	{
-		auto excepted = false;
-		if (!_running.compare_exchange_strong(excepted, true)) return;
-
 		_readerThread = std::thread([this]()
 		{
 		  char buffer[512];
 		  std::size_t bytesRead;
 		  try
 		  {
-			  while (_running.load(std::memory_order_acquire) &&
-				  (bytesRead = _pipe.Read(buffer, sizeof(buffer))) > 0)
+			  while ((bytesRead = _pipe.Read(buffer, sizeof(buffer))) > 0)
 			  {
 				  _stringStream << std::string_view(buffer, bytesRead);
 			  }
@@ -41,8 +37,6 @@ namespace Elpida
 
 	void AsyncPipeReader::StopReading()
 	{
-		auto expected = true;
-		if (!_running.compare_exchange_strong(expected, false)) return;
 		if (_readerThread.joinable())
 		{
 			_readerThread.join();

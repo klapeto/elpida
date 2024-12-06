@@ -7,7 +7,7 @@
     name: $DEPLOY_ENVIRONMENT
   script:
     - git submodule update --init
-    - x86_64-w64-mingw32.static-cmake -S .
+    - $MINGW_ARCH-w64-mingw32.static-cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
@@ -29,7 +29,17 @@
 build:windows:amd64:
   variables:
     TARGET_ARCH: amd64
+    MINGW_ARCH: x86_64
     TARGET_OS: windows
   dependencies:
     - docker-image:windows:amd64
+  extends: .build:windows
+
+build:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+    MINGW_ARCH: i686
+    TARGET_OS: windows
+  dependencies:
+    - docker-image:windows:i686
   extends: .build:windows
