@@ -119,7 +119,11 @@ namespace Elpida
 		}
 
 		return {
+#if defined(__x86_64__) || defined(_M_X64)
 				"x86_64",
+#else
+				"i686",
+#endif
 				vendorName,
 				SanitizeModelName(modelName)
 		};
