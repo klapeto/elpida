@@ -21,5 +21,13 @@
 docker-image:windows:amd64:
   variables:
     TARGET_ARCH: amd64
+    MINGW_ARCH: x86_64
+    TARGET_OS: windows
+  extends: .docker-image:windows
+
+docker-image:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+    MINGW_ARCH: i686
     TARGET_OS: windows
   extends: .docker-image:windows

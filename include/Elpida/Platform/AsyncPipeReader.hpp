@@ -8,7 +8,6 @@
 #include "Elpida/Platform/AnonymousPipe.hpp"
 
 #include <thread>
-#include <atomic>
 #include <sstream>
 
 namespace Elpida
@@ -30,7 +29,6 @@ namespace Elpida
 		std::ostringstream _stringStream;
 		std::thread _readerThread;
 		AnonymousPipe& _pipe;
-		std::atomic<bool> _running;
 	};
 
 } // Elpida
