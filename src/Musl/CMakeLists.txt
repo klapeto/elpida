@@ -1,16 +1,14 @@
-set(MUSL_LITE_SOURCES
-        ${CMAKE_CURRENT_LIST_DIR}/string/isalnum.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/memccpy.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/memchr.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/memcmp.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/memcpy.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/memmem.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/memmove.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/mempcpy.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/memrchr.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/memset.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/strchrnul.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/strlen.c
-        ${CMAKE_CURRENT_LIST_DIR}/string/strchr.c
-        PARENT_SCOPE
+add_library(musl-lite OBJECT
+        string/memccpy.c
+        string/memchr.c
+        string/memcmp.c
+        string/memcpy.c
+        string/memmem.c
+        string/memmove.c
+        string/mempcpy.c
+        string/memrchr.c
+        string/memset.c
+        string/strchrnul.c
+        string/strlen.c
+        string/strchr.c
 )

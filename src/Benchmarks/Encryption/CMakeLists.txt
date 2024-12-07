@@ -14,7 +14,6 @@ add_executable(elpida-encryption-benchmarks
         AESDecryptTask.cpp
         AESEncryptionBenchmark.cpp
         AESDecryptionBenchmark.cpp
-        ${MUSL_LITE_SOURCES}
 )
 
 if(MSYS OR MINGW OR MSVC)
@@ -25,6 +24,6 @@ else()
     target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto ${CRYPTO_CUSTOM_LIB_PATH} zlibstatic)
 endif()
 
-target_link_libraries(elpida-encryption-benchmarks PRIVATE elpida-core elpida-platform elpida-common-tasks elpida-entry-point)
+target_link_libraries(elpida-encryption-benchmarks PRIVATE elpida-core elpida-platform elpida-common-tasks elpida-entry-point musl-lite)
 
 install(TARGETS elpida-encryption-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
