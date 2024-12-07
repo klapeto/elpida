@@ -36,7 +36,8 @@ endif ()
 
 # static link stdlib
 if (ELPIDA_COMPILER_GCC)
-    add_link_options(-static-libstdc++ -static-libgcc -fno-builtin)
+    add_link_options(-static-libstdc++ -static-libgcc)
+    add_compile_options(-fno-builtin)
 else ()
     message(WARNING "Compiler flags for static linking are not implemented for this compiler")
 endif ()

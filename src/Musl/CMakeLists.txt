@@ -12,3 +12,5 @@ add_library(musl-lite OBJECT
         string/strlen.c
         string/strchr.c
 )
+
+target_compile_options(musl-lite PRIVATE -ffreestanding)
