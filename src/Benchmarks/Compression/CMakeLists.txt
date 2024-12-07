@@ -12,6 +12,7 @@ set(ELPIDA_COMPRESSION_BENCHMARKS_SOURCES
         ZlibDecompressionTask.hpp
         ZlibDecompressionBenchmark.cpp
         ZlibDecompressionBenchmark.hpp
+        ${MUSL_LITE_SOURCES}
 )
 
 add_executable(elpida-compression-benchmarks ${ELPIDA_COMPRESSION_BENCHMARKS_SOURCES})

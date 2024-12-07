@@ -191,6 +191,8 @@ int main(int argC, char** argV)
 			thisInstance["description"] = benchmark.GetDescription();
 			thisInstance["resultType"] = benchmark.GetResultType();
 			thisInstance["resultUnit"] = benchmark.GetResultUnit();
+			thisInstance["baseScore"] = instance->GetBaseScore();
+			thisInstance["isMultiThreaded"] = instance->IsMultiThread();
 			thisInstance["uuid"] = instance->GetUuid();
 
 			root.push_back(std::move(thisInstance));

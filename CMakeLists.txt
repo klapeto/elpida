@@ -32,14 +32,14 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     set(ELPIDA_COMPILER_INTEL TRUE)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(ELPIDA_COMPILER_MSVC TRUE)
-endif()
+endif ()
 
 # static link stdlib
 if (ELPIDA_COMPILER_GCC)
-    add_link_options(-static-libstdc++ -static-libgcc)
-else()
+    add_link_options(-static-libstdc++ -static-libgcc -fno-builtin)
+else ()
     message(WARNING "Compiler flags for static linking are not implemented for this compiler")
-endif()
+endif ()
 
 #====================
 # RPATH Config
@@ -98,8 +98,8 @@ if (MSYS OR MINGW OR MSVC)
     set(ELPIDA_LIB_INSTALL_DIR bin)
     set(ELPIDA_APP_INSTALL_DIR bin)
     add_definitions(-DWIN32=1)
-    add_definitions(-DWINVER=0x0501) # We support Vista and above
-    add_definitions(-D_WIN32_WINNT=0x0501) # We support Vista and above
+    add_definitions(-DWINVER=0x0501) # We support XP and above
+    add_definitions(-D_WIN32_WINNT=0x0501) # We support XP and above
 else ()
     set(ELPIDA_BENCHMARK_INSTALL_DIR bin/Benchmarks)
     set(ELPIDA_HEADER_INSTALL_DIR include)

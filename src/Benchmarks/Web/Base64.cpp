@@ -62,6 +62,10 @@ namespace Elpida
 	std::string Base64::Encode(const unsigned char* data, std::size_t size)
 	{
 		std::string ret;
+
+		// predict the size needed
+		ret.reserve((size + 2 - ((size + 2) % 3)) / 3 * 4);
+
 		int i = 0;
 		int j = 0;
 		unsigned char char_array_3[3];
@@ -115,6 +119,9 @@ namespace Elpida
 		int in_ = 0;
 		unsigned char char_array_4[4], char_array_3[3];
 		std::string ret;
+
+		// predict the size needed
+		ret.reserve((std::size_t)(size * 0.75));
 
 		while (size-- && (data[in_] != '=')
 			   && is_base64(data[in_])) {

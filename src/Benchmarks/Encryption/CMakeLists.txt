@@ -14,6 +14,7 @@ add_executable(elpida-encryption-benchmarks
         AESDecryptTask.cpp
         AESEncryptionBenchmark.cpp
         AESDecryptionBenchmark.cpp
+        ${MUSL_LITE_SOURCES}
 )
 
 if(MSYS OR MINGW OR MSVC)

@@ -24,6 +24,7 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         RayTracingTask.cpp
         RayTracingBenchmark.cpp
         SceneCreator.cpp
+        ${MUSL_LITE_SOURCES}
 )
 
 add_executable(elpida-image-benchmarks ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})

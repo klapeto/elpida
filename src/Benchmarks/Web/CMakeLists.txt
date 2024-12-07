@@ -17,6 +17,7 @@ set(ELPIDA_WEB_BENCHMARKS_SOURCES
         Base64DecodeBenchmark.cpp
         RegexTask.cpp
         RegexBenchmark.cpp
+        ${MUSL_LITE_SOURCES}
 )
 
 add_executable(elpida-web-benchmarks ${ELPIDA_WEB_BENCHMARKS_SOURCES})

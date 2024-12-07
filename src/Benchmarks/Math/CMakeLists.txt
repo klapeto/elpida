@@ -18,6 +18,7 @@ add_executable(elpida-math-benchmarks
         NBodySystem.cpp
         NBodyBenchmark.cpp
         NBodyTask.cpp
+        ${MUSL_LITE_SOURCES}
 )
 
 target_link_libraries(elpida-math-benchmarks PRIVATE elpida-core elpida-platform elpida-entry-point elpida-math)
