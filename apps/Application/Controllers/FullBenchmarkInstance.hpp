@@ -65,6 +65,12 @@ namespace Elpida::Application
 		}
 
 		[[nodiscard]]
+		Score GetBaseScore() const
+		{
+			return _baseScore;
+		}
+
+		[[nodiscard]]
 		bool IsMultiThread() const;
 
 		FullBenchmarkInstance(const FullBenchmarkInstance&) = delete;
@@ -103,6 +109,7 @@ namespace Elpida::Application
 		{
 			return ConcurrencyMode::ShareInput;
 		}
+
 	private:
 		[[nodiscard]]
 		FullBenchmarkInstanceResult RunSingleThread() const;
