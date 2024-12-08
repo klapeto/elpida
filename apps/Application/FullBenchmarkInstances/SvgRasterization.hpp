@@ -43,6 +43,8 @@ namespace Elpida::Application
 		void Configure() override;
 	};
 
+	using SVGRasterization = SvgRasterization;
+
 } // Elpida::Application
 
 #endif //ELPIDA_SVGRASTERIZATION_HPP

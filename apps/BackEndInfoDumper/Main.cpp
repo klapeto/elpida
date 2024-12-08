@@ -187,6 +187,7 @@ int main(int argC, char** argV)
 
 			auto& benchmark = instance->GetBenchmark();
 
+			thisInstance["benchmarkName"] = instance->GetBenchmark().GetName();
 			thisInstance["name"] = instance->GetName();
 			thisInstance["description"] = benchmark.GetDescription();
 			thisInstance["resultType"] = benchmark.GetResultType();

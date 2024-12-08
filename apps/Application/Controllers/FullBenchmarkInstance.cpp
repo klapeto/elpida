@@ -95,7 +95,7 @@ namespace Elpida::Application
 				Seconds(5).count()
 		);
 
-		auto thisResult = benchmarkResult.GetResult() / _baseScore;
+		auto thisResult = benchmarkResult.GetResult();
 
 		return FullBenchmarkInstanceResult(std::move(benchmarkResult), thisResult);
 	}
@@ -113,7 +113,7 @@ namespace Elpida::Application
 				Seconds(5).count()
 				);
 
-		auto thisResult = benchmarkResult.GetResult() / _baseScore;
+		auto thisResult = benchmarkResult.GetResult();
 
 		return FullBenchmarkInstanceResult(std::move(benchmarkResult),thisResult);
 

@@ -106,10 +106,12 @@ namespace Elpida::Application
 			{
 				for (std::size_t i = 0; i < _runConfigurationModel.GetIterationsToRun(); ++i)
 				{
-					Score singleThreadScore = 0.0;
-					Score multiThreadScore = 0.0;
-					std::size_t singleThreadScoresCount = 0;
-					std::size_t multiThreadScoresCount = 0;
+					Score singleThreadRate = 0.0;
+					Score singleThreadBaseRate = 0.0;
+					Score multiThreadRate = 0.0;
+					Score multiThreadBaseRate = 0.0;
+					std::size_t singleThreadRatesCount = 0;
+					std::size_t multiThreadRatesCount = 0;
 					std::vector<BenchmarkResultModel> benchmarkResults;
 
 					for (auto& benchmark : _benchmarks)
@@ -122,21 +124,28 @@ namespace Elpida::Application
 
 						if (benchmark->IsMultiThread())
 						{
-							multiThreadScore += 1.0 / result.GetScore();
-							multiThreadScoresCount++;
+							multiThreadRate += 1.0 / result.GetScore();
+							multiThreadBaseRate += 1.0 / benchmark->GetBaseScore();
+							multiThreadRatesCount++;
 						}
 						else
 						{
-							singleThreadScore += 1.0 / result.GetScore();
-							singleThreadScoresCount++;
+							singleThreadRate += 1.0 / result.GetScore();
+							singleThreadBaseRate += 1.0 / benchmark->GetBaseScore();
+							singleThreadRatesCount++;
 						}
 
 						benchmarkResults.push_back(std::move(result.GetBenchmarkResult()));
 					}
 
 					// harmonic mean since we are averaging performance ratios
-					singleThreadScore = singleThreadScoresCount / singleThreadScore;
-					multiThreadScore = multiThreadScoresCount / multiThreadScore;
+					auto singleThreadMeanRate = singleThreadRatesCount / singleThreadRate;
+					auto singleThreadMeanBaseRate = singleThreadRatesCount / singleThreadBaseRate;
+					auto singleThreadScore = singleThreadMeanRate / singleThreadMeanBaseRate;
+
+					auto multiThreadMeanRate = multiThreadRatesCount / multiThreadRate;
+					auto multiThreadMeanBaseRate = multiThreadRatesCount / multiThreadBaseRate;
+					auto multiThreadScore = multiThreadMeanRate / multiThreadMeanBaseRate;
 
 					auto totalScore = CalculateTotalScore(singleThreadScore, multiThreadScore);
 
