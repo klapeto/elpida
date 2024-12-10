@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 
+# Force local compiler
+#set(CMAKE_C_COMPILER /usr/bin/gcc-9 CACHE PATH "" FORCE)
+#set(CMAKE_CXX_COMPILER /usr/bin/g++-9 CACHE PATH "" FORCE)
+
 set(ELPIDA_MSVC_STATIC ON)
 
 if (MSVC AND ELPIDA_MSVC_STATIC)

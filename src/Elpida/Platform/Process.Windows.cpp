@@ -48,16 +48,16 @@ namespace Elpida
 
 		ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 
-		STARTUPINFOW siStartInfo;
-		ZeroMemory(&siStartInfo, sizeof(STARTUPINFOW));
-		siStartInfo.cb = sizeof(STARTUPINFOW);
+		STARTUPINFO siStartInfo;
+		ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
+		siStartInfo.cb = sizeof(STARTUPINFO);
 		siStartInfo.hStdError = errorPipe.IsOpen() ? errorPipe.GetWriteHandle<HANDLE>() : NULL;
 		siStartInfo.hStdOutput = outputPipe.IsOpen() ? outputPipe.GetWriteHandle<HANDLE>() : NULL;
 		siStartInfo.hStdInput = NULL;
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-		success = CreateProcessW(NULL,
-				(LPWSTR)Vu::StringToWstring(GetCommandLine(actualPath.string(), args)).c_str(), // command line
+		success = CreateProcess(NULL,
+				(LPSTR)GetCommandLine(actualPath.string(), args).c_str(), // command line
 				NULL,                                        // process security attributes
 				NULL,                                        // primary thread security attributes
 				TRUE,                                        // handles are inherited
@@ -101,7 +101,13 @@ namespace Elpida
 	void Process::WaitToExitImpl(bool noThrow) const
 	{
 		if (_pid < 0) return;
-		auto handle = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, _pid);
+		auto flags = SYNCHRONIZE |
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN6
+				PROCESS_QUERY_LIMITED_INFORMATION;
+#else
+				PROCESS_QUERY_INFORMATION;	// windows XP quirk
+#endif
+		auto handle = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION, FALSE, _pid);
 		if (handle == nullptr)
 		{
 			// Assume exited.
@@ -113,10 +119,20 @@ namespace Elpida
 #endif
 		}
 
-		WaitForSingleObject(handle, INFINITE);
+		if (WaitForSingleObject(handle, INFINITE) > 0)
+		{
+			CloseHandle(handle);
+			if (noThrow) return;
+			throw ElpidaException("Failed to wait for process: ", OsUtilities::GetLastErrorString());
+		}
 
 		DWORD exitCode;
-		GetExitCodeProcess(handle, &exitCode);
+		if (GetExitCodeProcess(handle, &exitCode) == 0)
+		{
+			CloseHandle(handle);
+			if (noThrow) return;
+			throw ElpidaException("Failed to get process exit code: ", OsUtilities::GetLastErrorString());
+		}
 
 		CloseHandle(handle);
 
