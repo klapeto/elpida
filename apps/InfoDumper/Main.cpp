@@ -113,7 +113,9 @@ int main(int argC, char** argV)
 
 	if (argC > 1)
 	{
-		benchmarkPath = argV[1];
+		std::string pathString = argV[1];
+		ValueUtilities::DeQuoteString(pathString);
+		benchmarkPath = pathString;
 	}
 	else
 	{

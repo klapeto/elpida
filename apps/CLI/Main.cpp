@@ -105,12 +105,21 @@ int main(int argC, char** argV)
 			}
 		}
 
+		std::filesystem::path benchmarksPath;
+		if (!helper.GetBenchmarksPath().empty())
+		{
+			std::string pathString = helper.GetBenchmarksPath();
+			ValueUtilities::DeQuoteString(pathString);
+			benchmarksPath = pathString;
+		}
+		else
+		{
+			benchmarksPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
+		}
+
 		ELPIDA_OUT(std::cout << "Getting System information..." << std::endl);
 
-		ModelBuilderJson builderJson = ModelBuilderJson(InfoGetter::GetInfoData(
-				!helper.GetBenchmarksPath().empty() ?
-				helper.GetBenchmarksPath() :
-				OsUtilities::GetExecutableDirectory() / "Benchmarks"));
+		ModelBuilderJson builderJson = ModelBuilderJson(InfoGetter::GetInfoData(benchmarksPath));
 
 		BenchmarkExecutionService executionService;
 

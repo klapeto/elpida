@@ -10,7 +10,7 @@
 #include <filesystem>
 
 #if defined(ELPIDA_WINDOWS)
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 namespace Elpida

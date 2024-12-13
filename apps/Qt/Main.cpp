@@ -152,7 +152,7 @@ static void UpdateBenchmarkSettings(std::vector<BenchmarkGroupModel>& groups, Se
 	}
 }
 
-static ModelBuilderJson GetBasicInfo(const std::string& benchmarksPath)
+static ModelBuilderJson GetBasicInfo(const std::filesystem::path& benchmarksPath)
 {
 	std::string data;
 	std::string error;
@@ -215,8 +215,19 @@ int main(int argc, char* argv[])
 		splash.showMessage("Getting system info (it should take about 5 seconds)...");
 		QApplication::processEvents();
 
-		ModelBuilderJson builderJson = GetBasicInfo(
-				argc > 1 ? argv[1] : (OsUtilities::GetExecutableDirectory() / "Benchmarks").string());
+		std::filesystem::path benchmarksPath;
+		if (argc > 1)
+		{
+			std::string pathString = argv[1];
+			ValueUtilities::DeQuoteString(pathString);
+			benchmarksPath = pathString;
+		}
+		else
+		{
+			benchmarksPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
+		}
+
+		ModelBuilderJson builderJson = GetBasicInfo(benchmarksPath);
 
 		QtMessageService messageService;
 

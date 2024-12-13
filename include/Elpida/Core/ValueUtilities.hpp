@@ -188,7 +188,8 @@ namespace Elpida
 		template<typename T>
 		static std::string GetTimeScaleValue(std::chrono::duration<T> duration, int decimals = 2)
 		{
-			return GetValueScaleStringImpl(duration.count(), TimeValues, TimeSuffixes, GetArrayLength(TimeSuffixes), decimals);
+			return GetValueScaleStringImpl(duration.count(), TimeValues, TimeSuffixes, GetArrayLength(TimeSuffixes),
+					decimals);
 		}
 
 		template<typename ... TArgs>
@@ -248,6 +249,34 @@ namespace Elpida
 		static String WstringTostring(const WString& wstring);
 
 		static WString StringToWstring(const String& string);
+
+		static void QuoteString(std::string& str)
+		{
+			if (str.empty()) return;
+
+			if (str.front() != '"')
+			{
+				str.insert(0, "\"");
+			}
+
+			if (str.back() != '"')
+			{
+				str.insert(str.size(), "\"");
+			}
+		}
+
+		static void DeQuoteString(std::string& str)
+		{
+			if (str.empty()) return;
+			if (str.front() == '"')
+			{
+				str.erase(0, 1);
+			}
+			if (str.back() == '"')
+			{
+				str.erase(str.size() - 1, 1);
+			}
+		}
 
 	private:
 		static String GetValueScaleStringImpl(double value,
