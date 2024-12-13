@@ -190,6 +190,8 @@ int main(int argc, char* argv[])
 {
 	setupPlatformSpecifics();
 
+	OsUtilities::ConvertArgumentsToUTF8(argc, argv);
+
 	try
 	{
 		ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());

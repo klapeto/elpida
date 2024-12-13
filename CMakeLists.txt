@@ -102,6 +102,8 @@ if (MSYS OR MINGW OR MSVC)
     set(ELPIDA_HEADER_INSTALL_DIR include)
     set(ELPIDA_LIB_INSTALL_DIR bin)
     set(ELPIDA_APP_INSTALL_DIR bin)
+    add_definitions(-D_UNICODE=1)
+    add_definitions(-DUNICODE=1)
     add_definitions(-DWIN32=1)
     add_definitions(-DWINVER=0x0501) # We support XP and above
     add_definitions(-D_WIN32_WINNT=0x0501) # We support XP and above

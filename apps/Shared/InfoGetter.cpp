@@ -27,9 +27,9 @@
 
 namespace Elpida
 {
-	std::string InfoGetter::GetInfoData(const std::string& benchmarksPath)
+	std::string InfoGetter::GetInfoData(const std::filesystem::path& benchmarksPath)
 	{
-		Process process(OsUtilities::GetExecutableDirectory() / "elpida-info-dumper", { benchmarksPath }, true, true);
+		Process process(OsUtilities::GetExecutableDirectory() / "elpida-info-dumper", { "\"" + benchmarksPath.string() + "\"" }, true, true);
 		AsyncPipeReader stdOut(process.GetStdOut());
 		AsyncPipeReader stdErr(process.GetStdErr());
 

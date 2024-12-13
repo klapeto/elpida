@@ -107,6 +107,8 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path)
 
 int main(int argC, char** argV)
 {
+	OsUtilities::ConvertArgumentsToUTF8(argC, argV);
+
 	std::filesystem::path benchmarkPath;
 
 	if (argC > 1)
@@ -120,7 +122,6 @@ int main(int argC, char** argV)
 
 	try
 	{
-
 		auto topology = TopologyLoader::LoadTopology();
 
 		topology.PinThreadToProcessor(0);

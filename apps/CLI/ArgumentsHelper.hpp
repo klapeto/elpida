@@ -22,6 +22,7 @@
 #define ELPIDA_ARGUMENTSVALIDATOR_HPP_
 
 #include <string>
+#include <filesystem>
 
 namespace Elpida::Application
 {
@@ -35,10 +36,10 @@ namespace Elpida::Application
 	{
 	public:
 		[[nodiscard]]
-		const std::string& GetBenchmarksPath() const;
+		const std::filesystem::path& GetBenchmarksPath() const;
 
 		[[nodiscard]]
-		const std::string& GetReportPath() const;
+		const std::filesystem::path& GetReportPath() const;
 
 		[[nodiscard]]
 		size_t GetIterationsToRun() const;
@@ -56,7 +57,7 @@ namespace Elpida::Application
 		bool IsUpload() const;
 
 		[[nodiscard]]
-		const std::string& GetResultPath() const;
+		const std::filesystem::path& GetResultPath() const;
 
 		[[nodiscard]]
 		bool IsQuiet() const
@@ -71,9 +72,9 @@ namespace Elpida::Application
 		~ArgumentsHelper() = default;
 
 	private:
-		std::string _benchmarksPath;
-		std::string _reportPath;
-		std::string _resultPath;
+		std::filesystem::path _benchmarksPath;
+		std::filesystem::path _reportPath;
+		std::filesystem::path _resultPath;
 		std::size_t _iterationsToRun;
 		std::size_t _secondsBetweenRuns;
 		OutputFormat _outputFormat;

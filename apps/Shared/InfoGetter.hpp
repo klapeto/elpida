@@ -21,7 +21,7 @@
 #ifndef ELPIDA_INFOGETTER_HPP
 #define ELPIDA_INFOGETTER_HPP
 
-#include <string>
+#include <filesystem>
 
 namespace Elpida
 {
@@ -29,7 +29,7 @@ namespace Elpida
 	class InfoGetter
 	{
 	public:
-		static std::string GetInfoData(const std::string& benchmarksPath);
+		static std::string GetInfoData(const std::filesystem::path& benchmarksPath);
 	};
 
 } // Elpida

@@ -25,6 +25,7 @@
 #include <iostream>
 #include <thread>
 
+#include "Elpida/Platform/OsUtilities.hpp"
 #include "Elpida/Core/AllocatorFactory.hpp"
 #include "Elpida/Core/DefaultAllocatorFactory.hpp"
 #include "Elpida/Core/Duration.hpp"
@@ -161,6 +162,8 @@ int main(int argC, char** argV)
 {
 	try
 	{
+		OsUtilities::ConvertArgumentsToUTF8(argC, argV);
+
 		std::locale::global(std::locale::classic());
 		ArgumentsHelper helper;
 

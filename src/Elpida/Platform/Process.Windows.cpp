@@ -12,24 +12,32 @@
 
 #include "Elpida/Platform/OsUtilities.hpp"
 
-#include <thread>
 #include <sstream>
-
 #include <windows.h>
 
 namespace Elpida
 {
 	using Vu = ValueUtilities;
 
-	static String GetCommandLine(const String& path, const Vector<String>& args)
+	static
+#if UNICODE
+	std::wstring
+#else
+	std::string
+#endif
+	GetCommandLineString(const std::filesystem::path& path, const Vector<String>& args)
 	{
+#if UNICODE
+		std::wostringstream accumulator;
+		accumulator << path.native();
+#else
 		std::ostringstream accumulator;
-
-		accumulator << path;
+		accumulator << path.string();
+#endif
 
 		for (auto& arg: args)
 		{
-			accumulator << " " << arg;
+			accumulator << " " << OsUtilities::GetWinApiStringFromString(arg);
 		}
 
 		return accumulator.str();
@@ -51,21 +59,23 @@ namespace Elpida
 		STARTUPINFO siStartInfo;
 		ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
 		siStartInfo.cb = sizeof(STARTUPINFO);
-		siStartInfo.hStdError = errorPipe.IsOpen() ? errorPipe.GetWriteHandle<HANDLE>() : NULL;
-		siStartInfo.hStdOutput = outputPipe.IsOpen() ? outputPipe.GetWriteHandle<HANDLE>() : NULL;
-		siStartInfo.hStdInput = NULL;
+		siStartInfo.hStdError = errorPipe.IsOpen() ? errorPipe.GetWriteHandle<HANDLE>() : nullptr;
+		siStartInfo.hStdOutput = outputPipe.IsOpen() ? outputPipe.GetWriteHandle<HANDLE>() : nullptr;
+		siStartInfo.hStdInput = nullptr;
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-		success = CreateProcess(NULL,
-				(LPSTR)GetCommandLine(actualPath.string(), args).c_str(), // command line
-				NULL,                                        // process security attributes
-				NULL,                                        // primary thread security attributes
-				TRUE,                                        // handles are inherited
-				CREATE_NO_WINDOW,                                            // creation flags
-				NULL,                                        // use parent's environment
-				NULL,                                        // use parent's current directory
-				&siStartInfo,                                // STARTUPINFO pointer
-				&piProcInfo);                                // receives PROCESS_INFORMATION
+		auto cmd = GetCommandLineString(actualPath, args);
+		success = CreateProcess(
+				nullptr,							// application name
+				const_cast<LPTSTR>(cmd.c_str()),	// command line
+				nullptr,							// process security attributes
+				nullptr,							// primary thread security attributes
+				TRUE,								// handles are inherited
+				CREATE_NO_WINDOW,					// creation flags
+				nullptr,							// use parent's environment
+				nullptr,							// use parent's current directory
+				&siStartInfo,						// STARTUPINFO pointer
+				&piProcInfo);						// receives PROCESS_INFORMATION
 
 		// If an error occurs, exit the application.
 		if (!success)

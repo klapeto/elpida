@@ -26,6 +26,11 @@ namespace Elpida
 		return { strerror(errno) };
 	}
 
+	bool OsUtilities::ConvertArgumentsToUTF8(int& originalArgC, char**& originalArgV)
+	{
+		return true;
+	}
+
 	unsigned int OsUtilities::GetNumaNodeIdForProcessor(unsigned int processorId)
 	{
 		if (numa_available() < 0) return 0;

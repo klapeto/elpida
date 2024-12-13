@@ -150,6 +150,8 @@ static json GetJsonWithOnlyBenchmarks(const std::filesystem::path& benchmarkPath
 
 int main(int argC, char** argV)
 {
+	OsUtilities::ConvertArgumentsToUTF8(argC, argV);
+
 	std::filesystem::path benchmarkPath;
 
 	if (argC > 1)

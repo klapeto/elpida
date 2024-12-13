@@ -210,12 +210,12 @@ namespace Elpida::Application
 
 	}
 
-	const std::string& ArgumentsHelper::GetBenchmarksPath() const
+	const std::filesystem::path& ArgumentsHelper::GetBenchmarksPath() const
 	{
 		return _benchmarksPath;
 	}
 
-	const std::string& ArgumentsHelper::GetReportPath() const
+	const std::filesystem::path& ArgumentsHelper::GetReportPath() const
 	{
 		return _reportPath;
 	}
@@ -245,7 +245,7 @@ namespace Elpida::Application
 		return _upload;
 	}
 
-	const std::string& ArgumentsHelper::GetResultPath() const
+	const std::filesystem::path& ArgumentsHelper::GetResultPath() const
 	{
 		return _resultPath;
 	}

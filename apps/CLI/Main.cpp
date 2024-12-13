@@ -18,8 +18,6 @@
 // Created by klapeto on 29/9/2024.
 //
 
-#include "Elpida/Core/Config.hpp"
-#include "Elpida/Core/Config.hpp"
 #include "ArgumentsHelper.hpp"
 
 #include "Models/SystemInfo/TopologyModel.hpp"
@@ -46,6 +44,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 
 #ifdef ELPIDA_UNIX
@@ -73,13 +72,13 @@ static void setupPlatformSpecifics()
 #endif
 }
 
-#define OUT(x) if (!helper.IsQuiet()) x
+#define ELPIDA_OUT(x) if (!helper.IsQuiet()) x
 
 using namespace Elpida;
 using namespace Elpida::Application;
 
 template<typename TCallable>
-static void WriteResultsToFile(TCallable callable, const std::string& filePath)
+static void WriteResultsToFile(TCallable callable, const std::filesystem::path& filePath)
 {
 	std::fstream file(filePath, std::ios::out | std::ios::trunc);
 	file << callable();
@@ -91,6 +90,8 @@ int main(int argC, char** argV)
 
 	try
 	{
+		OsUtilities::ConvertArgumentsToUTF8(argC, argV);
+
 		std::locale::global(std::locale::classic());
 		ArgumentsHelper helper;
 
@@ -104,11 +105,12 @@ int main(int argC, char** argV)
 			}
 		}
 
-		OUT(std::cout << "Getting System information..." << std::endl);
+		ELPIDA_OUT(std::cout << "Getting System information..." << std::endl);
 
 		ModelBuilderJson builderJson = ModelBuilderJson(InfoGetter::GetInfoData(
-				!helper.GetBenchmarksPath().empty() ? helper.GetBenchmarksPath() : (
-						OsUtilities::GetExecutableDirectory() / "Benchmarks").string()));
+				!helper.GetBenchmarksPath().empty() ?
+				helper.GetBenchmarksPath() :
+				OsUtilities::GetExecutableDirectory() / "Benchmarks"));
 
 		BenchmarkExecutionService executionService;
 
@@ -187,7 +189,7 @@ int main(int argC, char** argV)
 			});
 		}
 
-		OUT(std::cout << "Starting benchmarking. Estimated execution time: " << std::setprecision(2)
+		ELPIDA_OUT(std::cout << "Starting benchmarking. Estimated execution time: " << std::setprecision(2)
 					  << ValueUtilities::GetTimeScaleValue(Seconds(5.0 * total)) << std::endl);
 
 		fullBenchmarkController.RunAsync();

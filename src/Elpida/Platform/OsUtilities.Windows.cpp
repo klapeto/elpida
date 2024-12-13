@@ -8,36 +8,108 @@
 
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
+#include "Elpida/Core/ValueUtilities.hpp"
 
 #include <windows.h>
 #include <strsafe.h>
 
 namespace Elpida
 {
-
 	unsigned int OsUtilities::GetNumaNodeIdForProcessor(unsigned int processorId)
 	{
 		UCHAR NodeNumber;
 
-		GetNumaProcessorNode((UCHAR)processorId, &NodeNumber);	// TODO: does not work with 64+ processors (thanks windows)
+		GetNumaProcessorNode(static_cast<UCHAR>(processorId), &NodeNumber);	// TODO: does not work with 64+ processors (thanks windows)
 		return NodeNumber;
 	}
 
-	String OsUtilities::GetLastErrorString()
+	bool OsUtilities::ConvertArgumentsToUTF8(int& originalArgC, char**& originalArgV)
 	{
-		HRESULT errorId = GetLastError();
+		// based on https://github.com/HandBrake/HandBrake/blame/master/test/test.c
+#if defined( __MINGW32__ )
+		bool ret = false;
+		int argc = 0;
+		char **argv = nullptr;
 
-		if (errorId == 0) return String();
+		auto **argVUtf16 = CommandLineToArgvW(GetCommandLineW(), &argc);
+		if (argVUtf16 != nullptr)
+		{
+			int offset = (argc + 1) * sizeof(char*);
+			int size = offset;
+
+			for(auto i = 0; i < argc; i++)
+			{
+				size += WideCharToMultiByte(CP_UTF8, 0, argVUtf16[i], -1, nullptr, 0, nullptr, nullptr );
+			}
+
+			argv = static_cast<char **>(malloc(size));
+			if (argv != nullptr)
+			{
+				for (auto i = 0; i < argc; i++)
+				{
+					argv[i] = reinterpret_cast<char *>(argv) + offset;
+					offset += WideCharToMultiByte(CP_UTF8, 0, argVUtf16[i], -1, argv[i], size - offset, nullptr, nullptr);
+				}
+				argv[argc] = nullptr;
+				ret = true;
+			}
+			LocalFree(argVUtf16);
+		}
+		if (ret)
+		{
+			originalArgC = argc;
+			originalArgV = argv;
+		}
+		return ret;
+#else
+		// On other systems, assume command line is already utf8
+		return true;
+#endif
+	}
+
+	std::string OsUtilities::GetStringFromWinApiBuffer(LPCTSTR buffer, DWORD size) {
+
+#if UNICODE
+		return ValueUtilities::WstringTostring({ buffer, static_cast<std::size_t>(size) });
+#else
+		return { reinterpret_cast<const char*>(buffer), static_cast<std::size_t>(size)};
+#endif
+	}
+
+#if UNICODE
+std::wstring
+#else
+std::string
+#endif
+	OsUtilities::GetWinApiStringFromString(const std::string &str) {
+#if UNICODE
+		return ValueUtilities::StringToWstring(str);
+#else
+		return str;
+#endif
+	}
+
+	std::string OsUtilities::GetLastErrorString()
+	{
+		const DWORD errorId = GetLastError();
+
+		if (errorId == 0) return {};
 
 		LPTSTR messageBuffer = nullptr;
 		try
 		{
-			size_t size = FormatMessage(
+			const auto size = FormatMessage(
 					FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-					NULL, errorId, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), (LPTSTR) & messageBuffer, 0, NULL);
+					nullptr,
+					errorId,
+					MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
+					reinterpret_cast<LPTSTR>(&messageBuffer),
+					0,
+					nullptr);
 
-			String message(messageBuffer, size);
+			if (size == 0) return ValueUtilities::Cs("Error getting string of the error: ", std::to_string(GetLastError()) , " (original error: " ,std::to_string(errorId), ")");
 
+			std::string message = GetStringFromWinApiBuffer(messageBuffer, size);
 			LocalFree(messageBuffer);
 			return message;
 		}
@@ -61,13 +133,13 @@ namespace Elpida
 	{
 		TCHAR buffer[MAX_PATH];
 
-		auto lenght = GetModuleFileName(NULL, buffer, sizeof(buffer));
-		if (lenght == MAX_PATH || GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+		const auto length = GetModuleFileName(NULL, buffer, sizeof(buffer));
+		if (length == MAX_PATH || GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 		{
 			throw ElpidaException("Failed to get the executable path. Path required larger buffer");
 		}
 
-		std::string pathStr(buffer, lenght);
+		std::string pathStr = GetStringFromWinApiBuffer(buffer, length);
 
 		return std::filesystem::path(pathStr);
 	}
@@ -75,10 +147,10 @@ namespace Elpida
 	std::string OsUtilities::ReadRegistryKeyFromHKLM(const std::string& subKey, const std::string& key)
 	{
 		// Modified version of https://stackoverflow.com/a/50821858
-		auto& regSubKey = subKey;
-		auto& regValue = key;
+		const auto regSubKey = GetWinApiStringFromString(subKey);
+		const auto regValue = GetWinApiStringFromString(key);
 		size_t bufferSize = 0xFFF; // If too small, will be resized down below.
-		std::string valueBuf; // Contiguous buffer since C++11.
+		std::wstring valueBuf; // Contiguous buffer since C++11.
 		valueBuf.resize(bufferSize);
 		auto cbData = static_cast<DWORD>(bufferSize * sizeof(TCHAR));
 
@@ -87,13 +159,13 @@ namespace Elpida
 
 		if (result != ERROR_SUCCESS)
 		{
-			throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", OsUtilities::GetLastErrorString());
+			throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", GetLastErrorString());
 		}
 
 		result = RegQueryValueEx(hKey,
 				regValue.c_str(),
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
 				reinterpret_cast<LPBYTE>(valueBuf.data()),
 				&cbData);
 
@@ -113,8 +185,8 @@ namespace Elpida
 			valueBuf.resize(bufferSize);
 			result = RegQueryValueEx(hKey,
 					regValue.c_str(),
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					reinterpret_cast<LPBYTE>(valueBuf.data()),
 					&cbData);
 		}
@@ -123,16 +195,10 @@ namespace Elpida
 			cbData /= sizeof(TCHAR);
 			valueBuf.resize(static_cast<size_t>(cbData - 1)); // remove end null character
 			RegCloseKey(hKey);
-			return valueBuf;
+			return ValueUtilities::WstringTostring(valueBuf);
 		}
-		else
-		{
-			RegCloseKey(hKey);
-			throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", OsUtilities::GetLastErrorString());
-		}
-
-
 		RegCloseKey(hKey);
+		throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", OsUtilities::GetLastErrorString());
 	}
 
 } // Elpida
