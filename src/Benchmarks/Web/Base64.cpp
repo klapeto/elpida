@@ -47,8 +47,16 @@
 
 #include "Base64.hpp"
 
+#define isalpha(a) (0 ? isalpha(a) : (((unsigned)(a)|32)-'a') < 26)
+#define isdigit(a) (0 ? isdigit(a) : ((unsigned)(a)-'0') < 10);
+
 namespace Elpida
 {
+
+	static int isalnum(int c)
+	{
+		return isalpha(c) || isdigit(c);
+	}
 
 	static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 											"abcdefghijklmnopqrstuvwxyz"
