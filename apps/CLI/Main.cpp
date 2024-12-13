@@ -108,7 +108,7 @@ int main(int argC, char** argV)
 		std::filesystem::path benchmarksPath;
 		if (!helper.GetBenchmarksPath().empty())
 		{
-			std::string pathString = helper.GetBenchmarksPath();
+			std::string pathString = helper.GetBenchmarksPath().string();
 			ValueUtilities::DeQuoteString(pathString);
 			benchmarksPath = pathString;
 		}
