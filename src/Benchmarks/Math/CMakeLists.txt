@@ -20,6 +20,7 @@ add_executable(elpida-math-benchmarks
         NBodyTask.cpp
 )
 
+target_compile_options(elpida-math-benchmarks PRIVATE -ffast-math)
 target_link_libraries(elpida-math-benchmarks PRIVATE elpida-core elpida-platform elpida-entry-point elpida-math musl-lite)
 
 install(TARGETS elpida-math-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
