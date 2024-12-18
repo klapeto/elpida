@@ -53,6 +53,10 @@ WORKDIR mxe
 RUN make -j$(nproc) MXE_TARGETS='x86_64-w64-mingw32.static' cmake hwloc qtbase qtsvg qtcharts gcc
 RUN make -j$(nproc) MXE_TARGETS='i686-w64-mingw32.static' cmake hwloc gcc
 
+# reduce size of the image
+RUN rm -rf /mxe/pkg /mxe/src /mxe/log
+RUN apt-get autoclean
+
 ENV PATH=/mxe/usr/bin:$PATH
 
 WORKDIR /

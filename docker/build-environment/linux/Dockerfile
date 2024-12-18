@@ -43,10 +43,6 @@ RUN echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal main restricted"
     echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
     echo "deb [arch=amd64] http://gr.archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list
 
-# Add KDE repo for latest QT
-#RUN echo 'deb http://archive.neon.kde.org/user/ focal main' > /etc/apt/sources.list.d/neon.list && \
-#    wget -qO - https://archive.neon.kde.org/public.key | apt-key add -
-
 # Update caches
 RUN apt-get update --fix-missing
 
@@ -96,6 +92,9 @@ RUN sed -i 's/"lief"/"lief<0.15.0"/' appimage-builder/setup.py
 
 RUN python3 -m pip install /opt/appimage-builder
 RUN rm -rf /opt/appimage-builder
+
+# reduce the size of the image
+RUN apt-get autoclean
 
 WORKDIR /
 
