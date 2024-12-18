@@ -1,6 +1,8 @@
 .package:linux:
   image: $IMAGE_NAME
   stage: package
+  tags:
+    - amd64
   script:
     - mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/"
       "$INSTALL_DIR/usr/share/metainfo/"

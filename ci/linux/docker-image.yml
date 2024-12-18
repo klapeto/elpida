@@ -1,6 +1,8 @@
 docker-image:linux:
   image: docker:latest
   stage: build-containers
+  tags:
+    - amd64
   variables:
     TARGET_OS: linux
   services:

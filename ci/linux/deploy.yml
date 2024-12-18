@@ -1,5 +1,7 @@
 .deploy:linux:
   stage: deploy
+  tags:
+    - amd64
   only:
     - master
     - staging

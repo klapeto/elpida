@@ -1,5 +1,7 @@
 .deploy:windows:
   stage: deploy
+  tags:
+    - amd64
   environment:
     name: $DEPLOY_ENVIRONMENT
   only:

@@ -1,33 +1,19 @@
-.docker-image:windows:
+docker-image:windows:
   image: docker:latest
   stage: build-containers
   tags:
-    - $TARGET_ARCH
     - powerful  # very resource heavy build, use local vms only
+    - amd64
   services:
     - docker:dind
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - docker build -t $IMAGE_NAME docker/build-environment/windows/$TARGET_ARCH
+    - docker build -t $IMAGE_NAME docker/build-environment/windows
     - docker push $IMAGE_NAME
   rules:
     - if: $CI_COMMIT_BRANCH
       changes:
         paths:
-          - docker/build-environment/windows/$TARGET_ARCH/Dockerfile
+          - docker/build-environment/windows/Dockerfile
           - ci/windows/docker-image.yml
-
-docker-image:windows:amd64:
-  variables:
-    TARGET_ARCH: amd64
-    MINGW_ARCH: x86_64
-    TARGET_OS: windows
-  extends: .docker-image:windows
-
-docker-image:windows:i686:
-  variables:
-    TARGET_ARCH: i686
-    MINGW_ARCH: i686
-    TARGET_OS: windows
-  extends: .docker-image:windows

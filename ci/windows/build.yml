@@ -2,7 +2,7 @@
   image: $IMAGE_NAME
   stage: build
   tags:
-    - $TARGET_ARCH
+    - amd64
   environment:
     name: $DEPLOY_ENVIRONMENT
   script:
@@ -32,7 +32,7 @@ build:windows:amd64:
     MINGW_ARCH: x86_64
     TARGET_OS: windows
   dependencies:
-    - docker-image:windows:amd64
+    - docker-image:windows
   extends: .build:windows
 
 build:windows:i686:
@@ -41,5 +41,5 @@ build:windows:i686:
     MINGW_ARCH: i686
     TARGET_OS: windows
   dependencies:
-    - docker-image:windows:i686
+    - docker-image:windows
   extends: .build:windows

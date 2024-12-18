@@ -2,7 +2,7 @@
   image: $IMAGE_NAME
   stage: package
   tags:
-    - $TARGET_ARCH
+    - amd64
   script:
     - |
       currentDir=$(pwd)
