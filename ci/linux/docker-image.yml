@@ -1,6 +1,8 @@
 docker-image:linux:
   image: docker:latest
   stage: build-containers
+  variables:
+    TARGET_OS: linux
   services:
     - docker:dind
   before_script:
