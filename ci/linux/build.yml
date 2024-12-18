@@ -1,8 +1,6 @@
 .build:linux:
   image: $IMAGE_NAME
   stage: build
-  tags:
-    - $TARGET_ARCH
   environment:
     name: $DEPLOY_ENVIRONMENT
   script:
@@ -32,7 +30,7 @@ build:linux:amd64:
     TARGET_ARCH: amd64
     TARGET_OS: linux
   dependencies:
-    - docker-image:linux:amd64
+    - docker-image:linux
   extends: .build:linux
 
 build:linux:aarch64:
@@ -40,13 +38,5 @@ build:linux:aarch64:
     TARGET_ARCH: aarch64
     TARGET_OS: linux
   dependencies:
-    - docker-image:linux:aarch64
+    - docker-image:linux
   extends: .build:linux
-
-#build:linux:armhf:
-#  variables:
-#    TARGET_ARCH: armhf
-#    TARGET_OS: linux
-#  dependencies:
-#    - docker-image:linux:armhf
-#  extends: .build:linux

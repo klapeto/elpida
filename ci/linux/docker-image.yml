@@ -1,8 +1,6 @@
-.docker-image:linux:
+docker-image:linux:
   image: docker:latest
   stage: build-containers
-  tags:
-    - $TARGET_ARCH
   services:
     - docker:dind
   before_script:
@@ -16,24 +14,3 @@
         paths:
           - docker/build-environment/linux/Dockerfile
           - ci/linux/docker-image.yml
-
-
-docker-image:linux:amd64:
-  variables:
-    TARGET_ARCH: amd64
-    TARGET_OS: linux
-  extends: .docker-image:linux
-
-docker-image:linux:aarch64:
-  variables:
-    TARGET_ARCH: aarch64
-    TARGET_OS: linux
-  timeout: 3 hours
-  extends: .docker-image:linux
-
-#docker-image:linux:armhf:
-#  variables:
-#    TARGET_ARCH: armhf
-#    TARGET_OS: linux
-#  timeout: 3 hours
-#  extends: .docker-image:linux

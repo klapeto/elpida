@@ -1,8 +1,6 @@
 .package:linux:
   image: $IMAGE_NAME
   stage: package
-  tags:
-    - $TARGET_ARCH
   script:
     - mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/"
       "$INSTALL_DIR/usr/share/metainfo/"
@@ -42,13 +40,3 @@ package:linux:aarch64:
   dependencies:
     - build:linux:aarch64
   extends: .package:linux
-
-#package:linux:armhf:
-#  variables:
-#    TARGET_ARCH: armhf
-#    TARGET_OS: linux
-#    TARGET_ARCH_APPIMAGE_RUNTIME: gnueabihf
-#    TARGET_ARCH_APPIMAGE_APT: armhf
-#  dependencies:
-#    - build:linux:armhf
-#  extends: .package:linux
