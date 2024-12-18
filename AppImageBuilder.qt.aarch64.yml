@@ -37,7 +37,7 @@ AppDir:
       - qt5-image-formats-plugins
   files:
     include:
-      - /usr/local/lib/libhwloc.*
+      - /usr/lib/aarch64-linux-gnu/libhwloc.*
     exclude:
       - usr/share/man
       - usr/share/doc/*/README.*
