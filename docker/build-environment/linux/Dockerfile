@@ -5,7 +5,7 @@ LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get -y full-upgrade
-RUN apt install -y \
+RUN apt-get install -y \
     ca-certificates \
     gpg \
     wget \
@@ -15,7 +15,7 @@ RUN apt install -y \
     zsync \
     gtk-update-icon-cache \
     squashfs-tools \
-    libglib2.0 \
+    libglib2.0-bin \
     git \
     make \
     patch \
@@ -54,7 +54,7 @@ RUN apt-get update --fix-missing
 RUN dpkg --add-architecture arm64 && dpkg --add-architecture armhf
 
 # install cross libraries
-RUN apt install -y \
+RUN apt-get install -y \
     gcc-aarch64-linux-gnu \
     g++-aarch64-linux-gnu \
     libnuma-dev:arm64 \
