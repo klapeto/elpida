@@ -126,6 +126,12 @@ elseif (MINGW)
     endif()
 endif()
 
+if (CMAKE_HOST_UNIX AND CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_PROCESSOR MATCHES aarch64)
+    set(CROSS ON)
+    set(CROSS_TARGET linux-aarch64)
+    set(CROSS_PREFIX aarch64-linux-gnu-)
+endif()
+
 set(BUILD_OPENSSL ON)
 set(OPENSSL_USE_STATIC_LIBS ON)
 set(OPENSSL_BUILD_VERSION 3.3.1)
@@ -137,3 +143,36 @@ add_subdirectory(openssl-cmake)
 get_property(CRYPTO_INTERFACE_LIB TARGET crypto PROPERTY INTERFACE_LINK_LIBRARIES)
 get_property(CRYPTO_LIB TARGET ${CRYPTO_INTERFACE_LIB} PROPERTY IMPORTED_LOCATION)
 set(CRYPTO_CUSTOM_LIB_PATH ${CRYPTO_LIB} PARENT_SCOPE)
+
+
+#set(LLVM_ROOT_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/llvm-project/ CACHE STRING "llvm-project root dir")
+#set(LLVM_BUILD_DIR   ${CMAKE_CURRENT_BINARY_DIR}/llvm_build CACHE STRING "llvm-project build dir")
+#set(LLVM_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm_install CACHE STRING "llvm-project install dir")
+#
+#file(MAKE_DIRECTORY ${LLVM_BUILD_DIR})
+#ExternalProject_Add(llvm-project
+#        PREFIX llvm-project
+#        SOURCE_DIR ${LLVM_ROOT_DIR}/llvm
+#        BINARY_DIR ${LLVM_BUILD_DIR}
+#        #CMAKE_COMMAND x86_64-w64-mingw32.static-cmake
+#        CMAKE_ARGS
+#        -DCMAKE_BUILD_TYPE=Release
+#        -DCMAKE_INSTALL_PREFIX=${LLVM_INSTALL_DIR}
+#        -DCMAKE_SKIP_INSTALL_RPATH=ON
+#        #            -DBUILD_SHARED_LIBS=OFF
+#        #            -DLLVM_STATIC_LINK_CXX_STDLIB=ON
+#        -DLLVM_TARGETS_TO_BUILD=X86
+#        -DLLVM_BUILD_TOOLS=ON
+#        -DLLVM_ENABLE_PROJECTS=clang
+#        -DLLVM_BUILD_STATIC=ON
+#        -DLLVM_ENABLE_ZLIB=OFF
+#        -DLLVM_ENABLE_ZSTD=OFF
+#        -DLLVM_INCLUDE_BENCHMARKS=OFF
+#        -DLLVM_INCLUDE_EXAMPLES=OFF
+#        -DLLVM_INCLUDE_TESTS=OFF
+#        -DLIBCLANG_BUILD_STATIC=ON
+#)
+## Don't always build this, Make target only if the user explicitly calls it
+#set_target_properties(llvm-project PROPERTIES EXCLUDE_FROM_ALL TRUE)
+#
+#set(LLVM_BUILD_ROOT ${LLVM_INSTALL_DIR} PARENT_SCOPE)

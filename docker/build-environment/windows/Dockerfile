@@ -42,17 +42,23 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     sed \
     unzip \
     wget \
-    xz-utils
+    xz-utils \
+    lsb-release \
+    software-properties-common \
+    gnupg \
+    cmake
 
 RUN git clone -b elpida_updates https://github.com/klapeto/mxe.git
 WORKDIR mxe
-
-# winxp and no QT support
-RUN sed -i 's/--with-default-win32-winnt=0x0601/--with-default-win32-winnt=0x0501/g' src/gcc.mk
+RUN make -j$(nproc) MXE_TARGETS='x86_64-w64-mingw32.static' cmake hwloc qtbase qtsvg qtcharts gcc
 RUN make -j$(nproc) MXE_TARGETS='i686-w64-mingw32.static' cmake hwloc gcc
 
-WORKDIR /
+# reduce size of the image
+RUN rm -rf /mxe/pkg /mxe/src /mxe/log
+RUN apt-get autoclean
 
 ENV PATH=/mxe/usr/bin:$PATH
+
+WORKDIR /
 
 CMD ["/bin/bash"]
