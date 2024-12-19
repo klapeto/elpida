@@ -84,6 +84,7 @@ RUN wget https://github.com/NixOS/patchelf/releases/download/0.12/patchelf-0.12.
     ./configure && make -j$(nproc) && make install; \
     rm -rf patchelf-*
 
+# install appimage-builder
 WORKDIR /opt
 RUN git clone https://github.com/AppImageCrafters/appimage-builder.git
 
@@ -93,8 +94,52 @@ RUN sed -i 's/"lief"/"lief<0.15.0"/' appimage-builder/setup.py
 RUN python3 -m pip install /opt/appimage-builder
 RUN rm -rf /opt/appimage-builder
 
+# install llvm both archs
+RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git
+RUN mkdir /opt/llvm-project/llvm/build && cd /opt/llvm-project/llvm/build && cmake -S .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_SKIP_INSTALL_RPATH=ON \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DLLVM_STATIC_LINK_CXX_STDLIB=ON \
+    -DLLVM_TARGETS_TO_BUILD=X86 \
+    -DLLVM_BUILD_TOOLS=ON \
+    -DLLVM_ENABLE_PROJECTS=clang \
+    -DLLVM_BUILD_STATIC=ON \
+    -DLLVM_ENABLE_ZLIB=OFF \
+    -DLLVM_ENABLE_ZSTD=OFF \
+    -DLLVM_INCLUDE_BENCHMARKS=OFF \
+    -DLLVM_INCLUDE_EXAMPLES=OFF \
+    -DLLVM_INCLUDE_TESTS=OFF \
+    -DLIBCLANG_BUILD_STATIC=ON && \
+    make -j$(nproc) && make install
+
+RUN cd /opt/llvm-project/llvm/build && rm -rf * && cmake -S .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_SYSTEM_NAME=Linux \
+    -DCMAKE_CROSSCOMPILING=ON \
+    -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
+    -DCMAKE_C_COMPILER=/usr/bin/aarch64-linux-gnu-gcc \
+    -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ \
+    -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu \
+    -DCMAKE_INSTALL_PREFIX=/usr/aarch64-linux-gnu \
+    -DCMAKE_SKIP_INSTALL_RPATH=ON \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DLLVM_STATIC_LINK_CXX_STDLIB=ON \
+    -DLLVM_TARGETS_TO_BUILD=X86 \
+    -DLLVM_BUILD_TOOLS=ON \
+    -DLLVM_ENABLE_PROJECTS=clang \
+    -DLLVM_BUILD_STATIC=ON \
+    -DLLVM_ENABLE_ZLIB=OFF \
+    -DLLVM_ENABLE_ZSTD=OFF \
+    -DLLVM_INCLUDE_BENCHMARKS=OFF \
+    -DLLVM_INCLUDE_EXAMPLES=OFF \
+    -DLLVM_INCLUDE_TESTS=OFF \
+    -DLIBCLANG_BUILD_STATIC=ON && \
+    make -j$(nproc) && make install
+
 # reduce the size of the image
 RUN apt-get autoclean
+RUN rm -rf /opt/llvm-project
 
 WORKDIR /
 
