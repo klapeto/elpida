@@ -31,7 +31,7 @@ AppDir:
       - libnuma1
   files:
     include:
-      - /usr/local/lib/libhwloc.*
+      - /usr/aarch64-linux-gnu/lib/libhwloc.*
     exclude:
       - usr/share/man
       - usr/share/doc/*/README.*

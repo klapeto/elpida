@@ -2,7 +2,7 @@
   image: $IMAGE_NAME
   stage: build
   tags:
-    - $TARGET_ARCH
+    - amd64
   environment:
     name: $DEPLOY_ENVIRONMENT
   script:
@@ -10,6 +10,7 @@
     - cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/$TARGET_ARCH-linux-cross.cmake
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
       -DELPIDA_RELEASE=TRUE
       -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
@@ -31,7 +32,7 @@ build:linux:amd64:
     TARGET_ARCH: amd64
     TARGET_OS: linux
   dependencies:
-    - docker-image:linux:amd64
+    - docker-image:linux
   extends: .build:linux
 
 build:linux:aarch64:
@@ -39,13 +40,5 @@ build:linux:aarch64:
     TARGET_ARCH: aarch64
     TARGET_OS: linux
   dependencies:
-    - docker-image:linux:aarch64
+    - docker-image:linux
   extends: .build:linux
-
-#build:linux:armhf:
-#  variables:
-#    TARGET_ARCH: armhf
-#    TARGET_OS: linux
-#  dependencies:
-#    - docker-image:linux:armhf
-#  extends: .build:linux
