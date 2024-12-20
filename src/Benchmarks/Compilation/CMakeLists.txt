@@ -18,6 +18,6 @@ find_package(Clang REQUIRED CONFIG)
 
 #target_include_directories(elpida-compilation-benchmarks PRIVATE /usr/lib/llvm-18/include)
 
-target_link_libraries(elpida-compilation-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-entry-point musl-lite libclang clangCodeGen)
+target_link_libraries(elpida-compilation-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-entry-point musl-lite libclang clangCodeGen LLVMX86CodeGen)
 
 install(TARGETS elpida-compilation-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
