@@ -34,7 +34,7 @@ namespace Elpida
 	{
 		Exec([&]()
 		{
-			_compiler.setOutputStream(_compiler.createNullOutputFile());
+			//_compiler.setOutputStream(_compiler.createNullOutputFile());
 			_compiler.ExecuteAction(_action);
 		});
 	}
