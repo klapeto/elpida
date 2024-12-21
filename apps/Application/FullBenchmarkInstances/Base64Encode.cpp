@@ -44,6 +44,6 @@ namespace Elpida::Application
 
 	ConcurrencyMode Base64Encode::GetMultiThreadConcurrencyMode() const
 	{
-		return ConcurrencyMode::ShareInput;
+		return ConcurrencyMode::CopyInput;
 	}
 } // Elpida::Application

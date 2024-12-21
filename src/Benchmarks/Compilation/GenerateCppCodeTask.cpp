@@ -1,4 +1,20 @@
 //
+// Copyright (C) 2024. Ioannis Panagiotopoulos
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 20/12/2024.
 //
 
@@ -7,7 +23,7 @@
 
 namespace Elpida
 {
-	const char source[] = "template<typename T, unsigned long R, unsigned long C>\n"
+	const char Source[] = "template<typename T, unsigned long R, unsigned long C>\n"
 						  "class Matrix\n"
 						  "{\n"
 						  "\tstatic_assert(R > 0);\n"
@@ -351,7 +367,7 @@ namespace Elpida
 	void GenerateCppCodeTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_outputData = std::move(inputData);
-		_outputData->Allocate(sizeof(source));
+		_outputData->Allocate(sizeof(Source));
 	}
 
 	SharedPtr<AbstractTaskData> GenerateCppCodeTask::Finalize()
@@ -377,7 +393,7 @@ namespace Elpida
 
 	void GenerateCppCodeTask::DoRun()
 	{
-		std::memcpy(_outputData->GetData(), source, sizeof(source));
+		std::memcpy(_outputData->GetData(), Source, sizeof(Source));
 	}
 
 	UniquePtr<Task> GenerateCppCodeTask::DoDuplicate() const

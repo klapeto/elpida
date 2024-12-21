@@ -41,5 +41,4 @@ namespace Elpida::Application
 	{
 		return ConcurrencyMode::CopyInput;
 	}
-} // Application
-// Elpida
+} // Elpida::Application

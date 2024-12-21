@@ -41,4 +41,9 @@ namespace Elpida::Application
 	{
 
 	}
+
+	ConcurrencyMode RSADecryption::GetMultiThreadConcurrencyMode() const
+	{
+		return ConcurrencyMode::CopyInput;
+	}
 } // Elpida::Application
