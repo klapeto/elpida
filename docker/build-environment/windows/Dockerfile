@@ -51,7 +51,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN git clone -b elpida_updates https://github.com/klapeto/mxe.git
 WORKDIR mxe
 RUN make -j$(nproc) MXE_TARGETS='x86_64-w64-mingw32.static' cmake hwloc qtbase qtsvg qtcharts gcc
-RUN make -j$(nproc) MXE_TARGETS='i686-w64-mingw32.static' cmake hwloc gcc
+RUN make -j$(nproc) MXE_TARGETS='i686-w64-mingw32.static' MXE_PLUGIN_DIRS=plugins/windows-xp cmake hwloc gcc
 
 ENV PATH=/mxe/usr/bin:$PATH
 
