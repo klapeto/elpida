@@ -26,6 +26,7 @@
 #include "FullBenchmarkInstances/AESEncryption.hpp"
 #include "FullBenchmarkInstances/Base64Decode.hpp"
 #include "FullBenchmarkInstances/Base64Encode.hpp"
+#include "FullBenchmarkInstances/CppCompilation.hpp"
 #include "FullBenchmarkInstances/FFT.hpp"
 #include "FullBenchmarkInstances/MatrixInverse.hpp"
 #include "FullBenchmarkInstances/MatrixMultiplication.hpp"
@@ -150,6 +151,16 @@ namespace Elpida::Application
 											"00a8b5a5-eb3e-45b5-bced-f90895103f7d",
 											361938699,
 											Generate<Base64Encode>,
+											false
+									}
+							},
+							{"C++ Compilation",
+									{
+											"a60442f2-1bc7-4df6-9d83-18dcda067b51",
+											1.0,
+											"b7c330be-90ba-4ac5-a84f-03cd8c77fd85",
+											2.0,
+											Generate<CppCompilation>,
 											false
 									}
 							},

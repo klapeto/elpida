@@ -30,7 +30,7 @@ namespace Elpida
 	void ClangCompilationBenchmark::DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
 			std::vector<TaskInfo>& taskInfos) const
 	{
-		name = "C++ compilation";
+		name = "C++ Compilation";
 		description = "Compiles C++ code with Clang";
 		taskToUseAsScoreIndex = 1;
 
