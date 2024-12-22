@@ -98,11 +98,11 @@ RUN rm -rf * && x86_64-w64-mingw32.static-cmake -S .. \
     -DLLVM_INCLUDE_UTILS=OFF
 
 RUN make -j$(nproc)
-RUN make install install-clang-cmake-exports
+RUN make install
 
 # apply patch to be able to build on windows XP. FileWatcher/Delete will not work but it is ok
-COPY docker/build-environment/windows/llvm.WindowsXp.patch /llvm.WindowsXp.patch
-RUN cd .. && patch -p1 -f /llvm.WindowsXp.patch
+COPY llvm.WindowsXp.patch llvm.WindowsXp.patch
+RUN cd .. && patch -p1 -f llvm.WindowsXp.patch
 # build i686
 RUN rm -rf * && i686-w64-mingw32.static-cmake -S .. \
     -DCMAKE_BUILD_TYPE=Release \
@@ -135,7 +135,7 @@ RUN rm -rf * && i686-w64-mingw32.static-cmake -S .. \
     -DLLVM_INCLUDE_UTILS=OFF
 
 RUN make -j$(nproc)
-RUN make install install-clang-cmake-exports
+RUN make install
 
 # reduce size of the image
 RUN rm -rf /mxe/pkg /mxe/src /mxe/log /mxe/llvm-project llvm.WindowsXp.patch
