@@ -96,24 +96,40 @@ RUN rm -rf /opt/appimage-builder
 
 # install llvm both archs
 RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git
-RUN mkdir /opt/llvm-project/llvm/build && cd /opt/llvm-project/llvm/build && cmake -S .. \
+RUN mkdir /opt/llvm-project/llvm/build
+WORKDIR /opt/llvm-project/llvm/build
+RUN cmake -S .. \
     -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_ENABLE_PROJECTS=clang \
     -DCMAKE_SKIP_INSTALL_RPATH=ON \
     -DBUILD_SHARED_LIBS=OFF \
     -DLLVM_STATIC_LINK_CXX_STDLIB=ON \
+    -DLIBCLANG_BUILD_STATIC=ON \
     -DLLVM_TARGETS_TO_BUILD=X86 \
-    -DLLVM_BUILD_TOOLS=ON \
-    -DLLVM_ENABLE_PROJECTS=clang \
-    -DLLVM_BUILD_STATIC=ON \
-    -DLLVM_ENABLE_ZLIB=OFF \
     -DLLVM_ENABLE_ZSTD=OFF \
+    -DLLVM_BUILD_DOCS=OFF \
+    -DLLVM_BUILD_EXAMPLES=OFF \
+    -DLLVM_BUILD_RUNTIME=OFF \
+    -DLLVM_BUILD_RUNTIMES=OFF \
+    -DLLVM_BUILD_TESTS=OFF \
+    -DLLVM_BUILD_TOOLS=OFF \
+    -DLLVM_BUILD_UTILS=OFF \
+    -DLLVM_ENABLE_BINDINGS=OFF \
+    -DLLVM_ENABLE_DOXYGEN=OFF \
+    -DLLVM_ENABLE_OCAMLDOC=OFF \
+    -DLLVM_ENABLE_SPHINX=OFF \
     -DLLVM_INCLUDE_BENCHMARKS=OFF \
     -DLLVM_INCLUDE_EXAMPLES=OFF \
     -DLLVM_INCLUDE_TESTS=OFF \
-    -DLIBCLANG_BUILD_STATIC=ON && \
-    make -j$(nproc) && make install
+    -DLLVM_INCLUDE_DOCS=OFF \
+    -DLLVM_INCLUDE_GO_TESTS=OFF \
+    -DLLVM_INCLUDE_RUNTIMES=OFF \
+    -DLLVM_INCLUDE_TOOLS=ON \
+    -DLLVM_INCLUDE_UTILS=OFF
+RUN make -j$(nproc)
+RUN make install
 
-RUN cd /opt/llvm-project/llvm/build && rm -rf * && cmake -S .. \
+RUN  rm -rf * && cmake -S .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_SYSTEM_NAME=Linux \
     -DCMAKE_CROSSCOMPILING=ON \
@@ -122,20 +138,34 @@ RUN cd /opt/llvm-project/llvm/build && rm -rf * && cmake -S .. \
     -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ \
     -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu \
     -DCMAKE_INSTALL_PREFIX=/usr/aarch64-linux-gnu \
+    -DLLVM_ENABLE_PROJECTS=clang \
     -DCMAKE_SKIP_INSTALL_RPATH=ON \
     -DBUILD_SHARED_LIBS=OFF \
     -DLLVM_STATIC_LINK_CXX_STDLIB=ON \
+    -DLIBCLANG_BUILD_STATIC=ON \
     -DLLVM_TARGETS_TO_BUILD=X86 \
-    -DLLVM_BUILD_TOOLS=ON \
-    -DLLVM_ENABLE_PROJECTS=clang \
-    -DLLVM_BUILD_STATIC=ON \
-    -DLLVM_ENABLE_ZLIB=OFF \
     -DLLVM_ENABLE_ZSTD=OFF \
+    -DLLVM_BUILD_DOCS=OFF \
+    -DLLVM_BUILD_EXAMPLES=OFF \
+    -DLLVM_BUILD_RUNTIME=OFF \
+    -DLLVM_BUILD_RUNTIMES=OFF \
+    -DLLVM_BUILD_TESTS=OFF \
+    -DLLVM_BUILD_TOOLS=OFF \
+    -DLLVM_BUILD_UTILS=OFF \
+    -DLLVM_ENABLE_BINDINGS=OFF \
+    -DLLVM_ENABLE_DOXYGEN=OFF \
+    -DLLVM_ENABLE_OCAMLDOC=OFF \
+    -DLLVM_ENABLE_SPHINX=OFF \
     -DLLVM_INCLUDE_BENCHMARKS=OFF \
     -DLLVM_INCLUDE_EXAMPLES=OFF \
     -DLLVM_INCLUDE_TESTS=OFF \
-    -DLIBCLANG_BUILD_STATIC=ON && \
-    make -j$(nproc) && make install
+    -DLLVM_INCLUDE_DOCS=OFF \
+    -DLLVM_INCLUDE_GO_TESTS=OFF \
+    -DLLVM_INCLUDE_RUNTIMES=OFF \
+    -DLLVM_INCLUDE_TOOLS=ON \
+    -DLLVM_INCLUDE_UTILS=OFF
+RUN make -j$(nproc)
+RUN make install
 
 # reduce the size of the image
 RUN apt-get autoclean
