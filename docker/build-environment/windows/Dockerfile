@@ -102,7 +102,7 @@ RUN make install
 
 # apply patch to be able to build on windows XP. FileWatcher/Delete will not work but it is ok
 COPY llvm.WindowsXp.patch llvm.WindowsXp.patch
-RUN cd .. && patch -p1 -f llvm.WindowsXp.patch
+RUN cd ../.. && patch -p1 -i llvm/build/llvm.WindowsXp.patch
 # build i686
 RUN rm -rf * && i686-w64-mingw32.static-cmake -S .. \
     -DCMAKE_BUILD_TYPE=Release \
