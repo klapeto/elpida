@@ -32,10 +32,111 @@ index d3aacd14b..b80090101 100644
  #define WIN32_LEAN_AND_MEAN
  #ifndef NOMINMAX
 diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.inc
-index c4bd5e247..97cab6b30 100644
+index c4bd5e247..ac25ba743 100644
 --- a/llvm/lib/Support/Windows/Path.inc
 +++ b/llvm/lib/Support/Windows/Path.inc
-@@ -364,6 +364,7 @@ std::error_code is_local(const Twine &path, bool &result) {
+@@ -27,6 +27,7 @@
+ #include "llvm/Support/Windows/WindowsSupport.h"
+ #include <shellapi.h>
+ #include <shlobj.h>
++#include <psapi.h>
+
+ #undef max
+
+@@ -361,9 +362,100 @@ std::error_code is_local(const Twine &path, bool &result) {
+   return is_local_internal(WidePath, result);
+ }
+
++static bool GetFilenameFromHandle(HANDLE hFile, char *pszFilename)
++{
++  BOOL bRC = FALSE;
++
++  // Get the file size.
++  DWORD dwFileSizeHi = 0;
++  DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
++
++  // Create a file mapping object.
++  HANDLE hFileMap = CreateFileMapping(hFile,
++                                      NULL,
++                                      PAGE_READONLY,
++                                      0,
++                                      dwFileSizeLo,
++                                      NULL);
++
++  if (hFileMap)
++  {
++    // Create a file mapping to get the file name.
++    void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
++
++    if (pMem)
++    {
++      if (GetMappedFileName (GetCurrentProcess(),
++                            pMem,
++                            pszFilename,
++                            MAX_PATH))
++      {
++        // At this point pszFilename already contains the name.
++        // But the drive name is not written in usual MS DOS fomat, actually,
++        // it is a device name.
++        // So below is an attempt to translate it to drive-letter
++        char szTemp[512];
++        *szTemp = 0;
++
++        auto uMaxLenDest = strlen(pszFilename);
++
++        if (GetLogicalDriveStrings(sizeof (szTemp) - 1, szTemp))
++        {
++          char szName[MAX_PATH];
++          char szDrive[3] = " :";
++          BOOL bFound = FALSE;
++          char* p = szTemp;
++
++          do
++          {
++            // Copy the drive letter into the template string,
++            // removing the backslash.
++            *szDrive = *p;
++
++            // Look up each device name.
++            if (QueryDosDevice(szDrive, szName,
++                               sizeof (szName)))
++            {
++              UINT uNameLen = strlen(szName);
++
++              //If greater than file name length, it's not a match.
++              if (uNameLen < uMaxLenDest)
++              {
++                bFound = strnicmp (pszFilename, szName,
++                                  uNameLen) == 0;
++
++                if (bFound)
++                {
++                  //Reconstruct pszFilename using szTemp as scratch,
++                  // and replace device path with our DOS path.
++                  char szTempFile[MAX_PATH];
++                  wsprintf(szTempFile,
++                           TEXT("%s%s"),
++                           szDrive,
++                           pszFilename+uNameLen);
++                  strncpy(pszFilename, szTempFile, uMaxLenDest);
++                }
++              }
++            }
++            // Go to the next NULL character.
++            while (*p++);
++
++          }
++          while (!bFound && *p); // at the end of the string
++        }
++      }
++      bRC = TRUE;
++      UnmapViewOfFile(pMem);
++    }
++    CloseHandle(hFileMap);
++  }
++  return bRC;
++}
++
  static std::error_code realPathFromHandle(HANDLE H,
                                            SmallVectorImpl<wchar_t> &Buffer,
                                            DWORD flags = VOLUME_NAME_DOS) {
@@ -43,15 +144,23 @@ index c4bd5e247..97cab6b30 100644
    Buffer.resize_for_overwrite(Buffer.capacity());
    DWORD CountChars = ::GetFinalPathNameByHandleW(
        H, Buffer.begin(), Buffer.capacity(), FILE_NAME_NORMALIZED | flags);
-@@ -377,6 +378,7 @@ static std::error_code realPathFromHandle(HANDLE H,
+@@ -377,6 +469,15 @@ static std::error_code realPathFromHandle(HANDLE H,
    Buffer.truncate(CountChars);
    if (CountChars == 0)
      return mapWindowsError(GetLastError());
++#else
++  char Buff[MAX_PATH];
++  if (!GetFilenameFromHandle(H, Buff)){
++    std::error_code();
++  }
++  auto Size = strlen(Buff);
++  Buffer.resize_for_overwrite(Size);
++  widenPath(Buff,Buffer);
 +#endif
    return std::error_code();
  }
- 
-@@ -425,6 +427,7 @@ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
+
+@@ -425,6 +526,7 @@ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
    // network file. On Windows 7 the function realPathFromHandle() below fails
    // if the FILE_DISPOSITION_INFO flag was already set to 'DeleteFile = true' by
    // a prior call.
@@ -59,7 +168,7 @@ index c4bd5e247..97cab6b30 100644
    FILE_DISPOSITION_INFO Disposition;
    Disposition.DeleteFile = false;
    if (!SetFileInformationByHandle(Handle, FileDispositionInfo, &Disposition,
-@@ -454,10 +457,14 @@ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
+@@ -454,10 +556,14 @@ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
                                    sizeof(Disposition)))
      return mapWindowsError(::GetLastError());
    return std::error_code();
@@ -67,24 +176,24 @@ index c4bd5e247..97cab6b30 100644
 +  return errc::not_supported;
 +#endif
  }
- 
+
  static std::error_code rename_internal(HANDLE FromHandle, const Twine &To,
                                         bool ReplaceIfExists) {
 +#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
    SmallVector<wchar_t, 0> ToWide;
    if (auto EC = widenPath(To, ToWide))
      return EC;
-@@ -481,6 +488,9 @@ static std::error_code rename_internal(HANDLE FromHandle, const Twine &To,
+@@ -481,6 +587,9 @@ static std::error_code rename_internal(HANDLE FromHandle, const Twine &To,
    }
- 
+
    return std::error_code();
 +#else
-+  return errc::not_supported;
++  return std::error_code(ERROR_CALL_NOT_IMPLEMENTED, std::system_category());
 +#endif
  }
- 
+
  static std::error_code rename_handle(HANDLE FromHandle, const Twine &To) {
-@@ -1464,6 +1474,7 @@ std::error_code real_path(const Twine &path, SmallVectorImpl<char> &dest,
+@@ -1464,6 +1573,7 @@ std::error_code real_path(const Twine &path, SmallVectorImpl<char> &dest,
  namespace path {
  static bool getKnownFolderPath(KNOWNFOLDERID folderId,
                                 SmallVectorImpl<char> &result) {
@@ -92,7 +201,7 @@ index c4bd5e247..97cab6b30 100644
    wchar_t *path = nullptr;
    if (::SHGetKnownFolderPath(folderId, KF_FLAG_CREATE, nullptr, &path) != S_OK)
      return false;
-@@ -1473,6 +1484,15 @@ static bool getKnownFolderPath(KNOWNFOLDERID folderId,
+@@ -1473,6 +1583,15 @@ static bool getKnownFolderPath(KNOWNFOLDERID folderId,
    if (ok)
      llvm::sys::path::make_preferred(result);
    return ok;
