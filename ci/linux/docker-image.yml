@@ -3,6 +3,7 @@ docker-image:linux:
   stage: build-containers
   tags:
     - amd64
+  timeout: 2h 30m
   variables:
     TARGET_OS: linux
   services:

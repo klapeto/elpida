@@ -3,7 +3,9 @@
 //
 
 #include "RSADecryptionBenchmark.hpp"
+#include "CommonTasks/GenerateLoremIpsum.hpp"
 #include "RSADecryptTask.hpp"
+#include "RSAEncryptTask.hpp"
 
 namespace Elpida
 {
@@ -16,6 +18,8 @@ namespace Elpida
 	{
 		std::vector<std::unique_ptr<Task>> returnTasks;
 
+		returnTasks.push_back(CreateTask<GenerateLoremIpsum>(224));
+		returnTasks.push_back(CreateTask<RSAEncryptTask>());
 		returnTasks.push_back(CreateTask<RSADecryptTask>());
 
 		return returnTasks;
@@ -29,8 +33,10 @@ namespace Elpida
 	{
 		name = "RSA Decryption";
 		description = "Decrypts data with a private key.";
-		taskToUseAsScoreIndex = 0;
+		taskToUseAsScoreIndex = 2;
 
+		taskInfos.push_back(GenerateLoremIpsum(256).GetInfo());
+		taskInfos.push_back(RSAEncryptTask().GetInfo());
 		taskInfos.push_back(RSADecryptTask().GetInfo());
 	}
 } // Elpida

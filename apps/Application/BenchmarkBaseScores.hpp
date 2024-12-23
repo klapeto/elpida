@@ -26,6 +26,7 @@
 #include "FullBenchmarkInstances/AESEncryption.hpp"
 #include "FullBenchmarkInstances/Base64Decode.hpp"
 #include "FullBenchmarkInstances/Base64Encode.hpp"
+#include "FullBenchmarkInstances/CppCompilation.hpp"
 #include "FullBenchmarkInstances/FFT.hpp"
 #include "FullBenchmarkInstances/MatrixInverse.hpp"
 #include "FullBenchmarkInstances/MatrixMultiplication.hpp"
@@ -113,176 +114,186 @@ namespace Elpida::Application
 		{
 			return
 					{
-							{"AES Decryption",
+							{ "AES Decryption",
 									{
 											"9a44b227-39b1-41d6-b8fc-18243d9c9744",
-											93425254,
+											93472847.135444,
 											"eb8aa408-5d7f-4d8e-8a37-e57edc011c63",
-											187080858,
+											187151343.421896,
 											Generate<AESDecryption>,
 											false
 									}
 							},
-							{"AES Encryption",
+							{ "AES Encryption",
 									{
 											"59248a7c-5d7f-4f1e-b01f-3c3cbe2e7437",
-											87875244,
+											87928850.627276,
 											"9e2fb41c-146f-4725-8ca0-1e19503b03c7",
-											175913782,
+											175893199.298437,
 											Generate<AESEncryption>,
 											false
 									}
 							},
-							{"Base64 Decode",
+							{ "Base64 Decode",
 									{
 											"0a48078b-b924-43a9-97d9-6a9fcb2ebb45",
-											21086520,
+											21789028.074646,
 											"060af447-f649-4a5b-b60a-0579616cada0",
-											42175706,
+											43523938.994868,
 											Generate<Base64Decode>,
 											false
 									}
 							},
-							{"Base64 Encode",
+							{ "Base64 Encode",
 									{
 											"b793d108-7603-4aa7-b2ae-4c2f8eba98a7",
-											155529587,
+											155464795.314767,
 											"00a8b5a5-eb3e-45b5-bced-f90895103f7d",
-											361938699,
+											309769221.588231,
 											Generate<Base64Encode>,
 											false
 									}
 							},
-							{"FFT calculation in place",
+							{ "C++ Compilation",
+									{
+											"a60442f2-1bc7-4df6-9d83-18dcda067b51",
+											0.397093,
+											"b7c330be-90ba-4ac5-a84f-03cd8c77fd85",
+											0.742627,
+											Generate<CppCompilation>,
+											false
+									}
+							},
+							{ "FFT calculation in place",
 									{
 											"a8946ba5-049f-4626-9b1a-d5d31211cea1",
-											20780406,
+											20822506.907889,
 											"554f2321-95df-43c0-af46-90554e26c8cd",
-											41685780,
+											41649607.848900,
 											Generate<FFT>,
 											false
 									}
 							},
-							{"Json Parsing",
+							{ "Json Parsing",
 									{
 											"cc53b078-75aa-41c0-8885-b381bc1a4bda",
-											20279636,
+											20294169.526248,
 											"35f22cbc-16e7-4c35-aebf-029dac328e46",
-											40836564,
+											40662024.604593,
 											Generate<JsonParsing>,
 											false
 									}
 							},
-							{"Matrix inverse (4x4)",
+							{ "Matrix inverse (4x4)",
 									{
 											"7930adf1-fd99-420a-9a39-b4e147f1bdf2",
-											54122165,
+											54151158.035408,
 											"3faca5e9-d9ac-47a5-a8d4-c331666c6e6a",
-											108501523,
+											108500955.867964,
 											Generate<MatrixInverse>,
 											false
 									}
 							},
-							{"Matrix multiplication (32x32)",
+							{ "Matrix multiplication (32x32)",
 									{
 											"56834364-d449-4d3e-bc50-197c697c6c6f",
-											73636672,
+											73725850.229367,
 											"a28c475e-4541-4dcb-80d4-14583c325a7c",
-											147461351,
+											147513642.371239,
 											Generate<MatrixMultiplication>,
 											false
 									}
 							},
-							{"NBody Simulation",
+							{ "NBody Simulation",
 									{
 											"9196f126-391f-452b-9ca0-0dd39d7f70ae",
-											6849136,
+											6848637.023895,
 											"6b01f47a-4f41-4f13-96e9-836baf6bed90",
-											13665060,
+											13693441.360039,
 											Generate<NBody>,
 											false
 									}
 							},
-							{"3D Ray Tracing",
+							{ "3D Ray Tracing",
 									{
 											"ad8da8ff-a1f3-4a21-9234-43b6aff8eea4",
-											844798,
+											843696.294072,
 											"5c888135-bab1-4651-9407-2d7187f54381",
-											1692982,
+											1690958.132620,
 											Generate<RayTracing>,
 											false
 									}
 							},
-							{"Regex (Boost)",
+							{ "Regex (Boost)",
 									{
 											"bd0d8849-b988-40ac-9961-5e3528327da3",
-											73462561,
+											27910970.246338,
 											"142291f8-3c83-4f1b-ab02-ad1914e08885",
-											147628131,
+											55223481.609028,
 											Generate<Regex>,
 											false
 									}
 							},
-							{"RSA Decryption",
+							{ "RSA Decryption",
 									{
 											"4a4e3a1d-df8b-48d8-8a86-b49fafea79fc",
-											31724,
+											31703.577692,
 											"bae420c9-3297-456c-bbc2-6b884af15bb7",
-											63471,
+											63444.866387,
 											Generate<RSADecryption>,
 											false
 									}
 							},
-							{"RSA Encryption",
+							{ "RSA Encryption",
 									{
 											"32e5628d-aa9a-4ddc-84d0-17779647e22b",
-											833105,
+											1072051.033291,
 											"021876da-05b4-4408-8d9a-7637035927c2",
-											1666134,
+											2120330.986377,
 											Generate<RSAEncryption>,
 											false
 									}
 							},
-							{"Svg Rasterization",
+							{ "Svg Rasterization",
 									{
 											"e7ab603e-6c05-428b-9851-1e0a3729e022",
-											254747,
+											255814.691063,
 											"66087de6-f486-4d24-b58d-f90300458179",
-											510860,
+											511471.396315,
 											Generate<SVGRasterization>,
 											false
 									}
 							},
-							{"XML Parsing",
+							{ "XML Parsing",
 									{
 											"70b7048f-face-4976-b68a-d8cd1004ad33",
-											31900259,
+											32015295.055276,
 											"2ac01731-f3de-4fb1-adfc-35937d009097",
-											64473723,
+											64372607.892171,
 											Generate<XmlParsing>,
 											false
 									}
 							},
-							{"Zlib compression",
+							{ "Zlib compression",
 									{
 											"895ff7fd-257d-411f-a8a6-de547b0f6485",
-											20988650,
+											21026465.621970,
 											"1b4532fd-14f0-41af-ab33-5e4e3803f79b",
-											42202667,
+											42189623.996918,
 											Generate<ZlibCompression>,
 											false
 									}
 							},
-							{"Zlib decompression",
+							{ "Zlib decompression",
 									{
 											"d40517b1-b39f-4b82-8dc4-b440dd11da1b",
-											43332071,
+											43334082.650269,
 											"39d94225-34aa-479b-b9cb-b6e104fb17b9",
-											86617811,
+											86661959.052828,
 											Generate<ZlibDecompression>,
 											false
 									}
-							},};
+							}, };
 
 		}
 	};
