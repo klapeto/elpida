@@ -14,17 +14,24 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef ELPIDA_RSADECRYPTION_HPP
-#define ELPIDA_RSADECRYPTION_HPP
+
+//
+// Created by klapeto on 21/12/2024.
+//
+
+#ifndef ELPIDA_CPPCOMPILATION_HPP
+#define ELPIDA_CPPCOMPILATION_HPP
+
 
 #include "Controllers/FullBenchmarkInstance.hpp"
 
 namespace Elpida::Application
 {
-	class RSADecryption : public FullBenchmarkInstance
+
+	class CppCompilation: public FullBenchmarkInstance
 	{
 	public:
-		RSADecryption(const std::string& uuid,
+		CppCompilation(const std::string& uuid,
 				Score baseScore,
 				bool multiThreaded,
 				const BenchmarkModel& benchmark,
@@ -34,16 +41,17 @@ namespace Elpida::Application
 				const BenchmarkRunConfigurationModel& runConfigurationModel,
 				BenchmarkExecutionService& executionService);
 
-		RSADecryption(const RSADecryption&) = delete;
-		RSADecryption(RSADecryption&&) noexcept = default;
-		RSADecryption& operator=(const RSADecryption&) = delete;
-		RSADecryption& operator=(RSADecryption&&) noexcept = delete;
-		~RSADecryption() override = default;
+		CppCompilation(const CppCompilation&) = delete;
+		CppCompilation(CppCompilation&&) noexcept = default;
+		CppCompilation& operator=(const CppCompilation&) = delete;
+		CppCompilation& operator=(CppCompilation&&) noexcept = delete;
+		~CppCompilation() override = default;
 	protected:
 		void Configure() override;
 		ConcurrencyMode GetMultiThreadConcurrencyMode() const override;
 	};
 
-} // Elpida::Application
+} // Application
+// Elpida
 
-#endif //ELPIDA_RSADECRYPTION_HPP
+#endif //ELPIDA_CPPCOMPILATION_HPP

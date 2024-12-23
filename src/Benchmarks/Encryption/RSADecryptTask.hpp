@@ -31,6 +31,7 @@ namespace Elpida
 		~RSADecryptTask() override = default;
 	private:
 		SharedPtr<AbstractTaskData> _output;
+		SharedPtr<AbstractTaskData> _input;
 		EvpPKeyCtxPtr _context;
 		EvpPKeyPtr _key;
 	protected:

@@ -14,35 +14,30 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "Regex.hpp"
-#include "Elpida/Platform/OsUtilities.hpp"
-#include "Models/Benchmark/BenchmarkModel.hpp"
+//
+// Created by klapeto on 21/12/2024.
+//
+
+#include "CppCompilation.hpp"
 
 namespace Elpida::Application
 {
-	Regex::Regex(const std::string& uuid,
-			Score baseScore,
-			bool multiThreaded,
-			const BenchmarkModel& benchmark,
-			const TimingModel& timingModel,
-			const TopologyModel& topologyModel,
-			const MemoryInfoModel& memoryInfoModel,
-			const BenchmarkRunConfigurationModel& runConfigurationModel,
-			BenchmarkExecutionService& executionService)
-			:FullBenchmarkInstance("Regex", uuid, baseScore, multiThreaded, benchmark, timingModel,
-			topologyModel,
-			memoryInfoModel,
-			runConfigurationModel,
+	CppCompilation::CppCompilation(const std::string& uuid, Score baseScore, bool multiThreaded,
+			const BenchmarkModel& benchmark, const TimingModel& timingModel, const TopologyModel& topologyModel,
+			const MemoryInfoModel& memoryInfoModel, const BenchmarkRunConfigurationModel& runConfigurationModel,
+			BenchmarkExecutionService& executionService) : FullBenchmarkInstance("C++ Compilation", uuid, baseScore,
+			multiThreaded, benchmark, timingModel, topologyModel, memoryInfoModel, runConfigurationModel,
 			executionService)
 	{
+
 	}
 
-	void Regex::Configure()
+	void CppCompilation::Configure()
 	{
-		_benchmark.GetConfigurations()[0].SetValue("2048");
+
 	}
 
-	ConcurrencyMode Regex::GetMultiThreadConcurrencyMode() const
+	ConcurrencyMode CppCompilation::GetMultiThreadConcurrencyMode() const
 	{
 		return ConcurrencyMode::CopyInput;
 	}

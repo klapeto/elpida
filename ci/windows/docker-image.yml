@@ -4,6 +4,7 @@ docker-image:windows:
   tags:
     - powerful  # very resource heavy build, use local vms only
     - amd64
+  timeout: 2h 30m
   variables:
     TARGET_OS: windows
   services:

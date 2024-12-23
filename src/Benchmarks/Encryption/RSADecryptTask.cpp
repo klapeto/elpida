@@ -10,7 +10,6 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Utilities.hpp"
 
-
 namespace Elpida
 {
 
@@ -117,33 +116,14 @@ namespace Elpida
 			0x41, 0x0d, 0xe2, 0xe7,
 	};
 
-	static unsigned short inputDataBinary[] = {
-			0xe20a, 0x81dd, 0x4afa, 0xbdee, 0xf932, 0x366a, 0xc485, 0x48b8,
-			0xfb30, 0x2f5e, 0xfdc0, 0x7d74, 0x73bb, 0x02c7, 0x9312, 0x2297,
-			0x664e, 0xea46, 0x7a20, 0x2a0e, 0x4563, 0xcb5a, 0xabdf, 0x0722,
-			0xb2d1, 0x1486, 0xb03c, 0x92a5, 0x541d, 0x71da, 0x897e, 0x9c39,
-			0x9372, 0xab66, 0x0233, 0x54e4, 0x18f4, 0x9325, 0x1629, 0x2043,
-			0x1dec, 0xc843, 0x8b73, 0x648d, 0x087d, 0x6f08, 0x456f, 0x8cb4,
-			0x55d6, 0x872d, 0x6e16, 0xb19b, 0xb7e0, 0xef50, 0xe740, 0x30c4,
-			0x3220, 0xaf53, 0x46af, 0x4cb1, 0x0a22, 0xfb76, 0x94db, 0xb2fe,
-			0xfb3a, 0x7bfd, 0x34f8, 0x6f9b, 0x8424, 0x77fd, 0x6568, 0x33f8,
-			0xe2b0, 0x8726, 0xa4c4, 0x23e5, 0xc0c7, 0x136b, 0xb4a3, 0x6b83,
-			0x13a2, 0x494a, 0x4ab5, 0x6c5f, 0x0016, 0x80cc, 0x0ce4, 0x5388,
-			0xaa0b, 0x66bd, 0x341d, 0x48f6, 0x2db9, 0x80c6, 0x0fac, 0x4c5e,
-			0xbdd5, 0x96ff, 0x0cca, 0xa27c, 0x3045, 0xab5c, 0x9df1, 0x069c,
-			0xc8c9, 0x7d8d, 0xfe4c, 0x1848, 0x39a7, 0x6169, 0x5bb1, 0x1dee,
-			0x0325, 0xbf31, 0x9c45, 0x3d66, 0x9665, 0x97a7, 0x31b4, 0xe145,
-			0x8fbc, 0xee77, 0xe15f, 0x2fda, 0x0c3d, 0xcb42, 0x7bb5, 0xa916
-	};
-
 	void RSADecryptTask::DoRunImpl()
 	{
 		auto context = _context.get();
 
 		const auto outputSizeC = _output->GetSize();
 		auto output = _output->GetData();
-		auto inputSize = sizeof(inputDataBinary);
-		auto input = reinterpret_cast<const unsigned char*>(inputDataBinary);
+		auto inputSize = _input->GetSize();
+		auto input = reinterpret_cast<const unsigned char*>(_input->GetData());
 
 		Exec([&]()
 		{
@@ -163,6 +143,8 @@ namespace Elpida
 
 	void RSADecryptTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		_input = std::move(inputData);
+
 		const unsigned char* data = privateKeyDer;
 		size_t data_len = sizeof(privateKeyDer);
 
@@ -194,13 +176,13 @@ namespace Elpida
 		}
 
 		std::size_t outputSize = 0;
-		if (EVP_PKEY_decrypt(_context.get(), nullptr, &outputSize, reinterpret_cast<unsigned char*>(inputDataBinary),
-				sizeof(inputDataBinary)) <= 0)
+		if (EVP_PKEY_decrypt(_context.get(), nullptr, &outputSize, reinterpret_cast<unsigned char*>(_input->GetData()),
+				_input->GetSize()) <= 0)
 		{
 			Utilities::ThrowOpenSSLError("Failed to get decrypted size: ");
 		}
 
-		_output = std::make_shared<RawTaskData>(inputData->GetAllocator());
+		_output = std::make_shared<RawTaskData>(_input->GetAllocator());
 		_output->Allocate(outputSize);
 	}
 
@@ -211,7 +193,7 @@ namespace Elpida
 
 	Size RSADecryptTask::GetProcessedDataSize() const
 	{
-		return sizeof(inputDataBinary);
+		return _input->GetSize();
 	}
 
 	TaskInfo RSADecryptTask::DoGetInfo() const

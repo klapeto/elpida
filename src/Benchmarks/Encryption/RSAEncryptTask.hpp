@@ -32,6 +32,7 @@ namespace Elpida
 		RSAEncryptTask& operator=(const RSAEncryptTask&) = delete;
 		~RSAEncryptTask() override = default;
 	private:
+		SharedPtr<AbstractTaskData> _input;
 		SharedPtr<AbstractTaskData> _output;
 		EvpPKeyCtxPtr _context;
 		EvpPKeyPtr _key;

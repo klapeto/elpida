@@ -37,20 +37,14 @@ namespace Elpida
 			0x39, 0x02, 0x03, 0x01, 0x00, 0x01,
 	};
 
-	static const unsigned char messageToEncrypt[] =
-			"To be, or not to be, that is the question,\n"
-			"Whether tis nobler in the minde to suffer\n"
-			"The slings and arrowes of outragious fortune,\n"
-			"Or to take Armes again in a sea of troubles";
-
 	void RSAEncryptTask::DoRunImpl()
 	{
 		auto context = _context.get();
 
 		auto outputSize = _output->GetSize();
 		auto output = _output->GetData();
-		auto inputSize = sizeof(messageToEncrypt);
-		auto input = messageToEncrypt;
+		auto inputSize = _input->GetSize();
+		auto input = _input->GetData();
 		Exec([&]()
 		{
 			if (EVP_PKEY_encrypt(context, output, &outputSize, input, inputSize) <= 0)
@@ -67,6 +61,7 @@ namespace Elpida
 
 	void RSAEncryptTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		_input = std::move(inputData);
 		const unsigned char* data = publicKeyDer;
 		size_t data_len = sizeof(publicKeyDer);
 
@@ -97,12 +92,12 @@ namespace Elpida
 		}
 
 		std::size_t size = 0;
-		if (EVP_PKEY_encrypt(_context.get(), nullptr, &size, messageToEncrypt, sizeof(messageToEncrypt)) <= 0)
+		if (EVP_PKEY_encrypt(_context.get(), nullptr, &size, _input->GetData(), _input->GetSize()) <= 0)
 		{
 			Utilities::ThrowOpenSSLError("Failed to get encryption size: ");
 		}
 
-		_output = std::make_shared<RawTaskData>(inputData->GetAllocator());
+		_output = std::make_shared<RawTaskData>(_input->GetAllocator());
 		_output->Allocate(size);
 	}
 
@@ -113,7 +108,7 @@ namespace Elpida
 
 	Size RSAEncryptTask::GetProcessedDataSize() const
 	{
-		return sizeof(messageToEncrypt);
+		return _input->GetSize();
 	}
 
 	TaskInfo RSAEncryptTask::DoGetInfo() const

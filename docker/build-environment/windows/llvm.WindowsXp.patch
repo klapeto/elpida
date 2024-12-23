@@ -1,0 +1,686 @@
+diff --git a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
+index 110d40243..62d83c802 100644
+--- a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
++++ b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
+@@ -87,6 +87,7 @@ DirectoryWatcherWindows::DirectoryWatcherWindows(
+   // Pre-compute the real location as we will be handing over the directory
+   // handle to the watcher and performing synchronous operations.
+   {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+     DWORD Size = GetFinalPathNameByHandleW(DirectoryHandle, NULL, 0, 0);
+     std::unique_ptr<WCHAR[]> Buffer{new WCHAR[Size + 1]};
+     Size = GetFinalPathNameByHandleW(DirectoryHandle, Buffer.get(), Size, 0);
+@@ -97,6 +98,7 @@ DirectoryWatcherWindows::DirectoryWatcherWindows(
+       Size -= 4;
+     }
+     llvm::sys::windows::UTF16ToUTF8(Data, Size, Path);
++#endif
+   }
+ 
+   size_t EntrySize = sizeof(FILE_NOTIFY_INFORMATION) + MAX_PATH * sizeof(WCHAR);
+diff --git a/llvm/include/llvm/Support/Windows/WindowsSupport.h b/llvm/include/llvm/Support/Windows/WindowsSupport.h
+index d3aacd14b..b80090101 100644
+--- a/llvm/include/llvm/Support/Windows/WindowsSupport.h
++++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h
+@@ -26,7 +26,7 @@
+ #undef _WIN32_IE
+ 
+ // Require at least Windows 7 API.
+-#define _WIN32_WINNT 0x0601
++#define _WIN32_WINNT 0x0501
+ #define _WIN32_IE    0x0800 // MinGW at it again. FIXME: verify if still needed.
+ #define WIN32_LEAN_AND_MEAN
+ #ifndef NOMINMAX
+diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.inc
+index c4bd5e247..ac25ba743 100644
+--- a/llvm/lib/Support/Windows/Path.inc
++++ b/llvm/lib/Support/Windows/Path.inc
+@@ -27,6 +27,7 @@
+ #include "llvm/Support/Windows/WindowsSupport.h"
+ #include <shellapi.h>
+ #include <shlobj.h>
++#include <psapi.h>
+
+ #undef max
+
+@@ -361,9 +362,100 @@ std::error_code is_local(const Twine &path, bool &result) {
+   return is_local_internal(WidePath, result);
+ }
+
++static bool GetFilenameFromHandle(HANDLE hFile, char *pszFilename)
++{
++  BOOL bRC = FALSE;
++
++  // Get the file size.
++  DWORD dwFileSizeHi = 0;
++  DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
++
++  // Create a file mapping object.
++  HANDLE hFileMap = CreateFileMapping(hFile,
++                                      NULL,
++                                      PAGE_READONLY,
++                                      0,
++                                      dwFileSizeLo,
++                                      NULL);
++
++  if (hFileMap)
++  {
++    // Create a file mapping to get the file name.
++    void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
++
++    if (pMem)
++    {
++      if (GetMappedFileName (GetCurrentProcess(),
++                            pMem,
++                            pszFilename,
++                            MAX_PATH))
++      {
++        // At this point pszFilename already contains the name.
++        // But the drive name is not written in usual MS DOS fomat, actually,
++        // it is a device name.
++        // So below is an attempt to translate it to drive-letter
++        char szTemp[512];
++        *szTemp = 0;
++
++        auto uMaxLenDest = strlen(pszFilename);
++
++        if (GetLogicalDriveStrings(sizeof (szTemp) - 1, szTemp))
++        {
++          char szName[MAX_PATH];
++          char szDrive[3] = " :";
++          BOOL bFound = FALSE;
++          char* p = szTemp;
++
++          do
++          {
++            // Copy the drive letter into the template string,
++            // removing the backslash.
++            *szDrive = *p;
++
++            // Look up each device name.
++            if (QueryDosDevice(szDrive, szName,
++                               sizeof (szName)))
++            {
++              UINT uNameLen = strlen(szName);
++
++              //If greater than file name length, it's not a match.
++              if (uNameLen < uMaxLenDest)
++              {
++                bFound = strnicmp (pszFilename, szName,
++                                  uNameLen) == 0;
++
++                if (bFound)
++                {
++                  //Reconstruct pszFilename using szTemp as scratch,
++                  // and replace device path with our DOS path.
++                  char szTempFile[MAX_PATH];
++                  wsprintf(szTempFile,
++                           TEXT("%s%s"),
++                           szDrive,
++                           pszFilename+uNameLen);
++                  strncpy(pszFilename, szTempFile, uMaxLenDest);
++                }
++              }
++            }
++            // Go to the next NULL character.
++            while (*p++);
++
++          }
++          while (!bFound && *p); // at the end of the string
++        }
++      }
++      bRC = TRUE;
++      UnmapViewOfFile(pMem);
++    }
++    CloseHandle(hFileMap);
++  }
++  return bRC;
++}
++
+ static std::error_code realPathFromHandle(HANDLE H,
+                                           SmallVectorImpl<wchar_t> &Buffer,
+                                           DWORD flags = VOLUME_NAME_DOS) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   Buffer.resize_for_overwrite(Buffer.capacity());
+   DWORD CountChars = ::GetFinalPathNameByHandleW(
+       H, Buffer.begin(), Buffer.capacity(), FILE_NAME_NORMALIZED | flags);
+@@ -377,6 +469,15 @@ static std::error_code realPathFromHandle(HANDLE H,
+   Buffer.truncate(CountChars);
+   if (CountChars == 0)
+     return mapWindowsError(GetLastError());
++#else
++  char Buff[MAX_PATH];
++  if (!GetFilenameFromHandle(H, Buff)){
++    std::error_code();
++  }
++  auto Size = strlen(Buff);
++  Buffer.resize_for_overwrite(Size);
++  widenPath(Buff,Buffer);
++#endif
+   return std::error_code();
+ }
+
+@@ -425,6 +526,7 @@ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
+   // network file. On Windows 7 the function realPathFromHandle() below fails
+   // if the FILE_DISPOSITION_INFO flag was already set to 'DeleteFile = true' by
+   // a prior call.
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   FILE_DISPOSITION_INFO Disposition;
+   Disposition.DeleteFile = false;
+   if (!SetFileInformationByHandle(Handle, FileDispositionInfo, &Disposition,
+@@ -454,10 +556,14 @@ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
+                                   sizeof(Disposition)))
+     return mapWindowsError(::GetLastError());
+   return std::error_code();
++#else
++  return errc::not_supported;
++#endif
+ }
+
+ static std::error_code rename_internal(HANDLE FromHandle, const Twine &To,
+                                        bool ReplaceIfExists) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   SmallVector<wchar_t, 0> ToWide;
+   if (auto EC = widenPath(To, ToWide))
+     return EC;
+@@ -481,6 +587,9 @@ static std::error_code rename_internal(HANDLE FromHandle, const Twine &To,
+   }
+
+   return std::error_code();
++#else
++  return std::error_code(ERROR_CALL_NOT_IMPLEMENTED, std::system_category());
++#endif
+ }
+
+ static std::error_code rename_handle(HANDLE FromHandle, const Twine &To) {
+@@ -1464,6 +1573,7 @@ std::error_code real_path(const Twine &path, SmallVectorImpl<char> &dest,
+ namespace path {
+ static bool getKnownFolderPath(KNOWNFOLDERID folderId,
+                                SmallVectorImpl<char> &result) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   wchar_t *path = nullptr;
+   if (::SHGetKnownFolderPath(folderId, KF_FLAG_CREATE, nullptr, &path) != S_OK)
+     return false;
+@@ -1473,6 +1583,15 @@ static bool getKnownFolderPath(KNOWNFOLDERID folderId,
+   if (ok)
+     llvm::sys::path::make_preferred(result);
+   return ok;
++#else
++  wchar_t Path[MAX_PATH];
++  if (::SHGetFolderPathW(0, CSIDL_APPDATA | CSIDL_FLAG_CREATE, 0,
++                         /*SHGFP_TYPE_CURRENT*/0, Path) != S_OK)
++    return false;
++  if (UTF16ToUTF8(Path, ::wcslen(Path), result))
++    return false;
++  return true;
++#endif
+ }
+ 
+ bool home_directory(SmallVectorImpl<char> &result) {
+diff --git a/llvm/lib/Support/Windows/Signals.inc b/llvm/lib/Support/Windows/Signals.inc
+index f11ad09f3..737304207 100644
+--- a/llvm/lib/Support/Windows/Signals.inc
++++ b/llvm/lib/Support/Windows/Signals.inc
+@@ -663,7 +663,7 @@ static HKEY FindWERKey(const llvm::Twine &RegistryLocation) {
+ static bool GetDumpFolder(HKEY Key,
+                           llvm::SmallVectorImpl<char> &ResultDirectory) {
+   using llvm::sys::windows::UTF16ToUTF8;
+-
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   if (!Key)
+     return false;
+ 
+@@ -695,6 +695,9 @@ static bool GetDumpFolder(HKEY Key,
+     return false;
+ 
+   return true;
++#else
++  return false;
++#endif
+ }
+ 
+ /// Populate ResultType with a valid MINIDUMP_TYPE based on the value of
+@@ -713,7 +716,7 @@ static bool GetDumpFolder(HKEY Key,
+ static bool GetDumpType(HKEY Key, MINIDUMP_TYPE &ResultType) {
+   if (!Key)
+     return false;
+-
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   DWORD DumpType;
+   DWORD TypeSize = sizeof(DumpType);
+   if (ERROR_SUCCESS != ::RegGetValueW(Key, NULL, L"DumpType", RRF_RT_REG_DWORD,
+@@ -741,6 +744,9 @@ static bool GetDumpType(HKEY Key, MINIDUMP_TYPE &ResultType) {
+     return false;
+   }
+   return true;
++#else
++  return false;
++#endif
+ }
+ 
+ /// Write a Windows dump file containing process information that can be
+diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/Threading.inc
+index 4baf8b8cb..4759e6c5b 100644
+--- a/llvm/lib/Support/Windows/Threading.inc
++++ b/llvm/lib/Support/Windows/Threading.inc
+@@ -49,7 +49,13 @@ void llvm_thread_detach_impl(HANDLE hThread) {
+   }
+ }
+ 
+-DWORD llvm_thread_get_id_impl(HANDLE hThread) { return ::GetThreadId(hThread); }
++DWORD llvm_thread_get_id_impl(HANDLE hThread) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::GetThreadId(hThread);
++#else
++  return 0;
++#endif
++}
+ 
+ DWORD llvm_thread_get_current_id_impl() { return ::GetCurrentThreadId(); }
+ 
+@@ -137,6 +143,7 @@ struct ProcessorGroup {
+ 
+ template <typename F>
+ static bool IterateProcInfo(LOGICAL_PROCESSOR_RELATIONSHIP Relationship, F Fn) {
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+   DWORD Len = 0;
+   BOOL R = ::GetLogicalProcessorInformationEx(Relationship, NULL, &Len);
+   if (R || GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+@@ -157,9 +164,13 @@ static bool IterateProcInfo(LOGICAL_PROCESSOR_RELATIONSHIP Relationship, F Fn) {
+   }
+   free(Info);
+   return true;
++#else
++  return false;
++#endif
+ }
+ 
+ static std::optional<std::vector<USHORT>> getActiveGroups() {
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+   USHORT Count = 0;
+   if (::GetProcessGroupAffinity(GetCurrentProcess(), &Count, nullptr))
+     return std::nullopt;
+@@ -173,6 +184,9 @@ static std::optional<std::vector<USHORT>> getActiveGroups() {
+     return std::nullopt;
+ 
+   return Groups;
++#else
++  return std::nullopt;
++#endif
+ }
+ 
+ static ArrayRef<ProcessorGroup> getProcessorGroups() {
+@@ -303,14 +317,17 @@ void llvm::ThreadPoolStrategy::apply_thread_strategy(
+   std::optional<unsigned> Socket = compute_cpu_socket(ThreadPoolNum);
+   if (!Socket)
+     return;
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+   ArrayRef<ProcessorGroup> Groups = getProcessorGroups();
+   GROUP_AFFINITY Affinity{};
+   Affinity.Group = Groups[*Socket].ID;
+   Affinity.Mask = Groups[*Socket].Affinity;
+   SetThreadGroupAffinity(GetCurrentThread(), &Affinity, nullptr);
++#endif
+ }
+ 
+ llvm::BitVector llvm::get_thread_affinity_mask() {
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+   GROUP_AFFINITY Affinity{};
+   GetThreadGroupAffinity(GetCurrentThread(), &Affinity);
+ 
+@@ -330,6 +347,9 @@ llvm::BitVector llvm::get_thread_affinity_mask() {
+       V.set(StartOffset + I);
+   }
+   return V;
++#else
++  return {};
++#endif
+ }
+ 
+ unsigned llvm::get_cpus() { return getProcessorGroups().size(); }
+diff --git a/llvm/lib/Support/raw_socket_stream.cpp b/llvm/lib/Support/raw_socket_stream.cpp
+index 04b323308..8b1378917 100644
+--- a/llvm/lib/Support/raw_socket_stream.cpp
++++ b/llvm/lib/Support/raw_socket_stream.cpp
+@@ -1,341 +1 @@
+-//===-- llvm/Support/raw_socket_stream.cpp - Socket streams --*- C++ -*-===//
+-//
+-// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+-// See https://llvm.org/LICENSE.txt for license information.
+-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+-//
+-//===----------------------------------------------------------------------===//
+-//
+-// This file contains raw_ostream implementations for streams to communicate
+-// via UNIX sockets
+-//
+-//===----------------------------------------------------------------------===//
+ 
+-#include "llvm/Support/raw_socket_stream.h"
+-#include "llvm/Config/config.h"
+-#include "llvm/Support/Error.h"
+-#include "llvm/Support/FileSystem.h"
+-
+-#include <atomic>
+-#include <fcntl.h>
+-#include <functional>
+-#include <thread>
+-
+-#ifndef _WIN32
+-#include <poll.h>
+-#include <sys/socket.h>
+-#include <sys/un.h>
+-#else
+-#include "llvm/Support/Windows/WindowsSupport.h"
+-// winsock2.h must be included before afunix.h. Briefly turn off clang-format to
+-// avoid error.
+-// clang-format off
+-#include <winsock2.h>
+-#include <afunix.h>
+-// clang-format on
+-#include <io.h>
+-#endif // _WIN32
+-
+-#if defined(HAVE_UNISTD_H)
+-#include <unistd.h>
+-#endif
+-
+-using namespace llvm;
+-
+-#ifdef _WIN32
+-WSABalancer::WSABalancer() {
+-  WSADATA WsaData;
+-  ::memset(&WsaData, 0, sizeof(WsaData));
+-  if (WSAStartup(MAKEWORD(2, 2), &WsaData) != 0) {
+-    llvm::report_fatal_error("WSAStartup failed");
+-  }
+-}
+-
+-WSABalancer::~WSABalancer() { WSACleanup(); }
+-#endif // _WIN32
+-
+-static std::error_code getLastSocketErrorCode() {
+-#ifdef _WIN32
+-  return std::error_code(::WSAGetLastError(), std::system_category());
+-#else
+-  return errnoAsErrorCode();
+-#endif
+-}
+-
+-static sockaddr_un setSocketAddr(StringRef SocketPath) {
+-  struct sockaddr_un Addr;
+-  memset(&Addr, 0, sizeof(Addr));
+-  Addr.sun_family = AF_UNIX;
+-  strncpy(Addr.sun_path, SocketPath.str().c_str(), sizeof(Addr.sun_path) - 1);
+-  return Addr;
+-}
+-
+-static Expected<int> getSocketFD(StringRef SocketPath) {
+-#ifdef _WIN32
+-  SOCKET Socket = socket(AF_UNIX, SOCK_STREAM, 0);
+-  if (Socket == INVALID_SOCKET) {
+-#else
+-  int Socket = socket(AF_UNIX, SOCK_STREAM, 0);
+-  if (Socket == -1) {
+-#endif // _WIN32
+-    return llvm::make_error<StringError>(getLastSocketErrorCode(),
+-                                         "Create socket failed");
+-  }
+-
+-  struct sockaddr_un Addr = setSocketAddr(SocketPath);
+-  if (::connect(Socket, (struct sockaddr *)&Addr, sizeof(Addr)) == -1)
+-    return llvm::make_error<StringError>(getLastSocketErrorCode(),
+-                                         "Connect socket failed");
+-
+-#ifdef _WIN32
+-  return _open_osfhandle(Socket, 0);
+-#else
+-  return Socket;
+-#endif // _WIN32
+-}
+-
+-ListeningSocket::ListeningSocket(int SocketFD, StringRef SocketPath,
+-                                 int PipeFD[2])
+-    : FD(SocketFD), SocketPath(SocketPath), PipeFD{PipeFD[0], PipeFD[1]} {}
+-
+-ListeningSocket::ListeningSocket(ListeningSocket &&LS)
+-    : FD(LS.FD.load()), SocketPath(LS.SocketPath),
+-      PipeFD{LS.PipeFD[0], LS.PipeFD[1]} {
+-
+-  LS.FD = -1;
+-  LS.SocketPath.clear();
+-  LS.PipeFD[0] = -1;
+-  LS.PipeFD[1] = -1;
+-}
+-
+-Expected<ListeningSocket> ListeningSocket::createUnix(StringRef SocketPath,
+-                                                      int MaxBacklog) {
+-
+-  // Handle instances where the target socket address already exists and
+-  // differentiate between a preexisting file with and without a bound socket
+-  //
+-  // ::bind will return std::errc:address_in_use if a file at the socket address
+-  // already exists (e.g., the file was not properly unlinked due to a crash)
+-  // even if another socket has not yet binded to that address
+-  if (llvm::sys::fs::exists(SocketPath)) {
+-    Expected<int> MaybeFD = getSocketFD(SocketPath);
+-    if (!MaybeFD) {
+-
+-      // Regardless of the error, notify the caller that a file already exists
+-      // at the desired socket address and that there is no bound socket at that
+-      // address. The file must be removed before ::bind can use the address
+-      consumeError(MaybeFD.takeError());
+-      return llvm::make_error<StringError>(
+-          std::make_error_code(std::errc::file_exists),
+-          "Socket address unavailable");
+-    }
+-    ::close(std::move(*MaybeFD));
+-
+-    // Notify caller that the provided socket address already has a bound socket
+-    return llvm::make_error<StringError>(
+-        std::make_error_code(std::errc::address_in_use),
+-        "Socket address unavailable");
+-  }
+-
+-#ifdef _WIN32
+-  WSABalancer _;
+-  SOCKET Socket = socket(AF_UNIX, SOCK_STREAM, 0);
+-  if (Socket == INVALID_SOCKET)
+-#else
+-  int Socket = socket(AF_UNIX, SOCK_STREAM, 0);
+-  if (Socket == -1)
+-#endif
+-    return llvm::make_error<StringError>(getLastSocketErrorCode(),
+-                                         "socket create failed");
+-
+-  struct sockaddr_un Addr = setSocketAddr(SocketPath);
+-  if (::bind(Socket, (struct sockaddr *)&Addr, sizeof(Addr)) == -1) {
+-    // Grab error code from call to ::bind before calling ::close
+-    std::error_code EC = getLastSocketErrorCode();
+-    ::close(Socket);
+-    return llvm::make_error<StringError>(EC, "Bind error");
+-  }
+-
+-  // Mark socket as passive so incoming connections can be accepted
+-  if (::listen(Socket, MaxBacklog) == -1)
+-    return llvm::make_error<StringError>(getLastSocketErrorCode(),
+-                                         "Listen error");
+-
+-  int PipeFD[2];
+-#ifdef _WIN32
+-  // Reserve 1 byte for the pipe and use default textmode
+-  if (::_pipe(PipeFD, 1, 0) == -1)
+-#else
+-  if (::pipe(PipeFD) == -1)
+-#endif // _WIN32
+-    return llvm::make_error<StringError>(getLastSocketErrorCode(),
+-                                         "pipe failed");
+-
+-#ifdef _WIN32
+-  return ListeningSocket{_open_osfhandle(Socket, 0), SocketPath, PipeFD};
+-#else
+-  return ListeningSocket{Socket, SocketPath, PipeFD};
+-#endif // _WIN32
+-}
+-
+-// If a file descriptor being monitored by ::poll is closed by another thread,
+-// the result is unspecified. In the case ::poll does not unblock and return,
+-// when ActiveFD is closed, you can provide another file descriptor via CancelFD
+-// that when written to will cause poll to return. Typically CancelFD is the
+-// read end of a unidirectional pipe.
+-//
+-// Timeout should be -1 to block indefinitly
+-//
+-// getActiveFD is a callback to handle ActiveFD's of std::atomic<int> and int
+-static std::error_code
+-manageTimeout(const std::chrono::milliseconds &Timeout,
+-              const std::function<int()> &getActiveFD,
+-              const std::optional<int> &CancelFD = std::nullopt) {
+-  struct pollfd FD[2];
+-  FD[0].events = POLLIN;
+-#ifdef _WIN32
+-  SOCKET WinServerSock = _get_osfhandle(getActiveFD());
+-  FD[0].fd = WinServerSock;
+-#else
+-  FD[0].fd = getActiveFD();
+-#endif
+-  uint8_t FDCount = 1;
+-  if (CancelFD.has_value()) {
+-    FD[1].events = POLLIN;
+-    FD[1].fd = CancelFD.value();
+-    FDCount++;
+-  }
+-
+-  // Keep track of how much time has passed in case ::poll or WSAPoll are
+-  // interupted by a signal and need to be recalled
+-  auto Start = std::chrono::steady_clock::now();
+-  auto RemainingTimeout = Timeout;
+-  int PollStatus = 0;
+-  do {
+-    // If Timeout is -1 then poll should block and RemainingTimeout does not
+-    // need to be recalculated
+-    if (PollStatus != 0 && Timeout != std::chrono::milliseconds(-1)) {
+-      auto TotalElapsedTime =
+-          std::chrono::duration_cast<std::chrono::milliseconds>(
+-              std::chrono::steady_clock::now() - Start);
+-
+-      if (TotalElapsedTime >= Timeout)
+-        return std::make_error_code(std::errc::operation_would_block);
+-
+-      RemainingTimeout = Timeout - TotalElapsedTime;
+-    }
+-#ifdef _WIN32
+-    PollStatus = WSAPoll(FD, FDCount, RemainingTimeout.count());
+-  } while (PollStatus == SOCKET_ERROR &&
+-           getLastSocketErrorCode() == std::errc::interrupted);
+-#else
+-    PollStatus = ::poll(FD, FDCount, RemainingTimeout.count());
+-  } while (PollStatus == -1 &&
+-           getLastSocketErrorCode() == std::errc::interrupted);
+-#endif
+-
+-  // If ActiveFD equals -1 or CancelFD has data to be read then the operation
+-  // has been canceled by another thread
+-  if (getActiveFD() == -1 || (CancelFD.has_value() && FD[1].revents & POLLIN))
+-    return std::make_error_code(std::errc::operation_canceled);
+-#if _WIN32
+-  if (PollStatus == SOCKET_ERROR)
+-#else
+-  if (PollStatus == -1)
+-#endif
+-    return getLastSocketErrorCode();
+-  if (PollStatus == 0)
+-    return std::make_error_code(std::errc::timed_out);
+-  if (FD[0].revents & POLLNVAL)
+-    return std::make_error_code(std::errc::bad_file_descriptor);
+-  return std::error_code();
+-}
+-
+-Expected<std::unique_ptr<raw_socket_stream>>
+-ListeningSocket::accept(const std::chrono::milliseconds &Timeout) {
+-  auto getActiveFD = [this]() -> int { return FD; };
+-  std::error_code TimeoutErr = manageTimeout(Timeout, getActiveFD, PipeFD[0]);
+-  if (TimeoutErr)
+-    return llvm::make_error<StringError>(TimeoutErr, "Timeout error");
+-
+-  int AcceptFD;
+-#ifdef _WIN32
+-  SOCKET WinAcceptSock = ::accept(_get_osfhandle(FD), NULL, NULL);
+-  AcceptFD = _open_osfhandle(WinAcceptSock, 0);
+-#else
+-  AcceptFD = ::accept(FD, NULL, NULL);
+-#endif
+-
+-  if (AcceptFD == -1)
+-    return llvm::make_error<StringError>(getLastSocketErrorCode(),
+-                                         "Socket accept failed");
+-  return std::make_unique<raw_socket_stream>(AcceptFD);
+-}
+-
+-void ListeningSocket::shutdown() {
+-  int ObservedFD = FD.load();
+-
+-  if (ObservedFD == -1)
+-    return;
+-
+-  // If FD equals ObservedFD set FD to -1; If FD doesn't equal ObservedFD then
+-  // another thread is responsible for shutdown so return
+-  if (!FD.compare_exchange_strong(ObservedFD, -1))
+-    return;
+-
+-  ::close(ObservedFD);
+-  ::unlink(SocketPath.c_str());
+-
+-  // Ensure ::poll returns if shutdown is called by a separate thread
+-  char Byte = 'A';
+-  ssize_t written = ::write(PipeFD[1], &Byte, 1);
+-
+-  // Ignore any write() error
+-  (void)written;
+-}
+-
+-ListeningSocket::~ListeningSocket() {
+-  shutdown();
+-
+-  // Close the pipe's FDs in the destructor instead of within
+-  // ListeningSocket::shutdown to avoid unnecessary synchronization issues that
+-  // would occur as PipeFD's values would have to be changed to -1
+-  //
+-  // The move constructor sets PipeFD to -1
+-  if (PipeFD[0] != -1)
+-    ::close(PipeFD[0]);
+-  if (PipeFD[1] != -1)
+-    ::close(PipeFD[1]);
+-}
+-
+-//===----------------------------------------------------------------------===//
+-//  raw_socket_stream
+-//===----------------------------------------------------------------------===//
+-
+-raw_socket_stream::raw_socket_stream(int SocketFD)
+-    : raw_fd_stream(SocketFD, true) {}
+-
+-raw_socket_stream::~raw_socket_stream() {}
+-
+-Expected<std::unique_ptr<raw_socket_stream>>
+-raw_socket_stream::createConnectedUnix(StringRef SocketPath) {
+-#ifdef _WIN32
+-  WSABalancer _;
+-#endif // _WIN32
+-  Expected<int> FD = getSocketFD(SocketPath);
+-  if (!FD)
+-    return FD.takeError();
+-  return std::make_unique<raw_socket_stream>(*FD);
+-}
+-
+-ssize_t raw_socket_stream::read(char *Ptr, size_t Size,
+-                                const std::chrono::milliseconds &Timeout) {
+-  auto getActiveFD = [this]() -> int { return this->get_fd(); };
+-  std::error_code Err = manageTimeout(Timeout, getActiveFD);
+-  // Mimic raw_fd_stream::read error handling behavior
+-  if (Err) {
+-    raw_fd_stream::error_detected(Err);
+-    return -1;
+-  }
+-  return raw_fd_stream::read(Ptr, Size);
+-}
