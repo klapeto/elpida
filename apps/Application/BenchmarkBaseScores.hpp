@@ -117,9 +117,9 @@ namespace Elpida::Application
 							{ "AES Decryption",
 									{
 											"9a44b227-39b1-41d6-b8fc-18243d9c9744",
-											93472847.135444,
+											93888378.539580,
 											"eb8aa408-5d7f-4d8e-8a37-e57edc011c63",
-											187151343.421896,
+											188081702.212871,
 											Generate<AESDecryption>,
 											false
 									}
@@ -127,9 +127,9 @@ namespace Elpida::Application
 							{ "AES Encryption",
 									{
 											"59248a7c-5d7f-4f1e-b01f-3c3cbe2e7437",
-											87928850.627276,
+											88587070.055041,
 											"9e2fb41c-146f-4725-8ca0-1e19503b03c7",
-											175893199.298437,
+											177245955.063836,
 											Generate<AESEncryption>,
 											false
 									}
@@ -137,9 +137,9 @@ namespace Elpida::Application
 							{ "Base64 Decode",
 									{
 											"0a48078b-b924-43a9-97d9-6a9fcb2ebb45",
-											21789028.074646,
+											21191164.348085,
 											"060af447-f649-4a5b-b60a-0579616cada0",
-											43523938.994868,
+											42510217.221105,
 											Generate<Base64Decode>,
 											false
 									}
@@ -147,9 +147,9 @@ namespace Elpida::Application
 							{ "Base64 Encode",
 									{
 											"b793d108-7603-4aa7-b2ae-4c2f8eba98a7",
-											155464795.314767,
+											155518865.568086,
 											"00a8b5a5-eb3e-45b5-bced-f90895103f7d",
-											309769221.588231,
+											309418817.401419,
 											Generate<Base64Encode>,
 											false
 									}
@@ -157,9 +157,9 @@ namespace Elpida::Application
 							{ "C++ Compilation",
 									{
 											"a60442f2-1bc7-4df6-9d83-18dcda067b51",
-											0.397093,
+											0.418063,
 											"b7c330be-90ba-4ac5-a84f-03cd8c77fd85",
-											0.742627,
+											0.778848,
 											Generate<CppCompilation>,
 											false
 									}
@@ -167,9 +167,9 @@ namespace Elpida::Application
 							{ "FFT calculation in place",
 									{
 											"a8946ba5-049f-4626-9b1a-d5d31211cea1",
-											20822506.907889,
+											15243339.518251,
 											"554f2321-95df-43c0-af46-90554e26c8cd",
-											41649607.848900,
+											30593212.722928,
 											Generate<FFT>,
 											false
 									}
@@ -177,9 +177,9 @@ namespace Elpida::Application
 							{ "Json Parsing",
 									{
 											"cc53b078-75aa-41c0-8885-b381bc1a4bda",
-											20294169.526248,
+											20680401.000514,
 											"35f22cbc-16e7-4c35-aebf-029dac328e46",
-											40662024.604593,
+											41596030.104768,
 											Generate<JsonParsing>,
 											false
 									}
@@ -187,9 +187,9 @@ namespace Elpida::Application
 							{ "Matrix inverse (4x4)",
 									{
 											"7930adf1-fd99-420a-9a39-b4e147f1bdf2",
-											54151158.035408,
+											56011730.096455,
 											"3faca5e9-d9ac-47a5-a8d4-c331666c6e6a",
-											108500955.867964,
+											112948959.350677,
 											Generate<MatrixInverse>,
 											false
 									}
@@ -197,9 +197,9 @@ namespace Elpida::Application
 							{ "Matrix multiplication (32x32)",
 									{
 											"56834364-d449-4d3e-bc50-197c697c6c6f",
-											73725850.229367,
+											73943981.729666,
 											"a28c475e-4541-4dcb-80d4-14583c325a7c",
-											147513642.371239,
+											148006033.763985,
 											Generate<MatrixMultiplication>,
 											false
 									}
@@ -207,9 +207,9 @@ namespace Elpida::Application
 							{ "NBody Simulation",
 									{
 											"9196f126-391f-452b-9ca0-0dd39d7f70ae",
-											6848637.023895,
+											7223440.518333,
 											"6b01f47a-4f41-4f13-96e9-836baf6bed90",
-											13693441.360039,
+											14449303.789569,
 											Generate<NBody>,
 											false
 									}
@@ -217,9 +217,9 @@ namespace Elpida::Application
 							{ "3D Ray Tracing",
 									{
 											"ad8da8ff-a1f3-4a21-9234-43b6aff8eea4",
-											843696.294072,
+											873831.049315,
 											"5c888135-bab1-4651-9407-2d7187f54381",
-											1690958.132620,
+											1747769.457912,
 											Generate<RayTracing>,
 											false
 									}
@@ -227,9 +227,9 @@ namespace Elpida::Application
 							{ "Regex (Boost)",
 									{
 											"bd0d8849-b988-40ac-9961-5e3528327da3",
-											27910970.246338,
+											28767930.330392,
 											"142291f8-3c83-4f1b-ab02-ad1914e08885",
-											55223481.609028,
+											57367963.099031,
 											Generate<Regex>,
 											false
 									}
@@ -237,9 +237,9 @@ namespace Elpida::Application
 							{ "RSA Decryption",
 									{
 											"4a4e3a1d-df8b-48d8-8a86-b49fafea79fc",
-											31703.577692,
+											31877.579442,
 											"bae420c9-3297-456c-bbc2-6b884af15bb7",
-											63444.866387,
+											63672.483516,
 											Generate<RSADecryption>,
 											false
 									}
@@ -247,9 +247,9 @@ namespace Elpida::Application
 							{ "RSA Encryption",
 									{
 											"32e5628d-aa9a-4ddc-84d0-17779647e22b",
-											1072051.033291,
+											1074723.035833,
 											"021876da-05b4-4408-8d9a-7637035927c2",
-											2120330.986377,
+											2150318.154469,
 											Generate<RSAEncryption>,
 											false
 									}
@@ -257,9 +257,9 @@ namespace Elpida::Application
 							{ "Svg Rasterization",
 									{
 											"e7ab603e-6c05-428b-9851-1e0a3729e022",
-											255814.691063,
+											267550.418008,
 											"66087de6-f486-4d24-b58d-f90300458179",
-											511471.396315,
+											536703.768533,
 											Generate<SVGRasterization>,
 											false
 									}
@@ -267,9 +267,9 @@ namespace Elpida::Application
 							{ "XML Parsing",
 									{
 											"70b7048f-face-4976-b68a-d8cd1004ad33",
-											32015295.055276,
+											32522173.912802,
 											"2ac01731-f3de-4fb1-adfc-35937d009097",
-											64372607.892171,
+											64597460.556535,
 											Generate<XmlParsing>,
 											false
 									}
@@ -277,9 +277,9 @@ namespace Elpida::Application
 							{ "Zlib compression",
 									{
 											"895ff7fd-257d-411f-a8a6-de547b0f6485",
-											21026465.621970,
+											21234936.806946,
 											"1b4532fd-14f0-41af-ab33-5e4e3803f79b",
-											42189623.996918,
+											42633434.290383,
 											Generate<ZlibCompression>,
 											false
 									}
@@ -287,9 +287,9 @@ namespace Elpida::Application
 							{ "Zlib decompression",
 									{
 											"d40517b1-b39f-4b82-8dc4-b440dd11da1b",
-											43334082.650269,
+											44468268.993683,
 											"39d94225-34aa-479b-b9cb-b6e104fb17b9",
-											86661959.052828,
+											87725386.669498,
 											Generate<ZlibDecompression>,
 											false
 									}
