@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 LABEL maintainer="Ioannis Panagiotopoulos yiannispana@hotmail.com"
 
 # This part is copied and modified from https://github.com/AppImageCrafters/appimage-builder/blob/0b2f1910b2e99df2fdbb50e12b37d97246a6fa9b/Dockerfile
@@ -28,20 +28,20 @@ RUN apt-get install -y \
 
 # install latest cmake
 RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-RUN echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
+RUN echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
 RUN apt-get update
 RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || rm /usr/share/keyrings/kitware-archive-keyring.gpg
 RUN apt-get install -y kitware-archive-keyring cmake
 
 # Add ARM repos
-RUN echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal main restricted" > /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
-    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal-updates main restricted" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
-    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal universe" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list  && \
-    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal-updates universe" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
-    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal multiverse" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
-    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal-updates multiverse" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
-    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
-    echo "deb [arch=amd64] http://gr.archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list
+RUN echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ jammy main restricted" > /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
+    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ jammy-updates main restricted" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
+    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ jammy universe" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list  && \
+    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ jammy-updates universe" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
+    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ jammy multiverse" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
+    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ jammy-updates multiverse" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
+    echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ jammy-backports main restricted universe multiverse" >> /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
+    echo "deb [arch=amd64] http://gr.archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse" >> /etc/apt/sources.list
 
 # Update caches
 RUN apt-get update --fix-missing

@@ -21,6 +21,7 @@
       -DELPIDA_VERSION_REVISION=$ELPIDA_VERSION_REVISION
       -DELPIDA_VERSION_BUILD=$ELPIDA_VERSION_BUILD
     - make -C "$BUILD_DIR" -j$(nproc) install
+    - rm -rf "$INSTALL_DIR/lib/*" "$INSTALL_DIR/bin/*png*" "$INSTALL_DIR/include/*" "$INSTALL_DIR/share/*"
   artifacts:
     expire_in: 2h30min
     paths:

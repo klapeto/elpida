@@ -13,19 +13,19 @@ AppDir:
       - armhf
     allow_unauthenticated: true
     sources:
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal main restricted
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-updates main restricted
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal universe
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-updates universe
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal multiverse
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-updates multiverse
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-backports main restricted
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy universe
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy-updates universe
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy multiverse
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy-updates multiverse
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted
           universe multiverse
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-security main restricted
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-security universe
-      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ focal-security multiverse
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy-security main restricted
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy-security universe
+      - sourceline: deb http://ports.ubuntu.com/ubuntu-ports/ jammy-security multiverse
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
-      - sourceline: deb http://archive.neon.kde.org/user/ focal main
+      - sourceline: deb http://archive.neon.kde.org/user/ jammy main
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xE6D4736255751E5D'
     include:
       - libnuma1
