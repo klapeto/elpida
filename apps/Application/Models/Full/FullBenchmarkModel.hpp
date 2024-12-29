@@ -16,7 +16,7 @@ namespace Elpida::Application
 	{
 	public:
 		const std::string& GetCurrentRunningBenchmark() const;
-		size_t GetTotalBenchmarks() const;
+		size_t GetTotalBenchmarksThatWillRun() const;
 		bool IsRunning() const;
 
 		Event<bool>& RunningChanged() const;

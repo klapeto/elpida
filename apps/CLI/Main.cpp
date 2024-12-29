@@ -72,7 +72,7 @@ static void setupPlatformSpecifics()
 #endif
 }
 
-#define ELPIDA_OUT(x) if (!helper.IsQuiet()) x
+#define ELPIDA_OUT(x) if (!helper.IsQuiet()) std::cout << x << std::endl
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -82,6 +82,27 @@ static void WriteResultsToFile(TCallable callable, const std::filesystem::path& 
 {
 	std::fstream file(filePath, std::ios::out | std::ios::trunc);
 	file << callable();
+}
+
+static const char* GetOutputFormatStr(OutputFormat format){
+	switch (format)
+	{
+	case OutputFormat::Default:
+		return "Default (StdOut)";
+	case OutputFormat::Json:
+		return "Json";
+	}
+	return "Unknown (Please report a bug)";
+}
+
+static const char* GetBooleanStr(bool value)
+{
+	return value ? "Yes" : "No";
+}
+
+static std::string GetOutputPathStr(const std::filesystem::path& path)
+{
+	return path.empty() ? "None (Std Out)" : path.string();
 }
 
 int main(int argC, char** argV)
@@ -117,7 +138,21 @@ int main(int argC, char** argV)
 			benchmarksPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
 		}
 
-		ELPIDA_OUT(std::cout << "Getting System information..." << std::endl);
+		ELPIDA_OUT("======================================================");
+		ELPIDA_OUT("  Elpida Benchmark ver. " << ELPIDA_VERSION << " (" << ELPIDA_COMPILER_NAME << " " << ELPIDA_COMPILER_VERSION << ")");
+		ELPIDA_OUT("======================================================");
+
+		ELPIDA_OUT("Run config:");
+		ELPIDA_OUT(" - Iterations to run: " << helper.GetIterationsToRun());
+		ELPIDA_OUT(" - Delay seconds between runs: " << helper.GetSecondsBetweenRuns());
+		ELPIDA_OUT(" - Upload results: " << GetBooleanStr(helper.IsUpload()));
+		ELPIDA_OUT(" - Output format: " << GetOutputFormatStr(helper.GetOutputFormat()));
+		ELPIDA_OUT(" - Output path: " << GetOutputPathStr(helper.GetResultPath()));
+		ELPIDA_OUT(" - Generate report: " << GetBooleanStr(helper.IsGenerateReport()));
+		ELPIDA_OUT(" - Report export path: " << helper.GetReportPath());
+		ELPIDA_OUT(" - Benchmarks path: " << helper.GetBenchmarksPath());
+
+		ELPIDA_OUT("Getting System information...");
 
 		ModelBuilderJson builderJson = ModelBuilderJson(InfoGetter::GetInfoData(benchmarksPath));
 
@@ -170,7 +205,7 @@ int main(int argC, char** argV)
 		{
 			std::ostringstream message;
 			message << "The following benchmarks are missing: ";
-			for (auto& benchmark : fullBenchmarkController.GetMissingBenchmarks())
+			for (auto& benchmark: fullBenchmarkController.GetMissingBenchmarks())
 			{
 				message << benchmark << ", ";
 			}
@@ -180,7 +215,7 @@ int main(int argC, char** argV)
 
 		if (!builderJson.GetFailedToLoadBenchmarkGroups().empty())
 		{
-			for (auto& [file, reason] : builderJson.GetFailedToLoadBenchmarkGroups())
+			for (auto& [file, reason]: builderJson.GetFailedToLoadBenchmarkGroups())
 			{
 				std::cerr << "Failed to load benchmark group File: " << file << std::endl << "Reason:" << reason;
 			}
@@ -193,13 +228,25 @@ int main(int argC, char** argV)
 		{
 			progressSubscription = fullBenchmarkModel.CurrentRunningBenchmarkChanged().Subscribe([&](auto& name)
 			{
+				if (name == "Waiting...")
+				{
+					std::cout << "Waiting for " << helper.GetIterationsToRun() << "s" << std::endl;
+					return;
+				}
+
+				if (name == "Uploading...")
+				{
+					std::cout << "Uploading..." << std::endl;
+					return;
+				}
 				std::cout << "Currently executing: " << name << "\t(Progress: " << i++ << "/" << total << ")"
 						  << std::endl;
 			});
 		}
 
-		ELPIDA_OUT(std::cout << "Starting benchmarking. Estimated execution time: " << std::setprecision(2)
-					  << ValueUtilities::GetTimeScaleValue(Seconds(5.0 * total)) << std::endl);
+		ELPIDA_OUT("Starting benchmarking. Estimated execution time: " << std::setprecision(2)
+							 << ValueUtilities::GetTimeScaleValue(Seconds((5.0 * total)
+							 + (helper.GetSecondsBetweenRuns() * helper.GetIterationsToRun()))));
 
 		fullBenchmarkController.RunAsync();
 		fullBenchmarkController.WaitToCompleteRun();
@@ -217,7 +264,7 @@ int main(int argC, char** argV)
 				std::vector<FullBenchmarkResultModel> results;
 				results.reserve(fullBenchmarkModel.Size());
 
-				for (auto& item : fullBenchmarkModel.GetItems())
+				for (auto& item: fullBenchmarkModel.GetItems())
 				{
 					results.push_back(item.GetValue());
 				}

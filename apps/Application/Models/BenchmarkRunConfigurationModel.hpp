@@ -43,6 +43,11 @@ namespace Elpida::Application
 			return _iterationsChanged;
 		}
 
+		Event<std::size_t>& DelaySecondsBetweenRunsChanged() const
+		{
+			return _delaySecondsBetweenRunsChanged;
+		}
+
 		void SetIterationsToRun(std::size_t iterations);
 		void SetUploadResults(bool uploadResults);
 		void SetOpenResult(bool openResult);
@@ -85,6 +90,7 @@ namespace Elpida::Application
 		~BenchmarkRunConfigurationModel() override = default;
 	private:
 		mutable Event<std::size_t> _iterationsChanged;
+		mutable Event<std::size_t> _delaySecondsBetweenRunsChanged;
 		std::size_t _iterationsToRun;
 		std::size_t _delaySecondsBetweenRuns;
 		Duration _minimumMicroTaskDuration;

@@ -43,7 +43,7 @@ namespace Elpida::Application
 		return _currentRunningBenchmark;
 	}
 
-	size_t FullBenchmarkModel::GetTotalBenchmarks() const
+	size_t FullBenchmarkModel::GetTotalBenchmarksThatWillRun() const
 	{
 		return _totalBenchmarks;
 	}

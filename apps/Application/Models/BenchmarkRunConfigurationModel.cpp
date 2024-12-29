@@ -119,6 +119,7 @@ namespace Elpida::Application
 	void BenchmarkRunConfigurationModel::SetDelaySecondsBetweenRuns(size_t delaySecondsBetweenRuns)
 	{
 		_delaySecondsBetweenRuns = delaySecondsBetweenRuns;
+		_delaySecondsBetweenRunsChanged.Raise(_delaySecondsBetweenRuns);
 		OnDataChanged();
 	}
 
