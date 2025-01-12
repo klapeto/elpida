@@ -1,4 +1,20 @@
 //
+// Copyright (C) 2025. Ioannis Panagiotopoulos
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 7/9/2024.
 //
 
@@ -25,10 +41,10 @@ namespace Elpida
 	SharedPtr<AbstractTaskData> SvgRasterization2Task::Finalize()
 	{
 		auto ptr = std::make_unique<ImageTaskData>(_inputData->GetAllocator(), _rasterizedImage.GetWidth(),
-				_rasterizedImage.GetHeight(), 4, 4);
+				_rasterizedImage.GetHeight(), 4, sizeof(Float));
 
-		ptr->Allocate(_rasterizedImage.GetColorData().size() * 4 * 4);
-		auto data = reinterpret_cast<float*>(ptr->GetData());
+		ptr->Allocate(_rasterizedImage.GetColorData().size() * 4 * sizeof(Float));
+		auto data = reinterpret_cast<Float*>(ptr->GetData());
 		auto& colorData = _rasterizedImage.GetColorData();
 		for (std::size_t i = 0; i < colorData.size(); ++i)
 		{

@@ -25,7 +25,7 @@ namespace Elpida
 	{
 		_inputData = std::move(inputData);
 
-		_input = Math::Matrix<double, 4, 4>{
+		_input = Math::Matrix<Float, 4, 4>{
 				-0.707, 0.0, -0.707, -13.8,
 				0.5, 0.94, 7.0, 8.0,
 				9.0, -10.0, -1.0, 1.0,

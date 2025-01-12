@@ -26,20 +26,36 @@
 namespace Elpida::Math
 {
 
+	template<typename T>
 	class DynamicMatrix final
 	{
 	public:
 
-		[[nodiscard]]
-		DynamicMatrix Multiply(const DynamicMatrix& other) const;
+		DynamicMatrix<T> Multiply(const DynamicMatrix<T>& other) const
+		{
+			DynamicMatrix<T> returnMatrix(_rows, other._columns);
+			for (std::size_t i = 0; i < _rows; ++i)
+			{
+				for (std::size_t j = 0; j < other._columns; ++j)
+				{
+					T product = 0.0;
+					for (std::size_t k = 0; k < _columns; ++k)
+					{
+						product += Get(i, k) * other.Get(k, j);
+					}
+					returnMatrix.Get(i, j) = product;
+				}
+			}
+			return returnMatrix;
+		}
 
 		[[nodiscard]]
-		double Get(std::size_t i, std::size_t j) const
+		T Get(std::size_t i, std::size_t j) const
 		{
 			return _values[i * _columns + j];
 		}
 
-		double& Get(std::size_t i, std::size_t j)
+		T& Get(std::size_t i, std::size_t j)
 		{
 			return _values[i * _columns + j];
 		}
@@ -49,10 +65,14 @@ namespace Elpida::Math
 		{
 		}
 
-		DynamicMatrix(size_t rows, size_t columns);
+		DynamicMatrix(size_t rows, size_t columns)
+				:_rows(rows), _columns(columns)
+		{
+			_values.resize(rows * columns);
+		}
 
-		template<class ... T>
-		explicit DynamicMatrix(size_t rows, size_t columns, const T ... values)
+		template<class ... TValues>
+		explicit DynamicMatrix(size_t rows, size_t columns, const TValues ... values)
 				:_rows(rows), _columns(columns), _values{ values... }
 		{
 
@@ -64,7 +84,7 @@ namespace Elpida::Math
 		DynamicMatrix& operator=(DynamicMatrix&&) noexcept = default;
 		~DynamicMatrix() = default;
 	private:
-		std::valarray<double> _values;
+		std::valarray<T> _values;
 		std::size_t _rows;
 		std::size_t _columns;
 	};

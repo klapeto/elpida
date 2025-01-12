@@ -22,27 +22,5 @@
 
 namespace Elpida::Math
 {
-	DynamicMatrix::DynamicMatrix(size_t rows, size_t columns)
-			:_rows(rows), _columns(columns)
-	{
-		_values.resize(rows * columns);
-	}
 
-	DynamicMatrix DynamicMatrix::Multiply(const DynamicMatrix& other) const
-	{
-		DynamicMatrix returnMatrix(_rows, other._columns);
-		for (std::size_t i = 0; i < _rows; ++i)
-		{
-			for (std::size_t j = 0; j < other._columns; ++j)
-			{
-				double product = 0.0;
-				for (std::size_t k = 0; k < _columns; ++k)
-				{
-					product += Get(i, k) * other.Get(k, j);
-				}
-				returnMatrix.Get(i, j) = product;
-			}
-		}
-		return returnMatrix;
-	}
 } // Elpida

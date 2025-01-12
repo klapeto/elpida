@@ -1,18 +1,18 @@
 //
-//  Copyright (c) 2024  Ioannis Panagiotopoulos
+// Copyright (C) 2024-2025. Ioannis Panagiotopoulos
 //
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
 // Created by klapeto on 12/8/2024.
@@ -22,6 +22,7 @@
 #define ELPIDA_DYNAMICMATRIXMULTIPLICATIONTASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
+#include "Elpida/Core/Float.hpp"
 #include "Elpida/Math/DynamicMatrix.hpp"
 
 namespace Elpida
@@ -45,9 +46,9 @@ namespace Elpida
 	private:
 		std::size_t _rows;
 		std::size_t _columns;
-		DynamicMatrix _matrix;
-		DynamicMatrix _a;
-		DynamicMatrix _b;
+		DynamicMatrix<Float> _matrix;
+		DynamicMatrix<Float> _a;
+		DynamicMatrix<Float> _b;
 		SharedPtr<AbstractTaskData> _output;
 	protected:
 		TaskInfo DoGetInfo() const override;

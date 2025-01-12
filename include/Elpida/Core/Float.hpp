@@ -15,24 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-// Created by klapeto on 5/3/2023.
+// Created by klapeto on 11/1/2025.
 //
 
-#ifndef _IMAGEBENCHMARKSCONFIG_HPP_
-#define _IMAGEBENCHMARKSCONFIG_HPP_
-
-#include "Elpida/Core/Float.hpp"
-#include <cstdint>
+#ifndef ELPIDA_FLOAT_HPP
+#define ELPIDA_FLOAT_HPP
 
 namespace Elpida
 {
-	using FloatChannel = Float;
-	using IntChannel = uint8_t;
-
-	constexpr const char* WidthProperty = "width";
-	constexpr const char* HeightProperty = "height";
-	constexpr const char* BytesPerChannelProperty = "bytesPerChannel";
-	constexpr const char* ChannelsProperty = "channels";
+	using Float = float;
 }
 
-#endif //_IMAGEBENCHMARKSCONFIG_HPP_
+#endif //ELPIDA_FLOAT_HPP

@@ -1,4 +1,20 @@
 //
+// Copyright (C) 2025. Ioannis Panagiotopoulos
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 12/8/2024.
 //
 
@@ -17,7 +33,7 @@ namespace Elpida
 
 	void CalculateFFTInPlaceTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
-		auto totalValues = _size / sizeof(std::complex<double>);
+		auto totalValues = _size / sizeof(std::complex<Float>);
 		if (totalValues < 2) totalValues = 2;
 		totalValues = std::pow(std::floor(std::sqrt(totalValues)), 2);
 
@@ -29,7 +45,7 @@ namespace Elpida
 		_values.resize(totalValues);
 		for (std::size_t i = 0; i < totalValues; ++i)
 		{
-			_values[i] = std::complex<double>(distribution(generator), distribution(generator));
+			_values[i] = std::complex<Float>(distribution(generator), distribution(generator));
 		}
 
 		_output = std::move(inputData);

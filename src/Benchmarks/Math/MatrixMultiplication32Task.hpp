@@ -18,6 +18,7 @@
 #define ELPIDA_MATRIXMULTIPLICATION32TASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
+#include "Elpida/Core/Float.hpp"
 #include "Elpida/Math/Matrix.hpp"
 
 namespace Elpida
@@ -49,9 +50,9 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
-		Matrix<double, 32, 32> _matrix;
-		Matrix<double, 32, 32> _a;
-		Matrix<double, 32, 32> _b;
+		Matrix<Float, 32, 32> _matrix;
+		Matrix<Float, 32, 32> _a;
+		Matrix<Float, 32, 32> _b;
 		SharedPtr<AbstractTaskData> _inputData;
 	};
 

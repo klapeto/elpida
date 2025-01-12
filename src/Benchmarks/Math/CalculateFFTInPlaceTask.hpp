@@ -1,4 +1,20 @@
 //
+// Copyright (C) 2025. Ioannis Panagiotopoulos
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//
 // Created by klapeto on 12/8/2024.
 //
 
@@ -6,6 +22,7 @@
 #define ELPIDA_CALCULATEFFTINPLACETASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
+#include "Elpida/Core/Float.hpp"
 #include <vector>
 #include <complex>
 
@@ -26,7 +43,7 @@ namespace Elpida
 		CalculateFFTInPlaceTask& operator=(const CalculateFFTInPlaceTask&) = delete;
 		~CalculateFFTInPlaceTask() override = default;
 	private:
-		std::vector<std::complex<double>> _values;
+		std::vector<std::complex<Float>> _values;
 		SharedPtr<AbstractTaskData> _output;
 		std::size_t _size;
 	protected:

@@ -1,18 +1,18 @@
 //
-//  Copyright (c) 2024  Ioannis Panagiotopoulos
+// Copyright (C) 2024-2025. Ioannis Panagiotopoulos
 //
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "RayTracingTask.hpp"
 #include "ImageTaskData.hpp"
@@ -25,9 +25,9 @@ namespace Elpida
 
 	void RayTracingTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
-		_frameBuffer = FrameBuffer<double>(_size, _size);
-		_scene = SceneCreator::GenerateScene<double>();
-		_camera = Camera<double>(
+		_frameBuffer = FrameBuffer<Float>(_size, _size);
+		_scene = SceneCreator::GenerateScene<Float>();
+		_camera = Camera<Float>(
 				{ -40.0, 40.0, 40.0 },
 				{ 0.0, 0.0, 0.0 },
 				{ 0.0, 1.0, 0.0 });
@@ -36,11 +36,11 @@ namespace Elpida
 
 	SharedPtr<AbstractTaskData> RayTracingTask::Finalize()
 	{
-		auto ptr = std::make_unique<ImageTaskData>(_inputData->GetAllocator(), _size, _size, 4, 4);
+		auto ptr = std::make_unique<ImageTaskData>(_inputData->GetAllocator(), _size, _size, 4, sizeof(Float));
 
 		auto totalSize = _size * _size;
-		ptr->Allocate(totalSize * 4 * 4);
-		auto data = reinterpret_cast<float*>(ptr->GetData());
+		ptr->Allocate(totalSize * 4 * sizeof(Float));
+		auto data = reinterpret_cast<Float*>(ptr->GetData());
 		for (std::size_t i = 0; i < totalSize; ++i)
 		{
 			auto colorIndex = i * 4;

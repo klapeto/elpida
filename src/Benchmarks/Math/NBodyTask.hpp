@@ -18,6 +18,7 @@
 #define ELPIDA_NBODYTASK_HPP
 
 #include "Elpida/Core/MicroTask.hpp"
+#include "Elpida/Core/Float.hpp"
 #include "NBodySystem.hpp"
 
 namespace Elpida
@@ -48,7 +49,7 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
-		NBodySystem<double> _system;
+		NBodySystem<Float> _system;
 		SharedPtr<AbstractTaskData> _inputData;
 	};
 

@@ -287,12 +287,12 @@ namespace Elpida::Math
 		}
 
 		[[nodiscard]]
-		double Get(std::size_t r, std::size_t c) const
+		T Get(std::size_t r, std::size_t c) const
 		{
 			return _values[r * C + c];
 		}
 
-		double& Get(std::size_t r, std::size_t c)
+		T& Get(std::size_t r, std::size_t c)
 		{
 			return _values[r * C + c];
 		}
@@ -335,7 +335,7 @@ namespace Elpida::Math
 
 		template<class ... TValue>
 		constexpr explicit Matrix(const TValue... values)
-				:_values{ values... }
+				:_values{ static_cast<T>(values)... }
 		{
 		}
 

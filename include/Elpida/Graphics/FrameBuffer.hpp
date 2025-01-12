@@ -96,7 +96,7 @@ namespace Elpida::Graphics
 
 		~FrameBuffer() = default;
 	private:
-		std::vector<Color < T>> _pixels;
+		std::vector<Color<T>> _pixels;
 		std::size_t _width;
 		std::size_t _height;
 	};
