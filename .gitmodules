@@ -4,3 +4,12 @@
 [submodule "extern/libpng"]
 	path = extern/libpng
 	url = https://github.com/glennrp/libpng.git
+[submodule "extern/google-test"]
+	path = extern/google-test
+	url = https://github.com/google/googletest.git
+[submodule "extern/boost-regex"]
+	path = extern/boost-regex
+	url = https://github.com/boostorg/regex.git
+[submodule "extern/openssl-cmake"]
+	path = extern/openssl-cmake
+	url = https://github.com/klapeto/openssl-cmake.git

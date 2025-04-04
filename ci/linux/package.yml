@@ -1,0 +1,44 @@
+.package:linux:
+  image: $IMAGE_NAME
+  stage: package
+  tags:
+    - amd64
+  script:
+    - mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/"
+      "$INSTALL_DIR/usr/share/metainfo/"
+      "$INSTALL_DIR/usr/share/applications/"
+    - cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/usr/share/icons/default/apps/32/elpida.svg"
+    - cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
+    - cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
+    - cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
+    - appimage-builder --skip-tests --recipe AppImageBuilder.cli.$TARGET_ARCH.yml
+    - appimage-builder --skip-tests --recipe AppImageBuilder.qt.$TARGET_ARCH.yml
+    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage
+      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
+      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage
+      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
+
+package:linux:amd64:
+  variables:
+    TARGET_ARCH: amd64
+    TARGET_OS: linux
+    TARGET_ARCH_APPIMAGE_RUNTIME: x86_64
+    TARGET_ARCH_APPIMAGE_APT: amd64
+  dependencies:
+    - build:linux:amd64
+  extends: .package:linux
+
+package:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+    TARGET_OS: linux
+    TARGET_ARCH_APPIMAGE_RUNTIME: aarch64
+    TARGET_ARCH_APPIMAGE_APT: arm64
+  dependencies:
+    - build:linux:aarch64
+  extends: .package:linux

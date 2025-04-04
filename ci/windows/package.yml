@@ -1,0 +1,54 @@
+.package:windows:
+  image: $IMAGE_NAME
+  stage: package
+  tags:
+    - amd64
+  script:
+    - |
+      currentDir=$(pwd)
+      stagingDir=$(mktemp -d -t ci-XXXXXXXXXX)
+      if [[ -e "$INSTALL_DIR/bin/elpida-qt.exe" ]]; then
+        /mxe/tools/copydlldeps.sh -c -f "$INSTALL_DIR/bin/elpida-qt.exe" -S "/mxe/usr/$MINGW_ARCH-w64-mingw32.static/bin/ /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/bin/" -R "$INSTALL_DIR"  "$BUILD_DIR" -d "$stagingDir"
+        cp "$INSTALL_DIR/bin/elpida-qt.exe" "$stagingDir"
+        cp "$INSTALL_DIR/bin/qt.conf" "$stagingDir"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/iconengines "$stagingDir"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/iconengines "$stagingDir"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/imageformats "$stagingDir"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/platforms "$stagingDir"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/platformthemes "$stagingDir"
+        cp -r /mxe/usr/$MINGW_ARCH-w64-mingw32.static/qt5/plugins/styles "$stagingDir"
+      fi
+      /mxe/tools/copydlldeps.sh -c -f "$INSTALL_DIR/bin/elpida-cli.exe" -S "/mxe/usr/$MINGW_ARCH-w64-mingw32.static/bin/" -R "$INSTALL_DIR" "$BUILD_DIR" -d "$stagingDir"
+      mkdir "$stagingDir/Benchmarks"
+      find "$BUILD_DIR/src/Benchmarks" -type f -name '*.exe' -exec cp "{}" "$stagingDir/Benchmarks" \;
+      cp "$INSTALL_DIR/bin/elpida-cli.exe" "$stagingDir"
+      cp "$INSTALL_DIR/bin/elpida-info-dumper.exe" "$stagingDir"
+      cp -r "$INSTALL_DIR/bin/assets" "$stagingDir"
+      cd "$stagingDir"
+      zip z -r .
+      cp ./z.zip "$currentDir/$PACKAGE_FILENAME.zip"
+      cd "$currentDir"
+      sha256sum "$PACKAGE_FILENAME.zip" > SHA256SUMS
+      rm -rf "$stagingDir"
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME.zip
+      - SHA256SUMS
+
+package:windows:amd64:
+  variables:
+    TARGET_ARCH: amd64
+    MINGW_ARCH: x86_64
+    TARGET_OS: windows
+  dependencies:
+    - build:windows:amd64
+  extends: .package:windows
+
+package:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+    MINGW_ARCH: i686
+    TARGET_OS: windows
+  dependencies:
+    - build:windows:i686
+  extends: .package:windows

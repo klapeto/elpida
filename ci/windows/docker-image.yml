@@ -1,0 +1,22 @@
+docker-image:windows:
+  image: docker:latest
+  stage: build-containers
+  tags:
+    - powerful  # very resource heavy build, use local vms only
+    - amd64
+  timeout: 2h 30m
+  variables:
+    TARGET_OS: windows
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker build -t $IMAGE_NAME docker/build-environment/windows
+    - docker push $IMAGE_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - docker/build-environment/windows/Dockerfile
+          - ci/windows/docker-image.yml

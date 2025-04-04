@@ -1,55 +1,103 @@
-project("Elpida Qt" VERSION ${ELPIDA_VERSION}
+project("Elpida Qt"
 		DESCRIPTION "Elpida Qt Front End"
 		LANGUAGES CXX C)
 
 set(ELPIDA_QT_SOURCES
-		Views/LogsView/LogsView.cpp
-		Views/MainWindow/MainWindow.cpp
-		Views/TopologyNodeFrame/TopologyNodeFrame.cpp
-		Views/TopologyView/TopologyView.cpp
-		Views/SystemInfoView/SystemInfoView.cpp
-		Views/BenchmarkListView/BenchmarkListView.cpp
-		Views/BenchmarkResultsView/BenchmarkResultsView.cpp
-		Views/CommonDialog/CommonDialog.cpp
-		Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.cpp
-		Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.cpp
-		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.cpp
-		Views/ConfigurationViews/FileInputView/FileInputView.cpp
-		Views/ConfigurationViews/TaskListItemView/TaskListItemView.cpp
-		Views/ConfigurationViews/ConfigurationValueViewBase.cpp
-		Views/ConfigurationViews/TaskConfigurationListItemViewBase.cpp
-		Views/ConfigurationViews/NumberInputView/NumberInputView.cpp
-		Views/NavigationBarView/NavigationBarView.cpp
-		Views/QuickStartView/QuickStartView.cpp
-		Views/BenchmarkConfigurationView/RentedConfigurationView.cpp
-
-		Views/MainWindow/MainWindow.ui
-		Views/BenchmarkListView/BenchmarkListView.ui
-		Views/LogsView/LogsView.ui
-		Views/TopologyView/TopologyView.ui
-		Views/TopologyNodeFrame/TopologyNodeFrame.ui
-		Views/SystemInfoView/SystemInfoView.ui
-		Views/BenchmarkResultsView/BenchmarkResultsView.ui
-		Views/CommonDialog/CommonDialog.ui
-		Views/BenchmarkRunnerStatusView/BenchmarkRunnerStatusView.ui
-		Views/BenchmarkRunnerControlsView/BenchmarkRunnerControlsView.ui
-		Views/BenchmarkConfigurationView/BenchmarkConfigurationView.ui
-		Views/ConfigurationViews/FileInputView/FileInputView.ui
-		Views/ConfigurationViews/NumberInputView/NumberInputView.ui
-		Views/NavigationBarView/NavigationBarView.ui
-		Views/QuickStartView/QuickStartView.ui
-
 		Main.cpp
 
-        UiModels/Screens/ScreensModel.cpp
-        UiModels/Screens/ScreenItem.cpp
+		MainWindow.hpp
+		MainWindow.cpp
+		MainWindow.ui
+
+		Layouts/FlowLayout.cpp
+		Layouts/FlowLayout.hpp
+
+		Views/ConfigurationViews/ConfigurationView.cpp
+		Views/ConfigurationViews/ConfigurationView.hpp
+
+		Views/OsInfoView/OsInfoView.hpp
+		Views/OsInfoView/OsInfoView.cpp
+		Views/OsInfoView/OsInfoView.ui
+
+		Views/BenchmarkRunConfigurationView/BenchmarkRunConfigurationView.hpp
+		Views/BenchmarkRunConfigurationView/BenchmarkRunConfigurationView.cpp
+		Views/BenchmarkRunConfigurationView/BenchmarkRunConfigurationView.ui
+
+		Views/MemoryInfoView/MemoryInfoView.hpp
+		Views/MemoryInfoView/MemoryInfoView.cpp
+		Views/MemoryInfoView/MemoryInfoView.ui
+
+		Views/TimingInfoView/TimingInfoView.hpp
+		Views/TimingInfoView/TimingInfoView.cpp
+		Views/TimingInfoView/TimingInfoView.ui
+
+		Views/CpuInfoView/CpuInfoView.hpp
+		Views/CpuInfoView/CpuInfoView.cpp
+		Views/CpuInfoView/CpuInfoView.ui
+
+		Views/TopologyNodeView/TopologyNodeView.hpp
+		Views/TopologyNodeView/TopologyNodeView.cpp
+		Views/TopologyNodeView/TopologyNodeView.ui
+
+		Views/TopologyView/TopologyView.hpp
+		Views/TopologyView/TopologyView.cpp
+		Views/TopologyView/TopologyView.ui
+
+		Views/CustomBenchmarkView/CustomBenchmarkView.hpp
+		Views/CustomBenchmarkView/CustomBenchmarkView.cpp
+		Views/CustomBenchmarkView/CustomBenchmarkView.ui
+
+		Views/FullBenchmarkView/FullBenchmarkView.hpp
+		Views/FullBenchmarkView/FullBenchmarkView.cpp
+		Views/FullBenchmarkView/FullBenchmarkView.ui
+
+		Views/CustomBenchmarkConfigurationView/CustomBenchmarkConfigurationView.hpp
+		Views/CustomBenchmarkConfigurationView/CustomBenchmarkConfigurationView.cpp
+		Views/CustomBenchmarkConfigurationView/CustomBenchmarkConfigurationView.ui
+
+		Views/ConfigurationViews/BooleanConfigurationView/BooleanConfigurationView.hpp
+		Views/ConfigurationViews/BooleanConfigurationView/BooleanConfigurationView.cpp
+		Views/ConfigurationViews/BooleanConfigurationView/BooleanConfigurationView.ui
+
+		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.hpp
+		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.cpp
+		Views/ConfigurationViews/IntegerConfigurationView/IntegerConfigurationView.ui
+
+		Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.hpp
+		Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.cpp
+		Views/ConfigurationViews/FloatConfigurationView/FloatConfigurationView.ui
+
+		Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.hpp
+		Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.cpp
+		Views/ConfigurationViews/StringConfigurationView/StringConfigurationView.ui
+
+		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.hpp
+		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.cpp
+		Views/ConfigurationViews/FileConfigurationView/FileConfigurationView.ui
+
+		Views/CustomBenchmarkResultsView/CustomBenchmarkResultsView.hpp
+		Views/CustomBenchmarkResultsView/CustomBenchmarkResultsView.cpp
+		Views/CustomBenchmarkResultsView/CustomBenchmarkResultsView.ui
+
+		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.hpp
+		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.cpp
+		Dialogs/BenchmarkRunningDialog/BenchmarkRunningDialog.ui
+
+        Views/MemoryBenchmarkView/MemoryBenchmarkView.hpp
+		Views/MemoryBenchmarkView/MemoryBenchmarkView.cpp
+		Views/MemoryBenchmarkView/MemoryBenchmarkView.ui
 
 		Images/Images.qrc
 
-		QCustomApplication.cpp
-		QModelLogAppender.cpp
-		ConfigurationViewsPool.cpp
-        )
+        ConfigurationViewPool.cpp
+		QtMessageService.cpp
+		QtThreadQueue.cpp
+		QtSettingsService.cpp
+		QtPathsService.cpp
+		QtPathsService.hpp
+		QtDesktopService.cpp
+        QtDesktopService.hpp
+)
 
 
 if (MSVC)
@@ -81,6 +129,8 @@ if (MSVC)
 		set(QT_MSVC 2017)
 	elseif(${MSVC_TOOLSET_VERSION} EQUAL 142)
 		set(QT_MSVC 2019)
+	elseif(${MSVC_TOOLSET_VERSION} EQUAL 143)
+		set(QT_MSVC 2022)
 	else()
 		message(FATAL_ERROR "Unsupported MSVC version")
 	endif()
@@ -106,7 +156,12 @@ if (ELPIDA_DEBUG_BUILD EQUAL 1)
 	add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
 endif()
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Charts)
+
+if (NOT Qt5Core_FOUND)
+	message("Disabling QT front end because Qt5 libraries (Core/Widgets/Charts) were not found")
+	return()
+endif()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -116,8 +171,7 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif ()
 
-
-if (MSYS OR MINGW)
+if (MSYS OR MINGW OR MSVC)
 	generate_product_version(
 			ELPIDA_QT_SOURCES
 			NAME ${PROJECT_NAME}
@@ -137,8 +191,8 @@ if (MSYS OR MINGW)
 	target_link_options(elpida-qt PRIVATE -Wl,-subsystem,windows)
 endif()
 
-target_include_directories(elpida-qt PRIVATE "${TASK_BATCHES_CONFIG_INCLUDE_DIR}")
-target_link_libraries(elpida-qt elpida elpidaCore Qt5::Widgets)
+target_include_directories(elpida-qt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(elpida-qt PRIVATE elpida-application elpida-shared Qt5::Core Qt5::Widgets Qt5::Charts)
 
-install(TARGETS elpida-qt RUNTIME DESTINATION ${ELPIDA_APP_INSTALL_DIR})
-install(FILES qt.conf DESTINATION ${ELPIDA_APP_INSTALL_DIR})
+install(TARGETS elpida-qt RUNTIME DESTINATION bin)
+install(FILES qt.conf DESTINATION bin)

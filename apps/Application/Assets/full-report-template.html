@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Elpida results report</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        table {
+            border: 1px gray solid;
+            border-spacing: 0;
+        }
+
+        th {
+            border-bottom: 1px gray solid;
+        }
+
+        th, td {
+            padding: .2em;
+            border-right: 1px gray solid;
+        }
+
+        pre {
+            text-wrap: balance;
+        }
+
+        section {
+            padding: 1.5em;
+        }
+
+        td:last-child, th:last-child {
+            border-right: 0;
+        }
+
+        h3 {
+            margin-top: 0;
+        }
+
+        header {
+            display: flex;
+            place-content: space-between;
+            align-items: center;
+        }
+
+        caption {
+            font-weight: bold;
+        }
+
+        .positive {
+            color: green;
+        }
+
+        .neutral {
+            color: #916d02;
+        }
+
+        .negative {
+            color: red;
+        }
+
+        .info-container {
+            display: flex;
+            place-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        input {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Elpida</h1>
+    <svg width="144" height="60" version="1.1" viewBox="0 0 96 40" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#717ede">
+            <path d="m0 40h26.971l13.814-37.955-26.977 0.01485-2.6869 7.3824h17.185l-2.5722 7.0671h-12.576l-2.6925 7.3976h12.576l-3.1644 8.6941h-17.185z"/>
+            <path d="m46.966 10.941-10.067 29.057h20.108z"/>
+            <path d="m66.903 40-13.938-37.955h9.8379l2.3896 6.9146h15.304l2.4151-6.9146h9.8379l-14.058 37.955zm5.9414-8.8975 5.2115-15.1h-10.397z"/>
+        </g>
+        <g fill="#e5e8fd">
+            <path d="m2.8944 37.955h26.971l13.814-37.955-26.977 0.01485-2.6869 7.3824h17.185l-2.5722 7.0671h-12.576l-2.6925 7.3976h12.576l-3.1644 8.6941h-17.185z"/>
+            <path d="m49.86 8.8957-10.067 29.057h20.108z"/>
+            <path d="m69.797 37.955-13.938-37.955h9.8379l2.3896 6.9146h15.304l2.4151-6.9146h9.8379l-14.058 37.955zm5.9414-8.8975 5.2115-15.1h-10.397z"/>
+        </g>
+    </svg>
+</header>
+<hr/>
+<h2>Results report</h2>
+<section>
+    <div class="info-container">
+        <section>
+            <h3>CPU information</h3>
+            <!--CPU-->
+        </section>
+
+        <section>
+            <h3>Os information</h3>
+            <!--OS-->
+        </section>
+        <section>
+            <h3>Execution information</h3>
+            <!--EXECUTION-->
+        </section>
+
+        <section>
+            <h3>Statistics</h3>
+            <div class="info-container">
+                <!--STATISTICS-->
+            </div>
+        </section>
+    </div>
+</section>
+
+
+<div class="info-container">
+    <section>
+        <h3>Results Summary</h3>
+        <!--RESULTS-->
+    </section>
+
+    <section>
+        <h3>Benchmark statistics</h3>
+        <!--BENCHMARK_STATISTICS-->
+    </section>
+</div>
+
+
+<section>
+    <h3>All benchmark results</h3>
+    <!--ALL_BENCHMARK_RESULTS-->
+</section>
+
+<hr/>
+<footer>Elpida Copyright (C) <!--YEAR--> Ioannis Panagiotopoulos</footer>
+</body>
+</html>

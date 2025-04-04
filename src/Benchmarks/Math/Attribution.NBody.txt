@@ -1,0 +1,5 @@
+Code is based on https://hg.mozilla.org/projects/kraken/file/e119421cb3253e9dd4d52e0bb9ef77c850396038/tests/sunspider-0.9.1/access-nbody.js
+
+The Great Computer Language Shootout
+   http://shootout.alioth.debian.org/
+   contributed by Isaac Gouy

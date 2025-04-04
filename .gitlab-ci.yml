@@ -8,27 +8,31 @@ variables:
   BUILD_DIR: './build'
   INSTALL_DIR: './AppDir'
   ELPIDA_VERSION_BUILD: $CI_PIPELINE_IID
-  ELPIDA_VERSION_STRING: $ELPIDA_VERSION_MAJOR.$ELPIDA_VERSION_MINOR.$ELPIDA_VERSION_REVISION.$CI_PIPELINE_IID
+  ELPIDA_VERSION_STRING: $ELPIDA_VERSION_MAJOR.$ELPIDA_VERSION_MINOR.$ELPIDA_VERSION_REVISION.$ELPIDA_VERSION_BUILD
   PACKAGE_PREFIX: Elpida
-  PACKAGE_SUFFIX: x86_64
   PACKAGE_SEPARATOR: '-'
-  PACKAGE_FILENAME: Elpida-$ELPIDA_VERSION_MAJOR.$ELPIDA_VERSION_MINOR.$ELPIDA_VERSION_REVISION.$CI_PIPELINE_IID-x86_64
-  PACKAGE_FILENAME_DEPLOY: Elpida-latest-x86_64
-  PACKAGE_FILENAME_DEPLOY_BETA: Elpida-latest-beta-x86_64
+  PACKAGE_FILENAME: $PACKAGE_PREFIX-$ELPIDA_VERSION_STRING-$TARGET_ARCH
+  PACKAGE_FILENAME_DEPLOY: $PACKAGE_PREFIX-latest-$TARGET_ARCH
+  PACKAGE_FILENAME_DEPLOY_BETA: $PACKAGE_PREFIX-latest-beta-$TARGET_ARCH
+  PACKAGE_QT_SUFFIX: 'Qt'
+  PACKAGE_CLI_SUFFIX: 'Cli'
   DEPLOY_ENVIRONMENT: "development"
+  IMAGE_TAG: $CI_COMMIT_REF_SLUG
+  IMAGE_PART_NAME: "$CI_REGISTRY_IMAGE/build-environment/$TARGET_OS"
+  IMAGE_NAME: "$IMAGE_PART_NAME:$IMAGE_TAG"
 
 workflow:
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       variables:
         DEPLOY_ENVIRONMENT: "production"
+        IMAGE_TAG: latest
     - if: $CI_COMMIT_REF_NAME == "staging"
       variables:
         DEPLOY_ENVIRONMENT: "staging"
+        IMAGE_TAG: staging
     - when: always  
 
 include:
-  - local: 'ci/docker-image-linux.yml'
-  - local: 'ci/linux.yml'
-  - local: 'ci/windows.yml'
-  # - local: 'ci/docker-image-windows.yml' # Do not run this because it takes a lot of time. Run and upload manually
+  - local: '/ci/linux/root.yml'
+  - local: '/ci/windows/root.yml'
