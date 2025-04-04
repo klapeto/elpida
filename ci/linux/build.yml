@@ -7,6 +7,7 @@
     name: $DEPLOY_ENVIRONMENT
   script:
     - git submodule update --init
+    - sed -i 's/cmake_minimum_required(VERSION 2.4.4)/cmake_minimum_required(VERSION 2.4.4...3.15.0)/' ./extern/zlib/CMakeLists.txt
     - cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
