@@ -1,6 +1,6 @@
-add_subdirectory(Core)
+add_subdirectory(Shared)
+add_subdirectory(Application)
+add_subdirectory(InfoDumper)
+add_subdirectory(BackEndInfoDumper)
 add_subdirectory(Qt)
-
-if (ELPIDA_DEBUG_BUILD EQUAL 1)
-    add_subdirectory(MetadataDumper)
-endif()
+add_subdirectory(CLI)

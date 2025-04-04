@@ -1,0 +1,42 @@
+.deploy:linux:
+  stage: deploy
+  tags:
+    - amd64
+  only:
+    - master
+    - staging
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  script:
+    - cp "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage"
+    - cp "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_CLI_SUFFIX.AppImage"
+    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME_DEPLOY.$PACKAGE_CLI_SUFFIX.AppImage.SHA256SUMS
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage
+      - $PACKAGE_FILENAME_DEPLOY.$PACKAGE_CLI_SUFFIX.AppImage
+      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage
+      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage
+      - $PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage.SHA256SUMS
+      - $PACKAGE_FILENAME_DEPLOY.$PACKAGE_CLI_SUFFIX.AppImage.SHA256SUMS
+      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage.SHA256SUMS
+      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage.SHA256SUMS
+
+deploy:linux:amd64:
+  variables:
+    TARGET_ARCH: amd64
+    TARGET_OS: linux
+  dependencies:
+    - package:linux:amd64
+  extends: .deploy:linux
+
+deploy:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+    TARGET_OS: linux
+  dependencies:
+    - package:linux:aarch64
+  extends: .deploy:linux

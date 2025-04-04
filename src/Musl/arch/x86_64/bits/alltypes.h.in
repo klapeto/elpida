@@ -1,0 +1,42 @@
+
+#ifdef WIN32
+    #ifdef __x86_64__
+        #define _Addr long long
+        #define _Int64 long long
+        #define _Reg long long
+    #else
+        #define _Addr long
+        #define _Int64 long
+        #define _Reg long
+    #endif
+#else
+    #define _Addr long
+    #define _Int64 long
+    #define _Reg long
+#endif
+
+#define __BYTE_ORDER 1234
+
+#ifdef WIN32
+    #define __LONG_MAX 0x7fffffffL
+#else
+    #define __LONG_MAX 0x7fffffffffffffffL
+#endif
+
+#ifndef __cplusplus
+#ifdef WIN32
+TYPEDEF unsigned short wchar_t;
+#else
+TYPEDEF int wchar_t;
+#endif
+#endif
+
+#if defined(__FLT_EVAL_METHOD__) && __FLT_EVAL_METHOD__ == 2
+TYPEDEF long double float_t;
+TYPEDEF long double double_t;
+#else
+TYPEDEF float float_t;
+TYPEDEF double double_t;
+#endif
+
+TYPEDEF struct { long long __ll; long double __ld; } max_align_t;

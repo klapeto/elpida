@@ -1,0 +1,37 @@
+.deploy:windows:
+  stage: deploy
+  tags:
+    - amd64
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  only:
+    - master
+    - staging
+  script:
+    - cp "$PACKAGE_FILENAME.zip" "$PACKAGE_FILENAME_DEPLOY.zip"
+    - sha256sum "$PACKAGE_FILENAME.zip" > $PACKAGE_FILENAME.zip.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY.zip" > $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME_DEPLOY.zip
+      - $PACKAGE_FILENAME.zip
+      - $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
+      - $PACKAGE_FILENAME.zip.SHA256SUMS
+
+deploy:windows:amd64:
+  variables:
+    TARGET_ARCH: amd64
+    MINGW_ARCH: x86_64
+    TARGET_OS: windows
+  dependencies:
+    - package:windows:amd64
+  extends: .deploy:windows
+
+deploy:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+    MINGW_ARCH: i686
+    TARGET_OS: windows
+  dependencies:
+    - package:windows:i686
+  extends: .deploy:windows

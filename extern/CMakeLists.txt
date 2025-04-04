@@ -99,4 +99,47 @@ set(LIBPNG_INCLUDE_DIRS ${LIBPNG_DIR} ${LIBPNG_BUILD_DIR})
 
 # unless you install them, they do not expose the header includes
 target_include_directories(zlib INTERFACE ${ZLIB_INCLUDE_DIRS})
+target_include_directories(zlibstatic INTERFACE ${ZLIB_INCLUDE_DIRS})
 target_include_directories(png INTERFACE ${LIBPNG_INCLUDE_DIRS})
+target_include_directories(png_static INTERFACE ${LIBPNG_INCLUDE_DIRS})
+
+add_subdirectory(google-test)
+
+set(BOOST_REGEX_STANDALONE TRUE)
+add_subdirectory(boost-regex)
+
+# openssl-cmake cross config
+if (MINGW AND CMAKE_HOST_UNIX)
+    set(CROSS ON)
+    if (CMAKE_SYSTEM_PROCESSOR MATCHES x86_64)
+        set(CROSS_TARGET mingw64)
+        set(CROSS_PREFIX x86_64-w64-mingw32.static-)
+    else()
+        set(CROSS_TARGET mingw)
+        set(CROSS_PREFIX i686-w64-mingw32.static-)
+    endif()
+elseif (MINGW)
+    if (CMAKE_SYSTEM_PROCESSOR MATCHES AMD64)
+        set(OPENSSL_ADDITIONAL_FLAGS mingw64)
+    else()
+        set(OPENSSL_ADDITIONAL_FLAGS mingw)
+    endif()
+endif()
+
+if (CMAKE_HOST_UNIX AND CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_PROCESSOR MATCHES aarch64)
+    set(CROSS ON)
+    set(CROSS_TARGET linux-aarch64)
+    set(CROSS_PREFIX aarch64-linux-gnu-)
+endif()
+
+set(BUILD_OPENSSL ON)
+set(OPENSSL_USE_STATIC_LIBS ON)
+set(OPENSSL_BUILD_VERSION 3.3.1)
+set(OPENSSL_BUILD_HASH 777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e)
+set(OPENSSL_MODULES "no-shared no-asm no-engine no-hw no-cast no-md2 no-md4 no-mdc2 no-rc4 no-rc5 no-engine no-idea no-mdc2 no-rc5 no-camellia no-ssl3 no-heartbeats no-gost no-deprecated no-capieng no-comp no-dtls no-psk no-srp no-dso no-dsa no-rc2 no-des no-apps ${OPENSSL_ADDITIONAL_FLAGS}")
+add_subdirectory(openssl-cmake)
+
+# Hack to get the library archive. CMAKE messes up the link order by moving the ws2_32 lib at the beginning
+get_property(CRYPTO_INTERFACE_LIB TARGET crypto PROPERTY INTERFACE_LINK_LIBRARIES)
+get_property(CRYPTO_LIB TARGET ${CRYPTO_INTERFACE_LIB} PROPERTY IMPORTED_LOCATION)
+set(CRYPTO_CUSTOM_LIB_PATH ${CRYPTO_LIB} PARENT_SCOPE)

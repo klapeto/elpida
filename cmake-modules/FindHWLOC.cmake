@@ -202,9 +202,15 @@ if( (NOT PKG_CONFIG_EXECUTABLE) OR (PKG_CONFIG_EXECUTABLE AND NOT HWLOC_FOUND) O
     # call cmake macro to find the lib path
     if(HWLOC_LIBDIR)
         set(HWLOC_hwloc_LIBRARY "HWLOC_hwloc_LIBRARY-NOTFOUND")
-        find_library(HWLOC_hwloc_LIBRARY
-                NAMES hwloc
-                HINTS ${HWLOC_LIBDIR})
+        if (MSVC)
+            find_library(HWLOC_hwloc_LIBRARY
+                    NAMES libhwloc
+                    HINTS ${HWLOC_LIBDIR})
+        else()
+            find_library(HWLOC_hwloc_LIBRARY
+                    NAMES hwloc
+                    HINTS ${HWLOC_LIBDIR})
+        endif()
     else()
         if(HWLOC_DIR)
             set(HWLOC_hwloc_LIBRARY "HWLOC_hwloc_LIBRARY-NOTFOUND")

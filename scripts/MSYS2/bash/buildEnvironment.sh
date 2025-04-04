@@ -20,7 +20,7 @@
 
 echo Downloading required packages
 pacman -Syuu --noconfirm
-pacman -S --noconfirm --needed git base-devel mingw-w64-$1-toolchain mingw-w64-$1-cmake mingw-w64-$1-qt5
+pacman -S --noconfirm --needed git base-devel mingw-w64-$1-toolchain mingw-w64-$1-cmake mingw-w64-$1-qt5 automake autoconf libtool
 cd ~
 git clone https://github.com/open-mpi/hwloc
 cd hwloc
