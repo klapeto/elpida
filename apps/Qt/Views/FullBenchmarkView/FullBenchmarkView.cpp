@@ -93,7 +93,7 @@ namespace Elpida::Application
 				if (running)
 				{
 					_currentBenchmarkIndex = 0;
-					_maxBenchmarkIndex = _model.GetTotalBenchmarksThatWillRun();
+					_maxBenchmarkIndex = _model.GetTotalBenchmarks() * _benchmarkRunConfigurationModel.GetIterationsToRun();
 					_ui->pbProgress->setRange(0, _maxBenchmarkIndex);
 					_ui->bpStart->setText("Cancel");
 					_ui->lblStatus->setText("Running...");
@@ -127,7 +127,7 @@ namespace Elpida::Application
 		});
 
 		_iterationsChanged = _benchmarkRunConfigurationModel.IterationsChanged().Subscribe([this](const auto& x){UpdateETA();});
-		_iterationsChanged = _benchmarkRunConfigurationModel.DelaySecondsBetweenRunsChanged().Subscribe([this](const auto& x){UpdateETA();});
+		_delayChanged = _benchmarkRunConfigurationModel.DelaySecondsBetweenRunsChanged().Subscribe([this](const auto& x){UpdateETA();});
 
 		UpdateETA();
 	}
@@ -135,8 +135,7 @@ namespace Elpida::Application
 	void FullBenchmarkView::UpdateETA()
 	{
 		auto value = ValueUtilities::GetTimeScaleValue(Seconds(5.0
-				* _benchmarkRunConfigurationModel.GetIterationsToRun()
-				* _model.GetTotalBenchmarksThatWillRun()
+				* _model.GetTotalBenchmarks() * _benchmarkRunConfigurationModel.GetIterationsToRun()
 				+ (_benchmarkRunConfigurationModel.GetIterationsToRun() * _benchmarkRunConfigurationModel.GetDelaySecondsBetweenRuns())));
 		_ui->lblETAValue->setText(QString::fromStdString(value));
 	}

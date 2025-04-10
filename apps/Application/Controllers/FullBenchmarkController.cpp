@@ -95,7 +95,6 @@ namespace Elpida::Application
 		_running.store(true, std::memory_order_release);
 		_cancelling.store(false, std::memory_order_release);
 
-		_model.SetTotalBenchmarks(_benchmarks.size() * _runConfigurationModel.GetIterationsToRun());
 		_runnerThread = std::thread([this]
 		{
 			auto start = Timer::now();

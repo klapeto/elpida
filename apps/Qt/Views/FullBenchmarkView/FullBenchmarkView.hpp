@@ -45,6 +45,7 @@ namespace Elpida::Application
 		EventSubscription<bool> _runningChanged;
 		EventSubscription<const CollectionItem<FullBenchmarkResultModel>&> _itemAdded;
 		EventSubscription<std::size_t> _iterationsChanged;
+		EventSubscription<std::size_t> _delayChanged;
 		EventSubscription<const std::string&> _currentBenchmarkChanged;
 		EventSubscription<> _resultsCleared;
 		std::optional<FullBenchmarkResultModel> _previousScore;

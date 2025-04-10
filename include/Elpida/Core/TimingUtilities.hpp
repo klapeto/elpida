@@ -142,7 +142,9 @@ namespace Elpida
 				Duration lowerBound = Duration(targetDuration * (1.0 - marginOfError));
 				Duration upperBound = Duration(targetDuration * (1.0 + marginOfError));
 
-				while (true)
+				auto attempts = 4;
+
+				while (attempts > 0)
 				{
 					prepare(iterations);
 					auto start = Timer::now();
@@ -154,8 +156,9 @@ namespace Elpida
 
 					if (currentDuration >= targetDuration)
 					{
-						break;
+						return { iterations, currentDuration };
 					}
+
 					if (currentDuration.count() < targetDuration.count() / 10.0)
 					{
 						iterations = CalculateNextIterations(iterations, 10.0, marginOfError);
@@ -164,12 +167,14 @@ namespace Elpida
 
 					if (currentDuration > lowerBound && currentDuration < upperBound)
 					{
-						break;
+						return { iterations, currentDuration };
 					}
 					if (iterations == 1 && currentDuration >= targetDuration)
 					{
-						break;
+						return { iterations, currentDuration };
 					}
+
+					attempts--;
 					auto ratio = targetDuration.count() / currentDuration.count();
 
 					iterations = CalculateNextIterations(iterations, ratio, marginOfError);
