@@ -1,0 +1,116 @@
+<!--
+  ~
+  ~  Copyright (c) 2025  Ioannis Panagiotopoulos
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Memory Benchmark</title>
+</head>
+<body>
+<h1>Memory benchmark</h1>
+<p>Memory benchmark is an advanced benchmark for measuring metrics about caches and main memory. Currently, there are 2
+    types of benchmarks, latency and read bandwidth. The benchmark will run back-to-back with an increasingly working
+    set depending on the configuration.</p>
+
+<h2>Understanding the difference between Latency and Bandwidth</h2>
+<p>Often people correlate latency and bandwidth, but this is not always true. These 2 are different metrics of anything
+    that delivers something with a rate, either network or memory or even a pipe of water. For the following
+    explanations we will use the "Internet speed" as an example, and you can apply the same principles to memory
+    too.</p>
+
+<h3>What happens when you request a web page on the browser</h3>
+<p>When you type a URI on the browser bar and hit the navigate button, the browser will do the following:</p>
+<ol>
+    <li>Request the translation of the domain (e.g. www.elpida.dev) to a real IP address (e.g. 13.54.102.85) from
+        the DNS server.
+    </li>
+    <li>The browser sends an HTTP request to the IP address and waits for the reply.</li>
+    <li>The remote server that the IP points, will receive the HTTP request, process it and reply back with a
+        response with the web page data.
+    </li>
+    <li>The browser will start receiving the response and web page data and when there is enough data available, it
+        will show the page or partially the page.
+    </li>
+</ol>
+
+<h3>Latency</h3>
+<p>The latency is the time the very first byte will be received, no matter how many bytes came at the same time. If this
+    was an empty pipe of water, it is the time it took from the moment water was pushed from one end to reach the other
+    end.</p>
+
+<h3>Bandwidth</h3>
+<p>Bandwidth is the amount of bytes received in a specified time gap. For instance if you received 100Mib during 1s,
+    this means the bandwidth was 100Mib/s. If this was an empty pipe of water, the bandwidth would be how many liters
+    you got on the other end in 1s.</p>
+
+<h2>Benchmark</h2>
+<p>Here you can select which kind of benchmark you want to run:</p>
+<ul>
+    <li><strong>Latency</strong>: It measures the worst case read latency for a specific working set. It loads values at
+        random places over the input working set in a matter that will cause the worst caching efficiency, which causes
+        the reads to be bound by performance of the storage that the working set fits, either a cache or main memory.
+        For instance, if the working set fits is larger than the L2D cache but smaller than the L3D cache, it measures
+        the latency of the LD3 cache.
+    </li>
+    <li><strong>Read bandwidth</strong>: It measures the fetch bandwidth for the working set size and cores. As with
+        latency, the working size determines what memory is measured, thus if the working set fits is larger than the
+        L2D cache but smaller than the L3D cache, it measures the bandwidth of the LD3 cache.
+    </li>
+</ul>
+
+<h2>Benchmark configuration</h2>
+<p>Here you can configure the memory benchmark. More specifically:</p>
+<ul>
+    <li><strong>Start size</strong>: It configures the starting size of the working set.</li>
+    <li><strong>Multiplier</strong>: It configures the multiplier to use for increasing the previous working set size on
+        each iteration.
+    </li>
+    <li><strong>Iterations</strong>: The amount of iterations to run.</li>
+</ul>
+<p><strong>WARNING!</strong> Be careful when changing these values especially the multiplier and iterations. You may end
+    up making your system run out of memory if you use larger values!</p>
+
+<h2>Execution</h2>
+<p>This controls the execution of the benchmark. See <a href="../advanced-benchmarking.md">Advanced Benchmarking</a> for
+    more information on the configuration.</p>
+<p>It is strongly advised to use the following configuration to get the most commonly useful results:</p>
+<ul>
+    <li><strong>Latency</strong>:
+        <ul>
+            <li><strong>Concurrency mode</strong>: None</li>
+            <li><strong>Use NUMA aware allocator</strong>: No</li>
+            <li><strong>Pin threads for automatically multithreaded tasks</strong>: No</li>
+            <li><strong>Minimum micro task duration</strong>: 5s</li>
+        </ul>
+    </li>
+    <li><strong>Read Bandwidth</strong>:
+        <ul>
+            <li><strong>Concurrency mode</strong>: Copy Input</li>
+            <li><strong>Use NUMA aware allocator</strong>: No</li>
+            <li><strong>Pin threads for automatically multithreaded tasks</strong>: No</li>
+            <li><strong>Minimum micro task duration</strong>: 5s</li>
+        </ul>
+    </li>
+</ul>
+<p>You can press the <b>Start</b> button to start the benchmark and can press it again to cancel current execution.</p>
+
+<h2>Results</h2>
+<p>Here are listed the results of the last execution along with each size used.</p>
+</body>
+</html>
