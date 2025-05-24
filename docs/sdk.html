@@ -1,0 +1,191 @@
+<!--
+  ~
+  ~  Copyright (c) 2025  Ioannis Panagiotopoulos
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Elpida SDK</title>
+</head>
+<body>
+<h1>Elpida SDK</h1>
+<p>With Elpida SDK you can create benchmarks from scratch tailored to your needs.</p>
+<section>
+    <h2>Contents</h2>
+    <ul>
+        <li><a href="#principles">Principles</a></li>
+        <li><a href="#how-are-structured">How benchmarks are structured</a></li>
+        <li><a href="#how-to-create-a-benchmark">How to create a benchmark</a></li>
+    </ul>
+</section>
+<section>
+    <h2 id="principles">Principles</h2>
+    <p>
+        Elpida SDK follows the following principles:
+    </p>
+    <dl>
+        <dt>In the form of executable</dt>
+        <dd>
+            Elpida benchmarks are in the form of cli applications that can be run on any system regardless of the
+            existence of UI.
+        </dd>
+        <dt>Static linked</dt>
+        <dd>
+            Elpida benchmarks are static linked as much as possible. This ensures that the results are as unaffected
+            as possible from the system libraries. Furthermore, it allows them to run on any system without requiring
+            installing libraries.
+        </dd>
+    </dl>
+</section>
+<section>
+    <h2 id="how-are-structured">How benchmarks are structured</h2>
+    <p>
+        Elpida benchmarks are usually grouped into groups. Each group is a stand-alone executable that can run a
+        specific
+        benchmark of the group based on the command line arguments.
+    </p>
+</section>
+
+<section>
+    <h2 id="how-to-create-a-benchmark">How to create a benchmark</h2>
+    <p>
+        As we said each benchmark group is an executable. You do not have to create the executable yourself, you just
+        define the benchmarks/tasks, export a function, link against an elpida library and done. More detailed:
+    </p>
+    <section>
+        <h3>Setup for Windows</h3>
+        <p>Windows machines needs a development environment to be able to develop Elpida benchmarks. You can follow
+            these steps:</p>
+        <ol>
+            <li>Install <a href="https://www.msys2.org/">MSYS2</a>, which is a development environment. You can use
+                MSVC,
+                but we do not recommend since it only works on a specific platform.
+            </li>
+            <li>Once MSYS is installed, search on start menu <kbd>mingw64</kbd> and open it the <b>MSYS2 MINGW64</b>.
+            </li>
+            <li>In the terminal that was opened, install the required Elpida the required MSYS2 packages by typing
+                <kbd>pacman -S --noconfirm --needed git base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
+                    mingw-w64-x86_64-clang mingw-w64-x86_64-llvm mingw-w64-x86_64-clang-tools-extra automake autoconf
+                    libtool</kbd> and press enter.
+                If the terminal closes open it again.
+            </li>
+            <li>
+                Build and install HWLOC by typing and pressing enter on the terminal: <kbd>git clone
+                https://github.com/open-mpi/hwloc &&
+                cd hwloc &&
+                git checkout v2.4 &&
+                ./autogen.sh &&
+                ./configure &&
+                make -j$(nproc) install &&
+                cd ~</kbd>
+            </li>
+            <li>
+                Clone the Elpida repository: <kbd>git clone --recursive https://gitlab.com/dev-hood/elpida/elpida.git
+                elpida && cd elpida</kbd>
+            </li>
+        </ol>
+    </section>
+    <section>
+        <h3>Creating the benchmark</h3>
+        <p>We will re-create the JSON parse benchmark as an example.</p>
+        <ol>
+            <li>Create a directory with the name of your benchmark group under <code>src/Benchmarks</code>. In this case
+                we use <code>Json</code></li>
+            <li>Create a <code>CMakeLists.txt</code>
+                <pre>
+            <code>
+project("Json benchmarks" VERSION 1.0.0
+DESCRIPTION "Json benchmarks"
+LANGUAGES CXX C)
+
+set(JSON_BENCHMARKS_SOURCES
+    Plugin.cpp
+    ParseJsonTask.cpp
+    JsonParseBenchmark.cpp
+)
+
+add_executable(json-benchmarks ${JSON_BENCHMARKS_SOURCES})
+
+target_link_libraries(json-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-entry-point musl-lite)
+
+install(TARGETS json-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
+        </code>
+        </pre>
+                <p> Here we defined a new project for the benchmark. We define 3 source files will use:</p>
+
+                <dl>
+                    <dt>
+                        Plugin.cpp
+                    </dt>
+                    <dd>
+                        Common file of benchmarks that exports the function that creates the benchmark objects.
+                    </dd>
+                    <dt>
+                        ParseJsonTask.cpp
+                    </dt>
+                    <dd>
+                        The source file of the class of a task that will parse the Json input.
+                    </dd>
+                    <dt>
+                        JsonParseBenchmark.cpp
+                    </dt>
+                    <dd>
+                        The source file of the class of our benchmark. Remember a benchmark as multiple tasks, but in
+                        our case
+                        it will only have 2 (one will be the ParseJsonTask)
+                    </dd>
+                </dl>
+                <p>
+                    Furthermore, we define the benchmark executable and the link libraries we need:
+                </p>
+                <dl>
+                    <dt>
+                        elpida-core
+                    </dt>
+                    <dd>
+                        The main elpida library used by all benchmarks providing basic functionality. Mandatory for every
+                        benchmark.
+                    </dd>
+                    <dt>
+                        elpida-entry-point
+                    </dt>
+                    <dd>
+                        A library that defines the entry point of the benchmark (main function)
+                    </dd>
+                    <dt>
+                        elpida-common-tasks
+                    </dt>
+                    <dd>
+                        A library that provides some standard tasks. We will need the 'ReadFileTask' from this.
+                    </dd>
+                    <dt>
+                        musl-lite
+                    </dt>
+                    <dd>
+                        A library that stdlib functions to avoid using the system provided.
+                    </dd>
+                </dl>
+            </li>
+            <li>
+
+            </li>
+        </ol>
+    </section>
+</section>
+</body>
+</html>
