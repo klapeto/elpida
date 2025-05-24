@@ -68,7 +68,7 @@
         define the benchmarks/tasks, export a function, link against an elpida library and done. More detailed:
     </p>
     <section>
-        <h3>Setup for Windows</h3>
+        <h3>Setup for Windows (x86-64)</h3>
         <p>Windows machines needs a development environment to be able to develop Elpida benchmarks. You can follow
             these steps:</p>
         <ol>
@@ -85,18 +85,20 @@
                 If the terminal closes open it again.
             </li>
             <li>
-                Build and install HWLOC by typing and pressing enter on the terminal: <kbd>git clone
-                https://github.com/open-mpi/hwloc &&
+                Build and install HWLOC by typing and pressing enter on the terminal: <kbd>
+                git clone https://github.com/open-mpi/hwloc &&
                 cd hwloc &&
-                git checkout v2.4 &&
+                git checkout v2.10 &&
                 ./autogen.sh &&
-                ./configure &&
+                ./configure --enable-static --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-gl --disable-libudev &&
                 make -j$(nproc) install &&
                 cd ~</kbd>
             </li>
             <li>
-                Clone the Elpida repository: <kbd>git clone --recursive https://gitlab.com/dev-hood/elpida/elpida.git
-                elpida && cd elpida</kbd>
+                Clone the Elpida repository: <kbd>git clone --recursive https://gitlab.com/dev-hood/elpida/elpida.git && cd elpida</kbd>
+            </li>
+            <li>
+                Test whether it builds: <kbd>mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=../install .. && ninja install</kbd>
             </li>
         </ol>
     </section>
@@ -108,8 +110,7 @@
                 we use <code>Json</code></li>
             <li>Create a <code>CMakeLists.txt</code>
                 <pre>
-            <code>
-project("Json benchmarks" VERSION 1.0.0
+            <code>project("Json benchmarks" VERSION 1.0.0
 DESCRIPTION "Json benchmarks"
 LANGUAGES CXX C)
 
@@ -123,11 +124,8 @@ add_executable(json-benchmarks ${JSON_BENCHMARKS_SOURCES})
 
 target_link_libraries(json-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-entry-point musl-lite)
 
-install(TARGETS json-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
-        </code>
-        </pre>
+install(TARGETS json-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})</code></pre>
                 <p> Here we defined a new project for the benchmark. We define 3 source files will use:</p>
-
                 <dl>
                     <dt>
                         Plugin.cpp
@@ -182,8 +180,372 @@ install(TARGETS json-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
                 </dl>
             </li>
             <li>
+                <p>
+                    Create the 'ParseJsonTask' class. It should be 2 files, <code>ParseJsonTask.hpp</code> and <code>ParseJsonTask.cpp</code>.
+                    This class will be our core task that is performing the actual task and is being measured.
+                </p>
 
+                <pre><code>#ifndef PARSEJSONTASK_HPP
+#define PARSEJSONTASK_HPP
+
+#include "Elpida/Core/MicroTask.hpp"
+#include "json.hpp"
+
+class ParseJsonTask: public MicroTask
+{
+public:
+    void Prepare(SharedPtr&lt;AbstractTaskData&gt; inputData) override;
+
+    [[nodiscard]]
+    SharedPtr&lt;AbstractTaskData&gt; Finalize() override;
+
+    [[nodiscard]]
+    Size GetProcessedDataSize() const override;
+
+    ParseJsonTask() = default;
+    ~ParseJsonTask() override = default;
+protected:
+    void DoRunImpl() override;
+
+    [[nodiscard]]
+    TaskInfo DoGetInfo() const override;
+
+    [[nodiscard]]
+    Size GetOperationsPerformedPerRun() override;
+
+    [[nodiscard]]
+    UniquePtr&lt;Task&gt; DoDuplicate() const override;
+private:
+    SharedPtr&lt;AbstractTaskData&gt; _inputData;
+    nlohmann::json _parsedElement;
+};
+
+#endif //PARSEJSONTASK_HPP</code></pre>
+                <p>
+                    Each task has to implement/override certain methods.
+                </p>
+                <dl>
+                    <dt>
+                        <code>Prepare(...)</code>
+                    </dt>
+                    <dd>
+                        Is called to pass the input data and prepare the task for execution.
+                    </dd>
+                    <dt>
+                        <code>Finalize()</code>
+                    </dt>
+                    <dd>
+                        Is called after execution to receive the processed data.
+                    </dd>
+                    <dt>
+                        <code>GetProcessedDataSize()</code>
+                    </dt>
+                    <dd>
+                        Is called to get the size of the data that was processed. It might not be the size of the input data
+                        (e.g. when processing images the processed data size is the number of pixels)
+                    </dd>
+                    <dt>
+                        <code>DoRunImpl()</code>
+                    </dt>
+                    <dd>
+                        Is called to actually run the processing (measured) code.
+                    </dd>
+                    <dt>
+                        <code>DoGetInfo()</code>
+                    </dt>
+                    <dd>
+                        Is called to get the task information.
+                    </dd>
+                    <dt>
+                        <code>GetOperationsPerformedPerRun()</code>
+                    </dt>
+                    <dd>
+                        Is called to get the amount of operations that happens on <code>DoRunImpl()</code>.
+                        Operations are not the instructions performed but how many times the normal procedure is happening
+                        inside. Most of the time this is 1.
+                    </dd>
+                    <dt>
+                        <code>DoDuplicate()</code>
+                    </dt>
+                    <dd>
+                        Is called to get a clone of this task with the same configuration.
+                    </dd>
+                    <dt>
+                        <code>SharedPtr&lt;AbstractTaskData&gt; _inputData;</code>
+                    </dt>
+                    <dd>
+                        Here we will store the input data for the duration of the execution.
+                    </dd>
+                    <dt>
+                        <code>nlohmann::json _parsedElement;</code>
+                    </dt>
+                    <dd>
+                        Here we will store the output data to be passed after the execution.
+                    </dd>
+                </dl>
+
+                <p>Now lets see the definitions (ParseJson.cpp):</p>
+                <pre><code>#include "ParseJsonTask.hpp"
+#include "Elpida/Core/SimpleTaskData.hpp"
+
+void ParseJsonTask::Prepare(SharedPtr&lt;AbstractTaskData&gt; inputData)
+{
+	_inputData = std::move(inputData);
+}
+
+SharedPtr&lt;AbstractTaskData&gt; ParseJsonTask::Finalize()
+{
+	return std::make_shared&lt;SimpleTaskData&lt;nlohmann::json&gt;&gt;(std::move(_parsedElement), _inputData-&gt;GetAllocator());
+}
+
+TaskInfo ParseJsonTask::DoGetInfo() const
+{
+	return { "JSON Parsing",
+			 "Parses an JSON document and measures the parsing throughput",
+			 "chars",
+			 "How many characters are processes in the time",
+			 ResultType::Throughput
+	};
+}
+
+Size ParseJsonTask::GetProcessedDataSize() const
+{
+	return _inputData-&gt;GetSize();
+}
+
+void ParseJsonTask::DoRunImpl()
+{
+	const char* ptr = reinterpret_cast&lt;char*&gt;(_inputData.get()-&gt;GetData());
+	std::string_view str{ ptr, _inputData-&gt;GetSize() };
+
+	Exec([&]()
+	{
+		_parsedElement = nlohmann::json::parse(str);
+	});
+}
+
+Size ParseJsonTask::GetOperationsPerformedPerRun()
+{
+	return 1;
+}
+
+UniquePtr&lt;Task&gt; ParseJsonTask::DoDuplicate() const
+{
+	return std::make_unique&lt;ParseJsonTask&gt;();
+}</code></pre>
+
+                <dl>
+                    <dt>
+                        <code>Prepare(...)</code>
+                    </dt>
+                    <dd>
+                        In this simple case, we just store the input data.
+                    </dd>
+                    <dt>
+                        <code>Finalize()</code>
+                    </dt>
+                    <dd>
+                        In this simple case, we just returned the parsed object we produced from <code>DoRunImpl()</code>.
+                    </dd>
+                    <dt>
+                        <code>DoGetInfo()</code>
+                    </dt>
+                    <dd>
+                        In this we return some information about the task:
+                        <ol>
+                            <li>
+                                Task name
+                            </li>
+                            <li>
+                                Task description
+                            </li>
+                            <li>
+                                Task result unit
+                            </li>
+                            <li>
+                                Task result description
+                            </li>
+                            <li>
+                                Task result type
+                            </li>
+                        </ol>
+                    </dd>
+                    <dt>
+                        <code>GetProcessedDataSize()</code>
+                    </dt>
+                    <dd>
+                        We return how much data we processed, which in this case is the input size.
+                    </dd>
+                    <dt>
+                        <code>DoRunImpl()</code>
+                    </dt>
+                    <dd>
+                        Here is we will put the code that will be measured. Initially we store some pointers and a view
+                        to avoid being measured. Then we call <code>Exec(...)</code> with a function of the actual measured
+                        code. In the measured code, we parse the input data and store the output parsed object. This inside
+                        code is the one that will be called multiple times.
+                    </dd>
+                    <dt>
+                        <code>GetOperationsPerformedPerRun()</code>
+                    </dt>
+                    <dd>
+                        Here is we will return the amount of parsings we did inside <code>Exec(...)</code>, which is 1.
+                    </dd>
+                    <dt>
+                        <code>DoDuplicate()</code>
+                    </dt>
+                    <dd>
+                        Here is we create and return a duplicate of ourselves. Do not pass any input/output apart any possible
+                        configurations.
+                    </dd>
+                </dl>
+                <p>With these 2 files our task is complete.</p>
             </li>
+            <li>
+                <p>Create the 'JsonParseBenchmark' class. It should be 2 files, JsonParseBenchmark.hpp and JsonParseBenchmark.cpp. This class will contain all tasks required by our benchmark.</p>
+                <pre><code>#ifndef JSONPARSEBENCHMARK_HPP
+#define JSONPARSEBENCHMARK_HPP
+
+#include "Elpida/Core/Benchmark.hpp"
+
+class JsonParseBenchmark: public Benchmark
+{
+public:
+	Vector&lt;TaskConfiguration&gt; GetRequiredConfiguration() const override;
+
+	JsonParseBenchmark() = default;
+	~JsonParseBenchmark() override = default;
+protected:
+	[[nodiscard]]
+	Vector&lt;UniquePtr&lt;Task&gt;&gt; GetTasks(BenchmarkRunContext& context) const override;
+	void DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
+			std::vector&lt;TaskInfo&gt;& taskInfos) const override;
+};
+
+#endif //JSONPARSEBENCHMARK_HPP</code></pre>
+                <p>In this class we need to implement some functions:</p>
+                <dl>
+                    <dt>
+                        <code>GetRequiredConfiguration()</code>
+                    </dt>
+                    <dd>
+                        Is called to get the configuration needed by the benchmark.
+                    </dd>
+                    <dt>
+                        <code>GetTasks(...)</code>
+                    </dt>
+                    <dd>
+                        Is called to get the task instances.
+                    </dd>
+                    <dt>
+                        <code>DoGetBenchmarkInfo(...)</code>
+                    </dt>
+                    <dd>
+                        Is called to get the benchmark information.
+                    </dd>
+                </dl>
+                <p>In lets see now the implementation:</p>
+                <pre><code>#include "JsonParseBenchmark.hpp"
+#include "CommonTasks/FileReadTask.hpp"
+#include "ParseJsonTask.hpp"
+#include "Elpida/Core/BenchmarkRunContext.hpp"
+
+Vector&lt;TaskConfiguration&gt; JsonParseBenchmark::GetRequiredConfiguration() const
+{
+	return {
+			TaskConfiguration("File", ConfigurationType::File, "test.json"),
+	};
+}
+
+Vector&lt;UniquePtr&lt;Task>> JsonParseBenchmark::GetTasks(BenchmarkRunContext& context) const
+{
+	std::vector&lt;std::unique_ptr&lt;Task&gt;&gt; returnTasks;
+
+	auto& configuration = context.GetConfiguration();
+
+	returnTasks.push_back(CreateTask&lt;FileReadTask&gt;(configuration.at(0).GetValue()));
+	returnTasks.push_back(CreateTask&lt;ParseJsonTask&gt;());
+
+	return returnTasks;
+}
+
+void JsonParseBenchmark::DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
+		std::vector&lt;TaskInfo&gt;& taskInfos) const
+{
+	name = "Json Parsing";
+	description = "Parses a Json document to determine the parsing speed.";
+	taskToUseAsScoreIndex = 1;
+
+	taskInfos.push_back(FileReadTask("").GetInfo());
+	taskInfos.push_back(ParseJsonTask().GetInfo());
+}</code></pre>
+            </li>
+            <dl>
+                <dt>
+                    <code>GetRequiredConfiguration()</code>
+                </dt>
+                <dd>
+                    Here we return the required configuration we request from the user. Since we will read the json content
+                    from a file, we require a filepath, with name "File", type File and a default value.
+                </dd>
+                <dt>
+                    <code>GetTasks(...)</code>
+                </dt>
+                <dd>
+                    Here we create and configure all the tasks of the benchmark. Initially we get the configuration the user
+                    supplied, and then we create the tasks with the configuration in the order they should execute. The first
+                    task is a common task "ReadFileTask" which will read the file from the path of the first configuration item
+                    (since we requested 1 configuration). The 2nd is the actual task we created that will parse the file data.
+                </dd>
+                <dt>
+                    <code>DoGetBenchmarkInfo(...)</code>
+                </dt>
+                <dd>
+                    Here we will supply the benchmark configuration. We set the name, description and an index of the task
+                    to use its result as a whole benchmark result. In this case it is the task we created which is the 2nd.
+                    Finally, we add the information of the tasks the benchmark has.
+                </dd>
+            </dl>
+            <li>
+                <p>Create the 'Plugin.cpp' which will export the benchmark.</p>
+                <pre><code>#include "Elpida/Core/BenchmarkGroup.hpp"
+#include "Elpida/Core/Config.hpp"
+#include "Elpida/Core/Vector.hpp"
+#include "Elpida/Core/ModuleExports.hpp"
+#include "JsonParseBenchmark.hpp"
+
+using namespace Elpida;
+
+ELPIDA_CREATE_BENCHMARK_GROUP_DECL
+{
+	Vector&ltUniquePtr&gt;Benchmark&gt;&gt; vec;
+
+	vec.push_back(std::make_unique&ltJsonParseBenchmark&gt;());
+
+	return std::make_unique&ltBenchmarkGroup&gt;("Json benchmark", std::move(vec));
+}</code></pre>
+                <p>
+                    As we said, each benchmark executable can have multiple benchmarks. Here we export the <code>ELPIDA_CREATE_BENCHMARK_GROUP_DECL</code>
+                    function which will return a vector with our benchmark. With this our benchmark is complete and we can compile
+                </p>
+            </li>
+            <li>
+                <p>Add the folder of our benchmark in <code>src/Benchmarks/CMakeLists.txt</code> like:</p>
+                <pre><code># workaround for mingw builds
+add_link_options(-Wl,--allow-multiple-definition)
+
+add_subdirectory(Memory)
+add_subdirectory(Image)
+add_subdirectory(Web)
+add_subdirectory(Compression)
+add_subdirectory(Encryption)
+add_subdirectory(Math)
+add_subdirectory(StdLib)
+add_subdirectory(Compilation)
+add_subdirectory(Json)</code></pre>
+            </li>
+            <li>Build the project</li>
+            <li>You can run your benchmark by running (assuming you are in the build directory) <kdb>./src/Benchmarks/Json/json-benchmarks</kdb></li>
         </ol>
     </section>
 </section>
