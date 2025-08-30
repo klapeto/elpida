@@ -82,7 +82,7 @@
                 <kbd>pacman -S --noconfirm --needed git base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake
                     mingw-w64-x86_64-clang mingw-w64-x86_64-llvm mingw-w64-x86_64-clang-tools-extra automake autoconf
                     libtool</kbd> and press enter.
-                If the terminal closes open it again.
+                If the terminal closes open it again. If you want to build the Qt GUI, also include <kbd>mingw-w64-x86_64-qt5</kbd>
             </li>
             <li>
                 Build and install HWLOC by typing and pressing enter on the terminal: <kbd>
@@ -101,6 +101,19 @@
                 Test whether it builds: <kbd>mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=../install .. && ninja install</kbd>
             </li>
         </ol>
+    </section>
+    <section>
+        <h3>Setup for Linux </h3>
+        <p>Most linux distros are already set to go. The only dependency required is libnuma-dev and hwloc. If hwloc is not present via package, use the following command to compile/install it:</p>
+        <kbd>
+            git clone https://github.com/open-mpi/hwloc &&
+            cd hwloc &&
+            git checkout v2.10 &&
+            ./autogen.sh &&
+            ./configure --enable-static --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-gl --disable-libudev &&
+            make -j$(nproc) install &&
+            cd ~</kbd>
+        <p>You may need to install the qt5 development libraries/qt5 svg/qt5 charts if you want to use the qt5 GUI. More details comming soon.</p>
     </section>
     <section>
         <h3>Creating the benchmark</h3>
@@ -545,7 +558,7 @@ add_subdirectory(Compilation)
 add_subdirectory(Json)</code></pre>
             </li>
             <li>Build the project</li>
-            <li>You can run your benchmark by running (assuming you are in the build directory) <kdb>./src/Benchmarks/Json/json-benchmarks</kdb></li>
+            <li>You can run your benchmark by running (assuming you are in the build directory) <kbd>./src/Benchmarks/Json/json-benchmarks</kbd></li>
         </ol>
     </section>
 </section>
