@@ -1,0 +1,186 @@
+<!--
+  ~
+  ~  Copyright (c) 2025  Ioannis Panagiotopoulos
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System information tab</title>
+</head>
+<body>
+<h1>System information tab</h1>
+<p>
+    The system information tab contains information about your system. These contain the following information.
+</p>
+<section>
+    <h2>Contents</h2>
+    <ul>
+        <li>
+            <a href="#os-information">Os Information</a>
+        </li>
+        <li>
+            <a href="#memory-information">Memory Information</a>
+        </li>
+        <li>
+            <a href="#cpu-information">CPU Information</a>
+        </li>
+        <li>
+            <a href="#timing-information">Timing Information</a>
+        </li>
+        <li>
+            <a href="#topology">Topology</a>
+        </li>
+    </ul>
+</section>
+<section>
+    <h2 id="os-information">Os Information</h2>
+    <p>
+        This group contains the Operating System information. More specifically:
+    </p>
+    <dl>
+        <dt>
+            Category
+        </dt>
+        <dd>
+            The general category of the operating system, for instance 'Linux', 'Windows' etc.
+        </dd>
+        <dt>
+            Name
+        </dt>
+        <dd>
+            The name of the operating system, for instance 'Ubuntu', 'Windows 10' etc.
+        </dd>
+        <dt>
+            Version
+        </dt>
+        <dd>
+            The version of the operating system, for instance '6.11.0', '2004' etc.
+        </dd>
+    </dl>
+</section>
+
+<section>
+    <h2 id="memory-information">Memory Information</h2>
+    <p>
+        This group contains the main memory (RAM) information. More specifically:
+    </p>
+    <dl>
+        <dt>
+            Total size
+        </dt>
+        <dd>
+            The main memory size in IEC units.
+        </dd>
+        <dt>
+            Page size
+        </dt>
+        <dd>
+            The page size that is used in IEC units.
+        </dd>
+        <dt>
+            Version
+        </dt>
+        <dd>
+            The version of the operating system, for instance '6.11.0', '2004' etc.
+        </dd>
+    </dl>
+</section>
+
+<section>
+    <h2 id="cpu-information">CPU Information</h2>
+    <p>
+        This group contains the CPU information. More specifically:
+    </p>
+    <dl>
+        <dt>
+            Architecture
+        </dt>
+        <dd>
+            The CPU architecture used by Elpida. Note that this does not imply the CPU architecture is this. For
+            instance, you can run the 'i686' version of Elpida on an 'x86-64' cpu, but Elpida will report 'i686' as
+            architecture.
+        </dd>
+        <dt>
+            Vendor
+        </dt>
+        <dd>
+            The CPU vendor name.
+        </dd>
+        <dt>
+            Model name
+        </dt>
+        <dd>
+            The CPU model name.
+        </dd>
+    </dl>
+</section>
+
+<section>
+    <h2 id="timing-information">Timing information</h2>
+    <p>
+        This group contains information about timings calculated by Elpida. These timing are used by elpida to precisely
+        calculate
+        time for benchmarks. More specifically:
+    </p>
+    <dl>
+        <dt>
+            now() overhead
+        </dt>
+        <dd>
+            The average time a call to 'now()' takes on this machine. 'now()' returns a precise time-point.
+        </dd>
+        <dt>
+            Loop overhead
+        </dt>
+        <dd>
+            The average time an empty loop takes.
+        </dd>
+        <dt>
+            B. Ips
+        </dt>
+        <dd>
+            Or Bogus instructions per second. This is directly related to 'Loop overhead' and it is the rate of empty
+            loops
+            that the system can run.
+        </dd>
+    </dl>
+</section>
+
+<section>
+    <h2 id="topology">Topology</h2>
+    <p>
+        This is the topology of the system. This graph describes the cpu cores/caches/packages structure tree and sizes
+        of each node.
+        From here you can select which cores/threads the custom benchmarks will use. You can select/deselect
+        cores/threads by clicking
+        on them or by massively select them by clicking an ancestor group (for instance clicking on the LD2 cache name
+        will select all
+        cores/threads inside that cache).
+    </p>
+    <ul>
+        <li>Numbers in parentheses (e.g. '(2)'), is the id/index the operating system gave to this node.</li>
+        <li>Numbers with a 'iB' (e.g. '32 KiB') suffix is the size of the node in bytes in case the node has memory.
+        </li>
+        <li>Numbers in brackets (e.g. '[1]') is the efficiency this specific core reports. This number makes sense when
+            the cpu
+            has not a standard size of cores, for instance big.LITTLE cpus.
+        </li>
+    </ul>
+</section>
+</body>
+</html>
