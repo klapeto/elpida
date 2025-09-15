@@ -1,0 +1,161 @@
+<!--
+  ~
+  ~  Copyright (c) 2025  Ioannis Panagiotopoulos
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced benchmarking</title>
+</head>
+<body>
+<h1>Advanced benchmarking</h1>
+<p>
+    This page describes and guides through the advanced options for benchmarking.
+</p>
+<section>
+    <h2>Microtasks and workloads</h2>
+    <p>
+        Each benchmark is consisted of multiple tasks. Some tasks generate input (e.g. Read File), other process data
+        (e.g.
+        Parse Json)
+        and others generate output (e.g. Write to File). Depending on the task, it can accept input, produce output or
+        both.
+    </p>
+    <p>
+        Apart from the type of processing they do, tasks also are distinguished from whether it can be repeated on the
+        same
+        data
+        with no side effects.
+    </p>
+    <ul>
+        <li>
+            If a task can be repeated, they are called 'Microtasks'. These tasks are measured by being run multiple
+            times until
+            a certain total execution time is reached. Once this happens, the total amount of time and total executions
+            that
+            occurred
+            are used to calculate the throughput/time.
+        </li>
+        <li>
+            If a task cannot be repeated for some reason, they are called normal 'Tasks' or 'Workload' tasks. These
+            tasks are
+            run
+            once and this execution time is measured for calculating its throughput.
+        </li>
+    </ul>
+</section>
+
+<section>
+    <h2>
+        Advanced settings
+    </h2>
+    <p>Advanced settings control various aspects when running memory/custom benchmarks.</p>
+    <section>
+        <h3>Concurrency mode</h3>
+        <p>
+            Concurrency mode controls how the benchmark tasks can be broken to run concurrently and how its input will
+            be handled.
+            Keep in mind that tasks have their own "Allowed" modes. This means that if a task can only run in single
+            thread
+            mode, it will ignore this setting.
+        </p>
+        <dl>
+            <dt>
+                None
+            </dt>
+            <dd>
+                Instructs Elpida to not use concurrency at all. This means each task will only run on a single thread.
+            </dd>
+            <dt>
+                Copy Input
+            </dt>
+            <dd>
+                Instructs Elpida to run the tasks in multithreaded mode while copying the input to a separate location
+                in
+                memory for each task. Elpida will create as many copies of the task as the topology config
+                implies and will create a copy of the input for each of the task. Then it will run them all, wait for
+                them
+                to complete and take the output of the first task as output. This mode, depending on
+                the input size, it can create a lot of memory stress and make caching inefficient.
+            </dd>
+            <dt>
+                Share Input
+            </dt>
+            <dd>
+                Instructs Elpida to run the tasks in multithreaded mode while using the same input for each task.
+                Elpida will create as many copies of the task as the topology config
+                implies and will use the memory location as input for each of the task. Then it will run them all, wait
+                for them
+                to complete and take the output of the first task as output. This mode, depending on
+                the input size, is very cache efficient and puts more stress on the caches/cores. On lower sizes, it
+                stresses
+                only the cores.
+            </dd>
+            <dt>
+                Share Input
+            </dt>
+            <dd>
+                Instructs Elpida to run the tasks in multithreaded mode while breaking the input into "chunks" for each
+                task.
+                The chunks have separate location on memory and have a copy of the part of the input. Elpida will create
+                as many chunks
+                of the task as the topology config implies and will assign a chunk of the input on each of the task.
+                Then it will run
+                them all, wait for them to complete and consolidate the chunks into one and used as output. This mode,
+                depending on
+                the input size, it can create a lot of memory stress and make caching inefficient. Furthermore, it
+                requires
+                support from the benchmark.
+            </dd>
+        </dl>
+    </section>
+    <section>
+        <h3>Use NUMA aware allocator</h3>
+        <p>
+            By default, Elpida uses the STD allocator of C/C++. However, sometimes you might want to pin memory on
+            specific NUMA nodes. By enabling this, each allocation for the benchmark data will attempt to allocate
+            the memory on the NUMA node the task will run. It is advised to use this with 'Pin threads for automatically
+            multithreaded tasks'
+        </p>
+    </section>
+    <section>
+        <h3>Pin threads for automatically
+            multithreaded tasks</h3>
+        <p>
+            By default, Elpida states to the OS to use only the cpu cores/threads stated by the topology affinity in the
+            config.
+            However, this does not imply any pining. If pining is desired, you can enable this option. This will pin
+            each
+            created task to a specific processor stated by the topology config.
+        </p>
+    </section>
+    <section>
+        <h3>Minimum micro task duration</h3>
+        <p>
+            As stated in the beginning, microtasks are run in succession until a certain time passes and depending on
+            the
+            time and amount of times it run, the throughput is calculated. This option defines the amount of time to
+            spend
+            on running a microtask on each stage of the benchmark. Higher values produce more consistent results but
+            last
+            longer, especially if the benchmark has multiple stages of microtasks.
+        </p>
+    </section>
+</section>
+</body>
+</html>

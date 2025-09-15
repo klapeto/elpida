@@ -1,0 +1,78 @@
+<!--
+  ~
+  ~  Copyright (c) 2025  Ioannis Panagiotopoulos
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Benchmark</title>
+</head>
+<body>
+<h1>Benchmark</h1>
+<p>
+    This tab is about general benchmarking your CPU. This will run a batch of pre-configured benchmarks to determine its
+    speed compared to other CPUs on the same benchmarks.
+</p>
+<h2>Score</h2>
+<p>This group shows the scores for the most recent benchmark run in this session.</p>
+<ul>
+    <li>The first number with the large letters is the total score. Next to it is the difference with the previous
+        run.
+    </li>
+    <li><strong>Single thread</strong>: The single thread score for the latest run. Next to it is the difference with
+        the previous run.
+    </li>
+    <li><strong>Multi thread</strong>: The multi thread score for the latest run. Next to it is the difference with the
+        previous run.
+    </li>
+</ul>
+
+<h2>Execution</h2>
+<p>This group has the controls for running the benchmark.</p>
+<ul>
+    <li><strong>Current benchmark:</strong> N/A: This shows the current benchmark name that is running.</li>
+    <li><strong>Run it</strong>: Here you can set how many times the benchmark should run in succession.</li>
+    <li><strong>Delay between runs</strong>: The amount of seconds to delay between runs when you selected multiple runs
+        via the **Run it** field.
+    </li>
+    <li><strong>Upload results anonymously to elpida website</strong>: When checked and the benchmarks are finished, the
+        results will be uploaded to elpida public website to be counted to statistics for this CPU.
+    </li>
+    <li><strong>Open result in browser after upload</strong>: If chosen to upload the results, after upload completes
+        the result will be opened in your default browser in the public page of the first result of the batch that was
+        run.
+    </li>
+    <li><strong>Generate HTML report when complete</strong>: When checked and the benchmarks are complete, an HTML
+        report will be generated on disk with the results and statistics. Also, the HTML page will open in your default
+        browser after generated.
+    </li>
+    <li><strong>Start</strong>: This button will start the benchmarking. When the benchmarks run, this button will
+        change to **Cancel**, where clicking it will cancel the current benchmark execution.
+    </li>
+    <li><strong>Estimated execution time</strong>: The amount of time the benchmark will take to complete. This changes
+        depending on the amount of **Run it** and **Delay between runs** you set.
+    </li>
+</ul>
+
+<h2>Results history</h2>
+<p>
+    This contains the results of runs you performed during this session. Each line is expandable and shows the individual
+    benchmark results as well as the delta with the previous execution.
+</p>
+</body>
+</html>
