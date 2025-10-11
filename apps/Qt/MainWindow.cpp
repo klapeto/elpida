@@ -1,20 +1,18 @@
 
-/*
- *  Copyright (c) 2025  Ioannis Panagiotopoulos
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+//  Copyright (c) 2025  Ioannis Panagiotopoulos
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "MainWindow.hpp"
 #include "ui_MainWindow.h"
@@ -22,7 +20,6 @@
 #include <QVBoxLayout>
 
 #include <sstream>
-#include <filesystem>
 #include <QMessageBox>
 #include <QFileDialog>
 
@@ -31,6 +28,7 @@
 #include "Controllers/FullBenchmarkController.hpp"
 #include "Controllers/MemoryBenchmarkController.hpp"
 #include "Controllers/CustomBenchmarkController.hpp"
+#include "Core/DesktopService.hpp"
 
 #include "Models/SystemInfo/TopologyModel.hpp"
 #include "Models/Custom/CustomBenchmarkModel.hpp"
@@ -47,6 +45,7 @@
 
 namespace Elpida::Application
 {
+	constexpr const char* documentationUrl = "https://dev-hood.gitlab.io/elpida/elpida/";
 	constexpr const char* aboutText = "<h2>Elpida " ELPIDA_VERSION "</h2>"
 									  "<p>Elpida is an Open Source (GPLv3) Benchmarking framework for measuring "
 									  "performance of computer hardware or algorithms.</p>"
@@ -66,6 +65,7 @@ namespace Elpida::Application
 			const CustomBenchmarkModel& customBenchmarksModel,
 			const MemoryBenchmarkModel& memoryOverheadCalculationModel,
 			TopologyModel& topologyModel,
+			const DesktopService& desktopService,
 			FullBenchmarkController& fullBenchmarkController,
 			CustomBenchmarkController& customBenchmarksController,
 			BenchmarkRunConfigurationController& benchmarkRunConfigurationController,
@@ -74,10 +74,10 @@ namespace Elpida::Application
 			QWidget* parent)
 			:QMainWindow(parent),
 			 _topologyModel(topologyModel),
-			 _cpuInfoModel(cpuInfoModel),
 			 _customBenchmarkController(customBenchmarksController),
 			 _memoryBenchmarkController(memoryOverheadCalculationController),
 			 _fullBenchmarkController(fullBenchmarkController),
+			 _desktopService(desktopService),
 			 _ui(new Ui::MainWindow)
 	{
 		_ui->setupUi(this);
@@ -175,6 +175,11 @@ namespace Elpida::Application
 	void MainWindow::on_actionExit_triggered()
 	{
 		QApplication::quit();
+	}
+
+	void MainWindow::on_actionDocumentation_triggered()
+	{
+		_desktopService.OpenUri(documentationUrl);
 	}
 
 	void MainWindow::on_actionAbout_triggered()
