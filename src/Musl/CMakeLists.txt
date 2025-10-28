@@ -8,6 +8,10 @@ else()
     set(ARCH "generic")
 endif()
 
+add_library(musl-platform
+        platform/errno-location.c
+)
+
 file(GLOB MUSL_SOURCES src/internal/*.c src/math/*.c src/stdio/*.c src/stdlib/*.c src/string/*.c)
 
 add_library(musl-lite OBJECT ${MUSL_SOURCES})
@@ -22,3 +26,5 @@ target_include_directories(musl-lite PRIVATE ${CMAKE_CURRENT_LIST_DIR}/arch/gene
 target_include_directories(musl-lite PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/include)
 target_include_directories(musl-lite PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/internal)
 target_include_directories(musl-lite PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
+
+target_link_libraries(musl-lite PUBLIC musl-platform)

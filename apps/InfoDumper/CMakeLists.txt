@@ -6,6 +6,8 @@ project("Elpida Information Dumper" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_INFO_DUMPER_SOURCES
         Main.cpp)
 
+append_product_version(ELPIDA_INFO_DUMPER_SOURCES "Elpida info dumper" "Dumps information about the system")
+
 add_executable(elpida-info-dumper ${ELPIDA_INFO_DUMPER_SOURCES})
 target_link_libraries(elpida-info-dumper PRIVATE elpida-core overheads-calculator elpida-platform elpida-shared)
 

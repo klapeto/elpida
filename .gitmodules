@@ -13,3 +13,10 @@
 [submodule "extern/openssl-cmake"]
 	path = extern/openssl-cmake
 	url = https://github.com/klapeto/openssl-cmake.git
+[submodule "extern/hwloc"]
+	path = extern/hwloc
+	url = https://github.com/open-mpi/hwloc.git
+[submodule "extern/llvm"]
+	path = extern/llvm
+	url = https://github.com/llvm/llvm-project.git
+	branch = release/19.x

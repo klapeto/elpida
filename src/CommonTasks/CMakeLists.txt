@@ -3,17 +3,14 @@ project("Elpida common tasks" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-set(ELPIDA_COMMON_TASKS_SOURCES
+add_library(elpida-common-tasks
         FileReadTask.cpp
         FileWriteTask.cpp
         ParseXmlTask.cpp
         AllocateMemoryTask.cpp
         GenerateRandomDataTask.cpp
-        GenerateLoremIpsum.cpp
-)
+        GenerateLoremIpsum.cpp)
 
-add_library(elpida-common-tasks ${ELPIDA_COMMON_TASKS_SOURCES})
+target_include_directories(elpida-common-tasks PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(elpida-common-tasks PUBLIC elpida-core elpida-xml)
-
-install(TARGETS elpida-common-tasks)

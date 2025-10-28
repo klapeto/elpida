@@ -13,4 +13,4 @@ add_library(elpida-graphics
         FrameBuffer.cpp
 )
 
-target_link_libraries(elpida-graphics PRIVATE elpida-math)
+target_link_libraries(elpida-graphics PUBLIC elpida-math)

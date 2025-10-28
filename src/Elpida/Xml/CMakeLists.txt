@@ -5,4 +5,5 @@ add_library(elpida-xml
         ParseException.cpp
         XmlElement.cpp
         XmlParser.cpp
-        XmlMap.cpp)
+        XmlMap.cpp
+)

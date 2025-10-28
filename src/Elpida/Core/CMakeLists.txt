@@ -3,7 +3,10 @@ project("Elpida Core Library" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-set(ELPIDA_CORE_SOURCES
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
+
+add_library(elpida-core
         Benchmark.cpp
         BenchmarkResult.cpp
         BenchmarkInfo.cpp
@@ -43,12 +46,9 @@ set(ELPIDA_CORE_SOURCES
         IterationMicroTask.cpp
 )
 
-configure_file("${PROJECT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
-
-add_library(elpida-core ${ELPIDA_CORE_SOURCES})
-
 add_library(overheads-calculator TimingCalculator.cpp)
-target_compile_options(overheads-calculator PRIVATE -O3 -fno-dce -fno-tree-dce -fno-unroll-loops)
+
+target_compile_options(overheads-calculator PRIVATE -O3)
 
 if (UNIX)
     include(FindThreads)
@@ -56,8 +56,10 @@ if (UNIX)
     target_link_libraries(elpida-core PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/include)
-target_include_directories(elpida-core PUBLIC ${ELPIDA_ROOT_DIRECTORY}/src)
-target_include_directories(elpida-core PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(elpida-core PUBLIC
+        ${ELPIDA_ROOT_DIRECTORY}/include
+        ${ELPIDA_ROOT_DIRECTORY}/src
+        ${CMAKE_CURRENT_BINARY_DIR}
+)
 
-target_link_libraries(elpida-core PUBLIC overheads-calculator)
+target_link_libraries(elpida-core PUBLIC overheads-calculator hwloc)

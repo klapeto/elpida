@@ -3,7 +3,7 @@ project("Elpida platform specific" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-set(ELPIDA_PLATFORM_SOURCES
+add_library(elpida-platform
         TopologyLoader.cpp
 
         NumaAllocator.Unix.cpp
@@ -34,18 +34,7 @@ set(ELPIDA_PLATFORM_SOURCES
         CpuInfoLoader.Arm64.Windows.cpp
 )
 
-add_library(elpida-platform ${ELPIDA_PLATFORM_SOURCES})
-
-target_link_libraries(elpida-platform PUBLIC elpida-core)
-
-if (MSVC)
-    include(FindHWLOC)
-    target_include_directories(elpida-platform PUBLIC ${HWLOC_INCLUDE_DIRS})
-    target_link_directories(elpida-platform PUBLIC ${HWLOC_LIBRARY_DIRS})
-    target_link_libraries(elpida-platform PUBLIC libhwloc)
-else()
-    target_link_libraries(elpida-platform PUBLIC hwloc)
-endif()
+target_link_libraries(elpida-platform PUBLIC elpida-core hwloc)
 
 if (UNIX)
     target_link_libraries(elpida-platform PUBLIC numa)
