@@ -45,7 +45,7 @@ if (ELPIDA_WINDOWS)
     execute_process(COMMAND patch --directory=${CMAKE_CURRENT_SOURCE_DIR}/llvm -p1 --input=${CMAKE_CURRENT_FUNCTION_LIST_DIR}/llvm.WindowsXp.patch)
 endif ()
 
-add_subdirectory(llvm/llvm EXCLUDE_FROM_ALL)
+add_subdirectory(llvm/llvm)
 
 set(LLVM_INCLUDE_DIRECTORIES
         ${LLVM_SOURCE_DIR}/include

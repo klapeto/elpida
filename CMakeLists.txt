@@ -52,7 +52,7 @@ set(ELPIDA_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 include_directories(include)
 
-add_subdirectory(extern)
+add_subdirectory(extern EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
