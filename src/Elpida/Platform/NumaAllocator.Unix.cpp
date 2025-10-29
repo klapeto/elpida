@@ -24,12 +24,15 @@
 
 #if defined(ELPIDA_UNIX)
 
+#include "Elpida/Core/Config.hpp"
 #include "Elpida/Platform/NumaAllocator.hpp"
 
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Core/Topology/ProcessingUnitNode.hpp"
 
+#ifdef ELPIDA_HAVE_NUMA
 #include <numa.h>
+#endif
 #include <cstring>
 
 namespace Elpida
@@ -40,6 +43,7 @@ namespace Elpida
 		auto numaNodeId = _targetProcessingUnit.GetNumaNode().GetOsIndex().value();
 		bool numaAvailable = false;
 		void* ptr;
+#ifdef ELPIDA_HAVE_NUMA
 		if (numa_available() < 0)
 		{
 			ptr = malloc(size);
@@ -50,7 +54,9 @@ namespace Elpida
 			ptr = (void*)numa_alloc_onnode(size, numaNodeId);
 			numaAvailable = true;
 		}
-
+#else
+		ptr = malloc(size);
+#endif
 		if (ptr == nullptr)
 		{
 			throw ElpidaException("Failed to allocate NUMA memory of size: ",
@@ -74,6 +80,7 @@ namespace Elpida
 	void NumaAllocator::Deallocate(void* ptr, Size size) noexcept
 	{
 		auto a = Timer::now();
+#ifdef ELPIDA_HAVE_NUMA
 		if (numa_available() < 0)
 		{
 			free(ptr);
@@ -82,6 +89,9 @@ namespace Elpida
 		{
 			numa_free(ptr, size);
 		}
+#else
+		free(ptr);
+#endif
 		auto b = Timer::now();
 		_totalTime += b - a;
 	}
@@ -92,6 +102,7 @@ namespace Elpida
 
 		auto a = Timer::now();
 		void* newPtr = nullptr;
+#ifdef ELPIDA_HAVE_NUMA
 		if (numa_available() < 0)
 		{
 			newPtr = realloc(ptr, newSize);
@@ -100,6 +111,9 @@ namespace Elpida
 		{
 			newPtr =  numa_realloc(ptr, oldSize, newSize);
 		}
+#else
+		newPtr = realloc(ptr, newSize);
+#endif
 
 		if (newSize > oldSize)
 		{

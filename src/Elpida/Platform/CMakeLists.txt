@@ -37,5 +37,11 @@ add_library(elpida-platform
 target_link_libraries(elpida-platform PUBLIC elpida-core hwloc)
 
 if (UNIX)
-    target_link_libraries(elpida-platform PUBLIC numa)
+    include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindNUMA.cmake)
+
+    if (NUMA_FOUND)
+        set(ELPIDA_HAVE_NUMA 1 CACHE BOOL "Whether numa is available")
+        target_link_libraries(elpida-platform PUBLIC numa)
+    endif ()
+
 endif ()

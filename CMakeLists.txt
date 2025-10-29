@@ -19,7 +19,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
 
     # static link stdlib
     add_link_options(-static-libstdc++ -static-libgcc -Wl,--no-undefined)
-    add_compile_options(-fno-builtin -Wextra)
+    add_compile_options(-fno-builtin)
 else ()
     message(FATAL_ERROR "'${CMAKE_CXX_COMPILER_ID}' compiler is currently unsupported. Elpida requires specific compiler functionality that currently only GCC/Clang provide. If you think another compiler can be supported, please let us know in the issues page.")
 endif ()
@@ -35,6 +35,14 @@ elseif (MSYS OR MSVC OR MINGW)
     add_compile_definitions(-DWINVER=0x0501) # We support XP and above
     add_compile_definitions(-D_WIN32_WINNT=0x0501) # We support XP and above
 endif ()
+
+if (LINUX)
+    set(ELPIDA_LINUX 1)
+endif ()
+
+if (ANDROID)
+    set(ELPIDA_ANDROID 1)
+endif()
 
 # Enable debug stuff if we build debug
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")

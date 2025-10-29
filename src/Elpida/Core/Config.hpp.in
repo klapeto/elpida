@@ -44,10 +44,20 @@
 #define ELPIDA_PLUGIN_ABI_VERSION 1
 
 #cmakedefine ELPIDA_UNIX
+#cmakedefine ELPIDA_LINUX
 #cmakedefine ELPIDA_WINDOWS
+#cmakedefine ELPIDA_ANDROID
 #cmakedefine ELPIDA_DEBUG
 
+#cmakedefine ELPIDA_HAVE_NUMA
+
 #cmakedefine ELPIDA_BETA
+
+#if defined(ELPIDA_LINUX)
+#define ELPIDA_HAVE_BACKTRACE 1
+#elif (defined(ELPIDA_ANDROID) && __ANDROID_API__ >= 33)
+#define ELPIDA_HAVE_BACKTRACE 1
+#endif
 
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW64__)
 #define ELPIDA_GCC

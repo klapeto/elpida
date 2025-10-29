@@ -31,7 +31,9 @@
 #include <cerrno>
 #include <cstring>
 
+#ifdef ELPIDA_HAVE_NUMA
 #include <numa.h>
+#endif
 
 namespace Elpida
 {
@@ -50,8 +52,12 @@ namespace Elpida
 
 	unsigned int OsUtilities::GetNumaNodeIdForProcessor(unsigned int processorId)
 	{
+#ifdef ELPIDA_HAVE_NUMA
 		if (numa_available() < 0) return 0;
 		return numa_node_of_cpu(processorId);
+#else
+		return 0;
+#endif
 	}
 
 	std::filesystem::path OsUtilities::GetExecutableDirectory()
