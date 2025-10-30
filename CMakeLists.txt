@@ -60,7 +60,12 @@ set(ELPIDA_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 include_directories(include)
 
-add_subdirectory(extern EXCLUDE_FROM_ALL)
+if (ELPIDA_DEBUG)
+    # speed up a bit the build
+    set(ELPIDA_DISABLE_LLVM 0)
+endif ()
+
+add_subdirectory(extern)
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)

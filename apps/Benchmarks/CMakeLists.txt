@@ -1,5 +1,7 @@
-add_executable(compilation-benchmarks Dummy.cpp)
-target_link_libraries(compilation-benchmarks PRIVATE elpida-entry-point elpida-compilation-benchmarks)
+if (NOT ELPIDA_DISABLE_LLVM)
+    add_executable(compilation-benchmarks Dummy.cpp)
+    target_link_libraries(compilation-benchmarks PRIVATE elpida-entry-point elpida-compilation-benchmarks)
+endif ()
 
 add_executable(compression-benchmarks Dummy.cpp)
 target_link_libraries(compression-benchmarks PRIVATE elpida-entry-point elpida-compression-benchmarks)
@@ -22,8 +24,14 @@ target_link_libraries(stdlib-benchmarks PRIVATE elpida-entry-point elpida-stdlib
 add_executable(web-benchmarks Dummy.cpp)
 target_link_libraries(web-benchmarks PRIVATE elpida-entry-point elpida-web-benchmarks)
 
+if (NOT ELPIDA_DISABLE_LLVM)
+    install(TARGETS
+            compilation-benchmarks
+            RUNTIME
+            DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
+endif ()
+
 install(TARGETS
-        compilation-benchmarks
         compression-benchmarks
         encryption-benchmarks
         image-benchmarks

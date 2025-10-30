@@ -15,49 +15,36 @@ function(include_hwloc sourceDir)
     # patch to avoid building stuff we do not need
     execute_process(COMMAND patch --directory=${sourceDir} -p1 --input=${CMAKE_CURRENT_FUNCTION_LIST_DIR}/hwloc.patch)
 
-    if (CMAKE_CROSSCOMPILING OR ANDROID)
-        set(HWLOC_TRIPLE ${CMAKE_C_COMPILER_TARGET})
-        set(HWLOC_C_COMPILER ${CMAKE_C_COMPILER})
-        set(HWLOC_CXX_COMPILER ${CMAKE_CXX_COMPILER})
+    set(ENV_FILE ${CMAKE_CURRENT_BINARY_DIR}/env.sh)
+    file(WRITE ${ENV_FILE} "#!/bin/bash\n")
 
-        if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-            if (NOT ${CMAKE_C_LIBRARY_ARCHITECTURE} STREQUAL "")
-                set(HWLOC_C_COMPILER "${HWLOC_C_COMPILER} --target=${CMAKE_C_LIBRARY_ARCHITECTURE}")
-            elseif (NOT ${CMAKE_C_COMPILER_TARGET} STREQUAL "")
-                set(HWLOC_C_COMPILER "${HWLOC_C_COMPILER} --target=${CMAKE_C_COMPILER_TARGET}")
-            endif ()
-        endif ()
-
-        if (NOT ${CMAKE_C_COMPILER_SYSROOT} STREQUAL "")
-            set(HWLOC_C_COMPILER "${HWLOC_C_COMPILER} ${CMAKE_C_COMPILE_OPTIONS_SYSROOT}${CMAKE_C_COMPILER_SYSROOT}")
-        elseif (NOT ${CMAKE_SYSROOT} STREQUAL "")
-            set(HWLOC_C_COMPILER "${HWLOC_C_COMPILER} ${CMAKE_C_COMPILE_OPTIONS_SYSROOT}${CMAKE_SYSROOT}")
-        endif ()
-
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            if (NOT ${CMAKE_CXX_LIBRARY_ARCHITECTURE} STREQUAL "")
-                set(HWLOC_CXX_COMPILER "${HWLOC_CXX_COMPILER} --target=${CMAKE_CXX_LIBRARY_ARCHITECTURE}")
-            elseif (NOT ${CMAKE_CXX_COMPILER_TARGET} STREQUAL "")
-                set(HWLOC_CXX_COMPILER "${HWLOC_CXX_COMPILER} --target=${CMAKE_CXX_COMPILER_TARGET}")
-            endif ()
-        endif ()
-
-        if (NOT ${CMAKE_CXX_COMPILER_SYSROOT} STREQUAL "")
-            set(HWLOC_CXX_COMPILER "${HWLOC_CXX_COMPILER} ${CMAKE_CXX_COMPILE_OPTIONS_SYSROOT}${CMAKE_CXX_COMPILER_SYSROOT}")
-        elseif (NOT ${CMAKE_SYSROOT} STREQUAL "")
-            set(HWLOC_CXX_COMPILER "${HWLOC_CXX_COMPILER} ${CMAKE_CXX_COMPILE_OPTIONS_SYSROOT}${CMAKE_SYSROOT}")
-        endif ()
+    if (ANDROID)
+        set(HWLOC_TRIPLE ${CMAKE_LIBRARY_ARCHITECTURE}${ANDROID_NATIVE_API_LEVEL})
+        file(APPEND ${ENV_FILE} "export CC=\"${CMAKE_C_COMPILER} --target=${HWLOC_TRIPLE}\"\n")
+        file(APPEND ${ENV_FILE} "export CXX=\"${CMAKE_CXX_COMPILER} --target=${HWLOC_TRIPLE}\"\n")
+        file(APPEND ${ENV_FILE} "export STRIP=\"${ANDROID_STRIP}\"\n")
+    else ()
+        file(APPEND ${ENV_FILE} "export CC=\"${CMAKE_C_COMPILER}\"\n")
+        file(APPEND ${ENV_FILE} "export CXX=\"${CMAKE_CXX_COMPILER}\"\n")
     endif ()
 
     if (NOT HWLOC_TRIPLE)
-        set(HWLOC_TRIPLE ${CMAKE_C_LIBRARY_ARCHITECTURE})
+        execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpmachine OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE HWLOC_TRIPLE)
     endif ()
+
+    file(APPEND ${ENV_FILE} "export AR=\"${CMAKE_AR}\"\n")
+    file(APPEND ${ENV_FILE} "export RANLIB=\"${CMAKE_RANLIB}\"\n")
+    file(APPEND ${ENV_FILE} "export CFLAGS=\"${CMAKE_C_FLAGS}\"\n")
+    file(APPEND ${ENV_FILE} "export CXXFLAGS=\"${CMAKE_CXX_FLAGS}\"\n")
+
+    file(APPEND ${ENV_FILE} "${sourceDir}/autogen.sh && ${sourceDir}/configure --host=${HWLOC_TRIPLE} --with-sysroot=${CMAKE_SYSROOT} --prefix=${ELPIDA_LOCAL_INSTALL_DIR} --enable-static --disable-shared --enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero --disable-gl --disable-libudev")
+    file(CHMOD ${ENV_FILE} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE WORLD_READ WORLD_WRITE WORLD_EXECUTE)
 
     ExternalProject_Add(hwloc_dep
             SOURCE_DIR ${sourceDir}
             CONFIGURE_HANDLED_BY_BUILD true
-            CONFIGURE_COMMAND ${sourceDir}/autogen.sh && ${sourceDir}/configure CC=${HWLOC_C_COMPILER} CXX=${HWLOC_CXX_COMPILER} AR=${CMAKE_AR} LD=${CMAKE_LINKER} RANLIB=${CMAKE_RANLIB} CFLAGS=${CMAKE_C_FLAGS} CXXFLAGS=${CMAKE_CXX_FLAGS} LDFLAGS=${CMAKE_LINKER_FLAGS} --host=${HWLOC_TRIPLE} --prefix=${ELPIDA_LOCAL_INSTALL_DIR} --enable-static --disable-shared --enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero --disable-gl --disable-libudev
-            BUILD_COMMAND ${MAKE_EXECUTABLE} -j$(nproc)
+            CONFIGURE_COMMAND ${ENV_FILE}
+            BUILD_COMMAND ${MAKE_EXECUTABLE} VERBOSE=1 V=1 -j$(nproc)
             INSTALL_COMMAND ${MAKE_EXECUTABLE} install
             TEST_COMMAND ""
             BUILD_BYPRODUCTS ${HWLOC_LIBRARY}
