@@ -44,7 +44,7 @@ function(include_hwloc sourceDir)
             SOURCE_DIR ${sourceDir}
             CONFIGURE_HANDLED_BY_BUILD true
             CONFIGURE_COMMAND ${ENV_FILE}
-            BUILD_COMMAND ${MAKE_EXECUTABLE} VERBOSE=1 V=1 -j$(nproc)
+            BUILD_COMMAND ${MAKE_EXECUTABLE} -j$(nproc)
             INSTALL_COMMAND ${MAKE_EXECUTABLE} install
             TEST_COMMAND ""
             BUILD_BYPRODUCTS ${HWLOC_LIBRARY}

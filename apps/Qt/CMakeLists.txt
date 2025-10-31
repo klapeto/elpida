@@ -123,7 +123,7 @@ if (MSYS OR MINGW)
 endif()
 
 target_include_directories(elpida-qt PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(elpida-qt PRIVATE elpida-application elpida-shared Qt5::Core Qt5::Widgets Qt5::Charts)
+target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt5::Core Qt5::Widgets Qt5::Charts)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION bin)
 install(FILES qt.conf DESTINATION bin)

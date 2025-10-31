@@ -13,6 +13,6 @@ set(ELPIDA_CLI_SOURCES
 
 add_executable(elpida-cli ${ELPIDA_CLI_SOURCES})
 
-target_link_libraries(elpida-cli PRIVATE elpida-core elpida-platform elpida-application)
+target_link_libraries(elpida-cli PUBLIC elpida-core elpida-platform elpida-application)
 
 install(TARGETS elpida-cli RUNTIME DESTINATION bin)

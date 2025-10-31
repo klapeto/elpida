@@ -15,5 +15,4 @@ if (NOT ELPIDA_DISABLE_LLVM)
             ${LLVM_INCLUDE_DIRECTORIES}
     )
     target_link_libraries(elpida-compilation-benchmarks PUBLIC elpida-core elpida-common-tasks clangBasic clangCodeGen LLVMX86CodeGen musl-lite)
-
 endif ()

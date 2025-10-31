@@ -53,7 +53,7 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "Local" FORCE)
 endif ()
 
-set(ELPIDA_LOCAL_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/install)
+set(ELPIDA_LOCAL_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/install.tmp)
 set(ELPIDA_BENCHMARK_INSTALL_DIR bin/Benchmarks)
 
 set(ELPIDA_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
@@ -65,7 +65,7 @@ if (ELPIDA_DEBUG)
     set(ELPIDA_DISABLE_LLVM 0)
 endif ()
 
-add_subdirectory(extern)
+add_subdirectory(extern EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 add_subdirectory(apps)
-add_subdirectory(tests)
+add_subdirectory(tests EXCLUDE_FROM_ALL)
