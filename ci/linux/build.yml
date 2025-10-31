@@ -6,13 +6,10 @@
   environment:
     name: $DEPLOY_ENVIRONMENT
   script:
-    - git submodule update --init
-    - sed -i 's/cmake_minimum_required(VERSION 2.4.4)/cmake_minimum_required(VERSION 3.14.0)/' ./extern/zlib/CMakeLists.txt
-    - sed -i 's/cmake_minimum_required(VERSION 3.1)/cmake_minimum_required(VERSION 3.14.0)/' ./extern/libpng/CMakeLists.txt
-    - sed -i 's/cmake_policy(VERSION 3.1)//' ./extern/libpng/CMakeLists.txt
     - cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
+      -DELPIDA_EXTERN_OVERRIDE="/sources"
       -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/$TARGET_ARCH-linux-cross.cmake
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
       -DELPIDA_RELEASE=TRUE
@@ -24,7 +21,6 @@
       -DELPIDA_VERSION_REVISION=$ELPIDA_VERSION_REVISION
       -DELPIDA_VERSION_BUILD=$ELPIDA_VERSION_BUILD
     - make -C "$BUILD_DIR" -j$(nproc) install
-    - rm -rf "$INSTALL_DIR/lib/*" "$INSTALL_DIR/bin/*png*" "$INSTALL_DIR/include/*" "$INSTALL_DIR/share/*"
   artifacts:
     expire_in: 2h30min
     paths:
