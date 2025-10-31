@@ -11,7 +11,7 @@ docker-image:linux:
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - docker build -t $IMAGE_NAME docker/build-environment/linux
+    - docker build -t $IMAGE_NAME -f docker/build-environment/linux/Dockerfile .
     - docker push $IMAGE_NAME
   rules:
     - if: $CI_COMMIT_BRANCH
