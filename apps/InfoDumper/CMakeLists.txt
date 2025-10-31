@@ -6,7 +6,22 @@ project("Elpida Information Dumper" VERSION ${ELPIDA_VERSION}
 set(ELPIDA_INFO_DUMPER_SOURCES
         Main.cpp)
 
+if (MSYS OR MINGW OR MSVC)
+    generate_product_version(
+            ELPIDA_INFO_DUMPER_SOURCES
+            NAME ${PROJECT_NAME}
+            ICON ${ELPIDA_ROOT_DIRECTORY}/images/Elpida-icon.ico
+            VERSION_MAJOR ${ELPIDA_VERSION_MAJOR}
+            VERSION_MINOR ${ELPIDA_VERSION_MINOR}
+            VERSION_PATCH ${ELPIDA_VERSION_REVISION}
+            VERSION_REVISION ${ELPIDA_VERSION_BUILD}
+            COMPANY_NAME ${ELPIDA_COMPANY_NAME}
+            FILE_DESCRIPTION "Dumps information about the system"
+    )
+endif()
+
 add_executable(elpida-info-dumper ${ELPIDA_INFO_DUMPER_SOURCES})
+
 target_link_libraries(elpida-info-dumper PUBLIC elpida-core overheads-calculator elpida-platform elpida-shared)
 
 install(TARGETS elpida-info-dumper RUNTIME DESTINATION bin)

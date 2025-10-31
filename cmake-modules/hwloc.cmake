@@ -60,4 +60,4 @@ function(include_hwloc sourceDir)
 
 endfunction()
 
-include_hwloc(${CMAKE_CURRENT_SOURCE_DIR}/hwloc)
+include_hwloc(${ELPIDA_EXTERN_PATH}/hwloc)

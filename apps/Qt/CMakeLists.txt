@@ -114,7 +114,19 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif ()
 
-append_product_version(ELPIDA_QT_SOURCES "Elpida QT FrontEnd" "The desktop GUI of Elpida based on QT for running benchmarks")
+if (MSYS OR MINGW OR MSVC)
+	generate_product_version(
+			ELPIDA_QT_SOURCES
+			NAME ${PROJECT_NAME}
+			ICON ${ELPIDA_ROOT_DIRECTORY}/images/Elpida-icon.ico
+			VERSION_MAJOR ${ELPIDA_VERSION_MAJOR}
+			VERSION_MINOR ${ELPIDA_VERSION_MINOR}
+			VERSION_PATCH ${ELPIDA_VERSION_REVISION}
+			VERSION_REVISION ${ELPIDA_VERSION_BUILD}
+			COMPANY_NAME ${ELPIDA_COMPANY_NAME}
+			FILE_DESCRIPTION "The desktop GUI of Elpida based on QT for running benchmarks"
+	)
+endif()
 
 add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
 
