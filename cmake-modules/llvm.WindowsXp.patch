@@ -1,8 +1,7 @@
 diff --git a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
-index 110d40243..62d83c802 100644
---- a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
-+++ b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
-@@ -87,6 +87,7 @@ DirectoryWatcherWindows::DirectoryWatcherWindows(
+--- a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(revision Staged)
++++ b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(date 1761999730963)
+@@ -87,6 +87,7 @@
    // Pre-compute the real location as we will be handing over the directory
    // handle to the watcher and performing synchronous operations.
    {
@@ -10,31 +9,30 @@ index 110d40243..62d83c802 100644
      DWORD Size = GetFinalPathNameByHandleW(DirectoryHandle, NULL, 0, 0);
      std::unique_ptr<WCHAR[]> Buffer{new WCHAR[Size + 1]};
      Size = GetFinalPathNameByHandleW(DirectoryHandle, Buffer.get(), Size, 0);
-@@ -97,6 +98,7 @@ DirectoryWatcherWindows::DirectoryWatcherWindows(
+@@ -97,6 +98,7 @@
        Size -= 4;
      }
      llvm::sys::windows::UTF16ToUTF8(Data, Size, Path);
 +#endif
    }
- 
+
    size_t EntrySize = sizeof(FILE_NOTIFY_INFORMATION) + MAX_PATH * sizeof(WCHAR);
 diff --git a/llvm/include/llvm/Support/Windows/WindowsSupport.h b/llvm/include/llvm/Support/Windows/WindowsSupport.h
-index d3aacd14b..b80090101 100644
---- a/llvm/include/llvm/Support/Windows/WindowsSupport.h
-+++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h
-@@ -26,7 +26,7 @@
+--- a/llvm/include/llvm/Support/Windows/WindowsSupport.h	(revision Staged)
++++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h	(date 1762002073267)
+@@ -26,7 +26,8 @@
  #undef _WIN32_IE
- 
+
  // Require at least Windows 7 API.
 -#define _WIN32_WINNT 0x0601
 +#define _WIN32_WINNT 0x0501
++#define WINVER 0x0501
  #define _WIN32_IE    0x0800 // MinGW at it again. FIXME: verify if still needed.
  #define WIN32_LEAN_AND_MEAN
  #ifndef NOMINMAX
 diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.inc
-index c4bd5e247..ac25ba743 100644
---- a/llvm/lib/Support/Windows/Path.inc
-+++ b/llvm/lib/Support/Windows/Path.inc
+--- a/llvm/lib/Support/Windows/Path.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Path.inc	(date 1762010396360)
 @@ -27,6 +27,7 @@
  #include "llvm/Support/Windows/WindowsSupport.h"
  #include <shellapi.h>
@@ -43,11 +41,11 @@ index c4bd5e247..ac25ba743 100644
 
  #undef max
 
-@@ -361,9 +362,100 @@ std::error_code is_local(const Twine &path, bool &result) {
+@@ -361,9 +362,100 @@
    return is_local_internal(WidePath, result);
  }
 
-+static bool GetFilenameFromHandle(HANDLE hFile, char *pszFilename)
++static bool GetFilenameFromHandle(HANDLE hFile, wchar_t *pszFilename)
 +{
 +  BOOL bRC = FALSE;
 +
@@ -79,17 +77,17 @@ index c4bd5e247..ac25ba743 100644
 +        // But the drive name is not written in usual MS DOS fomat, actually,
 +        // it is a device name.
 +        // So below is an attempt to translate it to drive-letter
-+        char szTemp[512];
++        wchar_t szTemp[512];
 +        *szTemp = 0;
 +
-+        auto uMaxLenDest = strlen(pszFilename);
++        auto uMaxLenDest = wcslen(pszFilename);
 +
 +        if (GetLogicalDriveStrings(sizeof (szTemp) - 1, szTemp))
 +        {
-+          char szName[MAX_PATH];
-+          char szDrive[3] = " :";
++          wchar_t szName[MAX_PATH];
++          wchar_t szDrive[3] = L" :";
 +          BOOL bFound = FALSE;
-+          char* p = szTemp;
++          wchar_t* p = szTemp;
 +
 +          do
 +          {
@@ -101,24 +99,24 @@ index c4bd5e247..ac25ba743 100644
 +            if (QueryDosDevice(szDrive, szName,
 +                               sizeof (szName)))
 +            {
-+              UINT uNameLen = strlen(szName);
++              UINT uNameLen = wcslen(szName);
 +
 +              //If greater than file name length, it's not a match.
 +              if (uNameLen < uMaxLenDest)
 +              {
-+                bFound = strnicmp (pszFilename, szName,
++                bFound = wcsnicmp (pszFilename, szName,
 +                                  uNameLen) == 0;
 +
 +                if (bFound)
 +                {
 +                  //Reconstruct pszFilename using szTemp as scratch,
 +                  // and replace device path with our DOS path.
-+                  char szTempFile[MAX_PATH];
++                  wchar_t szTempFile[MAX_PATH];
 +                  wsprintf(szTempFile,
 +                           TEXT("%s%s"),
 +                           szDrive,
 +                           pszFilename+uNameLen);
-+                  strncpy(pszFilename, szTempFile, uMaxLenDest);
++                  wcsncpy(pszFilename, szTempFile, uMaxLenDest);
 +                }
 +              }
 +            }
@@ -144,23 +142,22 @@ index c4bd5e247..ac25ba743 100644
    Buffer.resize_for_overwrite(Buffer.capacity());
    DWORD CountChars = ::GetFinalPathNameByHandleW(
        H, Buffer.begin(), Buffer.capacity(), FILE_NAME_NORMALIZED | flags);
-@@ -377,6 +469,15 @@ static std::error_code realPathFromHandle(HANDLE H,
+@@ -377,6 +469,14 @@
    Buffer.truncate(CountChars);
    if (CountChars == 0)
      return mapWindowsError(GetLastError());
 +#else
-+  char Buff[MAX_PATH];
++  wchar_t Buff[MAX_PATH];
 +  if (!GetFilenameFromHandle(H, Buff)){
 +    std::error_code();
 +  }
-+  auto Size = strlen(Buff);
++  auto Size = wcslen(Buff);
 +  Buffer.resize_for_overwrite(Size);
-+  widenPath(Buff,Buffer);
 +#endif
    return std::error_code();
  }
 
-@@ -425,6 +526,7 @@ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
+@@ -425,6 +525,7 @@
    // network file. On Windows 7 the function realPathFromHandle() below fails
    // if the FILE_DISPOSITION_INFO flag was already set to 'DeleteFile = true' by
    // a prior call.
@@ -168,7 +165,7 @@ index c4bd5e247..ac25ba743 100644
    FILE_DISPOSITION_INFO Disposition;
    Disposition.DeleteFile = false;
    if (!SetFileInformationByHandle(Handle, FileDispositionInfo, &Disposition,
-@@ -454,10 +556,14 @@ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
+@@ -454,10 +555,14 @@
                                    sizeof(Disposition)))
      return mapWindowsError(::GetLastError());
    return std::error_code();
@@ -183,7 +180,7 @@ index c4bd5e247..ac25ba743 100644
    SmallVector<wchar_t, 0> ToWide;
    if (auto EC = widenPath(To, ToWide))
      return EC;
-@@ -481,6 +587,9 @@ static std::error_code rename_internal(HANDLE FromHandle, const Twine &To,
+@@ -481,6 +586,9 @@
    }
 
    return std::error_code();
@@ -193,7 +190,7 @@ index c4bd5e247..ac25ba743 100644
  }
 
  static std::error_code rename_handle(HANDLE FromHandle, const Twine &To) {
-@@ -1464,6 +1573,7 @@ std::error_code real_path(const Twine &path, SmallVectorImpl<char> &dest,
+@@ -1464,6 +1572,7 @@
  namespace path {
  static bool getKnownFolderPath(KNOWNFOLDERID folderId,
                                 SmallVectorImpl<char> &result) {
@@ -201,7 +198,7 @@ index c4bd5e247..ac25ba743 100644
    wchar_t *path = nullptr;
    if (::SHGetKnownFolderPath(folderId, KF_FLAG_CREATE, nullptr, &path) != S_OK)
      return false;
-@@ -1473,6 +1583,15 @@ static bool getKnownFolderPath(KNOWNFOLDERID folderId,
+@@ -1473,6 +1582,15 @@
    if (ok)
      llvm::sys::path::make_preferred(result);
    return ok;
@@ -215,13 +212,12 @@ index c4bd5e247..ac25ba743 100644
 +  return true;
 +#endif
  }
- 
+
  bool home_directory(SmallVectorImpl<char> &result) {
 diff --git a/llvm/lib/Support/Windows/Signals.inc b/llvm/lib/Support/Windows/Signals.inc
-index f11ad09f3..737304207 100644
---- a/llvm/lib/Support/Windows/Signals.inc
-+++ b/llvm/lib/Support/Windows/Signals.inc
-@@ -663,7 +663,7 @@ static HKEY FindWERKey(const llvm::Twine &RegistryLocation) {
+--- a/llvm/lib/Support/Windows/Signals.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Signals.inc	(date 1761999730963)
+@@ -663,7 +663,7 @@
  static bool GetDumpFolder(HKEY Key,
                            llvm::SmallVectorImpl<char> &ResultDirectory) {
    using llvm::sys::windows::UTF16ToUTF8;
@@ -229,18 +225,18 @@ index f11ad09f3..737304207 100644
 +#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
    if (!Key)
      return false;
- 
-@@ -695,6 +695,9 @@ static bool GetDumpFolder(HKEY Key,
+
+@@ -695,6 +695,9 @@
      return false;
- 
+
    return true;
 +#else
 +  return false;
 +#endif
  }
- 
+
  /// Populate ResultType with a valid MINIDUMP_TYPE based on the value of
-@@ -713,7 +716,7 @@ static bool GetDumpFolder(HKEY Key,
+@@ -713,7 +716,7 @@
  static bool GetDumpType(HKEY Key, MINIDUMP_TYPE &ResultType) {
    if (!Key)
      return false;
@@ -249,7 +245,7 @@ index f11ad09f3..737304207 100644
    DWORD DumpType;
    DWORD TypeSize = sizeof(DumpType);
    if (ERROR_SUCCESS != ::RegGetValueW(Key, NULL, L"DumpType", RRF_RT_REG_DWORD,
-@@ -741,6 +744,9 @@ static bool GetDumpType(HKEY Key, MINIDUMP_TYPE &ResultType) {
+@@ -741,6 +744,9 @@
      return false;
    }
    return true;
@@ -257,16 +253,15 @@ index f11ad09f3..737304207 100644
 +  return false;
 +#endif
  }
- 
+
  /// Write a Windows dump file containing process information that can be
 diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/Threading.inc
-index 4baf8b8cb..4759e6c5b 100644
---- a/llvm/lib/Support/Windows/Threading.inc
-+++ b/llvm/lib/Support/Windows/Threading.inc
-@@ -49,7 +49,13 @@ void llvm_thread_detach_impl(HANDLE hThread) {
+--- a/llvm/lib/Support/Windows/Threading.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Threading.inc	(date 1761999730964)
+@@ -49,7 +49,13 @@
    }
  }
- 
+
 -DWORD llvm_thread_get_id_impl(HANDLE hThread) { return ::GetThreadId(hThread); }
 +DWORD llvm_thread_get_id_impl(HANDLE hThread) {
 +#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
@@ -275,18 +270,18 @@ index 4baf8b8cb..4759e6c5b 100644
 +  return 0;
 +#endif
 +}
- 
+
  DWORD llvm_thread_get_current_id_impl() { return ::GetCurrentThreadId(); }
- 
-@@ -137,6 +143,7 @@ struct ProcessorGroup {
- 
+
+@@ -137,6 +143,7 @@
+
  template <typename F>
  static bool IterateProcInfo(LOGICAL_PROCESSOR_RELATIONSHIP Relationship, F Fn) {
 +#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
    DWORD Len = 0;
    BOOL R = ::GetLogicalProcessorInformationEx(Relationship, NULL, &Len);
    if (R || GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-@@ -157,9 +164,13 @@ static bool IterateProcInfo(LOGICAL_PROCESSOR_RELATIONSHIP Relationship, F Fn) {
+@@ -157,9 +164,13 @@
    }
    free(Info);
    return true;
@@ -294,23 +289,23 @@ index 4baf8b8cb..4759e6c5b 100644
 +  return false;
 +#endif
  }
- 
+
  static std::optional<std::vector<USHORT>> getActiveGroups() {
 +#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
    USHORT Count = 0;
    if (::GetProcessGroupAffinity(GetCurrentProcess(), &Count, nullptr))
      return std::nullopt;
-@@ -173,6 +184,9 @@ static std::optional<std::vector<USHORT>> getActiveGroups() {
+@@ -173,6 +184,9 @@
      return std::nullopt;
- 
+
    return Groups;
 +#else
 +  return std::nullopt;
 +#endif
  }
- 
+
  static ArrayRef<ProcessorGroup> getProcessorGroups() {
-@@ -303,14 +317,17 @@ void llvm::ThreadPoolStrategy::apply_thread_strategy(
+@@ -303,14 +317,17 @@
    std::optional<unsigned> Socket = compute_cpu_socket(ThreadPoolNum);
    if (!Socket)
      return;
@@ -322,13 +317,13 @@ index 4baf8b8cb..4759e6c5b 100644
    SetThreadGroupAffinity(GetCurrentThread(), &Affinity, nullptr);
 +#endif
  }
- 
+
  llvm::BitVector llvm::get_thread_affinity_mask() {
 +#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
    GROUP_AFFINITY Affinity{};
    GetThreadGroupAffinity(GetCurrentThread(), &Affinity);
- 
-@@ -330,6 +347,9 @@ llvm::BitVector llvm::get_thread_affinity_mask() {
+
+@@ -330,6 +347,9 @@
        V.set(StartOffset + I);
    }
    return V;
@@ -336,13 +331,12 @@ index 4baf8b8cb..4759e6c5b 100644
 +  return {};
 +#endif
  }
- 
+
  unsigned llvm::get_cpus() { return getProcessorGroups().size(); }
 diff --git a/llvm/lib/Support/raw_socket_stream.cpp b/llvm/lib/Support/raw_socket_stream.cpp
-index 04b323308..8b1378917 100644
---- a/llvm/lib/Support/raw_socket_stream.cpp
-+++ b/llvm/lib/Support/raw_socket_stream.cpp
-@@ -1,341 +1 @@
+--- a/llvm/lib/Support/raw_socket_stream.cpp	(revision Staged)
++++ b/llvm/lib/Support/raw_socket_stream.cpp	(date 1761999730964)
+@@ -1,341 +1,1 @@
 -//===-- llvm/Support/raw_socket_stream.cpp - Socket streams --*- C++ -*-===//
 -//
 -// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
@@ -355,7 +349,7 @@ index 04b323308..8b1378917 100644
 -// via UNIX sockets
 -//
 -//===----------------------------------------------------------------------===//
- 
+-
 -#include "llvm/Support/raw_socket_stream.h"
 -#include "llvm/Config/config.h"
 -#include "llvm/Support/Error.h"
@@ -634,7 +628,7 @@ index 04b323308..8b1378917 100644
 -  // Ensure ::poll returns if shutdown is called by a separate thread
 -  char Byte = 'A';
 -  ssize_t written = ::write(PipeFD[1], &Byte, 1);
--
+
 -  // Ignore any write() error
 -  (void)written;
 -}
