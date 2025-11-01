@@ -5,7 +5,7 @@ else ()
 endif ()
 
 set(ZLIB_BUILD_EXAMPLES OFF)
-add_subdirectory(${ELPIDA_EXTERN_PATH}/zlib)
+add_subdirectory(${ELPIDA_EXTERN_PATH}/zlib ${CMAKE_CURRENT_BINARY_DIR}/zlib)
 
 set(ZLIB_INCLUDE_DIRECTORIES
         ${ELPIDA_EXTERN_PATH}/zlib
@@ -26,7 +26,7 @@ else ()
 endif ()
 
 set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRECTORIES})
-add_subdirectory(${ELPIDA_EXTERN_PATH}/libpng)
+add_subdirectory(${ELPIDA_EXTERN_PATH}/libpng ${CMAKE_CURRENT_BINARY_DIR}/libpng)
 
 set(LIBPNG_INCLUDE_DIRECTORIES
         ${ELPIDA_EXTERN_PATH}/libpng
@@ -35,7 +35,7 @@ set(LIBPNG_INCLUDE_DIRECTORIES
 )
 
 set(BOOST_REGEX_STANDALONE ON)
-add_subdirectory(${ELPIDA_EXTERN_PATH}/boost-regex)
+add_subdirectory(${ELPIDA_EXTERN_PATH}/boost-regex ${CMAKE_CURRENT_BINARY_DIR}/boost-regex)
 
 include(../cmake-modules/openssl.cmake)
 include(../cmake-modules/hwloc.cmake)

@@ -12,9 +12,6 @@ function(include_hwloc sourceDir)
     find_program(MAKE_EXECUTABLE NAMES gmake make mingw32-make REQUIRED)
     find_program(PATCH_EXECUTABLE NAMES patch REQUIRED)
 
-    # patch to avoid building stuff we do not need
-    execute_process(COMMAND patch --directory=${sourceDir} -p1 --input=${CMAKE_CURRENT_FUNCTION_LIST_DIR}/hwloc.patch)
-
     set(ENV_FILE ${CMAKE_CURRENT_BINARY_DIR}/env.sh)
     file(WRITE ${ENV_FILE} "#!/bin/bash\n")
 

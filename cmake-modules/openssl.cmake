@@ -33,7 +33,7 @@ set(OPENSSL_USE_STATIC_LIBS ON)
 set(OPENSSL_BUILD_VERSION 3.3.1)
 set(OPENSSL_BUILD_HASH 777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e)
 set(OPENSSL_MODULES "no-shared no-asm no-engine no-hw no-cast no-md2 no-md4 no-mdc2 no-rc4 no-rc5 no-engine no-idea no-mdc2 no-rc5 no-camellia no-ssl3 no-heartbeats no-gost no-deprecated no-capieng no-comp no-dtls no-psk no-srp no-dso no-dsa no-rc2 no-des no-apps ${OPENSSL_ADDITIONAL_FLAGS}")
-add_subdirectory(${ELPIDA_EXTERN_PATH}/openssl-cmake)
+add_subdirectory(${ELPIDA_EXTERN_PATH}/openssl-cmake ${CMAKE_CURRENT_BINARY_DIR}/openssl-cmake)
 
 # Hack to get the library archive. CMAKE messes up the link order by moving the ws2_32 lib at the beginning
 get_property(CRYPTO_INTERFACE_LIB TARGET crypto PROPERTY INTERFACE_LINK_LIBRARIES)

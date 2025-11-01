@@ -64,11 +64,11 @@ RUN make clean-junk
 
 RUN mkdir /sources
 WORKDIR /sources
-RUN git clone --depth 1 -b llvmorg-19.1.7 https://github.com/llvm/llvm-project.git llvm
+RUN git clone --depth 1 -b release/19.x https://github.com/llvm/llvm-project.git llvm
 RUN git clone --depth 1 -b v2.4 https://github.com/open-mpi/hwloc.git
 RUN git clone --depth 1 https://github.com/klapeto/openssl-cmake.git
 RUN git clone --depth 1 https://github.com/google/googletest.git
-RUN git clone --depth 1 -b boost-1.89.0 https://github.com/boostorg/regex.git
+RUN git clone --depth 1 -b boost-1.89.0 https://github.com/boostorg/regex.git boost-regex
 RUN git clone --depth 1 -b v1.6.50 https://github.com/pnggroup/libpng.git
 RUN git clone --depth 1 -b v1.3.1 https://github.com/madler/zlib.git
 

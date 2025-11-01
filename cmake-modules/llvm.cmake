@@ -40,12 +40,7 @@ set(LLVM_ENABLE_SPHINX OFF CACHE INTERNAL "")
 set(LLVM_INDIVIDUAL_TEST_COVERAGE OFF CACHE INTERNAL "")
 set(LLVM_LINK_LLVM_DYLIB OFF CACHE INTERNAL "")
 
-if (ELPIDA_WINDOWS)
-    # Apply our custom patch to allow to build for windows xp
-    execute_process(COMMAND patch --directory=${ELPIDA_EXTERN_PATH}/llvm -p1 --input=${CMAKE_CURRENT_FUNCTION_LIST_DIR}/llvm.WindowsXp.patch)
-endif ()
-
-add_subdirectory(${ELPIDA_EXTERN_PATH}/llvm/llvm)
+add_subdirectory(${ELPIDA_EXTERN_PATH}/llvm/llvm ${CMAKE_CURRENT_BINARY_DIR}/llvm)
 
 set(LLVM_INCLUDE_DIRECTORIES
         ${LLVM_SOURCE_DIR}/include
