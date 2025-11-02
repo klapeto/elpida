@@ -14,6 +14,10 @@ RUN apt-get install -y \
     squashfs-tools \
     git \
     make \
+    pkg-config \
+    automake \
+    autoconf \
+    libtool-bin \
     patch \
     g++ \
     gcc
