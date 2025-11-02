@@ -7,5 +7,5 @@ Comment=Benchmarking framework
 Categories=Utility;Qt;
 
 Icon=elpida
-Exec=elpida-qt
+Exec=elpida
 Terminal=false

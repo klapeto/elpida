@@ -16,29 +16,23 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-installDir=$1 || printHelpAndExit
-rootDir=$2 || printHelpAndExit
-major=$3 || major=0
-minor=$4 || minor=0
-revision=$5 || revision=1
-build=$6 || build=1000
+INSTALL_DIR=$1 || ./AppDir
+EXECUTABLE=$2 || bin/elpida-qt
+VERSION=$3 || "0.0.0.1000"
+NAME=$4 || elpida.appimage
 
-# Fix version on AppImageBuilder.yml
-cp ./AppImageBuilder.yml ./AppImageBuilder.yml.old
-sed  s/"version: latest"/"version: $major.$minor.$revision.$build"/ < ./AppImageBuilder.yml.old > ./AppImageBuilder.yml
-
-mkdir -p "$installDir/usr/share/icons/default/apps/32/" \
-  "$installDir/usr/share/metainfo/" \
-  "$installDir/usr/share/applications/"
-
-cp -u "$rootDir/images/Elpida_Icon.svg" "$installDir/usr/share/icons/default/apps/32/elpida.svg"
-cp -u "$rootDir/resources/dev.elpida.qt.metainfo.xml" "$installDir/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
-cp -u "$rootDir/resources/dev.elpida.qt.metainfo.xml" "$installDir/usr/share/metainfo/dev.elpida.qt.appdata.xml"
-cp -u "$rootDir/resources/dev.elpida.qt.desktop" "$installDir/usr/share/applications/"
-
-appimage-builder --skip-tests
-
-function printHelpAndExit() {
-   echo "Usage: ./createAppImage 'Installed directory' 'root repo directory'"
-   exit
-}
+this_dir="$(readlink -f "$(dirname "$0")")"
+mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/" "$INSTALL_DIR/usr/share/metainfo/" "$INSTALL_DIR/usr/share/applications/"
+cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/usr/share/icons/default/apps/32/elpida.svg"
+cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/elpida.svg"
+cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
+cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
+cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
+cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR"
+CURDIR=$PWD
+cd $INSTALL_DIR
+rm elpida
+ln -s $EXECUTABLE elpida
+cd $CURDIR
+cp -u "$this_dir/AppRun" "$INSTALL_DIR"
+./appimagetool "$INSTALL_DIR" elpida.appimage

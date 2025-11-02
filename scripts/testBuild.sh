@@ -30,31 +30,19 @@ export PACKAGE_QT_SUFFIX="Qt"
 export PACKAGE_CLI_SUFFIX="Cli"
 export DEPLOY_ENVIRONMENT="development"
 
-if [ ! -f ./appimage-builder ]; then
-  wget -O appimage-builder https://github.com/AppImageCrafters/appimage-builder/releases/download/v1.1.0/appimage-builder-1.1.0-x86_64.AppImage
-  chmod +x appimage-builder
+if [ ! -f ./appimage-tool ]; then
+  wget -O appimage-tool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+  chmod +x appimage-tool
 fi
 
-rm *.SHA256SUMS
-rm *.zsync
-rm Elpida*.AppImage
-rm -rf $INSTALL_DIR
-rm -rf $BUILD_DIR
 mkdir $INSTALL_DIR $BUILD_DIR
 cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR
 make -C build -j$(nproc) install
 mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/" "$INSTALL_DIR/usr/share/metainfo/" "$INSTALL_DIR/usr/share/applications/"
 cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/usr/share/icons/default/apps/32/elpida.svg"
+cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/elpida.svg"
 cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
 cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
 cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
-./appimage-builder --skip-tests --recipe AppImageBuilder.cli.$TARGET_ARCH.yml
-./appimage-builder --skip-tests --recipe AppImageBuilder.qt.$TARGET_ARCH.yml
-sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
-sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
-cp "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage"
-cp "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_CLI_SUFFIX.AppImage"
-sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage.SHA256SUMS
-sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage.SHA256SUMS
-sha256sum "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME_DEPLOY.$PACKAGE_QT_SUFFIX.AppImage.SHA256SUMS
-sha256sum "$PACKAGE_FILENAME_DEPLOY.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME_DEPLOY.$PACKAGE_CLI_SUFFIX.AppImage.SHA256SUMS
+cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR"
+./appimagetool ./AppDir elpida.appimage

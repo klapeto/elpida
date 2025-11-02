@@ -1,0 +1,5 @@
+#! /bin/sh
+set -e
+this_dir="$(readlink -f "$(dirname "$0")")"
+export PATH="$this_dir"/bin:"$PATH"
+exec "$this_dir"/elpida "$@"

@@ -9,20 +9,12 @@ RUN apt-get install -y \
     ca-certificates \
     gpg \
     wget \
-    python3 \
-    python-is-python3 \
-    python3-pip \
     zsync \
     gtk-update-icon-cache \
     squashfs-tools \
-    libglib2.0-bin \
     git \
     make \
     patch \
-    pkg-config \
-    automake \
-    autoconf \
-    libtool-bin \
     g++ \
     gcc
 
@@ -66,27 +58,6 @@ RUN apt-get install -y \
     qt5-image-formats-plugins:arm64 \
     qt5-image-formats-plugins:amd64
 
-# install patchelf
-WORKDIR /tmp
-RUN wget https://github.com/NixOS/patchelf/releases/download/0.12/patchelf-0.12.tar.bz2; \
-    tar -xvf patchelf-0.12.tar.bz2;  \
-    cd patchelf-0.12.20200827.8d3a16e; \
-    ./configure && make -j$(nproc) && make install; \
-    rm -rf patchelf-*
-
-# install appimage-builder
-WORKDIR /opt
-RUN git clone https://github.com/AppImageCrafters/appimage-builder.git
-
-# Force 0.14.x lief version because it crashes
-RUN sed -i 's/"lief"/"lief<0.15.0"/' appimage-builder/setup.py
-
-# python snafu requires this now...
-RUN pip install --upgrade setuptools
-
-RUN python3 -m pip install /opt/appimage-builder
-RUN rm -rf /opt/appimage-builder
-
 RUN mkdir /sources
 WORKDIR /sources
 RUN git clone --depth 1 -b release/19.x https://github.com/llvm/llvm-project.git llvm
@@ -101,5 +72,12 @@ COPY cmake-modules/hwloc.patch hwloc.patch
 RUN patch --directory=/sources/hwloc -p1 --input=/sources/hwloc.patch
 
 WORKDIR /
+
+# setup appimagetool
+RUN wget -O appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+RUN chmod +x appimagetool && mkdir /opt/appimagetool && cd /opt/appimagetool && /appimagetool --appimage-extract
+RUN ln -s /opt/appimagetool/squashfs-root/AppRun /opt/appimagetool/squashfs-root/appimagetool
+RUN rm /appimagetool
+ENV PATH=/opt/appimagetool/squashfs-root:$PATH
 
 CMD ["/bin/bash"]

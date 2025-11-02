@@ -20,7 +20,7 @@
       fi
       /mxe/tools/copydlldeps.sh -c -f "$INSTALL_DIR/bin/elpida-cli.exe" -S "/mxe/usr/$MINGW_ARCH-w64-mingw32.static/bin/" -R "$INSTALL_DIR" "$BUILD_DIR" -d "$stagingDir"
       mkdir "$stagingDir/Benchmarks"
-      find "$BUILD_DIR/src/Benchmarks" -type f -name '*.exe' -exec cp "{}" "$stagingDir/Benchmarks" \;
+      find "$INSTALL_DIR/bin/Benchmarks" -type f -name '*.exe' -exec cp "{}" "$stagingDir/Benchmarks" \;
       cp "$INSTALL_DIR/bin/elpida-cli.exe" "$stagingDir"
       cp "$INSTALL_DIR/bin/elpida-info-dumper.exe" "$stagingDir"
       cp -r "$INSTALL_DIR/bin/assets" "$stagingDir"

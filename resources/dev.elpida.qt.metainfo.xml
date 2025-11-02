@@ -2,12 +2,11 @@
 <component type="desktop-application">
     <id>dev.elpida.qt</id>
 
+    <metadata_license>FSFAP</metadata_license>
+
     <name>Elpida</name>
     <summary>CPU/Algorithm benchmarking framework</summary>
-
-    <metadata_license>FSFAP</metadata_license>
-    <project_license>GPL-3.0-or-later</project_license>
-
+    <icon type="stock">elpida</icon>
     <description>
         <p>
             Elpida is an Open Source (GPLv3) Benchmarking framework for measuring performance of computer hardware or
@@ -16,17 +15,43 @@
             measuring computer hardware capabilities.
         </p>
     </description>
-
+    <categories>
+        <category>Utility</category>
+        <category>Profiling</category>
+    </categories>
+    <keywords>
+        <keyword>benchmark</keyword>
+        <keyword>cpu</keyword>
+    </keywords>
+    <url type="homepage">
+        https://www.elpida.dev
+    </url>
+    <url type="contribute">
+        https://gitlab.com/dev-hood/elpida/elpida
+    </url>
+    <url type="bugtracker">
+        https://gitlab.com/dev-hood/elpida/elpida/-/issues
+    </url>
     <launchable type="desktop-id">dev.elpida.qt.desktop</launchable>
+    <project_license>GPL-3.0-or-later</project_license>
+    <supports>
+        <internet>offline-only</internet>
+    </supports>
+    <developer id="klapeto.gitlab.com">
+        <name>Ioannis Panagiotopoulos</name>
+    </developer>
+    <content_rating type="oars-1.0">
+        <content_attribute id="social-info">mild</content_attribute>
+    </content_rating>
     <screenshots>
         <screenshot type="default">
-            <image>https://beta.elpida.dev/assets/elpida-qt-scrn-01.png</image>
+            <image>https://www.elpida.dev/assets/elpida-qt-scrn-01.png</image>
         </screenshot>
         <screenshot>
-            <image>https://beta.elpida.dev/assets/elpida-qt-scrn-02.png</image>
+            <image>https://www.elpida.dev/assets/elpida-qt-scrn-02.png</image>
         </screenshot>
         <screenshot>
-            <image>https://beta.elpida.dev/assets/elpida-qt-scrn-03.png</image>
+            <image>https://www.elpida.dev/assets/elpida-qt-scrn-03.png</image>
         </screenshot>
     </screenshots>
 </component>
