@@ -1,1 +1,1 @@
-set PATH /media/klapeto/Αρχεία/Code/mxe/usr/bin:$PATH
+export PATH="$PATH:/media/klapeto/Αρχεία/Code/mxe/usr/bin"
