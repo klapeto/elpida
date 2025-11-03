@@ -1,0 +1,1 @@
+export PATH="$PATH:/media/klapeto/649c93e3-7e94-41e1-8241-a961d8f4f4fc/toolchains/llvm-mingw-msvcrt-ubuntu-22.04/bin"

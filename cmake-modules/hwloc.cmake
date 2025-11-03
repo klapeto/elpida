@@ -26,7 +26,11 @@ function(include_hwloc sourceDir)
     endif ()
 
     if (NOT HWLOC_TRIPLE)
-        execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpmachine OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE HWLOC_TRIPLE)
+        if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+            execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpmachine OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE HWLOC_TRIPLE)
+        elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang")
+            set(HWLOC_TRIPLE ${CROSS_TRIPLE})
+        endif ()
     endif ()
 
     file(APPEND ${ENV_FILE} "export AR=\"${CMAKE_AR}\"\n")
