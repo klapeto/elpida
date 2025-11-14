@@ -12,39 +12,13 @@ function(include_hwloc sourceDir)
     find_program(MAKE_EXECUTABLE NAMES gmake make mingw32-make REQUIRED)
     find_program(PATCH_EXECUTABLE NAMES patch REQUIRED)
 
-    set(ENV_FILE ${CMAKE_CURRENT_BINARY_DIR}/env.sh)
-    file(WRITE ${ENV_FILE} "#!/bin/bash\n")
-
-    if (ANDROID)
-        set(HWLOC_TRIPLE ${CMAKE_LIBRARY_ARCHITECTURE}${ANDROID_NATIVE_API_LEVEL})
-        file(APPEND ${ENV_FILE} "export CC=\"${CMAKE_C_COMPILER} --target=${HWLOC_TRIPLE}\"\n")
-        file(APPEND ${ENV_FILE} "export CXX=\"${CMAKE_CXX_COMPILER} --target=${HWLOC_TRIPLE}\"\n")
-        file(APPEND ${ENV_FILE} "export STRIP=\"${ANDROID_STRIP}\"\n")
-    else ()
-        file(APPEND ${ENV_FILE} "export CC=\"${CMAKE_C_COMPILER}\"\n")
-        file(APPEND ${ENV_FILE} "export CXX=\"${CMAKE_CXX_COMPILER}\"\n")
-    endif ()
-
-    if (NOT HWLOC_TRIPLE)
-        if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-            execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpmachine OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE HWLOC_TRIPLE)
-        elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-            set(HWLOC_TRIPLE ${CROSS_TRIPLE})
-        endif ()
-    endif ()
-
-    file(APPEND ${ENV_FILE} "export AR=\"${CMAKE_AR}\"\n")
-    file(APPEND ${ENV_FILE} "export RANLIB=\"${CMAKE_RANLIB}\"\n")
-    file(APPEND ${ENV_FILE} "export CFLAGS=\"${CMAKE_C_FLAGS}\"\n")
-    file(APPEND ${ENV_FILE} "export CXXFLAGS=\"${CMAKE_CXX_FLAGS}\"\n")
-
-    file(APPEND ${ENV_FILE} "${sourceDir}/autogen.sh && ${sourceDir}/configure --host=${HWLOC_TRIPLE} --with-sysroot=${CMAKE_SYSROOT} --prefix=${ELPIDA_LOCAL_INSTALL_DIR} --enable-static --disable-shared --enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero --disable-gl --disable-libudev")
-    file(CHMOD ${ENV_FILE} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE WORLD_READ WORLD_WRITE WORLD_EXECUTE)
+    set(HWLOC_CONFIG_FILE ${CMAKE_CURRENT_BINARY_DIR}/hwloc.config.sh)
+    generate_environment_file(${HWLOC_CONFIG_FILE} "${sourceDir}/autogen.sh && ${sourceDir}/configure --host=$TRIPLE --with-sysroot=$SYSROOT --prefix=${ELPIDA_LOCAL_INSTALL_DIR} --enable-static --disable-shared --enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero --disable-gl --disable-libudev")
 
     ExternalProject_Add(hwloc_dep
             SOURCE_DIR ${sourceDir}
             CONFIGURE_HANDLED_BY_BUILD true
-            CONFIGURE_COMMAND ${ENV_FILE}
+            CONFIGURE_COMMAND ${HWLOC_CONFIG_FILE}
             BUILD_COMMAND ${MAKE_EXECUTABLE} -j$(nproc)
             INSTALL_COMMAND ${MAKE_EXECUTABLE} install
             TEST_COMMAND ""

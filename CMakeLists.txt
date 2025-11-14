@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 include(cmake-modules/GetElpidaVersion.cmake)
 include(cmake-modules/generate_product_version.cmake)
+include(cmake-modules/autotools.env.cmake)
 
 project(Elpida VERSION ${ELPIDA_VERSION}
         DESCRIPTION "Elpida Simple Benchmarking Framework"

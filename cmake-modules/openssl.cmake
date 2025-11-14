@@ -1,41 +1,74 @@
-# openssl-cmake cross config
-if (MINGW AND CMAKE_HOST_UNIX)
-    set(CROSS ON)
-    if (CMAKE_SYSTEM_PROCESSOR MATCHES x86_64)
-        set(CROSS_TARGET mingw64)
-        set(CROSS_PREFIX x86_64-w64-mingw32.static-)
-    else()
-        set(CROSS_TARGET mingw)
-        set(CROSS_PREFIX i686-w64-mingw32.static-)
-    endif()
-elseif (MINGW)
-    if (CMAKE_SYSTEM_PROCESSOR MATCHES AMD64)
-        set(OPENSSL_ADDITIONAL_FLAGS mingw64)
-    else()
-        set(OPENSSL_ADDITIONAL_FLAGS mingw)
-    endif()
-endif()
+# MIT License
+#
+# Copyright (c) 2015-2024 The ViaDuck Project
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
 
-if (CMAKE_HOST_UNIX AND CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_PROCESSOR MATCHES aarch64)
-    set(CROSS ON)
-    set(CROSS_TARGET linux-aarch64)
-    set(CROSS_PREFIX aarch64-linux-gnu-)
-endif()
+# heavily modified code from The ViaDuck Project
 
-if (ANDROID)
-    set(CROSS ON)
-    set(CROSS_ANDROID ON)
-    set(OPENSSL_ADDITIONAL_FLAGS "-D__ANDROID_API__=${ANDROID_NATIVE_API_LEVEL}")
-endif ()
+include(ProcessorCount)
+ProcessorCount(NUM_JOBS)
+include(ExternalProject)
 
-set(BUILD_OPENSSL ON)
-set(OPENSSL_USE_STATIC_LIBS ON)
 set(OPENSSL_BUILD_VERSION 3.3.1)
 set(OPENSSL_BUILD_HASH 777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e)
-set(OPENSSL_MODULES "no-shared no-asm no-engine no-hw no-cast no-md2 no-md4 no-mdc2 no-rc4 no-rc5 no-engine no-idea no-mdc2 no-rc5 no-camellia no-ssl3 no-heartbeats no-gost no-deprecated no-capieng no-comp no-dtls no-psk no-srp no-dso no-dsa no-rc2 no-des no-apps ${OPENSSL_ADDITIONAL_FLAGS}")
-add_subdirectory(${ELPIDA_EXTERN_PATH}/openssl-cmake ${CMAKE_CURRENT_BINARY_DIR}/openssl-cmake)
+set(OPENSSL_MODULES "no-shared no-asm no-engine no-hw no-cast no-md2 no-md4 no-mdc2 no-rc4 no-rc5 no-engine no-idea no-mdc2 no-rc5 no-camellia no-ssl3 no-heartbeats no-gost no-deprecated no-capieng no-comp no-dtls no-psk no-srp no-dso no-dsa no-rc2 no-des no-apps")
+set(OPENSSL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/openssl-install)
 
-# Hack to get the library archive. CMAKE messes up the link order by moving the ws2_32 lib at the beginning
-get_property(CRYPTO_INTERFACE_LIB TARGET crypto PROPERTY INTERFACE_LINK_LIBRARIES)
-get_property(CRYPTO_LIB TARGET ${CRYPTO_INTERFACE_LIB} PROPERTY IMPORTED_LOCATION)
-set(CRYPTO_CUSTOM_LIB_PATH ${CRYPTO_LIB} CACHE PATH "")
+if (CMAKE_HOST_UNIX AND CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_PROCESSOR MATCHES aarch64)
+    set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} linux-aarch64")
+endif()
+
+set(OPENSSL_INCLUDE_VAR "${OPENSSL_PREFIX_PATH}/include")
+
+foreach(OPENSSL_BASE_NAME crypto ssl)
+    set(OPENSSL_STATIC_LIB ${OPENSSL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${OPENSSL_BASE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+    add_library(${OPENSSL_BASE_NAME} STATIC IMPORTED GLOBAL)
+    set_property(TARGET ${OPENSSL_BASE_NAME} PROPERTY IMPORTED_LOCATION ${OPENSSL_STATIC_LIB})
+
+    list(APPEND ${OPENSSL_BYPRODUCTS_VAR} ${OPENSSL_STATIC_LIB})
+endforeach()
+
+set(OPENSSL_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/src)
+set(OPENSSL_CONFIG_FILE ${CMAKE_CURRENT_BINARY_DIR}/openssl.config.sh)
+generate_environment_file(${OPENSSL_CONFIG_FILE} "${OPENSSL_SRC_DIR}/Configure --prefix=${OPENSSL_PREFIX} --libdir=${CMAKE_INSTALL_LIBDIR} --openssldir=${OPENSSL_PREFIX} ${OPENSSL_MODULES} ${OPENSSL_ADDITIONAL_FLAGS}")
+
+find_program(MAKE_PROGRAM make)
+
+ExternalProject_Add(openssl
+        URL https://mirror.viaduck.org/openssl/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
+        ${OPENSSL_CHECK_HASH}
+        SOURCE_DIR ${OPENSSL_SRC_DIR}
+        CONFIGURE_COMMAND ${OPENSSL_CONFIG_FILE}
+
+        BUILD_COMMAND ${MAKE_PROGRAM} -j ${NUM_JOBS}
+        BUILD_BYPRODUCTS ${OPENSSL_BYPRODUCTS}
+
+        INSTALL_COMMAND ${MAKE_PROGRAM} install_sw
+)
+
+add_dependencies(ssl openssl)
+add_dependencies(crypto openssl)
+
+# set include locations
+target_include_directories(ssl BEFORE INTERFACE ${OPENSSL_INCLUDE_DIR})
+target_include_directories(crypto BEFORE INTERFACE ${OPENSSL_INCLUDE_DIR})
+

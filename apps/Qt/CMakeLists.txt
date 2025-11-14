@@ -99,20 +99,25 @@ set(ELPIDA_QT_SOURCES
         QtDesktopService.hpp
 )
 
-find_package(Qt5 COMPONENTS Widgets Charts)
+if (CMAKE_CROSSCOMPILING)
+	set(QT_HOST_PATH /home/klapeto/dev/amd64-linux-gnu/usr)
+	set(QT_HOST_PATH_CMAKE_DIR /home/klapeto/dev/amd64-linux-gnu/lib/x86_64-linux-gnu/cmake)
+	set(QT_REQUIRE_HOST_PATH_CHECK ON)
 
-if (NOT Qt5Core_FOUND)
+	set(Qt6CoreTools_DIR "/home/klapeto/dev/amd64-linux-gnu/lib/x86_64-linux-gnu/cmake/Qt6CoreTools")
+	set(Qt6DBusTools_DIR "/home/klapeto/dev/amd64-linux-gnu/lib/x86_64-linux-gnu/cmake/Qt6DBusTools")
+	set(Qt6GuiTools_DIR "/home/klapeto/dev/amd64-linux-gnu/lib/x86_64-linux-gnu/cmake/Qt6GuiTools")
+	set(Qt6WidgetsTools_DIR "/home/klapeto/dev/amd64-linux-gnu/lib/x86_64-linux-gnu/cmake/Qt6WidgetsTools")
+endif ()
+
+find_package(Qt6 COMPONENTS Widgets Charts)
+
+if (NOT Qt6Core_FOUND)
 	message("Disabling QT front end because Qt5 libraries (Core/Widgets/Charts) were not found")
 	return()
 endif()
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-if (CMAKE_VERSION VERSION_LESS "3.7.0")
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif ()
+qt_standard_project_setup()
 
 if (MSYS OR MINGW OR MSVC)
 	generate_product_version(
@@ -128,14 +133,14 @@ if (MSYS OR MINGW OR MSVC)
 	)
 endif()
 
-add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
+qt_add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
 
 if (MSYS OR MINGW)
 	target_link_options(elpida-qt PRIVATE -Wl,-subsystem,windows)
 endif()
 
 target_include_directories(elpida-qt PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt5::Core Qt5::Widgets Qt5::Charts)
+target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt6::Core Qt6::Widgets Qt6::Charts)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION bin)
 install(FILES qt.conf DESTINATION bin)
