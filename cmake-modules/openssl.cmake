@@ -27,8 +27,8 @@ include(ProcessorCount)
 ProcessorCount(NUM_JOBS)
 include(ExternalProject)
 
-set(OPENSSL_BUILD_VERSION 3.3.1)
-set(OPENSSL_BUILD_HASH 777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e)
+set(OPENSSL_BUILD_VERSION 3.6.0)
+set(OPENSSL_BUILD_HASH b6a5f44b7eb69e3fa35dbf15524405b44837a481d43d81daddde3ff21fcbb8e9)
 set(OPENSSL_MODULES "no-shared no-asm no-engine no-hw no-cast no-md2 no-md4 no-mdc2 no-rc4 no-rc5 no-engine no-idea no-mdc2 no-rc5 no-camellia no-ssl3 no-heartbeats no-gost no-deprecated no-capieng no-comp no-dtls no-psk no-srp no-dso no-dsa no-rc2 no-des no-apps")
 set(OPENSSL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/openssl-install)
 
@@ -64,7 +64,7 @@ generate_environment_file(${OPENSSL_CONFIG_FILE} "${OPENSSL_SRC_DIR}/Configure -
 find_program(MAKE_PROGRAM make)
 
 ExternalProject_Add(openssl
-        URL https://mirror.viaduck.org/openssl/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
+        URL https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_BUILD_VERSION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
         ${OPENSSL_CHECK_HASH}
         SOURCE_DIR ${OPENSSL_SRC_DIR}
         CONFIGURE_COMMAND ${OPENSSL_CONFIG_FILE}
