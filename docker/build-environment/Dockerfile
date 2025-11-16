@@ -85,6 +85,21 @@ RUN ../configure -static  \
 RUN cmake --build .
 RUN cmake --install .
 
+# aarch64 mingw
+RUN rm -rf *
+RUN ../configure -static  \
+    -qt-host-path /lib  \
+    -prefix /opt/mingw/aarch64-w64-mingw32 --  \
+    -DCMAKE_SYSTEM_NAME=Windows  \
+    -DCMAKE_SYSTEM_PROCESSOR=aarch64  \
+    -DCMAKE_SYSROOT="/opt/mingw/aarch64-w64-mingw32"  \
+    -DQt6HostInfo_DIR=/lib/x86_64-linux-gnu/cmake/Qt6HostInfo/  \
+    -DCMAKE_C_COMPILER=aarch64-w64-mingw32-clang  \
+    -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-clang++  \
+    -DCMAKE_FIND_ROOT_PATH="/opt/mingw/aarch64-w64-mingw32"
+RUN cmake --build .
+RUN cmake --install .
+
 # windows build
 #cmake -DTARGET_TRIPLE=x86_64-w64-mingw32 -DTARGET_PREFIX=x86_64-w64-mingw32 -DTARGET_SYSTEM=Windows -DTARGET_ARCH=x86_64 -DTARGET_SYSROOT="/opt/mingw/x86_64-w64-mingw32" -DHOST_TOOLS_SYSROOT="/" -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake  ..
 
