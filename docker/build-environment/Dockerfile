@@ -18,7 +18,11 @@ RUN apt install -y \
     xz-utils \
     build-essential \
     debootstrap \
-    qemu-user-binfmt
+    qemu-user-binfmt \
+    qt6-base-dev \
+    libqt6svg6-dev  \
+    libqt6charts6-dev \
+    libgl1-mesa-dev
 
 # install latest cmake
 RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
@@ -48,12 +52,40 @@ RUN chroot aarch64-linux-gnu symlinks -cr .
 WORKDIR /opt
 RUN git clone -b 6.2.4 --depth=1 git://code.qt.io/qt/qt5.git qt6
 WORKDIR /opt/qt6
-RUN ./init-repository --module-subset=qtcharts,qtsvg
+RUN ./init-repository --module-subset=qtcharts,qtsvg,qtbase
 RUN mkdir build
 WORKDIR /opt/qt6/build
-#RUN ../configure -static -qt-host-path /sysroots/amd64-linux-gnu/usr/lib -prefix /opt/mingw/x86_64-w64-mingw32 -- -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_SYSROOT="/opt/mingw/x86_64-w64-mingw32" -DQt6HostInfo_DIR=/sysroots/amd64-linux-gnu/lib/x86_64-linux-gnu/cmake/Qt6HostInfo/ -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_FIND_ROOT_PATH="/opt/mingw/x86_64-w64-mingw32"
-#RUN ../configure -static -qt-host-path /lib -prefix /opt/mingw/x86_64-w64-mingw32 -- -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_SYSROOT="/opt/mingw/x86_64-w64-mingw32" -DQt6HostInfo_DIR=/lib/x86_64-linux-gnu/cmake/Qt6HostInfo/ -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_FIND_ROOT_PATH="/opt/mingw/x86_64-w64-mingw32"
 
+# x86_64 mingw
+RUN ../configure -static  \
+    -qt-host-path /lib  \
+    -prefix /opt/mingw/x86_64-w64-mingw32 --  \
+    -DCMAKE_SYSTEM_NAME=Windows  \
+    -DCMAKE_SYSTEM_PROCESSOR=x86_64  \
+    -DCMAKE_SYSROOT="/opt/mingw/x86_64-w64-mingw32"  \
+    -DQt6HostInfo_DIR=/lib/x86_64-linux-gnu/cmake/Qt6HostInfo/  \
+    -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang  \
+    -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++  \
+    -DCMAKE_FIND_ROOT_PATH="/opt/mingw/x86_64-w64-mingw32"
+RUN cmake --build .
+RUN cmake --install .
+
+# x86_64 mingw
+RUN rm -rf *
+RUN ../configure -static  \
+    -qt-host-path /lib  \
+    -prefix /opt/mingw/i686-w64-mingw32 --  \
+    -DCMAKE_SYSTEM_NAME=Windows  \
+    -DCMAKE_SYSTEM_PROCESSOR=i686  \
+    -DCMAKE_SYSROOT="/opt/mingw/i686-w64-mingw32"  \
+    -DQt6HostInfo_DIR=/lib/x86_64-linux-gnu/cmake/Qt6HostInfo/  \
+    -DCMAKE_C_COMPILER=i686-w64-mingw32-clang  \
+    -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++  \
+    -DCMAKE_FIND_ROOT_PATH="/opt/mingw/i686-w64-mingw32"
+RUN cmake --build .
+RUN cmake --install .
+
+# windows build
 #cmake -DTARGET_TRIPLE=x86_64-w64-mingw32 -DTARGET_PREFIX=x86_64-w64-mingw32 -DTARGET_SYSTEM=Windows -DTARGET_ARCH=x86_64 -DTARGET_SYSROOT="/opt/mingw/x86_64-w64-mingw32" -DHOST_TOOLS_SYSROOT="/" -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake  ..
 
 WORKDIR /
