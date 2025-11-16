@@ -33,8 +33,8 @@ elseif (MSYS OR MSVC OR MINGW)
     add_compile_definitions(-D_UNICODE=1)
     add_compile_definitions(-DUNICODE=1)
     add_compile_definitions(-DWIN32=1)
-    add_compile_definitions(-DWINVER=0x0501) # We support XP and above
-    add_compile_definitions(-D_WIN32_WINNT=0x0501) # We support XP and above
+    add_compile_definitions(-DWINVER=0x0600) # We support XP and above
+    add_compile_definitions(-D_WIN32_WINNT=0x0600) # We support XP and above
 endif ()
 
 if (LINUX)

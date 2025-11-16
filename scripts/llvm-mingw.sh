@@ -1,0 +1,1 @@
+export PATH="$PATH:/media/klapeto/1c3958e6-7b3f-4d9b-9dc8-8154c5cef89c/toolchains/llvm-mingw/bin"
