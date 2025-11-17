@@ -41,7 +41,8 @@ workflow:
           - src/**/*
           - tests/**/*
           - CMakeLists.txt
-          - "*.yml"
+          - .gitlab-ci.yml
+          - ci/**/*
       when: always
     - when: never
 

@@ -20,6 +20,7 @@ RUN apt install -y --no-install-recommends \
     qt6-base-dev \
     libqt6svg6-dev  \
     libqt6charts6-dev \
+    libqt6opengl6-dev \
     libgl1-mesa-dev
 
 # install latest cmake
@@ -90,8 +91,8 @@ RUN apt-get install -y \
     qt6-base-dev:arm64 \
     libqt6svg6-dev:arm64  \
     libqt6charts6-dev:arm64 \
+    libqt6opengl6-dev:arm64 \
     libgl1-mesa-dev:arm64
-
 
 WORKDIR /
 
