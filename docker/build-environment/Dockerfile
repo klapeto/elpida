@@ -102,4 +102,4 @@ RUN ln -s /opt/appimagetool/squashfs-root/AppRun /opt/appimagetool/squashfs-root
 RUN rm /appimagetool
 ENV PATH=/opt/appimagetool/squashfs-root:$PATH
 
-ENTRYPOINT ["/bin/bash"]
+CMD ["/bin/bash"]
