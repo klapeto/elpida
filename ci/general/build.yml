@@ -12,6 +12,8 @@
       -DTARGET_SYSTEM=$TARGET_OS
       -DTARGET_ARCH=$TARGET_ARCH
       -DTARGET_SYSROOT=$TARGET_SYSROOT
+      -DTARGET_TRIPLE=$TARGET_TRIPLE
+      -DCLANG_TARGET_TRIPLE=$CLANG_TARGET_TRIPLE
       -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/llvm-cross.cmake
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
       -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
@@ -31,9 +33,11 @@
 
 build:linux:amd64:
   variables:
-    TARGET_ARCH: amd64
+    TARGET_ARCH: x86_64
     TARGET_OS: Linux
     TARGET_SYSROOT: /
+    TARGET_TRIPLE: x86_64-linux-gnu
+    CLANG_TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
     - docker-image
   extends: .build:linux
@@ -43,15 +47,20 @@ build:linux:aarch64:
     TARGET_ARCH: aarch64
     TARGET_OS: Linux
     TARGET_SYSROOT: /
+    TARGET_TRIPLE: aarch64-linux-gnu
+    CLANG_TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
     - docker-image
   extends: .build:linux
 
 build:windows:amd64:
   variables:
-    TARGET_ARCH: amd64
+    TARGET_ARCH: x86_64
     TARGET_OS: Windows
     TARGET_SYSROOT: /opt/toolchains/llvm-mingw/x86_64-w64-mingw32
+    TARGET_TRIPLE: x86_64-windows-mingw32
+    TARGET_PREFIX: x86_64-w64-mingw32-
+    CLANG_TARGET_TRIPLE: x86_64-w64-windows-gnu
   dependencies:
     - docker-image
   extends: .build:linux
@@ -61,6 +70,9 @@ build:windows:i686:
     TARGET_ARCH: i686
     TARGET_OS: Windows
     TARGET_SYSROOT: /opt/toolchains/llvm-mingw/i686-w64-mingw32
+    TARGET_TRIPLE: i686-windows-mingw32
+    TARGET_PREFIX: i686-w64-mingw32-
+    CLANG_TARGET_TRIPLE: i686-w64-windows-gnu
   dependencies:
     - docker-image
   extends: .build:linux
@@ -70,6 +82,9 @@ build:windows:aarch64:
     TARGET_ARCH: aarch64
     TARGET_OS: Windows
     TARGET_SYSROOT: /opt/toolchains/llvm-mingw/aarch64-w64-mingw32
+    TARGET_TRIPLE: aarch64-windows-mingw32
+    TARGET_PREFIX: aarch64-w64-mingw32-
+    CLANG_TARGET_TRIPLE: aarch64-w64-windows-gnu
   dependencies:
     - docker-image
   extends: .build:linux
