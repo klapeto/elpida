@@ -46,23 +46,43 @@
       - $PACKAGE_FILENAME.zip
       - SHA256SUMS
 
-package:windows:amd64:
-  variables:
-    TARGET_ARCH: amd64
-    MINGW_ARCH: x86_64
-    TARGET_OS: windows
-  dependencies:
-    - build:windows:amd64
-  extends: .package:windows
-
-package:windows:i686:
-  variables:
-    TARGET_ARCH: i686
-    MINGW_ARCH: i686
-    TARGET_OS: windows
-  dependencies:
-    - build:windows:i686
-  extends: .package:windows
+#package:linux:amd64:
+#  variables:
+#    TARGET_ARCH: amd64
+#    TARGET_OS: linux
+#    TARGET_ARCH_APPIMAGE_RUNTIME: x86_64
+#    TARGET_ARCH_APPIMAGE_APT: amd64
+#  dependencies:
+#    - build:linux:amd64
+#  extends: .package:linux
+#
+#package:linux:aarch64:
+#  variables:
+#    TARGET_ARCH: aarch64
+#    TARGET_OS: linux
+#    TARGET_ARCH_APPIMAGE_RUNTIME: aarch64
+#    TARGET_ARCH_APPIMAGE_APT: arm64
+#  dependencies:
+#    - build:linux:aarch64
+#  extends: .package:linux
+#
+#package:windows:amd64:
+#  variables:
+#    TARGET_ARCH: amd64
+#    MINGW_ARCH: x86_64
+#    TARGET_OS: windows
+#  dependencies:
+#    - build:windows:amd64
+#  extends: .package:windows
+#
+#package:windows:i686:
+#  variables:
+#    TARGET_ARCH: i686
+#    MINGW_ARCH: i686
+#    TARGET_OS: windows
+#  dependencies:
+#    - build:windows:i686
+#  extends: .package:windows
 
 package:windows:aarch64:
   variables:
@@ -72,23 +92,3 @@ package:windows:aarch64:
   dependencies:
     - build:windows:aarch64
   extends: .package:windows
-
-package:linux:amd64:
-  variables:
-    TARGET_ARCH: amd64
-    TARGET_OS: linux
-    TARGET_ARCH_APPIMAGE_RUNTIME: x86_64
-    TARGET_ARCH_APPIMAGE_APT: amd64
-  dependencies:
-    - build:linux:amd64
-  extends: .package:linux
-
-package:linux:aarch64:
-  variables:
-    TARGET_ARCH: aarch64
-    TARGET_OS: linux
-    TARGET_ARCH_APPIMAGE_RUNTIME: aarch64
-    TARGET_ARCH_APPIMAGE_APT: arm64
-  dependencies:
-    - build:linux:aarch64
-  extends: .package:linux

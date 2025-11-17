@@ -45,21 +45,37 @@
       - $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
       - $PACKAGE_FILENAME.zip.SHA256SUMS
 
-deploy:windows:amd64:
-  variables:
-    TARGET_ARCH: amd64
-    TARGET_OS: windows
-  dependencies:
-    - package:windows:amd64
-  extends: .deploy:windows
-
-deploy:windows:i686:
-  variables:
-    TARGET_ARCH: i686
-    TARGET_OS: windows
-  dependencies:
-    - package:windows:i686
-  extends: .deploy:windows
+#deploy:linux:amd64:
+#  variables:
+#    TARGET_ARCH: amd64
+#    TARGET_OS: linux
+#  dependencies:
+#    - package:linux:amd64
+#  extends: .deploy:linux
+#
+#deploy:linux:aarch64:
+#  variables:
+#    TARGET_ARCH: aarch64
+#    TARGET_OS: linux
+#  dependencies:
+#    - package:linux:aarch64
+#  extends: .deploy:linux
+#
+#deploy:windows:amd64:
+#  variables:
+#    TARGET_ARCH: amd64
+#    TARGET_OS: windows
+#  dependencies:
+#    - package:windows:amd64
+#  extends: .deploy:windows
+#
+#deploy:windows:i686:
+#  variables:
+#    TARGET_ARCH: i686
+#    TARGET_OS: windows
+#  dependencies:
+#    - package:windows:i686
+#  extends: .deploy:windows
 
 deploy:windows:aarch64:
   variables:
@@ -68,19 +84,3 @@ deploy:windows:aarch64:
   dependencies:
     - package:windows:aarch64
   extends: .deploy:windows
-
-deploy:linux:amd64:
-  variables:
-    TARGET_ARCH: amd64
-    TARGET_OS: linux
-  dependencies:
-    - package:linux:amd64
-  extends: .deploy:linux
-
-deploy:linux:aarch64:
-  variables:
-    TARGET_ARCH: aarch64
-    TARGET_OS: linux
-  dependencies:
-    - package:linux:aarch64
-  extends: .deploy:linux

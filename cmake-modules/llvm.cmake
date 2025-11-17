@@ -1,5 +1,5 @@
 # Force release for here, we do not want 2gb binaries
-set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Release)
 set(ENABLE_STATIC ON CACHE INTERNAL "")
 set(LLVM_ENABLE_PROJECTS clang CACHE INTERNAL "")
 set(CMAKE_SKIP_INSTALL_RPATH ON CACHE INTERNAL "")
