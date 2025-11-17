@@ -18,7 +18,7 @@ variables:
   PACKAGE_CLI_SUFFIX: 'Cli'
   DEPLOY_ENVIRONMENT: "development"
   IMAGE_TAG: $CI_COMMIT_REF_SLUG
-  IMAGE_PART_NAME: "$CI_REGISTRY_IMAGE/build-environment/$TARGET_OS"
+  IMAGE_PART_NAME: "$CI_REGISTRY_IMAGE/build-environment"
   IMAGE_NAME: "$IMAGE_PART_NAME:$IMAGE_TAG"
 
 workflow:
@@ -46,6 +46,5 @@ workflow:
     - when: never
 
 include:
-  - local: '/ci/linux/root.yml'
-  - local: '/ci/windows/root.yml'
+  - local: '/ci/general/root.yml'
   - local: '/ci/docs.yml'

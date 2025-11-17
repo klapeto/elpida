@@ -3,8 +3,6 @@ LABEL authors="klapeto"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-#https://github.com/multiarch/qemu-user-static/tree/master
-
 RUN apt update && apt -y full-upgrade
 RUN apt install -y --no-install-recommends \
     ca-certificates \
@@ -19,8 +17,6 @@ RUN apt install -y --no-install-recommends \
     python3 \
     xz-utils \
     build-essential \
-    debootstrap \
-    qemu-user-binfmt \
     qt6-base-dev \
     libqt6svg6-dev  \
     libqt6charts6-dev \
@@ -41,11 +37,6 @@ WORKDIR /opt/toolchains
 RUN wget -O mingw.tar.xz https://github.com/mstorsjo/llvm-mingw/releases/download/20251021/llvm-mingw-20251021-msvcrt-ubuntu-22.04-x86_64.tar.xz
 RUN tar xf mingw.tar.xz && mv llvm-mingw-20251021-msvcrt-ubuntu-22.04-x86_64/ llvm-mingw && rm -rf mingw.tar.xz
 ENV PATH=/opt/toolchains/llvm-mingw/bin:$PATH
-
-# Crete Linux Aarch64 packages
-WORKDIR /opt/sysroots
-RUN debootstrap --arch=arm64 --variant=minbase --include=build-essential,symlinks,qt6-base-dev,qt6-charts-dev,qt6-svg-dev stable aarch64-linux-gnu && \
-    chroot aarch64-linux-gnu symlinks -cr .
 
 # Clone Qt6
 WORKDIR /opt/sources
@@ -100,11 +91,15 @@ RUN apt-get install -y \
     libqt6svg6-dev:arm64  \
     libqt6charts6-dev:arm64 \
     libgl1-mesa-dev:arm64
-#cmake -DTARGET_TRIPLE=aarch64-linux-gnu -DTARGET_SYSTEM=Linux -DTARGET_ARCH=aarch64 -DHOST_TOOLS_SYSROOT="/" -DTARGET_SYSROOT="/" -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake ..
 
-# windows build
-#cmake -DTARGET_TRIPLE=x86_64-w64-mingw32 -DTARGET_PREFIX=x86_64-w64-mingw32 -DTARGET_SYSTEM=Windows -DTARGET_ARCH=x86_64 -DTARGET_SYSROOT="/opt/mingw/x86_64-w64-mingw32" -DHOST_TOOLS_SYSROOT="/" -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake  ..
-#cmake -DTARGET_TRIPLE=aarch64-w64-mingw32 -DTARGET_PREFIX=aarch64-w64-mingw32 -DTARGET_SYSTEM=Windows -DTARGET_ARCH=aarch64 -DTARGET_SYSROOT="/opt/mingw/aarch64-w64-mingw32" -DHOST_TOOLS_SYSROOT="/" -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake  ..
 
 WORKDIR /
+
+# setup appimagetool
+RUN wget -O appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+RUN chmod +x appimagetool && mkdir /opt/appimagetool && cd /opt/appimagetool && /appimagetool --appimage-extract
+RUN ln -s /opt/appimagetool/squashfs-root/AppRun /opt/appimagetool/squashfs-root/appimagetool
+RUN rm /appimagetool
+ENV PATH=/opt/appimagetool/squashfs-root:$PATH
+
 ENTRYPOINT ["/bin/bash"]

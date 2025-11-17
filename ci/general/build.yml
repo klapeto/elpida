@@ -1,0 +1,75 @@
+.build:linux:
+  image: $IMAGE_NAME
+  stage: build
+  tags:
+    - amd64
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  script:
+    - cmake -S .
+      -B "$BUILD_DIR"
+      -DCMAKE_BUILD_TYPE=Release
+      -DTARGET_SYSTEM=$TARGET_OS
+      -DTARGET_ARCH=$TARGET_ARCH
+      -DTARGET_SYSROOT=$TARGET_SYSROOT
+      -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/llvm-cross.cmake
+      -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+      -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
+      -DELPIDA_WEB_API_URL="$ELPIDA_WEB_API_URL"
+      -DELPIDA_WEB_API_KEY="$ELPIDA_WEB_API_KEY"
+      -DELPIDA_VERSION_MAJOR=$ELPIDA_VERSION_MAJOR
+      -DELPIDA_VERSION_MINOR=$ELPIDA_VERSION_MINOR
+      -DELPIDA_VERSION_REVISION=$ELPIDA_VERSION_REVISION
+      -DELPIDA_VERSION_BUILD=$ELPIDA_VERSION_BUILD
+    # LLVM build randomly fails with these targets so pre-build them
+    - make -C "$BUILD_DIR" -j$(nproc) llvm-tblgen llvm-config clang-tblgen
+    - make -C "$BUILD_DIR" -j$(nproc) install
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $INSTALL_DIR
+
+build:linux:amd64:
+  variables:
+    TARGET_ARCH: amd64
+    TARGET_OS: Linux
+    TARGET_SYSROOT: /
+  dependencies:
+    - docker-image
+  extends: .build:linux
+
+build:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+    TARGET_OS: Linux
+    TARGET_SYSROOT: /
+  dependencies:
+    - docker-image
+  extends: .build:linux
+
+build:windows:amd64:
+  variables:
+    TARGET_ARCH: amd64
+    TARGET_OS: Windows
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/x86_64-w64-mingw32
+  dependencies:
+    - docker-image
+  extends: .build:linux
+
+build:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+    TARGET_OS: Windows
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/i686-w64-mingw32
+  dependencies:
+    - docker-image
+  extends: .build:linux
+
+build:windows:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+    TARGET_OS: Windows
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/aarch64-w64-mingw32
+  dependencies:
+    - docker-image
+  extends: .build:linux

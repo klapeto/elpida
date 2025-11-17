@@ -100,14 +100,9 @@ set(ELPIDA_QT_SOURCES
 )
 
 if (CMAKE_CROSSCOMPILING)
-	set(QT_HOST_PATH "${HOST_TOOLS_SYSROOT}/usr")
-	set(QT_HOST_PATH_CMAKE_DIR "${HOST_TOOLS_SYSROOT}/lib/x86_64-linux-gnu/cmake")
+	set(QT_HOST_PATH "/usr")
+	set(QT_HOST_PATH_CMAKE_DIR "/lib/${CMAKE_HOST_SYSTEM_PROCESSOR}-linux-gnu/cmake")
 	set(QT_REQUIRE_HOST_PATH_CHECK ON)
-
-	set(Qt6CoreTools_DIR "${HOST_TOOLS_SYSROOT}/lib/x86_64-linux-gnu/cmake/Qt6CoreTools")
-	set(Qt6DBusTools_DIR "${HOST_TOOLS_SYSROOT}/lib/x86_64-linux-gnu/cmake/Qt6DBusTools")
-	set(Qt6GuiTools_DIR "${HOST_TOOLS_SYSROOT}/lib/x86_64-linux-gnu/cmake/Qt6GuiTools")
-	set(Qt6WidgetsTools_DIR "${HOST_TOOLS_SYSROOT}/lib/x86_64-linux-gnu/cmake/Qt6WidgetsTools")
 endif ()
 
 find_package(Qt6 COMPONENTS Widgets Charts)

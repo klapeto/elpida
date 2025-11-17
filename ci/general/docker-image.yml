@@ -1,0 +1,19 @@
+docker-image:
+  image: docker:latest
+  stage: build-containers
+  tags:
+    - amd64
+  timeout: 2h 30m
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker build -t $IMAGE_NAME -f docker/build-environment/Dockerfile .
+    - docker push $IMAGE_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - docker/build-environment/Dockerfile
+          - ci/general/docker-image.yml

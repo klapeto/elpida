@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CIAidSettingsState">
+    <option name="yamlToUserMarkings">
+      <map>
+        <entry key="$PROJECT_DIR$/ci/general/build.yml" value="false" />
+        <entry key="$PROJECT_DIR$/ci/general/deploy.yml" value="false" />
+        <entry key="$PROJECT_DIR$/ci/general/docker-image.yml" value="false" />
+        <entry key="$PROJECT_DIR$/ci/general/package.yml" value="false" />
+        <entry key="$PROJECT_DIR$/ci/general/root.yml" value="false" />
+      </map>
+    </option>
+  </component>
+</project>
