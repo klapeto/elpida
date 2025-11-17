@@ -1,4 +1,4 @@
-.build:linux:
+.build:
   image: $IMAGE_NAME
   stage: build
   tags:
@@ -6,6 +6,7 @@
   environment:
     name: $DEPLOY_ENVIRONMENT
   script:
+    - git submodule update --init --depth=1
     - cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
@@ -40,7 +41,7 @@ build:linux:amd64:
     CLANG_TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
     - docker-image
-  extends: .build:linux
+  extends: .build
 
 build:linux:aarch64:
   variables:
@@ -51,7 +52,7 @@ build:linux:aarch64:
     CLANG_TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
     - docker-image
-  extends: .build:linux
+  extends: .build
 
 build:windows:amd64:
   variables:
@@ -63,7 +64,7 @@ build:windows:amd64:
     CLANG_TARGET_TRIPLE: x86_64-w64-windows-gnu
   dependencies:
     - docker-image
-  extends: .build:linux
+  extends: .build
 
 build:windows:i686:
   variables:
@@ -75,7 +76,7 @@ build:windows:i686:
     CLANG_TARGET_TRIPLE: i686-w64-windows-gnu
   dependencies:
     - docker-image
-  extends: .build:linux
+  extends: .build
 
 build:windows:aarch64:
   variables:
@@ -87,4 +88,4 @@ build:windows:aarch64:
     CLANG_TARGET_TRIPLE: aarch64-w64-windows-gnu
   dependencies:
     - docker-image
-  extends: .build:linux
+  extends: .build
