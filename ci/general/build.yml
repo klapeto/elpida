@@ -16,6 +16,7 @@
       -DTARGET_TRIPLE=$TARGET_TRIPLE
       -DTARGET_PREFIX=$TARGET_PREFIX
       -DCLANG_TARGET_TRIPLE=$CLANG_TARGET_TRIPLE
+      -DMCPU=$MCPU
       -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/llvm-cross.cmake
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
       -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
@@ -87,6 +88,7 @@ build:windows:aarch64:
     TARGET_TRIPLE: aarch64-windows-mingw32
     TARGET_PREFIX: aarch64-w64-mingw32-
     CLANG_TARGET_TRIPLE: aarch64-w64-windows-gnu
+    MCPU: neoverse-n1
   dependencies:
     - docker-image
   extends: .build
