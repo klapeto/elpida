@@ -21,7 +21,7 @@
 
 #include "Elpida/Core/Config.hpp"
 
-#if defined(ELPIDA_WINDOWS) && (defined(_M_ARM64) || defined(__aarch64__))
+#if defined(ELPIDA_WINDOWS) && (defined(__aarch64__) || defined(_M_ARM) || defined(__arm__))
 
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"

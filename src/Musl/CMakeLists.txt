@@ -2,11 +2,13 @@ if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL 
     set(ARCH "x86_64")
 elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "i686")
     set(ARCH "i386")
-elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64ec")
     set(ARCH "aarch64")
-else()
+elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7")
+    set(ARCH "arm")
+else ()
     set(ARCH "generic")
-endif()
+endif ()
 
 add_library(musl-platform
         platform/errno-location.c

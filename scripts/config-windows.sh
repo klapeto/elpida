@@ -1,0 +1,2 @@
+#!/bin/bash
+cmake .. -DTARGET_SYSTEM=Windows -DTARGET_ARCH=$1 -DTARGET_SYSROOT=/mnt/Dev/toolchains/llvm-mingw/$1-w64-mingw32/ -DTARGET_TRIPLE=$1-windows-mingw32 -DTARGET_PREFIX=$1-w64-mingw32- -DCLANG_TARGET_TRIPLE=$1-w64-windows-gnu -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake

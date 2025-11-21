@@ -16,7 +16,7 @@ if (MSYS OR MINGW OR MSVC)
             VERSION_PATCH ${ELPIDA_VERSION_REVISION}
             VERSION_REVISION ${ELPIDA_VERSION_BUILD}
             COMPANY_NAME ${ELPIDA_COMPANY_NAME}
-            FILE_DESCRIPTION "Dumps information for the Elpida Web Backend"
+            FILE_DESCRIPTION "Information dumper Elpida Web Backend"
     )
 endif()
 
