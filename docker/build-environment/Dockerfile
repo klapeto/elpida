@@ -21,7 +21,8 @@ RUN apt install -y --no-install-recommends \
     libqt6svg6-dev  \
     libqt6charts6-dev \
     libqt6opengl6-dev \
-    libgl1-mesa-dev
+    libgl1-mesa-dev \
+    zip
 
 # install latest cmake
 RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
@@ -64,10 +65,25 @@ RUN rm -rf *
 RUN ../build-qt-windows.sh aarch64
 RUN cmake --build .
 RUN cmake --install .
+RUN rm -rf *
+
+# Build Qt6 armv7-w64-mingw32
+RUN ../build-qt-windows.sh armv7
+RUN cmake --build .
+RUN cmake --install .
 
 # Cleanup
 WORKDIR /opt/sources
 RUN rm -rf *
+
+WORKDIR /
+
+# setup appimagetool
+RUN wget -O appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+RUN chmod +x appimagetool && mkdir /opt/appimagetool && cd /opt/appimagetool && /appimagetool --appimage-extract
+RUN ln -s /opt/appimagetool/squashfs-root/AppRun /opt/appimagetool/squashfs-root/appimagetool
+RUN rm /appimagetool
+ENV PATH=/opt/appimagetool/squashfs-root:$PATH
 
 # Add ARM repos
 RUN echo "deb [arch=armhf,arm64] http://ports.ubuntu.com/ jammy main restricted" > /etc/apt/sources.list.d/arm-cross-compile-sources.list && \
@@ -93,14 +109,5 @@ RUN apt-get install -y \
     libqt6charts6-dev:arm64 \
     libqt6opengl6-dev:arm64 \
     libgl1-mesa-dev:arm64
-
-WORKDIR /
-
-# setup appimagetool
-RUN wget -O appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
-RUN chmod +x appimagetool && mkdir /opt/appimagetool && cd /opt/appimagetool && /appimagetool --appimage-extract
-RUN ln -s /opt/appimagetool/squashfs-root/AppRun /opt/appimagetool/squashfs-root/appimagetool
-RUN rm /appimagetool
-ENV PATH=/opt/appimagetool/squashfs-root:$PATH
 
 CMD ["/bin/bash"]

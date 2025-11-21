@@ -34,51 +34,63 @@
     paths:
       - $INSTALL_DIR
 
-#build:linux:amd64:
-#  variables:
-#    TARGET_ARCH: x86_64
-#    TARGET_OS: Linux
-#    TARGET_SYSROOT: /
-#    TARGET_TRIPLE: x86_64-linux-gnu
-#    CLANG_TARGET_TRIPLE: x86_64-linux-gnu
-#  dependencies:
-#    - docker-image
-#  extends: .build
-#
-#build:linux:aarch64:
-#  variables:
-#    TARGET_ARCH: aarch64
-#    TARGET_OS: Linux
-#    TARGET_SYSROOT: /
-#    TARGET_TRIPLE: aarch64-linux-gnu
-#    CLANG_TARGET_TRIPLE: aarch64-linux-gnu
-#  dependencies:
-#    - docker-image
-#  extends: .build
-#
-#build:windows:amd64:
-#  variables:
-#    TARGET_ARCH: x86_64
-#    TARGET_OS: Windows
-#    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/x86_64-w64-mingw32
-#    TARGET_TRIPLE: x86_64-windows-mingw32
-#    TARGET_PREFIX: x86_64-w64-mingw32-
-#    CLANG_TARGET_TRIPLE: x86_64-w64-windows-gnu
-#  dependencies:
-#    - docker-image
-#  extends: .build
-#
-#build:windows:i686:
-#  variables:
-#    TARGET_ARCH: i686
-#    TARGET_OS: Windows
-#    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/i686-w64-mingw32
-#    TARGET_TRIPLE: i686-windows-mingw32
-#    TARGET_PREFIX: i686-w64-mingw32-
-#    CLANG_TARGET_TRIPLE: i686-w64-windows-gnu
-#  dependencies:
-#    - docker-image
-#  extends: .build
+build:linux:amd64:
+  variables:
+    TARGET_ARCH: x86_64
+    TARGET_OS: Linux
+    TARGET_SYSROOT: /
+    TARGET_TRIPLE: x86_64-linux-gnu
+    CLANG_TARGET_TRIPLE: x86_64-linux-gnu
+  dependencies:
+    - docker-image
+  extends: .build
+
+build:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+    TARGET_OS: Linux
+    TARGET_SYSROOT: /
+    TARGET_TRIPLE: aarch64-linux-gnu
+    CLANG_TARGET_TRIPLE: aarch64-linux-gnu
+  dependencies:
+    - docker-image
+  extends: .build
+
+build:windows:amd64:
+  variables:
+    TARGET_ARCH: x86_64
+    TARGET_OS: Windows
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/x86_64-w64-mingw32
+    TARGET_TRIPLE: x86_64-windows-mingw32
+    TARGET_PREFIX: x86_64-w64-mingw32-
+    CLANG_TARGET_TRIPLE: x86_64-w64-windows-gnu
+  dependencies:
+    - docker-image
+  extends: .build
+
+build:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+    TARGET_OS: Windows
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/i686-w64-mingw32
+    TARGET_TRIPLE: i686-windows-mingw32
+    TARGET_PREFIX: i686-w64-mingw32-
+    CLANG_TARGET_TRIPLE: i686-w64-windows-gnu
+  dependencies:
+    - docker-image
+  extends: .build
+
+build:windows:armv7:
+  variables:
+    TARGET_ARCH: armv7
+    TARGET_OS: Windows
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/armv7-w64-mingw32
+    TARGET_TRIPLE: armv7-windows-mingw32
+    TARGET_PREFIX: armv7-w64-mingw32-
+    CLANG_TARGET_TRIPLE: armv7-w64-windows-gnu
+  dependencies:
+    - docker-image
+  extends: .build
 
 build:windows:aarch64:
   variables:
@@ -88,7 +100,6 @@ build:windows:aarch64:
     TARGET_TRIPLE: aarch64-windows-mingw32
     TARGET_PREFIX: aarch64-w64-mingw32-
     CLANG_TARGET_TRIPLE: aarch64-w64-windows-gnu
-    MCPU: neoverse-n1
   dependencies:
     - docker-image
   extends: .build

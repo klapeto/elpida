@@ -35,4 +35,4 @@ rm elpida
 ln -s $EXECUTABLE elpida
 cd $CURDIR
 cp -u "$this_dir/AppRun" "$INSTALL_DIR"
-appimagetool "$INSTALL_DIR" elpida.appimage
+appimagetool "$INSTALL_DIR" $NAME

@@ -25,64 +25,62 @@
   script:
     - |
       currentDir=$(pwd)
-      stagingDir=$(mktemp -d -t ci-XXXXXXXXXX)
-      if [[ -e "$INSTALL_DIR/bin/elpida-qt.exe" ]]; then
-        cp "$INSTALL_DIR/bin/elpida-qt.exe" "$stagingDir"
-        cp "$INSTALL_DIR/bin/qt.conf" "$stagingDir"
-      fi
-      mkdir "$stagingDir/Benchmarks"
-      find "$INSTALL_DIR/bin/Benchmarks" -type f -name '*.exe' -exec cp "{}" "$stagingDir/Benchmarks" \;
-      cp "$INSTALL_DIR/bin/elpida-cli.exe" "$stagingDir"
-      cp "$INSTALL_DIR/bin/elpida-info-dumper.exe" "$stagingDir"
-      cp -r "$INSTALL_DIR/bin/assets" "$stagingDir"
-      cd "$stagingDir"
+      cd "$INSTALL_DIR/bin"
       zip z -r .
       cp ./z.zip "$currentDir/$PACKAGE_FILENAME.zip"
       cd "$currentDir"
       sha256sum "$PACKAGE_FILENAME.zip" > SHA256SUMS
-      rm -rf "$stagingDir"
   artifacts:
     paths:
       - $PACKAGE_FILENAME.zip
       - SHA256SUMS
 
-#package:linux:amd64:
-#  variables:
-#    TARGET_ARCH: amd64
-#    TARGET_OS: linux
-#    TARGET_ARCH_APPIMAGE_RUNTIME: x86_64
-#    TARGET_ARCH_APPIMAGE_APT: amd64
-#  dependencies:
-#    - build:linux:amd64
-#  extends: .package:linux
-#
-#package:linux:aarch64:
-#  variables:
-#    TARGET_ARCH: aarch64
-#    TARGET_OS: linux
-#    TARGET_ARCH_APPIMAGE_RUNTIME: aarch64
-#    TARGET_ARCH_APPIMAGE_APT: arm64
-#  dependencies:
-#    - build:linux:aarch64
-#  extends: .package:linux
-#
-#package:windows:amd64:
-#  variables:
-#    TARGET_ARCH: amd64
-#    MINGW_ARCH: x86_64
-#    TARGET_OS: windows
-#  dependencies:
-#    - build:windows:amd64
-#  extends: .package:windows
-#
-#package:windows:i686:
-#  variables:
-#    TARGET_ARCH: i686
-#    MINGW_ARCH: i686
-#    TARGET_OS: windows
-#  dependencies:
-#    - build:windows:i686
-#  extends: .package:windows
+package:linux:amd64:
+  variables:
+    TARGET_ARCH: amd64
+    TARGET_OS: linux
+    TARGET_ARCH_APPIMAGE_RUNTIME: x86_64
+    TARGET_ARCH_APPIMAGE_APT: amd64
+  dependencies:
+    - build:linux:amd64
+  extends: .package:linux
+
+package:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+    TARGET_OS: linux
+    TARGET_ARCH_APPIMAGE_RUNTIME: aarch64
+    TARGET_ARCH_APPIMAGE_APT: arm64
+  dependencies:
+    - build:linux:aarch64
+  extends: .package:linux
+
+package:windows:amd64:
+  variables:
+    TARGET_ARCH: amd64
+    MINGW_ARCH: x86_64
+    TARGET_OS: windows
+  dependencies:
+    - build:windows:amd64
+  extends: .package:windows
+
+package:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+    MINGW_ARCH: i686
+    TARGET_OS: windows
+  dependencies:
+    - build:windows:i686
+  extends: .package:windows
+
+package:windows:armv7:
+  variables:
+    TARGET_ARCH: armv7
+    MINGW_ARCH: armv7
+    TARGET_OS: windows
+  dependencies:
+    - build:windows:armv7
+  extends: .package:windows
 
 package:windows:aarch64:
   variables:
