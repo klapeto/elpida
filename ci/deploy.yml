@@ -25,18 +25,71 @@
       - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage.SHA256SUMS
       - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage.SHA256SUMS
 
-deploy:linux:amd64:
+.deploy:windows:
+  stage: deploy
+  tags:
+    - amd64
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  only:
+    - master
+    - staging
+  script:
+    - cp "$PACKAGE_FILENAME.zip" "$PACKAGE_FILENAME_DEPLOY.zip"
+    - sha256sum "$PACKAGE_FILENAME.zip" > $PACKAGE_FILENAME.zip.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY.zip" > $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME_DEPLOY.zip
+      - $PACKAGE_FILENAME.zip
+      - $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
+      - $PACKAGE_FILENAME.zip.SHA256SUMS
+
+deploy:linux:x86_64:
   variables:
-    TARGET_ARCH: amd64
-    TARGET_OS: linux
+    TARGET_ARCH: x86_64
   dependencies:
-    - package:linux:amd64
+    - package:linux:x86_64
+  extends: .deploy:linux
+
+deploy:linux:arm:
+  variables:
+    TARGET_ARCH: arm
+  dependencies:
+    - package:linux:arm
   extends: .deploy:linux
 
 deploy:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
-    TARGET_OS: linux
   dependencies:
     - package:linux:aarch64
   extends: .deploy:linux
+
+deploy:windows:x86_64:
+  variables:
+    TARGET_ARCH: x86_64
+  dependencies:
+    - package:windows:x86_64
+  extends: .deploy:windows
+
+deploy:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+  dependencies:
+    - package:windows:i686
+  extends: .deploy:windows
+
+deploy:windows:armv7:
+  variables:
+    TARGET_ARCH: armv7
+  dependencies:
+    - package:windows:armv7
+  extends: .deploy:windows
+
+deploy:windows:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+  dependencies:
+    - package:windows:aarch64
+  extends: .deploy:windows

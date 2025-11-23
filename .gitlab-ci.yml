@@ -47,5 +47,4 @@ workflow:
     - when: never
 
 include:
-  - local: '/ci/general/root.yml'
-  - local: '/ci/docs.yml'
+  - local: '/ci/root.yml'

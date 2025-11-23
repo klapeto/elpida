@@ -9,8 +9,7 @@ function(include_hwloc sourceDir)
     set(HWLOC_INCLUDE_DIR ${ELPIDA_LOCAL_INSTALL_DIR}/${CMAKE_INSTALL_INCLUDEDIR})
     set(HWLOC_LIBRARY ${HWLOC_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}hwloc${CMAKE_STATIC_LIBRARY_SUFFIX})
 
-    find_program(MAKE_EXECUTABLE NAMES gmake make mingw32-make REQUIRED)
-    find_program(PATCH_EXECUTABLE NAMES patch REQUIRED)
+    find_program(MAKE_EXECUTABLE NAMES make REQUIRED)
 
     set(HWLOC_CONFIG_FILE ${CMAKE_CURRENT_BINARY_DIR}/hwloc.config.sh)
     generate_environment_file(${HWLOC_CONFIG_FILE} "${sourceDir}/autogen.sh && ${sourceDir}/configure --host=$TRIPLE --with-sysroot=$SYSROOT --prefix=${ELPIDA_LOCAL_INSTALL_DIR} --enable-static --disable-shared --enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero --disable-gl --disable-libudev")

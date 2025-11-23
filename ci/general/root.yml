@@ -1,5 +1,0 @@
-include:
-  - local: '/ci/general/docker-image.yml'
-  - local: '/ci/general/build.yml'
-  - local: '/ci/general/package.yml'
-  - local: '/ci/general/deploy.yml'
