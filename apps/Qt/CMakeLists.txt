@@ -100,7 +100,7 @@ set(ELPIDA_QT_SOURCES
 )
 
 if (CMAKE_CROSSCOMPILING)
-	set(QT_HOST_PATH "/")
+	set(QT_HOST_PATH "/usr")
 	set(QT_REQUIRE_HOST_PATH_CHECK ON)
 endif ()
 

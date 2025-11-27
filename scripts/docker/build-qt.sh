@@ -17,27 +17,33 @@ elif [ $OS == w64 ]; then
     OS=Windows
 fi
 
-PREFIX=/opt/sysroots/$CROSSPREFIX
+SYSROOT=/opt/sysroots/$CROSSPREFIX
+PREFIX=$SYSROOT/usr
 
 if [ $USEHOST -eq 0 ]; then
     echo "Cross compiling: $CROSSPREFIX"
+
+    FLAGS="--sysroot=$SYSROOT"
+    if [ $OS != Windows ]; then
+      FLAGS="$FLAGS -L/opt/sysroots/$CROSSPREFIX/lib/$CROSSPREFIX/ -Wl,/opt/sysroots/$CROSSPREFIX/lib/$CROSSPREFIX/libc.a"
+    fi
+
   ../configure \
-    -static \
-    -prefix $PREFIX \
-    -qt-host-path / \
+    -static -no-shared -release \
     -submodules qtcharts,qtsvg,qtbase \
-    -force-bundled-libs \
-    -no-tslib -- \
+    -nomake examples -nomake tests -nomake tools -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests \
+    -prefix $PREFIX \
+    -qt-host-path /usr -- \
     -DCMAKE_C_COMPILER=$CROSSPREFIX-clang \
     -DCMAKE_CXX_COMPILER=$CROSSPREFIX-clang++ \
     -DCMAKE_ASM_COMPILER=$CROSSPREFIX-clang \
-    -DCMAKE_C_FLAGS_INIT="--sysroot=$PREFIX" \
-    -DCMAKE_CXX_FLAGS_INIT="--sysroot=$PREFIX" \
+    -DCMAKE_C_FLAGS_INIT="$FLAGS" \
+    -DCMAKE_CXX_FLAGS_INIT="$FLAGS" \
     -DCMAKE_LINKER_TYPE=LLD \
     -DCMAKE_SYSTEM_NAME=$OS \
     -DCMAKE_SYSTEM_PROCESSOR=$ARCH \
-    -DCMAKE_SYSROOT=$PREFIX \
-    -DCMAKE_FIND_ROOT_PATH=$PREFIX \
+    -DCMAKE_SYSROOT=$SYSROOT \
+    -DCMAKE_FIND_ROOT_PATH=$SYSROOT \
     -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
@@ -45,25 +51,24 @@ if [ $USEHOST -eq 0 ]; then
 else
   echo "Compiling for host: $CROSSPREFIX"
   ../configure \
-    -static \
-    -prefix $PREFIX \
+    -static -no-shared -release \
     -submodules qtcharts,qtsvg,qtbase \
-    -force-bundled-libs \
-    -no-tslib -- \
+    -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests \
+    -prefix $PREFIX -- \
     -DCMAKE_C_COMPILER=$CROSSPREFIX-clang \
     -DCMAKE_CXX_COMPILER=$CROSSPREFIX-clang++ \
     -DCMAKE_ASM_COMPILER=$CROSSPREFIX-clang \
-    -DCMAKE_C_FLAGS_INIT="--sysroot=$PREFIX" \
-    -DCMAKE_CXX_FLAGS_INIT="--sysroot=$PREFIX" \
+    -DCMAKE_C_FLAGS_INIT="--sysroot=$SYSROOT" \
+    -DCMAKE_CXX_FLAGS_INIT="--sysroot=$SYSROOT" \
     -DCMAKE_LINKER_TYPE=LLD \
-    -DCMAKE_SYSROOT=$PREFIX \
-    -DCMAKE_FIND_ROOT_PATH=$PREFIX \
+    -DCMAKE_SYSROOT=$SYSROOT\
+    -DCMAKE_FIND_ROOT_PATH=$SYSROOT \
     -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY
 fi
 
-cmake --build .
+cmake --build . --parallel
 cmake --install .
 rm -rf ./*

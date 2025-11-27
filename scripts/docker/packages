@@ -1,8 +1,0 @@
-build-essential
-libc6-dev
-libnuma-dev
-libgl1-mesa-dev
-libbrotli-dev
-libudev-dev
-libmtdev-dev
-cmake
