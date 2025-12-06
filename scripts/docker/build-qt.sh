@@ -1,9 +1,10 @@
 #!/bin/bash
 
 USEHOST=0
+HOST=$(gcc -dumpmachine)
 if [ $# -eq 0 ]; then
     USEHOST=1
-    CROSSPREFIX=$(gcc -dumpmachine)
+    CROSSPREFIX=$HOST
 else
     CROSSPREFIX=$1
 fi
@@ -17,7 +18,9 @@ elif [ $OS == w64 ]; then
     OS=Windows
 fi
 
-SYSROOT=/opt/sysroots/$CROSSPREFIX
+SYSROOTBASE=/opt/sysroots
+#SYSROOTBASE=/mnt/Dev/sysroots/
+SYSROOT=$SYSROOTBASE/$CROSSPREFIX
 PREFIX=$SYSROOT/usr
 
 if [ $USEHOST -eq 0 ]; then
@@ -25,15 +28,15 @@ if [ $USEHOST -eq 0 ]; then
 
     FLAGS="--sysroot=$SYSROOT"
     if [ $OS != Windows ]; then
-      FLAGS="$FLAGS -L/opt/sysroots/$CROSSPREFIX/lib/$CROSSPREFIX/ -Wl,/opt/sysroots/$CROSSPREFIX/lib/$CROSSPREFIX/libc.a"
+      FLAGS="$FLAGS -L$SYSROOTBASE/$CROSSPREFIX/lib/$CROSSPREFIX/ -Wl,$SYSROOTBASE/$CROSSPREFIX/lib/$CROSSPREFIX/libc.a"
     fi
 
   ../configure \
     -static -no-shared -release \
     -submodules qtcharts,qtsvg,qtbase \
-    -nomake examples -nomake tests -nomake tools -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests \
+    -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests \
     -prefix $PREFIX \
-    -qt-host-path /usr -- \
+    -qt-host-path $SYSROOTBASE/$HOST/usr -- \
     -DCMAKE_C_COMPILER=$CROSSPREFIX-clang \
     -DCMAKE_CXX_COMPILER=$CROSSPREFIX-clang++ \
     -DCMAKE_ASM_COMPILER=$CROSSPREFIX-clang \

@@ -193,8 +193,6 @@ int main(int argc, char* argv[])
 		ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
 
 		QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-		QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 		QCoreApplication::setOrganizationName("Elpida");
 		QCoreApplication::setOrganizationDomain(ELPIDA_WEBSITE_URL);

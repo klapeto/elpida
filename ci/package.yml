@@ -4,6 +4,7 @@
   tags:
     - amd64
   script:
+    - ./scripts/Linux/setupDependencies.sh "$INSTALL_DIR/bin/elpida-qt" "$INSTALL_DIR" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir"
     - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-qt $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage
     - rm "$INSTALL_DIR/bin/elpida-qt"
     - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-cli $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage
@@ -38,8 +39,7 @@
 package:linux:x86_64:
   variables:
     TARGET_ARCH: x86_64
-    TARGET_ARCH_APPIMAGE_RUNTIME: x86_64
-    TARGET_ARCH_APPIMAGE_APT: x86_64
+    TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
     - build:linux:x86_64
   extends: .package:linux
@@ -47,8 +47,7 @@ package:linux:x86_64:
 package:linux:arm:
   variables:
     TARGET_ARCH: arm
-    TARGET_ARCH_APPIMAGE_RUNTIME: arm
-    TARGET_ARCH_APPIMAGE_APT: armhf
+    TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
     - build:linux:arm
   extends: .package:linux
@@ -56,8 +55,7 @@ package:linux:arm:
 package:linux:aarch64:
   variables:
     TARGET_ARCH: aarch64
-    TARGET_ARCH_APPIMAGE_RUNTIME: aarch64
-    TARGET_ARCH_APPIMAGE_APT: arm64
+    TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
     - build:linux:aarch64
   extends: .package:linux
@@ -65,6 +63,7 @@ package:linux:aarch64:
 package:windows:x86_64:
   variables:
     TARGET_ARCH: x86_64
+    TARGET_TRIPLE: x86_64-w64-mingw32
   dependencies:
     - build:windows:x86_64
   extends: .package:windows
@@ -72,20 +71,15 @@ package:windows:x86_64:
 package:windows:i686:
   variables:
     TARGET_ARCH: i686
+    TARGET_TRIPLE: i686-w64-mingw32
   dependencies:
     - build:windows:i686
-  extends: .package:windows
-
-package:windows:armv7:
-  variables:
-    TARGET_ARCH: armv7
-  dependencies:
-    - build:windows:armv7
   extends: .package:windows
 
 package:windows:aarch64:
   variables:
     TARGET_ARCH: aarch64
+    TARGET_TRIPLE: aarch64-w64-mingw32
   dependencies:
     - build:windows:aarch64
   extends: .package:windows

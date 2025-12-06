@@ -1,4 +1,5 @@
-option(TARGET_PREFIX "The cross target prefix" "")
+set(TARGET_PREFIX "" CACHE STRING "The cross target prefix")
+set(HOST_SYSROOT "" CACHE PATH "The host sysroot")
 
 if (TARGET_PREFIX)
     # replace last -

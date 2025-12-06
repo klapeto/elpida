@@ -80,13 +80,6 @@ deploy:windows:i686:
     - package:windows:i686
   extends: .deploy:windows
 
-deploy:windows:armv7:
-  variables:
-    TARGET_ARCH: armv7
-  dependencies:
-    - package:windows:armv7
-  extends: .deploy:windows
-
 deploy:windows:aarch64:
   variables:
     TARGET_ARCH: aarch64

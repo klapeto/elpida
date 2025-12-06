@@ -100,14 +100,19 @@ set(ELPIDA_QT_SOURCES
 )
 
 if (CMAKE_CROSSCOMPILING)
-	set(QT_HOST_PATH "/usr")
+	if (HOST_SYSROOT STREQUAL "")
+		set(QT_HOST_PATH "${CMAKE_SYSROOT}/usr")
+	else ()
+		set(QT_HOST_PATH "${HOST_SYSROOT}/usr")
+	endif ()
+
 	set(QT_REQUIRE_HOST_PATH_CHECK ON)
 endif ()
 
-find_package(Qt6 COMPONENTS Widgets Charts)
+find_package(Qt6 COMPONENTS Gui Widgets Charts)
 
 if (NOT Qt6Core_FOUND)
-	message("Disabling QT front end because Qt5 libraries (Core/Widgets/Charts) were not found")
+	message("Disabling QT front end because Qt6 libraries (Core/Widgets/Charts) were not found")
 	return()
 endif()
 
@@ -115,7 +120,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-#qt_standard_project_setup()
+qt_standard_project_setup()
 
 if (MSYS OR MINGW OR MSVC)
 	generate_product_version(
@@ -138,7 +143,7 @@ if (MSYS OR MINGW)
 endif()
 
 target_include_directories(elpida-qt PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt6::Core Qt6::Widgets Qt6::Charts)
+target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Charts)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION bin)
 install(FILES qt.conf DESTINATION bin)

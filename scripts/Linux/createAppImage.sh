@@ -16,10 +16,27 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-INSTALL_DIR=$1 || ./AppDir
-EXECUTABLE=$2 || bin/elpida-qt
-VERSION=$3 || "0.0.0.1000"
-NAME=$4 || elpida.appimage
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <appdir> <relative-executable> <version> <name>"
+    exit 1
+fi
+
+INSTALL_DIR=$1
+EXECUTABLE=$2
+VERSION=$3
+NAME=$4
+
+if [[ -z $EXECUTABLE ]]; then
+  EXECUTABLE="bin/elpida-qt"
+fi
+
+if [[ -z $VERSION ]]; then
+  VERSION="0.0.0.1000"
+fi
+
+if [[ -z $NAME ]]; then
+  VERSION="Elpida.appimage"
+fi
 
 this_dir="$(readlink -f "$(dirname "$0")")"
 mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/" "$INSTALL_DIR/usr/share/metainfo/" "$INSTALL_DIR/usr/share/applications/"
@@ -30,9 +47,9 @@ cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/de
 cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
 cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR"
 CURDIR=$PWD
-cd $INSTALL_DIR
+cd "$INSTALL_DIR" || exit
 rm elpida
 ln -s $EXECUTABLE elpida
-cd $CURDIR
+cd "$CURDIR" || exit
 cp -u "$this_dir/AppRun" "$INSTALL_DIR"
-appimagetool "$INSTALL_DIR" $NAME
+./appimagetool "$INSTALL_DIR" $NAME
