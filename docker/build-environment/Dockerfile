@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:noble
 LABEL authors="klapeto"
 
 ENV DEBIAN_FRONTEND=noninteractive
