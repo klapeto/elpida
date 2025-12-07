@@ -69,7 +69,7 @@ WORKDIR /opt/sources/qt6/build
 ADD ./scripts/docker/build-qt.sh ../build-qt.sh
 
 # Append loader libs for Qt tools run
-#RUN echo "/opt/sysroots/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu" > /etc/ld.so.conf.d/cross.conf && ldconfig
+RUN echo "/opt/sysroots/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu" > /etc/ld.so.conf.d/cross.conf && ldconfig
 
 # Build Qt
 RUN ../build-qt.sh

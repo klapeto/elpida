@@ -4,7 +4,7 @@ Type=Application
 
 Name=Elpida
 Comment=Benchmarking framework
-Categories=Utility;Qt;
+Categories=Utility;
 
 Icon=elpida
 Exec=elpida

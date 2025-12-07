@@ -16,7 +16,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -lt 1 ]; then
     echo "Usage: $0 <appdir> <relative-executable> <version> <name>"
     exit 1
 fi
@@ -42,14 +42,14 @@ this_dir="$(readlink -f "$(dirname "$0")")"
 mkdir -p "$INSTALL_DIR/usr/share/icons/default/apps/32/" "$INSTALL_DIR/usr/share/metainfo/" "$INSTALL_DIR/usr/share/applications/"
 cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/usr/share/icons/default/apps/32/elpida.svg"
 cp -u "images/Elpida_Icon.svg" "$INSTALL_DIR/elpida.svg"
-cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.metainfo.xml"
-cp -u "resources/dev.elpida.qt.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.qt.appdata.xml"
-cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR/usr/share/applications/"
-cp -u "resources/dev.elpida.qt.desktop" "$INSTALL_DIR"
+cp -u "resources/dev.elpida.app.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.app.metainfo.xml"
+cp -u "resources/dev.elpida.app.metainfo.xml" "$INSTALL_DIR/usr/share/metainfo/dev.elpida.app.appdata.xml"
+cp -u "resources/dev.elpida.app.desktop" "$INSTALL_DIR/usr/share/applications/"
+cp -u "resources/dev.elpida.app.desktop" "$INSTALL_DIR"
 CURDIR=$PWD
 cd "$INSTALL_DIR" || exit
 rm elpida
 ln -s $EXECUTABLE elpida
 cd "$CURDIR" || exit
 cp -u "$this_dir/AppRun" "$INSTALL_DIR"
-./appimagetool "$INSTALL_DIR" $NAME
+appimagetool "$INSTALL_DIR" $NAME
