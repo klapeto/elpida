@@ -13,6 +13,7 @@
       -DCMAKE_SYSROOT=$TARGET_SYSROOT
       -DTARGET_PREFIX=$TARGET_PREFIX
       -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/llvm-cross.cmake
+      -DHOST_SYSROOT=/opt/toolchains/llvm-mingw/x86_64-linux-gnu
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
       -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
       -DELPIDA_WEB_API_URL="$ELPIDA_WEB_API_URL"
@@ -31,24 +32,24 @@
 
 build:linux:x86_64:
   variables:
-    TARGET_SYSROOT: /
-    TARGET_TRIPLE: x86_64-linux-gnu
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/x86_64-linux-gnu
+    TARGET_PREFIX: x86_64-linux-gnu-
   dependencies:
     - docker-image
   extends: .build
 
 build:linux:arm:
   variables:
-    TARGET_SYSROOT: /
-    TARGET_TRIPLE: arm-linux-gnueabihf
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/arm-linux-gnueabihf
+    TARGET_PREFIX: arm-linux-gnueabihf-
   dependencies:
     - docker-image
   extends: .build
 
 build:linux:aarch64:
   variables:
-    TARGET_SYSROOT: /
-    TARGET_TRIPLE: aarch64-linux-gnu
+    TARGET_SYSROOT: /opt/toolchains/llvm-mingw/aarch64-linux-gnu
+    TARGET_PREFIX: aarch64-linux-gnu-
   dependencies:
     - docker-image
   extends: .build

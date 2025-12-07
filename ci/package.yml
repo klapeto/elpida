@@ -6,7 +6,7 @@
   script:
     - ./scripts/Linux/setupDependencies.sh "$INSTALL_DIR/bin/elpida-qt" "$INSTALL_DIR" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir"
     - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-qt $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage
-    - rm "$INSTALL_DIR/bin/elpida-qt"
+    - rm "$INSTALL_DIR/bin/elpida-qt" #reduce the size of AppImage
     - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-cli $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage
     - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
     - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
