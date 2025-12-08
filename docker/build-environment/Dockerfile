@@ -33,10 +33,14 @@ RUN apt-get install -y kitware-archive-keyring cmake
 RUN mkdir /opt/toolchains && mkdir /opt/sysroots && mkdir /opt/sources && mkdir /opt/logs
 
 # Install LLVM-MINGW
-WORKDIR /opt/toolchains
-RUN wget -O mingw.tar.xz https://github.com/mstorsjo/llvm-mingw/releases/download/20251021/llvm-mingw-20251021-msvcrt-ubuntu-22.04-x86_64.tar.xz
-RUN tar xf mingw.tar.xz && mv llvm-mingw-20251021-msvcrt-ubuntu-22.04-x86_64/ llvm-mingw && rm -rf mingw.tar.xz
+WORKDIR /opt/sources
+RUN git clone https://github.com/mstorsjo/llvm-mingw.git
+WORKDIR /opt/sources/llvm-mingw
+ADD ./docker/build-environment/llvm-mingw.patch llvm-mingw.patch
+RUN git checkout 20251202 && patch -p1 < llvm-mingw.patch
+RUN ./build-all.sh /opt/toolchains/llvm-mingw --with-default-msvcrt=msvcrt
 
+WORKDIR /opt/toolchains
 # create stubs for other crosses
 ADD ./scripts/docker/create-llvm-mingw-links.sh create-llvm-mingw-links.sh
 RUN cd llvm-mingw && ../create-llvm-mingw-links.sh x86_64-linux-gnu && ../create-llvm-mingw-links.sh aarch64-linux-gnu && ../create-llvm-mingw-links.sh arm-linux-gnueabihf && ../create-llvm-mingw-links.sh riscv64-linux-gnu
