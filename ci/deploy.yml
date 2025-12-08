@@ -66,6 +66,13 @@ deploy:linux:aarch64:
     - package:linux:aarch64
   extends: .deploy:linux
 
+deploy:linux:riscv64:
+  variables:
+    TARGET_ARCH: riscv64
+  dependencies:
+    - package:linux:riscv64
+  extends: .deploy:linux
+
 deploy:windows:x86_64:
   variables:
     TARGET_ARCH: x86_64

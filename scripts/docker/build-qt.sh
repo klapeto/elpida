@@ -33,7 +33,7 @@ if [ $USEHOST -eq 0 ]; then
 
   ../configure \
     -static -no-shared -release \
-    -submodules qtcharts,qtsvg,qtbase \
+    -submodules qtcharts,qtsvg,qtbase,qtwayland \
     -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests \
     -prefix $PREFIX \
     -qt-host-path $SYSROOTBASE/$HOST/usr -- \
@@ -55,7 +55,7 @@ else
   echo "Compiling for host: $CROSSPREFIX"
   ../configure \
     -static -no-shared -release \
-    -submodules qtcharts,qtsvg,qtbase \
+    -submodules qtcharts,qtsvg,qtbase,qtwayland \
     -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests \
     -prefix $PREFIX -- \
     -DCMAKE_C_COMPILER=$CROSSPREFIX-clang \

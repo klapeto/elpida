@@ -60,6 +60,14 @@ package:linux:aarch64:
     - build:linux:aarch64
   extends: .package:linux
 
+package:linux:riscv64:
+  variables:
+    TARGET_ARCH: riscv64
+    TARGET_TRIPLE: riscv64-linux-gnu
+  dependencies:
+    - build:linux:riscv64
+  extends: .package:linux
+
 package:windows:x86_64:
   variables:
     TARGET_ARCH: x86_64

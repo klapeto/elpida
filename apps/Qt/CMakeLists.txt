@@ -142,6 +142,71 @@ if (MSYS OR MINGW)
 	target_link_options(elpida-qt PRIVATE -Wl,-subsystem,windows)
 endif()
 
+if (LINUX)
+	qt_import_plugins(elpida-qt INCLUDE
+			Qt::QConnManNetworkInformationPlugin
+			Qt::QNetworkManagerNetworkInformationPlugin
+			Qt::QTlsBackendCertOnlyPlugin
+			Qt::QComposePlatformInputContextPlugin
+			Qt::QEglFSEmulatorIntegrationPlugin
+			Qt::QEglFSIntegrationPlugin
+			Qt::QEglFSX11IntegrationPlugin
+			Qt::QEvdevKeyboardPlugin
+			Qt::QEvdevMousePlugin
+			Qt::QEvdevTabletPlugin
+			Qt::QEvdevTouchScreenPlugin
+			Qt::QGifPlugin
+			Qt::QICNSPlugin
+			Qt::QICOPlugin
+			Qt::QIbusPlatformInputContextPlugin
+			Qt::QJpegPlugin
+			Qt::QLinuxFbIntegrationPlugin
+			Qt::QMinimalEglIntegrationPlugin
+			Qt::QMinimalIntegrationPlugin
+			Qt::QOffscreenIntegrationPlugin
+			Qt::QSvgIconPlugin
+			Qt::QSvgPlugin
+			Qt::QTgaPlugin
+			Qt::QTiffPlugin
+			Qt::QTsLibPlugin
+			Qt::QTuioTouchPlugin
+			Qt::QVncIntegrationPlugin
+			Qt::QWbmpPlugin
+			Qt::QWebpPlugin
+			Qt::QXcbEglIntegrationPlugin
+			Qt::QXcbGlxIntegrationPlugin
+			Qt::QXcbIntegrationPlugin
+			Qt::QXdgDesktopPortalThemePlugin
+			Qt::QWaylandIntegrationPlugin
+			Qt::QWaylandBrcmEglPlatformIntegrationPlugin
+			Qt::QWaylandEglPlatformIntegrationPlugin
+			Qt::QWaylandXCompositeEglPlatformIntegrationPlugin
+			Qt::QWaylandXCompositeGlxPlatformIntegrationPlugin
+	)
+elseif (WIN32)
+	qt_import_plugins(elpida-qt INCLUDE
+			Qt::QNLMNIPlugin
+			Qt::QSchannelBackendPlugin
+			Qt::QTlsBackendCertOnlyPlugin
+			Qt::QGifPlugin
+			Qt::QICNSPlugin
+			Qt::QICOPlugin
+			Qt::QJpegPlugin
+			Qt::QMinimalIntegrationPlugin
+			Qt::QOffscreenIntegrationPlugin
+			Qt::QSvgIconPlugin
+			Qt::QSvgPlugin
+			Qt::QTgaPlugin
+			Qt::QTiffPlugin
+			Qt::QTuioTouchPlugin
+			Qt::QWbmpPlugin
+			Qt::QWebpPlugin
+			#Qt::QWindowsDirect2DIntegrationPlugin
+			Qt::QWindowsIntegrationPlugin
+			Qt::QModernWindowsStylePlugin
+	)
+endif ()
+
 target_include_directories(elpida-qt PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Charts)
 

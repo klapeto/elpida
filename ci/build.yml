@@ -54,6 +54,14 @@ build:linux:aarch64:
     - docker-image
   extends: .build
 
+build:linux:riscv64:
+  variables:
+    TARGET_SYSROOT: /opt/sysroots/riscv64-linux-gnu
+    TARGET_PREFIX: riscv64-linux-gnu-
+  dependencies:
+    - docker-image
+  extends: .build
+
 build:windows:x86_64:
   variables:
     TARGET_SYSROOT: /opt/sysroots/x86_64-w64-mingw32
