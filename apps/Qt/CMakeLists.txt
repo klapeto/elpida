@@ -177,11 +177,11 @@ if (LINUX)
 			Qt::QXcbGlxIntegrationPlugin
 			Qt::QXcbIntegrationPlugin
 			Qt::QXdgDesktopPortalThemePlugin
-			Qt::QWaylandIntegrationPlugin
-			Qt::QWaylandBrcmEglPlatformIntegrationPlugin
-			Qt::QWaylandEglPlatformIntegrationPlugin
-			Qt::QWaylandXCompositeEglPlatformIntegrationPlugin
-			Qt::QWaylandXCompositeGlxPlatformIntegrationPlugin
+#			Qt::QWaylandIntegrationPlugin
+#			Qt::QWaylandBrcmEglPlatformIntegrationPlugin
+#			Qt::QWaylandEglPlatformIntegrationPlugin
+#			Qt::QWaylandXCompositeEglPlatformIntegrationPlugin
+#			Qt::QWaylandXCompositeGlxPlatformIntegrationPlugin
 	)
 elseif (WIN32)
 	qt_import_plugins(elpida-qt INCLUDE
