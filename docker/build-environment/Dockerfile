@@ -62,7 +62,7 @@ RUN ln -s /opt/toolchains/llvm-mingw/x86_64-w64-mingw32 x86_64-w64-mingw32
 # Clone Qt6
 WORKDIR /opt/sources
 RUN git clone -b v6.10.0 --depth=1 git://code.qt.io/qt/qt5.git qt6
-RUN cd qt6 && ./init-repository --module-subset=qtcharts,qtsvg,qtbase && mkdir build
+RUN cd qt6 && ./init-repository --module-subset=qtcharts,qtsvg,qtbase,qtwayland && mkdir build
 
 WORKDIR /opt/sources/qt6/build
 
