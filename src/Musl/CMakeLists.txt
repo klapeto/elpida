@@ -6,6 +6,8 @@ elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STRE
     set(ARCH "aarch64")
 elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
     set(ARCH "arm")
+elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "riscv64")
+    set(ARCH "riscv64")
 else ()
     set(ARCH "generic")
 endif ()

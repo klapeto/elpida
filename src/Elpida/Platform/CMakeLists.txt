@@ -21,6 +21,7 @@ add_library(elpida-platform
         CpuInfoLoader.X86.cpp
         CpuInfoLoader.Arm.Unix.cpp
         CpuInfoLoader.Arm64.Windows.cpp
+        CpuInfoLoader.RiscV64.Unix.cpp
 
         Process.cpp
         Process.Unix.cpp
@@ -31,10 +32,11 @@ add_library(elpida-platform
         AnonymousPipe.Windows.cpp
         AsyncPipeReader.cpp
         NumaAllocatorFactory.cpp
-        CpuInfoLoader.Arm64.Windows.cpp
 )
 
-target_link_libraries(elpida-platform PUBLIC elpida-core hwloc)
+add_library(jep106 jep106.c)
+
+target_link_libraries(elpida-platform PUBLIC elpida-core hwloc jep106)
 
 if (UNIX)
     include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindNUMA.cmake)
