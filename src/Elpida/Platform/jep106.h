@@ -16,11 +16,19 @@
  *         manufacturer associated with bank and id, or one of the strings
  *         "<invalid>" and "<unknown>".
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 const char *jep106_table_manufacturer(unsigned int bank, unsigned int id);
 
 static inline const char *jep106_manufacturer(unsigned int manufacturer)
 {
     return jep106_table_manufacturer(manufacturer >> 7, manufacturer & 0x7f);
 }
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif /* OPENOCD_HELPER_JEP106_H */

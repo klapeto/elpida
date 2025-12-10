@@ -84,6 +84,20 @@ RUN ../build-qt.sh aarch64-w64-mingw32
 RUN ../build-qt.sh i686-w64-mingw32
 RUN ../build-qt.sh x86_64-w64-mingw32
 
+# build LLVM
+WORKDIR /opt/sources
+RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git
+RUN mkdir /opt/sources/llvm-project/llvm/build
+WORKDIR /opt/sources/llvm-project/llvm/build
+ADD ./scripts/docker/build-llvm.sh ../build-llvm.sh
+RUN ../build-llvm.sh
+RUN ../build-llvm.sh aarch64-linux-gnu
+RUN ../build-llvm.sh arm-linux-gnueabihf
+RUN ../build-llvm.sh riscv64-linux-gnueabihf
+RUN ../build-llvm.sh aarch64-w64-mingw32
+RUN ../build-llvm.sh i686-w64-mingw32
+RUN ../build-llvm.sh x86_64-w64-mingw32
+
 # Cleanup
 RUN rm -rf /opt/sources
 
