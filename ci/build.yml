@@ -22,8 +22,6 @@
       -DELPIDA_VERSION_MINOR=$ELPIDA_VERSION_MINOR
       -DELPIDA_VERSION_REVISION=$ELPIDA_VERSION_REVISION
       -DELPIDA_VERSION_BUILD=$ELPIDA_VERSION_BUILD
-    # LLVM build randomly fails with these targets so pre-build them
-    - make -C "$BUILD_DIR" -j$(nproc) llvm-tblgen llvm-config clang-tblgen
     - make -C "$BUILD_DIR" -j$(nproc) install
   artifacts:
     expire_in: 2h30min
