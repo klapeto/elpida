@@ -109,7 +109,7 @@ if (CMAKE_CROSSCOMPILING)
 	set(QT_REQUIRE_HOST_PATH_CHECK ON)
 endif ()
 
-find_package(Qt6 COMPONENTS Gui Widgets Charts)
+find_package(Qt6 COMPONENTS Widgets Charts)
 
 if (NOT Qt6Core_FOUND)
 	message("Disabling QT front end because Qt6 libraries (Core/Widgets/Charts) were not found")
@@ -208,7 +208,7 @@ elseif (WIN32)
 endif ()
 
 target_include_directories(elpida-qt PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Charts)
+target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt6::Core Qt6::Widgets Qt6::Charts)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION bin)
 install(FILES qt.conf DESTINATION bin)
