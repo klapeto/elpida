@@ -79,7 +79,7 @@ RUN echo "/opt/sysroots/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu" > /etc/ld.so.
 RUN ../build-qt.sh
 RUN ../build-qt.sh aarch64-linux-gnu
 RUN ../build-qt.sh arm-linux-gnueabihf
-RUN ../build-qt.sh riscv64-linux-gnueabihf
+RUN ../build-qt.sh riscv64-linux-gnu
 RUN ../build-qt.sh aarch64-w64-mingw32
 RUN ../build-qt.sh i686-w64-mingw32
 RUN ../build-qt.sh x86_64-w64-mingw32
@@ -93,7 +93,7 @@ ADD ./scripts/docker/build-llvm.sh ../build-llvm.sh
 RUN ../build-llvm.sh
 RUN ../build-llvm.sh aarch64-linux-gnu
 RUN ../build-llvm.sh arm-linux-gnueabihf
-RUN ../build-llvm.sh riscv64-linux-gnueabihf
+RUN ../build-llvm.sh riscv64-linux-gnu
 RUN ../build-llvm.sh aarch64-w64-mingw32
 RUN ../build-llvm.sh i686-w64-mingw32
 RUN ../build-llvm.sh x86_64-w64-mingw32

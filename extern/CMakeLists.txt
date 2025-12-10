@@ -40,6 +40,6 @@ add_subdirectory(${ELPIDA_EXTERN_PATH}/boost-regex ${CMAKE_CURRENT_BINARY_DIR}/b
 include(../cmake-modules/openssl.cmake)
 include(../cmake-modules/hwloc.cmake)
 
-if (NOT ELPIDA_DISABLE_LLVM)
-    include(../cmake-modules/llvm.cmake)
-endif ()
+#if (NOT ELPIDA_DISABLE_LLVM)
+#    include(../cmake-modules/llvm.cmake)
+#endif ()
