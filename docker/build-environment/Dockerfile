@@ -63,26 +63,8 @@ RUN ln -s /opt/toolchains/llvm-mingw/armv7-w64-mingw32 armv7-w64-mingw32
 RUN ln -s /opt/toolchains/llvm-mingw/i686-w64-mingw32 i686-w64-mingw32
 RUN ln -s /opt/toolchains/llvm-mingw/x86_64-w64-mingw32 x86_64-w64-mingw32
 
-# Clone Qt6
-WORKDIR /opt/sources
-RUN git clone -b v6.10.0 --depth=1 git://code.qt.io/qt/qt5.git qt6
-RUN cd qt6 && ./init-repository --module-subset=qtcharts,qtsvg,qtbase,qtwayland && mkdir build
-
-WORKDIR /opt/sources/qt6/build
-
-ADD ./scripts/docker/build-qt.sh ../build-qt.sh
-
 # Append loader libs for Qt tools run
 RUN echo "/opt/sysroots/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu" > /etc/ld.so.conf.d/cross.conf && ldconfig
-
-# Build Qt
-RUN ../build-qt.sh
-RUN ../build-qt.sh aarch64-linux-gnu
-RUN ../build-qt.sh arm-linux-gnueabihf
-RUN ../build-qt.sh riscv64-linux-gnu
-RUN ../build-qt.sh aarch64-w64-mingw32
-RUN ../build-qt.sh i686-w64-mingw32
-RUN ../build-qt.sh x86_64-w64-mingw32
 
 # build LLVM
 WORKDIR /opt/sources
@@ -97,6 +79,24 @@ RUN ../build-llvm.sh riscv64-linux-gnu
 RUN ../build-llvm.sh aarch64-w64-mingw32
 RUN ../build-llvm.sh i686-w64-mingw32
 RUN ../build-llvm.sh x86_64-w64-mingw32
+
+# Clone Qt6
+WORKDIR /opt/sources
+RUN git clone -b v6.10.0 --depth=1 git://code.qt.io/qt/qt5.git qt6
+RUN cd qt6 && ./init-repository --module-subset=qtcharts,qtsvg,qtbase && mkdir build
+
+WORKDIR /opt/sources/qt6/build
+
+ADD ./scripts/docker/build-qt.sh ../build-qt.sh
+
+# Build Qt
+RUN ../build-qt.sh
+RUN ../build-qt.sh aarch64-linux-gnu
+RUN ../build-qt.sh arm-linux-gnueabihf
+RUN ../build-qt.sh riscv64-linux-gnu
+RUN ../build-qt.sh aarch64-w64-mingw32
+RUN ../build-qt.sh i686-w64-mingw32
+RUN ../build-qt.sh x86_64-w64-mingw32
 
 # Cleanup
 RUN rm -rf /opt/sources

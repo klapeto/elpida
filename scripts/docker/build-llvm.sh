@@ -120,5 +120,6 @@ else
 
 fi
 
+make -j$(nproc) llvm-tblgen llvm-config clang-tblgen install
 make -j$(nproc) install
 rm -rf ./*

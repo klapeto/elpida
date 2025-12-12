@@ -29,7 +29,3 @@ libxi-dev
 libxkbcommon-dev
 libxkbcommon-x11-dev
 libxrender-dev
-libwayland-dev
-libwayland-egl-backend-dev
-libwayland-server0
-libgles2-mesa-dev
