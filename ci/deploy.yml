@@ -54,7 +54,7 @@ deploy:linux:x86_64:
 
 deploy:linux:arm:
   variables:
-    TARGET_ARCH: arm
+    TARGET_ARCH: armhf
   dependencies:
     - package:linux:arm
   extends: .deploy:linux
