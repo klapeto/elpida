@@ -25,6 +25,7 @@ INSTALL_DIR=$1
 EXECUTABLE=$2
 VERSION=$3
 NAME=$4
+ARCH=$5
 
 if [[ -z $EXECUTABLE ]]; then
   EXECUTABLE="bin/elpida-qt"
@@ -36,6 +37,10 @@ fi
 
 if [[ -z $NAME ]]; then
   VERSION="Elpida.appimage"
+fi
+
+if [[ -z $ARCH ]]; then
+  ARCH="x86_64"
 fi
 
 this_dir="$(readlink -f "$(dirname "$0")")"

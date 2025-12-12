@@ -7,7 +7,7 @@
     - ./scripts/Linux/setupDependencies.sh "$INSTALL_DIR/bin/elpida-qt" "$INSTALL_DIR" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir"
     - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-qt $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage
     - rm "$INSTALL_DIR/bin/elpida-qt" #reduce the size of AppImage
-    - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-cli $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage
+    - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-cli $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage $TARGET_ARCH
     - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
     - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
   artifacts:
@@ -46,7 +46,7 @@ package:linux:x86_64:
 
 package:linux:arm:
   variables:
-    TARGET_ARCH: arm
+    TARGET_ARCH: armhf
     TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
     - build:linux:arm
