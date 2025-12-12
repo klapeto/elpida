@@ -3,7 +3,7 @@ docker-image:
   stage: build-containers
   tags:
     - amd64
-  timeout: 3h 30m
+  timeout: 5h 30m
   services:
     - docker:dind
   before_script:
