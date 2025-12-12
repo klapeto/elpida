@@ -5,17 +5,17 @@
     - amd64
   script:
     - ./scripts/Linux/setupDependencies.sh "$INSTALL_DIR/bin/elpida-qt" "$INSTALL_DIR" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir"
-    - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-qt $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage $TARGET_ARCH
+    - ./scripts/Linux/finalizeAppDir.sh "$INSTALL_DIR" bin/elpida-qt $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz
     - rm "$INSTALL_DIR/bin/elpida-qt" #reduce the size of AppImage
-    - ./scripts/Linux/createAppImage.sh "$INSTALL_DIR" bin/elpida-cli $ELPIDA_VERSION_STRING $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage $TARGET_ARCH
-    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
-    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
+    - ./scripts/Linux/finalizeAppDir.sh "$INSTALL_DIR" bin/elpida-cli $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz
+    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
   artifacts:
     expire_in: 2h30min
     paths:
-      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.AppImage
+      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz
       - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
-      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.AppImage
+      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz
       - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
 
 .package:windows:

@@ -61,6 +61,9 @@ if [ -z "$LIBS" ]; then
     exit 0
 fi
 
+# clear existing libs
+rm -rf "${DEST_DIR:?}/usr"
+
 searchDirectories=("usr" "lib" "lib64")
 
 libCopied=0
