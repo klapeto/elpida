@@ -89,6 +89,9 @@ WORKDIR /opt/sources/qt6/build
 
 ADD ./scripts/docker/build-qt.sh ../build-qt.sh
 
+# Workaround a Qt6 bug where configuration does not detect the sysroot libxkbcommon-x11
+RUN apt-get install -y libxkbcommon-x11-dev
+
 # Build Qt
 RUN ../build-qt.sh
 RUN ../build-qt.sh aarch64-linux-gnu
@@ -103,12 +106,12 @@ RUN rm -rf /opt/sources
 
 WORKDIR /
 
-# setup appimagetool
-RUN wget -O appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
-RUN chmod +x appimagetool && mkdir /opt/appimagetool && cd /opt/appimagetool && /appimagetool --appimage-extract
-RUN ln -s /opt/appimagetool/squashfs-root/AppRun /opt/appimagetool/squashfs-root/appimagetool
-RUN rm /appimagetool
-ENV PATH=/opt/appimagetool/squashfs-root:$PATH
+## setup appimagetool
+#RUN wget -O appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+#RUN chmod +x appimagetool && mkdir /opt/appimagetool && cd /opt/appimagetool && /appimagetool --appimage-extract
+#RUN ln -s /opt/appimagetool/squashfs-root/AppRun /opt/appimagetool/squashfs-root/appimagetool
+#RUN rm /appimagetool
+#ENV PATH=/opt/appimagetool/squashfs-root:$PATH
 
 # cleanup packages
 RUN apt-get -y autoremove && apt-get autoclean

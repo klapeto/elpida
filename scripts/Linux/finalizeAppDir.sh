@@ -35,7 +35,7 @@ fi
 
 CURDIR=$PWD
 this_script_dir="$(readlink -f "$(dirname "$0")")"
-cp -u "$this_script_dir/elpida-entry-point.sh" "$INSTALL_DIR/elpida"
+cp "$this_script_dir/elpida-entry-point.sh" "$INSTALL_DIR/elpida"
 {
   printf "\n"
   tail -n +2 "$INSTALL_DIR/ld.env.sh"
