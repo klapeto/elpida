@@ -1,7 +1,5 @@
-if (NOT ELPIDA_DISABLE_LLVM)
-    add_executable(compilation-benchmarks Dummy.cpp)
-    target_link_libraries(compilation-benchmarks PUBLIC elpida-entry-point elpida-compilation-benchmarks)
-endif ()
+add_executable(compilation-benchmarks Dummy.cpp)
+target_link_libraries(compilation-benchmarks PUBLIC elpida-entry-point elpida-compilation-benchmarks)
 
 add_executable(compression-benchmarks Dummy.cpp)
 target_link_libraries(compression-benchmarks PUBLIC elpida-entry-point elpida-compression-benchmarks)

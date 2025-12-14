@@ -24,7 +24,6 @@
 
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Core/String.hpp"
-#include "Elpida/Core/Size.hpp"
 #include "Elpida/Core/Map.hpp"
 
 #include <sstream>
@@ -52,13 +51,13 @@ namespace Elpida
         uint64_t archId = 0;
         auto archIdDelegate = [&archId](const String& value)
         {
-            archId = strtol(value.data(), nullptr, 16);
+            archId = std::strtoul(value.data(), nullptr, 16);
         };
 
         uint64_t implId = 0;
         auto implIdDelegate = [&implId](const String& value)
         {
-            implId = strtol(value.data(), nullptr, 16);
+            implId = std::strtoul(value.data(), nullptr, 16);
         };
 
         Map<String, std::function<void(const String&)>> fields
@@ -172,7 +171,7 @@ namespace Elpida
                 vendorName = "Unknown";
             }
 
-            if ((archId & (1 << 64)) != 0)
+            if (archId >= 0x8000000000000000)
             {
                 // commercial arch id
                 modelName = std::to_string(archId & 0x7fffffffffffffff);
