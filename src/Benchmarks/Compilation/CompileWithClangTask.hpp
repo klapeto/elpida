@@ -64,9 +64,9 @@ namespace Elpida
 	private:
 		SharedPtr<AbstractTaskData> _input;
 		clang::CompilerInstance _compiler;
-		std::shared_ptr<clang::CompilerInvocation> _invocation;
 		llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> _diagnosticIds;
-		llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> _diagnosticOptions;
+		clang::DiagnosticOptions _diagnosticOptions;
+		clang::DiagnosticConsumer _diagnosticConsumer;
 		std::unique_ptr<clang::DiagnosticsEngine> _diagnosticsEngine;
 		clang::EmitObjAction _action;
 		std::unique_ptr<llvm::MemoryBuffer> _sourceBuffer;
