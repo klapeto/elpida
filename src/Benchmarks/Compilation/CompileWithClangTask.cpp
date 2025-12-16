@@ -33,8 +33,8 @@ namespace Elpida
 		_input = std::move(inputData);
 
 		_sourceBuffer = llvm::MemoryBuffer::getMemBuffer(reinterpret_cast<const char*>(_input->GetData()));
-		_compiler.getInvocation().getPreprocessorOpts().clearRemappedFiles();
-		_compiler.getInvocation().getPreprocessorOpts().addRemappedFile("test.cpp", _sourceBuffer.get());
+		_invocation->getPreprocessorOpts().clearRemappedFiles();
+		_invocation->getPreprocessorOpts().addRemappedFile("test.cpp", _sourceBuffer.get());
 	}
 
 	SharedPtr<AbstractTaskData> CompileWithClangTask::Finalize()
@@ -79,17 +79,19 @@ namespace Elpida
 	CompileWithClangTask::CompileWithClangTask()
 	{
 		_diagnosticIds = new clang::DiagnosticIDs();
-		_diagnosticOptions = clang::DiagnosticOptions();
-		_diagnosticsEngine = std::make_unique<clang::DiagnosticsEngine>(_diagnosticIds, _diagnosticOptions, &_diagnosticConsumer, false);
+		_diagnosticOptions = new clang::DiagnosticOptions();
+		_diagnosticsEngine = std::make_unique<clang::DiagnosticsEngine>(_diagnosticIds, _diagnosticOptions);
+		_invocation = std::make_shared<clang::CompilerInvocation>();
 
-		clang::CompilerInvocation::CreateFromArgs(_compiler.getInvocation(), { "-O3", "test.cpp" }, *_diagnosticsEngine);
-		_compiler.getInvocation().getTargetOpts().Triple = "x86_64-none-none";
-		_compiler.getInvocation().resetNonModularOptions();
+		clang::CompilerInvocation::CreateFromArgs(*_invocation, { "-O3", "test.cpp" }, *_diagnosticsEngine);
+		_invocation->getTargetOpts().Triple = "x86_64-none-none";
+		_invocation->resetNonModularOptions();
 
+		_compiler.setInvocation(_invocation);
 		_compiler.setDiagnostics(new clang::DiagnosticsEngine(
 				_diagnosticIds,
 				_diagnosticOptions,
-				new clang::TextDiagnosticPrinter(llvm::errs(), _diagnosticOptions))
+				new clang::TextDiagnosticPrinter(llvm::errs(), _diagnosticOptions.get()))
 		);
 	}
 } // Elpida
