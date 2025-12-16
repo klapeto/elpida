@@ -17,3 +17,4 @@ docker-image:
         paths:
           - docker/build-environment/Dockerfile
           - ci/general/docker-image.yml
+          - scripts/docker/*
