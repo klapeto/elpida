@@ -2,6 +2,8 @@ function(include_hwloc sourceDir)
 
     include(GNUInstallDirs)
     include(ExternalProject)
+    include(ProcessorCount)
+    ProcessorCount(NUM_JOBS)
 
     set_property(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED true)
 
@@ -18,7 +20,7 @@ function(include_hwloc sourceDir)
             SOURCE_DIR ${sourceDir}
             CONFIGURE_HANDLED_BY_BUILD true
             CONFIGURE_COMMAND ${HWLOC_CONFIG_FILE}
-            BUILD_COMMAND ${MAKE_EXECUTABLE} -j$(nproc)
+            BUILD_COMMAND ${MAKE_EXECUTABLE} -j${NUM_JOBS}
             INSTALL_COMMAND ${MAKE_EXECUTABLE} install
             TEST_COMMAND ""
             BUILD_BYPRODUCTS ${HWLOC_LIBRARY}
