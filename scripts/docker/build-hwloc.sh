@@ -41,5 +41,5 @@ export STRIP="$CROSSPREFIX-strip"
     --disable-gl \
     --disable-libudev
 
-make -j(nproc) install
+make -j$(nproc) install
 rm -rf ./*
