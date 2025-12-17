@@ -101,6 +101,22 @@ RUN ../build-qt.sh aarch64-w64-mingw32
 RUN ../build-qt.sh i686-w64-mingw32
 RUN ../build-qt.sh x86_64-w64-mingw32
 
+WORKDIR /opt/sources/
+
+# Build HWLOC
+RUN git clone --depth=1 -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git && cd hwloc && ./autogen.sh && mkdir build
+
+WORKDIR /opt/sources/hwloc/build
+ADD ./scripts/docker/build-hwloc.sh ../build-hwloc.sh
+
+RUN ../build-hwloc.sh
+RUN ../build-hwloc.sh aarch64-linux-gnu
+RUN ../build-hwloc.sh arm-linux-gnueabihf
+RUN ../build-hwloc.sh riscv64-linux-gnu
+RUN ../build-hwloc.sh aarch64-w64-mingw32
+RUN ../build-hwloc.sh i686-w64-mingw32
+RUN ../build-hwloc.sh x86_64-w64-mingw32
+
 # Cleanup
 RUN rm -rf /opt/sources
 

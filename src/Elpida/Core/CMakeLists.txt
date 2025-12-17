@@ -62,4 +62,11 @@ target_include_directories(elpida-core PUBLIC
         ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(elpida-core PUBLIC overheads-calculator hwloc)
+include(FindPkgConfig)
+if(PKG_CONFIG_FOUND)
+    pkg_search_module(HWLOC REQUIRED IMPORTED_TARGET hwloc)
+else(PKG_CONFIG_FOUND)
+    message(FATAL_ERROR "FindHWLOC needs pkg-config program and PKG_CONFIG_PATH must contain the path to hwloc.pc file.")
+endif(PKG_CONFIG_FOUND)
+
+target_link_libraries(elpida-core PUBLIC overheads-calculator PkgConfig::HWLOC)

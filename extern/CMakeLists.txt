@@ -38,4 +38,4 @@ set(BOOST_REGEX_STANDALONE ON)
 add_subdirectory(${ELPIDA_EXTERN_PATH}/boost-regex ${CMAKE_CURRENT_BINARY_DIR}/boost-regex)
 
 include(../cmake-modules/openssl.cmake)
-include(../cmake-modules/hwloc.cmake)
+#include(../cmake-modules/hwloc.cmake)

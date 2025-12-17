@@ -12,6 +12,7 @@ function(include_hwloc sourceDir)
     set(HWLOC_LIBRARY ${HWLOC_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}hwloc${CMAKE_STATIC_LIBRARY_SUFFIX})
 
     find_program(MAKE_EXECUTABLE NAMES make REQUIRED)
+    find_program(SH_EXECUTABLE NAMES sh REQUIRED)
 
     set(HWLOC_CONFIG_FILE ${CMAKE_CURRENT_BINARY_DIR}/hwloc.config.sh)
     generate_environment_file(${HWLOC_CONFIG_FILE} "${sourceDir}/autogen.sh && ${sourceDir}/configure --host=$TRIPLE --with-sysroot=$SYSROOT --prefix=${ELPIDA_LOCAL_INSTALL_DIR} --enable-static --disable-shared --enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero --disable-gl --disable-libudev")
@@ -19,7 +20,7 @@ function(include_hwloc sourceDir)
     ExternalProject_Add(hwloc_dep
             SOURCE_DIR ${sourceDir}
             CONFIGURE_HANDLED_BY_BUILD true
-            CONFIGURE_COMMAND ${HWLOC_CONFIG_FILE}
+            CONFIGURE_COMMAND ${SH_EXECUTABLE} ${HWLOC_CONFIG_FILE}
             BUILD_COMMAND ${MAKE_EXECUTABLE} -j${NUM_JOBS}
             INSTALL_COMMAND ${MAKE_EXECUTABLE} install
             TEST_COMMAND ""
