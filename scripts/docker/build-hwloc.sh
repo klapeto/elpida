@@ -1,30 +1,28 @@
 #!/bin/bash
+#
+#  Copyright (c) 2025  Ioannis Panagiotopoulos
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 
-HOST=$(gcc -dumpmachine)
-if [ $# -eq 0 ]; then
-    USEHOST=1
-    CROSSPREFIX=$HOST
-else
-    CROSSPREFIX=$1
-fi
-
-SYSROOTBASE=/opt/sysroots
-#SYSROOTBASE=/mnt/Dev/sysroots/
-SYSROOT=$SYSROOTBASE/$CROSSPREFIX
-PREFIX=$SYSROOT/usr
-
-echo "Compiling: $CROSSPREFIX"
-
-export CC="$CROSSPREFIX-clang"
-export CXX="$CROSSPREFIX-clang++"
-export RANLIB="$CROSSPREFIX-ranlib"
-export AR="$CROSSPREFIX-ar"
-export STRIP="$CROSSPREFIX-strip"
+this_dir="$(readlink -f "$(dirname "$0")")"
+. ${this_dir}/build-base.sh
 
 ../configure \
-    --host=$CROSSPREFIX \
+    --host=$TARGET_TRIPLE \
     --with-sysroot=$SYSROOT \
-    --prefix=$PREFIX \
+    --prefix=$INSTALL_PREFIX \
     --enable-static \
     --disable-shared \
     --enable-plugins=no \

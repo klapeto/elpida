@@ -1,50 +1,24 @@
+Index: clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
 --- a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(revision Staged)
-+++ b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(date 1761999730963)
-@@ -87,6 +87,7 @@
-   // Pre-compute the real location as we will be handing over the directory
-   // handle to the watcher and performing synchronous operations.
-   {
-+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
-     DWORD Size = GetFinalPathNameByHandleW(DirectoryHandle, NULL, 0, 0);
-     std::unique_ptr<WCHAR[]> Buffer{new WCHAR[Size + 1]};
-     Size = GetFinalPathNameByHandleW(DirectoryHandle, Buffer.get(), Size, 0);
-@@ -97,6 +98,7 @@
-       Size -= 4;
-     }
-     llvm::sys::windows::UTF16ToUTF8(Data, Size, Path);
-+#endif
-   }
-
-   size_t EntrySize = sizeof(FILE_NOTIFY_INFORMATION) + MAX_PATH * sizeof(WCHAR);
-diff --git a/llvm/include/llvm/Support/Windows/WindowsSupport.h b/llvm/include/llvm/Support/Windows/WindowsSupport.h
---- a/llvm/include/llvm/Support/Windows/WindowsSupport.h	(revision Staged)
-+++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h	(date 1762002073267)
-@@ -26,7 +26,8 @@
- #undef _WIN32_IE
-
- // Require at least Windows 7 API.
--#define _WIN32_WINNT 0x0601
-+#define _WIN32_WINNT 0x0501
-+#define WINVER 0x0501
- #define _WIN32_IE    0x0800 // MinGW at it again. FIXME: verify if still needed.
- #define WIN32_LEAN_AND_MEAN
- #ifndef NOMINMAX
-diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.inc
---- a/llvm/lib/Support/Windows/Path.inc	(revision Staged)
-+++ b/llvm/lib/Support/Windows/Path.inc	(date 1762010396360)
-@@ -27,6 +27,7 @@
++++ b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(date 1766318679288)
+@@ -12,6 +12,7 @@
+ #include "llvm/Support/ConvertUTF.h"
+ #include "llvm/Support/Path.h"
  #include "llvm/Support/Windows/WindowsSupport.h"
- #include <shellapi.h>
- #include <shlobj.h>
 +#include <psapi.h>
+ #include <condition_variable>
+ #include <mutex>
+ #include <queue>
+@@ -80,6 +81,98 @@
+   void NotifierThreadProc(bool WaitForInitialSync);
+ };
 
- #undef max
-
-@@ -361,9 +362,100 @@
-   return is_local_internal(WidePath, result);
- }
-
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
 +static bool GetFilenameFromHandle(HANDLE hFile, wchar_t *pszFilename)
 +{
 +  BOOL bRC = FALSE;
@@ -54,7 +28,7 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
 +  DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
 +
 +  // Create a file mapping object.
-+  HANDLE hFileMap = CreateFileMapping(hFile,
++  HANDLE hFileMap = CreateFileMappingW(hFile,
 +                                      NULL,
 +                                      PAGE_READONLY,
 +                                      0,
@@ -68,7 +42,7 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
 +
 +    if (pMem)
 +    {
-+      if (GetMappedFileName (GetCurrentProcess(),
++      if (GetMappedFileNameW(GetCurrentProcess(),
 +                            pMem,
 +                            pszFilename,
 +                            MAX_PATH))
@@ -82,7 +56,7 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
 +
 +        auto uMaxLenDest = wcslen(pszFilename);
 +
-+        if (GetLogicalDriveStrings(sizeof (szTemp) - 1, szTemp))
++        if (GetLogicalDriveStringsW(sizeof (szTemp) - 1, szTemp))
 +        {
 +          wchar_t szName[MAX_PATH];
 +          wchar_t szDrive[3] = L" :";
@@ -96,7 +70,7 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
 +            *szDrive = *p;
 +
 +            // Look up each device name.
-+            if (QueryDosDevice(szDrive, szName,
++            if (QueryDosDeviceW(szDrive, szName,
 +                               sizeof (szName)))
 +            {
 +              UINT uNameLen = wcslen(szName);
@@ -112,8 +86,8 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
 +                  //Reconstruct pszFilename using szTemp as scratch,
 +                  // and replace device path with our DOS path.
 +                  wchar_t szTempFile[MAX_PATH];
-+                  wsprintf(szTempFile,
-+                           TEXT("%s%s"),
++                  wsprintfW(szTempFile,
++                           L"%s%s",
 +                           szDrive,
 +                           pszFilename+uNameLen);
 +                  wcsncpy(pszFilename, szTempFile, uMaxLenDest);
@@ -134,6 +108,168 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
 +  }
 +  return bRC;
 +}
++#endif
++
+ DirectoryWatcherWindows::DirectoryWatcherWindows(
+     HANDLE DirectoryHandle, bool WaitForInitialSync,
+     DirectoryWatcherCallback Receiver)
+@@ -87,6 +180,7 @@
+   // Pre-compute the real location as we will be handing over the directory
+   // handle to the watcher and performing synchronous operations.
+   {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+     DWORD Size = GetFinalPathNameByHandleW(DirectoryHandle, NULL, 0, 0);
+     std::unique_ptr<WCHAR[]> Buffer{new WCHAR[Size + 1]};
+     Size = GetFinalPathNameByHandleW(DirectoryHandle, Buffer.get(), Size, 0);
+@@ -97,6 +191,18 @@
+       Size -= 4;
+     }
+     llvm::sys::windows::UTF16ToUTF8(Data, Size, Path);
++#else
++    wchar_t filename[MAX_PATH];
++    wchar_t outPath[2048];
++    wchar_t* Data = outPath;
++    GetFilenameFromHandle(DirectoryHandle, filename);
++    auto Size = wcslen(filename);
++    if (Size >= 4 && ::memcmp(Data, L"\\\\?\\", 8) == 0) {
++      Data += 4;
++      Size -= 4;
++    }
++    llvm::sys::windows::UTF16ToUTF8(Data, Size, Path);
++#endif
+   }
+
+   size_t EntrySize = sizeof(FILE_NOTIFY_INFORMATION) + MAX_PATH * sizeof(WCHAR);
+Index: llvm/include/llvm/Support/Windows/WindowsSupport.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/include/llvm/Support/Windows/WindowsSupport.h b/llvm/include/llvm/Support/Windows/WindowsSupport.h
+--- a/llvm/include/llvm/Support/Windows/WindowsSupport.h	(revision Staged)
++++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h	(date 1766316274573)
+@@ -26,7 +26,7 @@
+ #undef _WIN32_IE
+
+ // Require at least Windows 7 API.
+-#define _WIN32_WINNT 0x0601
++#define _WIN32_WINNT 0x0501
+ #define _WIN32_IE    0x0800 // MinGW at it again. FIXME: verify if still needed.
+ #define WIN32_LEAN_AND_MEAN
+ #ifndef NOMINMAX
+Index: llvm/lib/Support/Windows/Path.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.inc
+--- a/llvm/lib/Support/Windows/Path.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Path.inc	(date 1766318087866)
+@@ -27,6 +27,9 @@
+ #include "llvm/Support/Windows/WindowsSupport.h"
+ #include <shellapi.h>
+ #include <shlobj.h>
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++#include <psapi.h>
++#endif
+
+ #undef max
+
+@@ -361,9 +364,102 @@
+   return is_local_internal(WidePath, result);
+ }
+
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++static bool GetFilenameFromHandle(HANDLE hFile, wchar_t *pszFilename)
++{
++  BOOL bRC = FALSE;
++
++  // Get the file size.
++  DWORD dwFileSizeHi = 0;
++  DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
++
++  // Create a file mapping object.
++  HANDLE hFileMap = CreateFileMappingW(hFile,
++                                      NULL,
++                                      PAGE_READONLY,
++                                      0,
++                                      dwFileSizeLo,
++                                      NULL);
++
++  if (hFileMap)
++  {
++    // Create a file mapping to get the file name.
++    void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
++
++    if (pMem)
++    {
++      if (GetMappedFileNameW(GetCurrentProcess(),
++                            pMem,
++                            pszFilename,
++                            MAX_PATH))
++      {
++        // At this point pszFilename already contains the name.
++        // But the drive name is not written in usual MS DOS fomat, actually,
++        // it is a device name.
++        // So below is an attempt to translate it to drive-letter
++        wchar_t szTemp[512];
++        *szTemp = 0;
++
++        auto uMaxLenDest = wcslen(pszFilename);
++
++        if (GetLogicalDriveStringsW(sizeof (szTemp) - 1, szTemp))
++        {
++          wchar_t szName[MAX_PATH];
++          wchar_t szDrive[3] = L" :";
++          BOOL bFound = FALSE;
++          wchar_t* p = szTemp;
++
++          do
++          {
++            // Copy the drive letter into the template string,
++            // removing the backslash.
++            *szDrive = *p;
++
++            // Look up each device name.
++            if (QueryDosDeviceW(szDrive, szName,
++                               sizeof (szName)))
++            {
++              UINT uNameLen = wcslen(szName);
++
++              //If greater than file name length, it's not a match.
++              if (uNameLen < uMaxLenDest)
++              {
++                bFound = wcsnicmp (pszFilename, szName,
++                                  uNameLen) == 0;
++
++                if (bFound)
++                {
++                  //Reconstruct pszFilename using szTemp as scratch,
++                  // and replace device path with our DOS path.
++                  wchar_t szTempFile[MAX_PATH];
++                  wsprintfW(szTempFile,
++                           L"%s%s",
++                           szDrive,
++                           pszFilename+uNameLen);
++                  wcsncpy(pszFilename, szTempFile, uMaxLenDest);
++                }
++              }
++            }
++            // Go to the next NULL character.
++            while (*p++);
++
++          }
++          while (!bFound && *p); // at the end of the string
++        }
++      }
++      bRC = TRUE;
++      UnmapViewOfFile(pMem);
++    }
++    CloseHandle(hFileMap);
++  }
++  return bRC;
++}
++#endif
 +
  static std::error_code realPathFromHandle(HANDLE H,
                                            SmallVectorImpl<wchar_t> &Buffer,
@@ -142,14 +278,14 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
    Buffer.resize_for_overwrite(Buffer.capacity());
    DWORD CountChars = ::GetFinalPathNameByHandleW(
        H, Buffer.begin(), Buffer.capacity(), FILE_NAME_NORMALIZED | flags);
-@@ -377,6 +469,14 @@
+@@ -377,11 +473,20 @@
    Buffer.truncate(CountChars);
    if (CountChars == 0)
      return mapWindowsError(GetLastError());
 +#else
 +  wchar_t Buff[MAX_PATH];
-+  if (!GetFilenameFromHandle(H, Buff)){
-+    std::error_code();
++  if (!GetFilenameFromHandle(H, Buff)) {
++    return std::error_code();
 +  }
 +  auto Size = wcslen(Buff);
 +  Buffer.resize_for_overwrite(Size);
@@ -157,15 +293,40 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
    return std::error_code();
  }
 
-@@ -425,6 +525,7 @@
+ static std::error_code realPathFromHandle(HANDLE H,
+                                           SmallVectorImpl<char> &RealPath) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   RealPath.clear();
+   SmallVector<wchar_t, MAX_PATH> Buffer;
+   if (std::error_code EC = realPathFromHandle(H, Buffer))
+@@ -407,6 +512,18 @@
+     return EC;
+
+   llvm::sys::path::make_preferred(RealPath);
++#else
++  wchar_t Buff[MAX_PATH];
++  if (!GetFilenameFromHandle(H, Buff)) {
++    return std::error_code();
++  }
++  auto Size = wcslen(Buff);
++  // Convert the result from UTF-16 to UTF-8.
++  if (std::error_code EC = UTF16ToUTF8(Buff, Size, RealPath))
++    return EC;
++
++  llvm::sys::path::make_preferred(RealPath);
++#endif
+   return std::error_code();
+ }
+
+@@ -421,6 +538,7 @@
+ }
+
+ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   // Clear the FILE_DISPOSITION_INFO flag first, before checking if it's a
    // network file. On Windows 7 the function realPathFromHandle() below fails
    // if the FILE_DISPOSITION_INFO flag was already set to 'DeleteFile = true' by
-   // a prior call.
-+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
-   FILE_DISPOSITION_INFO Disposition;
-   Disposition.DeleteFile = false;
-   if (!SetFileInformationByHandle(Handle, FileDispositionInfo, &Disposition,
-@@ -454,10 +555,14 @@
+@@ -454,10 +572,14 @@
                                    sizeof(Disposition)))
      return mapWindowsError(::GetLastError());
    return std::error_code();
@@ -180,100 +341,83 @@ diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.i
    SmallVector<wchar_t, 0> ToWide;
    if (auto EC = widenPath(To, ToWide))
      return EC;
-@@ -481,6 +586,9 @@
+@@ -481,6 +603,16 @@
    }
 
    return std::error_code();
 +#else
-+  return std::error_code(ERROR_CALL_NOT_IMPLEMENTED, std::system_category());
++  wchar_t filename[MAX_PATH];
++  GetFilenameFromHandle(FromHandle, filename);
++  SmallVector<wchar_t, 0> ToWide;
++  if (auto EC = widenPath(To, ToWide))
++    return EC;
++  if (!MoveFileExW(filename, ToWide.begin(), ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0))
++    return mapWindowsError(GetLastError());
++  return std::error_code();
 +#endif
  }
 
  static std::error_code rename_handle(HANDLE FromHandle, const Twine &To) {
-@@ -1464,6 +1572,7 @@
+@@ -1462,6 +1594,7 @@
+ } // end namespace fs
+
  namespace path {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
  static bool getKnownFolderPath(KNOWNFOLDERID folderId,
                                 SmallVectorImpl<char> &result) {
-+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
    wchar_t *path = nullptr;
-   if (::SHGetKnownFolderPath(folderId, KF_FLAG_CREATE, nullptr, &path) != S_OK)
-     return false;
-@@ -1473,6 +1582,15 @@
-   if (ok)
+@@ -1474,19 +1607,42 @@
      llvm::sys::path::make_preferred(result);
    return ok;
+ }
 +#else
++static bool getKnownFolderPath(int folderId, SmallVectorImpl<char> &result) {
 +  wchar_t Path[MAX_PATH];
-+  if (::SHGetFolderPathW(0, CSIDL_APPDATA | CSIDL_FLAG_CREATE, 0,
-+                         /*SHGFP_TYPE_CURRENT*/0, Path) != S_OK)
++  if (::SHGetFolderPathW(0, folderId | CSIDL_FLAG_CREATE, 0,
++                         /*SHGFP_TYPE_CURRENT*/ 0, Path) != S_OK)
 +    return false;
 +  if (UTF16ToUTF8(Path, ::wcslen(Path), result))
 +    return false;
 +  return true;
++}
 +#endif
- }
 
  bool home_directory(SmallVectorImpl<char> &result) {
-diff --git a/llvm/lib/Support/Windows/Signals.inc b/llvm/lib/Support/Windows/Signals.inc
---- a/llvm/lib/Support/Windows/Signals.inc	(revision Staged)
-+++ b/llvm/lib/Support/Windows/Signals.inc	(date 1761999730963)
-@@ -663,7 +663,7 @@
- static bool GetDumpFolder(HKEY Key,
-                           llvm::SmallVectorImpl<char> &ResultDirectory) {
-   using llvm::sys::windows::UTF16ToUTF8;
--
 +#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
-   if (!Key)
-     return false;
-
-@@ -695,6 +695,9 @@
-     return false;
-
-   return true;
+   return getKnownFolderPath(FOLDERID_Profile, result);
 +#else
-+  return false;
++  return getKnownFolderPath(CSIDL_PROFILE, result);
 +#endif
  }
 
- /// Populate ResultType with a valid MINIDUMP_TYPE based on the value of
-@@ -713,7 +716,7 @@
- static bool GetDumpType(HKEY Key, MINIDUMP_TYPE &ResultType) {
-   if (!Key)
-     return false;
--
+ bool user_config_directory(SmallVectorImpl<char> &result) {
 +#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
-   DWORD DumpType;
-   DWORD TypeSize = sizeof(DumpType);
-   if (ERROR_SUCCESS != ::RegGetValueW(Key, NULL, L"DumpType", RRF_RT_REG_DWORD,
-@@ -741,6 +744,9 @@
-     return false;
-   }
-   return true;
+   // Either local or roaming appdata may be suitable in some cases, depending
+   // on the data. Local is more conservative, Roaming may not always be correct.
+   return getKnownFolderPath(FOLDERID_LocalAppData, result);
 +#else
-+  return false;
++  return getKnownFolderPath(CSIDL_LOCAL_APPDATA, result);
 +#endif
  }
 
- /// Write a Windows dump file containing process information that can be
+ bool cache_directory(SmallVectorImpl<char> &result) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   return getKnownFolderPath(FOLDERID_LocalAppData, result);
++#else
++return getKnownFolderPath(CSIDL_LOCAL_APPDATA, result);
++#endif
+ }
+
+ static bool getTempDirEnvVar(const wchar_t *Var, SmallVectorImpl<char> &Res) {
+Index: llvm/lib/Support/Windows/Threading.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/Threading.inc
 --- a/llvm/lib/Support/Windows/Threading.inc	(revision Staged)
-+++ b/llvm/lib/Support/Windows/Threading.inc	(date 1761999730964)
-@@ -49,7 +49,13 @@
-   }
- }
-
--DWORD llvm_thread_get_id_impl(HANDLE hThread) { return ::GetThreadId(hThread); }
-+DWORD llvm_thread_get_id_impl(HANDLE hThread) {
-+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
-+  return ::GetThreadId(hThread);
-+#else
-+  return 0;
-+#endif
-+}
-
- DWORD llvm_thread_get_current_id_impl() { return ::GetCurrentThreadId(); }
-
-@@ -137,6 +143,7 @@
++++ b/llvm/lib/Support/Windows/Threading.inc	(date 1766317291608)
+@@ -137,6 +137,7 @@
 
  template <typename F>
  static bool IterateProcInfo(LOGICAL_PROCESSOR_RELATIONSHIP Relationship, F Fn) {
@@ -281,7 +425,7 @@ diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/T
    DWORD Len = 0;
    BOOL R = ::GetLogicalProcessorInformationEx(Relationship, NULL, &Len);
    if (R || GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-@@ -157,9 +164,13 @@
+@@ -157,9 +158,13 @@
    }
    free(Info);
    return true;
@@ -295,7 +439,7 @@ diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/T
    USHORT Count = 0;
    if (::GetProcessGroupAffinity(GetCurrentProcess(), &Count, nullptr))
      return std::nullopt;
-@@ -173,6 +184,9 @@
+@@ -173,6 +178,9 @@
      return std::nullopt;
 
    return Groups;
@@ -305,376 +449,116 @@ diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/T
  }
 
  static ArrayRef<ProcessorGroup> getProcessorGroups() {
-@@ -303,14 +317,17 @@
-   std::optional<unsigned> Socket = compute_cpu_socket(ThreadPoolNum);
-   if (!Socket)
-     return;
+@@ -294,7 +302,7 @@
+ // Assign the current thread to a more appropriate CPU socket or CPU group
+ void llvm::ThreadPoolStrategy::apply_thread_strategy(
+     unsigned ThreadPoolNum) const {
+-
 +#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
-   ArrayRef<ProcessorGroup> Groups = getProcessorGroups();
-   GROUP_AFFINITY Affinity{};
+   // After Windows 11 and Windows Server 2022, let the OS do the scheduling,
+   // since a process automatically gains access to all processor groups.
+   if (llvm::RunningWindows11OrGreater())
+@@ -308,9 +316,35 @@
    Affinity.Group = Groups[*Socket].ID;
    Affinity.Mask = Groups[*Socket].Affinity;
    SetThreadGroupAffinity(GetCurrentThread(), &Affinity, nullptr);
 +#endif
  }
++
++#if _WIN32_WINNT < _WIN32_WINNT_WIN7
++DWORD GetThreadAffinityMask(HANDLE thread)
++{
++  DWORD Mask = 1;
++  DWORD Old = 0;
++
++  // try every CPU one by one until one works or none are left
++  while(Mask)
++  {
++    Old = SetThreadAffinityMask(thread, Mask);
++    if(Old)
++    {   // this one worked
++      SetThreadAffinityMask(thread, Old);
++      return Old;
++    }
++    if (GetLastError() != ERROR_INVALID_PARAMETER)
++      return 0;
++    Mask <<= 1;
++  }
++
++  return 0;
++}
++#endif
 
  llvm::BitVector llvm::get_thread_affinity_mask() {
 +#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
    GROUP_AFFINITY Affinity{};
    GetThreadGroupAffinity(GetCurrentThread(), &Affinity);
 
-@@ -330,6 +347,9 @@
+@@ -330,6 +364,16 @@
        V.set(StartOffset + I);
    }
    return V;
 +#else
-+  return {};
++  DWORD_PTR Affinity = GetThreadAffinityMask(GetCurrentThread());
++  llvm::BitVector V;
++  V.resize(sizeof(DWORD));
++  for (unsigned I = 0; I < sizeof(DWORD); ++I) {
++    if ((Affinity >> I) & 1)
++      V.set(I);
++  }
++  return V;
 +#endif
  }
 
  unsigned llvm::get_cpus() { return getProcessorGroups().size(); }
+Index: llvm/lib/Support/raw_socket_stream.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
 diff --git a/llvm/lib/Support/raw_socket_stream.cpp b/llvm/lib/Support/raw_socket_stream.cpp
 --- a/llvm/lib/Support/raw_socket_stream.cpp	(revision Staged)
-+++ b/llvm/lib/Support/raw_socket_stream.cpp	(date 1761999730964)
-@@ -1,341 +1,1 @@
--//===-- llvm/Support/raw_socket_stream.cpp - Socket streams --*- C++ -*-===//
--//
--// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
--// See https://llvm.org/LICENSE.txt for license information.
--// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
--//
--//===----------------------------------------------------------------------===//
--//
--// This file contains raw_ostream implementations for streams to communicate
--// via UNIX sockets
--//
--//===----------------------------------------------------------------------===//
--
--#include "llvm/Support/raw_socket_stream.h"
--#include "llvm/Config/config.h"
--#include "llvm/Support/Error.h"
--#include "llvm/Support/FileSystem.h"
--
--#include <atomic>
--#include <fcntl.h>
--#include <functional>
--#include <thread>
--
--#ifndef _WIN32
--#include <poll.h>
--#include <sys/socket.h>
--#include <sys/un.h>
--#else
--#include "llvm/Support/Windows/WindowsSupport.h"
--// winsock2.h must be included before afunix.h. Briefly turn off clang-format to
--// avoid error.
--// clang-format off
--#include <winsock2.h>
--#include <afunix.h>
--// clang-format on
--#include <io.h>
--#endif // _WIN32
--
--#if defined(HAVE_UNISTD_H)
--#include <unistd.h>
--#endif
--
--using namespace llvm;
--
--#ifdef _WIN32
--WSABalancer::WSABalancer() {
--  WSADATA WsaData;
--  ::memset(&WsaData, 0, sizeof(WsaData));
--  if (WSAStartup(MAKEWORD(2, 2), &WsaData) != 0) {
--    llvm::report_fatal_error("WSAStartup failed");
--  }
--}
--
--WSABalancer::~WSABalancer() { WSACleanup(); }
--#endif // _WIN32
--
--static std::error_code getLastSocketErrorCode() {
--#ifdef _WIN32
--  return std::error_code(::WSAGetLastError(), std::system_category());
--#else
--  return errnoAsErrorCode();
--#endif
--}
--
--static sockaddr_un setSocketAddr(StringRef SocketPath) {
--  struct sockaddr_un Addr;
--  memset(&Addr, 0, sizeof(Addr));
--  Addr.sun_family = AF_UNIX;
--  strncpy(Addr.sun_path, SocketPath.str().c_str(), sizeof(Addr.sun_path) - 1);
--  return Addr;
--}
--
--static Expected<int> getSocketFD(StringRef SocketPath) {
--#ifdef _WIN32
--  SOCKET Socket = socket(AF_UNIX, SOCK_STREAM, 0);
--  if (Socket == INVALID_SOCKET) {
--#else
--  int Socket = socket(AF_UNIX, SOCK_STREAM, 0);
--  if (Socket == -1) {
--#endif // _WIN32
--    return llvm::make_error<StringError>(getLastSocketErrorCode(),
--                                         "Create socket failed");
--  }
--
--  struct sockaddr_un Addr = setSocketAddr(SocketPath);
--  if (::connect(Socket, (struct sockaddr *)&Addr, sizeof(Addr)) == -1)
--    return llvm::make_error<StringError>(getLastSocketErrorCode(),
--                                         "Connect socket failed");
--
--#ifdef _WIN32
--  return _open_osfhandle(Socket, 0);
--#else
--  return Socket;
--#endif // _WIN32
--}
--
--ListeningSocket::ListeningSocket(int SocketFD, StringRef SocketPath,
--                                 int PipeFD[2])
--    : FD(SocketFD), SocketPath(SocketPath), PipeFD{PipeFD[0], PipeFD[1]} {}
--
--ListeningSocket::ListeningSocket(ListeningSocket &&LS)
--    : FD(LS.FD.load()), SocketPath(LS.SocketPath),
--      PipeFD{LS.PipeFD[0], LS.PipeFD[1]} {
--
--  LS.FD = -1;
--  LS.SocketPath.clear();
--  LS.PipeFD[0] = -1;
--  LS.PipeFD[1] = -1;
--}
--
--Expected<ListeningSocket> ListeningSocket::createUnix(StringRef SocketPath,
--                                                      int MaxBacklog) {
--
--  // Handle instances where the target socket address already exists and
--  // differentiate between a preexisting file with and without a bound socket
--  //
--  // ::bind will return std::errc:address_in_use if a file at the socket address
--  // already exists (e.g., the file was not properly unlinked due to a crash)
--  // even if another socket has not yet binded to that address
--  if (llvm::sys::fs::exists(SocketPath)) {
--    Expected<int> MaybeFD = getSocketFD(SocketPath);
--    if (!MaybeFD) {
--
--      // Regardless of the error, notify the caller that a file already exists
--      // at the desired socket address and that there is no bound socket at that
--      // address. The file must be removed before ::bind can use the address
--      consumeError(MaybeFD.takeError());
--      return llvm::make_error<StringError>(
--          std::make_error_code(std::errc::file_exists),
--          "Socket address unavailable");
--    }
--    ::close(std::move(*MaybeFD));
--
--    // Notify caller that the provided socket address already has a bound socket
--    return llvm::make_error<StringError>(
--        std::make_error_code(std::errc::address_in_use),
--        "Socket address unavailable");
--  }
--
--#ifdef _WIN32
--  WSABalancer _;
--  SOCKET Socket = socket(AF_UNIX, SOCK_STREAM, 0);
--  if (Socket == INVALID_SOCKET)
--#else
--  int Socket = socket(AF_UNIX, SOCK_STREAM, 0);
--  if (Socket == -1)
--#endif
--    return llvm::make_error<StringError>(getLastSocketErrorCode(),
--                                         "socket create failed");
--
--  struct sockaddr_un Addr = setSocketAddr(SocketPath);
--  if (::bind(Socket, (struct sockaddr *)&Addr, sizeof(Addr)) == -1) {
--    // Grab error code from call to ::bind before calling ::close
--    std::error_code EC = getLastSocketErrorCode();
--    ::close(Socket);
--    return llvm::make_error<StringError>(EC, "Bind error");
--  }
--
--  // Mark socket as passive so incoming connections can be accepted
--  if (::listen(Socket, MaxBacklog) == -1)
--    return llvm::make_error<StringError>(getLastSocketErrorCode(),
--                                         "Listen error");
--
--  int PipeFD[2];
--#ifdef _WIN32
--  // Reserve 1 byte for the pipe and use default textmode
--  if (::_pipe(PipeFD, 1, 0) == -1)
--#else
--  if (::pipe(PipeFD) == -1)
--#endif // _WIN32
--    return llvm::make_error<StringError>(getLastSocketErrorCode(),
--                                         "pipe failed");
--
--#ifdef _WIN32
--  return ListeningSocket{_open_osfhandle(Socket, 0), SocketPath, PipeFD};
--#else
--  return ListeningSocket{Socket, SocketPath, PipeFD};
--#endif // _WIN32
--}
--
--// If a file descriptor being monitored by ::poll is closed by another thread,
--// the result is unspecified. In the case ::poll does not unblock and return,
--// when ActiveFD is closed, you can provide another file descriptor via CancelFD
--// that when written to will cause poll to return. Typically CancelFD is the
--// read end of a unidirectional pipe.
--//
--// Timeout should be -1 to block indefinitly
--//
--// getActiveFD is a callback to handle ActiveFD's of std::atomic<int> and int
--static std::error_code
--manageTimeout(const std::chrono::milliseconds &Timeout,
--              const std::function<int()> &getActiveFD,
--              const std::optional<int> &CancelFD = std::nullopt) {
--  struct pollfd FD[2];
--  FD[0].events = POLLIN;
--#ifdef _WIN32
--  SOCKET WinServerSock = _get_osfhandle(getActiveFD());
--  FD[0].fd = WinServerSock;
--#else
--  FD[0].fd = getActiveFD();
--#endif
--  uint8_t FDCount = 1;
--  if (CancelFD.has_value()) {
--    FD[1].events = POLLIN;
--    FD[1].fd = CancelFD.value();
--    FDCount++;
--  }
--
--  // Keep track of how much time has passed in case ::poll or WSAPoll are
--  // interupted by a signal and need to be recalled
--  auto Start = std::chrono::steady_clock::now();
--  auto RemainingTimeout = Timeout;
--  int PollStatus = 0;
--  do {
--    // If Timeout is -1 then poll should block and RemainingTimeout does not
--    // need to be recalculated
--    if (PollStatus != 0 && Timeout != std::chrono::milliseconds(-1)) {
--      auto TotalElapsedTime =
--          std::chrono::duration_cast<std::chrono::milliseconds>(
--              std::chrono::steady_clock::now() - Start);
--
--      if (TotalElapsedTime >= Timeout)
--        return std::make_error_code(std::errc::operation_would_block);
--
--      RemainingTimeout = Timeout - TotalElapsedTime;
--    }
--#ifdef _WIN32
--    PollStatus = WSAPoll(FD, FDCount, RemainingTimeout.count());
--  } while (PollStatus == SOCKET_ERROR &&
--           getLastSocketErrorCode() == std::errc::interrupted);
--#else
--    PollStatus = ::poll(FD, FDCount, RemainingTimeout.count());
--  } while (PollStatus == -1 &&
--           getLastSocketErrorCode() == std::errc::interrupted);
--#endif
--
--  // If ActiveFD equals -1 or CancelFD has data to be read then the operation
--  // has been canceled by another thread
--  if (getActiveFD() == -1 || (CancelFD.has_value() && FD[1].revents & POLLIN))
--    return std::make_error_code(std::errc::operation_canceled);
--#if _WIN32
--  if (PollStatus == SOCKET_ERROR)
--#else
--  if (PollStatus == -1)
--#endif
--    return getLastSocketErrorCode();
--  if (PollStatus == 0)
--    return std::make_error_code(std::errc::timed_out);
--  if (FD[0].revents & POLLNVAL)
--    return std::make_error_code(std::errc::bad_file_descriptor);
--  return std::error_code();
--}
--
--Expected<std::unique_ptr<raw_socket_stream>>
--ListeningSocket::accept(const std::chrono::milliseconds &Timeout) {
--  auto getActiveFD = [this]() -> int { return FD; };
--  std::error_code TimeoutErr = manageTimeout(Timeout, getActiveFD, PipeFD[0]);
--  if (TimeoutErr)
--    return llvm::make_error<StringError>(TimeoutErr, "Timeout error");
--
--  int AcceptFD;
--#ifdef _WIN32
--  SOCKET WinAcceptSock = ::accept(_get_osfhandle(FD), NULL, NULL);
--  AcceptFD = _open_osfhandle(WinAcceptSock, 0);
--#else
--  AcceptFD = ::accept(FD, NULL, NULL);
--#endif
--
--  if (AcceptFD == -1)
--    return llvm::make_error<StringError>(getLastSocketErrorCode(),
--                                         "Socket accept failed");
--  return std::make_unique<raw_socket_stream>(AcceptFD);
--}
--
--void ListeningSocket::shutdown() {
--  int ObservedFD = FD.load();
--
--  if (ObservedFD == -1)
--    return;
--
--  // If FD equals ObservedFD set FD to -1; If FD doesn't equal ObservedFD then
--  // another thread is responsible for shutdown so return
--  if (!FD.compare_exchange_strong(ObservedFD, -1))
--    return;
--
--  ::close(ObservedFD);
--  ::unlink(SocketPath.c_str());
--
--  // Ensure ::poll returns if shutdown is called by a separate thread
--  char Byte = 'A';
--  ssize_t written = ::write(PipeFD[1], &Byte, 1);
++++ b/llvm/lib/Support/raw_socket_stream.cpp	(date 1766316906912)
+@@ -191,6 +191,7 @@
+ manageTimeout(const std::chrono::milliseconds &Timeout,
+               const std::function<int()> &getActiveFD,
+               const std::optional<int> &CancelFD = std::nullopt) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   struct pollfd FD[2];
+   FD[0].events = POLLIN;
+ #ifdef _WIN32
+@@ -248,6 +249,7 @@
+     return std::make_error_code(std::errc::timed_out);
+   if (FD[0].revents & POLLNVAL)
+     return std::make_error_code(std::errc::bad_file_descriptor);
++#endif
+   return std::error_code();
+ }
 
--  // Ignore any write() error
--  (void)written;
--}
+Index: llvm/tools/llvm-ar/llvm-ar.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/tools/llvm-ar/llvm-ar.cpp b/llvm/tools/llvm-ar/llvm-ar.cpp
+--- a/llvm/tools/llvm-ar/llvm-ar.cpp	(revision Staged)
++++ b/llvm/tools/llvm-ar/llvm-ar.cpp	(date 1766318608461)
+@@ -562,12 +562,17 @@
+ // CompareStringOrdinal compares two Unicode strings for
+ // binary equivalence and allows for case insensitivity.
+ #ifdef _WIN32
++
+   SmallVector<wchar_t, 128> WPath1, WPath2;
+   failIfError(sys::windows::UTF8ToUTF16(normalizePath(Path1), WPath1));
+   failIfError(sys::windows::UTF8ToUTF16(normalizePath(Path2), WPath2));
 -
--ListeningSocket::~ListeningSocket() {
--  shutdown();
--
--  // Close the pipe's FDs in the destructor instead of within
--  // ListeningSocket::shutdown to avoid unnecessary synchronization issues that
--  // would occur as PipeFD's values would have to be changed to -1
--  //
--  // The move constructor sets PipeFD to -1
--  if (PipeFD[0] != -1)
--    ::close(PipeFD[0]);
--  if (PipeFD[1] != -1)
--    ::close(PipeFD[1]);
--}
--
--//===----------------------------------------------------------------------===//
--//  raw_socket_stream
--//===----------------------------------------------------------------------===//
--
--raw_socket_stream::raw_socket_stream(int SocketFD)
--    : raw_fd_stream(SocketFD, true) {}
--
--raw_socket_stream::~raw_socket_stream() {}
--
--Expected<std::unique_ptr<raw_socket_stream>>
--raw_socket_stream::createConnectedUnix(StringRef SocketPath) {
--#ifdef _WIN32
--  WSABalancer _;
--#endif // _WIN32
--  Expected<int> FD = getSocketFD(SocketPath);
--  if (!FD)
--    return FD.takeError();
--  return std::make_unique<raw_socket_stream>(*FD);
--}
--
--ssize_t raw_socket_stream::read(char *Ptr, size_t Size,
--                                const std::chrono::milliseconds &Timeout) {
--  auto getActiveFD = [this]() -> int { return this->get_fd(); };
--  std::error_code Err = manageTimeout(Timeout, getActiveFD);
--  // Mimic raw_fd_stream::read error handling behavior
--  if (Err) {
--    raw_fd_stream::error_detected(Err);
--    return -1;
--  }
--  return raw_fd_stream::read(Ptr, Size);
--}
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   return CompareStringOrdinal(WPath1.data(), WPath1.size(), WPath2.data(),
+                               WPath2.size(), true) == CSTR_EQUAL;
++#else
++  return CompareStringW(LOCALE_INVARIANT,0, WPath1.data(), WPath1.size(), WPath2.data(),
++                              WPath2.size()) == CSTR_EQUAL;
++#endif
+ #else
+   return normalizePath(Path1) == normalizePath(Path2);
+ #endif

@@ -72,13 +72,14 @@ RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git
 RUN mkdir /opt/sources/llvm-project/llvm/build
 WORKDIR /opt/sources/llvm-project/llvm/build
 ADD ./scripts/docker/build-llvm.sh ../build-llvm.sh
+ADD ./scripts/docker/build-base.sh ../build-base.sh
 RUN ../build-llvm.sh
-RUN ../build-llvm.sh aarch64-linux-gnu
-RUN ../build-llvm.sh arm-linux-gnueabihf
-RUN ../build-llvm.sh riscv64-linux-gnu
-RUN ../build-llvm.sh aarch64-w64-mingw32
-RUN ../build-llvm.sh i686-w64-mingw32
-RUN ../build-llvm.sh x86_64-w64-mingw32
+RUN TARGET_TRIPLE=aarch64-linux-gnu ../build-llvm.sh
+RUN TARGET_TRIPLE=arm-linux-gnueabihf ../build-llvm.sh
+RUN TARGET_TRIPLE=riscv64-linux-gnu ../build-llvm.sh
+RUN TARGET_TRIPLE=aarch64-w64-mingw32 ../build-llvm.sh
+RUN TARGET_TRIPLE=i686-w64-mingw32 ../build-llvm.sh
+RUN TARGET_TRIPLE=x86_64-w64-mingw32 ../build-llvm.sh
 
 # Clone Qt6
 WORKDIR /opt/sources
@@ -88,18 +89,19 @@ RUN cd qt6 && ./init-repository --module-subset=qtcharts,qtsvg,qtbase && mkdir b
 WORKDIR /opt/sources/qt6/build
 
 ADD ./scripts/docker/build-qt.sh ../build-qt.sh
+ADD ./scripts/docker/build-base.sh ../build-base.sh
 
 # Workaround a Qt6 bug where configuration does not detect the sysroot libxkbcommon-x11
 RUN apt-get install -y libxkbcommon-x11-dev
 
 # Build Qt
 RUN ../build-qt.sh
-RUN ../build-qt.sh aarch64-linux-gnu
-RUN ../build-qt.sh arm-linux-gnueabihf
-RUN ../build-qt.sh riscv64-linux-gnu
-RUN ../build-qt.sh aarch64-w64-mingw32
-RUN ../build-qt.sh i686-w64-mingw32
-RUN ../build-qt.sh x86_64-w64-mingw32
+RUN TARGET_TRIPLE=aarch64-linux-gnu ../build-qt.sh
+RUN TARGET_TRIPLE=arm-linux-gnueabihf ../build-qt.sh
+RUN TARGET_TRIPLE=riscv64-linux-gnu ../build-qt.sh
+RUN TARGET_TRIPLE=aarch64-w64-mingw32 ../build-qt.sh
+RUN TARGET_TRIPLE=i686-w64-mingw32 ../build-qt.sh
+RUN TARGET_TRIPLE=x86_64-w64-mingw32 ../build-qt.sh
 
 WORKDIR /opt/sources/
 
@@ -108,14 +110,15 @@ RUN git clone --depth=1 -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git && 
 
 WORKDIR /opt/sources/hwloc/build
 ADD ./scripts/docker/build-hwloc.sh ../build-hwloc.sh
+ADD ./scripts/docker/build-base.sh ../build-base.sh
 
 RUN ../build-hwloc.sh
-RUN ../build-hwloc.sh aarch64-linux-gnu
-RUN ../build-hwloc.sh arm-linux-gnueabihf
-RUN ../build-hwloc.sh riscv64-linux-gnu
-RUN ../build-hwloc.sh aarch64-w64-mingw32
-RUN ../build-hwloc.sh i686-w64-mingw32
-RUN ../build-hwloc.sh x86_64-w64-mingw32
+RUN TARGET_TRIPLE=aarch64-linux-gnu ../build-hwloc.sh
+RUN TARGET_TRIPLE=arm-linux-gnueabihf ../build-hwloc.sh
+RUN TARGET_TRIPLE=riscv64-linux-gnu ../build-hwloc.sh
+RUN TARGET_TRIPLE=aarch64-w64-mingw32 ../build-hwloc.sh
+RUN TARGET_TRIPLE=i686-w64-mingw32 ../build-hwloc.sh
+RUN TARGET_TRIPLE=x86_64-w64-mingw32 ../build-hwloc.sh
 
 # Cleanup
 RUN rm -rf /opt/sources
