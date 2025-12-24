@@ -50,12 +50,14 @@ ENV PATH=/opt/toolchains/llvm-mingw/bin:$PATH
 
 WORKDIR /opt/sysroots
 
-RUN apt-get -y install nano debootstrap
+RUN apt-get -y install binutils zstd gzip xz-utils
 ADD ./scripts/docker/packages packages
-RUN debootstrap --arch=amd64 --variant=buildd --components=main,universe --include=`paste -sd, packages` noble x86_64-linux-gnu
-RUN debootstrap --arch=arm64 --variant=buildd --components=main,universe --include=`paste -sd, packages` noble aarch64-linux-gnu
-RUN debootstrap --arch=armhf --variant=buildd --components=main,universe --include=`paste -sd, packages` noble arm-linux-gnueabihf
-RUN debootstrap --arch=riscv64 --variant=buildd --components=main,universe --include=`paste -sd, packages` noble riscv64-linux-gnu
+ADD ./docker/build-environment/SysrootGenerator ./SysrootGenerator
+RUN ./SysrootGenerator --arch=amd64 --distribution=noble --sources="https://archive.ubuntu.com/ubuntu/|main,universe" --packages=`paste -sd, packages` --path=x86_64-linux-gnu
+RUN ./SysrootGenerator --arch=arm64 --distribution=noble --sources="https://ports.ubuntu.com/ubuntu-ports/|main,universe" --packages=`paste -sd, packages` --path=aarch64-linux-gnu
+RUN ./SysrootGenerator --arch=armhf --distribution=noble --sources="https://ports.ubuntu.com/ubuntu-ports/|main,universe" --packages=`paste -sd, packages` --path=arm-linux-gnueabihf
+RUN ./SysrootGenerator --arch=riscv64 --distribution=noble --sources="https://ports.ubuntu.com/ubuntu-ports/|main,universe" --packages=`paste -sd, packages` --path=riscv64-linux-gnu
+RUN rm ./SysrootGenerator packages
 
 # linking existing sysroots for consistency
 RUN ln -s /opt/toolchains/llvm-mingw/aarch64-w64-mingw32 aarch64-w64-mingw32

@@ -1,0 +1,112 @@
+Index: libunwind/src/RWMutex.hpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libunwind/src/RWMutex.hpp b/libunwind/src/RWMutex.hpp
+--- a/libunwind/src/RWMutex.hpp	(revision Staged)
++++ b/libunwind/src/RWMutex.hpp	(date 1763224524207)
+@@ -39,24 +39,67 @@
+ class _LIBUNWIND_HIDDEN RWMutex {
+ public:
+   bool lock_shared() {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+     AcquireSRWLockShared(&_lock);
++#else
++    EnterCriticalSection(&_readerMutex);
++    if (++_readers == 1) EnterCriticalSection(&_writerMutex);
++    LeaveCriticalSection(&_readerMutex);
++#endif
+     return true;
+   }
+   bool unlock_shared() {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+     ReleaseSRWLockShared(&_lock);
++#else
++    EnterCriticalSection(&_readerMutex);
++    if (--_readers == 0) LeaveCriticalSection(&_writerMutex);
++    EnterCriticalSection(&_writerMutex);
++    LeaveCriticalSection(&_readerMutex);
++#endif
+     return true;
+   }
+   bool lock() {
+-    AcquireSRWLockExclusive(&_lock);
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++   AcquireSRWLockExclusive(&_lock);
++#else
++    EnterCriticalSection(&_writerMutex);
++#endif
+     return true;
+   }
+   bool unlock() {
+-    ReleaseSRWLockExclusive(&_lock);
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++   ReleaseSRWLockExclusive(&_lock);
++#else
++    LeaveCriticalSection(&_writerMutex);
++#endif
+     return true;
+   }
+
++  RWMutex()
++  {
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++    InitializeCriticalSection(&_readerMutex);
++    InitializeCriticalSection(&_writerMutex);
++    _readers = 0;
++#endif
++  }
++
++  ~RWMutex()
++  {
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++    DeleteCriticalSection(&_readerMutex);
++    DeleteCriticalSection(&_writerMutex);
++#endif
++  }
+ private:
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   SRWLOCK _lock = SRWLOCK_INIT;
++#else
++  CRITICAL_SECTION _readerMutex;
++  CRITICAL_SECTION _writerMutex;
++  unsigned int _readers;
++#endif
+ };
+
+ #elif !defined(LIBUNWIND_USE_WEAK_PTHREAD)
+Index: compiler-rt/lib/builtins/emutls.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/compiler-rt/lib/builtins/emutls.c b/compiler-rt/lib/builtins/emutls.c
+--- a/compiler-rt/lib/builtins/emutls.c	(revision Staged)
++++ b/compiler-rt/lib/builtins/emutls.c	(date 1763207015458)
+@@ -205,8 +205,25 @@
+ }
+
+ static __inline void emutls_init_once(void) {
++
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   static INIT_ONCE once;
+   InitOnceExecuteOnce(&once, emutls_init, NULL, NULL);
++#else
++  static int initialized = 0;
++  if (initialized == 1) return;
++  HANDLE initMutex = CreateMutex(NULL, TRUE, TEXT("emutls_mutex"));
++  if (GetLastError() == ERROR_ALREADY_EXISTS)
++  {
++    WaitForSingleObject(initMutex, INFINITE);
++    ReleaseMutex(initMutex);
++    return;
++  }
++  emutls_init(NULL, NULL, NULL);
++  initialized = 1;
++  ReleaseMutex(initMutex);
++  CloseHandle(initMutex);
++#endif
+ }
+
+ static __inline void emutls_lock(void) { EnterCriticalSection(emutls_mutex); }

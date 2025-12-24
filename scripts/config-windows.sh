@@ -22,7 +22,10 @@ RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -
 RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DCMAKE_SYSROOT=/opt/sysroots/aarch64-linux-gnu -DTARGET_PREFIX=aarch64-linux-gnu- .. && make -j20 && make -j20 install
 RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DCMAKE_SYSROOT=/opt/sysroots/arm-linux-gnueabihf -DTARGET_PREFIX=arm-linux-gnueabihf- .. && make -j20 && make -j20 install
 RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DCMAKE_SYSROOT=/opt/sysroots/aarch64-w64-mingw32 -DTARGET_PREFIX=aarch64-w64-mingw32- .. && make -j20 && make -j20 install
-RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DCMAKE_SYSROOT=/opt/sysroots/riscv64-w64-mingw32 -DTARGET_PREFIX=riscv64-w64-mingw32- .. && make -j20 && make -j20 install
+RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DCMAKE_SYSROOT=/opt/sysroots/riscv64-linux-gnu -DTARGET_PREFIX=riscv64-linux-gnu- .. && make -j20 && make -j20 install
 RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DCMAKE_SYSROOT=/opt/sysroots/armv7-w64-mingw32 -DTARGET_PREFIX=armv7-w64-mingw32- .. && make -j20 && make -j20 install
 RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DCMAKE_SYSROOT=/opt/sysroots/i686-w64-mingw32 -DTARGET_PREFIX=i686-w64-mingw32- .. && make -j20 && make -j20 install
 RUN rm -rf * && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/llvm-cross.cmake -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DCMAKE_SYSROOT=/opt/sysroots/x86_64-w64-mingw32 -DTARGET_PREFIX=x86_64-w64-mingw32- .. && make -j20 && make -j20 install
+
+
+SYSROOT_BASE=/mnt/Dev/sysroots TARGET_TRIPLE=aarch64-linux-android TARGET_PREFIX=aarch64-linux-android21- ../build-hwloc.sh

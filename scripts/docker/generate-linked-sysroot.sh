@@ -16,32 +16,24 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-this_dir="$(readlink -f "$(dirname "$0")")"
-. ${this_dir}/build-base.sh
+if [ -z "$1" ]; then
+  echo "usage: $0 source-sysroot triple output-dir"
+fi
 
-../configure \
-    CC=$CC \
-    CXX=$CXX \
-    CFLAGS="--sysroot=$SYSROOT" \
-    CXXFLAGS="--sysroot=$SYSROOT" \
-    --host=$TARGET_TRIPLE \
-    --with-sysroot=$SYSROOT \
-    --prefix=$INSTALL_PREFIX \
-    --enable-static \
-    --disable-shared \
-    --enable-plugins=no \
-    --disable-readme \
-    --disable-cairo \
-    --disable-libxml2 \
-    --disable-io \
-    --disable-pci \
-    --disable-opencl \
-    --disable-cuda \
-    --disable-nvml \
-    --disable-rsmi \
-    --disable-levelzero \
-    --disable-gl \
-    --disable-libudev
+if [ -z "$2" ]; then
+  echo "usage: $0 source-sysroot triple output-dir"
+fi
 
-make -j$(nproc) install
-rm -rf ./*
+if [ -z "$3" ]; then
+  echo "usage: $0 source-sysroot triple output-dir"
+fi
+
+INPUT_SYSROOT=$(readlink -f "$1")
+TRIPLE=$2
+OUTPUT_DIR=$(readlink -f "$3")
+
+mkdir -p "$OUTPUT_DIR/usr"
+ln -s "$INPUT_SYSROOT/usr/lib/$TRIPLE" "$OUTPUT_DIR/usr/lib"
+ln -s "$INPUT_SYSROOT/usr/include" "$OUTPUT_DIR/usr/include"
+ln -s "usr/lib" "$OUTPUT_DIR/lib"
+ln -s "usr/include" "$OUTPUT_DIR/include"

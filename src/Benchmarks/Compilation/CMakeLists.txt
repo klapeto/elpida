@@ -68,5 +68,26 @@ target_link_libraries(elpida-compilation-benchmarks PUBLIC elpida-core elpida-co
         LLVMWindowsDriver
         LLVMBitstreamReader
         LLVMOption
+        LLVMCodeGen
+        LLVMGlobalISel
+        LLVMSelectionDAG
+        LLVMTableGen
+        LLVMTableGenBasic
+        LLVMTableGenCommon
+        LLVMTransformUtils
+        LLVMX86TargetMCA
+        LLVMX86Desc
+        LLVMX86Info
+        LLVMMCParser
+        LLVMAsmPrinter
+        LLVMDebugInfoCodeView
+        LLVMDebugInfoDWARF
+        LLVMVectorize
+        LLVMRemarks
+        LLVMAsmParser
+        LLVMCFGuard
+        LLVMTextAPI
+        LLVMMCDisassembler
         LLVMX86CodeGen
+        zlibstatic
         musl-lite)

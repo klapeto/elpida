@@ -5,7 +5,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
 --- a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(revision Staged)
-+++ b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(date 1766318679288)
++++ b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(date 1766347552997)
 @@ -12,6 +12,7 @@
  #include "llvm/Support/ConvertUTF.h"
  #include "llvm/Support/Path.h"
@@ -140,6 +140,55 @@ diff --git a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp b/c
    }
 
    size_t EntrySize = sizeof(FILE_NOTIFY_INFORMATION) + MAX_PATH * sizeof(WCHAR);
+Index: clang/lib/DirectoryWatcher/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/clang/lib/DirectoryWatcher/CMakeLists.txt b/clang/lib/DirectoryWatcher/CMakeLists.txt
+--- a/clang/lib/DirectoryWatcher/CMakeLists.txt	(revision Staged)
++++ b/clang/lib/DirectoryWatcher/CMakeLists.txt	(date 1766352037108)
+@@ -19,6 +19,7 @@
+   endif()
+ elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
+   list(APPEND DIRECTORY_WATCHER_SOURCES windows/DirectoryWatcher-windows.cpp)
++  set(DIRECTORY_WATCHER_LINK_LIBS "psapi")
+ else()
+   list(APPEND DIRECTORY_WATCHER_SOURCES default/DirectoryWatcher-not-implemented.cpp)
+ endif()
+Index: compiler-rt/lib/builtins/emutls.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/compiler-rt/lib/builtins/emutls.c b/compiler-rt/lib/builtins/emutls.c
+--- a/compiler-rt/lib/builtins/emutls.c	(revision Staged)
++++ b/compiler-rt/lib/builtins/emutls.c	(date 1766347711966)
+@@ -205,8 +205,24 @@
+ }
+
+ static __inline void emutls_init_once(void) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   static INIT_ONCE once;
+   InitOnceExecuteOnce(&once, emutls_init, NULL, NULL);
++#else
++  static int initialized = 0;
++  if (initialized == 1)
++    return;
++  HANDLE initMutex = CreateMutexW(NULL, TRUE, L"emutls_mutex");
++  if (GetLastError() == ERROR_ALREADY_EXISTS) {
++    WaitForSingleObject(initMutex, INFINITE);
++    ReleaseMutex(initMutex);
++    return;
++  }
++  emutls_init(NULL, NULL, NULL);
++  initialized = 1;
++  ReleaseMutex(initMutex);
++  CloseHandle(initMutex);
++#endif
+ }
+
+ static __inline void emutls_lock(void) { EnterCriticalSection(emutls_mutex); }
 Index: llvm/include/llvm/Support/Windows/WindowsSupport.h
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -147,7 +196,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/llvm/include/llvm/Support/Windows/WindowsSupport.h b/llvm/include/llvm/Support/Windows/WindowsSupport.h
 --- a/llvm/include/llvm/Support/Windows/WindowsSupport.h	(revision Staged)
-+++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h	(date 1766316274573)
++++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h	(date 1766347552998)
 @@ -26,7 +26,7 @@
  #undef _WIN32_IE
 
@@ -164,7 +213,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.inc
 --- a/llvm/lib/Support/Windows/Path.inc	(revision Staged)
-+++ b/llvm/lib/Support/Windows/Path.inc	(date 1766318087866)
++++ b/llvm/lib/Support/Windows/Path.inc	(date 1766347552998)
 @@ -27,6 +27,9 @@
  #include "llvm/Support/Windows/WindowsSupport.h"
  #include <shellapi.h>
@@ -416,7 +465,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/Threading.inc
 --- a/llvm/lib/Support/Windows/Threading.inc	(revision Staged)
-+++ b/llvm/lib/Support/Windows/Threading.inc	(date 1766317291608)
++++ b/llvm/lib/Support/Windows/Threading.inc	(date 1766347552998)
 @@ -137,6 +137,7 @@
 
  template <typename F>
@@ -518,7 +567,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/llvm/lib/Support/raw_socket_stream.cpp b/llvm/lib/Support/raw_socket_stream.cpp
 --- a/llvm/lib/Support/raw_socket_stream.cpp	(revision Staged)
-+++ b/llvm/lib/Support/raw_socket_stream.cpp	(date 1766316906912)
++++ b/llvm/lib/Support/raw_socket_stream.cpp	(date 1766347552998)
 @@ -191,6 +191,7 @@
  manageTimeout(const std::chrono::milliseconds &Timeout,
                const std::function<int()> &getActiveFD,
@@ -542,7 +591,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/llvm/tools/llvm-ar/llvm-ar.cpp b/llvm/tools/llvm-ar/llvm-ar.cpp
 --- a/llvm/tools/llvm-ar/llvm-ar.cpp	(revision Staged)
-+++ b/llvm/tools/llvm-ar/llvm-ar.cpp	(date 1766318608461)
++++ b/llvm/tools/llvm-ar/llvm-ar.cpp	(date 1766347552998)
 @@ -562,12 +562,17 @@
  // CompareStringOrdinal compares two Unicode strings for
  // binary equivalence and allows for case insensitivity.

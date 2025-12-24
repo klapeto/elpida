@@ -16,29 +16,38 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-if [ "$TARGET_TRIPLE" == "" ]; then
+if [ -z "${TARGET_TRIPLE}" ]; then
     TARGET_TRIPLE=$(gcc -dumpmachine)
 fi
 
 TARGET_ARCH=$(expr match "$TARGET_TRIPLE" '\(.*\)-.*-.*')
 
 TARGET_OS=$(expr match "$TARGET_TRIPLE" '.*-\(.*\)-.*')
-if [ "$TARGET_OS" == "linux" ]; then
+
+if [ "$TARGET_OS" = "linux" ]; then
     TARGET_OS=Linux
-elif [ "$TARGET_OS" == "w64" ]; then
+elif [ "$TARGET_OS" = "w64" ]; then
     TARGET_OS=Windows
 fi
 
-if [ "$TARGET_PREFIX" == "" ]; then
+if [ -z "${TARGET_PREFIX}" ]; then
     TARGET_PREFIX=$TARGET_TRIPLE-
 fi
 
-if [ "$SYSROOT_BASE" == "" ]; then
+if [ -z "${SYSROOT_BASE}" ]; then
     SYSROOT_BASE=/opt/sysroots
     #SYSROOT_BASE=/mnt/Dev/sysroots/
 fi
+
 SYSROOT=$SYSROOT_BASE/$TARGET_TRIPLE
-INSTALL_PREFIX=$SYSROOT/usr
+
+if [ -z "${INSTALL_PREFIX}" ]; then
+    if [ -z "${INSTALL_BASE}" ]; then
+        INSTALL_PREFIX="$SYSROOT/usr"
+    else
+        INSTALL_PREFIX="$INSTALL_BASE/$TARGET_TRIPLE/usr"
+    fi
+fi
 
 CC="${TARGET_PREFIX}clang"
 CXX="${TARGET_PREFIX}clang++"
