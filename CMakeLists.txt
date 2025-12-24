@@ -61,7 +61,20 @@ set(ELPIDA_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 include_directories(include)
 
-add_subdirectory(extern EXCLUDE_FROM_ALL)
+option(ELPIDA_INSTALL_CORE_LIBRARIES "Whether to install the Elpida core libraries on the system" OFF)
+option(ELPIDA_INSTALL_COMMON_TASKS_LIBRARIES "Whether to install the Elpida common tasks libraries on the system" OFF)
+option(ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES "Whether to install the Elpida predefined benchmark libraries on the system" OFF)
+
+if (ELPIDA_INSTALL_COMMON_TASKS_LIBRARIES)
+    set(ELPIDA_INSTALL_CORE_LIBRARIES ON)
+endif ()
+
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    set(ELPIDA_INSTALL_CORE_LIBRARIES ON)
+    set(ELPIDA_INSTALL_COMMON_TASKS_LIBRARIES ON)
+endif ()
+
+add_subdirectory(extern)
 add_subdirectory(src)
 add_subdirectory(apps)
-add_subdirectory(tests EXCLUDE_FROM_ALL)
+add_subdirectory(tests)

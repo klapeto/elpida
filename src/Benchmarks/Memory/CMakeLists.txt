@@ -13,3 +13,7 @@ add_library(elpida-memory-benchmarks
 )
 
 target_link_libraries(elpida-memory-benchmarks PUBLIC elpida-core elpida-common-tasks)
+
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-memory-benchmarks ARCHIVE)
+endif ()

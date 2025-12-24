@@ -14,3 +14,7 @@ add_library(elpida-common-tasks
 target_include_directories(elpida-common-tasks PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(elpida-common-tasks PUBLIC elpida-core elpida-xml)
+
+if (ELPIDA_INSTALL_COMMON_TASKS_LIBRARIES)
+    install(TARGETS elpida-common-tasks ARCHIVE)
+endif ()

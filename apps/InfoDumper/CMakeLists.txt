@@ -22,6 +22,6 @@ endif()
 
 add_executable(elpida-info-dumper ${ELPIDA_INFO_DUMPER_SOURCES})
 
-target_link_libraries(elpida-info-dumper PUBLIC elpida-core overheads-calculator elpida-platform elpida-shared)
+target_link_libraries(elpida-info-dumper PUBLIC elpida-core elpida-overheads-calculator elpida-platform elpida-shared)
 
 install(TARGETS elpida-info-dumper RUNTIME DESTINATION bin)

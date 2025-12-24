@@ -22,3 +22,7 @@ add_library(elpida-math-benchmarks
 
 target_compile_options(elpida-math-benchmarks PRIVATE -ffast-math)
 target_link_libraries(elpida-math-benchmarks PUBLIC elpida-core elpida-platform elpida-math musl-lite)
+
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-math-benchmarks ARCHIVE)
+endif ()

@@ -39,7 +39,9 @@ if [ -z "${SYSROOT_BASE}" ]; then
     #SYSROOT_BASE=/mnt/Dev/sysroots/
 fi
 
-SYSROOT=$SYSROOT_BASE/$TARGET_TRIPLE
+if [ -z "${SYSROOT}" ]; then
+  SYSROOT=$SYSROOT_BASE/$TARGET_TRIPLE
+fi
 
 if [ -z "${INSTALL_PREFIX}" ]; then
     if [ -z "${INSTALL_BASE}" ]; then

@@ -46,9 +46,9 @@ add_library(elpida-core
         IterationMicroTask.cpp
 )
 
-add_library(overheads-calculator TimingCalculator.cpp)
+add_library(elpida-overheads-calculator TimingCalculator.cpp)
 
-target_compile_options(overheads-calculator PRIVATE -O3)
+target_compile_options(elpida-overheads-calculator PRIVATE -O3)
 
 if (UNIX)
     include(FindThreads)
@@ -65,3 +65,7 @@ include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindHWLOC.cmake)
 
 target_include_directories(elpida-core PRIVATE ${HWLOC_INCLUDE_DIR})
 target_link_libraries(elpida-core PUBLIC ${HWLOC_LIBRARY})
+
+if (ELPIDA_INSTALL_CORE_LIBRARIES)
+    install(TARGETS elpida-core elpida-overheads-calculator ARCHIVE)
+endif ()

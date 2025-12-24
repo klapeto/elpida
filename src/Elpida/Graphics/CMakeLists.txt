@@ -14,3 +14,7 @@ add_library(elpida-graphics
 )
 
 target_link_libraries(elpida-graphics PUBLIC elpida-math)
+
+if (ELPIDA_INSTALL_CORE_LIBRARIES)
+    install(TARGETS elpida-graphics ARCHIVE)
+endif ()

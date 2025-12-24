@@ -31,3 +31,7 @@ target_include_directories(elpida-image-benchmarks PRIVATE
 )
 
 target_link_libraries(elpida-image-benchmarks PUBLIC elpida-core elpida-common-tasks elpida-xml elpida-svg png_static zlibstatic elpida-math elpida-graphics musl-lite)
+
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-image-benchmarks ARCHIVE)
+endif ()

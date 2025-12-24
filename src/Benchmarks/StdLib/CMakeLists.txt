@@ -28,3 +28,6 @@ add_library(elpida-stdlib-benchmarks
 target_link_libraries(elpida-stdlib-benchmarks PUBLIC elpida-core elpida-common-tasks)
 target_compile_options(elpida-stdlib-benchmarks PRIVATE -fno-builtin -fno-plt)
 
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-stdlib-benchmarks ARCHIVE)
+endif ()

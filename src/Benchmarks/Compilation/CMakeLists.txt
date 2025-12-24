@@ -91,3 +91,7 @@ target_link_libraries(elpida-compilation-benchmarks PUBLIC elpida-core elpida-co
         LLVMX86CodeGen
         zlibstatic
         musl-lite)
+
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-compilation-benchmarks ARCHIVE)
+endif ()

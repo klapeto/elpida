@@ -34,9 +34,9 @@ add_library(elpida-platform
         NumaAllocatorFactory.cpp
 )
 
-add_library(jep106 jep106.c)
+add_library(elpida-jep106 jep106.c)
 
-target_link_libraries(elpida-platform PUBLIC elpida-core hwloc jep106)
+target_link_libraries(elpida-platform PUBLIC elpida-core hwloc elpida-jep106)
 
 if (UNIX)
     include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindNUMA.cmake)
@@ -46,4 +46,8 @@ if (UNIX)
         target_link_libraries(elpida-platform PUBLIC numa)
     endif ()
 
+endif ()
+
+if (ELPIDA_INSTALL_CORE_LIBRARIES)
+    install(TARGETS elpida-platform elpida-jep106 ARCHIVE)
 endif ()

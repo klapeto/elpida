@@ -7,3 +7,7 @@ add_library(elpida-xml
         XmlParser.cpp
         XmlMap.cpp
 )
+
+if (ELPIDA_INSTALL_CORE_LIBRARIES)
+    install(TARGETS elpida-xml ARCHIVE)
+endif ()

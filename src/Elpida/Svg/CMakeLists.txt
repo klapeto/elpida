@@ -59,3 +59,7 @@ add_library(elpida-svg
 )
 
 target_link_libraries(elpida-svg PUBLIC elpida-core elpida-xml)
+
+if (ELPIDA_INSTALL_CORE_LIBRARIES)
+    install(TARGETS elpida-svg ARCHIVE)
+endif ()

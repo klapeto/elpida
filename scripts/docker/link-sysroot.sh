@@ -17,11 +17,17 @@
 #
 
 if [ -z "$1" ]; then
-  echo "usage: $0 source-sysroot output-dir"
+  echo "usage: $0 source-sysroot output-dir [triple]"
+  exit 1;
 fi
 
 if [ -z "$2" ]; then
-  echo "usage: $0 source-sysroot output-dir"
+  echo "usage: $0 source-sysroot output-dir [triple]"
+  exit 1;
+fi
+
+if [ -n "$3" ]; then
+  TRIPLE="$3"
 fi
 
 INPUT_SYSROOT=$(readlink -f "$1")
@@ -31,22 +37,31 @@ mkdir -p "$OUTPUT_DIR/usr"
 
 if [ -d "$INPUT_SYSROOT/usr/bin" ]; then
   ln -s "$INPUT_SYSROOT/usr/bin" "$OUTPUT_DIR/usr/bin"
-else
+elif [ -d "$INPUT_SYSROOT/bin" ]; then
   ln -s "$INPUT_SYSROOT/bin" "$OUTPUT_DIR/usr/bin"
 fi
 
-if [ -d "$INPUT_SYSROOT/usr/lib" ]; then
-  ln -s "$INPUT_SYSROOT/usr/lib" "$OUTPUT_DIR/usr/lib"
+if [ -z "$TRIPLE" ]; then
+  if [ -d "$INPUT_SYSROOT/usr/lib" ]; then
+    ln -s "$INPUT_SYSROOT/usr/lib" "$OUTPUT_DIR/usr/lib"
+  elif [ -d "$INPUT_SYSROOT/lib" ]; then
+    ln -s "$INPUT_SYSROOT/lib" "$OUTPUT_DIR/usr/lib"
+  fi
 else
-  ln -s "$INPUT_SYSROOT/lib" "$OUTPUT_DIR/usr/lib"
+  ln -s "$INPUT_SYSROOT/usr/lib/$TRIPLE" "$OUTPUT_DIR/usr/lib"
+  ln -s "$INPUT_SYSROOT/usr/lib/$TRIPLE" "$INPUT_SYSROOT/usr/lib/$TRIPLE/$TRIPLE"
 fi
 
 if [ -d "$INPUT_SYSROOT/usr/include" ]; then
   ln -s "$INPUT_SYSROOT/usr/include" "$OUTPUT_DIR/usr/include"
-else
+elif [ -d "$INPUT_SYSROOT/include" ]; then
   ln -s "$INPUT_SYSROOT/include" "$OUTPUT_DIR/usr/include"
 fi
 
-ln -s "usr/bin" "$OUTPUT_DIR/bin"
-ln -s "usr/lib" "$OUTPUT_DIR/lib"
-ln -s "usr/include" "$OUTPUT_DIR/include"
+if [ -z "$TRIPLE" ]; then
+  if [ -d "$OUTPUT_DIR/usr/bin" ]; then
+    ln -s "usr/bin" "$OUTPUT_DIR/bin"
+  fi
+  ln -s "usr/lib" "$OUTPUT_DIR/lib"
+  ln -s "usr/include" "$OUTPUT_DIR/include"
+fi

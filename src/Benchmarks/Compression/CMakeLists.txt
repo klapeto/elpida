@@ -16,3 +16,7 @@ target_include_directories(elpida-compression-benchmarks PRIVATE
 )
 
 target_link_libraries(elpida-compression-benchmarks PUBLIC elpida-core elpida-common-tasks zlibstatic musl-lite)
+
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-compression-benchmarks ARCHIVE)
+endif ()

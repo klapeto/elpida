@@ -25,3 +25,7 @@ else()
 endif()
 
 target_link_libraries(elpida-encryption-benchmarks PUBLIC elpida-core elpida-platform elpida-common-tasks musl-lite)
+
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-encryption-benchmarks ARCHIVE)
+endif ()
