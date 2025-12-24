@@ -52,18 +52,19 @@ WORKDIR /opt/sysroots
 
 RUN apt-get -y install binutils zstd gzip xz-utils
 ADD ./scripts/docker/packages packages
-ADD ./docker/build-environment/SysrootGenerator ./SysrootGenerator
+RUN wget -O SysrootGenerator https://github.com/klapeto/SysrootGenerator/releases/download/v1.0.1/SysrootGenerator-linux-x86-64 && chmod +x ./SysrootGenerator
 RUN ./SysrootGenerator --arch=amd64 --distribution=noble --sources="https://archive.ubuntu.com/ubuntu/|main,universe" --packages=`paste -sd, packages` --path=x86_64-linux-gnu
 RUN ./SysrootGenerator --arch=arm64 --distribution=noble --sources="https://ports.ubuntu.com/ubuntu-ports/|main,universe" --packages=`paste -sd, packages` --path=aarch64-linux-gnu
 RUN ./SysrootGenerator --arch=armhf --distribution=noble --sources="https://ports.ubuntu.com/ubuntu-ports/|main,universe" --packages=`paste -sd, packages` --path=arm-linux-gnueabihf
 RUN ./SysrootGenerator --arch=riscv64 --distribution=noble --sources="https://ports.ubuntu.com/ubuntu-ports/|main,universe" --packages=`paste -sd, packages` --path=riscv64-linux-gnu
-RUN rm ./SysrootGenerator packages
 
 # linking existing sysroots for consistency
-RUN ln -s /opt/toolchains/llvm-mingw/aarch64-w64-mingw32 aarch64-w64-mingw32
-RUN ln -s /opt/toolchains/llvm-mingw/armv7-w64-mingw32 armv7-w64-mingw32
-RUN ln -s /opt/toolchains/llvm-mingw/i686-w64-mingw32 i686-w64-mingw32
-RUN ln -s /opt/toolchains/llvm-mingw/x86_64-w64-mingw32 x86_64-w64-mingw32
+
+ADD ./scripts/docker/link-sysroot.sh link-sysroot.sh
+RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/aarch64-w64-mingw32 aarch64-w64-mingw32
+RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/armv7-w64-mingw32 armv7-w64-mingw32
+RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/i686-w64-mingw32 i686-w64-mingw32
+RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/x86_64-w64-mingw32 x86_64-w64-mingw32
 
 # Append loader libs for Qt tools run
 RUN echo "/opt/sysroots/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu" > /etc/ld.so.conf.d/cross.conf && ldconfig
@@ -75,7 +76,7 @@ RUN mkdir /opt/sources/llvm-project/llvm/build
 WORKDIR /opt/sources/llvm-project/llvm/build
 ADD ./scripts/docker/build-llvm.sh ../build-llvm.sh
 ADD ./scripts/docker/build-base.sh ../build-base.sh
-RUN ../build-llvm.sh
+RUN TARGET_TRIPLE=x86_64-linux-gnu ../build-llvm.sh
 RUN TARGET_TRIPLE=aarch64-linux-gnu ../build-llvm.sh
 RUN TARGET_TRIPLE=arm-linux-gnueabihf ../build-llvm.sh
 RUN TARGET_TRIPLE=riscv64-linux-gnu ../build-llvm.sh
@@ -97,7 +98,7 @@ ADD ./scripts/docker/build-base.sh ../build-base.sh
 RUN apt-get install -y libxkbcommon-x11-dev
 
 # Build Qt
-RUN ../build-qt.sh
+RUN TARGET_TRIPLE=x86_64-linux-gnu ../build-qt.sh
 RUN TARGET_TRIPLE=aarch64-linux-gnu ../build-qt.sh
 RUN TARGET_TRIPLE=arm-linux-gnueabihf ../build-qt.sh
 RUN TARGET_TRIPLE=riscv64-linux-gnu ../build-qt.sh
@@ -114,7 +115,7 @@ WORKDIR /opt/sources/hwloc/build
 ADD ./scripts/docker/build-hwloc.sh ../build-hwloc.sh
 ADD ./scripts/docker/build-base.sh ../build-base.sh
 
-RUN ../build-hwloc.sh
+RUN TARGET_TRIPLE=x86_64-linux-gnu ../build-hwloc.sh
 RUN TARGET_TRIPLE=aarch64-linux-gnu ../build-hwloc.sh
 RUN TARGET_TRIPLE=arm-linux-gnueabihf ../build-hwloc.sh
 RUN TARGET_TRIPLE=riscv64-linux-gnu ../build-hwloc.sh
@@ -125,8 +126,6 @@ RUN TARGET_TRIPLE=x86_64-w64-mingw32 ../build-hwloc.sh
 # Cleanup
 RUN rm -rf /opt/sources
 
-WORKDIR /
-
 ## setup appimagetool
 #RUN wget -O appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
 #RUN chmod +x appimagetool && mkdir /opt/appimagetool && cd /opt/appimagetool && /appimagetool --appimage-extract
@@ -134,7 +133,12 @@ WORKDIR /
 #RUN rm /appimagetool
 #ENV PATH=/opt/appimagetool/squashfs-root:$PATH
 
-# cleanup packages
+# cleanup
 RUN apt-get -y autoremove && apt-get autoclean
+
+WORKDIR /opt/sysroots
+RUN rm -rf /SysrootGenerator packages *-linux-gnu*/tmp *-linux-gnu*/var *-linux-gnu*/etc *-linux-gnu*/usr/share
+
+WORKDIR /
 
 CMD ["/bin/bash"]
