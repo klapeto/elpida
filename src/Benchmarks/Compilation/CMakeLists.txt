@@ -3,8 +3,10 @@ project("Elpida Compilation benchmarks" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-find_package(LLVM REQUIRED CONFIG)
-find_package(Clang REQUIRED)
+# this should work but the config files check for executables we delete on docker image
+# so we just link with no problems since the libraries are there
+#find_package(LLVM REQUIRED CONFIG)
+#find_package(Clang REQUIRED)
 
 add_library(elpida-compilation-benchmarks
         Plugin.cpp
@@ -91,6 +93,10 @@ target_link_libraries(elpida-compilation-benchmarks PUBLIC elpida-core elpida-co
         LLVMX86CodeGen
         zlibstatic
         musl-lite)
+
+if (WIN32)
+    target_link_libraries(elpida-compilation-benchmarks PUBLIC ntdll version)
+endif()
 
 if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
     install(TARGETS elpida-compilation-benchmarks ARCHIVE)

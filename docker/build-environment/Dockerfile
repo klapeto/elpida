@@ -59,10 +59,8 @@ RUN ./SysrootGenerator --arch=armhf --distribution=noble --sources="https://port
 RUN ./SysrootGenerator --arch=riscv64 --distribution=noble --sources="https://ports.ubuntu.com/ubuntu-ports/|main,universe" --packages=`paste -sd, packages` --path=riscv64-linux-gnu
 
 # linking existing sysroots for consistency
-
 ADD ./scripts/docker/link-sysroot.sh link-sysroot.sh
 RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/aarch64-w64-mingw32 aarch64-w64-mingw32
-RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/armv7-w64-mingw32 armv7-w64-mingw32
 RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/i686-w64-mingw32 i686-w64-mingw32
 RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/x86_64-w64-mingw32 x86_64-w64-mingw32
 
@@ -137,7 +135,27 @@ RUN rm -rf /opt/sources
 RUN apt-get -y autoremove && apt-get autoclean
 
 WORKDIR /opt/sysroots
-RUN rm -rf /SysrootGenerator packages *-linux-gnu*/tmp *-linux-gnu*/var *-linux-gnu*/etc *-linux-gnu*/usr/share
+RUN rm -rf ./SysrootGenerator \
+    ./packages \
+    ./link-sysroot.sh \
+    ./*/tmp \
+    ./*/var \
+    ./*/etc \
+    ./*/usr/share \
+    ./*/usr/sbom \
+    ./*/usr/doc \
+    ./*/usr/metatypes \
+    ./[ar]*-linux-gnu*/bin \
+    ./[ar]*-linux-gnu*/sbin \
+    ./[ar]*-linux-gnu*/usr/bin \
+    ./[ar]*-linux-gnu*/usr/sbin \
+    ./*-w64-mingw32/bin \
+    ./*-w64-mingw32/usr/bin \
+    /opt/toolchains/llvm-mingw/arm64ec-w64-mingw32 \
+    /opt/toolchains/llvm-mingw/armv7-w64-mingw32 \
+    /opt/toolchains/llvm-mingw/aarch64-w64-mingw32/bin \
+    /opt/toolchains/llvm-mingw/i686-w64-mingw32/bin \
+    /opt/toolchains/llvm-mingw/x86_64-w64-mingw32/bin
 
 WORKDIR /
 
