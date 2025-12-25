@@ -10,7 +10,7 @@ docker-image:
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - docker pull $IMAGE_NAME || true
-    - docker --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_NAME -t $IMAGE_NAME -f docker/build-environment/Dockerfile .
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_NAME -t $IMAGE_NAME -f docker/build-environment/Dockerfile .
     - docker push $IMAGE_NAME
   rules:
     - if: $CI_COMMIT_BRANCH
