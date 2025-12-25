@@ -1,5 +1,6 @@
 stages:
-  - build-containers
+  - build-base-docker-image
+  - build-docker-images
   - build
   - package
   - deploy
@@ -19,7 +20,8 @@ variables:
   DEPLOY_ENVIRONMENT: "development"
   IMAGE_TAG: $CI_COMMIT_REF_SLUG
   IMAGE_PART_NAME: "$CI_REGISTRY_IMAGE/build-environment"
-  IMAGE_NAME: "$IMAGE_PART_NAME:$IMAGE_TAG"
+  IMAGE_BASE_NAME: "$IMAGE_PART_NAME-base:$IMAGE_TAG"
+  IMAGE_NAME: "$IMAGE_PART_NAME-$TARGET_TRIPLE:$IMAGE_TAG"
 
 workflow:
   rules:

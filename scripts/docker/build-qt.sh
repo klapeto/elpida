@@ -19,13 +19,18 @@
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
+if [ -s "$SYSROOT/usr/lib/libQt6Core.a" ]; then
+  echo "Seems already built. We will not build it again"
+  exit 0;
+fi
+
 CFLAGS="--sysroot=$SYSROOT"
 
 HOST_TRIPLE=$(gcc -dumpmachine)
 
 if [ "$TARGET_TRIPLE" != "$HOST_TRIPLE" ]; then
   ../configure \
-    -static -no-shared -release \
+    -static -no-shared -release -no-sbom \
     -submodules qtcharts,qtsvg,qtbase \
     -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests \
     -prefix "$INSTALL_PREFIX" \
@@ -46,7 +51,7 @@ if [ "$TARGET_TRIPLE" != "$HOST_TRIPLE" ]; then
     -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY
 else
   ../configure \
-    -static -no-shared -release \
+    -static -no-shared -release -no-sbom \
     -submodules qtcharts,qtsvg,qtbase \
     -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests \
     -prefix "$INSTALL_PREFIX" -- \

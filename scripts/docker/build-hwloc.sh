@@ -19,6 +19,11 @@
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
+if [ -s "$SYSROOT/usr/lib/libhwloc.a" ]; then
+  echo "Seems already built. We will not build it again"
+  exit 0;
+fi
+
 ../configure \
     CC=$CC \
     CXX=$CXX \

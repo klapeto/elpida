@@ -33,7 +33,7 @@ build:linux:x86_64:
     TARGET_SYSROOT: /opt/sysroots/x86_64-linux-gnu
     TARGET_PREFIX: x86_64-linux-gnu-
   dependencies:
-    - docker-image
+    - docker-image:linux:x86_64
   extends: .build
 
 build:linux:arm:
@@ -41,7 +41,7 @@ build:linux:arm:
     TARGET_SYSROOT: /opt/sysroots/arm-linux-gnueabihf
     TARGET_PREFIX: arm-linux-gnueabihf-
   dependencies:
-    - docker-image
+    - docker-image:linux:arm
   extends: .build
 
 build:linux:aarch64:
@@ -49,7 +49,7 @@ build:linux:aarch64:
     TARGET_SYSROOT: /opt/sysroots/aarch64-linux-gnu
     TARGET_PREFIX: aarch64-linux-gnu-
   dependencies:
-    - docker-image
+    - docker-image:linux:aarch64
   extends: .build
 
 build:linux:riscv64:
@@ -57,7 +57,7 @@ build:linux:riscv64:
     TARGET_SYSROOT: /opt/sysroots/riscv64-linux-gnu
     TARGET_PREFIX: riscv64-linux-gnu-
   dependencies:
-    - docker-image
+    - docker-image:linux:riscv64
   extends: .build
 
 build:windows:x86_64:
@@ -65,7 +65,7 @@ build:windows:x86_64:
     TARGET_SYSROOT: /opt/sysroots/x86_64-w64-mingw32
     TARGET_PREFIX: x86_64-w64-mingw32-
   dependencies:
-    - docker-image
+    - docker-image:windows:x86_64
   extends: .build
 
 build:windows:i686:
@@ -73,7 +73,7 @@ build:windows:i686:
     TARGET_SYSROOT: /opt/sysroots/i686-w64-mingw32
     TARGET_PREFIX: i686-w64-mingw32-
   dependencies:
-    - docker-image
+    - docker-image:windows:i686
   extends: .build
 
 build:windows:aarch64:
@@ -81,5 +81,5 @@ build:windows:aarch64:
     TARGET_SYSROOT: /opt/sysroots/aarch64-w64-mingw32
     TARGET_PREFIX: aarch64-w64-mingw32-
   dependencies:
-    - docker-image
+    - docker-image:windows:aarch64
   extends: .build
