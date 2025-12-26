@@ -17,18 +17,8 @@
 #
 
 if [ -z "$1" ]; then
-  echo "usage: $0 arch sourceUrl triple"
-  exit 1;
-fi
-
-if [ -z "$2" ]; then
-  echo "usage: $0 arch sourceUrl triple"
-  exit 1;
-fi
-
-if [ -z "$3" ]; then
-  echo "usage: $0 arch sourceUrl triple"
-  exit 1;
+    echo "Ignore generating sysroot. Empty Arch argument was passed"
+  exit 0;
 fi
 
 if [ -f "./$3/usr/lib/$3/libc.a" ]; then

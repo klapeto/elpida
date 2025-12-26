@@ -18,7 +18,12 @@
         paths:
           - docker/build-environment/Dockerfile
           - ci/general/docker-image.yml
-          - scripts/docker/*
+          - scripts/docker/build-base.sh
+          - scripts/docker/build-hwloc.sh
+          - scripts/docker/build-llvm.sh
+          - scripts/docker/build-qt.sh
+          - scripts/docker/generate-sysroot.sh
+          - scripts/docker/packages
 
 docker-image:linux:x86_64:
   tags:

@@ -18,4 +18,9 @@ docker-base-image:
         paths:
           - docker/build-environment-base/Dockerfile
           - ci/general/docker-image-base.yml
-          - scripts/docker/*
+          - scripts/docker/build-base.sh
+          - scripts/docker/build-qt.sh
+          - scripts/docker/create-llvm-mingw-links.sh
+          - scripts/docker/generate-sysroot.sh
+          - scripts/docker/link-sysroot.sh
+          - scripts/docker/packages
