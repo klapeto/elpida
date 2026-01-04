@@ -18,7 +18,7 @@ add_library(musl-platform
 
 file(GLOB MUSL_SOURCES src/internal/*.c src/math/*.c src/stdio/*.c src/stdlib/*.c src/string/*.c)
 
-add_library(musl-lite ${MUSL_SOURCES})
+add_library(musl-lite OBJECT ${MUSL_SOURCES})
 
 find_program(SED_EXECUTABLE NAMES sed REQUIRED)
 

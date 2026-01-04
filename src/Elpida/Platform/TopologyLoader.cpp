@@ -21,7 +21,7 @@
 #include "Elpida/Core/Topology/TopologyNode.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 
-#include "hwloc.h"
+#include <hwloc.h>
 
 namespace Elpida
 {

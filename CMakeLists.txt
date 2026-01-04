@@ -18,9 +18,11 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(ELPIDA_COMPILER_GCC 1) #most flags work here
 
-    # static link stdlib
-    add_link_options(-static-libstdc++ -static-libgcc -Wl,--no-undefined)
-    add_compile_options(-fno-builtin)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin -static")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin -static")
+
+    # if we link with musl, allow this
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 else ()
     message(FATAL_ERROR "'${CMAKE_CXX_COMPILER_ID}' compiler is currently unsupported. Elpida requires specific compiler functionality that currently only GCC/Clang provide. If you think another compiler can be supported, please let us know in the issues page.")
 endif ()

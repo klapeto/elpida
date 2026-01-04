@@ -117,7 +117,7 @@ namespace Elpida
 
 		if (newSize > oldSize)
 		{
-			std::memset(((char*) ptr) + oldSize, 0 , newSize - oldSize);	// commit immediately
+			std::memset(((char*) newPtr) + oldSize, 0 , newSize - oldSize);	// commit immediately
 		}
 
 		auto b = Timer::now();

@@ -5,7 +5,7 @@ include(FindPackageHandleStandardArgs)
 find_path(HWLOC_ROOT_DIR
         NAMES include/hwloc.h
         PATHS ENV HWLOC_ROOT
-        DOC "NUMA root directory")
+        DOC "HWLOC root directory")
 
 find_path(HWLOC_INCLUDE_DIR
         NAMES hwloc.h

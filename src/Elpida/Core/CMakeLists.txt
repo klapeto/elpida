@@ -3,9 +3,6 @@ project("Elpida Core Library" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Config.hpp.in" "Elpida/Core/Config.hpp")
-
 add_library(elpida-core
         Benchmark.cpp
         BenchmarkResult.cpp
@@ -61,10 +58,12 @@ target_include_directories(elpida-core PUBLIC
         ${ELPIDA_ROOT_DIRECTORY}/src
         ${CMAKE_CURRENT_BINARY_DIR}
 )
-include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindHWLOC.cmake)
+if (NOT ANDROID)
+#    include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindHWLOC.cmake)
+#    target_include_directories(elpida-core PRIVATE ${HWLOC_INCLUDE_DIR})
+endif ()
 
-target_include_directories(elpida-core PRIVATE ${HWLOC_INCLUDE_DIR})
-target_link_libraries(elpida-core PUBLIC ${HWLOC_LIBRARY})
+target_link_libraries(elpida-core PUBLIC hwloc)
 
 if (ELPIDA_INSTALL_CORE_LIBRARIES)
     install(TARGETS elpida-core elpida-overheads-calculator ARCHIVE)
