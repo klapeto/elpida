@@ -5,7 +5,7 @@
  * so that between calls the inline shcnt macro can add rpos-buf to get
  * the actual count. */
 
-void __shlim(FILE *f, off_t lim)
+void _MuslLite_shlim(FILE *f, off_t lim)
 {
 	f->shlim = lim;
 	f->shcnt = f->buf - f->rpos;
@@ -16,11 +16,11 @@ void __shlim(FILE *f, off_t lim)
 		f->shend = f->rend;
 }
 
-int __shgetc(FILE *f)
+int _MuslLite_shgetc(FILE *f)
 {
 	int c;
 	off_t cnt = shcnt(f);
-	if (f->shlim && cnt >= f->shlim || (c=__uflow(f)) < 0) {
+	if (f->shlim && cnt >= f->shlim || (c=_MuslLite_uflow(f)) < 0) {
 		f->shcnt = f->buf - f->rpos + cnt;
 		f->shend = f->rpos;
 		f->shlim = -1;

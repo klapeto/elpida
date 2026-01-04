@@ -5,9 +5,9 @@
 
 #define UNGET 8
 
-#define FFINALLOCK(f) ((f)->lock>=0 ? __lockfile((f)) : 0)
-#define FLOCK(f) int __need_unlock = ((f)->lock>=0 ? __lockfile((f)) : 0)
-#define FUNLOCK(f) do { if (__need_unlock) __unlockfile((f)); } while (0)
+#define FFINALLOCK(f) ((f)->lock>=0 ? _MuslLite_lockfile((f)) : 0)
+#define FLOCK(f) int _MuslLite_need_unlock = ((f)->lock>=0 ? _MuslLite_lockfile((f)) : 0)
+#define FUNLOCK(f) do { if (_MuslLite_need_unlock) _MuslLite_unlockfile((f)); } while (0)
 
 #define F_PERM 1
 #define F_NORD 4
@@ -46,12 +46,12 @@ struct _IO_FILE {
 	struct __locale_struct *locale;
 };
 
-hidden int __toread(FILE *);
+hidden int _MuslLite_toread(FILE *);
 
 #if defined(__PIC__) && (100*__GNUC__+__GNUC_MINOR__ >= 303)
 __attribute__((visibility("protected")))
 #endif
-int __uflow(FILE *);
+int _MuslLite_uflow(FILE *);
 
 struct __pthread;
 

@@ -23,7 +23,7 @@ static const unsigned char table[] = { -1,
 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 };
 
-unsigned long long __intscan(FILE *f, unsigned base, int pok, unsigned long long lim)
+unsigned long long _MuslLite_intscan(FILE *f, unsigned base, int pok, unsigned long long lim)
 {
 	const unsigned char *val = table+1;
 	int c, neg=0;

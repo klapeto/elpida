@@ -141,7 +141,7 @@ long double logl(long double x)
 		}
 		x = z / y;
 		z = x*x;
-		z = x * (z * __polevll(z, R, 3) / __p1evll(z, S, 3));
+		z = x * (z * _MuslLite_polevll(z, R, 3) / _MuslLite_p1evll(z, S, 3));
 		z = z + e * C2;
 		z = z + x;
 		z = z + e * C1;
@@ -156,7 +156,7 @@ long double logl(long double x)
 		x = x - 1.0;
 	}
 	z = x*x;
-	y = x * (z * __polevll(x, P, 6) / __p1evll(x, Q, 6));
+	y = x * (z * _MuslLite_polevll(x, P, 6) / _MuslLite_p1evll(x, Q, 6));
 	y = y + e * C2;
 	z = y - 0.5*z;
 	/* Note, the sum of above terms does not exceed x/4,

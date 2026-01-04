@@ -423,7 +423,7 @@ static long double hexfloat(FILE *f, int bits, int emin, int sign, int pok)
 	return scalbnl(y, e2);
 }
 
-long double __floatscan(FILE *f, int prec, int pok)
+long double _MuslLite_floatscan(FILE *f, int prec, int pok)
 {
 	int sign = 1;
 	size_t i;

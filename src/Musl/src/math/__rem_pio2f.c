@@ -40,7 +40,7 @@ invpio2 = 6.36619772367581382433e-01, /* 0x3FE45F30, 0x6DC9C883 */
 pio2_1  = 1.57079631090164184570e+00, /* 0x3FF921FB, 0x50000000 */
 pio2_1t = 1.58932547735281966916e-08; /* 0x3E5110b4, 0x611A6263 */
 
-int __rem_pio2f(float x, double *y)
+int _MuslLite_rem_pio2f(float x, double *y)
 {
 	union {float f; uint32_t i;} u = {x};
 	double tx[1],ty[1];
@@ -76,7 +76,7 @@ int __rem_pio2f(float x, double *y)
 	e0 = (ix>>23) - (0x7f+23);  /* e0 = ilogb(|x|)-23, positive */
 	u.i = ix - (e0<<23);
 	tx[0] = u.f;
-	n  =  __rem_pio2_large(tx,ty,e0,1,0);
+	n  =  _MuslLite_rem_pio2_large(tx,ty,e0,1,0);
 	if (sign) {
 		*y = -ty[0];
 		return -n;

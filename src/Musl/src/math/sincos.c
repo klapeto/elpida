@@ -32,8 +32,8 @@ void sincos(double x, double *sin, double *cos)
 			*cos = 1.0;
 			return;
 		}
-		*sin = __sin(x, 0.0, 0);
-		*cos = __cos(x, 0.0);
+		*sin = _MuslLite_sin(x, 0.0, 0);
+		*cos = _MuslLite_cos(x, 0.0);
 		return;
 	}
 
@@ -44,9 +44,9 @@ void sincos(double x, double *sin, double *cos)
 	}
 
 	/* argument reduction needed */
-	n = __rem_pio2(x, y);
-	s = __sin(y[0], y[1], 1);
-	c = __cos(y[0], y[1]);
+	n = _MuslLite_rem_pio2(x, y);
+	s = _MuslLite_sin(y[0], y[1], 1);
+	c = _MuslLite_cos(y[0], y[1]);
 	switch (n&3) {
 	case 0:
 		*sin = s;

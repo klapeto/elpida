@@ -15,6 +15,6 @@ extern hidden const struct logf_data {
 	} tab[1 << LOGF_TABLE_BITS];
 	double ln2;
 	double poly[LOGF_POLY_ORDER - 1]; /* First order coefficient is 1.  */
-} __logf_data;
+} _MuslLite_logf_data;
 
 #endif

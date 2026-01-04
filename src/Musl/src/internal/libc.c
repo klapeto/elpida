@@ -1,3 +1,3 @@
 #include "libc.h"
 
-struct __libc __libc;
+struct __libc _MuslLite_libc;

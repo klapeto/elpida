@@ -9,7 +9,7 @@
 
 #define N (1 << EXP2F_TABLE_BITS)
 
-const struct exp2f_data __exp2f_data = {
+const struct exp2f_data _MuslLite_exp2f_data = {
   /* tab[i] = uint(2^(i/N)) - (i << 52-BITS)
      used for computing 2^(k/N) for an int |k| < 150 N as
      double(tab[k%N] + (k << 52-BITS)) */

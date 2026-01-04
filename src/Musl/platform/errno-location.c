@@ -20,7 +20,7 @@
 #include <errno.h>
 
 // Hack to get the actual platform errno. In this context the errno.h includes the platform errno.h
-int* __errno_location_m(void)
+int* _MuslLite_errno_location_m(void)
 {
 	return &errno;
 }

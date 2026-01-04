@@ -45,8 +45,8 @@ void sincosf(float x, float *sin, float *cos)
 			*cos = 1.0f;
 			return;
 		}
-		*sin = __sindf(x);
-		*cos = __cosdf(x);
+		*sin = _MuslLite_sindf(x);
+		*cos = _MuslLite_cosdf(x);
 		return;
 	}
 
@@ -54,17 +54,17 @@ void sincosf(float x, float *sin, float *cos)
 	if (ix <= 0x407b53d1) {
 		if (ix <= 0x4016cbe3) {  /* |x| ~<= 3pi/4 */
 			if (sign) {
-				*sin = -__cosdf(x + s1pio2);
-				*cos = __sindf(x + s1pio2);
+				*sin = -_MuslLite_cosdf(x + s1pio2);
+				*cos = _MuslLite_sindf(x + s1pio2);
 			} else {
-				*sin = __cosdf(s1pio2 - x);
-				*cos = __sindf(s1pio2 - x);
+				*sin = _MuslLite_cosdf(s1pio2 - x);
+				*cos = _MuslLite_sindf(s1pio2 - x);
 			}
 			return;
 		}
 		/* -sin(x+c) is not correct if x+c could be 0: -0 vs +0 */
-		*sin = -__sindf(sign ? x + s2pio2 : x - s2pio2);
-		*cos = -__cosdf(sign ? x + s2pio2 : x - s2pio2);
+		*sin = -_MuslLite_sindf(sign ? x + s2pio2 : x - s2pio2);
+		*cos = -_MuslLite_cosdf(sign ? x + s2pio2 : x - s2pio2);
 		return;
 	}
 
@@ -72,16 +72,16 @@ void sincosf(float x, float *sin, float *cos)
 	if (ix <= 0x40e231d5) {
 		if (ix <= 0x40afeddf) {  /* |x| ~<= 7*pi/4 */
 			if (sign) {
-				*sin = __cosdf(x + s3pio2);
-				*cos = -__sindf(x + s3pio2);
+				*sin = _MuslLite_cosdf(x + s3pio2);
+				*cos = -_MuslLite_sindf(x + s3pio2);
 			} else {
-				*sin = -__cosdf(x - s3pio2);
-				*cos = __sindf(x - s3pio2);
+				*sin = -_MuslLite_cosdf(x - s3pio2);
+				*cos = _MuslLite_sindf(x - s3pio2);
 			}
 			return;
 		}
-		*sin = __sindf(sign ? x + s4pio2 : x - s4pio2);
-		*cos = __cosdf(sign ? x + s4pio2 : x - s4pio2);
+		*sin = _MuslLite_sindf(sign ? x + s4pio2 : x - s4pio2);
+		*cos = _MuslLite_cosdf(sign ? x + s4pio2 : x - s4pio2);
 		return;
 	}
 
@@ -92,9 +92,9 @@ void sincosf(float x, float *sin, float *cos)
 	}
 
 	/* general argument reduction needed */
-	n = __rem_pio2f(x, &y);
-	s = __sindf(y);
-	c = __cosdf(y);
+	n = _MuslLite_rem_pio2f(x, &y);
+	s = _MuslLite_sindf(y);
+	c = _MuslLite_cosdf(y);
 	switch (n&3) {
 	case 0:
 		*sin = s;

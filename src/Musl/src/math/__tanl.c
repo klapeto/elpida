@@ -98,7 +98,7 @@ T57 =  1.4912469681508012e-10;		/*  0x147edbdba6f43a.0p-85 */
 	w * (T47 + w * (T51 + w * T55))))))))))))
 #endif
 
-long double __tanl(long double x, long double y, int odd) {
+long double _MuslLite_tanl(long double x, long double y, int odd) {
 	long double z, r, v, w, s, a, t;
 	int big, sign;
 

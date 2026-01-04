@@ -17,10 +17,10 @@ relerr_log: 1.3 * 2^-68 (Relative error of log, 1.5 * 2^-68 without fma)
 ulperr_exp: 0.509 ULP (ULP error of exp, 0.511 ULP without fma)
 */
 
-#define T __pow_log_data.tab
-#define A __pow_log_data.poly
-#define Ln2hi __pow_log_data.ln2hi
-#define Ln2lo __pow_log_data.ln2lo
+#define T _MuslLite_pow_log_data.tab
+#define A _MuslLite_pow_log_data.poly
+#define Ln2hi _MuslLite_pow_log_data.ln2hi
+#define Ln2lo _MuslLite_pow_log_data.ln2lo
 #define N (1 << POW_LOG_TABLE_BITS)
 #define OFF 0x3fe6955500000000
 
@@ -103,16 +103,16 @@ static inline double_t log_inline(uint64_t ix, double_t *tail)
 #undef N
 #undef T
 #define N (1 << EXP_TABLE_BITS)
-#define InvLn2N __exp_data.invln2N
-#define NegLn2hiN __exp_data.negln2hiN
-#define NegLn2loN __exp_data.negln2loN
-#define Shift __exp_data.shift
-#define T __exp_data.tab
-#define C2 __exp_data.poly[5 - EXP_POLY_ORDER]
-#define C3 __exp_data.poly[6 - EXP_POLY_ORDER]
-#define C4 __exp_data.poly[7 - EXP_POLY_ORDER]
-#define C5 __exp_data.poly[8 - EXP_POLY_ORDER]
-#define C6 __exp_data.poly[9 - EXP_POLY_ORDER]
+#define InvLn2N _MuslLite_exp_data.invln2N
+#define NegLn2hiN _MuslLite_exp_data.negln2hiN
+#define NegLn2loN _MuslLite_exp_data.negln2loN
+#define Shift _MuslLite_exp_data.shift
+#define T _MuslLite_exp_data.tab
+#define C2 _MuslLite_exp_data.poly[5 - EXP_POLY_ORDER]
+#define C3 _MuslLite_exp_data.poly[6 - EXP_POLY_ORDER]
+#define C4 _MuslLite_exp_data.poly[7 - EXP_POLY_ORDER]
+#define C5 _MuslLite_exp_data.poly[8 - EXP_POLY_ORDER]
+#define C6 _MuslLite_exp_data.poly[9 - EXP_POLY_ORDER]
 
 /* Handle cases that may overflow or underflow when computing the result that
    is scale*(1+TMP) without intermediate rounding.  The bit representation of
@@ -182,9 +182,9 @@ static inline double exp_inline(double_t x, double_t xtail, uint32_t sign_bias)
 		if (abstop >= top12(1024.0)) {
 			/* Note: inf and nan are already handled.  */
 			if (asuint64(x) >> 63)
-				return __math_uflow(sign_bias);
+				return _MuslLite_math_uflow(sign_bias);
 			else
-				return __math_oflow(sign_bias);
+				return _MuslLite_math_oflow(sign_bias);
 		}
 		/* Large x is special cased below.  */
 		abstop = 0;
@@ -295,7 +295,7 @@ double pow(double x, double y)
 			/* Finite x < 0.  */
 			int yint = checkint(iy);
 			if (yint == 0)
-				return __math_invalid(x);
+				return _MuslLite_math_invalid(x);
 			if (yint == 1)
 				sign_bias = SIGN_BIAS;
 			ix &= 0x7fffffffffffffff;
@@ -314,8 +314,8 @@ double pow(double x, double y)
 					return 1.0;
 			}
 			return (ix > asuint64(1.0)) == (topy < 0x800) ?
-				       __math_oflow(0) :
-				       __math_uflow(0);
+				       _MuslLite_math_oflow(0) :
+				       _MuslLite_math_uflow(0);
 		}
 		if (topx == 0) {
 			/* Normalize subnormal x so exponent becomes negative.  */

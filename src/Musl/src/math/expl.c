@@ -114,8 +114,8 @@ long double expl(long double x)
 	 * e**x =  1 + 2x P(x**2)/(Q(x**2) - x P(x**2))
 	 */
 	xx = x * x;
-	px = x * __polevll(xx, P, 2);
-	x = px/(__polevll(xx, Q, 3) - px);
+	px = x * _MuslLite_polevll(xx, P, 2);
+	x = px/(_MuslLite_polevll(xx, Q, 3) - px);
 	x = 1.0 + 2.0 * x;
 	return scalbnl(x, k);
 }

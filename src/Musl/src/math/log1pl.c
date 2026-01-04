@@ -140,7 +140,7 @@ long double log1pl(long double xm1)
 		}
 		x = z / y;
 		z = x*x;
-		z = x * (z * __polevll(z, R, 3) / __p1evll(z, S, 3));
+		z = x * (z * _MuslLite_polevll(z, R, 3) / _MuslLite_p1evll(z, S, 3));
 		z = z + e * C2;
 		z = z + x;
 		z = z + e * C1;
@@ -161,7 +161,7 @@ long double log1pl(long double xm1)
 			x = xm1;
 	}
 	z = x*x;
-	y = x * (z * __polevll(x, P, 6) / __p1evll(x, Q, 6));
+	y = x * (z * _MuslLite_polevll(x, P, 6) / _MuslLite_p1evll(x, Q, 6));
 	y = y + e * C2;
 	z = y - 0.5 * z;
 	z = z + x;

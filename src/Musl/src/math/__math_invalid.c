@@ -1,6 +1,6 @@
 #include "libm.h"
 
-double __math_invalid(double x)
+double _MuslLite_math_invalid(double x)
 {
 	return (x - x) / (x - x);
 }

@@ -68,7 +68,7 @@ pio2_3  =  2.0670321098263988236499468110329591e-43L,	/*  0x127044533e63a0105e00
 pio2_3t = -2.5650587247459238361625433492959285e-65L;	/* -0x159c4ec64ddaeb5f78671cbfb2210.0p-327 */
 #endif
 
-int __rem_pio2l(long double x, long double *y)
+int _MuslLite_rem_pio2l(long double x, long double *y)
 {
 	union ldshape u,uz;
 	long double z,w,t,r,fn;
@@ -135,7 +135,7 @@ int __rem_pio2l(long double x, long double *y)
 	tx[i] = z;
 	while (tx[i] == 0)
 		i--;
-	n = __rem_pio2_large(tx, ty, ex-0x3fff-23, i+1, NY);
+	n = _MuslLite_rem_pio2_large(tx, ty, ex-0x3fff-23, i+1, NY);
 	w = ty[1];
 	if (NY == 3)
 		w += ty[2];

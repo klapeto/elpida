@@ -97,10 +97,10 @@ void *memrchr(const void *, int, size_t);
 void *mempcpy(void *, const void *, size_t);
 #endif
 
-hidden char *__strchrnul(const char *s, int c);
-hidden char *__stpcpy(char *restrict d, const char *restrict s);
-hidden char *__stpncpy(char *restrict d, const char *restrict s, size_t n);
-hidden void *__memrchr(const void *m, int c, size_t n);
+hidden char *_MuslLite_strchrnul(const char *s, int c);
+hidden char *_MuslLite_stpcpy(char *restrict d, const char *restrict s);
+hidden char *_MuslLite_stpncpy(char *restrict d, const char *restrict s, size_t n);
+hidden void *_MuslLite_memrchr(const void *m, int c, size_t n);
 
 #ifdef __cplusplus
 }

@@ -42,7 +42,7 @@ static unsigned long long wcstox(const wchar_t *s, wchar_t **p, int base, unsign
 	while (iswspace(*t)) t++;
 	f.cookie = (void *)t;
 	shlim(&f, 0);
-	unsigned long long y = __intscan(&f, base, 1, lim);
+	unsigned long long y = _MuslLite_intscan(&f, base, 1, lim);
 	if (p) {
 		size_t cnt = shcnt(&f);
 		*p = cnt ? t + cnt : (wchar_t *)s;

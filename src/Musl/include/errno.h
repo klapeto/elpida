@@ -19,8 +19,8 @@ __declspec(dllimport) extern int *__cdecl _errno(void);
 #define errno (*_errno())
 #endif /* _CRT_ERRNO_DEFINED */
 #else
-int *__errno_location_m(void);
-#define errno (*__errno_location_m())
+int *_MuslLite_errno_location_m(void);
+#define errno (*_MuslLite_errno_location_m())
 #endif
 
 #ifdef _GNU_SOURCE

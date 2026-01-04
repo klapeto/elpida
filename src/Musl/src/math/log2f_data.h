@@ -14,6 +14,6 @@ extern hidden const struct log2f_data {
 		double invc, logc;
 	} tab[1 << LOG2F_TABLE_BITS];
 	double poly[LOG2F_POLY_ORDER];
-} __log2f_data;
+} _MuslLite_log2f_data;
 
 #endif
