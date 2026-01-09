@@ -22,24 +22,25 @@ RUN ./build-hwloc.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 RUN ./build-qt.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
-# cleanup
-RUN apt-get -y autoremove && apt-get autoclean
-#
-#WORKDIR /
-#RUN rm -rf /tmp/* \
-#    "/opt/sysroots/$TARGET_TRIPLE/tmp" \
-#    "/opt/sysroots/$TARGET_TRIPLE/var" \
-#    "/opt/sysroots/$TARGET_TRIPLE/etc" \
-#    "/opt/sysroots/$TARGET_TRIPLE/usr/share" \
-#    "/opt/sysroots/$TARGET_TRIPLE/usr/sbom" \
-#    "/opt/sysroots/$TARGET_TRIPLE/usr/doc" \
-#    "/opt/sysroots/$TARGET_TRIPLE/usr/metatypes"
+WORKDIR /
+RUN rm -rf /tmp/* \
+    "/opt/sysroots/$TARGET_TRIPLE/tmp" \
+    "/opt/sysroots/$TARGET_TRIPLE/var" \
+    "/opt/sysroots/$TARGET_TRIPLE/etc" \
+    "/opt/sysroots/$TARGET_TRIPLE/usr/share" \
+    "/opt/sysroots/$TARGET_TRIPLE/usr/sbom" \
+    "/opt/sysroots/$TARGET_TRIPLE/usr/doc" \
+    "/opt/sysroots/$TARGET_TRIPLE/usr/metatypes"
 
-#RUN if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ] then; \
-#    rm "/opt/sysroots/$TARGET_TRIPLE/bin" \
-#    "/opt/sysroots/$TARGET_TRIPLE/sbin" \
-#    "/opt/sysroots/$TARGET_TRIPLE/usr/bin" \
-#    "/opt/sysroots/$TARGET_TRIPLE/usr/sbin"; \
-#    fi
+RUN if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ]; then \
+    rm -rf "/opt/sysroots/$TARGET_TRIPLE/bin" \
+    "/opt/sysroots/$TARGET_TRIPLE/sbin" \
+    "/opt/sysroots/$TARGET_TRIPLE/usr/bin" \
+    "/opt/sysroots/$TARGET_TRIPLE/usr/sbin"; \
+    fi
+
+# cleanup
+RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin
+RUN apt-get -y autoremove && apt-get autoclean
 
 CMD ["/bin/bash"]
