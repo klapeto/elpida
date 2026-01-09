@@ -16,21 +16,77 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-if [ -z "$1" ]; then
-    echo "Ignore generating sysroot. Empty Arch argument was passed"
-  exit 0;
+# exit if any command fails
+set -e
+
+if [ $# -ne 3 ]; then
+    echo "Usage $0 target-triple sysroot-target-dir packages-file"
+    exit 1;
 fi
 
-if [ -f "./$3/usr/lib/$3/libc.a" ]; then
-  echo "Sysroot seems to already exist. To force, remove the following directory '$PWD/$3'"
-  exit 0;
+: ${DEBIAN_DISTRIBUTION:="noble"}
+: ${DEBIAN_SOURCES:="https://archive.ubuntu.com/ubuntu/|main,universe https://ports.ubuntu.com/ubuntu-ports/|main,universe"}
+
+TARGET_TRIPLE="$1"
+SYSROOT="$2"
+PACKAGES_FILE="$3"
+
+case "$TARGET_TRIPLE" in
+*-linux-gnu*)
+    ;;
+*-w64-mingw32)
+    echo "Fixing Mingw32 sysroot for $TARGET_TRIPLE"
+    ln -s "$SYSROOT" "$SYSROOT/usr"
+    exit 0
+    ;;
+esac
+
+case "$TARGET_TRIPLE" in
+x86_64-*)
+    DEBIAN_ARCH=amd64
+    ;;
+arm-linux-gnueabihf)
+    DEBIAN_ARCH=armhf
+    ;;
+aarch64-*)
+    DEBIAN_ARCH=arm64
+    ;;
+rsicv64-*)
+    DEBIAN_ARCH=riscv64
+    ;;
+i[63]86-*)
+    DEBIAN_ARCH=i386
+    ;;
+*)
+    echo "Unknown target: $TARGET_TRIPLE"
+    exit 1;
+    ;;
+esac
+
+echo "Generating a Linux/GNU sysroot for $TARGET_TRIPLE"
+
+if [ -z "$SYSROOT" ]; then
+    echo "Invalid sysroot target dir: $SYSROOT"
+    exit 1;
 fi
 
-if [ ! -f ./SysrootGenerator ]; then
-    wget -O SysrootGenerator https://github.com/klapeto/SysrootGenerator/releases/download/v1.0.1/SysrootGenerator-linux-x86-64
+if [ ! -f "$PACKAGES_FILE" ]; then
+    echo "Packages file does not exist: $PACKAGES_FILE"
+    exit 1;
 fi
 
-chmod +x ./SysrootGenerator;
+if [ ! -f ./SysrootGenerator ] || [ ! -x ./SysrootGenerator ]; then
+    wget -O ./SysrootGenerator https://github.com/klapeto/SysrootGenerator/releases/download/v1.0.3/SysrootGenerator-linux-x86-64
+    chmod +x ./SysrootGenerator
+fi
 
-./SysrootGenerator --arch="$1" --distribution=noble --sources="$2|main,universe" --packages=`paste -sd, packages` --path="$3";
+./SysrootGenerator --path "$SYSROOT" \
+    --arch "$DEBIAN_ARCH" \
+    --distribution "$DEBIAN_DISTRIBUTION" \
+    --sources "$DEBIAN_SOURCES" \
+    --http-timeout=300 \
+    --cache-path ./cache \
+    --packages `paste -sd, "$PACKAGES_FILE"` \
+    --store-install-state
 
+ldconfig

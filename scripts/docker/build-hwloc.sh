@@ -16,22 +16,29 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+set -e
+
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
-if [ -s "$SYSROOT/usr/lib/libhwloc.a" ]; then
-  echo "Seems already built. We will not build it again"
-  exit 0;
+if [ ! -d ./hwloc ]; then
+    git clone --depth=1 -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git
+    cd hwloc
+    ./autogen.sh
+    cd ..
 fi
+
+mkdir -p hwloc/build
+cd hwloc/build
 
 ../configure \
     CC=$CC \
     CXX=$CXX \
-    CFLAGS="--sysroot=$SYSROOT" \
-    CXXFLAGS="--sysroot=$SYSROOT" \
-    --host=$TARGET_TRIPLE \
-    --with-sysroot=$SYSROOT \
-    --prefix=$INSTALL_PREFIX \
+    CFLAGS="$CFLAGS" \
+    CXXFLAGS="$CXXFLAGS" \
+    --host="$TARGET_TRIPLE" \
+    --with-sysroot="$SYSROOT" \
+    --prefix="$INSTALL_PREFIX" \
     --enable-static \
     --disable-shared \
     --enable-plugins=no \
@@ -50,3 +57,4 @@ fi
 
 make -j$(nproc) install
 rm -rf ./*
+cd ../..

@@ -10,7 +10,7 @@
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - docker pull $IMAGE_NAME || true
-    - docker build --build-arg IMAGE="$IMAGE_BASE_NAME" --build-arg TARGET_TRIPLE="$TARGET_TRIPLE" --build-arg SYSROOT_ARCH="$SYSROOT_ARCH" --build-arg SYSROOT_SOURCE="$SYSROOT_SOURCE" --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_NAME -t $IMAGE_NAME -f docker/build-environment/Dockerfile .
+    - docker build --build-arg IMAGE="$IMAGE_BASE_NAME" --build-arg TARGET_TRIPLE="$TARGET_TRIPLE" --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_NAME -t $IMAGE_NAME -f docker/build-environment/Dockerfile .
     - docker push $IMAGE_NAME
   rules:
     - if: $CI_COMMIT_BRANCH
@@ -31,8 +31,6 @@ docker-image:linux:x86_64:
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: x86_64-linux-gnu
-    SYSROOT_ARCH: amd64
-    SYSROOT_SOURCE: https://archive.ubuntu.com/ubuntu/
   dependencies:
     - docker-base-image
   extends: .docker-image
@@ -43,8 +41,6 @@ docker-image:linux:aarch64:
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: aarch64-linux-gnu
-    SYSROOT_ARCH: arm64
-    SYSROOT_SOURCE: https://ports.ubuntu.com/ubuntu-ports/
   dependencies:
     - docker-base-image
   extends: .docker-image
@@ -55,8 +51,6 @@ docker-image:linux:arm:
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: arm-linux-gnueabihf
-    SYSROOT_ARCH: armhf
-    SYSROOT_SOURCE: https://ports.ubuntu.com/ubuntu-ports/
   dependencies:
     - docker-base-image
   extends: .docker-image
@@ -67,8 +61,6 @@ docker-image:linux:riscv64:
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: riscv64-linux-gnu
-    SYSROOT_ARCH: riscv64
-    SYSROOT_SOURCE: https://ports.ubuntu.com/ubuntu-ports/
   dependencies:
     - docker-base-image
   extends: .docker-image

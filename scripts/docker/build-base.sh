@@ -16,13 +16,40 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+# exit if any command fails
+set -e
+
+if [ $# -ne 2 ]; then
+    echo "Usage $0 target-triple sysroot-target-dir"
+    exit 1;
+fi
+
+TARGET_TRIPLE="$1"
+SYSROOT="$2"
 if [ -z "${TARGET_TRIPLE}" ]; then
-    TARGET_TRIPLE=$(gcc -dumpmachine)
+    echo "Provided empty target triple: $TARGET_TRIPLE"
+    exit 1;
+fi
+
+if [ -z "$SYSROOT" ]; then
+    echo "Provided sysroot target dir: $SYSROOT"
+    exit 1;
 fi
 
 TARGET_ARCH=$(expr match "$TARGET_TRIPLE" '\(.*\)-.*-.*')
-
 TARGET_OS=$(expr match "$TARGET_TRIPLE" '.*-\(.*\)-.*')
+TARGET_PREFIX="$TARGET_TRIPLE-"
+INSTALL_PREFIX="$SYSROOT/usr"
+
+if [ `command -v gcc` ]; then
+    HOST_TRIPLE=$(gcc -dumpmachine)
+else
+    CLANG_HOST_TRIPLE=$(clang -dumpmachine)
+    CLANG_HOST_ARCH=$(expr match "$CLANG_HOST_TRIPLE" '\(.*\)-.*-.*-.*')
+    CLANG_HOST_OS=$(expr match "$CLANG_HOST_TRIPLE" '.*-.*-\(.*\)-.*')
+    CLANG_HOST_ENV=$(expr match "$CLANG_HOST_TRIPLE" '.*-.*-.*-\(.*\)')
+    HOST_TRIPLE="$CLANG_HOST_ARCH-$CLANG_HOST_OS-$CLANG_HOST_ENV"
+fi
 
 if [ "$TARGET_OS" = "linux" ]; then
     TARGET_OS=Linux
@@ -30,38 +57,12 @@ elif [ "$TARGET_OS" = "w64" ]; then
     TARGET_OS=Windows
 fi
 
-if [ -z "${TARGET_PREFIX}" ]; then
-    TARGET_PREFIX=$TARGET_TRIPLE-
-fi
-
-if [ -z "${SYSROOT_BASE}" ]; then
-    SYSROOT_BASE=/opt/sysroots
-    #SYSROOT_BASE=/mnt/Dev/sysroots/
-fi
-
-if [ -z "${SYSROOT}" ]; then
-  SYSROOT=$SYSROOT_BASE/$TARGET_TRIPLE
-fi
-
-if [ -z "${INSTALL_PREFIX}" ]; then
-    if [ -z "${INSTALL_BASE}" ]; then
-        INSTALL_PREFIX="$SYSROOT/usr"
-    else
-        INSTALL_PREFIX="$INSTALL_BASE/$TARGET_TRIPLE/usr"
-    fi
-fi
-
 CC="${TARGET_PREFIX}clang"
 CXX="${TARGET_PREFIX}clang++"
 RANLIB="${TARGET_PREFIX}ranlib"
 AR="${TARGET_PREFIX}ar"
 STRIP="${TARGET_PREFIX}strip"
-TARGET_TRIPLE="$TARGET_TRIPLE"
-TARGET_PREFIX="$TARGET_PREFIX"
-SYSROOT_BASE="$SYSROOT_BASE"
-SYSROOT="$SYSROOT"
-INSTALL_PREFIX="$INSTALL_PREFIX"
-TARGET_ARCH="$TARGET_ARCH"
-TARGET_OS="$TARGET_OS"
+CFLAGS="--sysroot=$SYSROOT"
+CXXFLAGS="--sysroot=$SYSROOT"
 
 echo "Compiling for '$TARGET_TRIPLE' using '${CC}' and will install to '${INSTALL_PREFIX}'"

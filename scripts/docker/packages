@@ -1,4 +1,3 @@
-build-essential
 libnuma-dev
 libgl1-mesa-dev
 libb2-dev

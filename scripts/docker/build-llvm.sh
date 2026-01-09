@@ -16,17 +16,20 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+set -e
+
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
-
-if [ -s "$SYSROOT/usr/lib/libclang.a" ]; then
-  echo "Seems already built. We will not build it again"
-  exit 0;
+if [ ! -d ./llvm-project ]; then
+    git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git
 fi
 
+mkdir -p ./llvm-project/llvm/build
+cd ./llvm-project/llvm/build
+
 # we need -fno-builtin because on arm64 windows the compilation benchmark crashes (wtf?)
-CFLAGS="-fno-builtin --sysroot=$SYSROOT"
+CFLAGS="-fno-builtin $CFLAGS"
 
 cmake -S .. \
   -DCMAKE_BUILD_TYPE=Release \
@@ -85,3 +88,4 @@ cmake -S .. \
 
 make -j$(nproc) llvm-tblgen llvm-config clang-tblgen install
 rm -rf ./*
+cd ../../..

@@ -3,7 +3,10 @@ LABEL authors="klapeto"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+WORKDIR /tmp
+
 # install basic packages
+ADD ./scripts/docker/packages ./
 RUN apt-get update && apt -y full-upgrade
 RUN apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -23,60 +26,57 @@ RUN apt-get install -y --no-install-recommends \
     zip \
     binutils \
     zstd \
-    gzip
+    gzip \
+    make \
+    cmake
 
 # install latest cmake
-RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-RUN echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
-RUN apt-get update
-RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || rm /usr/share/keyrings/kitware-archive-keyring.gpg
-RUN apt-get install -y kitware-archive-keyring cmake
+#RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+#RUN echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
+#RUN apt-get update
+#RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || rm /usr/share/keyrings/kitware-archive-keyring.gpg
+#RUN apt-get install -y kitware-archive-keyring cmake
 
 # Create dirs
-RUN mkdir /opt/toolchains && mkdir /opt/sysroots && mkdir /opt/sources && mkdir /opt/logs
+RUN mkdir -p /opt/toolchains
 
-# Install LLVM-MINGW
-WORKDIR /opt/sources
-RUN git clone https://github.com/mstorsjo/llvm-mingw.git
-WORKDIR /opt/sources/llvm-mingw
-ADD ./docker/build-environment/llvm-mingw.patch llvm-mingw.patch
-RUN git checkout 20251202 && patch -p1 < llvm-mingw.patch
-RUN ./build-all.sh /opt/toolchains/llvm-mingw --with-default-msvcrt=msvcrt
+# Build LLVM cross toolchain
+RUN git clone -b unified-toolchain https://github.com/klapeto/llvm-mingw.git
+WORKDIR /tmp/llvm-mingw
+RUN ./build-llvm.sh /opt/toolchains/llvm
+RUN TARGET_TRIPLES="x86_64-linux-gnu" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt
 
-WORKDIR /opt/toolchains
-# create stubs for other crosses
-ADD ./scripts/docker/create-llvm-mingw-links.sh create-llvm-mingw-links.sh
-RUN cd llvm-mingw && ../create-llvm-mingw-links.sh x86_64-linux-gnu && ../create-llvm-mingw-links.sh aarch64-linux-gnu && ../create-llvm-mingw-links.sh arm-linux-gnueabihf && ../create-llvm-mingw-links.sh riscv64-linux-gnu
-RUN rm create-llvm-mingw-links.sh
+ENV PATH=/opt/toolchains/llvm/bin:$PATH
 
-ENV PATH=/opt/toolchains/llvm-mingw/bin:$PATH
+RUN ln -s /opt/toolchains/llvm/ /opt/sysroots
 
-# linking existing sysroots for consistency
-ADD ./scripts/docker/link-sysroot.sh link-sysroot.sh
-RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/aarch64-w64-mingw32 aarch64-w64-mingw32
-RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/i686-w64-mingw32 i686-w64-mingw32
-RUN ./link-sysroot.sh /opt/toolchains/llvm-mingw/x86_64-w64-mingw32 x86_64-w64-mingw32
+WORKDIR /tmp
 
-# cleanup
-RUN apt-get -y autoremove && apt-get autoclean
+# Clone repos that we will cross compile
+RUN git clone --depth=1 -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git && \
+    cd hwloc && \
+    ./autogen.sh && \
+    mkdir -p build
 
-WORKDIR /opt/sources
-RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git
-RUN git clone --depth=1 -b v6.10.0 git://code.qt.io/qt/qt5.git qt6 && cd qt6 && ./init-repository --module-subset=qtcharts,qtsvg,qtbase
-RUN git clone --depth=1 -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git && cd hwloc && ./autogen.sh
+RUN git clone --depth=1 -b v6.10.0 git://code.qt.io/qt/qt5.git qt6 && \
+    cd qt6 && \
+    ./init-repository --module-subset=qtcharts,qtsvg,qtbase && \
+    mkdir -p build
 
-WORKDIR /opt/sysroots
-ADD ./scripts/docker/packages ./scripts/docker/generate-sysroot.sh ./
-RUN ./generate-sysroot.sh "amd64" "https://archive.ubuntu.com/ubuntu/" "x86_64-linux-gnu"
+RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git && \
+    mkdir -p ./llvm-project/llvm/build
 
-# Append loader libs for Qt tools run
-RUN echo "/opt/sysroots/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu" > /etc/ld.so.conf.d/cross.conf && ldconfig
+# qt tools will be built against the sysroot and will run for the rest archs and will need to find the sysroot libs
+ENV LD_LIBRARY_PATH="/opt/sysroots/x86_64-linux-gnu/lib:/opt/sysroots/x86_64-linux-gnu/lib/x86_64-linux-gnu"
 
-WORKDIR /opt/sources
-RUN mkdir -p qt6/build
-WORKDIR /opt/sources/qt6/build
-ADD ./scripts/docker/build-qt.sh ../build-qt.sh
-ADD ./scripts/docker/build-base.sh ../build-base.sh
-RUN TARGET_TRIPLE=x86_64-linux-gnu ../build-qt.sh
+WORKDIR /tmp/
+ADD ./scripts/docker/generate-sysroot.sh ./scripts/docker/build-base.sh  ./scripts/docker/build-qt.sh ./scripts/docker/build-hwloc.sh ./scripts/docker/build-llvm.sh  ./
+
+# Workaround a Qt6 bug where configuration does not detect the sysroot libxkbcommon-x11
+RUN apt-get -y install libxkbcommon-x11-dev
+RUN ./generate-sysroot.sh x86_64-linux-gnu /opt/sysroots/x86_64-linux-gnu /tmp/packages
+RUN ./build-qt.sh x86_64-linux-gnu /opt/sysroots/x86_64-linux-gnu
 
 WORKDIR /
+
+CMD ["/bin/bash"]

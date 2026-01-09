@@ -18,8 +18,11 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(ELPIDA_COMPILER_GCC 1) #most flags work here
 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin -static")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin -static")
+    # ubuntu does not ship static libs for GL/EGL to be able to static link...
+    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin -static")
+    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin -static")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin")
 
     # if we link with musl, allow this
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
