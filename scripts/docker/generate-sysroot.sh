@@ -51,7 +51,7 @@ arm-linux-gnueabihf)
 aarch64-*)
     DEBIAN_ARCH=arm64
     ;;
-rsicv64-*)
+riscv64-*)
     DEBIAN_ARCH=riscv64
     ;;
 i[63]86-*)
