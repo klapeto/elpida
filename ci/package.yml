@@ -42,7 +42,6 @@
 
 package:linux:x86_64:
   variables:
-    TARGET_ARCH: x86_64
     TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
     - build:linux:x86_64
@@ -50,7 +49,6 @@ package:linux:x86_64:
 
 package:linux:arm:
   variables:
-    TARGET_ARCH: armhf
     TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
     - build:linux:arm
@@ -58,7 +56,6 @@ package:linux:arm:
 
 package:linux:aarch64:
   variables:
-    TARGET_ARCH: aarch64
     TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
     - build:linux:aarch64
@@ -66,7 +63,6 @@ package:linux:aarch64:
 
 package:linux:riscv64:
   variables:
-    TARGET_ARCH: riscv64
     TARGET_TRIPLE: riscv64-linux-gnu
   dependencies:
     - build:linux:riscv64
@@ -74,7 +70,6 @@ package:linux:riscv64:
 
 package:windows:x86_64:
   variables:
-    TARGET_ARCH: x86_64
     TARGET_TRIPLE: x86_64-w64-mingw32
   dependencies:
     - build:windows:x86_64
@@ -82,7 +77,6 @@ package:windows:x86_64:
 
 package:windows:i686:
   variables:
-    TARGET_ARCH: i686
     TARGET_TRIPLE: i686-w64-mingw32
   dependencies:
     - build:windows:i686
@@ -90,7 +84,6 @@ package:windows:i686:
 
 package:windows:aarch64:
   variables:
-    TARGET_ARCH: aarch64
     TARGET_TRIPLE: aarch64-w64-mingw32
   dependencies:
     - build:windows:aarch64

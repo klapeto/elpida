@@ -46,50 +46,36 @@
       - $PACKAGE_FILENAME.zip.SHA256SUMS
 
 deploy:linux:x86_64:
-  variables:
-    TARGET_ARCH: x86_64
   dependencies:
     - package:linux:x86_64
   extends: .deploy:linux
 
 deploy:linux:arm:
-  variables:
-    TARGET_ARCH: armhf
   dependencies:
     - package:linux:arm
   extends: .deploy:linux
 
 deploy:linux:aarch64:
-  variables:
-    TARGET_ARCH: aarch64
   dependencies:
     - package:linux:aarch64
   extends: .deploy:linux
 
 deploy:linux:riscv64:
-  variables:
-    TARGET_ARCH: riscv64
   dependencies:
     - package:linux:riscv64
   extends: .deploy:linux
 
 deploy:windows:x86_64:
-  variables:
-    TARGET_ARCH: x86_64
   dependencies:
     - package:windows:x86_64
   extends: .deploy:windows
 
 deploy:windows:i686:
-  variables:
-    TARGET_ARCH: i686
   dependencies:
     - package:windows:i686
   extends: .deploy:windows
 
 deploy:windows:aarch64:
-  variables:
-    TARGET_ARCH: aarch64
   dependencies:
     - package:windows:aarch64
   extends: .deploy:windows

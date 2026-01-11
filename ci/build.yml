@@ -10,8 +10,8 @@
     - cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
-      -DCMAKE_SYSROOT=$TARGET_SYSROOT
-      -DTARGET_PREFIX=$TARGET_PREFIX
+      -DCMAKE_SYSROOT=/opt/sysroots/$TARGET_TRIPLE
+      -DTARGET_PREFIX=$TARGET_TRIPLE-
       -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/llvm-cross.cmake
       -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu
       -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
@@ -30,56 +30,49 @@
 
 build:linux:x86_64:
   variables:
-    TARGET_SYSROOT: /opt/sysroots/x86_64-linux-gnu
-    TARGET_PREFIX: x86_64-linux-gnu-
+    TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
     - docker-image:linux:x86_64
   extends: .build
 
 build:linux:arm:
   variables:
-    TARGET_SYSROOT: /opt/sysroots/arm-linux-gnueabihf
-    TARGET_PREFIX: arm-linux-gnueabihf-
+    TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
     - docker-image:linux:arm
   extends: .build
 
 build:linux:aarch64:
   variables:
-    TARGET_SYSROOT: /opt/sysroots/aarch64-linux-gnu
-    TARGET_PREFIX: aarch64-linux-gnu-
+    TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
     - docker-image:linux:aarch64
   extends: .build
 
 build:linux:riscv64:
   variables:
-    TARGET_SYSROOT: /opt/sysroots/riscv64-linux-gnu
-    TARGET_PREFIX: riscv64-linux-gnu-
+    TARGET_TRIPLE: riscv64-linux-gnu
   dependencies:
     - docker-image:linux:riscv64
   extends: .build
 
 build:windows:x86_64:
   variables:
-    TARGET_SYSROOT: /opt/sysroots/x86_64-w64-mingw32
-    TARGET_PREFIX: x86_64-w64-mingw32-
+    TARGET_TRIPLE: x86_64-w64-mingw32
   dependencies:
     - docker-image:windows:x86_64
   extends: .build
 
 build:windows:i686:
   variables:
-    TARGET_SYSROOT: /opt/sysroots/i686-w64-mingw32
-    TARGET_PREFIX: i686-w64-mingw32-
+    TARGET_TRIPLE: i686-w64-mingw32
   dependencies:
     - docker-image:windows:i686
   extends: .build
 
 build:windows:aarch64:
   variables:
-    TARGET_SYSROOT: /opt/sysroots/aarch64-w64-mingw32
-    TARGET_PREFIX: aarch64-w64-mingw32-
+    TARGET_TRIPLE: aarch64-w64-mingw32
   dependencies:
     - docker-image:windows:aarch64
   extends: .build
