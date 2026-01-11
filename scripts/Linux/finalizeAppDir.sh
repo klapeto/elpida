@@ -16,6 +16,8 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+set -e
+
 if [ "$#" -lt 1 ]; then
     echo "Usage: $0 <appdir> <relative-executable> <name>"
     exit 1
@@ -42,5 +44,5 @@ cp "$this_script_dir/elpida-entry-point.sh" "$INSTALL_DIR/elpida"
   echo "exec \"\$this_dir/$EXECUTABLE\" \"\$@\""
 } >> "$INSTALL_DIR/elpida"
 chmod +x "$INSTALL_DIR/elpida"
-cd "$INSTALL_DIR" || exit
+cd "$INSTALL_DIR"
 tar --exclude="ld.env.sh" -cJf "$CURDIR/$NAME" .

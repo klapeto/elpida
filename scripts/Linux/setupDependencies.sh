@@ -16,6 +16,8 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+set -e
+
 if [ "$#" -ne 4 ]; then
     echo "Usage: $0 <binary_file> <destination_folder> <rootdir> <ld_append_dir>"
     exit 1
@@ -111,17 +113,19 @@ done
 
 echo "Creating ldconfig environment file"
 ldFile="export LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH"
-for conf_file in $ROOT_DIR/etc/ld.so.conf.d/*.conf; do
-  while IFS= read -r line || [ -n "$line" ]; do
-    # Skip empty lines and lines that start with '#' (allowing for leading whitespace)
+if [ -d $ROOT_DIR/etc/ld.so.conf.d ]; then
+    for conf_file in $ROOT_DIR/etc/ld.so.conf.d/*.conf; do
+      while IFS= read -r line || [ -n "$line" ]; do
+        # Skip empty lines and lines that start with '#' (allowing for leading whitespace)
 
-    if [[ -z "$line" ]] || [[ $line =~ .*#.* ]]; then
-      continue
-    fi
+        if [[ -z "$line" ]] || [[ $line =~ .*#.* ]]; then
+          continue
+        fi
 
-    ldFile="$ldFile:$LD_DIR$line"
-  done < "$conf_file"
-done
+        ldFile="$ldFile:$LD_DIR$line"
+      done < "$conf_file"
+    done
+fi
 
 echo "#!/bin/sh" > $DEST_DIR/ld.env.sh
 echo "$ldFile\"" >> $DEST_DIR/ld.env.sh
