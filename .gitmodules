@@ -10,10 +10,3 @@
 [submodule "extern/boost-regex"]
 	path = extern/boost-regex
 	url = https://github.com/boostorg/regex.git
-[submodule "extern/openssl-cmake"]
-	path = extern/openssl-cmake
-	url = https://github.com/klapeto/openssl-cmake.git
-[submodule "extern/hwloc"]
-	path = extern/hwloc
-	url = https://github.com/open-mpi/hwloc.git
-	branch = v2.4

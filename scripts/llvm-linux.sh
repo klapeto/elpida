@@ -1,1 +1,0 @@
-export PATH="$PATH:/mnt/Dev/toolchains/llvm/bin"
