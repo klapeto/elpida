@@ -90,7 +90,7 @@ for lib in $LIBS; do
          fi
     done
 
-    allFiles=$(find -L "$ROOT_DIR" -samefile "$lib_path" 2>/dev/null)
+    allFiles=$(find -L "$ROOT_DIR" -samefile "$lib_path" 2>/dev/null) || true
 
     for candidate in $allFiles; do
 
