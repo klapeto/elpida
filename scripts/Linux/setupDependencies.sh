@@ -77,7 +77,8 @@ for lib in $LIBS; do
         break;
     fi
 
-    found=$(find "$ROOT_DIR/$directory" \( -type l -o -type f \) -name "$lib" 2>/dev/null)
+    # || true are for errors due to link loops
+    found=$(find "$ROOT_DIR/$directory" \( -type l -o -type f \) -name "$lib" 2>/dev/null) || true
 
     if [ -z "$found" ]; then
         continue
@@ -90,6 +91,7 @@ for lib in $LIBS; do
          fi
     done
 
+    # || true are for errors due to link loops
     allFiles=$(find -L "$ROOT_DIR" -samefile "$lib_path" 2>/dev/null) || true
 
     for candidate in $allFiles; do
@@ -111,24 +113,34 @@ for lib in $LIBS; do
   done
 done
 
+function readConfFile() {
+  local conf_file=$1;
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip empty lines and lines that start with '#' (allowing for leading whitespace)
+
+    if [[ -z "$line" ]] || [[ $line =~ .*#.* ]]; then
+      continue
+    fi
+
+    ldFile="$ldFile:$LD_DIR$line"
+  done < "$conf_file"
+}
+
 echo "Creating ldconfig environment file"
-ldFile="export LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH"
-if [ -d $ROOT_DIR/etc/ld.so.conf.d ]; then
+ldFile="export LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH:$LD_DIR/usr/lib"
+
+if [ -f "$ROOT_DIR/etc/ld.so.conf" ]; then
+  readConfFile "$ROOT_DIR/etc/ld.so.conf"
+fi
+
+if [ -d "$ROOT_DIR/etc/ld.so.conf.d" ]; then
     for conf_file in $ROOT_DIR/etc/ld.so.conf.d/*.conf; do
-      while IFS= read -r line || [ -n "$line" ]; do
-        # Skip empty lines and lines that start with '#' (allowing for leading whitespace)
-
-        if [[ -z "$line" ]] || [[ $line =~ .*#.* ]]; then
-          continue
-        fi
-
-        ldFile="$ldFile:$LD_DIR$line"
-      done < "$conf_file"
+      readConfFile "$conf_file"
     done
 fi
 
-echo "#!/bin/sh" > $DEST_DIR/ld.env.sh
-echo "$ldFile\"" >> $DEST_DIR/ld.env.sh
+echo "#!/bin/sh" > "$DEST_DIR/ld.env.sh"
+echo "$ldFile\"" >> "$DEST_DIR/ld.env.sh"
 
 echo "Created '$DEST_DIR/ld.env.sh'"
 echo "Done."
