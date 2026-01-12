@@ -26,7 +26,6 @@ WORKDIR /
 RUN rm -rf /tmp/* \
     "/opt/sysroots/$TARGET_TRIPLE/tmp" \
     "/opt/sysroots/$TARGET_TRIPLE/var" \
-    "/opt/sysroots/$TARGET_TRIPLE/etc" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/share" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/sbom" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/doc" \
