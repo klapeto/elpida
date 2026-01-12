@@ -21,7 +21,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
     # ubuntu does not ship static libs for GL/EGL to be able to static link...
     #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin -static")
     #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin -static")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin")
 
     # if we link with musl, allow this
@@ -37,6 +37,8 @@ elseif (MSYS OR MSVC OR MINGW)
     set(ELPIDA_WINDOWS 1)
     add_compile_definitions(-D_UNICODE=1)
     add_compile_definitions(-DUNICODE=1)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
 #    add_compile_definitions(-DWIN32=1)
 #    add_compile_definitions(-DWINVER=0x0600) # We support XP and above
 #    add_compile_definitions(-D_WIN32_WINNT=0x0600) # We support XP and above
