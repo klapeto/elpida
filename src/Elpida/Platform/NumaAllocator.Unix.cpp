@@ -68,7 +68,7 @@ namespace Elpida
 				")");
 		}
 
-		std::memset(ptr, 0 , size);	// commit immediately
+		//std::memset(ptr, 0 , size);	// commit immediately
 
 		_totalAllocations++;
 

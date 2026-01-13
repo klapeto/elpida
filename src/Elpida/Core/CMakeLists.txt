@@ -59,8 +59,8 @@ target_include_directories(elpida-core PUBLIC
         ${CMAKE_CURRENT_BINARY_DIR}
 )
 if (NOT ANDROID)
-#    include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindHWLOC.cmake)
-#    target_include_directories(elpida-core PRIVATE ${HWLOC_INCLUDE_DIR})
+    include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindHWLOC.cmake)
+    target_include_directories(elpida-core PRIVATE ${HWLOC_INCLUDE_DIR})
 endif ()
 
 target_link_libraries(elpida-core PUBLIC hwloc)
