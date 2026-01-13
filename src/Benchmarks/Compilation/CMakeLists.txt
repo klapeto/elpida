@@ -5,8 +5,8 @@ project("Elpida Compilation benchmarks" VERSION ${ELPIDA_VERSION}
 
 # this should work but the config files check for executables we delete on docker image
 # so we just link with no problems since the libraries are there
-find_package(LLVM REQUIRED CONFIG)
-find_package(Clang REQUIRED)
+#find_package(LLVM REQUIRED CONFIG)
+#find_package(Clang REQUIRED)
 
 add_library(elpida-compilation-benchmarks
         Plugin.cpp
