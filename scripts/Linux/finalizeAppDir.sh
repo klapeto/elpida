@@ -40,7 +40,9 @@ this_script_dir="$(readlink -f "$(dirname "$0")")"
 cp "$this_script_dir/elpida-entry-point.sh" "$INSTALL_DIR/elpida"
 {
   printf "\n"
-  tail -n +2 "$INSTALL_DIR/ld.env.sh"
+  if [ -f "$INSTALL_DIR/ld.env.sh" ]; then
+        tail -n +2 "$INSTALL_DIR/ld.env.sh"
+  fi
   echo "exec \"\$this_dir/$EXECUTABLE\" \"\$@\""
 } >> "$INSTALL_DIR/elpida"
 chmod +x "$INSTALL_DIR/elpida"
