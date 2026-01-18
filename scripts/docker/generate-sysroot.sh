@@ -24,8 +24,8 @@ if [ $# -ne 3 ]; then
     exit 1;
 fi
 
-: ${DEBIAN_DISTRIBUTION:="noble"}
-: ${DEBIAN_SOURCES:="https://archive.ubuntu.com/ubuntu/|main,universe https://ports.ubuntu.com/ubuntu-ports/|main,universe"}
+: ${DEB_DISTRIBUTION:="noble"}
+: ${DEB_SOURCES:="https://archive.ubuntu.com/ubuntu/|main,universe https://ports.ubuntu.com/ubuntu-ports/|main,universe"}
 
 TARGET_TRIPLE="$1"
 SYSROOT="$2"
@@ -82,8 +82,8 @@ fi
 
 ./SysrootGenerator --path "$SYSROOT" \
     --arch "$DEBIAN_ARCH" \
-    --distribution "$DEBIAN_DISTRIBUTION" \
-    --sources "$DEBIAN_SOURCES" \
+    --distribution "$DEB_DISTRIBUTION" \
+    --sources "$DEB_SOURCES" \
     --http-timeout=300 \
     --cache-path ./cache \
     --packages `paste -sd, "$PACKAGES_FILE"` \

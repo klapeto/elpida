@@ -17,7 +17,7 @@ RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-d
 #RUN apt-get -y install make
 #
 WORKDIR /tmp/
-RUN ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/packages
+RUN DEB_DISTRIBUTION=focal ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/packages
 RUN ./build-hwloc.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 RUN ./build-qt.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
