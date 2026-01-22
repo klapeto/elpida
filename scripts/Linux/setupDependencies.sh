@@ -94,6 +94,10 @@ for lib in $LIBS; do
     # || true are for errors due to link loops
     allFiles=$(find -L "$ROOT_DIR" -samefile "$lib_path" 2>/dev/null) || true
 
+    if [ -z "$allFiles" ]; then
+      allFiles="$found";
+    fi
+
     for candidate in $allFiles; do
 
         if [[ "$candidate" != *"$directory"* ]]; then

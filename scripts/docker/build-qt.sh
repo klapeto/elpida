@@ -21,7 +21,7 @@ set -e
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
-if [ -s "$INSTALL_PREFIX/lib/libQt6Core.a" ]; then
+if [ -s "$INSTALL_PREFIX/lib/libQt6Core.a" ] || [ -s "$INSTALL_PREFIX/lib/libQt6Core.so" ]; then
   echo "Seems already built. We will not build it again"
   exit 0;
 fi
@@ -35,12 +35,15 @@ fi
 
 mkdir -p qt6/build
 cd qt6/build
+rm -rf ./*
 
 QT_CONFIG_ARGS="-static -no-shared -release -no-sbom -submodules qtcharts,qtsvg,qtbase -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests"
 QT_CONFIG_ARGS="$QT_CONFIG_ARGS -prefix $INSTALL_PREFIX"
 
-if [ "$TARGET_TRIPLE" != "$HOST_TRIPLE" ] || [ -n "$FORCE_NON_HOST" ]; then
-    QT_CONFIG_ARGS="$QT_CONFIG_ARGS -qt-host-path /opt/sysroots/$HOST_TRIPLE/usr"
+: ${QT_HOST_PATH:="/opt/sysroots/$HOST_TRIPLE/usr"}
+
+if [ "$TARGET_TRIPLE" != "$HOST_TRIPLE" ] || [ -n "$FORCE_NON_HOST" ] && [ -z "$FORCE_HOST" ]; then
+    QT_CONFIG_ARGS="$QT_CONFIG_ARGS -qt-host-path $QT_HOST_PATH"
     QT_OS="$TARGET_OS"
 fi
 
