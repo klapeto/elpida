@@ -53,7 +53,7 @@
 
 #cmakedefine ELPIDA_BETA
 
-#if defined(ELPIDA_LINUX)
+#if defined(ELPIDA_LINUX) && defined(__GLIBC__)
 #define ELPIDA_HAVE_BACKTRACE 1
 #elif (defined(ELPIDA_ANDROID) && __ANDROID_API__ >= 33)
 #define ELPIDA_HAVE_BACKTRACE 1
