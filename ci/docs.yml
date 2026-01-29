@@ -1,0 +1,13 @@
+create-pages:
+  image: busybox
+  stage: deploy
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  script:
+    - echo "Building pages"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
+  pages:
+    publish: docs

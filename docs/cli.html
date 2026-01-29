@@ -1,0 +1,61 @@
+<!--
+  ~
+  ~  Copyright (c) 2025  Ioannis Panagiotopoulos
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Elpida CLI Documentation</title>
+</head>
+<body>
+<h1>Elpida CLI Documentation</h1>
+
+<h2>Default Usage</h2>
+<pre><code>elpida-cli</code></pre>
+
+<h2>Example Usage with parameters</h2>
+<pre><code>elpida-cli --format=json --upload ...
+</code></pre>
+
+<h2>Options</h2>
+
+<ul>
+    <li><code>-v, --version</code>: Prints the version and exits.</li>
+
+    <li><code>-h, --help</code>: Prints this help and exits.</li>
+
+    <li><code>--format=FORMAT</code>: The result output format. Accepted values: default, json (default).</li>
+
+    <li><code>--delay-seconds=SECONDS</code>: The delay in seconds between runs (Default is 0).</li>
+
+    <li><code>--upload</code>: Enable uploading the result to elpida website (disabled by default).</li>
+
+    <li><code>--generate-report=[OUTPUT_FILE]</code>: Whether to generate an HTML report. If no path is specified, it is
+        output to 'Elpida-Report.html'.
+    </li>
+
+    <li><code>--iterations=N</code>: How many iterations to run (Default is 1).</li>
+
+    <li><code>--benchmarks-directory=DIRECTORY</code>: Where to find the benchmarks (Default is './Benchmarks').</li>
+
+    <li><code>--output=FILE</code>: Output the results on a file instead of STDOUT.</li>
+
+    <li><code>--quiet</code>: Output only the results on STDOUT.</li>
+</ul>
+</body>
+</html>

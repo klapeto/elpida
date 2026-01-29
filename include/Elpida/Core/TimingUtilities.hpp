@@ -1,3 +1,20 @@
+/*
+ *  Copyright (c) 2025  Ioannis Panagiotopoulos
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 //
 // Created by klapeto on 10/9/2023.
 //
@@ -142,7 +159,9 @@ namespace Elpida
 				Duration lowerBound = Duration(targetDuration * (1.0 - marginOfError));
 				Duration upperBound = Duration(targetDuration * (1.0 + marginOfError));
 
-				while (true)
+				auto attempts = 4;
+
+				while (attempts > 0)
 				{
 					prepare(iterations);
 					auto start = Timer::now();
@@ -154,8 +173,9 @@ namespace Elpida
 
 					if (currentDuration >= targetDuration)
 					{
-						break;
+						return { iterations, currentDuration };
 					}
+
 					if (currentDuration.count() < targetDuration.count() / 10.0)
 					{
 						iterations = CalculateNextIterations(iterations, 10.0, marginOfError);
@@ -164,12 +184,14 @@ namespace Elpida
 
 					if (currentDuration > lowerBound && currentDuration < upperBound)
 					{
-						break;
+						return { iterations, currentDuration };
 					}
 					if (iterations == 1 && currentDuration >= targetDuration)
 					{
-						break;
+						return { iterations, currentDuration };
 					}
+
+					attempts--;
 					auto ratio = targetDuration.count() / currentDuration.count();
 
 					iterations = CalculateNextIterations(iterations, ratio, marginOfError);

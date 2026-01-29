@@ -1,3 +1,20 @@
+/*
+ *  Copyright (c) 2025  Ioannis Panagiotopoulos
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "FullBenchmarkView.hpp"
 
 #include "ui_FullBenchmarkView.h"
@@ -93,7 +110,7 @@ namespace Elpida::Application
 				if (running)
 				{
 					_currentBenchmarkIndex = 0;
-					_maxBenchmarkIndex = _model.GetTotalBenchmarksThatWillRun();
+					_maxBenchmarkIndex = _model.GetTotalBenchmarks() * _benchmarkRunConfigurationModel.GetIterationsToRun();
 					_ui->pbProgress->setRange(0, _maxBenchmarkIndex);
 					_ui->bpStart->setText("Cancel");
 					_ui->lblStatus->setText("Running...");
@@ -127,7 +144,7 @@ namespace Elpida::Application
 		});
 
 		_iterationsChanged = _benchmarkRunConfigurationModel.IterationsChanged().Subscribe([this](const auto& x){UpdateETA();});
-		_iterationsChanged = _benchmarkRunConfigurationModel.DelaySecondsBetweenRunsChanged().Subscribe([this](const auto& x){UpdateETA();});
+		_delayChanged = _benchmarkRunConfigurationModel.DelaySecondsBetweenRunsChanged().Subscribe([this](const auto& x){UpdateETA();});
 
 		UpdateETA();
 	}
@@ -135,8 +152,7 @@ namespace Elpida::Application
 	void FullBenchmarkView::UpdateETA()
 	{
 		auto value = ValueUtilities::GetTimeScaleValue(Seconds(5.0
-				* _benchmarkRunConfigurationModel.GetIterationsToRun()
-				* _model.GetTotalBenchmarksThatWillRun()
+				* _model.GetTotalBenchmarks() * _benchmarkRunConfigurationModel.GetIterationsToRun()
 				+ (_benchmarkRunConfigurationModel.GetIterationsToRun() * _benchmarkRunConfigurationModel.GetDelaySecondsBetweenRuns())));
 		_ui->lblETAValue->setText(QString::fromStdString(value));
 	}

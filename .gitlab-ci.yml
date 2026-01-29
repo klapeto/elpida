@@ -31,8 +31,21 @@ workflow:
       variables:
         DEPLOY_ENVIRONMENT: "staging"
         IMAGE_TAG: staging
-    - when: always  
+    - changes:
+        paths:
+          - apps/**/*
+          - cmake-modules/**/*
+          - docker/**/*
+          - extern/**/*
+          - include/**/*
+          - src/**/*
+          - tests/**/*
+          - CMakeLists.txt
+          - "*.yml"
+      when: always
+    - when: never
 
 include:
   - local: '/ci/linux/root.yml'
   - local: '/ci/windows/root.yml'
+  - local: '/ci/docs.yml'

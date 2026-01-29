@@ -91,6 +91,9 @@ RUN git clone https://github.com/AppImageCrafters/appimage-builder.git
 # Force 0.14.x lief version because it crashes
 RUN sed -i 's/"lief"/"lief<0.15.0"/' appimage-builder/setup.py
 
+# python snafu requires this now...
+RUN pip install --upgrade setuptools
+
 RUN python3 -m pip install /opt/appimage-builder
 RUN rm -rf /opt/appimage-builder
 
