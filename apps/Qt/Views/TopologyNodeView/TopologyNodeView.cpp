@@ -275,7 +275,7 @@ namespace Elpida::Application
 		_topologyNodeModel.SetSelected(!_topologyNodeModel.IsSelected());
 	}
 
-	void TopologyNodeView::enterEvent(QEvent* event)
+	void TopologyNodeView::enterEvent(QEnterEvent* event)
 	{
 		if (_fastest)
 		{

@@ -21,6 +21,6 @@ extern hidden const struct powf_log2_data {
 		double invc, logc;
 	} tab[1 << POWF_LOG2_TABLE_BITS];
 	double poly[POWF_LOG2_POLY_ORDER];
-} __powf_log2_data;
+} _MuslLite_powf_log2_data;
 
 #endif

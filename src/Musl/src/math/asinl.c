@@ -50,12 +50,12 @@ long double asinl(long double x)
 			FORCE_EVAL(x + 0x1p120f);
 			return x;
 		}
-		return x + x*__invtrigl_R(x*x);
+		return x + x*_MuslLite_invtrigl_R(x*x);
 	}
 	/* 1 > |x| >= 0.5 */
 	z = (1.0 - fabsl(x))*0.5;
 	s = sqrtl(z);
-	r = __invtrigl_R(z);
+	r = _MuslLite_invtrigl_R(z);
 	if (CLOSETO1(u)) {
 		x = pio2_hi - (2*(s+s*r)-pio2_lo);
 	} else {

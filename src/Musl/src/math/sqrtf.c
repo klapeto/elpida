@@ -24,7 +24,7 @@ float sqrtf(float x)
 		if (ix == 0x7f800000)
 			return x;
 		if (ix > 0x7f800000)
-			return __math_invalidf(x);
+			return _MuslLite_math_invalidf(x);
 		/* x is subnormal, normalize it.  */
 		ix = asuint(x * 0x1p23f);
 		ix -= 23 << 23;
@@ -45,7 +45,7 @@ float sqrtf(float x)
 	static const uint32_t three = 0xc0000000;
 	uint32_t r, s, d, u, i;
 	i = (ix >> 17) % 128;
-	r = (uint32_t)__rsqrt_tab[i] << 16;
+	r = (uint32_t)_MuslLite_rsqrt_tab[i] << 16;
 	/* |r*sqrt(m) - 1| < 0x1p-8 */
 	s = mul32(m, r);
 	/* |s/sqrt(m) - 1| < 0x1p-8 */

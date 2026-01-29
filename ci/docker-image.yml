@@ -1,0 +1,96 @@
+.docker-image:
+  image: docker:latest
+  stage: build-docker-images
+  tags:
+    - amd64
+  timeout: 5h 30m
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker pull $IMAGE_NAME || true
+    - docker build --build-arg IMAGE="$IMAGE_BASE_NAME" --build-arg TARGET_TRIPLE="$TARGET_TRIPLE" --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_NAME -t $IMAGE_NAME -f docker/build-environment/Dockerfile .
+    - docker push $IMAGE_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - docker/build-environment/Dockerfile
+          - ci/general/docker-image.yml
+          - scripts/docker/build-base.sh
+          - scripts/docker/build-hwloc.sh
+          - scripts/docker/build-llvm.sh
+          - scripts/docker/build-qt.sh
+          - scripts/docker/generate-sysroot.sh
+          - scripts/docker/packages
+
+docker-image:linux:x86_64:
+  tags:
+    - amd64
+  timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: x86_64-linux-gnu
+  dependencies:
+    - docker-base-image
+  extends: .docker-image
+
+docker-image:linux:aarch64:
+  tags:
+    - amd64
+  timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: aarch64-linux-gnu
+  dependencies:
+    - docker-base-image
+  extends: .docker-image
+
+docker-image:linux:arm:
+  tags:
+    - amd64
+  timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: arm-linux-gnueabihf
+  dependencies:
+    - docker-base-image
+  extends: .docker-image
+
+docker-image:linux:riscv64:
+  tags:
+    - amd64
+  timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: riscv64-linux-gnu
+  dependencies:
+    - docker-base-image
+  extends: .docker-image
+
+docker-image:windows:aarch64:
+  tags:
+    - amd64
+  timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: aarch64-w64-mingw32
+  dependencies:
+    - docker-base-image
+  extends: .docker-image
+
+docker-image:windows:i686:
+  tags:
+    - amd64
+  timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: i686-w64-mingw32
+  dependencies:
+    - docker-base-image
+  extends: .docker-image
+
+docker-image:windows:x86_64:
+  tags:
+    - amd64
+  timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: x86_64-w64-mingw32
+  dependencies:
+    - docker-base-image
+  extends: .docker-image

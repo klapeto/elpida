@@ -23,6 +23,6 @@ extern hidden const struct log_data {
 		double chi, clo;
 	} tab2[1 << LOG_TABLE_BITS];
 #endif
-} __log_data;
+} _MuslLite_log_data;
 
 #endif

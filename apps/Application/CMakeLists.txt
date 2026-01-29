@@ -83,32 +83,17 @@ set(ELPIDA_APPLICATION_SOURCES
 
 file(GLOB ELPIDA_BENCHMARK_INSTANCES FullBenchmarkInstances/*.cpp)
 
-
-if (MSYS OR MINGW OR MSVC)
-    generate_product_version(
-            ELPIDA_APPLICATION_SOURCES
-            NAME ${PROJECT_NAME}
-            ICON ${ELPIDA_ROOT_DIRECTORY}/images/Elpida-icon.ico
-            VERSION_MAJOR ${ELPIDA_VERSION_MAJOR}
-            VERSION_MINOR ${ELPIDA_VERSION_MINOR}
-            VERSION_PATCH ${ELPIDA_VERSION_REVISION}
-            VERSION_REVISION ${ELPIDA_VERSION_BUILD}
-            COMPANY_NAME ${ELPIDA_COMPANY_NAME}
-            FILE_DESCRIPTION ${PROJECT_DESCRIPTION}
-    )
-endif()
-
 add_library(elpida-application ${ELPIDA_APPLICATION_SOURCES} ${ELPIDA_BENCHMARK_INSTANCES})
 
 if (ELPIDA_WEB_API_KEY)
-    add_definitions(-DELPIDA_WEB_API_KEY="${ELPIDA_WEB_API_KEY}")
+    target_compile_definitions(elpida-application PRIVATE -DELPIDA_WEB_API_KEY="${ELPIDA_WEB_API_KEY}")
 endif()
 
 if (ELPIDA_WEB_API_URL)
-    add_definitions(-DELPIDA_WEB_API_URL="${ELPIDA_WEB_API_URL}")
+    target_compile_definitions(elpida-application PRIVATE -DELPIDA_WEB_API_URL="${ELPIDA_WEB_API_URL}")
 endif()
 
-add_definitions(-DCPPHTTPLIB_OPENSSL_SUPPORT)
+target_compile_definitions(elpida-application PRIVATE -DCPPHTTPLIB_OPENSSL_SUPPORT)
 
 if(MSYS OR MINGW OR MSVC)
     target_link_libraries(elpida-application PUBLIC ssl crypto ws2_32 crypt32 zlibstatic)
@@ -130,7 +115,6 @@ endif()
 
 target_include_directories(elpida-application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-install(TARGETS elpida-application)
 install(FILES Assets/placeholder DESTINATION bin/assets)
 install(FILES Assets/custom-report-template.html DESTINATION bin/assets)
 install(FILES Assets/full-report-template.html DESTINATION bin/assets)

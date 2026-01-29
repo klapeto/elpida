@@ -21,9 +21,9 @@ Non-nearest ULP error: 1 (rounded ULP error)
 */
 
 #define N (1 << EXP2F_TABLE_BITS)
-#define InvLn2N __exp2f_data.invln2_scaled
-#define T __exp2f_data.tab
-#define C __exp2f_data.poly_scaled
+#define InvLn2N _MuslLite_exp2f_data.invln2_scaled
+#define T _MuslLite_exp2f_data.tab
+#define C _MuslLite_exp2f_data.poly_scaled
 
 static inline uint32_t top12(float x)
 {
@@ -45,9 +45,9 @@ float expf(float x)
 		if (abstop >= top12(INFINITY))
 			return x + x;
 		if (x > 0x1.62e42ep6f) /* x > log(0x1p128) ~= 88.72 */
-			return __math_oflowf(0);
+			return _MuslLite_math_oflowf(0);
 		if (x < -0x1.9fe368p6f) /* x < log(0x1p-150) ~= -103.97 */
-			return __math_uflowf(0);
+			return _MuslLite_math_uflowf(0);
 	}
 
 	/* x*N/Ln2 = k + r with r in [-1/2, 1/2] and int k.  */
@@ -60,7 +60,7 @@ float expf(float x)
 	kd = roundtoint(z);
 	ki = converttoint(z);
 #else
-# define SHIFT __exp2f_data.shift
+# define SHIFT _MuslLite_exp2f_data.shift
 	kd = eval_as_double(z + SHIFT);
 	ki = asuint64(kd);
 	kd -= SHIFT;

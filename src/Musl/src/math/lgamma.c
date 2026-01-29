@@ -3,5 +3,5 @@
 
 double lgamma(double x)
 {
-	return __lgamma_r(x, &__signgam);
+	return _MuslLite_lgamma_r(x, &_MuslLite_signgam);
 }

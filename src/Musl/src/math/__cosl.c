@@ -83,7 +83,7 @@ C11 =  0.1601061435794535138244346256065192782581e-23;
 	z*(C8+z*(C9+z*(C10+z*C11)))))))))))
 #endif
 
-long double __cosl(long double x, long double y)
+long double _MuslLite_cosl(long double x, long double y)
 {
 	long double hz,z,r,w;
 

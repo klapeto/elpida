@@ -26,6 +26,6 @@ float sinhf(float x)
 	}
 
 	/* |x| > logf(FLT_MAX) or nan */
-	t = __expo2f(absx, 2*h);
+	t = _MuslLite_expo2f(absx, 2*h);
 	return t;
 }

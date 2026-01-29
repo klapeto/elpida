@@ -190,7 +190,7 @@ long double sqrtl(long double x)
 		if (ix.hi == 0x7fff000000000000 && ix.lo == 0)
 			return x;
 		if (top >= 0x7fff)
-			return __math_invalidl(x);
+			return _MuslLite_math_invalidl(x);
 		/* x is subnormal, normalize it.  */
 		ix = asu128(x * 0x1p112);
 		top = ix.hi >> 48;
@@ -208,7 +208,7 @@ long double sqrtl(long double x)
 	const uint64_t three = 0xc0000000;
 	uint64_t r, s, d, u, i;
 	i = (ix.hi >> 42) % 128;
-	r = (uint32_t)__rsqrt_tab[i] << 16;
+	r = (uint32_t)_MuslLite_rsqrt_tab[i] << 16;
 	/* |r sqrt(m) - 1| < 0x1p-8 */
 	s = mul32(ml.hi>>32, r);
 	d = mul32(s, r);

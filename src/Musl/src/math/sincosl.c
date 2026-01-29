@@ -30,13 +30,13 @@ void sincosl(long double x, long double *sin, long double *cos)
 			*cos = 1.0 + x;
 			return;
 		}
-		*sin = __sinl(x, 0, 0);
-		*cos = __cosl(x, 0);
+		*sin = _MuslLite_sinl(x, 0, 0);
+		*cos = _MuslLite_cosl(x, 0);
 		return;
 	}
-	n = __rem_pio2l(x, y);
-	s = __sinl(y[0], y[1], 1);
-	c = __cosl(y[0], y[1]);
+	n = _MuslLite_rem_pio2l(x, y);
+	s = _MuslLite_sinl(y[0], y[1], 1);
+	c = _MuslLite_cosl(y[0], y[1]);
 	switch (n & 3) {
 	case 0:
 		*sin = s;

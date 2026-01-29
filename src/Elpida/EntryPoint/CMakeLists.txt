@@ -3,7 +3,8 @@ project("Elpida Benchmark Entry Point" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-set(ELPIDA_ENTRY_POINT_SOURCES
+
+add_library(elpida-entry-point
         Main.cpp
         ArgumentsHelper.cpp
         JsonFormatter.cpp
@@ -11,6 +12,4 @@ set(ELPIDA_ENTRY_POINT_SOURCES
         ResultFormatter.cpp
 )
 
-add_library(elpida-entry-point ${ELPIDA_ENTRY_POINT_SOURCES})
-
-target_link_libraries(elpida-entry-point PRIVATE elpida-core elpida-platform)
+target_link_libraries(elpida-entry-point PUBLIC elpida-core elpida-platform)

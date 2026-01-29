@@ -9,9 +9,9 @@ int strncasecmp(const char *_l, const char *_r, size_t n)
 	return tolower(*l) - tolower(*r);
 }
 
-int __strncasecmp_l(const char *l, const char *r, size_t n, locale_t loc)
+int _MuslLite_strncasecmp_l(const char *l, const char *r, size_t n, locale_t loc)
 {
 	return strncasecmp(l, r, n);
 }
 
-weak_alias(__strncasecmp_l, strncasecmp_l);
+weak_alias(_MuslLite_strncasecmp_l, strncasecmp_l);

@@ -1,0 +1,97 @@
+.package:linux:
+  image: $IMAGE_NAME
+  stage: package
+  tags:
+    - amd64
+  script:
+    - cp -r "$INSTALL_DIR" "qt"
+    - mv "$INSTALL_DIR" "cli"
+    - rm "qt/bin/elpida-cli"
+    - rm "cli/bin/elpida-qt"
+    - ./scripts/Linux/setupDependencies.sh "$PWD/cli/bin/elpida-cli" "$PWD/cli" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir"
+    - ./scripts/Linux/finalizeAppDir.sh "$PWD/cli" bin/elpida-cli $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz
+    - ./scripts/Linux/setupDependencies.sh "$PWD/qt/bin/elpida-qt" "$PWD/qt" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir"
+    - ./scripts/Linux/finalizeAppDir.sh "$PWD/qt" bin/elpida-qt $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz
+    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz
+      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
+      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz
+      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
+
+.package:windows:
+  image: $IMAGE_NAME
+  stage: package
+  tags:
+    - amd64
+  script:
+    - |
+      currentDir=$(pwd)
+      cd "$INSTALL_DIR/bin"
+      zip z -r .
+      cp ./z.zip "$currentDir/$PACKAGE_FILENAME.zip"
+      cd "$currentDir"
+      sha256sum "$PACKAGE_FILENAME.zip" > SHA256SUMS
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME.zip
+      - SHA256SUMS
+
+package:linux:x86_64:
+  variables:
+    TARGET_ARCH: x86_64
+    TARGET_TRIPLE: x86_64-linux-gnu
+  dependencies:
+    - build:linux:x86_64
+  extends: .package:linux
+
+package:linux:arm:
+  variables:
+    TARGET_ARCH: armhf
+    TARGET_TRIPLE: arm-linux-gnueabihf
+  dependencies:
+    - build:linux:arm
+  extends: .package:linux
+
+package:linux:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+    TARGET_TRIPLE: aarch64-linux-gnu
+  dependencies:
+    - build:linux:aarch64
+  extends: .package:linux
+
+package:linux:riscv64:
+  variables:
+    TARGET_ARCH: riscv64
+    TARGET_TRIPLE: riscv64-linux-gnu
+  dependencies:
+    - build:linux:riscv64
+  extends: .package:linux
+
+package:windows:x86_64:
+  variables:
+    TARGET_ARCH: x86_64
+    TARGET_TRIPLE: x86_64-w64-mingw32
+  dependencies:
+    - build:windows:x86_64
+  extends: .package:windows
+
+package:windows:i686:
+  variables:
+    TARGET_ARCH: i686
+    TARGET_TRIPLE: i686-w64-mingw32
+  dependencies:
+    - build:windows:i686
+  extends: .package:windows
+
+package:windows:aarch64:
+  variables:
+    TARGET_ARCH: aarch64
+    TARGET_TRIPLE: aarch64-w64-mingw32
+  dependencies:
+    - build:windows:aarch64
+  extends: .package:windows

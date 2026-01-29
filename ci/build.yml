@@ -1,0 +1,78 @@
+.build:
+  image: $IMAGE_NAME
+  stage: build
+  tags:
+    - amd64
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  script:
+    - git submodule update --init --depth=1
+    - cmake -S .
+      -B "$BUILD_DIR"
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_SYSROOT=/opt/sysroots/$TARGET_TRIPLE
+      -DTARGET_PREFIX=$TARGET_TRIPLE-
+      -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/llvm-cross.cmake
+      -DHOST_SYSROOT=/opt/sysroots/x86_64-linux-gnu
+      -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+      -DELPIDA_WEBSITE="$ELPIDA_WEBSITE"
+      -DELPIDA_WEB_API_URL="$ELPIDA_WEB_API_URL"
+      -DELPIDA_WEB_API_KEY="$ELPIDA_WEB_API_KEY"
+      -DELPIDA_VERSION_MAJOR=$ELPIDA_VERSION_MAJOR
+      -DELPIDA_VERSION_MINOR=$ELPIDA_VERSION_MINOR
+      -DELPIDA_VERSION_REVISION=$ELPIDA_VERSION_REVISION
+      -DELPIDA_VERSION_BUILD=$ELPIDA_VERSION_BUILD
+    - make -C "$BUILD_DIR" -j$(nproc) install
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $INSTALL_DIR
+
+build:linux:x86_64:
+  variables:
+    TARGET_TRIPLE: x86_64-linux-gnu
+  dependencies:
+    - docker-image:linux:x86_64
+  extends: .build
+
+build:linux:arm:
+  variables:
+    TARGET_TRIPLE: arm-linux-gnueabihf
+  dependencies:
+    - docker-image:linux:arm
+  extends: .build
+
+build:linux:aarch64:
+  variables:
+    TARGET_TRIPLE: aarch64-linux-gnu
+  dependencies:
+    - docker-image:linux:aarch64
+  extends: .build
+
+build:linux:riscv64:
+  variables:
+    TARGET_TRIPLE: riscv64-linux-gnu
+  dependencies:
+    - docker-image:linux:riscv64
+  extends: .build
+
+build:windows:x86_64:
+  variables:
+    TARGET_TRIPLE: x86_64-w64-mingw32
+  dependencies:
+    - docker-image:windows:x86_64
+  extends: .build
+
+build:windows:i686:
+  variables:
+    TARGET_TRIPLE: i686-w64-mingw32
+  dependencies:
+    - docker-image:windows:i686
+  extends: .build
+
+build:windows:aarch64:
+  variables:
+    TARGET_TRIPLE: aarch64-w64-mingw32
+  dependencies:
+    - docker-image:windows:aarch64
+  extends: .build

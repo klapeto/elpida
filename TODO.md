@@ -1,2 +1,0 @@
- - Custom scheduling on Full
- - Load Results

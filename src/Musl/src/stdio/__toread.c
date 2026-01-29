@@ -1,6 +1,6 @@
 #include <stdio_impl.h>
 
-int __toread(FILE *f)
+int _MuslLite_toread(FILE *f)
 {
 	f->mode |= f->mode-1;
 	if (f->wpos != f->wbase) f->write(f, 0, 0);

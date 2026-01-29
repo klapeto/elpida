@@ -21,9 +21,9 @@ Non-nearest ULP error: 1 (rounded ULP error)
 */
 
 #define N (1 << EXP2F_TABLE_BITS)
-#define T __exp2f_data.tab
-#define C __exp2f_data.poly
-#define SHIFT __exp2f_data.shift_scaled
+#define T _MuslLite_exp2f_data.tab
+#define C _MuslLite_exp2f_data.poly
+#define SHIFT _MuslLite_exp2f_data.shift_scaled
 
 static inline uint32_t top12(float x)
 {
@@ -45,9 +45,9 @@ float exp2f(float x)
 		if (abstop >= top12(INFINITY))
 			return x + x;
 		if (x > 0.0f)
-			return __math_oflowf(0);
+			return _MuslLite_math_oflowf(0);
 		if (x <= -150.0f)
-			return __math_uflowf(0);
+			return _MuslLite_math_uflowf(0);
 	}
 
 	/* x = k/N + r with r in [-1/(2N), 1/(2N)] and int k.  */

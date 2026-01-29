@@ -23,7 +23,7 @@ int   tolower(int);
 int   toupper(int);
 
 #ifndef __cplusplus
-static __inline int __isspace(int _c)
+static __inline int _MuslLite_isspace(int _c)
 {
 	return _c == ' ' || (unsigned)_c-'\t' < 5;
 }
@@ -34,7 +34,7 @@ static __inline int __isspace(int _c)
 #define isupper(a) (0 ? isupper(a) : ((unsigned)(a)-'A') < 26)
 #define isprint(a) (0 ? isprint(a) : ((unsigned)(a)-0x20) < 0x5f)
 #define isgraph(a) (0 ? isgraph(a) : ((unsigned)(a)-0x21) < 0x5e)
-#define isspace(a) __isspace(a)
+#define isspace(a) _MuslLite_isspace(a)
 #endif
 
 

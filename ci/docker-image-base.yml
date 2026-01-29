@@ -1,0 +1,24 @@
+docker-base-image:
+  image: docker:latest
+  stage: build-base-docker-image
+  tags:
+    - amd64
+  timeout: 5h 30m
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker pull $IMAGE_BASE_NAME || true
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_BASE_NAME -t $IMAGE_BASE_NAME -f docker/build-environment-base/Dockerfile .
+    - docker push $IMAGE_BASE_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - docker/build-environment-base/Dockerfile
+          - ci/general/docker-image-base.yml
+          - scripts/docker/build-base.sh
+          - scripts/docker/build-qt.sh
+          - scripts/docker/generate-sysroot.sh
+          - scripts/docker/packages

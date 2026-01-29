@@ -3,7 +3,7 @@ project("Elpida image benchmarks" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
+add_library(elpida-image-benchmarks
         PngEncodingTask.cpp
         PngDecodingTask.cpp
         PngEncodingBenchmark.cpp
@@ -23,11 +23,15 @@ set(ELPIDA_IMAGE_BENCHMARKS_SOURCES
         SvgRasterization2Benchmark.cpp
         RayTracingTask.cpp
         RayTracingBenchmark.cpp
-        SceneCreator.cpp
+        SceneCreator.cpp)
+
+target_include_directories(elpida-image-benchmarks PRIVATE
+        ${ZLIB_INCLUDE_DIRECTORIES}
+        ${LIBPNG_INCLUDE_DIRECTORIES}
 )
 
-add_executable(elpida-image-benchmarks ${ELPIDA_IMAGE_BENCHMARKS_SOURCES})
+target_link_libraries(elpida-image-benchmarks PUBLIC elpida-core elpida-common-tasks elpida-xml elpida-svg png_static zlibstatic elpida-math elpida-graphics musl-lite)
 
-target_link_libraries(elpida-image-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-xml elpida-svg png_static zlibstatic elpida-entry-point elpida-math elpida-graphics musl-lite)
-
-install(TARGETS elpida-image-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-image-benchmarks ARCHIVE)
+endif ()

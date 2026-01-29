@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-int __flt_rounds(void);
-#define FLT_ROUNDS (__flt_rounds())
+int _MuslLite_flt_rounds(void);
+#define FLT_ROUNDS (_MuslLite_flt_rounds())
 
 #define FLT_RADIX 2
 

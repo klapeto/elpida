@@ -3,7 +3,8 @@ project("Elpida Web benchmarks" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-set(ELPIDA_WEB_BENCHMARKS_SOURCES
+
+add_library(elpida-web-benchmarks
         Plugin.cpp
         XmlParseBenchmark.cpp
         ParseJsonTask.cpp
@@ -19,8 +20,8 @@ set(ELPIDA_WEB_BENCHMARKS_SOURCES
         RegexBenchmark.cpp
 )
 
-add_executable(elpida-web-benchmarks ${ELPIDA_WEB_BENCHMARKS_SOURCES})
+target_link_libraries(elpida-web-benchmarks PUBLIC elpida-core elpida-common-tasks boost_regex musl-lite)
 
-target_link_libraries(elpida-web-benchmarks PRIVATE elpida-core elpida-common-tasks elpida-entry-point boost_regex musl-lite)
-
-install(TARGETS elpida-web-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-web-benchmarks ARCHIVE)
+endif ()
