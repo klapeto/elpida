@@ -57,7 +57,7 @@ double tan(double x)
 			FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
 			return x;
 		}
-		return __tan(x, 0.0, 0);
+		return _MuslLite_tan(x, 0.0, 0);
 	}
 
 	/* tan(Inf or NaN) is NaN */
@@ -65,6 +65,6 @@ double tan(double x)
 		return x - x;
 
 	/* argument reduction */
-	n = __rem_pio2(x, y);
-	return __tan(y[0], y[1], n&1);
+	n = _MuslLite_rem_pio2(x, y);
+	return _MuslLite_tan(y[0], y[1], n&1);
 }

@@ -21,9 +21,9 @@ long double tanl(long double x)
 			FORCE_EVAL(u.i.se == 0 ? x*0x1p-120f : x+0x1p120f);
 			return x;
 		}
-		return __tanl(x, 0, 0);
+		return _MuslLite_tanl(x, 0, 0);
 	}
-	n = __rem_pio2l(x, y);
-	return __tanl(y[0], y[1], n&1);
+	n = _MuslLite_rem_pio2l(x, y);
+	return _MuslLite_tanl(y[0], y[1], n&1);
 }
 #endif

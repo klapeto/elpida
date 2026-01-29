@@ -3,7 +3,7 @@ project("Elpida math benchmarks" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-add_executable(elpida-math-benchmarks
+add_library(elpida-math-benchmarks
         Plugin.cpp
         FFTCalculator.cpp
         CalculateFFTInPlaceTask.cpp
@@ -21,6 +21,8 @@ add_executable(elpida-math-benchmarks
 )
 
 target_compile_options(elpida-math-benchmarks PRIVATE -ffast-math)
-target_link_libraries(elpida-math-benchmarks PRIVATE elpida-core elpida-platform elpida-entry-point elpida-math musl-lite)
+target_link_libraries(elpida-math-benchmarks PUBLIC elpida-core elpida-platform elpida-math musl-lite)
 
-install(TARGETS elpida-math-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-math-benchmarks ARCHIVE)
+endif ()

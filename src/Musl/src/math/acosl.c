@@ -47,13 +47,13 @@ long double acosl(long double x)
 	if (e < 0x3fff - 1) {
 		if (e < 0x3fff - LDBL_MANT_DIG - 1)
 			return pio2_hi + 0x1p-120f;
-		return pio2_hi - (__invtrigl_R(x*x)*x - pio2_lo + x);
+		return pio2_hi - (_MuslLite_invtrigl_R(x*x)*x - pio2_lo + x);
 	}
 	/* x < -0.5 */
 	if (u.i.se >> 15) {
 		z = (1 + x)*0.5;
 		s = sqrtl(z);
-		return 2*(pio2_hi - (__invtrigl_R(z)*s - pio2_lo + s));
+		return 2*(pio2_hi - (_MuslLite_invtrigl_R(z)*s - pio2_lo + s));
 	}
 	/* x > 0.5 */
 	z = (1 - x)*0.5;
@@ -62,6 +62,6 @@ long double acosl(long double x)
 	CLEARBOTTOM(u);
 	f = u.f;
 	c = (z - f*f)/(s + f);
-	return 2*(__invtrigl_R(z)*s + c + f);
+	return 2*(_MuslLite_invtrigl_R(z)*s + c + f);
 }
 #endif

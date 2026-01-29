@@ -25,7 +25,7 @@ static const double T[] = {
   0x1362b9bf971bcd.0p-59, /* 0.00946564784943673166728 */
 };
 
-float __tandf(double x, int odd)
+float _MuslLite_tandf(double x, int odd)
 {
 	double_t z,r,w,s,t,u;
 

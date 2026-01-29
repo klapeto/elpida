@@ -1,0 +1,1 @@
+export PATH="$PATH:/mnt/Dev/toolchains/llvm-mingw/bin"

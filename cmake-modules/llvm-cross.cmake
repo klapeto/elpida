@@ -1,0 +1,41 @@
+set(TARGET_PREFIX "" CACHE STRING "The cross target prefix")
+set(HOST_SYSROOT "" CACHE PATH "The host sysroot")
+
+if (TARGET_PREFIX)
+    # replace last -
+    string(REGEX REPLACE "-$" "" TARGET_TRIPLE ${TARGET_PREFIX})
+
+    string(REGEX REPLACE "-" ";" TARGET_PARTS ${TARGET_PREFIX})
+    list(GET TARGET_PARTS 0 CMAKE_SYSTEM_PROCESSOR)
+    list(GET TARGET_PARTS 1 TARGET_OS)
+    list(GET TARGET_PARTS 2 TARGET_ENV)
+
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL armv7)
+        # needed to avoid llvm detect aarch64
+        set(CMAKE_SYSTEM_PROCESSOR arm)
+    endif()
+
+    if (TARGET_OS STREQUAL "w64")
+        set(CMAKE_SYSTEM_NAME Windows)
+    elseif (TARGET_OS STREQUAL "linux")
+        set(CMAKE_SYSTEM_NAME Linux)
+    else ()
+        set(CMAKE_SYSTEM_NAME ${TARGET_OS})
+    endif ()
+endif ()
+
+set(CMAKE_C_COMPILER ${TARGET_PREFIX}clang)
+set(CMAKE_CXX_COMPILER ${TARGET_PREFIX}clang++)
+set(CMAKE_ASM_COMPILER ${TARGET_PREFIX}clang)
+set(CMAKE_LINKER_TYPE LLD)
+
+if (CMAKE_SYSROOT)
+    set(CMAKE_FIND_ROOT_PATH ${CMAKE_SYSROOT})
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --sysroot=\"${CMAKE_SYSROOT}\"")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --sysroot=\"${CMAKE_SYSROOT}\"")
+endif ()

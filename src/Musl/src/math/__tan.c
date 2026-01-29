@@ -63,7 +63,7 @@ static const double T[] = {
 pio4 =       7.85398163397448278999e-01, /* 3FE921FB, 54442D18 */
 pio4lo =     3.06161699786838301793e-17; /* 3C81A626, 33145C07 */
 
-double __tan(double x, double y, int odd)
+double _MuslLite_tan(double x, double y, int odd)
 {
 	double_t z, r, v, w, s, a;
 	double w0, a0;

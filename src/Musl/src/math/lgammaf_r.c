@@ -95,14 +95,14 @@ static float sin_pi(float x)
 	y *= 3.14159265358979323846;
 	switch (n) {
 	default: /* case 4: */
-	case 0: return __sindf(y);
-	case 1: return __cosdf(y);
-	case 2: return __sindf(-y);
-	case 3: return -__cosdf(y);
+	case 0: return _MuslLite_sindf(y);
+	case 1: return _MuslLite_cosdf(y);
+	case 2: return _MuslLite_sindf(-y);
+	case 3: return -_MuslLite_cosdf(y);
 	}
 }
 
-float __lgammaf_r(float x, int *signgamp)
+float _MuslLite_lgammaf_r(float x, int *signgamp)
 {
 	union {float f; uint32_t i;} u = {x};
 	float t,y,z,nadj,p,p1,p2,p3,q,r,w;
@@ -215,4 +215,4 @@ float __lgammaf_r(float x, int *signgamp)
 	return r;
 }
 
-weak_alias(__lgammaf_r, lgammaf_r);
+weak_alias(_MuslLite_lgammaf_r, lgammaf_r);

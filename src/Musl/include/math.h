@@ -48,17 +48,17 @@ extern "C" {
 #define FP_FAST_FMAL 1
 #endif
 
-int __fpclassify(double);
-int __fpclassifyf(float);
-int __fpclassifyl(long double);
+int _MuslLite_fpclassify(double);
+int _MuslLite_fpclassifyf(float);
+int _MuslLite_fpclassifyl(long double);
 
-static __inline unsigned __FLOAT_BITS(float __f)
+static __inline unsigned _MuslLite_FLOAT_BITS(float __f)
 {
 	union {float __f; unsigned __i;} __u;
 	__u.__f = __f;
 	return __u.__i;
 }
-static __inline unsigned long long __DOUBLE_BITS(double __f)
+static __inline unsigned long long _MuslLite_DOUBLE_BITS(double __f)
 {
 	union {double __f; unsigned long long __i;} __u;
 	__u.__f = __f;
@@ -66,43 +66,43 @@ static __inline unsigned long long __DOUBLE_BITS(double __f)
 }
 
 #define fpclassify(x) ( \
-	sizeof(x) == sizeof(float) ? __fpclassifyf(x) : \
-	sizeof(x) == sizeof(double) ? __fpclassify(x) : \
-	__fpclassifyl(x) )
+	sizeof(x) == sizeof(float) ? _MuslLite_fpclassifyf(x) : \
+	sizeof(x) == sizeof(double) ? _MuslLite_fpclassify(x) : \
+	_MuslLite_fpclassifyl(x) )
 
 #define isinf(x) ( \
-	sizeof(x) == sizeof(float) ? (__FLOAT_BITS(x) & 0x7fffffff) == 0x7f800000 : \
-	sizeof(x) == sizeof(double) ? (__DOUBLE_BITS(x) & -1ULL>>1) == 0x7ffULL<<52 : \
-	__fpclassifyl(x) == FP_INFINITE)
+	sizeof(x) == sizeof(float) ? (_MuslLite_FLOAT_BITS(x) & 0x7fffffff) == 0x7f800000 : \
+	sizeof(x) == sizeof(double) ? (_MuslLite_DOUBLE_BITS(x) & -1ULL>>1) == 0x7ffULL<<52 : \
+	_MuslLite_fpclassifyl(x) == FP_INFINITE)
 
 #define isnan(x) ( \
-	sizeof(x) == sizeof(float) ? (__FLOAT_BITS(x) & 0x7fffffff) > 0x7f800000 : \
-	sizeof(x) == sizeof(double) ? (__DOUBLE_BITS(x) & -1ULL>>1) > 0x7ffULL<<52 : \
-	__fpclassifyl(x) == FP_NAN)
+	sizeof(x) == sizeof(float) ? (_MuslLite_FLOAT_BITS(x) & 0x7fffffff) > 0x7f800000 : \
+	sizeof(x) == sizeof(double) ? (_MuslLite_DOUBLE_BITS(x) & -1ULL>>1) > 0x7ffULL<<52 : \
+	_MuslLite_fpclassifyl(x) == FP_NAN)
 
 #define isnormal(x) ( \
-	sizeof(x) == sizeof(float) ? ((__FLOAT_BITS(x)+0x00800000) & 0x7fffffff) >= 0x01000000 : \
-	sizeof(x) == sizeof(double) ? ((__DOUBLE_BITS(x)+(1ULL<<52)) & -1ULL>>1) >= 1ULL<<53 : \
-	__fpclassifyl(x) == FP_NORMAL)
+	sizeof(x) == sizeof(float) ? ((_MuslLite_FLOAT_BITS(x)+0x00800000) & 0x7fffffff) >= 0x01000000 : \
+	sizeof(x) == sizeof(double) ? ((_MuslLite_DOUBLE_BITS(x)+(1ULL<<52)) & -1ULL>>1) >= 1ULL<<53 : \
+	_MuslLite_fpclassifyl(x) == FP_NORMAL)
 
 #define isfinite(x) ( \
-	sizeof(x) == sizeof(float) ? (__FLOAT_BITS(x) & 0x7fffffff) < 0x7f800000 : \
-	sizeof(x) == sizeof(double) ? (__DOUBLE_BITS(x) & -1ULL>>1) < 0x7ffULL<<52 : \
-	__fpclassifyl(x) > FP_INFINITE)
+	sizeof(x) == sizeof(float) ? (_MuslLite_FLOAT_BITS(x) & 0x7fffffff) < 0x7f800000 : \
+	sizeof(x) == sizeof(double) ? (_MuslLite_DOUBLE_BITS(x) & -1ULL>>1) < 0x7ffULL<<52 : \
+	_MuslLite_fpclassifyl(x) > FP_INFINITE)
 
-int __signbit(double);
-int __signbitf(float);
-int __signbitl(long double);
+int _MuslLite_signbit(double);
+int _MuslLite_signbitf(float);
+int _MuslLite_signbitl(long double);
 
 #define signbit(x) ( \
-	sizeof(x) == sizeof(float) ? (int)(__FLOAT_BITS(x)>>31) : \
-	sizeof(x) == sizeof(double) ? (int)(__DOUBLE_BITS(x)>>63) : \
-	__signbitl(x) )
+	sizeof(x) == sizeof(float) ? (int)(_MuslLite_FLOAT_BITS(x)>>31) : \
+	sizeof(x) == sizeof(double) ? (int)(_MuslLite_DOUBLE_BITS(x)>>63) : \
+	_MuslLite_signbitl(x) )
 
 #define isunordered(x,y) (isnan((x)) ? ((void)(y),1) : isnan((y)))
 
 #define __ISREL_DEF(rel, op, type) \
-static __inline int __is##rel(type __x, type __y) \
+static __inline int _MuslLite_is##rel(type __x, type __y) \
 { return !isunordered(__x,__y) && __x op __y; }
 
 __ISREL_DEF(lessf, <, float_t)
@@ -126,11 +126,11 @@ __ISREL_DEF(greaterequall, >=, long double)
 	sizeof((x)+(y)) == sizeof(double) ? p(x, y) : \
 	p##l(x, y) )
 
-#define isless(x, y)            __tg_pred_2(x, y, __isless)
-#define islessequal(x, y)       __tg_pred_2(x, y, __islessequal)
-#define islessgreater(x, y)     __tg_pred_2(x, y, __islessgreater)
-#define isgreater(x, y)         __tg_pred_2(x, y, __isgreater)
-#define isgreaterequal(x, y)    __tg_pred_2(x, y, __isgreaterequal)
+#define isless(x, y)            __tg_pred_2(x, y, _MuslLite_isless)
+#define islessequal(x, y)       __tg_pred_2(x, y, _MuslLite_islessequal)
+#define islessgreater(x, y)     __tg_pred_2(x, y, _MuslLite_islessgreater)
+#define isgreater(x, y)         __tg_pred_2(x, y, _MuslLite_isgreater)
+#define isgreaterequal(x, y)    __tg_pred_2(x, y, _MuslLite_isgreaterequal)
 
 double      acos(double);
 float       acosf(float);

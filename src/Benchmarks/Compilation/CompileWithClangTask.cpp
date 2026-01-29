@@ -28,70 +28,68 @@
 
 namespace Elpida
 {
-	void CompileWithClangTask::Prepare(SharedPtr<AbstractTaskData> inputData)
-	{
-		_input = std::move(inputData);
+    void CompileWithClangTask::Prepare(SharedPtr<AbstractTaskData> inputData)
+    {
+        _input = std::move(inputData);
 
-		_sourceBuffer = llvm::MemoryBuffer::getMemBuffer(reinterpret_cast<const char*>(_input->GetData()));
-		_invocation->getPreprocessorOpts().clearRemappedFiles();
-		_invocation->getPreprocessorOpts().addRemappedFile("test.cpp", _sourceBuffer.get());
-	}
+        _sourceBuffer = llvm::MemoryBuffer::getMemBuffer(reinterpret_cast<const char*>(_input->GetData()));
+        _compiler.getInvocation().getPreprocessorOpts().clearRemappedFiles();
+        _compiler.getInvocation().getPreprocessorOpts().addRemappedFile("test.cpp", _sourceBuffer.get());
+    }
 
-	SharedPtr<AbstractTaskData> CompileWithClangTask::Finalize()
-	{
-		return std::move(_input);
-	}
+    SharedPtr<AbstractTaskData> CompileWithClangTask::Finalize()
+    {
+        return std::move(_input);
+    }
 
-	Size CompileWithClangTask::GetProcessedDataSize() const
-	{
-		return 1;
-	}
+    Size CompileWithClangTask::GetProcessedDataSize() const
+    {
+        return 1;
+    }
 
-	void CompileWithClangTask::DoRunImpl()
-	{
-		Exec([&]()
-		{
-			_compiler.setOutputStream(_compiler.createNullOutputFile());
-			_compiler.ExecuteAction(_action);
-		});
-	}
+    void CompileWithClangTask::DoRunImpl()
+    {
+        Exec([&]()
+        {
+            _compiler.setOutputStream(_compiler.createNullOutputFile());
+            _compiler.ExecuteAction(_action);
+        });
+    }
 
-	TaskInfo CompileWithClangTask::DoGetInfo() const
-	{
-		return TaskInfo("Clang compilation",
-				"Compiles a file with clang",
-				"Files",
-				"The compilation file throughput",
-				ResultType::Throughput,
-				true);
-	}
+    TaskInfo CompileWithClangTask::DoGetInfo() const
+    {
+        return TaskInfo("Clang compilation",
+                        "Compiles a file with clang",
+                        "Files",
+                        "The compilation file throughput",
+                        ResultType::Throughput,
+                        true);
+    }
 
-	Size CompileWithClangTask::GetOperationsPerformedPerRun()
-	{
-		return 1;
-	}
+    Size CompileWithClangTask::GetOperationsPerformedPerRun()
+    {
+        return 1;
+    }
 
-	UniquePtr<Task> CompileWithClangTask::DoDuplicate() const
-	{
-		return std::make_unique<CompileWithClangTask>();
-	}
+    UniquePtr<Task> CompileWithClangTask::DoDuplicate() const
+    {
+        return std::make_unique<CompileWithClangTask>();
+    }
 
-	CompileWithClangTask::CompileWithClangTask()
-	{
-		_diagnosticIds = new clang::DiagnosticIDs();
-		_diagnosticOptions = new clang::DiagnosticOptions();
-		_diagnosticsEngine = std::make_unique<clang::DiagnosticsEngine>(_diagnosticIds, _diagnosticOptions);
-		_invocation = std::make_shared<clang::CompilerInvocation>();
+    CompileWithClangTask::CompileWithClangTask()
+    {
+        _diagnosticIds = new clang::DiagnosticIDs();
+        _diagnosticOptions = new clang::DiagnosticOptions();
+        _diagnosticsEngine = std::make_unique<clang::DiagnosticsEngine>(_diagnosticIds, _diagnosticOptions);
 
-		clang::CompilerInvocation::CreateFromArgs(*_invocation, { "-O3", "test.cpp" }, *_diagnosticsEngine);
-		_invocation->getTargetOpts().Triple = "x86_64-none-none";
-		_invocation->resetNonModularOptions();
+        clang::CompilerInvocation::CreateFromArgs(_compiler.getInvocation(), {"-O3", "test.cpp"}, *_diagnosticsEngine);
+        _compiler.getInvocation().getTargetOpts().Triple = "x86_64-none-none";
+        _compiler.getInvocation().resetNonModularOptions();
 
-		_compiler.setInvocation(_invocation);
-		_compiler.setDiagnostics(new clang::DiagnosticsEngine(
-				_diagnosticIds,
-				_diagnosticOptions,
-				new clang::TextDiagnosticPrinter(llvm::errs(), _diagnosticOptions.get()))
-		);
-	}
+        _compiler.setDiagnostics(new clang::DiagnosticsEngine(
+                _diagnosticIds,
+                _diagnosticOptions,
+                new clang::TextDiagnosticPrinter(llvm::errs(), _diagnosticOptions.get()))
+        );
+    }
 } // Elpida

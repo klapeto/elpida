@@ -11,13 +11,13 @@
 #include "exp_data.h"
 
 #define N (1 << EXP_TABLE_BITS)
-#define Shift __exp_data.exp2_shift
-#define T __exp_data.tab
-#define C1 __exp_data.exp2_poly[0]
-#define C2 __exp_data.exp2_poly[1]
-#define C3 __exp_data.exp2_poly[2]
-#define C4 __exp_data.exp2_poly[3]
-#define C5 __exp_data.exp2_poly[4]
+#define Shift _MuslLite_exp_data.exp2_shift
+#define T _MuslLite_exp_data.tab
+#define C1 _MuslLite_exp_data.exp2_poly[0]
+#define C2 _MuslLite_exp_data.exp2_poly[1]
+#define C3 _MuslLite_exp_data.exp2_poly[2]
+#define C4 _MuslLite_exp_data.exp2_poly[3]
+#define C5 _MuslLite_exp_data.exp2_poly[4]
 
 /* Handle cases that may overflow or underflow when computing the result that
    is scale*(1+TMP) without intermediate rounding.  The bit representation of
@@ -85,9 +85,9 @@ double exp2(double x)
 			if (abstop >= top12(INFINITY))
 				return 1.0 + x;
 			if (!(asuint64(x) >> 63))
-				return __math_oflow(0);
+				return _MuslLite_math_oflow(0);
 			else if (asuint64(x) >= asuint64(-1075.0))
-				return __math_uflow(0);
+				return _MuslLite_math_uflow(0);
 		}
 		if (2 * asuint64(x) > 2 * asuint64(928.0))
 			/* Large x is special cased below.  */

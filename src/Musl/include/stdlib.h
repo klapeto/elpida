@@ -78,8 +78,8 @@ size_t wcstombs (char *__restrict, const wchar_t *__restrict, size_t);
 #define EXIT_FAILURE 1
 #define EXIT_SUCCESS 0
 
-size_t __ctype_get_mb_cur_max(void);
-#define MB_CUR_MAX (__ctype_get_mb_cur_max())
+size_t _MuslLite_ctype_get_mb_cur_max(void);
+#define MB_CUR_MAX (_MuslLite_ctype_get_mb_cur_max())
 
 #define RAND_MAX (0x7fffffff)
 
@@ -151,7 +151,7 @@ void qsort_r (void *, size_t, size_t, int (*)(const void *, const void *, void *
 #endif
 
 typedef int (*cmpfun_q)(const void *, const void *, void *);
-hidden void __qsort_r(void *base, size_t nel, size_t width, cmpfun_q cmp, void *arg);
+hidden void _MuslLite_qsort_r(void *base, size_t nel, size_t width, cmpfun_q cmp, void *arg);
 
 #ifdef _GNU_SOURCE
 int ptsname_r(int, char *, size_t);

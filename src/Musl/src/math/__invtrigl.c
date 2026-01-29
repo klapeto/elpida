@@ -21,7 +21,7 @@ const long double pio2_lo = -2.50827880633416601173e-20L;
 
 /* used in asinl() and acosl() */
 /* R(x^2) is a rational approximation of (asin(x)-x)/x^3 with Remez algorithm */
-long double __invtrigl_R(long double z)
+long double _MuslLite_invtrigl_R(long double z)
 {
 	long double p, q;
 	p = z*(pS0+z*(pS1+z*(pS2+z*(pS3+z*(pS4+z*(pS5+z*pS6))))));
@@ -53,7 +53,7 @@ qS9 = -1.99407384882605586705979504567947007e-04L;
 const long double pio2_hi = 1.57079632679489661923132169163975140L;
 const long double pio2_lo = 4.33590506506189051239852201302167613e-35L;
 
-long double __invtrigl_R(long double z)
+long double _MuslLite_invtrigl_R(long double z)
 {
 	long double p, q;
 	p = z*(pS0+z*(pS1+z*(pS2+z*(pS3+z*(pS4+z*(pS5+z*(pS6+z*(pS7+z*(pS8+z*pS9)))))))));

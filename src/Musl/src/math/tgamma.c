@@ -45,13 +45,13 @@ static double sinpi(double x)
 	switch (n) {
 	default: /* case 4 */
 	case 0:
-		return __sin(x, 0, 0);
+		return _MuslLite_sin(x, 0, 0);
 	case 1:
-		return __cos(x, 0);
+		return _MuslLite_cos(x, 0);
 	case 2:
-		return __sin(-x, 0, 0);
+		return _MuslLite_sin(-x, 0, 0);
 	case 3:
-		return -__cos(x, 0);
+		return -_MuslLite_cos(x, 0);
 	}
 }
 
@@ -171,7 +171,7 @@ double tgamma(double x)
 }
 
 #if 0
-double __lgamma_r(double x, int *sign)
+double _MuslLite_lgamma_r(double x, int *sign)
 {
 	double r, absx;
 
@@ -218,5 +218,5 @@ double __lgamma_r(double x, int *sign)
 	return r;
 }
 
-weak_alias(__lgamma_r, lgamma_r);
+weak_alias(_MuslLite_lgamma_r, lgamma_r);
 #endif

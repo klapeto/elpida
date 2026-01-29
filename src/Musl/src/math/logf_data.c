@@ -7,7 +7,7 @@
 
 #include "logf_data.h"
 
-const struct logf_data __logf_data = {
+const struct logf_data _MuslLite_logf_data = {
   .tab = {
   { 0x1.661ec79f8f3bep+0, -0x1.57bf7808caadep-2 },
   { 0x1.571ed4aaf883dp+0, -0x1.2bef0a7c06ddbp-2 },

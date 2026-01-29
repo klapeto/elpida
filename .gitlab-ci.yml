@@ -1,5 +1,6 @@
 stages:
-  - build-containers
+  - build-base-docker-image
+  - build-docker-images
   - build
   - package
   - deploy
@@ -18,8 +19,9 @@ variables:
   PACKAGE_CLI_SUFFIX: 'Cli'
   DEPLOY_ENVIRONMENT: "development"
   IMAGE_TAG: $CI_COMMIT_REF_SLUG
-  IMAGE_PART_NAME: "$CI_REGISTRY_IMAGE/build-environment/$TARGET_OS"
-  IMAGE_NAME: "$IMAGE_PART_NAME:$IMAGE_TAG"
+  IMAGE_PART_NAME: "$CI_REGISTRY_IMAGE/build-environment"
+  IMAGE_BASE_NAME: "$IMAGE_PART_NAME-base:$IMAGE_TAG"
+  IMAGE_NAME: "$IMAGE_PART_NAME-$TARGET_TRIPLE:$IMAGE_TAG"
 
 workflow:
   rules:
@@ -41,11 +43,10 @@ workflow:
           - src/**/*
           - tests/**/*
           - CMakeLists.txt
-          - "*.yml"
+          - .gitlab-ci.yml
+          - ci/**/*
       when: always
     - when: never
 
 include:
-  - local: '/ci/linux/root.yml'
-  - local: '/ci/windows/root.yml'
-  - local: '/ci/docs.yml'
+  - local: '/ci/root.yml'

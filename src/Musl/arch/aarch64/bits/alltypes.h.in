@@ -1,14 +1,30 @@
-#define _Addr long
-#define _Int64 long
-#define _Reg long
+#ifdef WIN32
+    #ifdef __aarch64__
+        #define _Addr long long
+        #define _Int64 long long
+        #define _Reg long long
+    #else
+        #define _Addr long
+        #define _Int64 long
+        #define _Reg long
+    #endif
+#else
+    #define _Addr long
+    #define _Int64 long
+    #define _Reg long
+#endif
+
+#ifdef WIN32
+    #define __LONG_MAX 0x7fffffffL
+#else
+    #define __LONG_MAX 0x7fffffffffffffffL
+#endif
 
 #if __AARCH64EB__
 #define __BYTE_ORDER 4321
 #else
 #define __BYTE_ORDER 1234
 #endif
-
-#define __LONG_MAX 0x7fffffffffffffffL
 
 #ifndef __cplusplus
 TYPEDEF unsigned wchar_t;

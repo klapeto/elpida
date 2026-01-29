@@ -64,7 +64,7 @@ S12 =  0.64038150078671872796678569586315881020659912139412e-25;
 	z*(S9+z*(S10+z*(S11+z*S12))))))))))
 #endif
 
-long double __sinl(long double x, long double y, int iy)
+long double _MuslLite_sinl(long double x, long double y, int iy)
 {
 	long double z,r,v;
 

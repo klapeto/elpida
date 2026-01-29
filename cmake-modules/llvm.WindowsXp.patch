@@ -1,0 +1,1149 @@
+Index: clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp
+--- a/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(revision Staged)
++++ b/clang/lib/DirectoryWatcher/windows/DirectoryWatcher-windows.cpp	(date 1767991709394)
+@@ -12,6 +12,7 @@
+ #include "llvm/Support/ConvertUTF.h"
+ #include "llvm/Support/Path.h"
+ #include "llvm/Support/Windows/WindowsSupport.h"
++#include <psapi.h>
+ #include <condition_variable>
+ #include <mutex>
+ #include <queue>
+@@ -80,6 +81,98 @@
+   void NotifierThreadProc(bool WaitForInitialSync);
+ };
+
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++static bool GetFilenameFromHandle(HANDLE hFile, wchar_t *pszFilename)
++{
++  BOOL bRC = FALSE;
++
++  // Get the file size.
++  DWORD dwFileSizeHi = 0;
++  DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
++
++  // Create a file mapping object.
++  HANDLE hFileMap = CreateFileMappingW(hFile,
++                                      NULL,
++                                      PAGE_READONLY,
++                                      0,
++                                      dwFileSizeLo,
++                                      NULL);
++
++  if (hFileMap)
++  {
++    // Create a file mapping to get the file name.
++    void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
++
++    if (pMem)
++    {
++      if (GetMappedFileNameW(GetCurrentProcess(),
++                            pMem,
++                            pszFilename,
++                            MAX_PATH))
++      {
++        // At this point pszFilename already contains the name.
++        // But the drive name is not written in usual MS DOS fomat, actually,
++        // it is a device name.
++        // So below is an attempt to translate it to drive-letter
++        wchar_t szTemp[512];
++        *szTemp = 0;
++
++        auto uMaxLenDest = wcslen(pszFilename);
++
++        if (GetLogicalDriveStringsW(sizeof (szTemp) - 1, szTemp))
++        {
++          wchar_t szName[MAX_PATH];
++          wchar_t szDrive[3] = L" :";
++          BOOL bFound = FALSE;
++          wchar_t* p = szTemp;
++
++          do
++          {
++            // Copy the drive letter into the template string,
++            // removing the backslash.
++            *szDrive = *p;
++
++            // Look up each device name.
++            if (QueryDosDeviceW(szDrive, szName,
++                               sizeof (szName)))
++            {
++              UINT uNameLen = wcslen(szName);
++
++              //If greater than file name length, it's not a match.
++              if (uNameLen < uMaxLenDest)
++              {
++                bFound = wcsnicmp (pszFilename, szName,
++                                  uNameLen) == 0;
++
++                if (bFound)
++                {
++                  //Reconstruct pszFilename using szTemp as scratch,
++                  // and replace device path with our DOS path.
++                  wchar_t szTempFile[MAX_PATH];
++                  wsprintfW(szTempFile,
++                           L"%s%s",
++                           szDrive,
++                           pszFilename+uNameLen);
++                  wcsncpy(pszFilename, szTempFile, uMaxLenDest);
++                }
++              }
++            }
++            // Go to the next NULL character.
++            while (*p++);
++
++          }
++          while (!bFound && *p); // at the end of the string
++        }
++      }
++      bRC = TRUE;
++      UnmapViewOfFile(pMem);
++    }
++    CloseHandle(hFileMap);
++  }
++  return bRC;
++}
++#endif
++
+ DirectoryWatcherWindows::DirectoryWatcherWindows(
+     HANDLE DirectoryHandle, bool WaitForInitialSync,
+     DirectoryWatcherCallback Receiver)
+@@ -87,6 +180,7 @@
+   // Pre-compute the real location as we will be handing over the directory
+   // handle to the watcher and performing synchronous operations.
+   {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+     DWORD Size = GetFinalPathNameByHandleW(DirectoryHandle, NULL, 0, 0);
+     std::unique_ptr<WCHAR[]> Buffer{new WCHAR[Size + 1]};
+     Size = GetFinalPathNameByHandleW(DirectoryHandle, Buffer.get(), Size, 0);
+@@ -97,6 +191,18 @@
+       Size -= 4;
+     }
+     llvm::sys::windows::UTF16ToUTF8(Data, Size, Path);
++#else
++    wchar_t filename[MAX_PATH];
++    wchar_t outPath[2048];
++    wchar_t* Data = outPath;
++    GetFilenameFromHandle(DirectoryHandle, filename);
++    auto Size = wcslen(filename);
++    if (Size >= 4 && ::memcmp(Data, L"\\\\?\\", 8) == 0) {
++      Data += 4;
++      Size -= 4;
++    }
++    llvm::sys::windows::UTF16ToUTF8(Data, Size, Path);
++#endif
+   }
+
+   size_t EntrySize = sizeof(FILE_NOTIFY_INFORMATION) + MAX_PATH * sizeof(WCHAR);
+Index: clang/lib/DirectoryWatcher/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/clang/lib/DirectoryWatcher/CMakeLists.txt b/clang/lib/DirectoryWatcher/CMakeLists.txt
+--- a/clang/lib/DirectoryWatcher/CMakeLists.txt	(revision Staged)
++++ b/clang/lib/DirectoryWatcher/CMakeLists.txt	(date 1767991709405)
+@@ -19,6 +19,7 @@
+   endif()
+ elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
+   list(APPEND DIRECTORY_WATCHER_SOURCES windows/DirectoryWatcher-windows.cpp)
++  set(DIRECTORY_WATCHER_LINK_LIBS "psapi")
+ else()
+   list(APPEND DIRECTORY_WATCHER_SOURCES default/DirectoryWatcher-not-implemented.cpp)
+ endif()
+Index: compiler-rt/lib/builtins/emutls.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/compiler-rt/lib/builtins/emutls.c b/compiler-rt/lib/builtins/emutls.c
+--- a/compiler-rt/lib/builtins/emutls.c	(revision Staged)
++++ b/compiler-rt/lib/builtins/emutls.c	(date 1767991709417)
+@@ -205,8 +205,24 @@
+ }
+
+ static __inline void emutls_init_once(void) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   static INIT_ONCE once;
+   InitOnceExecuteOnce(&once, emutls_init, NULL, NULL);
++#else
++  static int initialized = 0;
++  if (initialized == 1)
++    return;
++  HANDLE initMutex = CreateMutexW(NULL, TRUE, L"emutls_mutex");
++  if (GetLastError() == ERROR_ALREADY_EXISTS) {
++    WaitForSingleObject(initMutex, INFINITE);
++    ReleaseMutex(initMutex);
++    return;
++  }
++  emutls_init(NULL, NULL, NULL);
++  initialized = 1;
++  ReleaseMutex(initMutex);
++  CloseHandle(initMutex);
++#endif
+ }
+
+ static __inline void emutls_lock(void) { EnterCriticalSection(emutls_mutex); }
+Index: compiler-rt/lib/fuzzer/FuzzerDataFlowTrace.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/compiler-rt/lib/fuzzer/FuzzerDataFlowTrace.cpp b/compiler-rt/lib/fuzzer/FuzzerDataFlowTrace.cpp
+--- a/compiler-rt/lib/fuzzer/FuzzerDataFlowTrace.cpp	(revision Staged)
++++ b/compiler-rt/lib/fuzzer/FuzzerDataFlowTrace.cpp	(date 1768039814393)
+@@ -39,9 +39,9 @@
+ // where N is the number of the function, T is the total number of instrumented
+ // BBs, and X,Y,Z, if present, are the indices of covered BB.
+ // BB #0, which is the entry block, is not explicitly listed.
+-bool BlockCoverage::AppendCoverage(std::istream &IN) {
++bool BlockCoverage::AppendCoverage(std::istream &in) {
+   std::string L;
+-  while (std::getline(IN, L, '\n')) {
++  while (std::getline(in, L, '\n')) {
+     if (L.empty())
+       continue;
+     std::stringstream SS(L.c_str() + 1);
+Index: libcxx/include/__locale_dir/support/windows.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/include/__locale_dir/support/windows.h b/libcxx/include/__locale_dir/support/windows.h
+--- a/libcxx/include/__locale_dir/support/windows.h	(revision Staged)
++++ b/libcxx/include/__locale_dir/support/windows.h	(date 1768038210769)
+@@ -22,6 +22,10 @@
+ #include <string>
+ #include <time.h> // ::_strftime_l
+
++#ifdef _WIN32_WINNT
++#include <windows.h>
++#endif
++
+ #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
+ #  pragma GCC system_header
+ #endif
+@@ -216,21 +220,102 @@
+
+ #  if _LIBCPP_HAS_WIDE_CHARACTERS
+ inline _LIBCPP_HIDE_FROM_ABI int __iswctype(wint_t __c, wctype_t __type, __locale_t __loc) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   return ::_iswctype_l(__c, __type, __loc);
++#else
++  return ::iswctype(__c, __type);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI int __iswspace(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswspace_l(__c, __loc);
++#else
++  return ::iswspace(__c);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI int __iswprint(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswprint_l(__c, __loc);
++#else
++  return ::iswprint(__c);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI int __iswcntrl(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswcntrl_l(__c, __loc);
++#else
++  return ::iswcntrl(__c);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI int __iswupper(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswupper_l(__c, __loc);
++#else
++  return ::iswupper(__c);
++#endif
+ }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswspace(wint_t __c, __locale_t __loc) { return ::_iswspace_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswprint(wint_t __c, __locale_t __loc) { return ::_iswprint_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswcntrl(wint_t __c, __locale_t __loc) { return ::_iswcntrl_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswupper(wint_t __c, __locale_t __loc) { return ::_iswupper_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswlower(wint_t __c, __locale_t __loc) { return ::_iswlower_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswalpha(wint_t __c, __locale_t __loc) { return ::_iswalpha_l(__c, __loc); }
++inline _LIBCPP_HIDE_FROM_ABI int __iswlower(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswlower_l(__c, __loc);
++#else
++  return ::iswlower(__c);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI int __iswalpha(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswalpha_l(__c, __loc);
++#else
++  return ::iswalpha(__c);
++#endif
++}
+ // TODO: use locale to determine blank characters
+ inline _LIBCPP_HIDE_FROM_ABI int __iswblank(wint_t __c, __locale_t /*loc*/) { return (__c == L' ' || __c == L'\t'); }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswdigit(wint_t __c, __locale_t __loc) { return ::_iswdigit_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswpunct(wint_t __c, __locale_t __loc) { return ::_iswpunct_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI int __iswxdigit(wint_t __c, __locale_t __loc) { return ::_iswxdigit_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI wint_t __towupper(wint_t __c, __locale_t __loc) { return ::_towupper_l(__c, __loc); }
+-inline _LIBCPP_HIDE_FROM_ABI wint_t __towlower(wint_t __c, __locale_t __loc) { return ::_towlower_l(__c, __loc); }
++inline _LIBCPP_HIDE_FROM_ABI int __iswdigit(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswdigit_l(__c, __loc);
++#else
++  return ::iswdigit(__c);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI int __iswpunct(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswpunct_l(__c, __loc);
++#else
++  return ::iswpunct(__c);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI int __iswxdigit(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_iswxdigit_l(__c, __loc);
++#else
++  return ::iswxdigit(__c);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI wint_t __towupper(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_towupper_l(__c, __loc);
++#else
++  return ::towupper(__c);
++#endif
++}
++inline _LIBCPP_HIDE_FROM_ABI wint_t __towlower(wint_t __c, __locale_t __loc)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return ::_towlower_l(__c, __loc);
++#else
++  return ::towlower(__c);
++#endif
++}
+
+ inline _LIBCPP_HIDE_FROM_ABI int __wcscoll(const wchar_t* __ws1, const wchar_t* __ws2, __locale_t __loc) {
+   return ::_wcscoll_l(__ws1, __ws2, __loc);
+Index: libcxx/include/__thread/support/pthread.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/include/__thread/support/pthread.h b/libcxx/include/__thread/support/pthread.h
+--- a/libcxx/include/__thread/support/pthread.h	(revision Staged)
++++ b/libcxx/include/__thread/support/pthread.h	(date 1768038384022)
+@@ -18,6 +18,10 @@
+ #include <pthread.h>
+ #include <sched.h>
+
++#ifdef _WIN32_WINNT
++#  include <windows.h>
++#endif
++
+ #ifdef __MVS__
+ #  include <__support/ibm/nanosleep.h>
+ #endif
+@@ -194,9 +198,16 @@
+ inline _LIBCPP_HIDE_FROM_ABI void __libcpp_thread_yield() { sched_yield(); }
+
+ inline _LIBCPP_HIDE_FROM_ABI void __libcpp_thread_sleep_for(const chrono::nanoseconds& __ns) {
++#ifdef _WIN32_WINNT
++  // round-up to the nearest millisecond
++  chrono::milliseconds __ms = chrono::ceil<chrono::milliseconds>(__ns);
++  // FIXME(compnerd) this should be an alertable sleep (WFSO or SleepEx)
++  Sleep(__ms.count());
++#else
+   __libcpp_timespec_t __ts = std::__convert_to_timespec<__libcpp_timespec_t>(__ns);
+   while (nanosleep(&__ts, &__ts) == -1 && errno == EINTR)
+     ;
++#endif
+ }
+
+ //
+Index: libcxx/src/filesystem/posix_compat.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/filesystem/posix_compat.h b/libcxx/src/filesystem/posix_compat.h
+--- a/libcxx/src/filesystem/posix_compat.h	(revision Staged)
++++ b/libcxx/src/filesystem/posix_compat.h	(date 1768003289257)
+@@ -37,6 +37,11 @@
+ #  include <io.h>
+ #  include <windows.h>
+ #  include <winioctl.h>
++#if __MINGW32__ && _WIN32_WINNT < _WIN32_WINNT_VISTA
++#  include <sys/stat.h>
++#  include <psapi.h>
++#include <unistd.h>
++#endif
+ #else
+ #  include <fcntl.h>
+ #  include <sys/stat.h>
+@@ -146,6 +151,7 @@
+   HANDLE h;
+ };
+
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ inline int stat_handle(HANDLE h, StatT* buf) {
+   FILE_BASIC_INFO basic;
+   if (!GetFileInformationByHandleEx(h, FileBasicInfo, &basic, sizeof(basic)))
+@@ -189,14 +195,54 @@
+   int ret = stat_handle(h, buf);
+   return ret;
+ }
+-
+-inline int stat(const wchar_t* path, StatT* buf) { return stat_file(path, buf, 0); }
++#else
++static void convertStat(StatT* buf, struct stat& statbuf)
++{
++  buf->st_mode = statbuf.st_mode;
++  buf->st_dev  = statbuf.st_dev;
++  buf->st_mtim.tv_sec = statbuf.st_mtime;
++  buf->st_atim.tv_sec = statbuf.st_atime;
++  buf->st_ino.id[0] = statbuf.st_ino;
++  buf->st_ino.id[1] = statbuf.st_ino >> 8;
++  buf->st_nlink = statbuf.st_nlink;
++  buf->st_size  = statbuf.st_size;
++}
++#endif
++
++inline int stat(const wchar_t* path, StatT* buf)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return return stat_file(path, buf, 0);
++#else
++  struct stat statbuf = {};
++  auto ret = ::wstat(path, &statbuf);
++  convertStat(buf, statbuf);
++  return ret;
++#endif
++}
+
+-inline int lstat(const wchar_t* path, StatT* buf) { return stat_file(path, buf, FILE_FLAG_OPEN_REPARSE_POINT); }
++inline int lstat(const wchar_t* path, StatT* buf)
++{
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++  return stat_file(path, buf, FILE_FLAG_OPEN_REPARSE_POINT);
++#else
++  struct stat statbuf = {};
++  auto ret = ::wstat(path, &statbuf);
++  convertStat(buf, statbuf);
++  return ret;
++#endif
++}
+
+ inline int fstat(int fd, StatT* buf) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   HANDLE h = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
+   return stat_handle(h, buf);
++#else
++  struct stat statbuf = {};
++  auto ret = ::fstat(fd, &statbuf);
++  convertStat(buf, statbuf);
++  return ret;
++#endif
+ }
+
+ inline int mkdir(const wchar_t* path, int permissions) {
+@@ -207,7 +253,9 @@
+ }
+
+ inline int symlink_file_dir(const wchar_t* oldname, const wchar_t* newname, bool is_dir) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   path dest(oldname);
++  REPARSE_DATA_BUFFER s;
+   dest.make_preferred();
+   oldname     = dest.c_str();
+   DWORD flags = is_dir ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0;
+@@ -218,6 +266,7 @@
+     return -1;
+   if (CreateSymbolicLinkW(newname, oldname, flags))
+     return 0;
++#endif
+   return -1;
+ }
+
+@@ -236,6 +285,7 @@
+ }
+
+ inline int remove(const wchar_t* path) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   detail::WinHandle h(path, DELETE, FILE_FLAG_OPEN_REPARSE_POINT);
+   if (!h)
+     return -1;
+@@ -243,6 +293,10 @@
+   info.DeleteFile = TRUE;
+   if (!SetFileInformationByHandle(h, FileDispositionInfo, &info, sizeof(info)))
+     return -1;
++#else
++  if (!DeleteFileW(path))
++    return -1;
++#endif
+   return 0;
+ }
+
+@@ -331,6 +385,98 @@
+   return buff.release();
+ }
+
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++static bool GetFilenameFromHandle(HANDLE hFile, wchar_t *pszFilename)
++{
++  BOOL bRC = FALSE;
++
++  // Get the file size.
++  DWORD dwFileSizeHi = 0;
++  DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
++
++  // Create a file mapping object.
++  HANDLE hFileMap = CreateFileMappingW(hFile,
++                                      NULL,
++                                      PAGE_READONLY,
++                                      0,
++                                      dwFileSizeLo,
++                                      NULL);
++
++  if (hFileMap)
++  {
++    // Create a file mapping to get the file name.
++    void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
++
++    if (pMem)
++    {
++      if (GetMappedFileNameW(GetCurrentProcess(),
++                            pMem,
++                            pszFilename,
++                            MAX_PATH))
++      {
++        // At this point pszFilename already contains the name.
++        // But the drive name is not written in usual MS DOS fomat, actually,
++        // it is a device name.
++        // So below is an attempt to translate it to drive-letter
++        wchar_t szTemp[512];
++        *szTemp = 0;
++
++        auto uMaxLenDest = wcslen(pszFilename);
++
++        if (GetLogicalDriveStringsW(sizeof (szTemp) - 1, szTemp))
++        {
++          wchar_t szName[MAX_PATH];
++          wchar_t szDrive[3] = L" :";
++          BOOL bFound = FALSE;
++          wchar_t* p = szTemp;
++
++          do
++          {
++            // Copy the drive letter into the template string,
++            // removing the backslash.
++            *szDrive = *p;
++
++            // Look up each device name.
++            if (QueryDosDeviceW(szDrive, szName,
++                               sizeof (szName)))
++            {
++              UINT uNameLen = wcslen(szName);
++
++              //If greater than file name length, it's not a match.
++              if (uNameLen < uMaxLenDest)
++              {
++                bFound = wcsnicmp (pszFilename, szName,
++                                  uNameLen) == 0;
++
++                if (bFound)
++                {
++                  //Reconstruct pszFilename using szTemp as scratch,
++                  // and replace device path with our DOS path.
++                  wchar_t szTempFile[MAX_PATH];
++                  wsprintfW(szTempFile,
++                           L"%s%s",
++                           szDrive,
++                           pszFilename+uNameLen);
++                  wcsncpy(pszFilename, szTempFile, uMaxLenDest);
++                }
++              }
++            }
++            // Go to the next NULL character.
++            while (*p++);
++
++          }
++          while (!bFound && *p); // at the end of the string
++        }
++      }
++      bRC = TRUE;
++      UnmapViewOfFile(pMem);
++    }
++    CloseHandle(hFileMap);
++  }
++  return bRC;
++}
++#endif
++
+ inline wchar_t* realpath(const wchar_t* path, [[maybe_unused]] wchar_t* resolved_name) {
+   // Only expected to be used with us allocating the buffer.
+   _LIBCPP_ASSERT_INTERNAL(resolved_name == nullptr, "Windows realpath() assumes a null resolved_name");
+@@ -339,6 +485,7 @@
+   if (!h) {
+     return nullptr;
+   }
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   size_t buff_size = MAX_PATH + 10;
+   std::unique_ptr<wchar_t, decltype(&::free)> buff(static_cast<wchar_t*>(malloc(buff_size * sizeof(wchar_t))), &::free);
+   DWORD retval = GetFinalPathNameByHandleW(h, buff.get(), buff_size, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+@@ -360,12 +507,31 @@
+     }
+   }
+   return buff.release();
++#else
++  size_t buff_size = MAX_PATH + 10;
++  wchar_t filename[buff_size];
++  wchar_t outPath[2048];
++  wchar_t* Data = outPath;
++  if (!GetFilenameFromHandle(h, filename))
++  {
++    return nullptr;
++  }
++  std::unique_ptr<wchar_t, decltype(&::free)> buff(static_cast<wchar_t*>(malloc(buff_size * sizeof(wchar_t))), &::free);
++  auto Size = wcslen(filename);
++  if (Size >= 4 && ::memcmp(Data, L"\\\\?\\", 8) == 0) {
++    Data += 4;
++    Size -= 4;
++  }
++  ::memcpy(buff.get(), Data, Size * sizeof(wchar_t));
++  return buff.release();
++#endif
+ }
+
+ #  define AT_FDCWD -1
+ #  define AT_SYMLINK_NOFOLLOW 1
+ using ModeT = int;
+
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ inline int fchmod_handle(HANDLE h, int perms) {
+   FILE_BASIC_INFO basic;
+   if (!GetFileInformationByHandleEx(h, FileBasicInfo, &basic, sizeof(basic)))
+@@ -378,6 +544,7 @@
+     return -1;
+   return 0;
+ }
++#endif
+
+ inline int fchmodat(int /*fd*/, const wchar_t* path, int perms, int flag) {
+   DWORD attributes = GetFileAttributesW(path);
+@@ -391,7 +558,13 @@
+     detail::WinHandle h(path, FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES, 0);
+     if (!h)
+       return -1;
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+     return fchmod_handle(h, perms);
++#else
++    wchar_t filename[MAX_PATH];
++    GetFilenameFromHandle(h, filename);
++    return _wchmod(filename, perms);
++#endif
+   } else {
+     // For a non-symlink, or if operating on the symlink itself instead of
+     // its target, we can use SetFileAttributesW, saving a few calls.
+@@ -405,9 +578,16 @@
+   return 0;
+ }
+
++
+ inline int fchmod(int fd, int perms) {
+   HANDLE h = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   return fchmod_handle(h, perms);
++#else
++  wchar_t filename[MAX_PATH];
++  GetFilenameFromHandle(h, filename);
++  return _wchmod(filename, perms);
++#endif
+ }
+
+ #  define MAX_SYMLINK_SIZE MAXIMUM_REPARSE_DATA_BUFFER_SIZE
+Index: libcxx/src/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/CMakeLists.txt b/libcxx/src/CMakeLists.txt
+--- a/libcxx/src/CMakeLists.txt	(revision Staged)
++++ b/libcxx/src/CMakeLists.txt	(date 1768003633097)
+@@ -279,6 +279,11 @@
+ )
+ cxx_add_common_build_flags(cxx_static)
+
++if (MINGW)
++  target_link_libraries(cxx_static PUBLIC psapi)
++  target_link_libraries(cxx_shared PUBLIC psapi)
++endif ()
++
+ if (LIBCXX_HERMETIC_STATIC_LIBRARY)
+   # If the hermetic library doesn't define the operator new/delete functions
+   # then its code shouldn't declare them with hidden visibility.  They might
+Index: libunwind/src/RWMutex.hpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libunwind/src/RWMutex.hpp b/libunwind/src/RWMutex.hpp
+--- a/libunwind/src/RWMutex.hpp	(revision Staged)
++++ b/libunwind/src/RWMutex.hpp	(date 1768042139378)
+@@ -13,7 +13,7 @@
+ #ifndef __RWMUTEX_HPP__
+ #define __RWMUTEX_HPP__
+
+-#if defined(_WIN32)
++#if defined(_WIN32) && !defined(_LIBUNWIND_LINK_PTHREAD_LIB)
+ #include <windows.h>
+ #elif !defined(_LIBUNWIND_HAS_NO_THREADS)
+ #include <pthread.h>
+@@ -34,7 +34,7 @@
+   bool unlock() { return true; }
+ };
+
+-#elif defined(_WIN32)
++#elif defined(_WIN32) && !defined(_LIBUNWIND_LINK_PTHREAD_LIB)
+
+ class _LIBUNWIND_HIDDEN RWMutex {
+ public:
+Index: llvm/include/llvm/Support/Windows/WindowsSupport.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/include/llvm/Support/Windows/WindowsSupport.h b/llvm/include/llvm/Support/Windows/WindowsSupport.h
+--- a/llvm/include/llvm/Support/Windows/WindowsSupport.h	(revision Staged)
++++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h	(date 1767991709435)
+@@ -25,7 +25,7 @@
+ #undef _WIN32_WINNT
+
+ // Require at least Windows 7 API.
+-#define _WIN32_WINNT 0x0601
++#define _WIN32_WINNT 0x0501
+ #define WIN32_LEAN_AND_MEAN
+ #ifndef NOMINMAX
+ #define NOMINMAX
+Index: llvm/lib/Support/Windows/Path.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.inc
+--- a/llvm/lib/Support/Windows/Path.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Path.inc	(date 1767991709455)
+@@ -27,6 +27,9 @@
+ #include "llvm/Support/Windows/WindowsSupport.h"
+ #include <shellapi.h>
+ #include <shlobj.h>
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++#include <psapi.h>
++#endif
+
+ #undef max
+
+@@ -362,9 +365,102 @@
+   return is_local_internal(WidePath, result);
+ }
+
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++static bool GetFilenameFromHandle(HANDLE hFile, wchar_t *pszFilename)
++{
++  BOOL bRC = FALSE;
++
++  // Get the file size.
++  DWORD dwFileSizeHi = 0;
++  DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
++
++  // Create a file mapping object.
++  HANDLE hFileMap = CreateFileMappingW(hFile,
++                                      NULL,
++                                      PAGE_READONLY,
++                                      0,
++                                      dwFileSizeLo,
++                                      NULL);
++
++  if (hFileMap)
++  {
++    // Create a file mapping to get the file name.
++    void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
++
++    if (pMem)
++    {
++      if (GetMappedFileNameW(GetCurrentProcess(),
++                            pMem,
++                            pszFilename,
++                            MAX_PATH))
++      {
++        // At this point pszFilename already contains the name.
++        // But the drive name is not written in usual MS DOS fomat, actually,
++        // it is a device name.
++        // So below is an attempt to translate it to drive-letter
++        wchar_t szTemp[512];
++        *szTemp = 0;
++
++        auto uMaxLenDest = wcslen(pszFilename);
++
++        if (GetLogicalDriveStringsW(sizeof (szTemp) - 1, szTemp))
++        {
++          wchar_t szName[MAX_PATH];
++          wchar_t szDrive[3] = L" :";
++          BOOL bFound = FALSE;
++          wchar_t* p = szTemp;
++
++          do
++          {
++            // Copy the drive letter into the template string,
++            // removing the backslash.
++            *szDrive = *p;
++
++            // Look up each device name.
++            if (QueryDosDeviceW(szDrive, szName,
++                               sizeof (szName)))
++            {
++              UINT uNameLen = wcslen(szName);
++
++              //If greater than file name length, it's not a match.
++              if (uNameLen < uMaxLenDest)
++              {
++                bFound = wcsnicmp (pszFilename, szName,
++                                  uNameLen) == 0;
++
++                if (bFound)
++                {
++                  //Reconstruct pszFilename using szTemp as scratch,
++                  // and replace device path with our DOS path.
++                  wchar_t szTempFile[MAX_PATH];
++                  wsprintfW(szTempFile,
++                           L"%s%s",
++                           szDrive,
++                           pszFilename+uNameLen);
++                  wcsncpy(pszFilename, szTempFile, uMaxLenDest);
++                }
++              }
++            }
++            // Go to the next NULL character.
++            while (*p++);
++
++          }
++          while (!bFound && *p); // at the end of the string
++        }
++      }
++      bRC = TRUE;
++      UnmapViewOfFile(pMem);
++    }
++    CloseHandle(hFileMap);
++  }
++  return bRC;
++}
++#endif
++
+ static std::error_code realPathFromHandle(HANDLE H,
+                                           SmallVectorImpl<wchar_t> &Buffer,
+                                           DWORD flags = VOLUME_NAME_DOS) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   Buffer.resize_for_overwrite(Buffer.capacity());
+   DWORD CountChars = ::GetFinalPathNameByHandleW(
+       H, Buffer.begin(), Buffer.capacity(), FILE_NAME_NORMALIZED | flags);
+@@ -378,11 +474,20 @@
+   Buffer.truncate(CountChars);
+   if (CountChars == 0)
+     return mapWindowsError(GetLastError());
++#else
++  wchar_t Buff[MAX_PATH];
++  if (!GetFilenameFromHandle(H, Buff)) {
++    return std::error_code();
++  }
++  auto Size = wcslen(Buff);
++  Buffer.resize_for_overwrite(Size);
++#endif
+   return std::error_code();
+ }
+
+ static std::error_code realPathFromHandle(HANDLE H,
+                                           SmallVectorImpl<char> &RealPath) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   RealPath.clear();
+   SmallVector<wchar_t, MAX_PATH> Buffer;
+   if (std::error_code EC = realPathFromHandle(H, Buffer))
+@@ -408,6 +513,18 @@
+     return EC;
+
+   llvm::sys::path::make_preferred(RealPath);
++#else
++  wchar_t Buff[MAX_PATH];
++  if (!GetFilenameFromHandle(H, Buff)) {
++    return std::error_code();
++  }
++  auto Size = wcslen(Buff);
++  // Convert the result from UTF-16 to UTF-8.
++  if (std::error_code EC = UTF16ToUTF8(Buff, Size, RealPath))
++    return EC;
++
++  llvm::sys::path::make_preferred(RealPath);
++#endif
+   return std::error_code();
+ }
+
+@@ -422,6 +539,7 @@
+ }
+
+ static std::error_code setDeleteDisposition(HANDLE Handle, bool Delete) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   // Clear the FILE_DISPOSITION_INFO flag first, before checking if it's a
+   // network file. On Windows 7 the function realPathFromHandle() below fails
+   // if the FILE_DISPOSITION_INFO flag was already set to 'DeleteFile = true' by
+@@ -455,10 +573,14 @@
+                                   sizeof(Disposition)))
+     return mapWindowsError(::GetLastError());
+   return std::error_code();
++#else
++  return errc::not_supported;
++#endif
+ }
+
+ static std::error_code rename_internal(HANDLE FromHandle, const Twine &To,
+                                        bool ReplaceIfExists) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   SmallVector<wchar_t, 0> ToWide;
+   if (auto EC = widenPath(To, ToWide))
+     return EC;
+@@ -482,6 +604,16 @@
+   }
+
+   return std::error_code();
++#else
++  wchar_t filename[MAX_PATH];
++  GetFilenameFromHandle(FromHandle, filename);
++  SmallVector<wchar_t, 0> ToWide;
++  if (auto EC = widenPath(To, ToWide))
++    return EC;
++  if (!MoveFileExW(filename, ToWide.begin(), ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0))
++    return mapWindowsError(GetLastError());
++  return std::error_code();
++#endif
+ }
+
+ static std::error_code rename_handle(HANDLE FromHandle, const Twine &To) {
+@@ -1488,6 +1620,7 @@
+ } // end namespace fs
+
+ namespace path {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ static bool getKnownFolderPath(KNOWNFOLDERID folderId,
+                                SmallVectorImpl<char> &result) {
+   wchar_t *path = nullptr;
+@@ -1500,19 +1633,42 @@
+     llvm::sys::path::make_preferred(result);
+   return ok;
+ }
++#else
++static bool getKnownFolderPath(int folderId, SmallVectorImpl<char> &result) {
++  wchar_t Path[MAX_PATH];
++  if (::SHGetFolderPathW(0, folderId | CSIDL_FLAG_CREATE, 0,
++                         /*SHGFP_TYPE_CURRENT*/ 0, Path) != S_OK)
++    return false;
++  if (UTF16ToUTF8(Path, ::wcslen(Path), result))
++    return false;
++  return true;
++}
++#endif
+
+ bool home_directory(SmallVectorImpl<char> &result) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   return getKnownFolderPath(FOLDERID_Profile, result);
++#else
++  return getKnownFolderPath(CSIDL_PROFILE, result);
++#endif
+ }
+
+ bool user_config_directory(SmallVectorImpl<char> &result) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   // Either local or roaming appdata may be suitable in some cases, depending
+   // on the data. Local is more conservative, Roaming may not always be correct.
+   return getKnownFolderPath(FOLDERID_LocalAppData, result);
++#else
++  return getKnownFolderPath(CSIDL_LOCAL_APPDATA, result);
++#endif
+ }
+
+ bool cache_directory(SmallVectorImpl<char> &result) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   return getKnownFolderPath(FOLDERID_LocalAppData, result);
++#else
++return getKnownFolderPath(CSIDL_LOCAL_APPDATA, result);
++#endif
+ }
+
+ static bool getTempDirEnvVar(const wchar_t *Var, SmallVectorImpl<char> &Res) {
+Index: llvm/lib/Support/Windows/Threading.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/Threading.inc
+--- a/llvm/lib/Support/Windows/Threading.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Threading.inc	(date 1767991709472)
+@@ -138,6 +138,7 @@
+
+ template <typename F>
+ static bool IterateProcInfo(LOGICAL_PROCESSOR_RELATIONSHIP Relationship, F Fn) {
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+   DWORD Len = 0;
+   BOOL R = ::GetLogicalProcessorInformationEx(Relationship, NULL, &Len);
+   if (R || GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+@@ -158,9 +159,13 @@
+   }
+   free(Info);
+   return true;
++#else
++  return false;
++#endif
+ }
+
+ static std::optional<std::vector<USHORT>> getActiveGroups() {
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+   USHORT Count = 0;
+   if (::GetProcessGroupAffinity(GetCurrentProcess(), &Count, nullptr))
+     return std::nullopt;
+@@ -174,6 +179,9 @@
+     return std::nullopt;
+
+   return Groups;
++#else
++  return std::nullopt;
++#endif
+ }
+
+ static ArrayRef<ProcessorGroup> getProcessorGroups() {
+@@ -295,7 +303,7 @@
+ // Assign the current thread to a more appropriate CPU socket or CPU group
+ void llvm::ThreadPoolStrategy::apply_thread_strategy(
+     unsigned ThreadPoolNum) const {
+-
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+   // After Windows 11 and Windows Server 2022, let the OS do the scheduling,
+   // since a process automatically gains access to all processor groups.
+   if (llvm::RunningWindows11OrGreater())
+@@ -309,9 +317,35 @@
+   Affinity.Group = Groups[*Socket].ID;
+   Affinity.Mask = Groups[*Socket].Affinity;
+   SetThreadGroupAffinity(GetCurrentThread(), &Affinity, nullptr);
++#endif
+ }
++
++#if _WIN32_WINNT < _WIN32_WINNT_WIN7
++DWORD GetThreadAffinityMask(HANDLE thread)
++{
++  DWORD Mask = 1;
++  DWORD Old = 0;
++
++  // try every CPU one by one until one works or none are left
++  while(Mask)
++  {
++    Old = SetThreadAffinityMask(thread, Mask);
++    if(Old)
++    {   // this one worked
++      SetThreadAffinityMask(thread, Old);
++      return Old;
++    }
++    if (GetLastError() != ERROR_INVALID_PARAMETER)
++      return 0;
++    Mask <<= 1;
++  }
++
++  return 0;
++}
++#endif
+
+ llvm::BitVector llvm::get_thread_affinity_mask() {
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+   GROUP_AFFINITY Affinity{};
+   GetThreadGroupAffinity(GetCurrentThread(), &Affinity);
+
+@@ -331,6 +365,16 @@
+       V.set(StartOffset + I);
+   }
+   return V;
++#else
++  DWORD_PTR Affinity = GetThreadAffinityMask(GetCurrentThread());
++  llvm::BitVector V;
++  V.resize(sizeof(DWORD));
++  for (unsigned I = 0; I < sizeof(DWORD); ++I) {
++    if ((Affinity >> I) & 1)
++      V.set(I);
++  }
++  return V;
++#endif
+ }
+
+ unsigned llvm::get_cpus() { return getProcessorGroups().size(); }
+Index: llvm/lib/Support/raw_socket_stream.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/raw_socket_stream.cpp b/llvm/lib/Support/raw_socket_stream.cpp
+--- a/llvm/lib/Support/raw_socket_stream.cpp	(revision Staged)
++++ b/llvm/lib/Support/raw_socket_stream.cpp	(date 1767991709490)
+@@ -208,6 +208,7 @@
+ manageTimeout(const std::chrono::milliseconds &Timeout,
+               const std::function<int()> &getActiveFD,
+               const std::optional<int> &CancelFD = std::nullopt) {
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   struct pollfd FD[2];
+   FD[0].events = POLLIN;
+ #ifdef _WIN32
+@@ -265,6 +266,7 @@
+     return std::make_error_code(std::errc::timed_out);
+   if (FD[0].revents & POLLNVAL)
+     return std::make_error_code(std::errc::bad_file_descriptor);
++#endif
+   return std::error_code();
+ }
+
+Index: llvm/tools/llvm-ar/llvm-ar.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/tools/llvm-ar/llvm-ar.cpp b/llvm/tools/llvm-ar/llvm-ar.cpp
+--- a/llvm/tools/llvm-ar/llvm-ar.cpp	(revision Staged)
++++ b/llvm/tools/llvm-ar/llvm-ar.cpp	(date 1767991709517)
+@@ -562,12 +562,17 @@
+ // CompareStringOrdinal compares two Unicode strings for
+ // binary equivalence and allows for case insensitivity.
+ #ifdef _WIN32
++
+   SmallVector<wchar_t, 128> WPath1, WPath2;
+   failIfError(sys::windows::UTF8ToUTF16(normalizePath(Path1), WPath1));
+   failIfError(sys::windows::UTF8ToUTF16(normalizePath(Path2), WPath2));
+-
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+   return CompareStringOrdinal(WPath1.data(), WPath1.size(), WPath2.data(),
+                               WPath2.size(), true) == CSTR_EQUAL;
++#else
++  return CompareStringW(LOCALE_INVARIANT,0, WPath1.data(), WPath1.size(), WPath2.data(),
++                              WPath2.size()) == CSTR_EQUAL;
++#endif
+ #else
+   return normalizePath(Path1) == normalizePath(Path2);
+ #endif

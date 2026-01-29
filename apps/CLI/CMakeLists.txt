@@ -11,8 +11,25 @@ set(ELPIDA_CLI_SOURCES
         CliMessageService.cpp
         DefaultOutputFormatter.cpp)
 
+if (MSYS OR MINGW OR MSVC)
+    generate_product_version(
+            ELPIDA_CLI_SOURCES
+            NAME ${PROJECT_NAME}
+            ICON ${ELPIDA_ROOT_DIRECTORY}/images/Elpida-icon.ico
+            VERSION_MAJOR ${ELPIDA_VERSION_MAJOR}
+            VERSION_MINOR ${ELPIDA_VERSION_MINOR}
+            VERSION_PATCH ${ELPIDA_VERSION_REVISION}
+            VERSION_REVISION ${ELPIDA_VERSION_BUILD}
+            COMPANY_NAME ${ELPIDA_COMPANY_NAME}
+            FILE_DESCRIPTION "Elpida CLI"
+    )
+endif()
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+
 add_executable(elpida-cli ${ELPIDA_CLI_SOURCES})
 
-target_link_libraries(elpida-cli PRIVATE elpida-core elpida-platform elpida-application)
+target_link_libraries(elpida-cli PUBLIC elpida-core elpida-platform elpida-application)
 
 install(TARGETS elpida-cli RUNTIME DESTINATION bin)

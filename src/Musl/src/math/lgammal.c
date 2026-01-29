@@ -89,9 +89,9 @@
 #include "libm.h"
 
 #if LDBL_MANT_DIG == 53 && LDBL_MAX_EXP == 1024
-long double __lgammal_r(long double x, int *sg)
+long double _MuslLite_lgammal_r(long double x, int *sg)
 {
-	return __lgamma_r(x, sg);
+	return _MuslLite_lgamma_r(x, sg);
 }
 #elif LDBL_MANT_DIG == 64 && LDBL_MAX_EXP == 16384
 static const long double
@@ -213,14 +213,14 @@ static long double sin_pi(long double x)
 
 	switch (n) {
 	default: /* case 4: */
-	case 0: return __sinl(x, 0.0, 0);
-	case 1: return __cosl(x, 0.0);
-	case 2: return __sinl(-x, 0.0, 0);
-	case 3: return -__cosl(x, 0.0);
+	case 0: return _MuslLite_sinl(x, 0.0, 0);
+	case 1: return _MuslLite_cosl(x, 0.0);
+	case 2: return _MuslLite_sinl(-x, 0.0, 0);
+	case 3: return -_MuslLite_cosl(x, 0.0);
 	}
 }
 
-long double __lgammal_r(long double x, int *sg) {
+long double _MuslLite_lgammal_r(long double x, int *sg) {
 	long double t, y, z, nadj, p, p1, p2, q, r, w;
 	union ldshape u = {x};
 	uint32_t ix = (u.i.se & 0x7fffU)<<16 | u.i.m>>48;
@@ -339,15 +339,15 @@ long double __lgammal_r(long double x, int *sg) {
 }
 #elif LDBL_MANT_DIG == 113 && LDBL_MAX_EXP == 16384
 // TODO: broken implementation to make things compile
-long double __lgammal_r(long double x, int *sg)
+long double _MuslLite_lgammal_r(long double x, int *sg)
 {
-	return __lgamma_r(x, sg);
+	return _MuslLite_lgamma_r(x, sg);
 }
 #endif
 
 long double lgammal(long double x)
 {
-	return __lgammal_r(x, &__signgam);
+	return _MuslLite_lgammal_r(x, &_MuslLite_signgam);
 }
 
-weak_alias(__lgammal_r, lgammal_r);
+weak_alias(_MuslLite_lgammal_r, lgammal_r);

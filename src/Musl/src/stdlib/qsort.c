@@ -155,7 +155,7 @@ static void trinkle(unsigned char *head, size_t width, cmpfun cmp, void *arg, si
 	}
 }
 
-void __qsort_r(void *base, size_t nel, size_t width, cmpfun cmp, void *arg)
+void _MuslLite_qsort_r(void *base, size_t nel, size_t width, cmpfun cmp, void *arg)
 {
 	size_t lp[12*sizeof(size_t)];
 	size_t i, size = width * nel;
@@ -218,4 +218,4 @@ void __qsort_r(void *base, size_t nel, size_t width, cmpfun cmp, void *arg)
 	}
 }
 
-weak_alias(__qsort_r, qsort_r);
+weak_alias(_MuslLite_qsort_r, qsort_r);

@@ -21,21 +21,21 @@ long double sinl(long double x)
 			FORCE_EVAL(u.i.se == 0 ? x*0x1p-120f : x+0x1p120f);
 			return x;
 		}
-		return __sinl(x, 0.0, 0);
+		return _MuslLite_sinl(x, 0.0, 0);
 	}
-	n = __rem_pio2l(x, y);
+	n = _MuslLite_rem_pio2l(x, y);
 	hi = y[0];
 	lo = y[1];
 	switch (n & 3) {
 	case 0:
-		return __sinl(hi, lo, 1);
+		return _MuslLite_sinl(hi, lo, 1);
 	case 1:
-		return __cosl(hi, lo);
+		return _MuslLite_cosl(hi, lo);
 	case 2:
-		return -__sinl(hi, lo, 1);
+		return -_MuslLite_sinl(hi, lo, 1);
 	case 3:
 	default:
-		return -__cosl(hi, lo);
+		return -_MuslLite_cosl(hi, lo);
 	}
 }
 #endif

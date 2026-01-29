@@ -1,0 +1,114 @@
+# MIT License
+#
+# Copyright (c) 2015-2024 The ViaDuck Project
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
+# heavily modified code from The ViaDuck Project
+
+include(ProcessorCount)
+ProcessorCount(NUM_JOBS)
+include(ExternalProject)
+
+set(OPENSSL_BUILD_VERSION 3.6.0)
+set(OPENSSL_BUILD_HASH b6a5f44b7eb69e3fa35dbf15524405b44837a481d43d81daddde3ff21fcbb8e9)
+set(OPENSSL_MODULES "no-shared no-asm no-engine no-hw no-cast no-md2 no-md4 no-mdc2 no-rc4 no-rc5 no-engine no-idea no-mdc2 no-rc5 no-camellia no-ssl3 no-heartbeats no-gost no-deprecated no-capieng no-comp no-dtls no-psk no-srp no-dso no-dsa no-rc2 no-des no-apps")
+set(OPENSSL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/openssl-install)
+
+set(OPENSSL_ENV_VARS "")
+
+if (CMAKE_SYSTEM_NAME STREQUAL Linux)
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} linux-x86_64")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL i686 OR CMAKE_SYSTEM_PROCESSOR STREQUAL i586 OR CMAKE_SYSTEM_PROCESSOR STREQUAL i386)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} linux-x86")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} linux-aarch64")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL arm)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} linux-generic32")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL riscv64)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} linux-generic64")
+    endif ()
+elseif (CMAKE_SYSTEM_NAME STREQUAL Android)
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} android-x86_64")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL i686 OR CMAKE_SYSTEM_PROCESSOR STREQUAL i586 OR CMAKE_SYSTEM_PROCESSOR STREQUAL i386)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} android-x86")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} android-arm64")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL arm)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} android-arm")
+    endif ()
+    set(OPENSSL_ENV_VARS "PATH=${ANDROID_TOOLCHAIN_ROOT}/bin:$PATH ANDROID_NDK_ROOT=${CMAKE_ANDROID_NDK}")
+    set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} -D__ANDROID_API__=${ANDROID_NATIVE_API_LEVEL}")
+elseif (CMAKE_SYSTEM_NAME STREQUAL Windows)
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64 OR CMAKE_SYSTEM_PROCESSOR STREQUAL AMD64)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} mingw64")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL i686 OR CMAKE_SYSTEM_PROCESSOR STREQUAL i586 OR CMAKE_SYSTEM_PROCESSOR STREQUAL i386)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} mingw")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64 OR CMAKE_SYSTEM_PROCESSOR STREQUAL ARM64)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} mingwarm64")
+    elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL arm OR CMAKE_SYSTEM_PROCESSOR STREQUAL armv7)
+        set(OPENSSL_ADDITIONAL_FLAGS "${OPENSSL_ADDITIONAL_FLAGS} mingw")
+    endif ()
+endif ()
+
+set(OPENSSL_INCLUDE_DIR "${OPENSSL_PREFIX}/include")
+file(MAKE_DIRECTORY ${OPENSSL_INCLUDE_DIR})
+file(MAKE_DIRECTORY ${OPENSSL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+
+foreach(OPENSSL_BASE_NAME crypto ssl)
+    set(OPENSSL_STATIC_LIB ${OPENSSL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${OPENSSL_BASE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+    add_library(${OPENSSL_BASE_NAME} STATIC IMPORTED GLOBAL)
+    set_property(TARGET ${OPENSSL_BASE_NAME} PROPERTY IMPORTED_LOCATION ${OPENSSL_STATIC_LIB})
+
+    list(APPEND OPENSSL_BYPRODUCTS ${OPENSSL_STATIC_LIB})
+endforeach()
+
+set(OPENSSL_SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/src)
+set(OPENSSL_CONFIG_FILE ${CMAKE_CURRENT_BINARY_DIR}/openssl.config.sh)
+generate_environment_file(${OPENSSL_CONFIG_FILE} "${OPENSSL_ENV_VARS} ${OPENSSL_SRC_DIR}/Configure --prefix=${OPENSSL_PREFIX} --libdir=${CMAKE_INSTALL_LIBDIR} --openssldir=${OPENSSL_PREFIX} ${OPENSSL_MODULES} ${OPENSSL_ADDITIONAL_FLAGS}")
+
+find_program(MAKE_PROGRAM make REQUIRED)
+find_program(SH_EXECUTABLE NAMES sh REQUIRED)
+
+set(OPENSSL_BUILD_FILE ${CMAKE_CURRENT_BINARY_DIR}/openssl.build.sh)
+generate_environment_file(${OPENSSL_BUILD_FILE} "${OPENSSL_ENV_VARS} ${MAKE_PROGRAM} -j ${NUM_JOBS}")
+
+ExternalProject_Add(openssl
+        URL https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_BUILD_VERSION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
+        ${OPENSSL_CHECK_HASH}
+        SOURCE_DIR ${OPENSSL_SRC_DIR}
+        CONFIGURE_COMMAND ${SH_EXECUTABLE} ${OPENSSL_CONFIG_FILE}
+
+        BUILD_COMMAND ${SH_EXECUTABLE} ${OPENSSL_BUILD_FILE}
+        BUILD_BYPRODUCTS ${OPENSSL_BYPRODUCTS}
+
+        INSTALL_COMMAND ${MAKE_PROGRAM} install_sw
+)
+
+add_dependencies(ssl openssl)
+add_dependencies(crypto openssl)
+
+# set include locations
+target_include_directories(ssl BEFORE INTERFACE ${OPENSSL_INCLUDE_DIR})
+target_include_directories(crypto BEFORE INTERFACE ${OPENSSL_INCLUDE_DIR})
+
