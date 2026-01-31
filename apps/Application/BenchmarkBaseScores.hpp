@@ -170,7 +170,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "FFT",
+                    "FFT calculation in place",
                     {
                         "a8946ba5-049f-4626-9b1a-d5d31211cea1",
                         17800925.881694,
@@ -192,7 +192,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "Matrix Inverse",
+                    "Matrix inverse (4x4)",
                     {
                         "7930adf1-fd99-420a-9a39-b4e147f1bdf2",
                         33158697.548213,
@@ -203,7 +203,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "Matrix Multiplication",
+                    "Matrix multiplication (32x32)",
                     {
                         "56834364-d449-4d3e-bc50-197c697c6c6f",
                         73369557.735944,
@@ -214,7 +214,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "NBody",
+                    "NBody Simulation",
                     {
                         "9196f126-391f-452b-9ca0-0dd39d7f70ae",
                         19150991.914668,
@@ -225,7 +225,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "Ray Tracing",
+                    "3D Ray Tracing",
                     {
                         "ad8da8ff-a1f3-4a21-9234-43b6aff8eea4",
                         895832.576202,
@@ -236,7 +236,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "Regex",
+                    "Regex (Boost)",
                     {
                         "bd0d8849-b988-40ac-9961-5e3528327da3",
                         31935984.281190,
@@ -269,7 +269,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "SVG Rasterization",
+                    "Svg Rasterization",
                     {
                         "e7ab603e-6c05-428b-9851-1e0a3729e022",
                         169822.554997,
@@ -280,7 +280,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "Xml Parsing",
+                    "XML Parsing",
                     {
                         "70b7048f-face-4976-b68a-d8cd1004ad33",
                         42710400.615093,
@@ -291,7 +291,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "Zlib Compression",
+                    "Zlib compression",
                     {
                         "895ff7fd-257d-411f-a8a6-de547b0f6485",
                         21185472.177368,
@@ -302,7 +302,7 @@ namespace Elpida::Application
                     }
                 },
                 {
-                    "Zlib Decompression",
+                    "Zlib decompression",
                     {
                         "d40517b1-b39f-4b82-8dc4-b440dd11da1b",
                         41985061.558662,
