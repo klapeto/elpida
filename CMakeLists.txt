@@ -25,7 +25,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin")
 
     # if we link with musl, allow this
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
+    # -lgcc is needed for i386 soft float routines
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgcc -Wl,--allow-multiple-definition")
 else ()
     message(FATAL_ERROR "'${CMAKE_CXX_COMPILER_ID}' compiler is currently unsupported. Elpida requires specific compiler functionality that currently only GCC/Clang provide. If you think another compiler can be supported, please let us know in the issues page.")
 endif ()

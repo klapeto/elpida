@@ -35,6 +35,16 @@ docker-image:linux:x86_64:
     - docker-base-image
   extends: .docker-image
 
+docker-image:linux:i686:
+  tags:
+    - amd64
+  timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: i686-linux-gnu
+  dependencies:
+    - docker-base-image
+  extends: .docker-image
+
 docker-image:linux:aarch64:
   tags:
     - amd64
@@ -45,7 +55,7 @@ docker-image:linux:aarch64:
     - docker-base-image
   extends: .docker-image
 
-docker-image:linux:arm:
+docker-image:linux:armhf:
   tags:
     - amd64
   timeout: 5h 30m

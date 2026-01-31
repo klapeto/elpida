@@ -52,11 +52,18 @@ deploy:linux:x86_64:
     - package:linux:x86_64
   extends: .deploy:linux
 
-deploy:linux:arm:
+deploy:linux:i686:
+  variables:
+    TARGET_ARCH: i686
+  dependencies:
+    - package:linux:i686
+  extends: .deploy:linux
+
+deploy:linux:armhf:
   variables:
     TARGET_ARCH: armhf
   dependencies:
-    - package:linux:arm
+    - package:linux:armhf
   extends: .deploy:linux
 
 deploy:linux:aarch64:

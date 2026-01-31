@@ -35,11 +35,18 @@ build:linux:x86_64:
     - docker-image:linux:x86_64
   extends: .build
 
-build:linux:arm:
+build:linux:i686:
+  variables:
+    TARGET_TRIPLE: i686-linux-gnu
+  dependencies:
+    - docker-image:linux:i686
+  extends: .build
+
+build:linux:armhf:
   variables:
     TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
-    - docker-image:linux:arm
+    - docker-image:linux:armhf
   extends: .build
 
 build:linux:aarch64:
