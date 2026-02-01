@@ -19,7 +19,7 @@
 # exit if any command fails
 set -e
 
-if [ $# -ne 2 ]; then
+if [ ! $# -ge 2 ]; then
     echo "Usage $0 target-triple sysroot-target-dir"
     exit 1;
 fi
