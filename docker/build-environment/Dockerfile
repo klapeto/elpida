@@ -44,7 +44,7 @@ RUN if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ]; then \
     fi
 
 # cleanup
-RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin
+RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin xutils-dev
 RUN apt-get -y autoremove && apt-get autoclean
 
 CMD ["/bin/bash"]

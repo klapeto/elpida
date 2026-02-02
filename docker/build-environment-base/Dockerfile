@@ -43,7 +43,6 @@ RUN mkdir -p /opt/toolchains
 # Build LLVM cross toolchain
 RUN git clone -b unified-toolchain https://github.com/klapeto/llvm-mingw.git
 WORKDIR /tmp/llvm-mingw
-RUN git pull
 RUN LLVM_VERSION=llvmorg-21.1.0 ./build-llvm.sh /opt/toolchains/llvm
 RUN DEB_DISTRIBUTION=focal TARGET_TRIPLES="x86_64-linux-gnu" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt
 

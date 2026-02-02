@@ -1,4 +1,4 @@
-.docker-image:
+.Build Docker Image:
   image: docker:latest
   stage: build-docker-images
   tags:
@@ -20,87 +20,89 @@
           - ci/general/docker-image.yml
           - scripts/docker/build-base.sh
           - scripts/docker/build-hwloc.sh
+          - scripts/docker/build-autotools-based.sh
+          - scripts/docker/build-linux-specific.sh
           - scripts/docker/build-llvm.sh
           - scripts/docker/build-qt.sh
           - scripts/docker/generate-sysroot.sh
           - scripts/docker/packages
 
-docker-image:linux:x86_64:
+Build Docker Image (x86_64-linux-gnu):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
-    - docker-base-image
-  extends: .docker-image
+    - Build Docker Image (Base)
+  extends: .Build Docker Image
 
-docker-image:linux:i686:
+Build Docker Image (i686-linux-gnu):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: i686-linux-gnu
   dependencies:
-    - docker-base-image
-  extends: .docker-image
+    - Build Docker Image (Base)
+  extends: .Build Docker Image
 
-docker-image:linux:aarch64:
+Build Docker Image (aarch64-linux-gnu):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
-    - docker-base-image
-  extends: .docker-image
+    - Build Docker Image (Base)
+  extends: .Build Docker Image
 
-docker-image:linux:armhf:
+Build Docker Image (arm-linux-gnueabihf):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
-    - docker-base-image
-  extends: .docker-image
+    - Build Docker Image (Base)
+  extends: .Build Docker Image
 
-docker-image:linux:riscv64:
+Build Docker Image (riscv64-linux-gnu):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: riscv64-linux-gnu
   dependencies:
-    - docker-base-image
-  extends: .docker-image
+    - Build Docker Image (Base)
+  extends: .Build Docker Image
 
-docker-image:windows:aarch64:
+Build Docker Image (aarch64-w64-mingw32):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: aarch64-w64-mingw32
   dependencies:
-    - docker-base-image
-  extends: .docker-image
+    - Build Docker Image (Base)
+  extends: .Build Docker Image
 
-docker-image:windows:i686:
+Build Docker Image (i686-w64-mingw32):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: i686-w64-mingw32
   dependencies:
-    - docker-base-image
-  extends: .docker-image
+    - Build Docker Image (Base)
+  extends: .Build Docker Image
 
-docker-image:windows:x86_64:
+Build Docker Image (x86_64-w64-mingw32):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
     TARGET_TRIPLE: x86_64-w64-mingw32
   dependencies:
-    - docker-base-image
-  extends: .docker-image
+    - Build Docker Image (Base)
+  extends: .Build Docker Image

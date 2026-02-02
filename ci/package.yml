@@ -1,4 +1,4 @@
-.package:linux:
+.Package Linux:
   image: $IMAGE_NAME
   stage: package
   tags:
@@ -22,7 +22,7 @@
       - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz
       - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
 
-.package:windows:
+.Package Windows:
   image: $IMAGE_NAME
   stage: package
   tags:
@@ -40,66 +40,58 @@
       - $PACKAGE_FILENAME.zip
       - SHA256SUMS
 
-package:linux:x86_64:
+Package (x86_64-linux-gnu):
   variables:
-    TARGET_ARCH: x86_64
     TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
-    - build:linux:x86_64
-  extends: .package:linux
+    - Build (x86_64-linux-gnu)
+  extends: .Package Linux
 
-package:linux:i686:
+Package (i686-linux-gnu):
   variables:
-    TARGET_ARCH: i686
     TARGET_TRIPLE: i686-linux-gnu
   dependencies:
-    - build:linux:i686
-  extends: .package:linux
+    - Build (i686-linux-gnu)
+  extends: .Package Linux
 
-package:linux:armhf:
+Package (arm-linux-gnueabihf):
   variables:
-    TARGET_ARCH: armhf
     TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
-    - build:linux:armhf
-  extends: .package:linux
+    - Build (arm-linux-gnueabihf)
+  extends: .Package Linux
 
-package:linux:aarch64:
+Package (aarch64-linux-gnu):
   variables:
-    TARGET_ARCH: aarch64
     TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
-    - build:linux:aarch64
-  extends: .package:linux
+    - Build (aarch64-linux-gnu)
+  extends: .Package Linux
 
-package:linux:riscv64:
+Package (riscv64-linux-gnu):
   variables:
-    TARGET_ARCH: riscv64
     TARGET_TRIPLE: riscv64-linux-gnu
   dependencies:
-    - build:linux:riscv64
-  extends: .package:linux
+    - Build (riscv64-linux-gnu)
+  extends: .Package Linux
 
-package:windows:x86_64:
+Package (x86_64-w64-mingw32):
   variables:
-    TARGET_ARCH: x86_64
     TARGET_TRIPLE: x86_64-w64-mingw32
   dependencies:
-    - build:windows:x86_64
-  extends: .package:windows
+    - Build (x86_64-w64-mingw32)
+  extends: .Package Windows
 
-package:windows:i686:
+Package (i686-w64-mingw32):
   variables:
-    TARGET_ARCH: i686
     TARGET_TRIPLE: i686-w64-mingw32
   dependencies:
-    - build:windows:i686
-  extends: .package:windows
+    - Build (i686-w64-mingw32)
+  extends: .Package Windows
 
-package:windows:aarch64:
+Package (aarch64-w64-mingw32):
   variables:
-    TARGET_ARCH: aarch64
     TARGET_TRIPLE: aarch64-w64-mingw32
   dependencies:
-    - build:windows:aarch64
-  extends: .package:windows
+    - Build (aarch64-w64-mingw32)
+  extends: .Package Windows

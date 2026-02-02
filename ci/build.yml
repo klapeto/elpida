@@ -1,4 +1,4 @@
-.build:
+.Build:
   image: $IMAGE_NAME
   stage: build
   tags:
@@ -28,58 +28,58 @@
     paths:
       - $INSTALL_DIR
 
-build:linux:x86_64:
+Build (x86_64-linux-gnu):
   variables:
     TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
-    - docker-image:linux:x86_64
-  extends: .build
+    - Build Docker Image (x86_64-linux-gnu)
+  extends: .Build
 
-build:linux:i686:
+Build (i686-linux-gnu):
   variables:
     TARGET_TRIPLE: i686-linux-gnu
   dependencies:
-    - docker-image:linux:i686
-  extends: .build
+    - Build Docker Image (i686-linux-gnu)
+  extends: .Build
 
-build:linux:armhf:
+Build (arm-linux-gnueabihf):
   variables:
     TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
-    - docker-image:linux:armhf
-  extends: .build
+    - Build Docker Image (arm-linux-gnueabihf)
+  extends: .Build
 
-build:linux:aarch64:
+Build (aarch64-linux-gnu):
   variables:
     TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
-    - docker-image:linux:aarch64
-  extends: .build
+    - Build Docker Image (aarch64-linux-gnu)
+  extends: .Build
 
-build:linux:riscv64:
+Build (riscv64-linux-gnu):
   variables:
     TARGET_TRIPLE: riscv64-linux-gnu
   dependencies:
-    - docker-image:linux:riscv64
-  extends: .build
+    - Build Docker Image (riscv64-linux-gnu)
+  extends: .Build
 
-build:windows:x86_64:
+Build (x86_64-w64-mingw32):
   variables:
     TARGET_TRIPLE: x86_64-w64-mingw32
   dependencies:
-    - docker-image:windows:x86_64
-  extends: .build
+    - Build Docker Image (x86_64-w64-mingw32)
+  extends: .Build
 
-build:windows:i686:
+Build (i686-w64-mingw32):
   variables:
     TARGET_TRIPLE: i686-w64-mingw32
   dependencies:
-    - docker-image:windows:i686
-  extends: .build
+    - Build Docker Image (i686-w64-mingw32)
+  extends: .Build
 
-build:windows:aarch64:
+Build (aarch64-w64-mingw32):
   variables:
     TARGET_TRIPLE: aarch64-w64-mingw32
   dependencies:
-    - docker-image:windows:aarch64
-  extends: .build
+    - Build Docker Image (aarch64-w64-mingw32)
+  extends: .Build

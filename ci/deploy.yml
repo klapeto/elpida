@@ -1,4 +1,4 @@
-.deploy:linux:
+.Deploy Linux:
   stage: deploy
   tags:
     - amd64
@@ -25,7 +25,7 @@
       - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz.SHA256SUMS
       - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz.SHA256SUMS
 
-.deploy:windows:
+.Deploy Windows:
   stage: deploy
   tags:
     - amd64
@@ -38,6 +38,8 @@
     - cp "$PACKAGE_FILENAME.zip" "$PACKAGE_FILENAME_DEPLOY.zip"
     - sha256sum "$PACKAGE_FILENAME.zip" > $PACKAGE_FILENAME.zip.SHA256SUMS
     - sha256sum "$PACKAGE_FILENAME_DEPLOY.zip" > $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
+  dependencies:
+    - package:$TARGET_TRIPLE
   artifacts:
     paths:
       - $PACKAGE_FILENAME_DEPLOY.zip
@@ -45,58 +47,58 @@
       - $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
       - $PACKAGE_FILENAME.zip.SHA256SUMS
 
-deploy:linux:x86_64:
+Deploy (x86_64-linux-gnu):
   variables:
-    TARGET_ARCH: x86_64
+    TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
-    - package:linux:x86_64
-  extends: .deploy:linux
+    - Package (x86_64-linux-gnu)
+  extends: .Deploy Linux
 
-deploy:linux:i686:
+Deploy (i686-linux-gnu):
   variables:
-    TARGET_ARCH: i686
+    TARGET_TRIPLE: i686-linux-gnu
   dependencies:
-    - package:linux:i686
-  extends: .deploy:linux
+    - Package (i686-linux-gnu)
+  extends: .Deploy Linux
 
-deploy:linux:armhf:
+Deploy (arm-linux-gnueabihf):
   variables:
-    TARGET_ARCH: armhf
+    TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
-    - package:linux:armhf
-  extends: .deploy:linux
+    - Package (arm-linux-gnueabihf)
+  extends: .Deploy Linux
 
-deploy:linux:aarch64:
+Deploy (aarch64-linux-gnu):
   variables:
-    TARGET_ARCH: aarch64
+    TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
-    - package:linux:aarch64
-  extends: .deploy:linux
+    - Package (aarch64-linux-gnu)
+  extends: .Deploy Linux
 
-deploy:linux:riscv64:
+Deploy (riscv64-linux-gnu):
   variables:
-    TARGET_ARCH: riscv64
+    TARGET_TRIPLE: riscv64-linux-gnu
   dependencies:
-    - package:linux:riscv64
-  extends: .deploy:linux
+    - Package (riscv64-linux-gnu)
+  extends: .Deploy Linux
 
-deploy:windows:x86_64:
+Deploy (x86_64-w64-mingw32):
   variables:
-    TARGET_ARCH: x86_64
+    TARGET_TRIPLE: x86_64-w64-mingw32
   dependencies:
-    - package:windows:x86_64
-  extends: .deploy:windows
+    - Package (x86_64-w64-mingw32)
+  extends: .Deploy Windows
 
-deploy:windows:i686:
+Deploy (i686-w64-mingw32):
   variables:
-    TARGET_ARCH: i686
+    TARGET_TRIPLE: i686-w64-mingw32
   dependencies:
-    - package:windows:i686
-  extends: .deploy:windows
+    - Package (i686-w64-mingw32)
+  extends: .Deploy Windows
 
-deploy:windows:aarch64:
+Deploy (aarch64-w64-mingw32):
   variables:
-    TARGET_ARCH: aarch64
+    TARGET_TRIPLE: aarch64-w64-mingw32
   dependencies:
-    - package:windows:aarch64
-  extends: .deploy:windows
+    - Package (aarch64-w64-mingw32)
+  extends: .Deploy Windows

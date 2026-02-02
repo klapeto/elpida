@@ -1,4 +1,4 @@
-docker-base-image:
+Build Docker Image (Base):
   image: docker:latest
   stage: build-base-docker-image
   tags:
@@ -21,4 +21,4 @@ docker-base-image:
           - scripts/docker/build-base.sh
           - scripts/docker/build-qt.sh
           - scripts/docker/generate-sysroot.sh
-          - scripts/docker/packages
+          - scripts/docker/build-autotools-based.sh
