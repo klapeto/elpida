@@ -21,7 +21,7 @@ set -e
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
-if [ $# -le 3 ]; then
+if [ $# -lt 3 ]; then
     echo "Usage $0 target-triple sysroot-target-dir source-dir [additional flags]"
     exit 1;
 fi
