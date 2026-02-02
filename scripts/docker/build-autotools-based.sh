@@ -21,19 +21,16 @@ set -e
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
-if [ $# -ne 3 ]; then
+if [ $# -le 3 ]; then
     echo "Usage $0 target-triple sysroot-target-dir source-dir [additional flags]"
     exit 1;
 fi
-
 
 directory="$3"
 additionalFlags="$4"
 
 mkdir -p "$directory/build"
-cd "$directory"
-NOCONFIGURE=1 ./autogen.sh
-cd "build"
+cd "$directory/build"
 
 ../configure \
     CC="$CC" \
@@ -44,7 +41,8 @@ cd "build"
     --with-sysroot="$SYSROOT" \
     --prefix="$INSTALL_PREFIX" \
     --enable-static \
-    "$additionalFlags"
+    --disable-shared \
+    $additionalFlags
 
 make -j$(nproc)
 make -j$(nproc) install

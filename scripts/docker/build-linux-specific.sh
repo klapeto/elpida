@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 #  Copyright (c) 2025  Ioannis Panagiotopoulos
 #
@@ -16,45 +16,18 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+# exit if any command fails
 set -e
 
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
-if [ ! -d ./hwloc ]; then
-    git clone --depth=1 -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git
-    cd hwloc
-    ./autogen.sh
-    cd ..
-fi
+case "$TARGET_TRIPLE" in
+*-linux-gnu*)
+    ;;
+*-w64-mingw32)
+    exit 0
+    ;;
+esac
 
-mkdir -p hwloc/build
-cd hwloc/build
-
-../configure \
-    CC=$CC \
-    CXX=$CXX \
-    CFLAGS="$CFLAGS" \
-    CXXFLAGS="$CXXFLAGS" \
-    --host="$TARGET_TRIPLE" \
-    --with-sysroot="$SYSROOT" \
-    --prefix="$INSTALL_PREFIX" \
-    --enable-static \
-    --disable-shared \
-    --enable-plugins=no \
-    --disable-readme \
-    --disable-cairo \
-    --disable-libxml2 \
-    --disable-io \
-    --disable-pci \
-    --disable-opencl \
-    --disable-cuda \
-    --disable-nvml \
-    --disable-rsmi \
-    --disable-levelzero \
-    --disable-gl \
-    --disable-libudev
-
-make -j$(nproc) install
-rm -rf ./*
-cd ../..
+PKG_CONFIG_PATH=/opt/sysroots/$TARGET_TRIPLE/usr/lib/$TARGET_TRIPLE/pkgconfig/ ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/libxcb-cursor"

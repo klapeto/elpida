@@ -1,4 +1,4 @@
-ARG IMAGE=registry.gitlab.com/dev-hood/elpida/elpida/build-environment-base:libs-local
+ARG IMAGE=build-base
 FROM $IMAGE
 LABEL authors="klapeto"
 
@@ -8,18 +8,23 @@ ARG TARGET_TRIPLE
 ENV LD_LIBRARY_PATH="/opt/sysroots/x86_64-linux-gnu/lib:/opt/sysroots/x86_64-linux-gnu/lib/x86_64-linux-gnu"
 ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /tmp/
-ADD ./scripts/docker/packages ./scripts/docker/generate-sysroot.sh ./scripts/docker/build-base.sh ./scripts/docker/build-qt.sh ./scripts/docker/build-hwloc.sh ./scripts/docker/build-llvm.sh  ./
-
 WORKDIR /tmp/llvm-mingw
 RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt
 
-#RUN apt-get -y install make
-#
 WORKDIR /tmp/
+ADD ./scripts/docker/packages ./scripts/docker/generate-sysroot.sh ./
 RUN DEB_DISTRIBUTION=focal ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/packages
-RUN ./build-hwloc.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
+
+ADD ./scripts/docker/build-base.sh ./scripts/docker/build-autotools-based.sh ./
+RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero--disable-gl --disable-libudev"
+
+ADD ./scripts/docker/build-linux-specific.sh ./
+RUN ./build-linux-specific.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
+
+ADD ./scripts/docker/build-qt.sh ./
 RUN ./build-qt.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
+
+ADD ./scripts/docker/build-llvm.sh ./
 RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
 WORKDIR /
