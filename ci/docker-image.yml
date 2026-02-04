@@ -9,7 +9,7 @@
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - docker pull $IMAGE_NAME || true
+#    - docker pull $IMAGE_NAME || true
     - docker build --build-arg IMAGE="$IMAGE_BASE_NAME" --build-arg TARGET_TRIPLE="$TARGET_TRIPLE" --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_NAME -t $IMAGE_NAME -f docker/build-environment/Dockerfile .
     - docker push $IMAGE_NAME
   rules:
@@ -37,12 +37,12 @@ Build Docker Image (x86_64-linux-gnu):
     - Build Docker Image (Base)
   extends: .Build Docker Image
 
-Build Docker Image (i686-linux-gnu):
+Build Docker Image (i386-linux-gnu):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
-    TARGET_TRIPLE: i686-linux-gnu
+    TARGET_TRIPLE: i386-linux-gnu
   dependencies:
     - Build Docker Image (Base)
   extends: .Build Docker Image

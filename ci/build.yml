@@ -35,11 +35,11 @@ Build (x86_64-linux-gnu):
     - Build Docker Image (x86_64-linux-gnu)
   extends: .Build
 
-Build (i686-linux-gnu):
+Build (i386-linux-gnu):
   variables:
-    TARGET_TRIPLE: i686-linux-gnu
+    TARGET_TRIPLE: i386-linux-gnu
   dependencies:
-    - Build Docker Image (i686-linux-gnu)
+    - Build Docker Image (i386-linux-gnu)
   extends: .Build
 
 Build (arm-linux-gnueabihf):

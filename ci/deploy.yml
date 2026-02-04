@@ -54,11 +54,11 @@ Deploy (x86_64-linux-gnu):
     - Package (x86_64-linux-gnu)
   extends: .Deploy Linux
 
-Deploy (i686-linux-gnu):
+Deploy (i386-linux-gnu):
   variables:
-    TARGET_TRIPLE: i686-linux-gnu
+    TARGET_TRIPLE: i386-linux-gnu
   dependencies:
-    - Package (i686-linux-gnu)
+    - Package (i386-linux-gnu)
   extends: .Deploy Linux
 
 Deploy (arm-linux-gnueabihf):

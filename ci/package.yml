@@ -47,11 +47,11 @@ Package (x86_64-linux-gnu):
     - Build (x86_64-linux-gnu)
   extends: .Package Linux
 
-Package (i686-linux-gnu):
+Package (i386-linux-gnu):
   variables:
-    TARGET_TRIPLE: i686-linux-gnu
+    TARGET_TRIPLE: i386-linux-gnu
   dependencies:
-    - Build (i686-linux-gnu)
+    - Build (i386-linux-gnu)
   extends: .Package Linux
 
 Package (arm-linux-gnueabihf):
