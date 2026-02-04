@@ -17,7 +17,7 @@
       changes:
         paths:
           - docker/build-environment/Dockerfile
-          - ci/general/docker-image.yml
+          - ci/docker-image.yml
           - scripts/docker/build-base.sh
           - scripts/docker/build-hwloc.sh
           - scripts/docker/build-autotools-based.sh
