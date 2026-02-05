@@ -8,9 +8,9 @@
     - mv "$INSTALL_DIR" "cli"
     - rm "qt/bin/elpida-cli"
     - rm "cli/bin/elpida-qt"
-    - ./scripts/Linux/setupDependencies.sh "$PWD/cli/bin/elpida-cli" "$PWD/cli" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir"
+    - ./scripts/Linux/setupDependencies.sh "$PWD/cli/bin/elpida-cli" "$PWD/cli" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir" "$TARGET_TRIPLE"
     - ./scripts/Linux/finalizeAppDir.sh "$PWD/cli" bin/elpida-cli $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz
-    - ./scripts/Linux/setupDependencies.sh "$PWD/qt/bin/elpida-qt" "$PWD/qt" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir"
+    - ./scripts/Linux/setupDependencies.sh "$PWD/qt/bin/elpida-qt" "$PWD/qt" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir" "$TARGET_TRIPLE"
     - ./scripts/Linux/finalizeAppDir.sh "$PWD/qt" bin/elpida-qt $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz
     - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
     - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS

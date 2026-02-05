@@ -17,7 +17,7 @@ Build Docker Image (Base):
       changes:
         paths:
           - docker/build-environment-base/Dockerfile
-          - ci/general/docker-image-base.yml
+          - ci/docker-image-base.yml
           - scripts/docker/build-base.sh
           - scripts/docker/build-qt.sh
           - scripts/docker/generate-sysroot.sh
