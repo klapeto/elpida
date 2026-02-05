@@ -4,23 +4,16 @@
   tags:
     - amd64
   script:
-    - cp -r "$INSTALL_DIR" "qt"
-    - mv "$INSTALL_DIR" "cli"
-    - rm "qt/bin/elpida-cli"
-    - rm "cli/bin/elpida-qt"
-    - ./scripts/Linux/setupDependencies.sh "$PWD/cli/bin/elpida-cli" "$PWD/cli" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir" "$TARGET_TRIPLE"
-    - ./scripts/Linux/finalizeAppDir.sh "$PWD/cli" bin/elpida-cli $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz
-    - ./scripts/Linux/setupDependencies.sh "$PWD/qt/bin/elpida-qt" "$PWD/qt" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir" "$TARGET_TRIPLE"
-    - ./scripts/Linux/finalizeAppDir.sh "$PWD/qt" bin/elpida-qt $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz
-    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz" > $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
-    - sha256sum "$PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz" > $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
+    - rm "$INSTALL_DIR/bin/$BINARY_TO_REMOVE"
+    - rm -rf "$INSTALL_DIR/include" "$INSTALL_DIR/share" "$INSTALL_DIR/lib" "$INSTALL_DIR/bin/libpng*"
+    - ./scripts/Linux/setupDependencies.sh "$INSTALL_DIR/bin/$BINARY" "$INSTALL_DIR" "/opt/sysroots/$TARGET_TRIPLE" "\$this_dir" "$TARGET_TRIPLE"
+    - ./scripts/Linux/finalizeAppDir.sh "$INSTALL_DIR" "bin/$BINARY" "$PACKAGE_FILENAME.tar.xz"
+    - sha256sum "$PACKAGE_FILENAME.tar.xz" > ""$PACKAGE_FILENAME.SHA256SUMS""
   artifacts:
     expire_in: 2h30min
     paths:
-      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.tar.xz
-      - $PACKAGE_FILENAME.$PACKAGE_QT_SUFFIX.SHA256SUMS
-      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.tar.xz
-      - $PACKAGE_FILENAME.$PACKAGE_CLI_SUFFIX.SHA256SUMS
+      - $PACKAGE_FILENAME.tar.xz
+      - $PACKAGE_FILENAME.SHA256SUMS
 
 .Package Windows:
   image: $IMAGE_NAME
@@ -30,6 +23,8 @@
   script:
     - |
       currentDir=$(pwd)
+      rm -rf "$INSTALL_DIR/include" "$INSTALL_DIR/share" "$INSTALL_DIR/lib" "$INSTALL_DIR/bin/libpng*" "$INSTALL_DIR/bin/*.dll"
+      rm "$INSTALL_DIR/bin/$BINARY_TO_REMOVE"
       cd "$INSTALL_DIR/bin"
       zip z -r .
       cp ./z.zip "$currentDir/$PACKAGE_FILENAME.zip"
@@ -40,58 +35,158 @@
       - $PACKAGE_FILENAME.zip
       - SHA256SUMS
 
-Package (x86_64-linux-gnu):
+.Package Qt:
+  variables:
+    PACKAGE_SUFFIX: Qt
+    BINARY: elpida-qt
+    BINARY_TO_REMOVE: elpida-cli
+
+.Package Cli:
+  variables:
+    PACKAGE_SUFFIX: Cli
+    BINARY: elpida-cli
+    BINARY_TO_REMOVE: elpida-qt
+
+Package Qt (x86_64-linux-gnu):
   variables:
     TARGET_TRIPLE: x86_64-linux-gnu
   dependencies:
     - Build (x86_64-linux-gnu)
-  extends: .Package Linux
+  extends:
+    - .Package Qt
+    - .Package Linux
 
-Package (i386-linux-gnu):
+Package Cli (x86_64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: x86_64-linux-gnu
+  dependencies:
+    - Build (x86_64-linux-gnu)
+  extends:
+    - .Package Cli
+    - .Package Linux
+
+Package Qt (i386-linux-gnu):
   variables:
     TARGET_TRIPLE: i386-linux-gnu
   dependencies:
     - Build (i386-linux-gnu)
-  extends: .Package Linux
+  extends:
+    - .Package Qt
+    - .Package Linux
 
-Package (arm-linux-gnueabihf):
+Package Cli (i386-linux-gnu):
+  variables:
+    TARGET_TRIPLE: i386-linux-gnu
+  dependencies:
+    - Build (i386-linux-gnu)
+  extends:
+    - .Package Cli
+    - .Package Linux
+
+Package Qt (arm-linux-gnueabihf):
   variables:
     TARGET_TRIPLE: arm-linux-gnueabihf
   dependencies:
     - Build (arm-linux-gnueabihf)
-  extends: .Package Linux
+  extends:
+    - .Package Qt
+    - .Package Linux
 
-Package (aarch64-linux-gnu):
+Package Cli (arm-linux-gnueabihf):
+  variables:
+    TARGET_TRIPLE: arm-linux-gnueabihf
+  dependencies:
+    - Build (arm-linux-gnueabihf)
+  extends:
+    - .Package Cli
+    - .Package Linux
+
+Package Qt (aarch64-linux-gnu):
   variables:
     TARGET_TRIPLE: aarch64-linux-gnu
   dependencies:
     - Build (aarch64-linux-gnu)
-  extends: .Package Linux
+  extends:
+    - .Package Qt
+    - .Package Linux
 
-Package (riscv64-linux-gnu):
+Package Cli (aarch64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: aarch64-linux-gnu
+  dependencies:
+    - Build (aarch64-linux-gnu)
+  extends:
+    - .Package Cli
+    - .Package Linux
+
+Package Qt (riscv64-linux-gnu):
   variables:
     TARGET_TRIPLE: riscv64-linux-gnu
   dependencies:
     - Build (riscv64-linux-gnu)
-  extends: .Package Linux
+  extends:
+    - .Package Qt
+    - .Package Linux
 
-Package (x86_64-w64-mingw32):
+Package Cli (riscv64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: riscv64-linux-gnu
+  dependencies:
+    - Build (riscv64-linux-gnu)
+  extends:
+    - .Package Cli
+    - .Package Linux
+
+Package Qt (x86_64-w64-mingw32):
   variables:
     TARGET_TRIPLE: x86_64-w64-mingw32
   dependencies:
     - Build (x86_64-w64-mingw32)
-  extends: .Package Windows
+  extends:
+    - .Package Qt
+    - .Package Windows
 
-Package (i686-w64-mingw32):
+Package Cli (x86_64-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: x86_64-w64-mingw32
+  dependencies:
+    - Build (x86_64-w64-mingw32)
+  extends:
+    - .Package Cli
+    - .Package Windows
+
+Package Qt (i686-w64-mingw32):
   variables:
     TARGET_TRIPLE: i686-w64-mingw32
   dependencies:
     - Build (i686-w64-mingw32)
-  extends: .Package Windows
+  extends:
+    - .Package Qt
+    - .Package Windows
 
-Package (aarch64-w64-mingw32):
+Package Cli (i686-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: i686-w64-mingw32
+  dependencies:
+    - Build (i686-w64-mingw32)
+  extends:
+    - .Package Cli
+    - .Package Windows
+
+Package Qt (aarch64-w64-mingw32):
   variables:
     TARGET_TRIPLE: aarch64-w64-mingw32
   dependencies:
     - Build (aarch64-w64-mingw32)
-  extends: .Package Windows
+  extends:
+    - .Package Qt
+    - .Package Windows
+
+Package Cli (aarch64-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: aarch64-w64-mingw32
+  dependencies:
+    - Build (aarch64-w64-mingw32)
+  extends:
+    - .Package Cli
+    - .Package Windows
