@@ -24,7 +24,7 @@
     - |
       currentDir=$(pwd)
       rm -rf "$INSTALL_DIR/include" "$INSTALL_DIR/share" "$INSTALL_DIR/lib" "$INSTALL_DIR/bin/libpng*" "$INSTALL_DIR/bin/*.dll"
-      rm "$INSTALL_DIR/bin/$BINARY_TO_REMOVE"
+      rm "$INSTALL_DIR/bin/$BINARY_TO_REMOVE.exe"
       cd "$INSTALL_DIR/bin"
       zip z -r .
       cp ./z.zip "$currentDir/$PACKAGE_FILENAME.zip"
