@@ -23,6 +23,8 @@ if [ "$#" -ne 5 ]; then
     exit 1
 fi
 
+this_dir="$(readlink -f "$(dirname "$0")")"
+
 BINARY="$1"
 DEST_DIR="$2"
 SEARCH_DIR="$3"
@@ -77,6 +79,8 @@ function getDependencies() {
         return 1
     fi
 
+    excludedFiles=$(cat "$this_dir/excludelist" | sed 's|#.*||g')
+
     targetArch=$(expr "$targetTriple" : '\(.*\)-.*-.*')
     targetSuffix=$(expr "$targetTriple" : '.*\(-.*-.*\)')
 
@@ -107,6 +111,12 @@ function doGetDependencies() {
     local libFound=0
     for lib in $libs; do
         libFound=0;
+
+        if [[ " $excludedFiles " =~ .*$lib.*  ]]; then
+            libFound=1
+            continue;
+        fi
+
         for directory in "${searchDirectories[@]}"; do
             local found=""
             local allFiles=""

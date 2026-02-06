@@ -28,7 +28,7 @@ ADD ./scripts/docker/build-llvm.sh ./
 RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
 WORKDIR /
-RUN rm -rf /tmp/* \
+RUN rm -rf /tmp \
     "/opt/sysroots/$TARGET_TRIPLE/tmp" \
     "/opt/sysroots/$TARGET_TRIPLE/var" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/share" \

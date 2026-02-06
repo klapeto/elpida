@@ -30,4 +30,4 @@ case "$TARGET_TRIPLE" in
     ;;
 esac
 
-PKG_CONFIG_PATH=/opt/sysroots/$TARGET_TRIPLE/usr/lib/$TARGET_TRIPLE/pkgconfig/ ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/libxcb-cursor"
+PKG_CONFIG_PATH=$SYSROOT/usr/lib/$TARGET_TRIPLE/pkgconfig/ ./build-autotools-based.sh "$TARGET_TRIPLE" "$SYSROOT" "$PWD/libxcb-cursor"

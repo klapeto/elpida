@@ -1,1 +1,1 @@
-export PATH="$PATH:/mnt/Dev/toolchains/llvm-mingw/bin"
+export PATH="$PATH:/mnt/Dev/toolchains/llvm/bin"

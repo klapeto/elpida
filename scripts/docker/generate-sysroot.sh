@@ -88,5 +88,3 @@ fi
     --cache-path ./cache \
     --packages `paste -sd, "$PACKAGES_FILE"` \
     --store-install-state
-
-ldconfig
