@@ -1,10 +1,11 @@
-ARG DEB_DISTRIBUTION=focal
+ARG DEB_DISTRIBUTION=noble
 
 FROM ubuntu:$DEB_DISTRIBUTION
 LABEL authors="klapeto"
 
 ARG DEB_DISTRIBUTION
 ARG HOST_TRIPLE=x86_64-linux-gnu
+ARG LLVM_VERSION=llvmorg-21.1.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /tmp
@@ -13,6 +14,7 @@ WORKDIR /tmp
 RUN apt-get update && apt -y full-upgrade
 RUN apt-get install -y --no-install-recommends \
     ca-certificates \
+    software-properties-common \
     gcc \
     g++ \
     gpg \
@@ -24,22 +26,27 @@ RUN apt-get install -y --no-install-recommends \
     autoconf \
     libtool-bin \
     patch \
-    python3.8 \
+    python3 \
     xz-utils \
     zip \
     binutils \
     zstd \
     gzip \
-    make \
-    xutils-dev
+    make
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
+
 # install latest cmake
-RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-RUN echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ $DEB_DISTRIBUTION main" | tee /etc/apt/sources.list.d/kitware.list >/dev/null
-RUN apt-get update
-RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || rm /usr/share/keyrings/kitware-archive-keyring.gpg
-RUN apt-get install -y kitware-archive-keyring cmake
+RUN wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3-linux-x86_64.tar.gz -O cmake.tar.gz
+RUN tar xf ./cmake.tar.gz -C /opt
+ENV PATH=/opt/cmake-4.2.3-linux-x86_64/bin:$PATH
+
+# install latest ninja
+RUN wget https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux.zip -O ninja.zip
+RUN apt-get install -y unzip
+RUN apt-get purge -y ninja-build
+RUN unzip ninja.zip -d /opt/ninja
+ENV PATH=/opt/ninja:$PATH
 
 # Create dirs
 RUN mkdir -p /opt/toolchains
@@ -47,8 +54,7 @@ RUN mkdir -p /opt/toolchains
 # Build LLVM cross toolchain
 RUN git clone -b unified-toolchain https://github.com/klapeto/llvm-mingw.git
 WORKDIR /tmp/llvm-mingw
-RUN LLVM_VERSION=llvmorg-21.1.0 ./build-llvm.sh /opt/toolchains/llvm
-RUN TARGET_TRIPLES="$HOST_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt
+RUN ./build-llvm.sh /opt/toolchains/llvm
 
 ENV PATH=/opt/toolchains/llvm/bin:$PATH
 
@@ -70,25 +76,14 @@ RUN git clone --depth=1 -b v6.10.0 git://code.qt.io/qt/qt5.git qt6 && \
 RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git && \
     mkdir -p ./llvm-project/llvm/build
 
-RUN git clone --recursive https://gitlab.freedesktop.org/xorg/lib/libxcb-cursor.git && \
-    cd libxcb-cursor && \
-    NOCONFIGURE=1 ./autogen.sh && \
-    mkdir -p build
-
 WORKDIR /tmp/
 
-ADD ./scripts/docker/generate-sysroot.sh ./scripts/docker/packages ./
-RUN ./generate-sysroot.sh $HOST_TRIPLE /opt/sysroots/$HOST_TRIPLE /tmp/packages
+RUN apt-get install -y libgl1-mesa-dev
 
-# Workaround a Qt6 bug where configuration does not detect the sysroot libxkbcommon-x11
-RUN apt-get -y install libxkbcommon-x11-dev pkg-config dpkg-dev gperf
-ADD ./scripts/docker/build-autotools-based.sh ./scripts/docker/build-base.sh ./
-RUN PKG_CONFIG_PATH=/opt/sysroots/$HOST_TRIPLE/usr/lib/$HOST_TRIPLE/pkgconfig/ ./build-autotools-based.sh $HOST_TRIPLE /opt/sysroots/$HOST_TRIPLE $PWD/libxcb-cursor
-
-# qt tools will be built against the sysroot and will run for the rest archs and will need to find the sysroot libs
-ENV LD_LIBRARY_PATH="/opt/sysroots/$HOST_TRIPLE/lib:/opt/sysroots/$HOST_TRIPLE/lib/$HOST_TRIPLE"
-ADD ./scripts/docker/build-qt.sh ./
-RUN ./build-qt.sh $HOST_TRIPLE /opt/sysroots/$HOST_TRIPLE
+WORKDIR /tmp/qt6/build
+RUN ../configure
+RUN cmake --build . --parallel
+RUN cmake --install .
 
 WORKDIR /
 

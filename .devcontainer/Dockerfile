@@ -1,9 +1,10 @@
-FROM mcr.microsoft.com/devcontainers/cpp:1-ubuntu-20.04
+FROM mcr.microsoft.com/devcontainers/cpp:1-ubuntu-24.04
 LABEL authors="klapeto"
 
-ARG HOST_TRIPLE
-ARG TARGET_TRIPLE
-
+ARG DEB_DISTRIBUTION=noble
+ARG DEB_DISTRIBUTION
+ARG HOST_TRIPLE=x86_64-linux-gnu
+ARG LLVM_VERSION=llvmorg-21.1.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /tmp
@@ -12,6 +13,7 @@ WORKDIR /tmp
 RUN apt-get update && apt -y full-upgrade
 RUN apt-get install -y --no-install-recommends \
     ca-certificates \
+    software-properties-common \
     gcc \
     g++ \
     gpg \
@@ -23,22 +25,27 @@ RUN apt-get install -y --no-install-recommends \
     autoconf \
     libtool-bin \
     patch \
-    python3.8 \
+    python3 \
     xz-utils \
     zip \
     binutils \
     zstd \
     gzip \
-    make \
-    xutils-dev
+    make
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
+
 # install latest cmake
-RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-RUN echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main" | tee /etc/apt/sources.list.d/kitware.list >/dev/null
-RUN apt-get update
-RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || rm /usr/share/keyrings/kitware-archive-keyring.gpg
-RUN apt-get install -y kitware-archive-keyring cmake
+RUN wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3-linux-x86_64.tar.gz -O cmake.tar.gz
+RUN tar xf ./cmake.tar.gz -C /opt
+ENV PATH=/opt/cmake-4.2.3-linux-x86_64/bin:$PATH
+
+# install latest ninja
+RUN wget https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux.zip -O ninja.zip
+RUN apt-get install -y unzip
+RUN apt-get purge -y ninja-build
+RUN unzip ninja.zip -d /opt/ninja
+ENV PATH=/opt/ninja:$PATH
 
 # Create dirs
 RUN mkdir -p /opt/toolchains
@@ -46,8 +53,7 @@ RUN mkdir -p /opt/toolchains
 # Build LLVM cross toolchain
 RUN git clone -b unified-toolchain https://github.com/klapeto/llvm-mingw.git
 WORKDIR /tmp/llvm-mingw
-RUN LLVM_VERSION=llvmorg-21.1.0 ./build-llvm.sh /opt/toolchains/llvm
-RUN DEB_DISTRIBUTION=focal TARGET_TRIPLES="$HOST_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt
+RUN ./build-llvm.sh /opt/toolchains/llvm
 
 ENV PATH=/opt/toolchains/llvm/bin:$PATH
 
@@ -69,51 +75,53 @@ RUN git clone --depth=1 -b v6.10.0 git://code.qt.io/qt/qt5.git qt6 && \
 RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git && \
     mkdir -p ./llvm-project/llvm/build
 
-RUN git clone --recursive https://gitlab.freedesktop.org/xorg/lib/libxcb-cursor.git && \
-    cd libxcb-cursor && \
-    NOCONFIGURE=1 ./autogen.sh && \
-    mkdir -p build
-
 WORKDIR /tmp/
 
-ADD ./scripts/docker/generate-sysroot.sh ./scripts/docker/packages ./
-RUN DEB_DISTRIBUTION=focal ./generate-sysroot.sh $HOST_TRIPLE /opt/sysroots/$HOST_TRIPLE /tmp/packages
+RUN apt-get install -y libgl1-mesa-dev
 
-# Workaround a Qt6 bug where configuration does not detect the sysroot libxkbcommon-x11
-RUN apt-get -y install libxkbcommon-x11-dev pkg-config dpkg-dev gperf
-ADD ./scripts/docker/build-autotools-based.sh ./scripts/docker/build-base.sh ./
-RUN PKG_CONFIG_PATH=/opt/sysroots/$HOST_TRIPLE/usr/lib/$HOST_TRIPLE/pkgconfig/ ./build-autotools-based.sh $HOST_TRIPLE /opt/sysroots/$HOST_TRIPLE $PWD/libxcb-cursor
+WORKDIR /tmp/qt6/build
+RUN ../configure
+RUN cmake --build . --parallel
+RUN cmake --install .
 
-# qt tools will be built against the sysroot and will run for the rest archs and will need to find the sysroot libs
-ENV LD_LIBRARY_PATH="/opt/sysroots/$HOST_TRIPLE/lib:/opt/sysroots/$HOST_TRIPLE/lib/$HOST_TRIPLE"
-ADD ./scripts/docker/build-qt.sh ./
-RUN ./build-qt.sh $HOST_TRIPLE /opt/sysroots/$HOST_TRIPLE
+WORKDIR /
 
-# help qt tools because they are built against the sysroot
-ENV LD_LIBRARY_PATH="/opt/sysroots/$HOST_TRIPLE/lib:/opt/sysroots/$HOST_TRIPLE/lib/$HOST_TRIPLE"
-ENV DEBIAN_FRONTEND=noninteractive
+ARG TARGET_TRIPLE=x86_64-linux-gnu
+ENV QT_HOST_PATH=/usr/local/Qt-6.10.0
+ENV TARGET_TRIPLE=$TARGET_TRIPLE
+ENV HOST_TRIPLE=$HOST_TRIPLE
+ENV DEB_DISTRIBUTION=$DEB_DISTRIBUTION
+ENV LLVM_VERSION=$LLVM_VERSION
+ENV PKG_CONFIG_SYSROOT_DIR=/opt/sysroots/$TARGET_TRIPLE
+ENV PKG_CONFIG_PATH=/opt/sysroots/$TARGET_TRIPLE/usr/lib/$TARGET_TRIPLE/pkgconfig/
 
 WORKDIR /tmp/llvm-mingw
 RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt
 
 WORKDIR /tmp/
 ADD ./scripts/docker/packages ./scripts/docker/generate-sysroot.sh ./
-RUN DEB_DISTRIBUTION=focal ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/packages
+RUN ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/packages
 
 ADD ./scripts/docker/build-base.sh ./scripts/docker/build-autotools-based.sh ./
 RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero--disable-gl --disable-libudev"
 
-ADD ./scripts/docker/build-linux-specific.sh ./
-RUN ./build-linux-specific.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
-
-ADD ./scripts/docker/build-qt.sh ./
+ADD ./scripts/docker/build-qt.sh ./scripts/docker/generate-toolchain-file.sh ./scripts/docker/cross.linux.cmake.template ./
+RUN ./generate-toolchain-file.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 RUN ./build-qt.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
 ADD ./scripts/docker/build-llvm.sh ./
 RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
 WORKDIR /
-RUN rm -rf /tmp/* \
+
+# cleanup
+RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin xutils-dev
+RUN apt-get -y autoremove && apt-get autoclean
+
+RUN apt-get purge -y `xargs < /tmp/packages`
+RUN apt-get autoremove -y
+
+RUN rm -rf /tmp \
     "/opt/sysroots/$TARGET_TRIPLE/tmp" \
     "/opt/sysroots/$TARGET_TRIPLE/var" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/share" \
@@ -128,6 +136,4 @@ RUN if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ]; then \
     "/opt/sysroots/$TARGET_TRIPLE/usr/sbin"; \
     fi
 
-# cleanup
-RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin xutils-dev
-RUN apt-get -y autoremove && apt-get autoclean
+CMD ["/bin/bash"]

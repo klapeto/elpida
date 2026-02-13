@@ -10,6 +10,12 @@
       "HOST_TRIPLE": "x86_64-linux-gnu"
     }
   },
+  "containerEnv": {
+    "DISPLAY": ":0"
+  },
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
+  ],
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
 

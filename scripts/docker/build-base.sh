@@ -57,6 +57,15 @@ elif [ "$TARGET_OS" = "w64" ]; then
     TARGET_OS=Windows
 fi
 
+case $TARGET_ARCH in
+armv7-*)
+    TARGET_PROCESSOR=arm
+    ;;
+*)
+    TARGET_PROCESSOR=$TARGET_ARCH
+    ;;
+esac
+
 CC="${TARGET_PREFIX}clang"
 CXX="${TARGET_PREFIX}clang++"
 RANLIB="${TARGET_PREFIX}ranlib"
