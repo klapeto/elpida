@@ -32,7 +32,8 @@ RUN apt-get install -y --no-install-recommends \
     binutils \
     zstd \
     gzip \
-    make
+    make \
+    xutils-dev
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
