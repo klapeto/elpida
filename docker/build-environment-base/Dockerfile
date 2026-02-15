@@ -1,4 +1,4 @@
-ARG DEB_DISTRIBUTION=noble
+ARG DEB_DISTRIBUTION=focal
 
 FROM ubuntu:$DEB_DISTRIBUTION
 LABEL authors="klapeto"
@@ -26,7 +26,7 @@ RUN apt-get install -y --no-install-recommends \
     autoconf \
     libtool-bin \
     patch \
-    python3 \
+    python3.8 \
     xz-utils \
     zip \
     binutils \
@@ -35,6 +35,11 @@ RUN apt-get install -y --no-install-recommends \
     make
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
+
+#RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
+#RUN apt-get install -y gcc-13 g++-13
+#RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 && \
+#    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
 # install latest cmake
 RUN wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3-linux-x86_64.tar.gz -O cmake.tar.gz
@@ -75,6 +80,11 @@ RUN git clone --depth=1 -b v6.10.0 git://code.qt.io/qt/qt5.git qt6 && \
 
 RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git && \
     mkdir -p ./llvm-project/llvm/build
+
+RUN git clone --recursive https://gitlab.freedesktop.org/xorg/lib/libxcb-cursor.git && \
+    cd libxcb-cursor && \
+    NOCONFIGURE=1 ./autogen.sh && \
+    mkdir -p build
 
 WORKDIR /tmp/
 

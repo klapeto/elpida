@@ -1,7 +1,7 @@
 ARG IMAGE=build-base
 FROM $IMAGE
 
-ARG DEB_DISTRIBUTION=noble
+ARG DEB_DISTRIBUTION=focal
 ARG HOST_TRIPLE=x86_64-linux-gnu
 ARG TARGET_TRIPLE
 ARG LLVM_VERSION=llvmorg-21.1.0
@@ -24,6 +24,9 @@ RUN ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/p
 
 ADD ./scripts/docker/build-base.sh ./scripts/docker/build-autotools-based.sh ./
 RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero--disable-gl --disable-libudev"
+
+ADD ./scripts/docker/build-linux-specific.sh ./
+RUN ./build-linux-specific.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
 ADD ./scripts/docker/build-qt.sh ./scripts/docker/generate-toolchain-file.sh ./scripts/docker/cross.linux.cmake.template ./
 RUN ./generate-toolchain-file.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"

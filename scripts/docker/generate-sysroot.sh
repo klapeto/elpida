@@ -76,7 +76,7 @@ if [ ! -f "$PACKAGES_FILE" ]; then
 fi
 
 if [ ! -f ./SysrootGenerator ] || [ ! -x ./SysrootGenerator ]; then
-    wget -O ./SysrootGenerator https://github.com/klapeto/SysrootGenerator/releases/download/v1.0.4/SysrootGenerator-linux-x86-64
+    wget -O ./SysrootGenerator https://github.com/klapeto/SysrootGenerator/releases/download/v1.0.5/SysrootGenerator-linux-x86-64
     chmod +x ./SysrootGenerator
 fi
 
