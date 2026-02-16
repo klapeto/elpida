@@ -22,9 +22,6 @@ endif()
 
 add_executable(elpida-info-dumper ${ELPIDA_INFO_DUMPER_SOURCES})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
-
 target_link_libraries(elpida-info-dumper PUBLIC elpida-core elpida-overheads-calculator elpida-platform elpida-shared)
 
 install(TARGETS elpida-info-dumper RUNTIME DESTINATION bin)

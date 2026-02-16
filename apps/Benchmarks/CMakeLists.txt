@@ -1,6 +1,3 @@
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
-
 add_executable(compilation-benchmarks Dummy.cpp)
 target_link_libraries(compilation-benchmarks PUBLIC elpida-entry-point elpida-compilation-benchmarks)
 
