@@ -26,7 +26,7 @@ ADD ./scripts/docker/build-base.sh ./scripts/docker/build-autotools-based.sh ./
 RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero--disable-gl --disable-libudev"
 
 ADD ./scripts/docker/build-linux-specific.sh ./
-RUN apt-get install -y gperf
+RUN apt-get install -y gperf dpkg-dev
 RUN ./build-linux-specific.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
 ADD ./scripts/docker/build-qt.sh ./scripts/docker/generate-toolchain-file.sh ./scripts/docker/cross.linux.cmake.template ./
@@ -39,7 +39,7 @@ RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 WORKDIR /
 
 # cleanup
-RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin xutils-dev
+RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin xutils-dev gperf dpkg-dev
 RUN apt-get -y autoremove && apt-get autoclean
 
 RUN apt-get purge -y `xargs < /tmp/packages`
