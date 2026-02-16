@@ -42,10 +42,7 @@ WORKDIR /
 RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin xutils-dev gperf dpkg-dev
 RUN apt-get -y autoremove && apt-get autoclean
 
-RUN apt-get purge -y `xargs < /tmp/packages`
-RUN apt-get autoremove -y
-
-RUN rm -rf /tmp \
+RUN rm -rf /tmp/* \
     "/opt/sysroots/$TARGET_TRIPLE/tmp" \
     "/opt/sysroots/$TARGET_TRIPLE/var" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/share" \
@@ -59,6 +56,5 @@ RUN if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ]; then \
     "/opt/sysroots/$TARGET_TRIPLE/usr/bin" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/sbin"; \
     fi
-
 
 CMD ["/bin/bash"]
