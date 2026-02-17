@@ -1,7 +1,8 @@
-FROM mcr.microsoft.com/devcontainers/cpp:1-ubuntu-24.04
+ARG DEB_DISTRIBUTION=focal
+
+FROM ubuntu:$DEB_DISTRIBUTION
 LABEL authors="klapeto"
 
-ARG DEB_DISTRIBUTION=noble
 ARG DEB_DISTRIBUTION
 ARG HOST_TRIPLE=x86_64-linux-gnu
 ARG LLVM_VERSION=llvmorg-21.1.0
@@ -25,15 +26,21 @@ RUN apt-get install -y --no-install-recommends \
     autoconf \
     libtool-bin \
     patch \
-    python3 \
+    python3.8 \
     xz-utils \
     zip \
     binutils \
     zstd \
     gzip \
-    make
+    make \
+    xutils-dev
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
+
+#RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
+#RUN apt-get install -y gcc-13 g++-13
+#RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 && \
+#    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
 # install latest cmake
 RUN wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3-linux-x86_64.tar.gz -O cmake.tar.gz
@@ -75,6 +82,11 @@ RUN git clone --depth=1 -b v6.10.0 git://code.qt.io/qt/qt5.git qt6 && \
 RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git && \
     mkdir -p ./llvm-project/llvm/build
 
+RUN git clone --recursive https://gitlab.freedesktop.org/xorg/lib/libxcb-cursor.git && \
+    cd libxcb-cursor && \
+    NOCONFIGURE=1 ./autogen.sh && \
+    mkdir -p build
+
 WORKDIR /tmp/
 
 RUN apt-get install -y libgl1-mesa-dev
@@ -87,6 +99,7 @@ RUN cmake --install .
 WORKDIR /
 
 ARG TARGET_TRIPLE=x86_64-linux-gnu
+ENV DEBIAN_FRONTEND=noninteractive
 ENV QT_HOST_PATH=/usr/local/Qt-6.10.0
 ENV TARGET_TRIPLE=$TARGET_TRIPLE
 ENV HOST_TRIPLE=$HOST_TRIPLE
@@ -105,23 +118,20 @@ RUN ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/p
 ADD ./scripts/docker/build-base.sh ./scripts/docker/build-autotools-based.sh ./
 RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero--disable-gl --disable-libudev"
 
+ADD ./scripts/docker/build-llvm.sh ./
+RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
+
+ADD ./scripts/docker/build-linux-specific.sh ./
+RUN apt-get install -y gperf dpkg-dev
+RUN ./build-linux-specific.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
+
 ADD ./scripts/docker/build-qt.sh ./scripts/docker/generate-toolchain-file.sh ./scripts/docker/cross.linux.cmake.template ./
 RUN ./generate-toolchain-file.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 RUN ./build-qt.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
-ADD ./scripts/docker/build-llvm.sh ./
-RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
-
 WORKDIR /
 
-# cleanup
-RUN apt-get -y purge g++ gcc libc6-dev automake autoconf libtool-bin xutils-dev
-RUN apt-get -y autoremove && apt-get autoclean
-
-RUN apt-get purge -y `xargs < /tmp/packages`
-RUN apt-get autoremove -y
-
-RUN rm -rf /tmp \
+RUN rm -rf /tmp/* \
     "/opt/sysroots/$TARGET_TRIPLE/tmp" \
     "/opt/sysroots/$TARGET_TRIPLE/var" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/share" \
@@ -135,5 +145,8 @@ RUN if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ]; then \
     "/opt/sysroots/$TARGET_TRIPLE/usr/bin" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/sbin"; \
     fi
+
+# needed by QT built tools on dev-container...
+RUN apt-get install -y libpcre2-16-0
 
 CMD ["/bin/bash"]

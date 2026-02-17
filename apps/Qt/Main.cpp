@@ -21,6 +21,7 @@
 #include <QSplashScreen>
 #include <QScreen>
 #include <QMessageBox>
+#include <QFontDatabase>
 
 #include <iostream>
 #include <sstream>
@@ -199,6 +200,9 @@ int main(int argc, char* argv[])
 		QCoreApplication::setApplicationName("Elpida Qt");
 
 		QApplication application(argc, argv);
+
+		// Needed for environments where fonts do not exist
+		auto _ = QFontDatabase::addApplicationFont(":/DejaVuSans.ttf");
 
 		auto screenSize = QGuiApplication::primaryScreen()->size();
 		auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(
