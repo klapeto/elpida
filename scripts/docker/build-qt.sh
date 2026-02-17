@@ -37,7 +37,7 @@ mkdir -p qt6/build
 cd qt6/build
 rm -rf ./*
 
-QT_CONFIG_ARGS="-static -no-shared -release -no-sbom -force-bundled-libs"
+QT_CONFIG_ARGS="-static -no-shared -release -no-sbom -submodules qtcharts,qtsvg,qtbase"
 QT_CONFIG_ARGS="$QT_CONFIG_ARGS -prefix $INSTALL_PREFIX"
 
 : ${QT_HOST_PATH:="/opt/sysroots/$HOST_TRIPLE/usr"}
