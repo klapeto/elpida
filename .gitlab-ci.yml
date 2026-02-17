@@ -41,6 +41,7 @@ workflow:
           - extern/**/*
           - include/**/*
           - src/**/*
+          - scripts/Linux/**/*
           - tests/**/*
           - CMakeLists.txt
           - .gitlab-ci.yml

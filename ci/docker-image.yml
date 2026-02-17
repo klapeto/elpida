@@ -24,6 +24,8 @@
           - scripts/docker/build-llvm.sh
           - scripts/docker/build-qt.sh
           - scripts/docker/generate-sysroot.sh
+          - scripts/docker/cross.linux.cmake.template
+          - scripts/docker/generate-toolchain-file.sh
           - scripts/docker/packages
 
 Build Docker Image (x86_64-linux-gnu):

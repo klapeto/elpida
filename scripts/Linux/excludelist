@@ -49,7 +49,7 @@ libGLX.so.0
 # reported to be superfluent and conflicting system libraries (graphics driver)
 # see https://github.com/linuxdeploy/linuxdeploy/issues/89
 
-libOpenGL.so.0
+#libOpenGL.so.0 # New ubuntu does not have this?
 # Qt installed via install-qt.sh apparently links to this library
 # part of OpenGL like libGL/libEGL, so excluding it should not cause any problems
 # https://github.com/linuxdeploy/linuxdeploy/issues/152

@@ -1,7 +1,8 @@
 - General:
-    - Qt6 needs host `libxkbcommon-x11-dev`
+    - Qt6 needs host `libxkbcommon-x11-dev`. It was probably the absolute links?
     - Had to move host `/usr/include` to `/usr/_include` to avoid conflicts with Sysroot headers.
     - Had not have gtk3 installed to avoid having to search for wayland scanner.
+    - qt6 on linux shows boxes as font, QFontDatabase: Cannot find font directory /opt/sysroots/x86_64-linux-gnu/usr/lib/fonts.
 - Ubuntu:bionic
     - LLVM 18.1.0: failed to link due to missing `dladdr` function
     - LLVM 19.1.0: compiled but failed to launch due to a missing library (fs something). Update: it was this "fix" I
@@ -19,4 +20,6 @@
     - Launching the latest CMake from repositories could not find libssl 1.1.1. Had to download from binaries instead.
     - on i386/aarch64/etc the symbolic links to libdl.so.2, etc. were rooted. this caused the "missing `dladdr` function" because it was looking for them in the root library.
 - Ubuntu:focal
- - i386 does not have `libxcb-cursor-dev` package
+ - i386 does not have `libxcb-cursor-dev` package. Had to manually build it.
+ - arm glibc has no _rtld_global_ro (glibc bug)
+   - had to remove "-static"
