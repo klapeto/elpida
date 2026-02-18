@@ -87,7 +87,7 @@ set(ELPIDA_QT_SOURCES
 		Views/MemoryBenchmarkView/MemoryBenchmarkView.cpp
 		Views/MemoryBenchmarkView/MemoryBenchmarkView.ui
 
-		Images/Images.qrc
+		Resources/Resources.qrc
 
         ConfigurationViewPool.cpp
 		QtMessageService.cpp

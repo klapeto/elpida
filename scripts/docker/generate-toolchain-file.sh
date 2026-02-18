@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 #  Copyright (c) 2025  Ioannis Panagiotopoulos
 #
@@ -16,45 +16,15 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+# exit if any command fails
 set -e
 
 this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
-if [ ! -d ./hwloc ]; then
-    git clone --depth=1 -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git
-    cd hwloc
-    ./autogen.sh
-    cd ..
-fi
-
-mkdir -p hwloc/build
-cd hwloc/build
-
-../configure \
-    CC=$CC \
-    CXX=$CXX \
-    CFLAGS="$CFLAGS" \
-    CXXFLAGS="$CXXFLAGS" \
-    --host="$TARGET_TRIPLE" \
-    --with-sysroot="$SYSROOT" \
-    --prefix="$INSTALL_PREFIX" \
-    --enable-static \
-    --disable-shared \
-    --enable-plugins=no \
-    --disable-readme \
-    --disable-cairo \
-    --disable-libxml2 \
-    --disable-io \
-    --disable-pci \
-    --disable-opencl \
-    --disable-cuda \
-    --disable-nvml \
-    --disable-rsmi \
-    --disable-levelzero \
-    --disable-gl \
-    --disable-libudev
-
-make -j$(nproc) install
-rm -rf ./*
-cd ../..
+(sed "s/<TARGET_SYSTEM_PROCESSOR>/${TARGET_PROCESSOR}/g" "$this_dir/cross.linux.cmake.template" |
+sed "s/<TARGET_SYSTEM_NAME>/${TARGET_OS}/g" |
+sed "s/<TARGET_C_COMPILER>/${CC}/g" |
+sed "s/<TARGET_CXX_COMPILER>/${CXX}/g" |
+sed "s/<TARGET_ASM_COMPILER>/${CC}/g" |
+sed "s#<TARGET_SYSROOT>#$SYSROOT#g") > "cross.linux.cmake" # hash to avoid having to escape the / from the path

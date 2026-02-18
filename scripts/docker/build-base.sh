@@ -19,7 +19,7 @@
 # exit if any command fails
 set -e
 
-if [ $# -ne 2 ]; then
+if [ ! $# -ge 2 ]; then
     echo "Usage $0 target-triple sysroot-target-dir"
     exit 1;
 fi
@@ -56,6 +56,15 @@ if [ "$TARGET_OS" = "linux" ]; then
 elif [ "$TARGET_OS" = "w64" ]; then
     TARGET_OS=Windows
 fi
+
+case $TARGET_ARCH in
+armv7-*)
+    TARGET_PROCESSOR=arm
+    ;;
+*)
+    TARGET_PROCESSOR=$TARGET_ARCH
+    ;;
+esac
 
 CC="${TARGET_PREFIX}clang"
 CXX="${TARGET_PREFIX}clang++"

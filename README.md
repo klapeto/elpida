@@ -5,67 +5,29 @@ Elpida is a simple CPU/Algorithm benchmarking library, aimed to be as transparen
 
 ## Contents
 
-* [Dependencies](#dependencies)
-* [Build for Windows](#build-for-windows)
-* [Build for Linux](#build-for-linux)
+* [Building](#Building)
 * [License](#license)
 
-## Dependencies
+## Building
+It is strongly recommended to use [Dev Containers](https://containers.dev/) to avoid messing with your host system and
+will create a docker instance with all the dependencies required to build. We already provide a docker configuration to setup the container. 
+Once you setup it with your IDE, you can build Elpida.
 
-To be able to build elpida from sources, you will need a small build system consisting of:
+### IDEA IDES
+We provide CMAKE/Run Configurations in the `./.idea` folder
 
-* [Cmake](https://cmake.org/ "CMAKE Build system")
-* [LLVM](https://gcc.gnu.org "LLVM/Clang") for C++ that supports c++17
-* [Qt6](https://www.qt.io/ "Qt framework") For the GUI frontend (optional).
-
-There are some other dependencies that are built together with Elpida.
-
-## Build for Windows
-
-Building Elpida on Windows natively is not supported yet and not recommended. 
-If you want to build it anyway, you can use [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10) and follow the instructions for Linux.
-
-## Build for Linux
-
-Assuming you can use similar commands on your distro, you can follow these steps to build Elpida.
-To keep your host system clean, you can go the way official builds are produced. This means that you will need to create 
-a sysroot for the target you need (most likely x86_64). Keep in mind this will require a lot of disk space (about 1,9GiB
-as of December 2025). Also, you will need 32GB of RAM to build llvm and as many cores as you have (to speed up the build).
-1. Install required packages:
+### Other IDES
+You need to configure the project via CMake and use the dev container sysroot (assuming your host machine is x86_64 architecture)
 ```bash
-sudo apt install git make pkg-config automake autoconf libtool-bin patch python3 clang cmake debootstrap
+mkdir build
+cd build
+cmake .. -DQT_HOST_PATH=/usr/local/Qt-6.10.0 -DCMAKE_TOOLCHAIN_FILE=cmake-modules/llvm-cross.cmake -DCMAKE_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DTARGET_PREFIX=x86_64-linux-gnu-
+make -j$(nproc)
+make install
 ```
-2. First, clone the repo and update the submodules:
+The above will install the elpida on the `./install` folder of the source folder. To run it, you need to specify the `LD_LIBRARY_PATH` to use the sysroot like:
 ```bash
-git clone --recurse-submodules https://gitlab.com/dev-hood/elpida.git
-```
-3. Set up the sysroot with the initial packages:
-```bash
-mkdir -p elpida/sysroot && sudo debootstrap --arch=amd64 --variant=buildd --components=main,universe --include=`paste -sd, elpida/scripts/docker/packages` noble elpida/sysroot/x86_64-linux-gnu
-```
-4. Clone and build LLVM:
-```bash
-extern ROOTDIR=$PWD && extern SYSROOTBASE=$PWD/elpida/sysroot && git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git && mkdir -p llvm-project/llvm/build && cd llvm-project/llvm/build && ../../../elpida/scripts/build-llvm.sh && cd $ROOTDIR
-```
-5. Clone and build hwloc:
-```bash
-git clone --depth=1 -b hwloc-2.4.0 https://github.com/open-mpi/hwloc.git && cd hwloc && ./autogen.sh && mkdir build && cd build && ../../../elpida/scripts/build-hwloc.sh && cd $ROOTDIR
-```
-6. (Optional if you want to build the QT GUI) Clone and build Qt:
-```bash
-git clone -b v6.10.0 --depth=1 git://code.qt.io/qt/qt5.git qt6 && cd qt6 && ./init-repository --module-subset=qtcharts,qtsvg,qtbase && mkdir build && cd build && ../../../elpida/scripts/build-qt.sh && cd $ROOTDIR
-```
-7. Now you have a setup sysroot. You can optionally remove the cloned repos we no longer need:
-```bash
-rm -rf $PWD/llvm-project && rm -rf $PWD/hwloc && rm -rf $PWD/qt6
-```
-8. Configure elpida
-```bash
-cd elpida && mkdir build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/llvm-cross.cmake -DCMAKE_SYSROOT=../sysroot/x86_64-linux-gnu ..
-```
-9. Build elpida
-```bash
-cmake --build . --parallel && cmake --install .
+LD_LIBRARY_PATH=/opt/sysroots/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu:/opt/sysroots/x86_64-linux-gnu/usr/lib:$LD_LIBRARY_PATH ./install/bin/elpida-qt
 ```
 
 ## License

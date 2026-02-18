@@ -25,9 +25,6 @@ if (MSYS OR MINGW OR MSVC)
     )
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
-
 add_executable(elpida-cli ${ELPIDA_CLI_SOURCES})
 
 target_link_libraries(elpida-cli PUBLIC elpida-core elpida-platform elpida-application)
