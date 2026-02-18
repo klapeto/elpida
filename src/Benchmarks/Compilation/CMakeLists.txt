@@ -98,6 +98,10 @@ if (WIN32)
     target_link_libraries(elpida-compilation-benchmarks PUBLIC ntdll version)
 endif()
 
+if (LINUX)
+    target_link_libraries(elpida-compilation-benchmarks PUBLIC dl)
+endif ()
+
 if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
     install(TARGETS elpida-compilation-benchmarks ARCHIVE)
 endif ()

@@ -35,6 +35,8 @@ if [[ -z $NAME ]]; then
   NAME="Elpida.tar.xz"
 fi
 
+echo "Finalizing $INSTALL_DIR"
+
 CURDIR=$PWD
 this_script_dir="$(readlink -f "$(dirname "$0")")"
 cp "$this_script_dir/elpida-entry-point.sh" "$INSTALL_DIR/elpida"
@@ -47,4 +49,6 @@ cp "$this_script_dir/elpida-entry-point.sh" "$INSTALL_DIR/elpida"
 } >> "$INSTALL_DIR/elpida"
 chmod +x "$INSTALL_DIR/elpida"
 cd "$INSTALL_DIR"
+echo "Creating tar file..."
 tar --exclude="ld.env.sh" -cJf "$CURDIR/$NAME" .
+echo "Done."

@@ -10,7 +10,7 @@
     #endif
 #else
     #define _Addr int
-    #define _Int64 long
+    #define _Int64 long long
     #define _Reg int
 #endif
 
@@ -46,3 +46,4 @@ TYPEDEF struct { __attribute__((__aligned__(8))) long long __ll; long double __l
 #else
 TYPEDEF struct { alignas(8) long long __ll; long double __ld; } max_align_t;
 #endif
+

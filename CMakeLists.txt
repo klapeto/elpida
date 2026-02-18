@@ -25,6 +25,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin")
 
     # if we link with musl, allow this
+    # -lgcc is needed for i386 soft float routines
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 else ()
     message(FATAL_ERROR "'${CMAKE_CXX_COMPILER_ID}' compiler is currently unsupported. Elpida requires specific compiler functionality that currently only GCC/Clang provide. If you think another compiler can be supported, please let us know in the issues page.")
@@ -46,6 +47,7 @@ endif ()
 
 if (LINUX)
     set(ELPIDA_LINUX 1)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgcc")
 endif ()
 
 if (ANDROID)
@@ -57,8 +59,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(ELPIDA_DEBUG 1)
 endif ()
 
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/AppDirs/${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR} CACHE PATH "Local" FORCE)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND ELPIDA_DEBUG)
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "Local" FORCE)
 endif ()
 
 set(ELPIDA_LOCAL_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/install.tmp/${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})

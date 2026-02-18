@@ -84,7 +84,8 @@ cmake -S .. \
   -DLLVM_ENABLE_IDE=OFF \
   -DLLVM_ENABLE_LIBPFM=OFF \
   -DLLVM_INDIVIDUAL_TEST_COVERAGE=OFF \
-  -DLLVM_LINK_LLVM_DYLIB=OFF
+  -DLLVM_LINK_LLVM_DYLIB=OFF \
+  -DLLVM_ENABLE_ZLIB=OFF #workaround with i686 link with libz.a
 
 make -j$(nproc) llvm-tblgen llvm-config clang-tblgen install
 rm -rf ./*

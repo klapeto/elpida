@@ -37,7 +37,7 @@ mkdir -p qt6/build
 cd qt6/build
 rm -rf ./*
 
-QT_CONFIG_ARGS="-static -no-shared -release -no-sbom -submodules qtcharts,qtsvg,qtbase -nomake examples -nomake tests -nomake benchmarks -nomake manual-tests -nomake minimal-static-tests"
+QT_CONFIG_ARGS="-static -no-shared -release -no-sbom -submodules qtcharts,qtsvg,qtbase"
 QT_CONFIG_ARGS="$QT_CONFIG_ARGS -prefix $INSTALL_PREFIX"
 
 : ${QT_HOST_PATH:="/opt/sysroots/$HOST_TRIPLE/usr"}
@@ -47,28 +47,17 @@ if [ "$TARGET_TRIPLE" != "$HOST_TRIPLE" ] || [ -n "$FORCE_NON_HOST" ] && [ -z "$
     QT_OS="$TARGET_OS"
 fi
 
-../configure $QT_CONFIG_ARGS -- \
-    -DCMAKE_C_COMPILER="$CC" \
-    -DCMAKE_CXX_COMPILER="$CXX" \
-    -DCMAKE_ASM_COMPILER="$CC" \
-    -DCMAKE_C_FLAGS_INIT="$CFLAGS" \
-    -DCMAKE_CXX_FLAGS_INIT="$CFLAGS" \
-    -DCMAKE_LINKER_TYPE=LLD \
-    -DCMAKE_SYSTEM_NAME="$QT_OS" \
-    -DCMAKE_SYSTEM_PROCESSOR="$TARGET_ARCH" \
-    -DCMAKE_SYSROOT="$SYSROOT" \
-    -DCMAKE_FIND_ROOT_PATH="$SYSROOT" \
-    -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
-    -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
-    -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
-    -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY
+case $TARGET_TRIPLE in
+*-linux-gnu*)
+    # force configuration to fail we cannot get xcb (qt wont even start without it)
+    QT_CONFIG_ARGS="$QT_CONFIG_ARGS -xcb"
+    ;;
+esac
 
-# extreme qt workaround because configure includes system headers
-mv /usr/include /usr/_include
+../configure $QT_CONFIG_ARGS -- \
+    -DCMAKE_TOOLCHAIN_FILE="/tmp/cross.linux.cmake"
 
 cmake --build . --parallel
-
-mv /usr/_include /usr/include
 cmake --install .
 rm -rf ./*
 cd ../..
