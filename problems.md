@@ -23,3 +23,5 @@
  - i386 does not have `libxcb-cursor-dev` package. Had to manually build it.
  - arm glibc has no _rtld_global_ro (glibc bug)
    - had to remove "-static"
+- Windows i686:
+ - Floor function is replaced with int3 spam (breakpoints) (I missed a change on musl code and INT64 was long instead of long long)
