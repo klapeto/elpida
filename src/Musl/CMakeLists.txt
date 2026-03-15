@@ -13,7 +13,6 @@ else ()
 endif ()
 
 add_library(musl-platform
-        OBJECT
         platform/errno-location.c
 )
 
