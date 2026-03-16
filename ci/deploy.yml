@@ -156,20 +156,20 @@ Deploy Cli (x86_64-w64-mingw32):
     - .Deploy Cli
     - .Deploy Windows
 
-Deploy Qt (i686-w64-mingw32):
+Deploy Qt (i386-w64-mingw32):
   variables:
-    TARGET_TRIPLE: i686-w64-mingw32
+    TARGET_TRIPLE: i386-w64-mingw32
   dependencies:
-    - Package Qt (i686-w64-mingw32)
+    - Package Qt (i386-w64-mingw32)
   extends:
     - .Deploy Qt
     - .Deploy Windows
 
-Deploy Cli (i686-w64-mingw32):
+Deploy Cli (i386-w64-mingw32):
   variables:
-    TARGET_TRIPLE: i686-w64-mingw32
+    TARGET_TRIPLE: i386-w64-mingw32
   dependencies:
-    - Package Cli (i686-w64-mingw32)
+    - Package Cli (i386-w64-mingw32)
   extends:
     - .Deploy Cli
     - .Deploy Windows

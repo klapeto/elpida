@@ -70,11 +70,11 @@ Build (x86_64-w64-mingw32):
     - Build Docker Image (x86_64-w64-mingw32)
   extends: .Build
 
-Build (i686-w64-mingw32):
+Build (i386-w64-mingw32):
   variables:
-    TARGET_TRIPLE: i686-w64-mingw32
+    TARGET_TRIPLE: i386-w64-mingw32
   dependencies:
-    - Build Docker Image (i686-w64-mingw32)
+    - Build Docker Image (i386-w64-mingw32)
   extends: .Build
 
 Build (aarch64-w64-mingw32):

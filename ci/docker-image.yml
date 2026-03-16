@@ -88,12 +88,12 @@ Build Docker Image (aarch64-w64-mingw32):
     - Build Docker Image (Base)
   extends: .Build Docker Image
 
-Build Docker Image (i686-w64-mingw32):
+Build Docker Image (i386-w64-mingw32):
   tags:
     - amd64
   timeout: 5h 30m
   variables:
-    TARGET_TRIPLE: i686-w64-mingw32
+    TARGET_TRIPLE: i386-w64-mingw32
   dependencies:
     - Build Docker Image (Base)
   extends: .Build Docker Image

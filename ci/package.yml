@@ -155,20 +155,20 @@ Package Cli (x86_64-w64-mingw32):
     - .Package Cli
     - .Package Windows
 
-Package Qt (i686-w64-mingw32):
+Package Qt (i386-w64-mingw32):
   variables:
-    TARGET_TRIPLE: i686-w64-mingw32
+    TARGET_TRIPLE: i386-w64-mingw32
   dependencies:
-    - Build (i686-w64-mingw32)
+    - Build (i386-w64-mingw32)
   extends:
     - .Package Qt
     - .Package Windows
 
-Package Cli (i686-w64-mingw32):
+Package Cli (i386-w64-mingw32):
   variables:
-    TARGET_TRIPLE: i686-w64-mingw32
+    TARGET_TRIPLE: i386-w64-mingw32
   dependencies:
-    - Build (i686-w64-mingw32)
+    - Build (i386-w64-mingw32)
   extends:
     - .Package Cli
     - .Package Windows
