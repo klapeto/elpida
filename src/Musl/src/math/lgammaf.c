@@ -3,5 +3,5 @@
 
 float lgammaf(float x)
 {
-	return __lgammaf_r(x, &__signgam);
+	return _MuslLite_lgammaf_r(x, &_MuslLite_signgam);
 }

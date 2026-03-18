@@ -1,6 +1,6 @@
 #include "libm.h"
 
-float __math_oflowf(uint32_t sign)
+float _MuslLite_math_oflowf(uint32_t sign)
 {
-	return __math_xflowf(sign, 0x1p97f);
+	return _MuslLite_math_xflowf(sign, 0x1p97f);
 }

@@ -3,7 +3,7 @@ project("Elpida encryption benchmarks" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-add_executable(elpida-encryption-benchmarks
+add_library(elpida-encryption-benchmarks
         Plugin.cpp
         RSAEncryptTask.cpp
         RSADecryptTask.cpp
@@ -19,11 +19,13 @@ add_executable(elpida-encryption-benchmarks
 if(MSYS OR MINGW OR MSVC)
     # hack to make sure it is linked correctly. Cmake messes the order when crypto is defined and links ws2_32 before crypto
     # `crypto` target is used to ensure is is built before building this
-    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto ${CRYPTO_CUSTOM_LIB_PATH} ws2_32 crypt32 zlibstatic)
+    target_link_libraries(elpida-encryption-benchmarks PUBLIC crypto ${CRYPTO_CUSTOM_LIB_PATH} ws2_32 crypt32 zlibstatic)
 else()
-    target_link_libraries(elpida-encryption-benchmarks PRIVATE crypto ${CRYPTO_CUSTOM_LIB_PATH} zlibstatic)
+    target_link_libraries(elpida-encryption-benchmarks PUBLIC crypto ${CRYPTO_CUSTOM_LIB_PATH} zlibstatic)
 endif()
 
-target_link_libraries(elpida-encryption-benchmarks PRIVATE elpida-core elpida-platform elpida-common-tasks elpida-entry-point musl-lite)
+target_link_libraries(elpida-encryption-benchmarks PUBLIC elpida-core elpida-platform elpida-common-tasks musl-lite)
 
-install(TARGETS elpida-encryption-benchmarks DESTINATION ${ELPIDA_BENCHMARK_INSTALL_DIR})
+if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)
+    install(TARGETS elpida-encryption-benchmarks ARCHIVE)
+endif ()

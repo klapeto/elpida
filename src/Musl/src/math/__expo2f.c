@@ -5,7 +5,7 @@ static const int k = 235;
 static const float kln2 = 0x1.45c778p+7f;
 
 /* expf(x)/2 for x >= log(FLT_MAX), slightly better than 0.5f*expf(x/2)*expf(x/2) */
-float __expo2f(float x, float sign)
+float _MuslLite_expo2f(float x, float sign)
 {
 	float scale;
 

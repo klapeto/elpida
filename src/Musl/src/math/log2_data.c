@@ -9,7 +9,7 @@
 
 #define N (1 << LOG2_TABLE_BITS)
 
-const struct log2_data __log2_data = {
+const struct log2_data _MuslLite_log2_data = {
 // First coefficient: 0x1.71547652b82fe1777d0ffda0d24p0
 .invln2hi = 0x1.7154765200000p+0,
 .invln2lo = 0x1.705fc2eefa200p-33,

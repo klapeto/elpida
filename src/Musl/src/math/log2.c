@@ -10,12 +10,12 @@
 #include "libm.h"
 #include "log2_data.h"
 
-#define T __log2_data.tab
-#define T2 __log2_data.tab2
-#define B __log2_data.poly1
-#define A __log2_data.poly
-#define InvLn2hi __log2_data.invln2hi
-#define InvLn2lo __log2_data.invln2lo
+#define T _MuslLite_log2_data.tab
+#define T2 _MuslLite_log2_data.tab2
+#define B _MuslLite_log2_data.poly1
+#define A _MuslLite_log2_data.poly
+#define InvLn2hi _MuslLite_log2_data.invln2hi
+#define InvLn2lo _MuslLite_log2_data.invln2lo
 #define N (1 << LOG2_TABLE_BITS)
 #define OFF 0x3fe6000000000000
 
@@ -66,11 +66,11 @@ double log2(double x)
 	if (predict_false(top - 0x0010 >= 0x7ff0 - 0x0010)) {
 		/* x < 0x1p-1022 or inf or nan.  */
 		if (ix * 2 == 0)
-			return __math_divzero(1);
+			return _MuslLite_math_divzero(1);
 		if (ix == asuint64(INFINITY)) /* log(inf) == inf.  */
 			return x;
 		if ((top & 0x8000) || (top & 0x7ff0) == 0x7ff0)
-			return __math_invalid(x);
+			return _MuslLite_math_invalid(x);
 		/* x is subnormal, normalize it.  */
 		ix = asuint64(x * 0x1p52);
 		ix -= 52ULL << 52;

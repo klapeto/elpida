@@ -20,8 +20,8 @@ relerr_exp2: 1.69 * 2^-34 (Relative error of exp2(ylogx).)
 */
 
 #define N (1 << POWF_LOG2_TABLE_BITS)
-#define T __powf_log2_data.tab
-#define A __powf_log2_data.poly
+#define T _MuslLite_powf_log2_data.tab
+#define A _MuslLite_powf_log2_data.poly
 #define OFF 0x3f330000
 
 /* Subnormal input is normalized so ix has negative biased exponent.
@@ -62,7 +62,7 @@ static inline double_t log2_inline(uint32_t ix)
 #undef N
 #undef T
 #define N (1 << EXP2F_TABLE_BITS)
-#define T __exp2f_data.tab
+#define T _MuslLite_exp2f_data.tab
 #define SIGN_BIAS (1 << (EXP2F_TABLE_BITS + 11))
 
 /* The output of log2 and thus the input of exp2 is either scaled by N
@@ -74,13 +74,13 @@ static inline float exp2_inline(double_t xd, uint32_t sign_bias)
 	double_t kd, z, r, r2, y, s;
 
 #if TOINT_INTRINSICS
-#define C __exp2f_data.poly_scaled
+#define C _MuslLite_exp2f_data.poly_scaled
 	/* N*x = k + r with r in [-1/2, 1/2] */
 	kd = roundtoint(xd); /* k */
 	ki = converttoint(xd);
 #else
-#define C __exp2f_data.poly
-#define SHIFT __exp2f_data.shift_scaled
+#define C _MuslLite_exp2f_data.poly
+#define SHIFT _MuslLite_exp2f_data.shift_scaled
 	/* x = k/N + r with r in [-1/(2N), 1/(2N)] */
 	kd = eval_as_double(xd + SHIFT);
 	ki = asuint64(kd);
@@ -159,7 +159,7 @@ float powf(float x, float y)
 			/* Finite x < 0.  */
 			int yint = checkint(iy);
 			if (yint == 0)
-				return __math_invalidf(x);
+				return _MuslLite_math_invalidf(x);
 			if (yint == 1)
 				sign_bias = SIGN_BIAS;
 			ix &= 0x7fffffff;
@@ -177,9 +177,9 @@ float powf(float x, float y)
 			  asuint64(126.0 * POWF_SCALE) >> 47)) {
 		/* |y*log(x)| >= 126.  */
 		if (ylogx > 0x1.fffffffd1d571p+6 * POWF_SCALE)
-			return __math_oflowf(sign_bias);
+			return _MuslLite_math_oflowf(sign_bias);
 		if (ylogx <= -150.0 * POWF_SCALE)
-			return __math_uflowf(sign_bias);
+			return _MuslLite_math_uflowf(sign_bias);
 	}
 	return exp2_inline(ylogx, sign_bias);
 }

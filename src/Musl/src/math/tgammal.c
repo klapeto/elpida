@@ -190,7 +190,7 @@ static long double stirf(long double x)
 		 + 8.33333333333333333333E-2L) * w
 		 + 1.0;
 	else
-		w = 1.0 + w * __polevll(w, STIR, 8);
+		w = 1.0 + w * _MuslLite_polevll(w, STIR, 8);
 	y = expl(x);
 	if (x > MAXSTIR) { /* Avoid overflow in pow() */
 		v = powl(x, 0.5L * x - 0.25L);
@@ -256,8 +256,8 @@ long double tgammal(long double x)
 		return z;
 
 	x -= 2.0;
-	p = __polevll(x, P, 7);
-	q = __polevll(x, Q, 8);
+	p = _MuslLite_polevll(x, P, 7);
+	q = _MuslLite_polevll(x, Q, 8);
 	z = z * p / q;
 	return z;
 
@@ -267,9 +267,9 @@ small:
 		return x / x;
 	if (x < 0.0) {
 		x = -x;
-		q = z / (x * __polevll(x, SN, 8));
+		q = z / (x * _MuslLite_polevll(x, SN, 8));
 	} else
-		q = z / (x * __polevll(x, S, 8));
+		q = z / (x * _MuslLite_polevll(x, S, 8));
 	return q;
 }
 #elif LDBL_MANT_DIG == 113 && LDBL_MAX_EXP == 16384

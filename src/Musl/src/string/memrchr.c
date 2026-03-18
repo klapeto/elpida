@@ -1,6 +1,6 @@
 #include <string.h>
 
-void *__memrchr(const void *m, int c, size_t n)
+void *_MuslLite_memrchr(const void *m, int c, size_t n)
 {
 	const unsigned char *s = m;
 	c = (unsigned char)c;
@@ -8,4 +8,4 @@ void *__memrchr(const void *m, int c, size_t n)
 	return 0;
 }
 
-weak_alias(__memrchr, memrchr);
+weak_alias(_MuslLite_memrchr, memrchr);

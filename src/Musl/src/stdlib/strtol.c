@@ -10,7 +10,7 @@ static unsigned long long strtox(const char *s, char **p, int base, unsigned lon
 	FILE f;
 	sh_fromstring(&f, s);
 	shlim(&f, 0);
-	unsigned long long y = __intscan(&f, base, 1, lim);
+	unsigned long long y = _MuslLite_intscan(&f, base, 1, lim);
 	if (p) {
 		size_t cnt = shcnt(&f);
 		*p = (char *)s + cnt;
@@ -48,9 +48,9 @@ uintmax_t strtoumax(const char *restrict s, char **restrict p, int base)
 	return strtoull(s, p, base);
 }
 
-weak_alias(strtol, __strtol_internal);
-weak_alias(strtoul, __strtoul_internal);
-weak_alias(strtoll, __strtoll_internal);
-weak_alias(strtoull, __strtoull_internal);
-weak_alias(strtoimax, __strtoimax_internal);
-weak_alias(strtoumax, __strtoumax_internal);
+weak_alias(strtol, _MuslLite_strtol_internal);
+weak_alias(strtoul, _MuslLite_strtoul_internal);
+weak_alias(strtoll, _MuslLite_strtoll_internal);
+weak_alias(strtoull, _MuslLite_strtoull_internal);
+weak_alias(strtoimax, _MuslLite_strtoimax_internal);
+weak_alias(strtoumax, _MuslLite_strtoumax_internal);

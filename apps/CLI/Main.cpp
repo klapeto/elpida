@@ -48,7 +48,7 @@
 #include <filesystem>
 #include <fstream>
 
-#ifdef ELPIDA_UNIX
+#if ELPIDA_HAVE_BACKTRACE
 
 #include <execinfo.h>
 #include <csignal>
@@ -67,7 +67,7 @@ void segFaultHandler(int sig)
 
 static void setupPlatformSpecifics()
 {
-#ifdef ELPIDA_UNIX
+#if ELPIDA_HAVE_BACKTRACE
 	signal(SIGSEGV, segFaultHandler);
 	signal(SIGABRT, segFaultHandler);
 #endif

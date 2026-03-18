@@ -6,7 +6,7 @@
         #define _Reg long long
     #else
         #define _Addr long
-        #define _Int64 long
+        #define _Int64 long long
         #define _Reg long
     #endif
 #else

@@ -18,6 +18,6 @@ extern hidden const struct exp2f_data {
 	double shift;
 	double invln2_scaled;
 	double poly_scaled[EXP2F_POLY_ORDER];
-} __exp2f_data;
+} _MuslLite_exp2f_data;
 
 #endif

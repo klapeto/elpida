@@ -19,21 +19,21 @@ long double cosl(long double x)
 		if (u.i.se < 0x3fff - LDBL_MANT_DIG)
 			/* raise inexact if x!=0 */
 			return 1.0 + x;
-		return __cosl(x, 0);
+		return _MuslLite_cosl(x, 0);
 	}
-	n = __rem_pio2l(x, y);
+	n = _MuslLite_rem_pio2l(x, y);
 	hi = y[0];
 	lo = y[1];
 	switch (n & 3) {
 	case 0:
-		return __cosl(hi, lo);
+		return _MuslLite_cosl(hi, lo);
 	case 1:
-		return -__sinl(hi, lo, 1);
+		return -_MuslLite_sinl(hi, lo, 1);
 	case 2:
-		return -__cosl(hi, lo);
+		return -_MuslLite_cosl(hi, lo);
 	case 3:
 	default:
-		return __sinl(hi, lo, 1);
+		return _MuslLite_sinl(hi, lo, 1);
 	}
 }
 #endif

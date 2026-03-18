@@ -1,6 +1,6 @@
 #include <math.h>
 #include "libm.h"
 
-int __signgam = 0;
+int _MuslLite_signgam = 0;
 
-weak_alias(__signgam, signgam);
+weak_alias(_MuslLite_signgam, signgam);

@@ -1,145 +1,41 @@
-#===================================================================================
-#  Zlib/Libpng
-#  Modified version of the: https://github.com/awstanley/deps-zlib-libpng
-#===================================================================================
-project(deps_zlib_libpng C)
-# zlib/png integration hack - removes all the errors related to export
-# (zlib doesn't export; libpng wants to; in this case we don't care).
-set(SKIP_INSTALL_EXPORT TRUE)
-
-# zlib (requires nothing)
-set(ZLIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/zlib")
-
-# Helper
-set(ZLIB_CONF_DIR "${CMAKE_CURRENT_BINARY_DIR}/zlib")
-set(ZLIB_INCLUDE_DIRS ${ZLIB_DIR} ${ZLIB_CONF_DIR})
-
-include_directories(${ZLIB_INCLUDE_DIRS})
-
-add_subdirectory(${ZLIB_DIR})
-
-get_directory_property(
-        ZLIB_BUILD_DIR
-        DIRECTORY
-        ${ZLIB_DIR}
-        DEFINITION
-        CMAKE_CURRENT_BINARY_DIR
-)
-
-option(PNG_LINK_ZLIB_STATIC "Use a static zlib library for libpng builds" OFF)
-
-# not needed, but paranoia for the future.
-get_directory_property(
-        zlib
-        DIRECTORY
-        ${ZLIB_DIR}
-        DEFINITION
-        zlib
-)
-
-# not needed, but paranoia for the future.
-get_directory_property(
-        zlibstatic
-        DIRECTORY
-        ${ZLIB_DIR}
-        DEFINITION
-        zlibstatic
-)
-
-if (PNG_LINK_ZLIB_STATIC)
-    set(ZLIB_LIBRARY zlibstatic)
+if (ELPIDA_EXTERN_OVERRIDE)
+    set(ELPIDA_EXTERN_PATH ${ELPIDA_EXTERN_OVERRIDE})
 else ()
-    set(ZLIB_LIBRARY zlib)
+    set(ELPIDA_EXTERN_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 
-# Include for png
-set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
+set(ZLIB_BUILD_EXAMPLES OFF)
+add_subdirectory(${ELPIDA_EXTERN_PATH}/zlib ${CMAKE_CURRENT_BINARY_DIR}/zlib)
 
-# libpng (requiring zlib)
-set(LIBPNG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libpng")
-
-# libpng needs a hand.
-include_directories(
-        ${ZLIB_DIR}
-        ${ZLIB_BUILD_DIR}
-        ${LIBPNG_DIR}
-        ${LIBPNG_BUILD_DIR}
+set(ZLIB_INCLUDE_DIRECTORIES
+        ${ELPIDA_EXTERN_PATH}/zlib
+        ${CMAKE_CURRENT_BINARY_DIR}/zlib
 )
 
-# we have to force png to use our lib not any system wise
-set(PNG_BUILD_ZLIB ON CACHE BOOL "Internal Zlib" FORCE)
+set(ZLIB_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRECTORIES} PARENT_SCOPE)
 
-add_subdirectory(${LIBPNG_DIR})
+set(PNG_SHARED OFF)
+set(PNG_TESTS OFF)
+set(PNG_TOOLS OFF)
+set(ZLIB_USE_STATIC_LIBS ON)
 
-get_directory_property(
-        LIBPNG_BUILD_DIR
-        DIRECTORY
-        ${LIBPNG_DIR}
-        DEFINITION
-        CMAKE_CURRENT_BINARY_DIR
+if (UNIX)
+    set(ZLIB_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/zlib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX} CACHE PATH "" FORCE)
+else ()
+    set(ZLIB_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/zlib/${CMAKE_STATIC_LIBRARY_PREFIX}zlibstatic${CMAKE_STATIC_LIBRARY_SUFFIX} CACHE PATH "" FORCE)
+endif ()
+
+set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRECTORIES})
+add_subdirectory(${ELPIDA_EXTERN_PATH}/libpng ${CMAKE_CURRENT_BINARY_DIR}/libpng)
+
+set(LIBPNG_INCLUDE_DIRECTORIES
+        ${ELPIDA_EXTERN_PATH}/libpng
+        ${CMAKE_CURRENT_BINARY_DIR}/libpng
+        PARENT_SCOPE
 )
 
-get_directory_property(
-        LIBPNG_STATIC
-        DIRECTORY
-        ${LIBPNG_DIR}
-        DEFINITION
-        PNG_LIB_NAME_STATIC
-)
+set(BOOST_REGEX_STANDALONE ON)
+add_subdirectory(${ELPIDA_EXTERN_PATH}/boost-regex ${CMAKE_CURRENT_BINARY_DIR}/boost-regex)
 
-get_directory_property(
-        LIBPNG_SHARED
-        DIRECTORY
-        ${LIBPNG_DIR}
-        DEFINITION
-        PNG_LIB_NAME
-)
-
-set(LIBPNG_INCLUDE_DIRS ${LIBPNG_DIR} ${LIBPNG_BUILD_DIR})
-
-# unless you install them, they do not expose the header includes
-target_include_directories(zlib INTERFACE ${ZLIB_INCLUDE_DIRS})
-target_include_directories(zlibstatic INTERFACE ${ZLIB_INCLUDE_DIRS})
-target_include_directories(png INTERFACE ${LIBPNG_INCLUDE_DIRS})
-target_include_directories(png_static INTERFACE ${LIBPNG_INCLUDE_DIRS})
-
-add_subdirectory(google-test)
-
-set(BOOST_REGEX_STANDALONE TRUE)
-add_subdirectory(boost-regex)
-
-# openssl-cmake cross config
-if (MINGW AND CMAKE_HOST_UNIX)
-    set(CROSS ON)
-    if (CMAKE_SYSTEM_PROCESSOR MATCHES x86_64)
-        set(CROSS_TARGET mingw64)
-        set(CROSS_PREFIX x86_64-w64-mingw32.static-)
-    else()
-        set(CROSS_TARGET mingw)
-        set(CROSS_PREFIX i686-w64-mingw32.static-)
-    endif()
-elseif (MINGW)
-    if (CMAKE_SYSTEM_PROCESSOR MATCHES AMD64)
-        set(OPENSSL_ADDITIONAL_FLAGS mingw64)
-    else()
-        set(OPENSSL_ADDITIONAL_FLAGS mingw)
-    endif()
-endif()
-
-if (CMAKE_HOST_UNIX AND CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_PROCESSOR MATCHES aarch64)
-    set(CROSS ON)
-    set(CROSS_TARGET linux-aarch64)
-    set(CROSS_PREFIX aarch64-linux-gnu-)
-endif()
-
-set(BUILD_OPENSSL ON)
-set(OPENSSL_USE_STATIC_LIBS ON)
-set(OPENSSL_BUILD_VERSION 3.3.1)
-set(OPENSSL_BUILD_HASH 777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e)
-set(OPENSSL_MODULES "no-shared no-asm no-engine no-hw no-cast no-md2 no-md4 no-mdc2 no-rc4 no-rc5 no-engine no-idea no-mdc2 no-rc5 no-camellia no-ssl3 no-heartbeats no-gost no-deprecated no-capieng no-comp no-dtls no-psk no-srp no-dso no-dsa no-rc2 no-des no-apps ${OPENSSL_ADDITIONAL_FLAGS}")
-add_subdirectory(openssl-cmake)
-
-# Hack to get the library archive. CMAKE messes up the link order by moving the ws2_32 lib at the beginning
-get_property(CRYPTO_INTERFACE_LIB TARGET crypto PROPERTY INTERFACE_LINK_LIBRARIES)
-get_property(CRYPTO_LIB TARGET ${CRYPTO_INTERFACE_LIB} PROPERTY IMPORTED_LOCATION)
-set(CRYPTO_CUSTOM_LIB_PATH ${CRYPTO_LIB} PARENT_SCOPE)
+include(../cmake-modules/openssl.cmake)
+#include(../cmake-modules/hwloc.cmake)

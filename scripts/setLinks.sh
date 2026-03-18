@@ -17,19 +17,34 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+set -e
+
 folders=("Qt" "CLI")
 
+if [ ! $# -eq 1 ]; then
+    echo "Usage $0 root-dir"
+    exit 1;
+fi
+
+function link() {
+  if [ ! -f "$2" ]; then
+    ln -s "$1" "$2"
+  fi
+}
+
 for fn in "${folders[@]}"; do
-  mkdir cmake-build-debug/apps/$fn/Benchmarks
-  ln -s "../InfoDumper/elpida-info-dumper" "cmake-build-debug/apps/$fn/elpida-info-dumper"
-  ln -s "../../../src/Benchmarks/Compression/elpida-compression-benchmarks" "cmake-build-debug/apps/$fn/Benchmarks/elpida-compression-benchmarks"
-  ln -s "../../../src/Benchmarks/Encryption/elpida-encryption-benchmarks" "cmake-build-debug/apps/$fn/Benchmarks/elpida-encryption-benchmarks"
-  ln -s "../../../src/Benchmarks/Image/elpida-image-benchmarks" "cmake-build-debug/apps/$fn/Benchmarks/elpida-image-benchmarks"
-  ln -s "../../../src/Benchmarks/Math/elpida-math-benchmarks" "cmake-build-debug/apps/$fn/Benchmarks/elpida-math-benchmarks"
-  ln -s "../../../src/Benchmarks/Memory/elpida-memory-benchmarks" "cmake-build-debug/apps/$fn/Benchmarks/elpida-memory-benchmarks"
-  ln -s "../../../src/Benchmarks/StdLib/elpida-stdlib-benchmarks" "cmake-build-debug/apps/$fn/Benchmarks/elpida-stdlib-benchmarks"
-  ln -s "../../../src/Benchmarks/Web/elpida-web-benchmarks" "cmake-build-debug/apps/$fn/Benchmarks/elpida-web-benchmarks"
-  ln -s "../../../src/Benchmarks/Compilation/elpida-compilation-benchmarks" "cmake-build-debug/apps/$fn/Benchmarks/elpida-compilation-benchmarks"
+  if [ ! -d $directory ]; then
+    mkdir -p "$1/apps/$fn/Benchmarks"
+  fi
+  link "../InfoDumper/elpida-info-dumper" "$1/apps/$fn/elpida-info-dumper"
+  link "../../../src/Benchmarks/Compression/elpida-compression-benchmarks" "$1/apps/$fn/Benchmarks/elpida-compression-benchmarks"
+  link "../../../src/Benchmarks/Encryption/elpida-encryption-benchmarks" "$1/apps/$fn/Benchmarks/elpida-encryption-benchmarks"
+  link "../../../src/Benchmarks/Image/elpida-image-benchmarks" "$1/apps/$fn/Benchmarks/elpida-image-benchmarks"
+  link "../../../src/Benchmarks/Math/elpida-math-benchmarks" "$1/apps/$fn/Benchmarks/elpida-math-benchmarks"
+  link "../../../src/Benchmarks/Memory/elpida-memory-benchmarks" "$1/apps/$fn/Benchmarks/elpida-memory-benchmarks"
+  link "../../../src/Benchmarks/StdLib/elpida-stdlib-benchmarks" "$1/apps/$fn/Benchmarks/elpida-stdlib-benchmarks"
+  link "../../../src/Benchmarks/Web/elpida-web-benchmarks" "$1/apps/$fn/Benchmarks/elpida-web-benchmarks"
+  link "../../../src/Benchmarks/Compilation/elpida-compilation-benchmarks" "$1/apps/$fn/Benchmarks/elpida-compilation-benchmarks"
 done
 
 

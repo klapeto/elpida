@@ -7,7 +7,7 @@
 
 #include "powf_data.h"
 
-const struct powf_log2_data __powf_log2_data = {
+const struct powf_log2_data _MuslLite_powf_log2_data = {
   .tab = {
   { 0x1.661ec79f8f3bep+0, -0x1.efec65b963019p-2 * POWF_SCALE },
   { 0x1.571ed4aaf883dp+0, -0x1.b0b6832d4fca4p-2 * POWF_SCALE },

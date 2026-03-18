@@ -87,7 +87,7 @@ set(ELPIDA_QT_SOURCES
 		Views/MemoryBenchmarkView/MemoryBenchmarkView.cpp
 		Views/MemoryBenchmarkView/MemoryBenchmarkView.ui
 
-		Images/Images.qrc
+		Resources/Resources.qrc
 
         ConfigurationViewPool.cpp
 		QtMessageService.cpp
@@ -99,67 +99,20 @@ set(ELPIDA_QT_SOURCES
         QtDesktopService.hpp
 )
 
+if (CMAKE_CROSSCOMPILING AND QT_HOST_PATH STREQUAL "")
+	if (HOST_SYSROOT STREQUAL "")
+		set(QT_HOST_PATH "${CMAKE_SYSROOT}/usr")
+	else ()
+		set(QT_HOST_PATH "${HOST_SYSROOT}/usr")
+	endif ()
 
-if (MSVC)
-	set(QT_MISSING True)
+	set(QT_REQUIRE_HOST_PATH_CHECK ON)
+endif ()
 
-	# Huge thanks to https://stackoverflow.com/a/47723189
-	# look for user-registry pointing to qtcreator
-	get_filename_component(QT_BIN [HKEY_CURRENT_USER\\Software\\Classes\\Applications\\QtProject.QtCreator.cpp\\shell\\Open\\Command] PATH)
+find_package(Qt6 COMPONENTS Widgets Charts)
 
-	# get root path so we can search for 5.3, 5.4, 5.5, etc
-	string(REPLACE "/Tools" ";" QT_BIN "${QT_BIN}")
-	list(GET QT_BIN 0 QT_BIN)
-	file(GLOB QT_VERSIONS "${QT_BIN}/5.*")
-	list(SORT QT_VERSIONS)
-
-	# assume the latest version will be last alphabetically
-	list(REVERSE QT_VERSIONS)
-
-	list(GET QT_VERSIONS 0 QT_VERSION)
-
-	# fix any double slashes which seem to be common
-	string(REPLACE "//" "/"  QT_VERSION "${QT_VERSION}")
-
-	if (${MSVC_TOOLSET_VERSION} EQUAL 120)
-		set(QT_MSVC 2013)
-	elseif(${MSVC_TOOLSET_VERSION} EQUAL 140)
-		set(QT_MSVC 2015)
-	elseif(${MSVC_TOOLSET_VERSION} EQUAL 141)
-		set(QT_MSVC 2017)
-	elseif(${MSVC_TOOLSET_VERSION} EQUAL 142)
-		set(QT_MSVC 2019)
-	elseif(${MSVC_TOOLSET_VERSION} EQUAL 143)
-		set(QT_MSVC 2022)
-	else()
-		message(FATAL_ERROR "Unsupported MSVC version")
-	endif()
-
-	# check for 64-bit os
-	# may need to be removed for older compilers as it wasn't always offered
-	if(CMAKE_SYSTEM_PROCESSOR MATCHES 64)
-		set(QT_MSVC "${QT_MSVC}_64")
-	endif()
-	set(QT_PATH "${QT_VERSION}/msvc${QT_MSVC}")
-	set(QT_MISSING False)
-
-	# use Qt_DIR approach so you can find Qt after cmake has been invoked
-	if(NOT QT_MISSING)
-		message("-- Qt found: ${QT_PATH}")
-		set(Qt5_DIR "${QT_PATH}/lib/cmake/Qt5/")
-		set(Qt5Test_DIR "${QT_PATH}/lib/cmake/Qt5Test")
-	endif()
-
-endif()
-
-if (ELPIDA_DEBUG_BUILD EQUAL 1)
-	add_definitions(-DTASK_BATCH_DEBUG_DIR="${TASK_BATCH_DEBUG_DIR}")
-endif()
-
-find_package(Qt5 COMPONENTS Widgets Charts)
-
-if (NOT Qt5Core_FOUND)
-	message("Disabling QT front end because Qt5 libraries (Core/Widgets/Charts) were not found")
+if (NOT Qt6Core_FOUND)
+	message("Disabling QT front end because Qt6 libraries (Core/Widgets/Charts) were not found")
 	return()
 endif()
 
@@ -167,9 +120,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-if (CMAKE_VERSION VERSION_LESS "3.7.0")
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif ()
+qt_standard_project_setup()
 
 if (MSYS OR MINGW OR MSVC)
 	generate_product_version(
@@ -181,18 +132,83 @@ if (MSYS OR MINGW OR MSVC)
 			VERSION_PATCH ${ELPIDA_VERSION_REVISION}
 			VERSION_REVISION ${ELPIDA_VERSION_BUILD}
 			COMPANY_NAME ${ELPIDA_COMPANY_NAME}
-			FILE_DESCRIPTION ${PROJECT_DESCRIPTION}
+			FILE_DESCRIPTION "Elpida QT"
 	)
 endif()
 
-add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
+qt_add_executable(elpida-qt ${ELPIDA_QT_SOURCES})
 
 if (MSYS OR MINGW)
 	target_link_options(elpida-qt PRIVATE -Wl,-subsystem,windows)
 endif()
 
-target_include_directories(elpida-qt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(elpida-qt PRIVATE elpida-application elpida-shared Qt5::Core Qt5::Widgets Qt5::Charts)
+if (LINUX)
+	qt_import_plugins(elpida-qt INCLUDE
+			Qt::QConnManNetworkInformationPlugin
+			Qt::QNetworkManagerNetworkInformationPlugin
+			Qt::QTlsBackendCertOnlyPlugin
+			Qt::QComposePlatformInputContextPlugin
+			Qt::QEglFSEmulatorIntegrationPlugin
+			Qt::QEglFSIntegrationPlugin
+			Qt::QEglFSX11IntegrationPlugin
+			Qt::QEvdevKeyboardPlugin
+			Qt::QEvdevMousePlugin
+			Qt::QEvdevTabletPlugin
+			Qt::QEvdevTouchScreenPlugin
+			Qt::QGifPlugin
+			Qt::QICNSPlugin
+			Qt::QICOPlugin
+			Qt::QIbusPlatformInputContextPlugin
+			Qt::QJpegPlugin
+			Qt::QLinuxFbIntegrationPlugin
+			Qt::QMinimalEglIntegrationPlugin
+			Qt::QMinimalIntegrationPlugin
+			Qt::QOffscreenIntegrationPlugin
+			Qt::QSvgIconPlugin
+			Qt::QSvgPlugin
+			Qt::QTgaPlugin
+			Qt::QTiffPlugin
+			Qt::QTsLibPlugin
+			Qt::QTuioTouchPlugin
+			Qt::QVncIntegrationPlugin
+			Qt::QWbmpPlugin
+			Qt::QWebpPlugin
+			Qt::QXcbEglIntegrationPlugin
+			Qt::QXcbGlxIntegrationPlugin
+			Qt::QXcbIntegrationPlugin
+			Qt::QXdgDesktopPortalThemePlugin
+#			Qt::QWaylandIntegrationPlugin
+#			Qt::QWaylandBrcmEglPlatformIntegrationPlugin
+#			Qt::QWaylandEglPlatformIntegrationPlugin
+#			Qt::QWaylandXCompositeEglPlatformIntegrationPlugin
+#			Qt::QWaylandXCompositeGlxPlatformIntegrationPlugin
+	)
+elseif (WIN32)
+	qt_import_plugins(elpida-qt INCLUDE
+			Qt::QNLMNIPlugin
+			Qt::QSchannelBackendPlugin
+			Qt::QTlsBackendCertOnlyPlugin
+			Qt::QGifPlugin
+			Qt::QICNSPlugin
+			Qt::QICOPlugin
+			Qt::QJpegPlugin
+			Qt::QMinimalIntegrationPlugin
+			Qt::QOffscreenIntegrationPlugin
+			Qt::QSvgIconPlugin
+			Qt::QSvgPlugin
+			Qt::QTgaPlugin
+			Qt::QTiffPlugin
+			Qt::QTuioTouchPlugin
+			Qt::QWbmpPlugin
+			Qt::QWebpPlugin
+			#Qt::QWindowsDirect2DIntegrationPlugin
+			Qt::QWindowsIntegrationPlugin
+			Qt::QModernWindowsStylePlugin
+	)
+endif ()
+
+target_include_directories(elpida-qt PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(elpida-qt PUBLIC elpida-application elpida-shared Qt6::Core Qt6::Widgets Qt6::Charts)
 
 install(TARGETS elpida-qt RUNTIME DESTINATION bin)
 install(FILES qt.conf DESTINATION bin)

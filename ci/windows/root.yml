@@ -1,5 +1,0 @@
-include:
-  - local: '/ci/windows/docker-image.yml'
-  - local: '/ci/windows/build.yml'
-  - local: '/ci/windows/package.yml'
-  - local: '/ci/windows/deploy.yml'

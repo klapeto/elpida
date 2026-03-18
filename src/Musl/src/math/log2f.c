@@ -19,8 +19,8 @@ Relative error: 1.9 * 2^-26 (before rounding.)
 */
 
 #define N (1 << LOG2F_TABLE_BITS)
-#define T __log2f_data.tab
-#define A __log2f_data.poly
+#define T _MuslLite_log2f_data.tab
+#define A _MuslLite_log2f_data.poly
 #define OFF 0x3f330000
 
 float log2f(float x)
@@ -36,11 +36,11 @@ float log2f(float x)
 	if (predict_false(ix - 0x00800000 >= 0x7f800000 - 0x00800000)) {
 		/* x < 0x1p-126 or inf or nan.  */
 		if (ix * 2 == 0)
-			return __math_divzerof(1);
+			return _MuslLite_math_divzerof(1);
 		if (ix == 0x7f800000) /* log2(inf) == inf.  */
 			return x;
 		if ((ix & 0x80000000) || ix * 2 >= 0xff000000)
-			return __math_invalidf(x);
+			return _MuslLite_math_invalidf(x);
 		/* x is subnormal, normalize it.  */
 		ix = asuint(x * 0x1p23f);
 		ix -= 23 << 23;

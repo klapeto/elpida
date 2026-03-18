@@ -1,6 +1,6 @@
 #include <string.h>
 
-char *__strchrnul(const char *s, int c)
+char *_MuslLite_strchrnul(const char *s, int c)
 {
 	c = (unsigned char)c;
 	if (!c) return (char *)s + strlen(s);
@@ -9,4 +9,4 @@ char *__strchrnul(const char *s, int c)
 	return (char *)s;
 }
 
-weak_alias(__strchrnul, strchrnul);
+weak_alias(_MuslLite_strchrnul, strchrnul);

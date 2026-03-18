@@ -1,7 +1,7 @@
 #include "libm.h"
 
 // FIXME: macro in math.h
-int __signbit(double x)
+int _MuslLite_signbit(double x)
 {
 	union {
 		double d;

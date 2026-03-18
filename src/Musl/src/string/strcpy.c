@@ -2,6 +2,6 @@
 
 char *strcpy(char *restrict dest, const char *restrict src)
 {
-	__stpcpy(dest, src);
+	_MuslLite_stpcpy(dest, src);
 	return dest;
 }

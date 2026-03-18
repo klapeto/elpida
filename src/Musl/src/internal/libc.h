@@ -34,7 +34,7 @@ struct __libc {
 #define PAGE_SIZE libc.page_size
 #endif
 
-extern hidden struct __libc __libc;
-#define libc __libc
+extern hidden struct __libc _MuslLite_libc;
+#define libc _MuslLite_libc
 
 #endif

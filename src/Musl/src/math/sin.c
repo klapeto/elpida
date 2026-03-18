@@ -59,7 +59,7 @@ double sin(double x)
 			FORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);
 			return x;
 		}
-		return __sin(x, 0.0, 0);
+		return _MuslLite_sin(x, 0.0, 0);
 	}
 
 	/* sin(Inf or NaN) is NaN */
@@ -67,12 +67,12 @@ double sin(double x)
 		return x - x;
 
 	/* argument reduction needed */
-	n = __rem_pio2(x, y);
+	n = _MuslLite_rem_pio2(x, y);
 	switch (n&3) {
-	case 0: return  __sin(y[0], y[1], 1);
-	case 1: return  __cos(y[0], y[1]);
-	case 2: return -__sin(y[0], y[1], 1);
+	case 0: return  _MuslLite_sin(y[0], y[1], 1);
+	case 1: return  _MuslLite_cos(y[0], y[1]);
+	case 2: return -_MuslLite_sin(y[0], y[1], 1);
 	default:
-		return -__cos(y[0], y[1]);
+		return -_MuslLite_cos(y[0], y[1]);
 	}
 }

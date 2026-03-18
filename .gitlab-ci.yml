@@ -1,5 +1,6 @@
 stages:
-  - build-containers
+  - build-base-docker-image
+  - build-docker-images
   - build
   - package
   - deploy
@@ -11,15 +12,16 @@ variables:
   ELPIDA_VERSION_STRING: $ELPIDA_VERSION_MAJOR.$ELPIDA_VERSION_MINOR.$ELPIDA_VERSION_REVISION.$ELPIDA_VERSION_BUILD
   PACKAGE_PREFIX: Elpida
   PACKAGE_SEPARATOR: '-'
-  PACKAGE_FILENAME: $PACKAGE_PREFIX-$ELPIDA_VERSION_STRING-$TARGET_ARCH
-  PACKAGE_FILENAME_DEPLOY: $PACKAGE_PREFIX-latest-$TARGET_ARCH
-  PACKAGE_FILENAME_DEPLOY_BETA: $PACKAGE_PREFIX-latest-beta-$TARGET_ARCH
+  PACKAGE_FILENAME: $PACKAGE_PREFIX-$ELPIDA_VERSION_STRING-$TARGET_TRIPLE-$PACKAGE_SUFFIX
+  PACKAGE_FILENAME_DEPLOY: $PACKAGE_PREFIX-latest-$TARGET_TRIPLE-$PACKAGE_SUFFIX
+  PACKAGE_FILENAME_DEPLOY_BETA: $PACKAGE_PREFIX-latest-beta-$TARGET_TRIPLE-$PACKAGE_SUFFIX
   PACKAGE_QT_SUFFIX: 'Qt'
   PACKAGE_CLI_SUFFIX: 'Cli'
   DEPLOY_ENVIRONMENT: "development"
   IMAGE_TAG: $CI_COMMIT_REF_SLUG
-  IMAGE_PART_NAME: "$CI_REGISTRY_IMAGE/build-environment/$TARGET_OS"
-  IMAGE_NAME: "$IMAGE_PART_NAME:$IMAGE_TAG"
+  IMAGE_PART_NAME: "$CI_REGISTRY_IMAGE/build-environment"
+  IMAGE_BASE_NAME: "$IMAGE_PART_NAME-base:$IMAGE_TAG"
+  IMAGE_NAME: "$IMAGE_PART_NAME-$TARGET_TRIPLE:$IMAGE_TAG"
 
 workflow:
   rules:
@@ -39,13 +41,13 @@ workflow:
           - extern/**/*
           - include/**/*
           - src/**/*
+          - scripts/Linux/**/*
           - tests/**/*
           - CMakeLists.txt
-          - "*.yml"
+          - .gitlab-ci.yml
+          - ci/**/*
       when: always
     - when: never
 
 include:
-  - local: '/ci/linux/root.yml'
-  - local: '/ci/windows/root.yml'
-  - local: '/ci/docs.yml'
+  - local: '/ci/root.yml'

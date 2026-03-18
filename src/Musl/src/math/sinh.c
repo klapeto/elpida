@@ -34,6 +34,6 @@ double sinh(double x)
 
 	/* |x| > log(DBL_MAX) or nan */
 	/* note: the result is stored to handle overflow */
-	t = __expo2(absx, 2*h);
+	t = _MuslLite_expo2(absx, 2*h);
 	return t;
 }

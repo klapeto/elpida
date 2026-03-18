@@ -1,0 +1,193 @@
+.Deploy Linux:
+  stage: deploy
+  tags:
+    - amd64
+  only:
+    - master
+    - staging
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  script:
+    - cp "$PACKAGE_FILENAME.tar.xz" "$PACKAGE_FILENAME_DEPLOY.tar.xz"
+    - sha256sum "$PACKAGE_FILENAME.tar.xz" > $PACKAGE_FILENAME.tar.xz.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY.tar.xz" > $PACKAGE_FILENAME_DEPLOY.tar.xz.SHA256SUMS
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME_DEPLOY.tar.xz
+      - $PACKAGE_FILENAME.tar.xz
+      - $PACKAGE_FILENAME_DEPLOY.tar.xz.SHA256SUMS
+      - $PACKAGE_FILENAME.tar.xz.SHA256SUMS
+
+.Deploy Windows:
+  stage: deploy
+  tags:
+    - amd64
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  only:
+    - master
+    - staging
+  script:
+    - cp "$PACKAGE_FILENAME.zip" "$PACKAGE_FILENAME_DEPLOY.zip"
+    - sha256sum "$PACKAGE_FILENAME.zip" > $PACKAGE_FILENAME.zip.SHA256SUMS
+    - sha256sum "$PACKAGE_FILENAME_DEPLOY.zip" > $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
+  dependencies:
+    - package:$TARGET_TRIPLE
+  artifacts:
+    paths:
+      - $PACKAGE_FILENAME_DEPLOY.zip
+      - $PACKAGE_FILENAME.zip
+      - $PACKAGE_FILENAME_DEPLOY.zip.SHA256SUMS
+      - $PACKAGE_FILENAME.zip.SHA256SUMS
+
+.Deploy Qt:
+  variables:
+    PACKAGE_SUFFIX: Qt
+
+.Deploy Cli:
+  variables:
+    PACKAGE_SUFFIX: Cli
+
+Deploy Qt (x86_64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: x86_64-linux-gnu
+  dependencies:
+    - Package Qt (x86_64-linux-gnu)
+  extends:
+    - .Deploy Qt
+    - .Deploy Linux
+
+Deploy Cli (x86_64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: x86_64-linux-gnu
+  dependencies:
+    - Package Cli (x86_64-linux-gnu)
+  extends:
+    - .Deploy Cli
+    - .Deploy Linux
+
+Deploy Qt (i386-linux-gnu):
+  variables:
+    TARGET_TRIPLE: i386-linux-gnu
+  dependencies:
+    - Package Qt (i386-linux-gnu)
+  extends:
+    - .Deploy Qt
+    - .Deploy Linux
+
+Deploy Cli (i386-linux-gnu):
+  variables:
+    TARGET_TRIPLE: i386-linux-gnu
+  dependencies:
+    - Package Cli (i386-linux-gnu)
+  extends:
+    - .Deploy Cli
+    - .Deploy Linux
+
+Deploy Qt (arm-linux-gnueabihf):
+  variables:
+    TARGET_TRIPLE: arm-linux-gnueabihf
+  dependencies:
+    - Package Qt (arm-linux-gnueabihf)
+  extends:
+    - .Deploy Qt
+    - .Deploy Linux
+
+Deploy Cli (arm-linux-gnueabihf):
+  variables:
+    TARGET_TRIPLE: arm-linux-gnueabihf
+  dependencies:
+    - Package Cli (arm-linux-gnueabihf)
+  extends:
+    - .Deploy Cli
+    - .Deploy Linux
+
+Deploy Qt (aarch64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: aarch64-linux-gnu
+  dependencies:
+    - Package Qt (aarch64-linux-gnu)
+  extends:
+    - .Deploy Qt
+    - .Deploy Linux
+
+Deploy Cli (aarch64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: aarch64-linux-gnu
+  dependencies:
+    - Package Cli (aarch64-linux-gnu)
+  extends:
+    - .Deploy Cli
+    - .Deploy Linux
+
+Deploy Qt (riscv64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: riscv64-linux-gnu
+  dependencies:
+    - Package Qt (riscv64-linux-gnu)
+  extends:
+    - .Deploy Qt
+    - .Deploy Linux
+
+Deploy Cli (riscv64-linux-gnu):
+  variables:
+    TARGET_TRIPLE: riscv64-linux-gnu
+  dependencies:
+    - Package Cli (riscv64-linux-gnu)
+  extends:
+    - .Deploy Cli
+    - .Deploy Linux
+
+Deploy Qt (x86_64-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: x86_64-w64-mingw32
+  dependencies:
+    - Package Qt (x86_64-w64-mingw32)
+  extends:
+    - .Deploy Qt
+    - .Deploy Windows
+
+Deploy Cli (x86_64-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: x86_64-w64-mingw32
+  dependencies:
+    - Package Cli (x86_64-w64-mingw32)
+  extends:
+    - .Deploy Cli
+    - .Deploy Windows
+
+Deploy Qt (i386-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: i386-w64-mingw32
+  dependencies:
+    - Package Qt (i386-w64-mingw32)
+  extends:
+    - .Deploy Qt
+    - .Deploy Windows
+
+Deploy Cli (i386-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: i386-w64-mingw32
+  dependencies:
+    - Package Cli (i386-w64-mingw32)
+  extends:
+    - .Deploy Cli
+    - .Deploy Windows
+
+Deploy Qt (aarch64-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: aarch64-w64-mingw32
+  dependencies:
+    - Package Qt (aarch64-w64-mingw32)
+  extends:
+    - .Deploy Qt
+    - .Deploy Windows
+
+Deploy Cli (aarch64-w64-mingw32):
+  variables:
+    TARGET_TRIPLE: aarch64-w64-mingw32
+  dependencies:
+    - Package Cli (aarch64-w64-mingw32)
+  extends:
+    - .Deploy Cli
+    - .Deploy Windows

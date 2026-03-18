@@ -2,6 +2,6 @@
 
 char *strncpy(char *restrict d, const char *restrict s, size_t n)
 {
-	__stpncpy(d, s, n);
+	_MuslLite_stpncpy(d, s, n);
 	return d;
 }

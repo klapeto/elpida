@@ -21,6 +21,7 @@
 #include <QSplashScreen>
 #include <QScreen>
 #include <QMessageBox>
+#include <QFontDatabase>
 
 #include <iostream>
 #include <sstream>
@@ -60,7 +61,7 @@
 using namespace Elpida;
 using namespace Elpida::Application;
 
-#ifdef ELPIDA_UNIX
+#if ELPIDA_HAVE_BACKTRACE
 
 #include <execinfo.h>
 #include <csignal>
@@ -81,7 +82,7 @@ void segFaultHandler(int sig)
 
 static void setupPlatformSpecifics()
 {
-#ifdef ELPIDA_UNIX
+#if ELPIDA_HAVE_BACKTRACE
 	signal(SIGSEGV, segFaultHandler);
 	signal(SIGABRT, segFaultHandler);
 #endif
@@ -193,14 +194,15 @@ int main(int argc, char* argv[])
 		ThreadQueue::SetCurrent(std::make_shared<QtThreadQueue>());
 
 		QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-		QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 		QCoreApplication::setOrganizationName("Elpida");
 		QCoreApplication::setOrganizationDomain(ELPIDA_WEBSITE_URL);
 		QCoreApplication::setApplicationName("Elpida Qt");
 
 		QApplication application(argc, argv);
+
+		// Needed for environments where fonts do not exist
+		auto _ = QFontDatabase::addApplicationFont(":/DejaVuSans.ttf");
 
 		auto screenSize = QGuiApplication::primaryScreen()->size();
 		auto pixmap = QIcon(":/Elpida_Splash_Screen.svg").pixmap(
