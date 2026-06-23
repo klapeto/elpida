@@ -1,23 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:Elpida.Mobile.ViewModels"
-             x:DataType="viewModels:MemoryInfoViewModel"
-             x:Class="Elpida.Mobile.Views.MemoryInfoView">
-
+             x:DataType="viewModels:TimingViewModel"
+             x:Class="Elpida.Mobile.Views.TimingInfoView">
+    
     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
         <Label Grid.Row="0"
                Grid.Column="0"
-               Text="Total size:" FontAttributes="Bold" />
+               Text="Loop overhead:" FontAttributes="Bold" />
         <Label Grid.Row="0"
                Grid.Column="1"
-               Text="{Binding TotalSize, Converter={StaticResource IecValueConverter}, ConverterParameter=2, StringFormat='{0}B'}" />
+               Text="{Binding LoopOverhead, Converter={StaticResource SiValueConverter}, ConverterParameter=2}" />
 
         <Label
             Grid.Row="1"
             Grid.Column="0"
-            Text="Page size:" FontAttributes="Bold" />
+            Text="Now overhead:" FontAttributes="Bold" />
         <Label
             Grid.Row="1"
-            Grid.Column="1" Text="{Binding PageSize}" />
+            Grid.Column="1" Text="{Binding NowOverhead, Converter={StaticResource SiValueConverter}, ConverterParameter=2}" />
     </Grid>
 </ContentView>

@@ -1,17 +1,22 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using Elpida.Mobile.Models;
 
 namespace Elpida.Mobile.ViewModels
 {
-	public class MemoryInfoViewModel
+	public partial class MemoryInfoViewModel: ObservableObject
 	{
 		private readonly MemoryInfoModel _model;
 
 		public MemoryInfoViewModel(MemoryInfoModel model)
 		{
-			_model = model;
+			_totalSize = model.TotalSize.ToString();
+			_pageSize = model.PageSize.ToString();
 		}
 
-		public string TotalSize => $"{_model.TotalSize / (1024 * 1024 * 1024):F2} GB";
-		public string PageSize => $"{_model.PageSize / (1024 * 1024):F2} MB";
+		[ObservableProperty]
+		public string _totalSize;
+		
+		[ObservableProperty]
+		public string _pageSize;
 	}
 }

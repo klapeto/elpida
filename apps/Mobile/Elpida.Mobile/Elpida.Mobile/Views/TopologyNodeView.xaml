@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Elpida.Mobile.ViewModels"
+             xmlns:views="clr-namespace:Elpida.Mobile.Views"
+             x:DataType="viewModels:TopologyNodeViewModel"
+             x:Class="Elpida.Mobile.Views.TopologyNodeView">
+    
+    <Border 
+        Padding="4"
+        Background="{Binding NodeColor, Mode=OneTime}"
+        >
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="8,8,8,8" />
+        </Border.StrokeShape>
+        <VerticalStackLayout>
+            <HorizontalStackLayout Spacing="4">
+                <Label Text="{Binding NodeName}"/>
+                <Label IsVisible="{Binding ShowIndex}" Text="{Binding OsIndex}"/>
+                <Label IsVisible="{Binding ShowSize}" Text="{Binding Size, Converter={StaticResource IecValueConverter}, ConverterParameter=0, StringFormat='{0}B'}"/>
+            </HorizontalStackLayout>
+            
+            <CollectionView ItemsSource="{Binding Children}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Horizontal"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:TopologyNodeViewModel">
+                        <views:TopologyNodeView BindingContext="{Binding}"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

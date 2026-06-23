@@ -1,35 +1,15 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:Elpida.Mobile.ViewModels"
+             xmlns:views="clr-namespace:Elpida.Mobile.Views"
              x:DataType="viewmodels:TopologyViewModel"
              x:Class="Elpida.Mobile.Views.TopologyView">
 
 	<VerticalStackLayout>
-		<Label Text="Topology Information" Style="{StaticResource SubHeadline}" />
-
 		<HorizontalStackLayout>
-			<Label Text="Fastest Processor:" FontAttributes="Bold" />
-			<Label Text="{Binding FastestProcessor}" />
+			<Label Text="Fastest CPU:"/>
+			<Label Text="{Binding FastestProcessor}"/>
 		</HorizontalStackLayout>
-
-		<HorizontalStackLayout>
-			<Label Text="Total Packages:" FontAttributes="Bold" />
-			<Label Text="{Binding TotalPackages}" />
-		</HorizontalStackLayout>
-
-		<HorizontalStackLayout>
-			<Label Text="Total NUMA Nodes:" FontAttributes="Bold" />
-			<Label Text="{Binding TotalNumaNodes}" />
-		</HorizontalStackLayout>
-
-		<HorizontalStackLayout>
-			<Label Text="Total Physical Cores:" FontAttributes="Bold" />
-			<Label Text="{Binding TotalPhysicalCores}" />
-		</HorizontalStackLayout>
-
-		<HorizontalStackLayout>
-			<Label Text="Total Logical Cores:" FontAttributes="Bold" />
-			<Label Text="{Binding TotalLogicalCores}" />
-		</HorizontalStackLayout>
+		<views:TopologyNodeView BindingContext="{Binding Root}"/>
 	</VerticalStackLayout>
 </ContentView>

@@ -193,6 +193,18 @@
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
+    
+    <Style TargetType="Label" x:Key="Header3">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Padding" Value="9" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+    
+    <Style TargetType="Label" x:Key="Header" BasedOn="{StaticResource Headline}" />
+    <Style TargetType="Label" x:Key="Header2" BasedOn="{StaticResource SubHeadline}" />
+    <Style TargetType="Label" x:Key="GroupBoxHeader" BasedOn="{StaticResource Header3}" />
 
     <Style TargetType="Picker">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />

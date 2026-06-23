@@ -1,32 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:Elpida.Mobile.ViewModels"
-             x:DataType="viewModels:CpuInfoViewModel"
-             x:Class="Elpida.Mobile.Views.CpuInfoView">
-
+             x:DataType="viewModels:OsInfoViewModel"
+             x:Class="Elpida.Mobile.Views.OsInfoView">
     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
         <Label Grid.Row="0"
                Grid.Column="0"
-               Text="Architecture:" FontAttributes="Bold" />
+               Text="Category:" FontAttributes="Bold" />
         <Label Grid.Row="0"
                Grid.Column="1"
-               Text="{Binding Architecture}" />
+               Text="{Binding Category}" />
 
         <Label
             Grid.Row="1"
             Grid.Column="0"
-            Text="Vendor:" FontAttributes="Bold" />
+            Text="Name:" FontAttributes="Bold" />
         <Label
             Grid.Row="1"
-            Grid.Column="1" Text="{Binding Vendor}" />
-
+            Grid.Column="1" Text="{Binding Name}" />
+        
         <Label
             Grid.Row="2"
             Grid.Column="0"
-            Text="Model Name:" FontAttributes="Bold" />
+            Text="Version:" FontAttributes="Bold" />
         <Label
             Grid.Row="2"
-            Grid.Column="1"
-            Text="{Binding ModelName}" />
+            Grid.Column="1" Text="{Binding Version}" />
     </Grid>
 </ContentView>

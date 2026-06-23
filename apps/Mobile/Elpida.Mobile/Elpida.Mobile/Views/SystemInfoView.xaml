@@ -2,16 +2,31 @@
 
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:views="clr-namespace:Elpida.Mobile.Views"
              xmlns:viewModels="clr-namespace:Elpida.Mobile.ViewModels"
-             xmlns:views1="clr-namespace:Elpida.Mobile.Views"
+             xmlns:views="clr-namespace:Elpida.Mobile.Views"
+             xmlns:controls="clr-namespace:Elpida.Mobile.Controls"
              x:Class="Elpida.Mobile.Views.SystemInfoView"
-             x:DataType="viewModels:MainViewModel">
-    <VerticalStackLayout>
-        <Label Text="CPU Information" Style="{StaticResource SubHeadline}"/>
-        <views1:CpuInfoView BindingContext="{ Binding CpuInfo}" />
+             x:DataType="viewModels:SystemInfoViewModel">
+    <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Center" AlignContent="SpaceAround">
+        <controls:GroupBox Margin="6" Title="CPU Information">
+            <views:CpuInfoView BindingContext="{Binding CpuInfo}" />
+        </controls:GroupBox>
         
-        <Label Text="Memory Information" Style="{StaticResource SubHeadline}"/>
-        <views1:CpuInfoView BindingContext="{Binding MemoryInfo}" />
-    </VerticalStackLayout>
+        <controls:GroupBox Margin="6" Title="Memory Information">
+            <views:MemoryInfoView BindingContext="{Binding MemoryInfo}" />
+        </controls:GroupBox>
+        
+        <controls:GroupBox Margin="6" Title="Os Information">
+            <views:OsInfoView BindingContext="{Binding OsInfo}" />
+        </controls:GroupBox>
+        
+        <controls:GroupBox Margin="6" Title="Timing Information">
+            <views:TimingInfoView BindingContext="{Binding TimingInfo}" />
+        </controls:GroupBox>
+        
+        <controls:GroupBox Title="Topology Information">
+            <views:TopologyView BindingContext="{Binding TopologyInfo}" />
+        </controls:GroupBox>
+    </FlexLayout>
+
 </ContentView>

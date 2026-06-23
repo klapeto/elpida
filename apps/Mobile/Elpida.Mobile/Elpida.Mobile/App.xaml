@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Elpida.Mobile"
+             xmlns:converters="clr-namespace:Elpida.Mobile.Converters"
              x:Class="Elpida.Mobile.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,9 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converters:NegatingConverter x:Key="NegatingConverter"/>
+            <converters:IecValueConverter x:Key="IecValueConverter"/>
+            <converters:SiValueConverter x:Key="SiValueConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

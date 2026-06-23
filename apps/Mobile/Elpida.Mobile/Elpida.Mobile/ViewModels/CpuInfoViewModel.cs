@@ -1,8 +1,9 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using Elpida.Mobile.Models;
 
 namespace Elpida.Mobile.ViewModels
 {
-	public class CpuInfoViewModel
+	public class CpuInfoViewModel : ObservableObject
 	{
 		private readonly CpuInfoModel _model;
 

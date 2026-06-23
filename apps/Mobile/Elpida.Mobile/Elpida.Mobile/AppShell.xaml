@@ -1,14 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <Shell
     x:Class="Elpida.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Elpida.Mobile"
-    Title="Elpida.Moblie">
+    xmlns:pages="clr-namespace:Elpida.Mobile.Pages"
+    Title="Elpida">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
+    <TabBar>
+        <Tab
+            Title="Home"
+             Icon="home_o.svg"
+             Route="MainPage">
+            <ShellContent ContentTemplate="{DataTemplate pages:MainPage}" />
+        </Tab>
+        <Tab
+            Title="Benchmark"
+            Icon="cpu_o.svg"
+            Route="Benchmark">
+            <ShellContent ContentTemplate="{DataTemplate pages:Benchmark}" />
+        </Tab>
+    </TabBar>
 </Shell>
