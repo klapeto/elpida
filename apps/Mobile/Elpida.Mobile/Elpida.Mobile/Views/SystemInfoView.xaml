@@ -8,7 +8,7 @@
              x:Class="Elpida.Mobile.Views.SystemInfoView"
              x:DataType="viewModels:SystemInfoViewModel">
     <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Center" AlignContent="SpaceAround">
-        <controls:GroupBox Margin="6" Title="CPU Information">
+        <controls:GroupBox Margin="6" Icon="cpu.png" Title="CPU Information">
             <views:CpuInfoView BindingContext="{Binding CpuInfo}" />
         </controls:GroupBox>
         

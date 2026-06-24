@@ -9,6 +9,8 @@
     
     <Border 
         Padding="4"
+        StrokeThickness="0"
+        Margin="1"
         Background="{Binding NodeColor, Mode=OneTime}"
         >
         <Border.StrokeShape>
@@ -21,16 +23,25 @@
                 <Label IsVisible="{Binding ShowSize}" Text="{Binding Size, Converter={StaticResource IecValueConverter}, ConverterParameter=0, StringFormat='{0}B'}"/>
             </HorizontalStackLayout>
             
-            <CollectionView ItemsSource="{Binding Children}">
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Horizontal"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
+            <FlexLayout 
+                Direction="Row" Wrap="Wrap" AlignItems="Center"
+                BindableLayout.ItemsSource="{Binding MemoryChildren}">
+                <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="viewModels:TopologyNodeViewModel">
                         <views:TopologyNodeView BindingContext="{Binding}"/>
                     </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+            
+            <FlexLayout 
+                Direction="Row" Wrap="Wrap" AlignItems="Center"
+                BindableLayout.ItemsSource="{Binding Children}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:TopologyNodeViewModel">
+                        <views:TopologyNodeView BindingContext="{Binding}"/>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
         </VerticalStackLayout>
     </Border>
 </ContentView>

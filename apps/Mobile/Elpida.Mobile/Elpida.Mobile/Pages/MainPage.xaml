@@ -4,7 +4,7 @@
              xmlns:viewmodels="clr-namespace:Elpida.Mobile.ViewModels"
              xmlns:views1="clr-namespace:Elpida.Mobile.Views"
              xmlns:converters="clr-namespace:Elpida.Mobile.Converters"
-             x:DataType="viewmodels:MainViewModel"
+             x:DataType="viewmodels:MainPageViewModel"
              x:Class="Elpida.Mobile.Pages.MainPage">
 	
 	<ScrollView>

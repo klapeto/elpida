@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Elpida.Mobile.ViewModels;
 
 namespace Elpida.Mobile.Pages
 {
 	public partial class Benchmark : ContentPage
 	{
-		public Benchmark()
+		public Benchmark(BenchmarkPageViewModel viewModel)
 		{
 			InitializeComponent();
+			BindingContext = viewModel;
 		}
 	}
 }

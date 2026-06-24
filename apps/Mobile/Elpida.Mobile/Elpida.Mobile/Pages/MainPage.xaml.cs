@@ -6,15 +6,12 @@ namespace Elpida.Mobile.Pages
 {
 	public partial class MainPage : ContentPage
 	{
-		private MainViewModel _model;
+		private readonly MainPageViewModel _model;
 
-		public MainPage()
+		public MainPage(MainPageViewModel viewModel)
 		{
 			InitializeComponent();
-			_model = new MainViewModel
-			{
-				SystemInfo = new SystemInfoViewModel(new SystemInfoModel())
-			};
+			_model = viewModel;
 			BindingContext = _model;
 			NavigatedTo += OnNavigatedTo;
 		}
@@ -41,11 +38,6 @@ namespace Elpida.Mobile.Pages
 					DisplayAlertAsync("Error", exception.Message, "OK");
 				}
 			});
-		}
-
-		protected override void OnAppearing()
-		{
-			base.OnAppearing();
 		}
 	}
 }

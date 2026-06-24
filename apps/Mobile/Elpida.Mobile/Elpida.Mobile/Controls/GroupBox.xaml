@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ContentView
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -13,14 +12,18 @@
                 Background="#cbc7f7"
                 Shadow="0 3 6 rgba(0, 0, 0, 0.14)"
                 StrokeThickness="0">
-                
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="7" />
                 </Border.StrokeShape>
                 <Grid ColumnDefinitions="*" RowDefinitions="Auto,*">
                     <VerticalStackLayout Grid.Row="0">
-                        <Label Text="{TemplateBinding Title}" 
-                                Style="{StaticResource GroupBoxHeader}" /> 
+                        <HorizontalStackLayout HorizontalOptions="Center" Padding="9">
+                            <Image IsVisible="{Binding ShowIcon}" 
+                                   Source="{TemplateBinding Icon}" 
+                                   Style="{StaticResource GroupBoxIcon}" />
+                            <Label Text="{TemplateBinding Title}" 
+                                   Style="{StaticResource GroupBoxHeader}" />  
+                        </HorizontalStackLayout>
                         <BoxView
                             Color="#9e9fee"
                             HeightRequest="1"

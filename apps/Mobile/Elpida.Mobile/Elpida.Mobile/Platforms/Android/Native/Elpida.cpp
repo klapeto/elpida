@@ -45,7 +45,7 @@ int GetSerializedInfo(char** buffer, uint64_t* size)
        //
        // // topology.PinThreadToProcessor(highestCore);
 
-        TimingInfo timing = {};//TimingCalculator::CalculateTiming();
+        TimingInfo timing = TimingCalculator::CalculateTiming();
 
         //topology.ClearThreadPinning();
 

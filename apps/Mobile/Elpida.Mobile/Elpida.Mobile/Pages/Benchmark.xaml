@@ -2,10 +2,62 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Elpida.Mobile.Controls"
+             xmlns:viewmodels="clr-namespace:Elpida.Mobile.ViewModels"
+             x:DataType="viewmodels:BenchmarkPageViewModel"
              x:Class="Elpida.Mobile.Pages.Benchmark">
     <ScrollView>
         <VerticalStackLayout>
-            <Label Text="Benchmark" />
+            <controls:GroupBox Margin="8" Title="Score">
+                <VerticalStackLayout>
+                    <Label
+                        Text="{Binding LastResult.TotalScore, FallbackValue='N/A', Converter={StaticResource SiValueConverter}}"
+                        Style="{StaticResource Header}" />
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Single thread:" Style="{StaticResource Header3}" />
+                        <Label Grid.Row="0" Grid.Column="1"
+                               Text="{Binding LastResult.SingleThreadScore, FallbackValue='N/A', Converter={StaticResource SiValueConverter}}"
+                               Style="{StaticResource Header3}" />
+                        <Label Grid.Row="1" Grid.Column="0" Text="Multi thread:" Style="{StaticResource Header3}" />
+                        <Label Grid.Row="1" Grid.Column="1"
+                               Text="{Binding LastResult.MultiThreadScore, FallbackValue='N/A', Converter={StaticResource SiValueConverter}}"
+                               Style="{StaticResource Header3}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </controls:GroupBox>
+            <controls:GroupBox Margin="8" Title="Execution">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*,*">
+                    <Label Grid.Row="0" Grid.Column="0" Text="Current Benchmark:" />
+                    <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                           Text="{Binding ExecutingBenchmark.Name, FallbackValue='N/A'}" />
+
+                    <ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
+                    <Label Grid.Row="1" Grid.Column="2">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{Binding ExecutedBenchmarks}"/>
+                                <Span Text="/"/>
+                                <Span Text="{Binding BenchmarkCount}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    
+                    <Label Grid.Row="2" Grid.Column="0" VerticalTextAlignment="Center" Text="Run it:" />
+                    <Entry Grid.Row="2" Grid.Column="1"
+                             Keyboard="Numeric"
+                             Text="{Binding RunItTimes}" />
+                    <Label Grid.Row="2" Grid.Column="2" VerticalTextAlignment="Center" Text="times" />
+                    
+                    <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+                        <CheckBox IsChecked="{Binding UploadResults}" />
+                        <Label VerticalTextAlignment="Center" Text="Upload results anonymously on Elpida website" />
+                    </HorizontalStackLayout>
+                    
+                    <Button Grid.Row="4" Grid.Column="0" Command="{Binding RunBenchmarkCommand}" Text="Start"/>
+                    <Label Grid.Row="4" Grid.Column="1" VerticalTextAlignment="Center" Text="Estimated time:" />
+                    <Label Grid.Row="4" Grid.Column="2" VerticalTextAlignment="Center" Text="{Binding EstimatedTime}" />
+                </Grid>
+            </controls:GroupBox>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

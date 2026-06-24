@@ -4,12 +4,5 @@
              xmlns:views="clr-namespace:Elpida.Mobile.Views"
              x:DataType="viewmodels:TopologyViewModel"
              x:Class="Elpida.Mobile.Views.TopologyView">
-
-	<VerticalStackLayout>
-		<HorizontalStackLayout>
-			<Label Text="Fastest CPU:"/>
-			<Label Text="{Binding FastestProcessor}"/>
-		</HorizontalStackLayout>
 		<views:TopologyNodeView BindingContext="{Binding Root}"/>
-	</VerticalStackLayout>
 </ContentView>
