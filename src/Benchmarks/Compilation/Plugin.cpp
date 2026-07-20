@@ -28,20 +28,8 @@
 
 using namespace Elpida;
 
-extern "C" {
-void LLVMInitializeX86Target();
-void LLVMInitializeX86TargetInfo();
-void LLVMInitializeX86TargetMC();
-void LLVMInitializeX86AsmPrinter();
-}
-
 ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 {
-	LLVMInitializeX86TargetInfo();
-	LLVMInitializeX86Target();
-	LLVMInitializeX86TargetMC();
-	LLVMInitializeX86AsmPrinter();
-
 	Vector<UniquePtr<Benchmark>> vec;
 
 	vec.push_back(std::make_unique<ClangCompilationBenchmark>());

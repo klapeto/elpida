@@ -33,7 +33,7 @@ namespace Elpida
 		[[nodiscard]]
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
-		ClangCompilationBenchmark() = default;
+		ClangCompilationBenchmark();
 		~ClangCompilationBenchmark() override = default;
 	protected:
 

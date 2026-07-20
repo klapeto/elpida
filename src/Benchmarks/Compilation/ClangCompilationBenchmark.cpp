@@ -24,11 +24,26 @@
 #include "GenerateCppCodeTask.hpp"
 #include "CompileWithClangTask.hpp"
 
+extern "C" {
+void LLVMInitializeX86Target();
+void LLVMInitializeX86TargetInfo();
+void LLVMInitializeX86TargetMC();
+void LLVMInitializeX86AsmPrinter();
+}
+
 namespace Elpida
 {
 	std::vector<TaskConfiguration> ClangCompilationBenchmark::GetRequiredConfiguration() const
 	{
 		return {};
+	}
+
+	ClangCompilationBenchmark::ClangCompilationBenchmark()
+	{
+		LLVMInitializeX86TargetInfo();
+		LLVMInitializeX86Target();
+		LLVMInitializeX86TargetMC();
+		LLVMInitializeX86AsmPrinter();
 	}
 
 	std::vector<std::unique_ptr<Task>> ClangCompilationBenchmark::GetTasks(BenchmarkRunContext& context) const
