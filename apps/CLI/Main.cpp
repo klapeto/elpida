@@ -25,7 +25,7 @@
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 #include "Models/Full/FullBenchmarkModel.hpp"
 
-#include "Core/BenchmarkExecutionService.hpp"
+#include "Core/OffProcessBenchmarkExecutionService.hpp"
 #include "Core/BenchmarkStatisticsService.hpp"
 #include "Core/ResultsHTMLReporter.hpp"
 #include "Controllers/BenchmarkRunConfigurationController.hpp"
@@ -157,7 +157,7 @@ int main(int argC, char** argV)
 
 		ModelBuilderJson builderJson = ModelBuilderJson(InfoGetter::GetInfoData(benchmarksPath));
 
-		BenchmarkExecutionService executionService;
+		OffProcessBenchmarkExecutionService executionService;
 
 		ResultSerializer resultSerializer(builderJson.GetCpuInfoModel(), builderJson.GetMemoryInfoModel(),
 				builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(), builderJson.GetTimingModel());

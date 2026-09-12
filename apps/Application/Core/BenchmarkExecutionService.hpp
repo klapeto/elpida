@@ -22,35 +22,31 @@
 #ifndef ELPIDA_BENCHMARKEXECUTIONSERVICE_HPP_
 #define ELPIDA_BENCHMARKEXECUTIONSERVICE_HPP_
 
-#include "Elpida/Platform/Process.hpp"
 #include "Models/Benchmark/BenchmarkResultModel.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 
-#include <string>
 #include <vector>
 
 namespace Elpida::Application
 {
 	class BenchmarkModel;
 
-	class BenchmarkExecutionService final
+	class BenchmarkExecutionService
 	{
 	public:
-		BenchmarkResultModel Execute(const BenchmarkModel& benchmarkModel,
+		virtual BenchmarkResultModel Execute(const BenchmarkModel& benchmarkModel,
 				const std::vector<std::size_t>& affinity,
 				double nowOverheadSeconds,
 				double loopOverheadSeconds,
 				bool numaAware,
 				bool pinThreads,
 				ConcurrencyMode concurrencyMode,
-				double minimumMicroTaskDuration);
+				double minimumMicroTaskDuration) =0;
 
-		void StopCurrentExecution();
+		virtual void StopCurrentExecution()=0;
 
 		BenchmarkExecutionService() = default;
-		~BenchmarkExecutionService() = default;
-	private:
-		Process _currentProcess;
+		virtual ~BenchmarkExecutionService() = default;
 	};
 
 } // Application

@@ -39,6 +39,7 @@
 #include "FullBenchmarkInstancesLoader.hpp"
 #include "ModelBuilderJson.hpp"
 #include "Core/BenchmarkExecutionService.hpp"
+#include "Core/OffProcessBenchmarkExecutionService.hpp"
 
 using namespace nlohmann;
 using namespace Elpida;
@@ -170,7 +171,7 @@ int main(int argC, char** argV)
 
 		ModelBuilderJson builderJson(GetJsonWithOnlyBenchmarks(benchmarkPath).dump());
 
-		BenchmarkExecutionService service;
+		OffProcessBenchmarkExecutionService service;
 		BenchmarkRunConfigurationModel runConfigurationModel;
 
 		std::vector<std::string> missingBenchmarks;

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug-DevContainer" ENABLED="true" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DQT_HOST_PATH=/usr/local/Qt-6.10.0 -DCMAKE_TOOLCHAIN_FILE=cmake-modules/llvm-cross.cmake -DCMAKE_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DTARGET_PREFIX=x86_64-linux-gnu-" />
       <configuration PROFILE_NAME="Debug-Linux" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="llvm-mingw32" GENERATION_OPTIONS="-DQT_HOST_PATH=/usr -DCMAKE_TOOLCHAIN_FILE=cmake-modules/llvm-cross.cmake -DCMAKE_SYSROOT=/mnt/Dev/toolchains/llvm-mingw/x86_64-linux-gnu -DTARGET_PREFIX=x86_64-linux-gnu-" />
+      <configuration PROFILE_NAME="Debug-DevContainer" ENABLED="false" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DQT_HOST_PATH=/usr/local/Qt-6.10.0 -DCMAKE_TOOLCHAIN_FILE=cmake-modules/llvm-cross.cmake -DCMAKE_SYSROOT=/opt/sysroots/x86_64-linux-gnu -DTARGET_PREFIX=x86_64-linux-gnu-" />
     </configurations>
   </component>
 </project>

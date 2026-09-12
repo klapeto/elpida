@@ -39,6 +39,7 @@ set(ELPIDA_APPLICATION_SOURCES
 
         Core/MessageService.cpp
         Core/BenchmarkExecutionService.cpp
+        Core/OffProcessBenchmarkExecutionService.cpp
         Core/Promise.cpp
         Core/ThreadQueue.cpp
         Core/SettingsService.cpp

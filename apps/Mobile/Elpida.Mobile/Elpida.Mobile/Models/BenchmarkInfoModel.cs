@@ -6,6 +6,6 @@ namespace Elpida.Mobile.Models
 		public string Description { get; set; } = string.Empty;
 		public string ResultUnit { get; set; } = string.Empty;
 		public ResultType ResultType { get; set; } = ResultType.Custom;
-		public List<TaskInfoModel> TaskInfos { get; set; } = new();
+		public int Index { get; set; }
 	}
 }

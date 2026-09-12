@@ -1,4 +1,4 @@
-option(ELPIDA_ENABLE_QT "Whether to enable the QT application" ON)
+option(ELPIDA_ENABLE_QT "Whether to enable the QT application" OFF)
 
 if (ELPIDA_ENABLE_QT)
     add_subdirectory(Qt)

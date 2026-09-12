@@ -1,4 +1,5 @@
-﻿using Elpida.Mobile.ViewModels;
+﻿using Elpida.Mobile.Services;
+using Elpida.Mobile.ViewModels;
 using Microsoft.Extensions.Logging;
 
 namespace Elpida.Mobile
@@ -24,6 +25,8 @@ namespace Elpida.Mobile
 			
 			builder.Services.AddSingleton<MainPageViewModel>();
 			builder.Services.AddSingleton<BenchmarkPageViewModel>();
+			builder.Services.AddTransient<DataLoader>();
+			builder.Services.AddSingleton<ElpidaService>();
 
 			return builder.Build();
 		}

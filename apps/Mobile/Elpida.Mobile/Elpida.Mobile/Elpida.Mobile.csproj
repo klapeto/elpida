@@ -23,9 +23,9 @@
         <NeutralLanguage>en-US</NeutralLanguage>
 
         <!-- DEBUG -->
-        <!--        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>-->
-        <!--        <RunAOTCompilation>False</RunAOTCompilation>-->
-        <!--        <PublishTrimmed>False</PublishTrimmed>-->
+                <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+                <RunAOTCompilation>False</RunAOTCompilation>
+                <PublishTrimmed>False</PublishTrimmed>
 
         <!-- Enable XAML source generation for faster build times and improved performance.
              This generates C# code from XAML at compile time instead of runtime inflation.
@@ -36,10 +36,10 @@
         <MauiXamlInflator>SourceGen</MauiXamlInflator>
 
         <!-- Display name -->
-        <ApplicationTitle>Elpida.Mobile</ApplicationTitle>
+        <ApplicationTitle>Elpida Mobile</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.elpida.mobile</ApplicationId>
+        <ApplicationId>dev.elpida.mobile</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -82,16 +82,16 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
+        <None Remove="Platforms\Android\Native\benchmarks.json" />
+        <MauiAsset Update="Resources\Raw\benchmarks.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </MauiAsset>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ClCompile Include="Platforms\Android\Native\Elpida.cpp"/>
     </ItemGroup>
 
     <ItemGroup>

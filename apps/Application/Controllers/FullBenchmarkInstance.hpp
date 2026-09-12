@@ -28,13 +28,13 @@
 
 namespace Elpida::Application
 {
-
 	class FullBenchmarkInstanceResult
 	{
 	public:
 		BenchmarkResultModel& GetBenchmarkResult();
 		Score GetScore() const;
 		FullBenchmarkInstanceResult(BenchmarkResultModel&& benchmarkResult, Score score);
+
 	private:
 		BenchmarkResultModel _benchmarkResult;
 		Score _score;
@@ -74,23 +74,30 @@ namespace Elpida::Application
 		[[nodiscard]]
 		bool IsMultiThread() const;
 
+		[[nodiscard]]
+		virtual ConcurrencyMode GetMultiThreadConcurrencyMode() const
+		{
+			return ConcurrencyMode::ShareInput;
+		}
+
 		FullBenchmarkInstance(const FullBenchmarkInstance&) = delete;
 		FullBenchmarkInstance(FullBenchmarkInstance&&) noexcept = default;
 		FullBenchmarkInstance& operator=(const FullBenchmarkInstance&) = delete;
 		FullBenchmarkInstance& operator=(FullBenchmarkInstance&&) noexcept = delete;
 		virtual ~FullBenchmarkInstance() = default;
+
 	protected:
 		FullBenchmarkInstance(
-				std::string name,
-				std::string uuid,
-				Score baseScore,
-				bool multiThreaded,
-				const BenchmarkModel& benchmark,
-				const TimingModel& timingModel,
-				const TopologyModel& topologyModel,
-				const MemoryInfoModel& memoryInfoModel,
-				const BenchmarkRunConfigurationModel& runConfigurationModel,
-				BenchmarkExecutionService& executionService);
+			std::string name,
+			std::string uuid,
+			Score baseScore,
+			bool multiThreaded,
+			const BenchmarkModel& benchmark,
+			const TimingModel& timingModel,
+			const TopologyModel& topologyModel,
+			const MemoryInfoModel& memoryInfoModel,
+			const BenchmarkRunConfigurationModel& runConfigurationModel,
+			BenchmarkExecutionService& executionService);
 
 		const BenchmarkModel& _benchmark;
 		const TimingModel& _timingModel;
@@ -105,12 +112,6 @@ namespace Elpida::Application
 
 		virtual void Configure() = 0;
 
-		[[nodiscard]]
-		virtual ConcurrencyMode GetMultiThreadConcurrencyMode() const
-		{
-			return ConcurrencyMode::ShareInput;
-		}
-
 	private:
 		[[nodiscard]]
 		FullBenchmarkInstanceResult RunSingleThread() const;
@@ -118,7 +119,6 @@ namespace Elpida::Application
 		[[nodiscard]]
 		FullBenchmarkInstanceResult RunMultiThread() const;
 	};
-
 } // Application
 // Elpida
 
