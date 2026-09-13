@@ -18,7 +18,7 @@
 #include "RegexTask.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 
 	void RegexTask::Prepare(SharedPtr<AbstractTaskData> inputData)

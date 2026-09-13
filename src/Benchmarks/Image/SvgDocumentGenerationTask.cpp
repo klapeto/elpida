@@ -24,7 +24,7 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include <cstring>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	static const char Header[] = R"lit(<svg width="1024" height="1024" viewBox="0 0 1024 1024" version="1.1"><defs><linearGradient id="linearGradient1"><stop style="stop-color:#142bf0;stop-opacity:1;" offset="0" id="stop1"/><stop style="stop-color:#7e86d9;stop-opacity:1;" offset="0.5" id="stop3"/><stop style="stop-color:#709be7;stop-opacity:1;" offset="1" id="stop2"/></linearGradient><radialGradient xlink:href="#linearGradient1" id="radialGradient2" cx="252.40239" cy="497.1463" fx="252.40239" fy="497.1463" r="512" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0.61402064,-0.62817989,1.9737004,2.0192136,-222.39196,417.93027)"/></defs>)lit";
 

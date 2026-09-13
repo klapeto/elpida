@@ -29,7 +29,7 @@
 #include "Elpida/Core/TaskConfiguration.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	std::vector<std::unique_ptr<Task>> PngEncodingBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{

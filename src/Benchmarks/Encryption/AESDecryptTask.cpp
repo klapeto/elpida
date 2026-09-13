@@ -29,7 +29,7 @@
 #include <openssl/err.h>
 
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 
 	AESDecryptTask::AESDecryptTask(std::string key)

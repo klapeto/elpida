@@ -32,6 +32,7 @@
 #include "RayTracingBenchmark.hpp"
 
 using namespace Elpida;
+using namespace Elpida::Benchmarks::Image;
 
 ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 {

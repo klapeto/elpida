@@ -19,7 +19,7 @@
 #include "FileReadTask.hpp"
 #include "RegexTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	Vector<TaskConfiguration> RegexBenchmark::GetRequiredConfiguration() const
 	{

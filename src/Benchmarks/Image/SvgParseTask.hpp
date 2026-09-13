@@ -26,7 +26,7 @@
 #include "Elpida/Svg/SvgDocument.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class SvgParseTask : public MicroTask

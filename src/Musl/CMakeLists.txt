@@ -33,6 +33,70 @@ target_include_directories(musl-lite PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/inclu
 target_include_directories(musl-lite PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/internal)
 target_include_directories(musl-lite PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
 
+# Check whether compiler's long double definition matches float.h
+include(CheckCSourceCompiles)
+include(CheckCXXSourceCompiles)
+
+set(CMAKE_REQUIRED_INCLUDES_SAVED ${CMAKE_REQUIRED_INCLUDES})
+set(CMAKE_REQUIRED_FLAGS_SAVED ${CMAKE_REQUIRED_FLAGS})
+set(CMAKE_REQUIRED_FLAGS -std=c99 -nostdinc -ffreestanding -fexcess-precision=standard -frounding-math -fno-strict-aliasing -Wa,--noexecstack)
+set(CMAKE_REQUIRED_INCLUDES
+        ${CMAKE_CURRENT_BINARY_DIR}/arch/${ARCH}
+        ${CMAKE_CURRENT_LIST_DIR}/arch/${ARCH}
+        ${CMAKE_CURRENT_LIST_DIR}/arch/generic
+        ${CMAKE_CURRENT_LIST_DIR}/include
+)
+
+check_cxx_source_compiles("
+#include <float.h>
+#define C(m,s) (m==LDBL_MANT_DIG && s==sizeof(long double))
+static_assert(C(53,8)||C(64,12)||C(64,16)||C(113,16), \"long double type does not match float.h.\");
+int main(void) { return 0; }
+" LONG_DOUBLE_MATCHES_FLOAT_H)
+
+check_c_source_compiles("
+typedef int x;
+#if __FAST_MATH__
+#error yes
+#endif
+int main(void) { return 0; }
+" PASSED_FAST_MATH)
+
+check_cxx_source_compiles("
+static_assert(((int)sizeof(double)-5) > 0, \"compiler's floating point configuration is unsupported\");
+int main(void) { return 0; }
+" IEEE_DOUBLE_CORRECT)
+
+check_c_source_compiles("
+float f(float x) { __asm__(\"\":\"+t\"(x)); return x; }
+int main(void) { f(5.5); return 0; }
+" WORKING_CLANG_FLOAT_CONSTRAINTS)
+
+set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_SAVED})
+set(CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS_SAVED})
+
+if (NOT PASSED_FAST_MATH)
+    message(FATAL_ERROR "__FAST_MATH__ was passed to the compiler. Remove it from musl")
+endif ()
+
+if (NOT IEEE_DOUBLE_CORRECT)
+    message(FATAL_ERROR "compiler's floating point configuration is unsupported")
+endif ()
+
+if (NOT LONG_DOUBLE_MATCHES_FLOAT_H)
+    if (ARCH STREQUAL "x86_64" AND ANDROID)
+        # android uses 128 bit long double for x86_64
+        message(WARNING "long double type does not match float.h.")
+        target_compile_options(musl-lite PRIVATE -mlong-double-80)
+    else ()
+        message(FATAL_ERROR "unsupported long double type")
+    endif ()
+endif ()
+
+if (NOT WORKING_CLANG_FLOAT_CONSTRAINTS)
+    target_compile_definitions(musl-lite PRIVATE -DBROKEN_VFP_ASM)
+endif ()
+
 target_link_libraries(musl-lite PUBLIC musl-platform)
 
 if (ELPIDA_INSTALL_CORE_LIBRARIES)

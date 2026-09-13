@@ -30,6 +30,7 @@
 #include "RegexBenchmark.hpp"
 
 using namespace Elpida;
+using namespace Elpida::Benchmarks::Web;
 
 ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 {

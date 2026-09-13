@@ -113,7 +113,7 @@
     </ItemGroup>
 
     <Target Name="BuildNativeLibrary" BeforeTargets="Build" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-        <Exec Command="cmake -H$(ProjectDir)/Platforms/Android/Native -B$(ProjectDir)/Platforms/Android/libs/$(AndroidAbi) -DANDROID_ABI=$(AndroidAbi) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion) -DCMAKE_TOOLCHAIN_FILE=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)/build/cmake/android.toolchain.cmake -G Ninja"/>
+        <Exec Command="cmake -DCMAKE_BUILD_TYPE=Release -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -H$(ProjectDir)/Platforms/Android/Native -B$(ProjectDir)/Platforms/Android/libs/$(AndroidAbi) -DANDROID_ABI=$(AndroidAbi) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion) -DCMAKE_TOOLCHAIN_FILE=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)/build/cmake/android.toolchain.cmake -G Ninja"/>
         <Exec Command="cmake --build $(ProjectDir)/Platforms/Android/libs/$(AndroidAbi)"/>
     </Target>
 

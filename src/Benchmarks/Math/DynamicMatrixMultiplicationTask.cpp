@@ -23,7 +23,7 @@
 
 #include <random>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 	DynamicMatrixMultiplicationTask::DynamicMatrixMultiplicationTask(std::size_t rows, std::size_t columns)
 			:_rows(rows), _columns(columns)
@@ -35,8 +35,8 @@ namespace Elpida
 	{
 		_output = std::move(inputData);
 
-		_a = DynamicMatrix<Float>(_rows, _columns);
-		_b = DynamicMatrix<Float>(_columns, _rows);
+		_a = Elpida::Math::DynamicMatrix<Float>(_rows, _columns);
+		_b = Elpida::Math::DynamicMatrix<Float>(_columns, _rows);
 
 		std::random_device randomDevice;
 		std::mt19937 generator(randomDevice());

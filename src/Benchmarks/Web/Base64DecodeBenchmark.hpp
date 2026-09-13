@@ -20,7 +20,7 @@
 
 #include "Elpida/Core/Benchmark.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 
 	class Base64DecodeBenchmark : public Benchmark

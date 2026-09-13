@@ -18,7 +18,7 @@
 #include <random>
 #include "StrtodTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	void StrtodTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

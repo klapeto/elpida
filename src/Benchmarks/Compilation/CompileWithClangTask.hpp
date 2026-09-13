@@ -35,7 +35,7 @@
 #include <clang/CodeGen/CodeGenAction.h>
 #include <llvm/ADT/IntrusiveRefCntPtr.h>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compilation
 {
 	class CompileWithClangTask: public MicroTask
 	{

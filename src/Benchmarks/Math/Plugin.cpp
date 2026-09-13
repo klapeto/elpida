@@ -31,6 +31,7 @@
 #include "NBodyBenchmark.hpp"
 
 using namespace Elpida;
+using namespace Elpida::Benchmarks::Math;
 
 ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 {

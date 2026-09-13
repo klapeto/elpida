@@ -19,10 +19,10 @@
 #include "ImageTaskData.hpp"
 #include "SceneCreator.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
-	using namespace Graphics;
+	using namespace Elpida::Graphics;
 
 	void RayTracingTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

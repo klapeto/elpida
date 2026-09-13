@@ -33,7 +33,7 @@ namespace Elpida.Mobile.Converters
 		public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			return Utilities.GetValueScaleString(System.Convert.ToDouble(value), ScaleValues, Prefixes,
-				System.Convert.ToInt32(parameter));
+				System.Convert.ToInt32(parameter), culture);
 		}
 
 		public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

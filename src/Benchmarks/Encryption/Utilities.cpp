@@ -21,6 +21,6 @@
 
 #include "Utilities.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 } // Elpida

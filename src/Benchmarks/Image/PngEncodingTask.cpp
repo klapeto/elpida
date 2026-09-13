@@ -25,7 +25,7 @@
 
 #include <png.h>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	void PngEncodingTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

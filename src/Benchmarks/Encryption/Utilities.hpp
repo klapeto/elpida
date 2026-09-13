@@ -25,7 +25,7 @@
 #include <openssl/err.h>
 #include "Elpida/Core/ElpidaException.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 
 	class Utilities

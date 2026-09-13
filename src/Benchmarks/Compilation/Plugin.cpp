@@ -27,6 +27,7 @@
 #include "ClangCompilationBenchmark.hpp"
 
 using namespace Elpida;
+using namespace Elpida::Benchmarks::Compilation;
 
 ELPIDA_CREATE_BENCHMARK_GROUP_DECL
 {

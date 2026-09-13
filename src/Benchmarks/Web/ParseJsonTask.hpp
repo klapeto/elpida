@@ -25,7 +25,7 @@
 #include "Elpida/Core/MicroTask.hpp"
 #include "json.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 	class ParseJsonTask: public MicroTask
 	{

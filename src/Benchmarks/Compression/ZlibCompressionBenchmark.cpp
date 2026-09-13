@@ -24,7 +24,7 @@
 #include "GenerateLoremIpsum.hpp"
 #include "ZlibCompressionTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compression
 {
 	Vector<TaskConfiguration> ZlibCompressionBenchmark::GetRequiredConfiguration() const
 	{

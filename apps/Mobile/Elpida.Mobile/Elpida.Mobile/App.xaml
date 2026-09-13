@@ -13,6 +13,8 @@
             <converters:NegatingConverter x:Key="NegatingConverter"/>
             <converters:IecValueConverter x:Key="IecValueConverter"/>
             <converters:SiValueConverter x:Key="SiValueConverter"/>
+            <converters:TimeValueConverter x:Key="TimeValueConverter"/>
+            <converters:RelativeChangeValueConverter x:Key="RelativeChangeValueConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

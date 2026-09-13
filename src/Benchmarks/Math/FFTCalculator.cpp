@@ -21,7 +21,7 @@
 
 #include "FFTCalculator.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 } // Elpida

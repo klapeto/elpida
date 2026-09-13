@@ -16,6 +16,8 @@
 
 #include <iostream>
 
+#include "ScoreCalculator.hpp"
+
 using namespace Elpida;
 using namespace Elpida::Application;
 using namespace nlohmann;
@@ -118,8 +120,19 @@ static TopologyNodeModel GetTopologyNodeModel(const TopologyNode& node)
 		std::move(memoryChildren));
 }
 
+double CalculateTotalScore(double singleCoreScore, double multiCoreScore)
+{
+	return ScoreCalculator::CalculateTotalScore(singleCoreScore, multiCoreScore);
+}
+
+double CalculateScore(const double score[], const double baseScores[], const uint32_t size)
+{
+	return ScoreCalculator::CalculateBenchmarkScore(score, baseScores, size);
+}
+
 ElpidaInstance* Load(char* inputJsonData, uint64_t inputSize)
 {
+	ElpidaInstance* instance = nullptr;
 	try
 	{
 		if (inputJsonData == nullptr)
@@ -129,7 +142,7 @@ ElpidaInstance* Load(char* inputJsonData, uint64_t inputSize)
 		}
 		std::string json(inputJsonData, inputSize);
 
-		auto instance = new ElpidaInstance {
+		instance = new ElpidaInstance {
 			EnvironmentInfo{
 				CpuInfoLoader::Load(),
 				MemoryInfoLoader::Load(),
@@ -171,6 +184,16 @@ ElpidaInstance* Load(char* inputJsonData, uint64_t inputSize)
 			instance->benchmarkExecutionService,
 			missingBenchmarks);
 
+		if (!missingBenchmarks.empty())
+		{
+			std::ostringstream stream;
+			for (auto& benchmark : missingBenchmarks)
+			{
+				stream << benchmark << ", ";
+			}
+			throw std::runtime_error("Missing benchmarks: " + stream.str());
+		}
+
 		instance->benchmarkInstances = std::move(benchmarksLoaded);
 		return instance;
 	}
@@ -179,6 +202,7 @@ ElpidaInstance* Load(char* inputJsonData, uint64_t inputSize)
 		auto message = ex.what();
 
 		std::strncpy(lastError, message, sizeof(lastError));
+		delete instance;
 		return nullptr;
 	}
 }
@@ -213,18 +237,22 @@ int RunBenchmark(const ElpidaInstance* instance,
 
 }
 
-int GetBenchmarkInstancesSerializedInfo(
-	const ElpidaInstance* instance,
-	char** outputJsonData, uint64_t* outputSize)
+int GetInfo(const ElpidaInstance* instance, char** buffer, uint64_t* size)
 {
 	try
 	{
+		json root;
+		root["cpu"] = JsonSerializer::Serialize(instance->environmentInfo.GetCpuInfo());
+		root["memory"] = JsonSerializer::Serialize(instance->environmentInfo.GetMemoryInfo());
+		root["os"] = JsonSerializer::Serialize(instance->environmentInfo.GetOsInfo());
+		root["topology"] = JsonSerializer::Serialize(instance->environmentInfo.GetTopologyInfo());
+		root["topology"]["fastestProcessor"] = 0;
+		root["timing"] = JsonSerializer::Serialize(instance->environmentInfo.GetOverheadsInfo());
 
-
-		nlohmann::json root = json::array();
+		json benchmarkGroups = json::array();
 		for (auto& benchmarkInstance : instance->benchmarkInstances)
 		{
-			nlohmann::json benchmarkJ;
+			json benchmarkJ;
 			benchmarkJ["uuid"] = benchmarkInstance->GetUuid();
 			benchmarkJ["name"] = benchmarkInstance->GetName();
 			benchmarkJ["baseScore"] = benchmarkInstance->GetBaseScore();
@@ -255,35 +283,10 @@ int GetBenchmarkInstancesSerializedInfo(
 			benchmarkInfoJ["configurations"] = benchmarkConfigJ;
 			benchmarkJ["benchmarkInfo"] = benchmarkInfoJ;
 
-			root.push_back(benchmarkJ);
+			benchmarkGroups.push_back(benchmarkJ);
 		}
 
-		auto str = root.dump();
-		*outputSize = str.size();
-		*outputJsonData = new char[*outputSize];
-		std::strncpy(*outputJsonData, str.c_str(), *outputSize);
-		return EXIT_SUCCESS;
-	}
-	catch (const std::exception& ex)
-	{
-		auto message = ex.what();
-
-		std::strncpy(lastError, message, sizeof(lastError));
-		return EXIT_FAILURE;
-	}
-}
-
-int GetSystemSerializedInfo(const ElpidaInstance* instance, char** buffer, uint64_t* size)
-{
-	try
-	{
-		json root;
-		root["cpu"] = JsonSerializer::Serialize(instance->environmentInfo.GetCpuInfo());
-		root["memory"] = JsonSerializer::Serialize(instance->environmentInfo.GetMemoryInfo());
-		root["os"] = JsonSerializer::Serialize(instance->environmentInfo.GetOsInfo());
-		root["topology"] = JsonSerializer::Serialize(instance->environmentInfo.GetTopologyInfo());
-		root["topology"]["fastestProcessor"] = 0;
-		root["timing"] = JsonSerializer::Serialize(instance->environmentInfo.GetOverheadsInfo());
+		root["benchmarkGroups"] = std::move(benchmarkGroups);
 
 		auto serialized = root.dump();
 
@@ -304,6 +307,6 @@ int GetSystemSerializedInfo(const ElpidaInstance* instance, char** buffer, uint6
 
 void DestroyBuffer(const char* buffer)
 {
-	delete buffer;
+	delete[] buffer;
 }
 }

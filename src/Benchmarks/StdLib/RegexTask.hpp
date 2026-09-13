@@ -21,7 +21,7 @@
 #include "Elpida/Core/MicroTask.hpp"
 #include <regex>
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 
 	class RegexTask : public MicroTask

@@ -22,7 +22,7 @@
 #include "ImageTaskData.hpp"
 #include "Elpida/Core/DataUtilities.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	Vector<SharedPtr<AbstractTaskData>>
 	ImageTaskData::Split(const Vector<SharedPtr<Allocator>>& targetAllocators) const

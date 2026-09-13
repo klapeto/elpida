@@ -23,7 +23,7 @@
 #include "GenerateLoremIpsum.hpp"
 #include "AESEncryptTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 	std::vector<TaskConfiguration> AESEncryptionBenchmark::GetRequiredConfiguration() const
 	{

@@ -19,7 +19,7 @@
 
 #include <cstring>
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 
 	void MemsetTask::Prepare(SharedPtr<AbstractTaskData> inputData)

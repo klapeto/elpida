@@ -2,9 +2,9 @@ using System.Globalization;
 
 namespace Elpida.Mobile.Converters
 {
-	public class SiValueConverter: IValueConverter
+	public class SiValueConverter : IValueConverter
 	{
-		private static readonly double[] ScaleValues =
+		public static readonly double[] ScaleValues =
 		[
 			1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0,
 			1.0 / 1000.0 / 1000.0 / 1000.0,
@@ -23,22 +23,25 @@ namespace Elpida.Mobile.Converters
 
 		private static readonly string[] Prefixes =
 		[
-			"ps",
-			"ns",
-			"μs",
-			"ms",
-			"seconds",
-			"minutes",
-			"hours",
-			"days",
-			"months",
-			"years"
+			"p",
+			"n",
+			"μ",
+			"m",
+			"",
+			"K",
+			"M",
+			"G",
+			"T",
+			"P",
+			"E",
+			"Z",
+			"Y"
 		];
 
 		public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			return Utilities.GetValueScaleString(System.Convert.ToDouble(value), ScaleValues, Prefixes,
-				System.Convert.ToInt32(parameter));
+				System.Convert.ToInt32(parameter), culture);
 		}
 
 		public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

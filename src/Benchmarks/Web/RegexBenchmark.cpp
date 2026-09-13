@@ -19,7 +19,7 @@
 #include "GenerateLoremIpsum.hpp"
 #include "RegexTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 	Vector<TaskConfiguration> RegexBenchmark::GetRequiredConfiguration() const
 	{

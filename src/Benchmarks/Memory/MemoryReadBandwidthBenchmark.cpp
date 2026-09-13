@@ -22,7 +22,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "AllocateMemoryTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Memory
 {
 
 	Vector<TaskConfiguration> MemoryReadBandwidthBenchmark::GetRequiredConfiguration() const

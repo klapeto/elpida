@@ -4,8 +4,9 @@ namespace Elpida.Mobile.ViewModels
 {
 	public class BenchmarkResultViewModel: ObservableObject
 	{
-		public double TotalScore { get; set; }
-		public double SingleThreadScore { get; set; }
-		public double MultiThreadScore { get; set; }
+		public ResultViewModel TotalScore { get; set; } = new();
+		
+		public ResultViewModel SingleThreadScore { get; set; } = new();
+		public ResultViewModel MultiThreadScore { get; set; } = new();
 	}
 }

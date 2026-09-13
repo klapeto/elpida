@@ -27,7 +27,7 @@
 #include <memory>
 #include <openssl/decoder.h>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 
 	class EvpCipherCtxPtr : public std::unique_ptr<EVP_CIPHER_CTX, decltype(&::EVP_CIPHER_CTX_free)>

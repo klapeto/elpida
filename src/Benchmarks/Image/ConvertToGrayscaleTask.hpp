@@ -28,7 +28,7 @@
 
 #include "ImageBenchmarksConfig.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class ConvertToGrayscaleTask : public Task

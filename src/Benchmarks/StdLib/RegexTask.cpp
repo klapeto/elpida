@@ -20,7 +20,7 @@
 #include <regex>
 #include <cstring>
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	//https://hg.mozilla.org/projects/kraken/file/e119421cb3253e9dd4d52e0bb9ef77c850396038/tests/sunspider-0.9.1/regexp-dna.js
 	static const char Data[] = ">ONE Homo sapiens alu\\n\\\n"

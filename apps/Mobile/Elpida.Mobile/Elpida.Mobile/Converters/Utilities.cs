@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 
 namespace Elpida.Mobile.Converters
@@ -7,7 +8,8 @@ namespace Elpida.Mobile.Converters
 		public static string GetValueScaleString(double value,
 			double[] denominators,
 			string[] prefixes,
-			int decimals)
+			int decimals,
+			CultureInfo culture)
 		{
 			var sb = new StringBuilder();
 			
@@ -23,7 +25,7 @@ namespace Elpida.Mobile.Converters
 				i--;
 			}
 
-			sb.Append((value / denominators[i]).ToString($"F{decimals}"));
+			sb.Append((value / denominators[i]).ToString($"F{decimals}", culture));
 			sb.Append(' ');
 			sb.Append(prefixes[i]);
 			

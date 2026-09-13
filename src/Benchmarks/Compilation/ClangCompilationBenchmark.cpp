@@ -31,7 +31,7 @@ void LLVMInitializeX86TargetMC();
 void LLVMInitializeX86AsmPrinter();
 }
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compilation
 {
 	std::vector<TaskConfiguration> ClangCompilationBenchmark::GetRequiredConfiguration() const
 	{

@@ -19,14 +19,18 @@ namespace Elpida.Mobile.Services
 		private static extern int RunBenchmark(IntPtr instance, int index, ref double result);
 		
 		[DllImport("elpida")]
-		private static extern int GetSystemSerializedInfo(IntPtr instance, ref IntPtr buffer, ref ulong size);
-		
-		[DllImport("elpida")]
-		private static extern int GetBenchmarkInstancesSerializedInfo(IntPtr instance, ref IntPtr outputBuffer, ref ulong outputSize);
+		private static extern int GetInfo(IntPtr instance, ref IntPtr buffer, ref ulong size);
 		
 		[DllImport("elpida")]
 		private static extern void DestroyBuffer(IntPtr buffer);
 
+		[DllImport("elpida")]
+		public static extern double CalculateTotalScore(double singleCoreScore, double multiCoreScore);
+
+		[DllImport("elpida")]
+		public static extern double CalculateScore(double[] score, double[] baseScores, int size);
+
+		
 		private IntPtr _instance;
 
 		public Task<double> RunBenchmarkAsync(int index)
@@ -50,7 +54,7 @@ namespace Elpida.Mobile.Services
 
 			var contents = reader.ReadToEnd() ;
 			
-			IntPtr inputBuffer = Marshal.StringToHGlobalAnsi(contents);
+			var inputBuffer = Marshal.StringToHGlobalAnsi(contents);
 			try
 			{
 				_instance = Load(inputBuffer, (ulong)contents.Length);
@@ -66,38 +70,7 @@ namespace Elpida.Mobile.Services
 			}
 		}
 
-		public List<FullBenchmarkInstanceModel> GetBenchmarkInstances()
-		{
-			if (_instance == IntPtr.Zero) throw new InvalidOperationException("Elpida instance is not loaded");
-			var outputBuffer = IntPtr.Zero;
-			ulong outputSize = 0;
-			try
-			{
-				var res = GetBenchmarkInstancesSerializedInfo(_instance, ref outputBuffer, ref outputSize);
-				if (res != 0)
-				{
-					var error = Marshal.PtrToStringAnsi(GetLastError());
-					throw new ApplicationException($"Failed to get info: {error}");
-				}
-				var str = Marshal.PtrToStringAnsi(outputBuffer, (int)outputSize);
-				if (str == null) throw new ArgumentException("Elpida returned null system info");
-				var deserialized = JsonSerializer.Deserialize<List<FullBenchmarkInstanceModel>>(str, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-				if (deserialized == null) throw new ArgumentException("Elpida returned null system info");
-				return deserialized;
-			}
-			finally
-			{
-				if (outputBuffer != IntPtr.Zero)
-				{
-					DestroyBuffer(outputBuffer);
-				}
-			}
-		}
-
-		public SystemInfoModel GetSystemInfo()
+		public ElpidaInfoDumpModel GetInfo()
 		{
 			if (_instance == IntPtr.Zero) throw new InvalidOperationException("Elpida instance is not loaded");
 			
@@ -106,7 +79,7 @@ namespace Elpida.Mobile.Services
 			string str;
 			try
 			{
-				var res = GetSystemSerializedInfo( _instance, ref buffer, ref size);
+				var res = GetInfo( _instance, ref buffer, ref size);
 				if (res != 0)
 				{
 					throw new ApplicationException($"Failed to get info: {Marshal.PtrToStringAnsi(GetLastError())}");
@@ -122,7 +95,7 @@ namespace Elpida.Mobile.Services
 				}
 			}
 
-			var deserialized = JsonSerializer.Deserialize<SystemInfoModel>(str, new JsonSerializerOptions
+			var deserialized = JsonSerializer.Deserialize<ElpidaInfoDumpModel>(str, new JsonSerializerOptions
 			{
 				PropertyNameCaseInsensitive = true
 			});

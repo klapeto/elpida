@@ -20,7 +20,7 @@
 
 #include "Elpida/Core/Benchmark.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 
 	class StrtodBenchmark : public Benchmark

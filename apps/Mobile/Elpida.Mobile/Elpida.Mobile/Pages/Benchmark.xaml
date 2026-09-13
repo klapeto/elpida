@@ -4,24 +4,43 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:Elpida.Mobile.Controls"
              xmlns:viewmodels="clr-namespace:Elpida.Mobile.ViewModels"
+             xmlns:views="clr-namespace:Elpida.Mobile.Views"
              x:DataType="viewmodels:BenchmarkPageViewModel"
              x:Class="Elpida.Mobile.Pages.Benchmark">
     <ScrollView>
         <VerticalStackLayout>
             <controls:GroupBox Margin="8" Title="Score">
                 <VerticalStackLayout>
-                    <Label
-                        Text="{Binding LastResult.TotalScore, FallbackValue='N/A', Converter={StaticResource SiValueConverter}}"
-                        Style="{StaticResource Header}" />
+                    <views:ResultView BindingContext="{Binding LastResult.TotalScore}">
+                        <views:ResultView.Resources>
+                            <Style TargetType="Label" BasedOn="{StaticResource Header}" />
+                            <Style TargetType="HorizontalStackLayout">
+                                <Setter Property="HorizontalOptions" Value="Center" />
+                                <Setter Property="Margin" Value="12" />
+                            </Style>
+                        </views:ResultView.Resources>
+                    </views:ResultView>
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
                         <Label Grid.Row="0" Grid.Column="0" Text="Single thread:" Style="{StaticResource Header3}" />
-                        <Label Grid.Row="0" Grid.Column="1"
-                               Text="{Binding LastResult.SingleThreadScore, FallbackValue='N/A', Converter={StaticResource SiValueConverter}}"
-                               Style="{StaticResource Header3}" />
+                        <views:ResultView Grid.Row="0" Grid.Column="1"
+                                          BindingContext="{Binding LastResult.SingleThreadScore}">
+                            <views:ResultView.Resources>
+                                <Style TargetType="Label" BasedOn="{StaticResource Header3}" />
+                                <Style TargetType="HorizontalStackLayout">
+                                    <Setter Property="HorizontalOptions" Value="Center" />
+                                </Style>
+                            </views:ResultView.Resources>
+                        </views:ResultView>
                         <Label Grid.Row="1" Grid.Column="0" Text="Multi thread:" Style="{StaticResource Header3}" />
-                        <Label Grid.Row="1" Grid.Column="1"
-                               Text="{Binding LastResult.MultiThreadScore, FallbackValue='N/A', Converter={StaticResource SiValueConverter}}"
-                               Style="{StaticResource Header3}" />
+                        <views:ResultView Grid.Row="1" Grid.Column="1"
+                                          BindingContext="{Binding LastResult.MultiThreadScore}">
+                            <views:ResultView.Resources>
+                                <Style TargetType="Label" BasedOn="{StaticResource Header3}" />
+                                <Style TargetType="HorizontalStackLayout">
+                                    <Setter Property="HorizontalOptions" Value="Center" />
+                                </Style>
+                            </views:ResultView.Resources>
+                        </views:ResultView>
                     </Grid>
                 </VerticalStackLayout>
             </controls:GroupBox>
@@ -31,33 +50,62 @@
                     <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
                            Text="{Binding ExecutingBenchmark.Name, FallbackValue='N/A'}" />
 
-                    <ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
+                    <ProgressBar Progress="{Binding Progress}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
                     <Label Grid.Row="1" Grid.Column="2">
                         <Label.FormattedText>
                             <FormattedString>
-                                <Span Text="{Binding ExecutedBenchmarks}"/>
-                                <Span Text="/"/>
-                                <Span Text="{Binding BenchmarkCount}"/>
+                                <Span Text="{Binding ExecutedBenchmarks}" />
+                                <Span Text="/" />
+                                <Span Text="{Binding BenchmarkCount}" />
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    
+
                     <Label Grid.Row="2" Grid.Column="0" VerticalTextAlignment="Center" Text="Run it:" />
                     <Entry Grid.Row="2" Grid.Column="1"
-                             Keyboard="Numeric"
-                             Text="{Binding RunItTimes}" />
+                           Keyboard="Numeric"
+                           Text="{Binding RunItTimes}" />
                     <Label Grid.Row="2" Grid.Column="2" VerticalTextAlignment="Center" Text="times" />
-                    
+
                     <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
                         <CheckBox IsChecked="{Binding UploadResults}" />
                         <Label VerticalTextAlignment="Center" Text="Upload results anonymously on Elpida website" />
                     </HorizontalStackLayout>
-                    
-                    <Button Grid.Row="4" Grid.Column="0" Command="{Binding RunBenchmarkCommand}" Text="Start"/>
+
+                    <Button Grid.Row="4" Grid.Column="0" Command="{Binding RunBenchmarkCommand}" Text="Start" />
                     <Label Grid.Row="4" Grid.Column="1" VerticalTextAlignment="Center" Text="Estimated time:" />
                     <Label Grid.Row="4" Grid.Column="2" VerticalTextAlignment="Center" Text="{Binding EstimatedTime}" />
                 </Grid>
             </controls:GroupBox>
+
+            <controls:GroupBox Margin="8" Title="Last results">
+                <CollectionView ItemsSource="{Binding BenchmarkResults}">
+                    <CollectionView.Header>
+                            <Grid ColumnDefinitions="*, *, *" RowDefinitions="Auto,Auto">
+                                <Label Grid.Column="0" Style="{StaticResource Header3}" Text="Total" />
+                                <Label Grid.Column="1" Style="{StaticResource Header3}" Text="Single thread" />
+                                <Label Grid.Column="2" Style="{StaticResource Header3}" Text="Multi thread" />
+                                <BoxView
+                                    Grid.ColumnSpan="3"
+                                    Grid.Row="1"
+                                    Color="#9e9fee"
+                                    HeightRequest="1"
+                                    HorizontalOptions="Fill" />
+                            </Grid>
+                    </CollectionView.Header>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:BenchmarkResultViewModel">
+                            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto">
+                                <views:ResultView Grid.Column="0" BindingContext="{Binding TotalScore}" />
+                                <views:ResultView Grid.Column="1" BindingContext="{Binding SingleThreadScore}" />
+                                <views:ResultView Grid.Column="2" BindingContext="{Binding MultiThreadScore}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </controls:GroupBox>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

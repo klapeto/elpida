@@ -22,7 +22,7 @@
 #include "ParseJsonTask.hpp"
 #include "Elpida/Core/SimpleTaskData.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 	void ParseJsonTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

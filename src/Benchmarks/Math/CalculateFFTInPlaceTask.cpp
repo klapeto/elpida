@@ -24,7 +24,7 @@
 
 #include <random>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 	CalculateFFTInPlaceTask::CalculateFFTInPlaceTask(std::size_t size)
 			:_size(size)

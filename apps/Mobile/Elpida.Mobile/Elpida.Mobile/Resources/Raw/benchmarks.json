@@ -1,0 +1,535 @@
+{
+  "benchmarkGroups": {
+    "failed": [],
+    "loaded": [
+      {
+        "benchmarks": [
+          {
+            "description": "Compiles C++ code with Clang",
+            "index": 0,
+            "name": "C++ Compilation",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "Files"
+          }
+        ],
+        "filePath": "",
+        "name": "Compilation benchmarks"
+      },
+      {
+        "benchmarks": [
+          {
+            "description": "Parses an XML document to determine the parsing speed.",
+            "index": 0,
+            "name": "XML Parsing",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "128",
+                "name": "File size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "chars"
+          },
+          {
+            "description": "Parses a Json document to determine the parsing speed.",
+            "index": 1,
+            "name": "Json Parsing",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "128",
+                "name": "File size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "chars"
+          },
+          {
+            "description": "Encodes data to base64",
+            "index": 2,
+            "name": "Base64 Encode",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "4096",
+                "name": "Input size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Decodes base64 encoded data",
+            "index": 3,
+            "name": "Base64 Decode",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "4096",
+                "name": "Input size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Searches text with regex",
+            "index": 4,
+            "name": "Regex (Boost)",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "2048",
+                "name": "Data size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "Chars"
+          }
+        ],
+        "filePath": "",
+        "name": "Web benchmarks"
+      },
+      {
+        "benchmarks": [
+          {
+            "description": "Calculates the peak memory read bandwidth by continuously reading a memory stream.",
+            "index": 0,
+            "name": "Memory read bandwidth",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "64",
+                "name": "Memory size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Calculates the average memory access latency by randomly reading memory regions.",
+            "index": 1,
+            "name": "Memory latency",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "64",
+                "name": "Memory size",
+                "type": 0
+              }
+            ],
+            "resultType": 1,
+            "resultUnit": "s"
+          }
+        ],
+        "filePath": "",
+        "name": "Memory benchmarks"
+      },
+      {
+        "benchmarks": [
+          {
+            "description": "Calculates the DFT of values in place",
+            "index": 0,
+            "name": "FFT calculation in place",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "2048",
+                "name": "Workload size in bytes",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "numbers"
+          },
+          {
+            "description": "Calculates the product between 2 matrices that their sizes are not known in advance",
+            "index": 1,
+            "name": "Dynamic matrix multiplication",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "32",
+                "name": "Matrix rows",
+                "type": 0
+              },
+              {
+                "defaultValue": "32",
+                "name": "Matrix columns",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "numbers"
+          },
+          {
+            "description": "Calculates the product between 2 32x23 matrices",
+            "index": 2,
+            "name": "Matrix multiplication (32x32)",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "Numbers"
+          },
+          {
+            "description": "Calculates the inverse of a 4x4 matrix",
+            "index": 3,
+            "name": "Matrix inverse (4x4)",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "Numbers"
+          },
+          {
+            "description": "Performs NBody simulation",
+            "index": 4,
+            "name": "NBody Simulation",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "Iterations"
+          }
+        ],
+        "filePath": "",
+        "name": "Math benchmarks"
+      },
+      {
+        "benchmarks": [
+          {
+            "description": "Encodes an image file to PNG.",
+            "index": 0,
+            "name": "PngEncoding",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "./testImage.png",
+                "name": "Input PNG file",
+                "type": 3
+              },
+              {
+                "defaultValue": "./testImage.out.png",
+                "name": "Output PNG file",
+                "type": 3
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "Pixels"
+          },
+          {
+            "description": "Parses an xml parsed document to SVG Dom tree.",
+            "index": 1,
+            "name": "Svg Parsing",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "./test-data.svg",
+                "name": "Input SVG file",
+                "type": 3
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "Elements"
+          },
+          {
+            "description": "Rasterizes a calculated Svg document.",
+            "index": 2,
+            "name": "Svg Rasterization",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "1",
+                "name": "Shape count",
+                "type": 0
+              },
+              {
+                "defaultValue": "1.0",
+                "name": "SVG output scale",
+                "type": 1
+              },
+              {
+                "defaultValue": "16",
+                "name": "SVG rasterization sub samples",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "pixels"
+          },
+          {
+            "description": "Rasterizes a calculated Svg document. Uses multiple buffers instead of a single.",
+            "index": 3,
+            "name": "Svg Rasterization 2",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "./assets/Elpida_Background.svg",
+                "name": "Input file",
+                "type": 3
+              },
+              {
+                "defaultValue": "1.0",
+                "name": "SVG output scale",
+                "type": 1
+              },
+              {
+                "defaultValue": "32",
+                "name": "SVG rasterization sub samples",
+                "type": 0
+              },
+              {
+                "defaultValue": "true",
+                "name": "Multithreaded internal operations",
+                "type": 4
+              },
+              {
+                "defaultValue": "./test-data-single.png",
+                "name": "Output Png file",
+                "type": 3
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "pixels"
+          },
+          {
+            "description": "Rasterizes a calculated Svg document from the disk.",
+            "index": 4,
+            "name": "Svg Rasterization from file",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "",
+                "name": "Input file",
+                "type": 3
+              },
+              {
+                "defaultValue": "1.0",
+                "name": "SVG output scale",
+                "type": 1
+              },
+              {
+                "defaultValue": "16",
+                "name": "SVG rasterization sub samples",
+                "type": 0
+              },
+              {
+                "defaultValue": "./test-data-single.png",
+                "name": "Output Png file",
+                "type": 3
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "pixels"
+          },
+          {
+            "description": "Ray traces a 3D scene to rasterized image",
+            "index": 5,
+            "name": "3D Ray Tracing",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "100",
+                "name": "Render size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "Rays"
+          }
+        ],
+        "filePath": "",
+        "name": "Image benchmarks"
+      },
+      {
+        "benchmarks": [
+          {
+            "description": "Encrypts data with a public key.",
+            "index": 0,
+            "name": "RSA Encryption",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Decrypts data with a private key.",
+            "index": 1,
+            "name": "RSA Decryption",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Encrypts data with a AES.",
+            "index": 2,
+            "name": "AES Encryption",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "131072",
+                "name": "Data size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Decrypts data with a AES",
+            "index": 3,
+            "name": "AES Decryption",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "131072",
+                "name": "Data size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          }
+        ],
+        "filePath": "",
+        "name": "Encryption benchmarks"
+      },
+      {
+        "benchmarks": [
+          {
+            "description": "Compresses a data with zlib",
+            "index": 0,
+            "name": "Zlib compression",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "32768",
+                "name": "Data size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Decompresses a data with zlib",
+            "index": 1,
+            "name": "Zlib decompression",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "32768",
+                "name": "Data size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          }
+        ],
+        "filePath": "",
+        "name": "Compression benchmarks"
+      },
+      {
+        "benchmarks": [
+          {
+            "description": "Measures the malloc() throughput",
+            "index": 0,
+            "name": "malloc()",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Measures the strtod() throughput",
+            "index": 1,
+            "name": "strtod()",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "chars"
+          },
+          {
+            "description": "Measures the strtoul() throughput",
+            "index": 2,
+            "name": "strtoul()",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "chars"
+          },
+          {
+            "description": "Measures the memset() throughput",
+            "index": 3,
+            "name": "memset()",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "268435456",
+                "name": "Memory size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Measures the memchr() throughput",
+            "index": 4,
+            "name": "memchr()",
+            "requiredConfiguration": [
+              {
+                "defaultValue": "268435456",
+                "name": "Memory size",
+                "type": 0
+              }
+            ],
+            "resultType": 0,
+            "resultUnit": "B"
+          },
+          {
+            "description": "Measures the sqrt() throughput",
+            "index": 5,
+            "name": "sqrt()",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "numbers"
+          },
+          {
+            "description": "Measures the ceil() throughput",
+            "index": 6,
+            "name": "ceil()",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "number"
+          },
+          {
+            "description": "Measures the floor() throughput",
+            "index": 7,
+            "name": "floor()",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "numbers"
+          },
+          {
+            "description": "Searches text with regex",
+            "index": 8,
+            "name": "Regex",
+            "requiredConfiguration": [],
+            "resultType": 0,
+            "resultUnit": "Chars"
+          }
+        ],
+        "filePath": "",
+        "name": "StdLib Benchmarks"
+      }
+    ]
+  },
+  "cpu": {
+    "architecture": "",
+    "modelName": "",
+    "vendor": ""
+  },
+  "memory": {
+    "pageSize": 0,
+    "totalSize": 0
+  },
+  "os": {
+    "category": "",
+    "name": "",
+    "version": ""
+  },
+  "timing": {
+    "iterations": 0,
+    "loopOverhead":0,
+    "nowOverhead": 0
+  },
+  "topology": {
+    "fastestProcessor": 0,
+    "root": {
+      "children": [],
+      "osIndex": 0,
+      "type": 0
+    }
+  }
+}

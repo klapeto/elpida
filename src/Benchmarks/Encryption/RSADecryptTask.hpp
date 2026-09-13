@@ -30,7 +30,7 @@
 #include <openssl/decoder.h>
 #include <openssl/core_names.h>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 
 	class RSADecryptTask final : public MicroTask
