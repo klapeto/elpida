@@ -33,13 +33,13 @@ namespace Elpida.Mobile.Services
 		
 		private IntPtr _instance;
 
-		public Task<double> RunBenchmarkAsync(int index)
+		public Task<double> RunBenchmarkAsync(int index, CancellationToken cancellationToken)
 		{
 			return Task.Run(() =>
 			{
 				double result = 0;
 				return RunBenchmark(_instance, index, ref result) == 0 ? result : throw new ApplicationException($"Failed to run benchmark: {Marshal.PtrToStringAnsi(GetLastError())}");
-			});
+			}, cancellationToken);
 		}
 
 		public void LoadAsync()

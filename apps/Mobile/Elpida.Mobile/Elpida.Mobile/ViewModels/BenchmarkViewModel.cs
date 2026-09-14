@@ -8,6 +8,8 @@ namespace Elpida.Mobile.ViewModels
 {
 	public partial class BenchmarkPageViewModel : ObservableObject
 	{
+		private CancellationTokenSource _cancel = new CancellationTokenSource();
+		
 		[ObservableProperty]
 		public int _benchmarkCount;
 
@@ -43,6 +45,9 @@ namespace Elpida.Mobile.ViewModels
 		[ObservableProperty]
 		public ObservableCollection<BenchmarkResultViewModel> _benchmarkResults = new ObservableCollection<BenchmarkResultViewModel>();
 
+		[ObservableProperty]
+		private string _buttonText = "Start";
+		
 		public BenchmarkPageViewModel(ElpidaService elpidaService)
 		{
 			_elpidaService = elpidaService;
@@ -50,15 +55,28 @@ namespace Elpida.Mobile.ViewModels
 
 		public List<FullBenchmarkInstanceModel> BenchmarksInstancesModels { get; set; } = new();
 
-		[RelayCommand(CanExecute = nameof(CanRun))]
+		[RelayCommand(AllowConcurrentExecutions = true)]
 		public async Task RunBenchmark()
 		{
-			if (Running) return;
+			if (Running)
+			{
+				if (_cancel.Token.IsCancellationRequested)
+				{
+					await _cancel.CancelAsync();
+					ExecutingBenchmark = new BenchmarkInfoViewModel
+					{
+						Name = "Waiting for cancellation..."
+					};
+					ButtonText = "Canceling...";
+				}
+				return;
+			}
 
 			try
 			{
 				RunItTimes = Math.Clamp(RunItTimes, 1, 10);
 				Running = true;
+				ButtonText = "Stop";
 				BenchmarkCount = BenchmarksInstancesModels.Count * RunItTimes;
 				ExecutedBenchmarks = 0;
 
@@ -66,6 +84,11 @@ namespace Elpida.Mobile.ViewModels
 				var multiThreadScores = new List<(double, double)>();
 				for (var index = 0; index < BenchmarksInstancesModels.Count; index++)
 				{
+					if (_cancel.Token.IsCancellationRequested)
+					{
+						return;
+					}
+
 					var fullBenchmarkInstanceModel = BenchmarksInstancesModels[index];
 					ExecutingBenchmark = new BenchmarkInfoViewModel
 					{
@@ -73,10 +96,10 @@ namespace Elpida.Mobile.ViewModels
 					};
 					ExecutedBenchmarks++;
 					Progress = ExecutedBenchmarks / (double)BenchmarkCount;
-					var result = await _elpidaService.RunBenchmarkAsync(index);
+					var result = await _elpidaService.RunBenchmarkAsync(index, _cancel.Token);
 					// await Task.Delay(500);
 					//var result = new Random().Next(100);
-		
+
 					if (fullBenchmarkInstanceModel.IsMultiThread)
 					{
 						multiThreadScores.Add((result, fullBenchmarkInstanceModel.BaseScore));
@@ -86,15 +109,17 @@ namespace Elpida.Mobile.ViewModels
 						singleThreadScores.Add((result, fullBenchmarkInstanceModel.BaseScore));
 					}
 				}
-				
-				var singleTheadScore = ElpidaService.CalculateScore(singleThreadScores.Select(x => x.Item1).ToArray(), singleThreadScores.Select(x => x.Item2).ToArray(), singleThreadScores.Count);
-				var multiThreadScore = ElpidaService.CalculateScore(multiThreadScores.Select(x => x.Item1).ToArray(), multiThreadScores.Select(x => x.Item2).ToArray(), multiThreadScores.Count);
+
+				var singleTheadScore = ElpidaService.CalculateScore(singleThreadScores.Select(x => x.Item1).ToArray(),
+					singleThreadScores.Select(x => x.Item2).ToArray(), singleThreadScores.Count);
+				var multiThreadScore = ElpidaService.CalculateScore(multiThreadScores.Select(x => x.Item1).ToArray(),
+					multiThreadScores.Select(x => x.Item2).ToArray(), multiThreadScores.Count);
 				var totalScore = ElpidaService.CalculateTotalScore(singleTheadScore, multiThreadScore);
 				var resultViewModel = new BenchmarkResultViewModel
 				{
-					SingleThreadScore = new ResultViewModel(){Value = singleTheadScore},
-					MultiThreadScore = new ResultViewModel(){Value = multiThreadScore},
-					TotalScore = new ResultViewModel(){Value = totalScore}
+					SingleThreadScore = new ResultViewModel() { Value = singleTheadScore },
+					MultiThreadScore = new ResultViewModel() { Value = multiThreadScore },
+					TotalScore = new ResultViewModel() { Value = totalScore }
 				};
 				if (LastResult != null)
 				{
@@ -111,16 +136,18 @@ namespace Elpida.Mobile.ViewModels
 				LastResult = resultViewModel;
 				BenchmarkResults.Add(LastResult);
 			}
+			catch (OperationCanceledException)
+			{
+				// ingnored
+			}
 			finally
 			{
 				Running = false;
 				ExecutingBenchmark = null;
+				ExecutedBenchmarks = 0;
+				_cancel.TryReset();
+				ButtonText = "Start";
 			}
-		}
-
-		public bool CanRun()
-		{
-			return !Running;
 		}
 	}
 }

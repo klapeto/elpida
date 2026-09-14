@@ -72,7 +72,7 @@
                         <Label VerticalTextAlignment="Center" Text="Upload results anonymously on Elpida website" />
                     </HorizontalStackLayout>
 
-                    <Button Grid.Row="4" Grid.Column="0" Command="{Binding RunBenchmarkCommand}" Text="Start" />
+                    <Button Grid.Row="4" Grid.Column="0" Command="{Binding RunBenchmarkCommand}" Text="{Binding ButtonText}" />
                     <Label Grid.Row="4" Grid.Column="1" VerticalTextAlignment="Center" Text="Estimated time:" />
                     <Label Grid.Row="4" Grid.Column="2" VerticalTextAlignment="Center" Text="{Binding EstimatedTime}" />
                 </Grid>
