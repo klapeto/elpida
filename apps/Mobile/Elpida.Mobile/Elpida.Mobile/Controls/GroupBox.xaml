@@ -8,10 +8,7 @@
 
     <ContentView.ControlTemplate>
         <ControlTemplate>
-            <Border
-                Background="#cbc7f7"
-                Shadow="0 3 6 rgba(0, 0, 0, 0.14)"
-                StrokeThickness="0">
+            <Border Style="{StaticResource GroupBoxHeaderBorder}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="7" />
                 </Border.StrokeShape>
@@ -25,12 +22,12 @@
                                    Style="{StaticResource GroupBoxHeader}" />  
                         </HorizontalStackLayout>
                         <BoxView
-                            Color="#9e9fee"
+                            Style="{StaticResource GroupBoxHeaderBox}"
                             HeightRequest="1"
                             HorizontalOptions="Fill" />
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout  Grid.Row="1" Padding="7" Background="#edf4f9">
+                    <VerticalStackLayout Grid.Row="1" Padding="7" Style="{StaticResource GroupBoxContentLayout}">
                         <ContentPresenter />
                     </VerticalStackLayout>
                 </Grid>

@@ -6,6 +6,9 @@ namespace Elpida.Mobile.Models
 		public MemoryInfoModel Memory { get; set; } = new MemoryInfoModel();
 		public OsInfoModel Os { get; set; } = new OsInfoModel();
 		public TopologyModel Topology { get; set; } = new TopologyModel();
+		
+		public ElpidaVersionModel ElpidaVersion { get; set; } = new ElpidaVersionModel();
+		
 		public TimingModel Timing { get; set; } = new TimingModel();
 	}
 }

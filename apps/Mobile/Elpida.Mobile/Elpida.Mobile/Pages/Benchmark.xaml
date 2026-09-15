@@ -88,7 +88,7 @@
                                 <BoxView
                                     Grid.ColumnSpan="3"
                                     Grid.Row="1"
-                                    Color="#9e9fee"
+                                    Color="{StaticResource Border}"
                                     HeightRequest="1"
                                     HorizontalOptions="Fill" />
                             </Grid>

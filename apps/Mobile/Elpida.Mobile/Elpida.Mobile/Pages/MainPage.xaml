@@ -19,13 +19,11 @@
 				Margin="0, 0, 0, 8"
 				/>
 			
-			<views1:SystemInfoView BindingContext="{Binding SystemInfo}" IsVisible="{Binding Loaded}"/>
-			
 			<VerticalStackLayout
 				HorizontalOptions="Center"
 				VerticalOptions="Center"
 				IsVisible="{Binding SystemInfo.Loaded, Converter={x:StaticResource NegatingConverter}}"
-				>
+			>
 				<ActivityIndicator IsRunning="true"
 				                   Color="Black"
 				                   SemanticProperties.Description="Loading" />
@@ -34,7 +32,8 @@
 					SemanticProperties.HeadingLevel="Level2"
 					Text="System Info is loading..." />
 			</VerticalStackLayout>
-
+			
+			<views1:SystemInfoView BindingContext="{Binding SystemInfo}" IsVisible="{Binding Loaded, FallbackValue=false}"/>
 		</VerticalStackLayout>
 	</ScrollView>
 </ContentPage>

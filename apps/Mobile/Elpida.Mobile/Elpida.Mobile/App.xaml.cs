@@ -11,7 +11,9 @@ namespace Elpida.Mobile
 
 		protected override Window CreateWindow(IActivationState? activationState)
 		{
-			return new Window(new AppShell(activationState.Context.Services.GetRequiredService<DataLoader>()));
+			return new Window(new AppShell(
+				activationState.Context.Services.GetRequiredService<DataLoader>(), 
+				activationState.Context.Services.GetRequiredService<MessageService>()));
 		}
 	}
 }

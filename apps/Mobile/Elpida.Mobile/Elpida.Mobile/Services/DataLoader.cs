@@ -17,10 +17,10 @@ namespace Elpida.Mobile.Services
 			_service = elpidaService;
 		}
 
-		public Task LoadInitialDataAsync()
+		public async Task LoadInitialDataAsync()
 		{
-			_service.LoadAsync();
-			var info = _service.GetInfo();
+			await _service.LoadAsync();
+			var info = await _service.GetInfoAsync();
 			_mainPageViewModel.SystemInfo = new SystemInfoViewModel(info)
 			{
 				Loaded = true,
@@ -28,7 +28,6 @@ namespace Elpida.Mobile.Services
 
 			_benchmarkPageViewModel.BenchmarksInstancesModels = info.BenchmarkGroups;
 			_benchmarkPageViewModel.Loaded = true;
-			return Task.CompletedTask;
 		}
 	}
 }

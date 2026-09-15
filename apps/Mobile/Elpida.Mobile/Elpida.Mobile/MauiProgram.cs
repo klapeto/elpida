@@ -27,6 +27,9 @@ namespace Elpida.Mobile
 			builder.Services.AddSingleton<BenchmarkPageViewModel>();
 			builder.Services.AddTransient<DataLoader>();
 			builder.Services.AddSingleton<ElpidaService>();
+			builder.Services.AddSingleton<UploadService>();
+			builder.Services.AddSingleton<MessageService>();
+			builder.Services.AddTransient<SettingService>();
 
 			return builder.Build();
 		}

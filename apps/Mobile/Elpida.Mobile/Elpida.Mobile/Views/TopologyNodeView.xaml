@@ -18,9 +18,9 @@
         </Border.StrokeShape>
         <VerticalStackLayout>
             <HorizontalStackLayout Spacing="4">
-                <Label Text="{Binding NodeName}"/>
-                <Label IsVisible="{Binding ShowIndex}" Text="{Binding OsIndex}"/>
-                <Label IsVisible="{Binding ShowSize}" Text="{Binding Size, Converter={StaticResource IecValueConverter}, ConverterParameter=0, StringFormat='{0}B'}"/>
+                <Label Text="{Binding NodeName}" Style="{StaticResource TopologyLabel}"/>
+                <Label IsVisible="{Binding ShowIndex}" Text="{Binding OsIndex}" Style="{StaticResource TopologyLabel}"/>
+                <Label IsVisible="{Binding ShowSize}" Text="{Binding Size, Converter={StaticResource IecValueConverter}, ConverterParameter=0, StringFormat='{0}B'}" Style="{StaticResource TopologyLabel}"/>
             </HorizontalStackLayout>
             
             <FlexLayout 
