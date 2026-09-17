@@ -8,6 +8,7 @@
 
     <HorizontalStackLayout>
         <Label Text="{Binding Value, FallbackValue='N/A', Converter={StaticResource SiValueConverter}, ConverterParameter=2}"/> 
-        <Label Text="{Binding RelativeChange, FallbackValue=' (N/A%)', StringFormat=' ({0}%)', Converter={StaticResource RelativeChangeValueConverter}, ConverterParameter=2}" TextColor="{Binding RelativeChangeColor}"/>
+        <Label Text="{Binding RelativeChange, FallbackValue=' (N/A%)', StringFormat=' ({0}%)', Converter={StaticResource RelativeChangeValueConverter}, ConverterParameter=2}"
+               Style="{StaticResource RelativeChangeLabelStyle}"/>
     </HorizontalStackLayout>
 </ContentView>

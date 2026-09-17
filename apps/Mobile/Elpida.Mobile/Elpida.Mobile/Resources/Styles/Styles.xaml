@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="clr-namespace:Elpida.Mobile.Converters">
+
+    <converters:RelativeChangeSignConverter x:Key="RelativeChangeSignConverter"/>
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
@@ -10,6 +13,18 @@
     <Style TargetType="IndicatorView">
         <Setter Property="IndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"/>
         <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray100}}"/>
+    </Style>
+
+    <Style x:Key="RelativeChangeLabelStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray200}}"/>
+        <Style.Triggers>
+            <DataTrigger TargetType="Label" Binding="{Binding RelativeChange, Converter={StaticResource RelativeChangeSignConverter}}" Value="Positive">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource RelativeChangePositiveLight}, Dark={StaticResource RelativeChangePositiveDark}}"/>
+            </DataTrigger>
+            <DataTrigger TargetType="Label" Binding="{Binding RelativeChange, Converter={StaticResource RelativeChangeSignConverter}}" Value="Negative">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource RelativeChangeNegativeLight}, Dark={StaticResource RelativeChangeNegativeDark}}"/>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="Border">

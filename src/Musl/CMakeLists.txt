@@ -42,9 +42,15 @@ block()
     include(CheckCSourceCompiles)
     unset(CMAKE_C_STANDARD)
     unset(CMAKE_SYSROOT)
-    set(CMAKE_C_STANDARD 11)
+    set(CMAKE_C_STANDARD 99)
     set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
-    set(CMAKE_REQUIRED_FLAGS "-std=c11 -nostdinc -ffreestanding -fno-builtin -fexcess-precision=standard -frounding-math -fno-strict-aliasing -Wa,--noexecstack")
+    set(CMAKE_REQUIRED_FLAGS "-std=c99 -nostdinc -ffreestanding -fno-builtin -fexcess-precision=standard -frounding-math -fno-strict-aliasing -Wa,--noexecstack")
+
+    # for aarch64-w64-mingw32 long double is 64bit
+    if (ELPIDA_WINDOWS)
+        set(CMAKE_REQUIRED_FLAGS "-DELPIDA_WINDOWS ${CMAKE_REQUIRED_FLAGS}")
+    endif ()
+
     set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}/arch/${ARCH};${CMAKE_CURRENT_LIST_DIR}/arch/${ARCH};${CMAKE_CURRENT_LIST_DIR}/arch/generic;${CMAKE_CURRENT_LIST_DIR}/include")
 
     check_c_source_compiles("
@@ -54,6 +60,7 @@ block()
     " LONG_DOUBLE_MATCHES_FLOAT_H)
 
     check_c_source_compiles([[
+        typedef int x;
         #if __FAST_MATH__
         #error yes
         #endif

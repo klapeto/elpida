@@ -39,6 +39,10 @@
     <Color x:Key="Line">#abade4</Color>
 
     <Color x:Key="Nav">#c7cdf9</Color>
+    <Color x:Key="RelativeChangePositiveLight">#188038</Color>
+    <Color x:Key="RelativeChangePositiveDark">#81C995</Color>
+    <Color x:Key="RelativeChangeNegativeLight">#B3261E</Color>
+    <Color x:Key="RelativeChangeNegativeDark">#F28B82</Color>
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
