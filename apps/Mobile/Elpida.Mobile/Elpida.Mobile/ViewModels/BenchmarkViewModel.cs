@@ -53,6 +53,15 @@ namespace Elpida.Mobile.ViewModels
 		private ElpidaService _elpidaService;
 		private bool _enteredEnergySaveMode;
 
+		partial void OnRunItTimesChanged(int value)
+		{
+			EstimatedTime = TimeSpan.FromMinutes(value * 3.3);
+			if (value <= 0)
+			{
+				RunItTimes = 1;
+			}
+		}
+
 		public BenchmarkPageViewModel(ElpidaService elpidaService, UploadService uploadService,
 			MessageService messageService, SettingService settingService)
 		{
@@ -60,6 +69,7 @@ namespace Elpida.Mobile.ViewModels
 			_uploadService = uploadService;
 			_messageService = messageService;
 			_settingService = settingService;
+			OnRunItTimesChanged(_runItTimes);
 		}
 
 		public List<FullBenchmarkInstanceModel> BenchmarksInstancesModels { get; set; } = new();
@@ -86,13 +96,12 @@ namespace Elpida.Mobile.ViewModels
 						{
 							Name = "Waiting for cancellation...",
 						};
-						ButtonText = "Canceling...";
+						ButtonText = Resources.Cancelling;
 					}
 
 					return;
 				}
 
-				RunItTimes = Math.Clamp(RunItTimes, 1, 10);
 				Running = true;
 				ButtonText = "Stop";
 				BenchmarkCount = BenchmarksInstancesModels.Count * RunItTimes;

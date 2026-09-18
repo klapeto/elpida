@@ -23,9 +23,9 @@
         <NeutralLanguage>en-US</NeutralLanguage>
 
         <!-- DEBUG -->
-                <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-                <RunAOTCompilation>False</RunAOTCompilation>
-                <PublishTrimmed>False</PublishTrimmed>
+        <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+        <RunAOTCompilation>True</RunAOTCompilation>
+        <PublishTrimmed>True</PublishTrimmed>
 
         <!-- Enable XAML source generation for faster build times and improved performance.
              This generates C# code from XAML at compile time instead of runtime inflation.
@@ -58,8 +58,8 @@
         <AndroidSdkBuildToolsVersion Condition=" '$(AndroidSdkBuildToolsVersion)' == '' ">34.0.0</AndroidSdkBuildToolsVersion>
         <AndroidSdkPlatformToolsVersion Condition="'$(AndroidSdkPlatformToolsVersion)' == ''">34.0.0</AndroidSdkPlatformToolsVersion>
         <AndroidSdkPlatformVersion Condition=" '$(AndroidSdkPlatformVersion)' == '' ">android-34</AndroidSdkPlatformVersion>
-<!--                <AndroidAbi Condition=" '$(AndroidAbi)' == '' ">arm64-v8a</AndroidAbi>-->
-        <AndroidAbi Condition=" '$(AndroidAbi)' == '' ">x86_64</AndroidAbi>
+<!--        <AndroidAbi Condition=" '$(AndroidAbi)' == '' ">arm64-v8a</AndroidAbi>-->
+                <AndroidAbi Condition=" '$(AndroidAbi)' == '' ">x86_64</AndroidAbi>
 
         <AndroidCommandLineToolsVersion Condition=" '$(AndroidCommandLineToolsVersion)' == '' ">19.0</AndroidCommandLineToolsVersion>
         <AndroidNdkVersion Condition="'$(AndroidNdkVersion)' == ''">27.0.12077973</AndroidNdkVersion>
@@ -82,9 +82,9 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
-        <None Remove="Platforms\Android\Native\benchmarks.json" />
+        <None Remove="Platforms\Android\Native\benchmarks.json"/>
         <MauiAsset Update="Resources\Raw\benchmarks.json">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </MauiAsset>
     </ItemGroup>
 
@@ -105,11 +105,24 @@
             <DependentUpon>MainPage.xaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Properties\Resources.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libelpida.so"/>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <EmbeddedResource Update="Properties\Resources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <Target Name="BuildNativeLibrary" BeforeTargets="Build" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">

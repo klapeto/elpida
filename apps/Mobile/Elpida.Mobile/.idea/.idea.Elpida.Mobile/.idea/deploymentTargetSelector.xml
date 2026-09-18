@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="Elpida.Mobile">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-06-23T22:10:39.361179329Z">
+        <DropdownSelection timestamp="2026-09-18T18:07:26.432341200Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCXA17FKSX" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/klapeto/.android/avd/Medium_Phone.avd" />
             </handle>
           </Target>
         </DropdownSelection>
