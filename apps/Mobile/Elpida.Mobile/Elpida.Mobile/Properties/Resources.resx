@@ -85,6 +85,9 @@
     <data name="Benchmark" xml:space="preserve">
         <value>Benchmark</value>
     </data>
+    <data name="About" xml:space="preserve">
+        <value>About</value>
+    </data>
     <data name="CpuInformation" xml:space="preserve">
         <value>CPU Information</value>
     </data>
@@ -138,5 +141,71 @@
     </data>
     <data name="Total" xml:space="preserve">
         <value>Total</value>
+    </data>
+    <data name="Start" xml:space="preserve">
+        <value>Start</value>
+    </data>
+    <data name="Stop" xml:space="preserve">
+        <value>Stop</value>
+    </data>
+    <data name="Information" xml:space="preserve">
+        <value>Information</value>
+    </data>
+    <data name="BenchmarkWarning" xml:space="preserve">
+        <value>Running benchmarks will make your device warm. Also keep you device charged, and on power if possible.</value>
+    </data>
+    <data name="Ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="WaitingForCancellation" xml:space="preserve">
+        <value>Waiting for cancellation...</value>
+    </data>
+    <data name="Machine" xml:space="preserve">
+        <value>Machine</value>
+    </data>
+    <data name="Package" xml:space="preserve">
+        <value>Package</value>
+    </data>
+    <data name="NumaDomain" xml:space="preserve">
+        <value>Numa Domain</value>
+    </data>
+    <data name="Group" xml:space="preserve">
+        <value>Group</value>
+    </data>
+    <data name="Die" xml:space="preserve">
+        <value>Die</value>
+    </data>
+    <data name="Core" xml:space="preserve">
+        <value>Core</value>
+    </data>
+    <data name="L1ICache" xml:space="preserve">
+        <value>L1I</value>
+    </data>
+    <data name="L1DCache" xml:space="preserve">
+        <value>L1D</value>
+    </data>
+    <data name="L2ICache" xml:space="preserve">
+        <value>L2I</value>
+    </data>
+    <data name="L2DCache" xml:space="preserve">
+        <value>L2D</value>
+    </data>
+    <data name="L3ICache" xml:space="preserve">
+        <value>L3I</value>
+    </data>
+    <data name="L3DCache" xml:space="preserve">
+        <value>L3D</value>
+    </data>
+    <data name="L4Cache" xml:space="preserve">
+        <value>L4</value>
+    </data>
+    <data name="L5Cache" xml:space="preserve">
+        <value>L5</value>
+    </data>
+    <data name="ProcessingUnit" xml:space="preserve">
+        <value>PU</value>
+    </data>
+    <data name="MoreInfo" xml:space="preserve">
+        <value>More info:</value>
     </data>
 </root>

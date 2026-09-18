@@ -48,7 +48,7 @@ namespace Elpida.Mobile.ViewModels
 		private readonly UploadService _uploadService;
 
 		[ObservableProperty]
-		private string _buttonText = "Start";
+		private string _buttonText = Resources.Start;
 
 		private ElpidaService _elpidaService;
 		private bool _enteredEnergySaveMode;
@@ -81,9 +81,9 @@ namespace Elpida.Mobile.ViewModels
 			{
 				if (!_settingService.BenchmarkNotificationIssued)
 				{
-					await _messageService.DisplayAlertAsync("Information",
-						"Running benchmarks will make your device warm. Also keep you device charged, and on power if possible.",
-						"OK");
+					await _messageService.DisplayAlertAsync(Resources.Information,
+						Resources.BenchmarkWarning,
+						Resources.Ok);
 					_settingService.BenchmarkNotificationIssued = true;
 				}
 
@@ -94,7 +94,7 @@ namespace Elpida.Mobile.ViewModels
 						await _cancel.CancelAsync();
 						ExecutingBenchmark = new BenchmarkInfoViewModel
 						{
-							Name = "Waiting for cancellation...",
+							Name = Resources.WaitingForCancellation,
 						};
 						ButtonText = Resources.Cancelling;
 					}
@@ -103,7 +103,7 @@ namespace Elpida.Mobile.ViewModels
 				}
 
 				Running = true;
-				ButtonText = "Stop";
+				ButtonText = Resources.Stop;
 				BenchmarkCount = BenchmarksInstancesModels.Count * RunItTimes;
 				ExecutedBenchmarks = 0;
 				_enteredEnergySaveMode = false;
@@ -201,7 +201,7 @@ namespace Elpida.Mobile.ViewModels
 				ExecutingBenchmark = null;
 				ExecutedBenchmarks = 0;
 				_cancel.TryReset();
-				ButtonText = "Start";
+				ButtonText = Resources.Start;
 			}
 		}
 

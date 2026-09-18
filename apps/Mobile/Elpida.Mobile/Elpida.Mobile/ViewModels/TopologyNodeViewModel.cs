@@ -23,21 +23,21 @@ namespace Elpida.Mobile.ViewModels
 
 		private static readonly Dictionary<TopologyNodeType, string> NodeNames = new Dictionary<TopologyNodeType, string>
 		{
-			[TopologyNodeType.Machine] = "Machine",
-			[TopologyNodeType.Package] = "Package",
-			[TopologyNodeType.NumaDomain] = "Numa Domain",
-			[TopologyNodeType.Group] = "Group",
-			[TopologyNodeType.Die] = "Die",
-			[TopologyNodeType.Core] = "Core",
-			[TopologyNodeType.L1ICache] = "L1I",
-			[TopologyNodeType.L1DCache] = "L1D",
-			[TopologyNodeType.L2ICache] = "L2I",
-			[TopologyNodeType.L2DCache] = "L2D",
-			[TopologyNodeType.L3ICache] = "L3I",
-			[TopologyNodeType.L3DCache] = "L3D",
-			[TopologyNodeType.L4Cache] = "L4",
-			[TopologyNodeType.L5Cache] = "L5",
-			[TopologyNodeType.ProcessingUnit] = "PU",
+			[TopologyNodeType.Machine] = Resources.Machine,
+			[TopologyNodeType.Package] = Resources.Package,
+			[TopologyNodeType.NumaDomain] = Resources.NumaDomain,
+			[TopologyNodeType.Group] = Resources.Group,
+			[TopologyNodeType.Die] = Resources.Die,
+			[TopologyNodeType.Core] = Resources.Core,
+			[TopologyNodeType.L1ICache] = Resources.L1ICache,
+			[TopologyNodeType.L1DCache] = Resources.L1DCache,
+			[TopologyNodeType.L2ICache] = Resources.L2ICache,
+			[TopologyNodeType.L2DCache] = Resources.L2DCache,
+			[TopologyNodeType.L3ICache] = Resources.L3ICache,
+			[TopologyNodeType.L3DCache] = Resources.L3DCache,
+			[TopologyNodeType.L4Cache] = Resources.L4Cache,
+			[TopologyNodeType.L5Cache] = Resources.L5Cache,
+			[TopologyNodeType.ProcessingUnit] = Resources.ProcessingUnit,
 		};
 		
 		private static readonly Dictionary<TopologyNodeType, Color> NodeColors = new Dictionary<TopologyNodeType, Color>

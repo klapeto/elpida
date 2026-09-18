@@ -21,5 +21,11 @@
             Route="Benchmark">
             <ShellContent ContentTemplate="{DataTemplate pages:Benchmark}" />
         </Tab>
+        <Tab
+            Title="{x:Static strings:Resources.About}"
+            Icon="elpida_icon_o.png"
+            Route="About">
+            <ShellContent ContentTemplate="{DataTemplate pages:About}" />
+        </Tab>
     </TabBar>
 </Shell>
