@@ -5,26 +5,27 @@
              xmlns:viewModels="clr-namespace:Elpida.Mobile.ViewModels"
              xmlns:views="clr-namespace:Elpida.Mobile.Views"
              xmlns:controls="clr-namespace:Elpida.Mobile.Controls"
+             xmlns:strings="clr-namespace:Elpida.Mobile"
              x:Class="Elpida.Mobile.Views.SystemInfoView"
              x:DataType="viewModels:SystemInfoViewModel">
     <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Center" AlignContent="SpaceAround">
-        <controls:GroupBox Margin="6" Icon="cpu.png" Title="CPU Information">
+        <controls:GroupBox Margin="6" Icon="cpu.png" Title="{x:Static strings:Resources.CpuInformation}">
             <views:CpuInfoView BindingContext="{Binding CpuInfo}" />
         </controls:GroupBox>
         
-        <controls:GroupBox Margin="6" Title="Memory Information">
+        <controls:GroupBox Margin="6" Title="{x:Static strings:Resources.MemoryInformation}">
             <views:MemoryInfoView BindingContext="{Binding MemoryInfo}" />
         </controls:GroupBox>
         
-        <controls:GroupBox Margin="6" Title="Os Information">
+        <controls:GroupBox Margin="6" Title="{x:Static strings:Resources.OsInformation}">
             <views:OsInfoView BindingContext="{Binding OsInfo}" />
         </controls:GroupBox>
         
-        <controls:GroupBox Margin="6" Title="Timing Information">
+        <controls:GroupBox Margin="6" Title="{x:Static strings:Resources.TimingInformation}">
             <views:TimingInfoView BindingContext="{Binding TimingInfo}" />
         </controls:GroupBox>
         
-        <controls:GroupBox Title="Topology Information">
+        <controls:GroupBox Title="{x:Static strings:Resources.TopologyInformation}">
             <views:TopologyView BindingContext="{Binding TopologyInfo}" />
         </controls:GroupBox>
     </FlexLayout>

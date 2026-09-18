@@ -3,13 +3,14 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:Elpida.Mobile.ViewModels"
+             xmlns:strings="clr-namespace:Elpida.Mobile"
              x:DataType="viewModels:TimingViewModel"
              x:Class="Elpida.Mobile.Views.TimingInfoView">
     
     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
         <Label Grid.Row="0"
                Grid.Column="0"
-               Text="Loop overhead:" FontAttributes="Bold" />
+               Text="{x:Static strings:Resources.LoopOverhead}" FontAttributes="Bold" />
         <Label Grid.Row="0"
                Grid.Column="1"
                Text="{Binding LoopOverhead, Converter={StaticResource SiValueConverter}, ConverterParameter=2}" />
@@ -17,7 +18,7 @@
         <Label
             Grid.Row="1"
             Grid.Column="0"
-            Text="Now overhead:" FontAttributes="Bold" />
+            Text="{x:Static strings:Resources.NowOverhead}" FontAttributes="Bold" />
         <Label
             Grid.Row="1"
             Grid.Column="1" Text="{Binding NowOverhead, Converter={StaticResource SiValueConverter}, ConverterParameter=2}" />

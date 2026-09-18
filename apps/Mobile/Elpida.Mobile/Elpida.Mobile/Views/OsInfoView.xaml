@@ -3,12 +3,13 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:Elpida.Mobile.ViewModels"
+             xmlns:strings="clr-namespace:Elpida.Mobile"
              x:DataType="viewModels:OsInfoViewModel"
              x:Class="Elpida.Mobile.Views.OsInfoView">
     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
         <Label Grid.Row="0"
                Grid.Column="0"
-               Text="Category:" FontAttributes="Bold" />
+               Text="{x:Static strings:Resources.Category}" FontAttributes="Bold" />
         <Label Grid.Row="0"
                Grid.Column="1"
                Text="{Binding Category}" />
@@ -16,7 +17,7 @@
         <Label
             Grid.Row="1"
             Grid.Column="0"
-            Text="Name:" FontAttributes="Bold" />
+            Text="{x:Static strings:Resources.Name}" FontAttributes="Bold" />
         <Label
             Grid.Row="1"
             Grid.Column="1" Text="{Binding Name}" />
@@ -24,7 +25,7 @@
         <Label
             Grid.Row="2"
             Grid.Column="0"
-            Text="Version:" FontAttributes="Bold" />
+            Text="{x:Static strings:Resources.Version}" FontAttributes="Bold" />
         <Label
             Grid.Row="2"
             Grid.Column="1" Text="{Binding Version}" />

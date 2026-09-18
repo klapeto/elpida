@@ -46,4 +46,97 @@
     <data name="ModelName" xml:space="preserve">
         <value>Model Name:</value>
     </data>
+    <data name="Category" xml:space="preserve">
+        <value>Category:</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Name:</value>
+    </data>
+    <data name="Version" xml:space="preserve">
+        <value>Version:</value>
+    </data>
+    <data name="LoopOverhead" xml:space="preserve">
+        <value>Loop overhead:</value>
+    </data>
+    <data name="NowOverhead" xml:space="preserve">
+        <value>Now overhead:</value>
+    </data>
+    <data name="TotalSize" xml:space="preserve">
+        <value>Total size:</value>
+    </data>
+    <data name="PageSize" xml:space="preserve">
+        <value>Page size:</value>
+    </data>
+    <data name="Welcome" xml:space="preserve">
+        <value>Welcome to Elpida!</value>
+    </data>
+    <data name="Loading" xml:space="preserve">
+        <value>Loading</value>
+    </data>
+    <data name="SystemInfoLoading" xml:space="preserve">
+        <value>System Info is loading...</value>
+    </data>
+    <data name="Elpida" xml:space="preserve">
+        <value>Elpida</value>
+    </data>
+    <data name="Home" xml:space="preserve">
+        <value>Home</value>
+    </data>
+    <data name="Benchmark" xml:space="preserve">
+        <value>Benchmark</value>
+    </data>
+    <data name="CpuInformation" xml:space="preserve">
+        <value>CPU Information</value>
+    </data>
+    <data name="MemoryInformation" xml:space="preserve">
+        <value>Memory Information</value>
+    </data>
+    <data name="OsInformation" xml:space="preserve">
+        <value>Os Information</value>
+    </data>
+    <data name="TimingInformation" xml:space="preserve">
+        <value>Timing Information</value>
+    </data>
+    <data name="TopologyInformation" xml:space="preserve">
+        <value>Topology Information</value>
+    </data>
+    <data name="Score" xml:space="preserve">
+        <value>Score</value>
+    </data>
+    <data name="SingleThread" xml:space="preserve">
+        <value>Single thread</value>
+    </data>
+    <data name="SingleThreadLabel" xml:space="preserve">
+        <value>Single thread:</value>
+    </data>
+    <data name="MultiThread" xml:space="preserve">
+        <value>Multi thread</value>
+    </data>
+    <data name="MultiThreadLabel" xml:space="preserve">
+        <value>Multi thread:</value>
+    </data>
+    <data name="Execution" xml:space="preserve">
+        <value>Execution</value>
+    </data>
+    <data name="CurrentBenchmark" xml:space="preserve">
+        <value>Current Benchmark:</value>
+    </data>
+    <data name="RunIt" xml:space="preserve">
+        <value>Run it:</value>
+    </data>
+    <data name="Times" xml:space="preserve">
+        <value>times</value>
+    </data>
+    <data name="UploadResultsAnonymously" xml:space="preserve">
+        <value>Upload results anonymously on Elpida website</value>
+    </data>
+    <data name="EstimatedTime" xml:space="preserve">
+        <value>Estimated time:</value>
+    </data>
+    <data name="LastResults" xml:space="preserve">
+        <value>Last results</value>
+    </data>
+    <data name="Total" xml:space="preserve">
+        <value>Total</value>
+    </data>
 </root>

@@ -1,13 +1,14 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:Elpida.Mobile.ViewModels"
+             xmlns:strings="clr-namespace:Elpida.Mobile"
              x:DataType="viewModels:MemoryInfoViewModel"
              x:Class="Elpida.Mobile.Views.MemoryInfoView">
 
     <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
         <Label Grid.Row="0"
                Grid.Column="0"
-               Text="Total size:" FontAttributes="Bold" />
+               Text="{x:Static strings:Resources.TotalSize}" FontAttributes="Bold" />
         <Label Grid.Row="0"
                Grid.Column="1"
                Text="{Binding TotalSize, Converter={StaticResource IecValueConverter}, ConverterParameter=2, StringFormat='{0}B'}" />
@@ -15,7 +16,7 @@
         <Label
             Grid.Row="1"
             Grid.Column="0"
-            Text="Page size:" FontAttributes="Bold" />
+            Text="{x:Static strings:Resources.PageSize}" FontAttributes="Bold" />
         <Label
             Grid.Row="1"
             Grid.Column="1" Text="{Binding PageSize}" />

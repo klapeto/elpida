@@ -68,5 +68,192 @@ namespace Elpida.Mobile {
                 return ResourceManager.GetString("ModelName", resourceCulture);
             }
         }
+
+        internal static string Category {
+            get {
+                return ResourceManager.GetString("Category", resourceCulture);
+            }
+        }
+
+        internal static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+
+        internal static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
+            }
+        }
+
+        internal static string LoopOverhead {
+            get {
+                return ResourceManager.GetString("LoopOverhead", resourceCulture);
+            }
+        }
+
+        internal static string NowOverhead {
+            get {
+                return ResourceManager.GetString("NowOverhead", resourceCulture);
+            }
+        }
+
+        internal static string TotalSize {
+            get {
+                return ResourceManager.GetString("TotalSize", resourceCulture);
+            }
+        }
+
+        internal static string PageSize {
+            get {
+                return ResourceManager.GetString("PageSize", resourceCulture);
+            }
+        }
+
+        internal static string Welcome {
+            get {
+                return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+
+        internal static string Loading {
+            get {
+                return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+
+        internal static string SystemInfoLoading {
+            get {
+                return ResourceManager.GetString("SystemInfoLoading", resourceCulture);
+            }
+        }
+
+        internal static string Elpida {
+            get {
+                return ResourceManager.GetString("Elpida", resourceCulture);
+            }
+        }
+
+        internal static string Home {
+            get {
+                return ResourceManager.GetString("Home", resourceCulture);
+            }
+        }
+
+        internal static string Benchmark {
+            get {
+                return ResourceManager.GetString("Benchmark", resourceCulture);
+            }
+        }
+
+        internal static string CpuInformation {
+            get {
+                return ResourceManager.GetString("CpuInformation", resourceCulture);
+            }
+        }
+
+        internal static string MemoryInformation {
+            get {
+                return ResourceManager.GetString("MemoryInformation", resourceCulture);
+            }
+        }
+
+        internal static string OsInformation {
+            get {
+                return ResourceManager.GetString("OsInformation", resourceCulture);
+            }
+        }
+
+        internal static string TimingInformation {
+            get {
+                return ResourceManager.GetString("TimingInformation", resourceCulture);
+            }
+        }
+
+        internal static string TopologyInformation {
+            get {
+                return ResourceManager.GetString("TopologyInformation", resourceCulture);
+            }
+        }
+
+        internal static string Score {
+            get {
+                return ResourceManager.GetString("Score", resourceCulture);
+            }
+        }
+
+        internal static string SingleThread {
+            get {
+                return ResourceManager.GetString("SingleThread", resourceCulture);
+            }
+        }
+
+        internal static string SingleThreadLabel {
+            get {
+                return ResourceManager.GetString("SingleThreadLabel", resourceCulture);
+            }
+        }
+
+        internal static string MultiThread {
+            get {
+                return ResourceManager.GetString("MultiThread", resourceCulture);
+            }
+        }
+
+        internal static string MultiThreadLabel {
+            get {
+                return ResourceManager.GetString("MultiThreadLabel", resourceCulture);
+            }
+        }
+
+        internal static string Execution {
+            get {
+                return ResourceManager.GetString("Execution", resourceCulture);
+            }
+        }
+
+        internal static string CurrentBenchmark {
+            get {
+                return ResourceManager.GetString("CurrentBenchmark", resourceCulture);
+            }
+        }
+
+        internal static string RunIt {
+            get {
+                return ResourceManager.GetString("RunIt", resourceCulture);
+            }
+
+        }
+
+        internal static string Times {
+            get {
+                return ResourceManager.GetString("Times", resourceCulture);
+            }
+        }
+
+        internal static string UploadResultsAnonymously {
+            get {
+                return ResourceManager.GetString("UploadResultsAnonymously", resourceCulture);
+            }
+        }
+
+        internal static string EstimatedTime {
+            get {
+                return ResourceManager.GetString("EstimatedTime", resourceCulture);
+            }
+        }
+
+        internal static string LastResults {
+            get {
+                return ResourceManager.GetString("LastResults", resourceCulture);
+            }
+        }
+
+        internal static string Total {
+            get {
+                return ResourceManager.GetString("Total", resourceCulture);
+            }
+        }
     }
 }
