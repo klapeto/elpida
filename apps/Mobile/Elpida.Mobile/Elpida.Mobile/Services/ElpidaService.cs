@@ -6,39 +6,47 @@ namespace Elpida.Mobile.Services
 {
 	public class ElpidaService
 	{
-		[DllImport("elpida")]
+		[DllImport("Elpida")]
 		private static extern IntPtr Load(IntPtr inputJsonBuffer, ulong inputSize);
 		
-		[DllImport("elpida")]
+		[DllImport("Elpida")]
 		private static extern IntPtr GetLastError();
 		
-		[DllImport("elpida")]
+		[DllImport("Elpida")]
 		private static extern IntPtr Destroy(IntPtr instance);
 		
-		[DllImport("elpida")]
-		private static extern int RunBenchmark(IntPtr instance, int index, ref double result);
+		[DllImport("Elpida")]
+		private static extern int RunBenchmark(IntPtr instance, 
+			[MarshalAs(UnmanagedType.LPStr)]string fileName,
+			long groupIndex,
+			long fullIndex,
+			ref double result);
 		
-		[DllImport("elpida")]
+		[DllImport("Elpida")]
 		private static extern int GetInfo(IntPtr instance, ref IntPtr buffer, ref ulong size);
 		
-		[DllImport("elpida")]
+		[DllImport("Elpida")]
 		private static extern void DestroyBuffer(IntPtr buffer);
 
-		[DllImport("elpida")]
+		[DllImport("Elpida")]
 		public static extern double CalculateTotalScore(double singleCoreScore, double multiCoreScore);
 
-		[DllImport("elpida")]
+		[DllImport("Elpida")]
 		public static extern double CalculateScore(double[] score, double[] baseScores, int size);
 		
 		private IntPtr _instance;
 		private ElpidaInfoDumpModel? _infoDump;
 
-		public Task<double> RunBenchmarkAsync(int index, CancellationToken cancellationToken)
+		public Task<double> RunBenchmarkAsync(string filename, 
+			int groupIndex,
+			int fullIndex,
+			CancellationToken cancellationToken)
 		{
 			return Task.Run(() =>
 			{
 				double result = 0;
-				return RunBenchmark(_instance, index, ref result) == 0 ? result : throw new ApplicationException($"Failed to run benchmark: {Marshal.PtrToStringAnsi(GetLastError())}");
+				
+				return RunBenchmark(_instance, filename, groupIndex, fullIndex, ref result) == 0 ? result : throw new ApplicationException($"Failed to run benchmark: {Marshal.PtrToStringAnsi(GetLastError())}");
 			}, cancellationToken);
 		}
 

@@ -26,8 +26,10 @@
 #include "Elpida/Core/BenchmarkGroup.hpp"
 #include <memory>
 
+#define ELPIDA_CREATE_BENCHMARK_GROUP_PTR std::unique_ptr<BenchmarkGroup>(*)()
 #define ELPIDA_CREATE_BENCHMARK_GROUP_NAME CreateBenchmarkGroup
 #define ELPIDA_CREATE_BENCHMARK_GROUP_FUNC ELPIDA_EXPORT std::unique_ptr<Elpida::BenchmarkGroup> ELPIDA_STDCALL ELPIDA_CREATE_BENCHMARK_GROUP_NAME
 #define ELPIDA_CREATE_BENCHMARK_GROUP_DECL ELPIDA_CREATE_BENCHMARK_GROUP_FUNC()
+#define ELPIDA_CREATE_BENCHMARK_GROUP_NAME_STRING "CreateBenchmarkGroup"
 
 #endif //ELPIDA_MODULEEXPORTS_HPP_

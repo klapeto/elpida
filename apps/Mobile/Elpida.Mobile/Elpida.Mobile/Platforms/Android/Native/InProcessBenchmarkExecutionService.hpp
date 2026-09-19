@@ -27,32 +27,34 @@
 
 struct ElpidaInstance;
 
-class InProcessBenchmarkExecutionService: public Elpida::Application::BenchmarkExecutionService
+namespace Elpida
 {
-public:
-	Elpida::Application::BenchmarkResultModel Execute(const Elpida::Application::BenchmarkModel& benchmarkModel,
-		const std::vector<std::size_t>& affinity, double nowOverheadSeconds, double loopOverheadSeconds, bool numaAware,
-		bool pinThreads, Elpida::Application::ConcurrencyMode concurrencyMode,
-		double minimumMicroTaskDuration) override;
-	void StopCurrentExecution() override;
-
-	void SetElpidaInstance(ElpidaInstance* instance)
+	class InProcessBenchmarkExecutionService: public Application::BenchmarkExecutionService
 	{
-		_instance = instance;
-	}
+	public:
+		Application::BenchmarkResultModel Execute(const Application::BenchmarkModel& benchmarkModel,
+			const std::vector<std::size_t>& affinity, double nowOverheadSeconds, double loopOverheadSeconds, bool numaAware,
+			bool pinThreads, Application::ConcurrencyMode concurrencyMode,
+			double minimumMicroTaskDuration) override;
+		void StopCurrentExecution() override;
 
-	InProcessBenchmarkExecutionService();
-private:
-	ElpidaInstance* _instance;
-	std::unordered_map<std::string, std::unique_ptr<Elpida::Benchmark>> _benchmarks;
+		void SetBenchmark(Benchmark* benchmark)
+		{
+			_benchmark = benchmark;
+		}
 
-	template<typename T>
-	void AddBenchmark()
-	{
-		auto benchmark = std::make_unique<T>();
-		_benchmarks[benchmark->GetInfo().GetName()] = std::move(benchmark);
-	}
-};
+		void SetElpidaInstance(ElpidaInstance* instance)
+		{
+			_instance = instance;
+		}
+
+		InProcessBenchmarkExecutionService();
+	private:
+		ElpidaInstance* _instance;
+		Benchmark* _benchmark;
+	};
+
+}
 
 
 #endif //ELPIDA_INPROCESSBENCHMARKEXECUTIONSERVICE_HPP

@@ -38,7 +38,7 @@ struct ElpidaInstance
 	Elpida::Application::TimingModel timingModel;
 	Elpida::Application::TopologyModel topologyModel;
 	Elpida::Application::MemoryInfoModel memoryModel;
-	InProcessBenchmarkExecutionService benchmarkExecutionService;
+	Elpida::InProcessBenchmarkExecutionService benchmarkExecutionService;
 	Elpida::Application::BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
 	std::vector<std::unique_ptr<Elpida::Application::FullBenchmarkInstance>> benchmarkInstances;
 };

@@ -6,6 +6,7 @@ namespace Elpida.Mobile.Models
 		public string Description { get; set; } = string.Empty;
 		public string ResultUnit { get; set; } = string.Empty;
 		public ResultType ResultType { get; set; } = ResultType.Custom;
+		public string Filename { get; set; } = string.Empty;
 		public int Index { get; set; }
 	}
 }

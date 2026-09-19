@@ -118,7 +118,15 @@
 
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libelpida.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libElpida.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libCompilationBenchmarks.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libCompressionBenchmarks.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libEncryptionBenchmarks.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libImageBenchmarks.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libMathBenchmarks.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libMemoryBenchmarks.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libStdLibBenchmarks.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libWebBenchmarks.so"/>
     </ItemGroup>
 
 

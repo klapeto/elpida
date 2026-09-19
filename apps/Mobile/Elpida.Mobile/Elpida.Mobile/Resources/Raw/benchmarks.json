@@ -13,7 +13,7 @@
             "resultUnit": "Files"
           }
         ],
-        "filePath": "",
+        "filePath": "libCompilationBenchmarks",
         "name": "Compilation benchmarks"
       },
       {
@@ -89,7 +89,7 @@
             "resultUnit": "Chars"
           }
         ],
-        "filePath": "",
+        "filePath": "libWebBenchmarks",
         "name": "Web benchmarks"
       },
       {
@@ -123,7 +123,7 @@
             "resultUnit": "s"
           }
         ],
-        "filePath": "",
+        "filePath": "libMemoryBenchmarks",
         "name": "Memory benchmarks"
       },
       {
@@ -186,7 +186,7 @@
             "resultUnit": "Iterations"
           }
         ],
-        "filePath": "",
+        "filePath": "libMathBenchmarks",
         "name": "Math benchmarks"
       },
       {
@@ -326,7 +326,7 @@
             "resultUnit": "Rays"
           }
         ],
-        "filePath": "",
+        "filePath": "libImageBenchmarks",
         "name": "Image benchmarks"
       },
       {
@@ -376,7 +376,7 @@
             "resultUnit": "B"
           }
         ],
-        "filePath": "",
+        "filePath": "libEncryptionBenchmarks",
         "name": "Encryption benchmarks"
       },
       {
@@ -410,7 +410,7 @@
             "resultUnit": "B"
           }
         ],
-        "filePath": "",
+        "filePath": "libCompressionBenchmarks",
         "name": "Compression benchmarks"
       },
       {
@@ -500,7 +500,7 @@
             "resultUnit": "Chars"
           }
         ],
-        "filePath": "",
+        "filePath": "libStdLibBenchmarks",
         "name": "StdLib Benchmarks"
       }
     ]

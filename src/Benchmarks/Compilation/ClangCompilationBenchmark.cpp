@@ -23,12 +23,19 @@
 #include "GenerateRandomDataTask.hpp"
 #include "GenerateCppCodeTask.hpp"
 #include "CompileWithClangTask.hpp"
+#include "llvm/Support/ManagedStatic.h"
 
 extern "C" {
 void LLVMInitializeX86Target();
 void LLVMInitializeX86TargetInfo();
 void LLVMInitializeX86TargetMC();
 void LLVMInitializeX86AsmPrinter();
+
+// For when the library is unloaded
+void _fini()
+{
+	llvm::llvm_shutdown();
+}
 }
 
 namespace Elpida::Benchmarks::Compilation

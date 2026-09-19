@@ -92,9 +92,6 @@ block()
     endif ()
 endblock()
 
-if (ANDROID AND ARCH STREQUAL "x86_64")
-    target_compile_options(musl-lite PRIVATE -mlong-double-80)
-endif ()
 
 target_link_libraries(musl-lite PUBLIC musl-platform)
 

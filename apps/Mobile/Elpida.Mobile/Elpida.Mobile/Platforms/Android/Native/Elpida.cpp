@@ -13,11 +13,15 @@
 #include "Benchmarks/Compression/ZlibCompressionBenchmark.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "Elpida/Core/DefaultAllocatorFactory.hpp"
+#include "Elpida/Core/ModuleExports.hpp"
+#include "ScoreCalculator.hpp"
+#include "DynamicLoadedBenchmark.hpp"
 
 #include <iostream>
 #include <Elpida/Core/Config.hpp>
+#include <dlfcn.h>
 
-#include "ScoreCalculator.hpp"
+ELPIDA_CREATE_BENCHMARK_GROUP_FUNC();
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -218,18 +222,24 @@ void Destroy(const ElpidaInstance* instance)
 	delete instance;
 }
 
-int RunBenchmark(const ElpidaInstance* instance,
-				int index,
-                 double* result)
+int RunBenchmark(ElpidaInstance* instance,
+				const char* fileName,
+				uint64_t groupIndex,
+				uint64_t fullIndex,
+				double* result)
 {
 	try
 	{
-		auto res = instance->benchmarkInstances[index]->Run();
-		*result = res.GetScore();
+		auto actualFileName = std::string(fileName) + ".so";
+		DynamicLoadedBenchmark dynamicLoadedBenchmark(actualFileName.c_str());
+		instance->benchmarkExecutionService.SetBenchmark(dynamicLoadedBenchmark.GetBenchmark(groupIndex));
+		const auto benchmarkResult = instance->benchmarkInstances[fullIndex]->Run();
+		*result = benchmarkResult.GetScore();
 		return EXIT_SUCCESS;
 	}
 	catch (const std::exception& ex)
 	{
+		instance->benchmarkExecutionService.SetBenchmark(nullptr);
 		auto message = ex.what();
 
 		std::strncpy(lastError, message, sizeof(lastError));
@@ -273,6 +283,7 @@ int GetInfo(const ElpidaInstance* instance, char** buffer, uint64_t* size)
 			benchmarkInfoJ["description"] = benchmark.GetDescription();
 			benchmarkInfoJ["resultType"] = benchmark.GetResultType();
 			benchmarkInfoJ["resultUnit"] = benchmark.GetResultUnit();
+			benchmarkInfoJ["filename"] = benchmark.GetFilePath();
 			benchmarkInfoJ["index"] = benchmark.GetBenchmarkIndex();
 
 			json benchmarkConfigJ = json::array();
