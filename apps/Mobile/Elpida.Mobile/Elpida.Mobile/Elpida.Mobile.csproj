@@ -12,8 +12,12 @@
         either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
         <!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
 
+        <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+            android-arm64;android-x64
+        </RuntimeIdentifiers>
+        
         <Company>klapeto</Company>
-        <Product>Elpida Mobile</Product>
+        <Product>Elpida.dev Mobile</Product>
         <OutputType>Exe</OutputType>
         <RootNamespace>Elpida.Mobile</RootNamespace>
         <UseMaui>true</UseMaui>
@@ -24,8 +28,8 @@
 
         <!-- DEBUG -->
         <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-        <RunAOTCompilation>True</RunAOTCompilation>
-        <PublishTrimmed>True</PublishTrimmed>
+        <RunAOTCompilation>False</RunAOTCompilation>
+        <PublishTrimmed>False</PublishTrimmed>
 
         <!-- Enable XAML source generation for faster build times and improved performance.
              This generates C# code from XAML at compile time instead of runtime inflation.
@@ -36,7 +40,7 @@
         <MauiXamlInflator>SourceGen</MauiXamlInflator>
 
         <!-- Display name -->
-        <ApplicationTitle>Elpida Mobile</ApplicationTitle>
+        <ApplicationTitle>Elpida.dev Mobile</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>dev.elpida.mobile</ApplicationId>
@@ -54,12 +58,12 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 
-
         <AndroidSdkBuildToolsVersion Condition=" '$(AndroidSdkBuildToolsVersion)' == '' ">34.0.0</AndroidSdkBuildToolsVersion>
         <AndroidSdkPlatformToolsVersion Condition="'$(AndroidSdkPlatformToolsVersion)' == ''">34.0.0</AndroidSdkPlatformToolsVersion>
-        <AndroidSdkPlatformVersion Condition=" '$(AndroidSdkPlatformVersion)' == '' ">android-34</AndroidSdkPlatformVersion>
-<!--        <AndroidAbi Condition=" '$(AndroidAbi)' == '' ">arm64-v8a</AndroidAbi>-->
-                <AndroidAbi Condition=" '$(AndroidAbi)' == '' ">x86_64</AndroidAbi>
+        <AndroidSdkPlatformVersion Condition=" '$(AndroidSdkPlatformVersion)' == '' ">android-21</AndroidSdkPlatformVersion>
+
+        <AndroidAbi Condition=" '$(RuntimeIdentifier)' == 'android-arm64' ">arm64-v8a</AndroidAbi>
+        <AndroidAbi Condition=" '$(RuntimeIdentifier)' == 'android-x64' ">x86_64</AndroidAbi>
 
         <AndroidCommandLineToolsVersion Condition=" '$(AndroidCommandLineToolsVersion)' == '' ">19.0</AndroidCommandLineToolsVersion>
         <AndroidNdkVersion Condition="'$(AndroidNdkVersion)' == ''">27.0.12077973</AndroidNdkVersion>
