@@ -128,8 +128,7 @@ namespace Elpida.Mobile.ViewModels
 						};
 						ExecutedBenchmarks++;
 						Progress = ExecutedBenchmarks / (double)BenchmarkCount;
-						var result =
-							new Random().Next(90, 100); //await _elpidaService.RunBenchmarkAsync(index, _cancel.Token);
+						var result = await _elpidaService.RunBenchmarkAsync(index, _cancel.Token);
 						runResults.Add(new ResultBenchmarkResultDto
 						{
 							Result = result,

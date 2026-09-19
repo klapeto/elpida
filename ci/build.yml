@@ -10,6 +10,8 @@
     - cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
+      -DELPIDA_ENABLE_QT=ON
+      -DELPIDA_ENABLE_CLI=ON
       -DCMAKE_SYSROOT=/opt/sysroots/$TARGET_TRIPLE
       -DTARGET_PREFIX=$TARGET_TRIPLE-
       -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/llvm-cross.cmake

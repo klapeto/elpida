@@ -4,7 +4,7 @@ if (ELPIDA_ENABLE_QT)
     add_subdirectory(Qt)
 endif ()
 
-option(ELPIDA_ENABLE_CLI "Whether to enable the CLI application" ON)
+option(ELPIDA_ENABLE_CLI "Whether to enable the CLI application" OFF)
 
 if (ELPIDA_ENABLE_CLI)
     add_subdirectory(CLI)
