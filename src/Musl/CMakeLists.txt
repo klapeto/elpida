@@ -92,6 +92,13 @@ block()
     endif ()
 endblock()
 
+if (ELPIDA_ANDROID)
+    target_compile_definitions(musl-lite PRIVATE -DELPIDA_ANDROID)
+endif ()
+
+if (ELPIDA_WINDOWS)
+    target_compile_definitions(musl-lite PRIVATE -DELPIDA_WINDOWS)
+endif ()
 
 target_link_libraries(musl-lite PUBLIC musl-platform)
 

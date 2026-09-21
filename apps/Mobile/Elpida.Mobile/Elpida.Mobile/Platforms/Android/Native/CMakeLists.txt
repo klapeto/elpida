@@ -26,66 +26,50 @@ target_link_libraries(Elpida
         dl
         log)
 
-add_library(CompilationBenchmarks SHARED Dummy.cpp)
+add_library(CompilationBenchmarks MODULE Dummy.cpp)
 target_link_libraries(CompilationBenchmarks
-        android
         elpida-core
         elpida-compilation-benchmarks
-        musl-lite
-        log)
+        musl-lite)
 
-add_library(WebBenchmarks SHARED Dummy.cpp)
+add_library(WebBenchmarks MODULE Dummy.cpp)
 target_link_libraries(WebBenchmarks
-        android
         elpida-core
         elpida-web-benchmarks
-        musl-lite
-        log)
+        musl-lite)
 
-add_library(MemoryBenchmarks SHARED Dummy.cpp)
+add_library(MemoryBenchmarks MODULE Dummy.cpp)
 target_link_libraries(MemoryBenchmarks
-        android
         elpida-core
         elpida-memory-benchmarks
-        musl-lite
-        log)
+        musl-lite)
 
-add_library(MathBenchmarks SHARED Dummy.cpp)
+add_library(MathBenchmarks MODULE Dummy.cpp)
 target_link_libraries(MathBenchmarks
-        android
         elpida-core
         elpida-math-benchmarks
-        musl-lite
-        log)
+        musl-lite)
 
-add_library(ImageBenchmarks SHARED Dummy.cpp)
+add_library(ImageBenchmarks MODULE Dummy.cpp)
 target_link_libraries(ImageBenchmarks
-        android
         elpida-core
         elpida-image-benchmarks
-        musl-lite
-        log)
+        musl-lite)
 
-add_library(EncryptionBenchmarks SHARED Dummy.cpp)
+add_library(EncryptionBenchmarks MODULE Dummy.cpp)
 target_link_libraries(EncryptionBenchmarks
-        android
         elpida-core
         elpida-encryption-benchmarks
-        musl-lite
-        log)
+        musl-lite)
 
-add_library(CompressionBenchmarks SHARED Dummy.cpp)
+add_library(CompressionBenchmarks MODULE Dummy.cpp)
 target_link_libraries(CompressionBenchmarks
-        android
         elpida-core
         elpida-compression-benchmarks
-        musl-lite
-        log)
+        musl-lite)
 
-add_library(StdLibBenchmarks SHARED Dummy.cpp)
+add_library(StdLibBenchmarks MODULE Dummy.cpp)
 target_link_libraries(StdLibBenchmarks
-        android
         elpida-core
         elpida-stdlib-benchmarks
-        musl-lite
-        log)
+        musl-lite)

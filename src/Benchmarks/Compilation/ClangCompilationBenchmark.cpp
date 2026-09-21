@@ -30,12 +30,6 @@ void LLVMInitializeX86Target();
 void LLVMInitializeX86TargetInfo();
 void LLVMInitializeX86TargetMC();
 void LLVMInitializeX86AsmPrinter();
-
-// For when the library is unloaded
-void _fini()
-{
-	llvm::llvm_shutdown();
-}
 }
 
 namespace Elpida::Benchmarks::Compilation
