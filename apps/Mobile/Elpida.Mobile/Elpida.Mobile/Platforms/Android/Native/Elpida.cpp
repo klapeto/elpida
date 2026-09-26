@@ -1,6 +1,5 @@
 #include "ElpidaInstance.hpp"
 #include "FullBenchmarkInstancesLoader.hpp"
-#include "InProcessBenchmarkExecutionService.hpp"
 #include "JsonSerializer.hpp"
 #include "ModelBuilderJson.hpp"
 #include "Core/BenchmarkExecutionService.hpp"
@@ -9,20 +8,15 @@
 #include "Elpida/Platform/MemoryInfoLoader.hpp"
 #include "Elpida/Platform/TopologyLoader.hpp"
 #include "Elpida/Core/TimingCalculator.hpp"
-#include "Elpida/Core/ConcurrencyMode.hpp"
-#include "Benchmarks/Compression/ZlibCompressionBenchmark.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
-#include "Elpida/Core/DefaultAllocatorFactory.hpp"
 #include "Elpida/Core/ModuleExports.hpp"
 #include "ScoreCalculator.hpp"
-#include "DynamicLoadedBenchmark.hpp"
 
 #include <iostream>
 #include <thread>
 #include <Elpida/Core/Config.hpp>
-#include <dlfcn.h>
 
-ELPIDA_CREATE_BENCHMARK_GROUP_FUNC();
+#include "Elpida/Platform/AsyncPipeReader.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -135,56 +129,49 @@ double CalculateScore(const double score[], const double baseScores[], const uin
 	return ScoreCalculator::CalculateBenchmarkScore(score, baseScores, size);
 }
 
-ElpidaInstance* Load(char* inputJsonData, uint64_t inputSize)
+ElpidaInstance* Load(char* executableDirectory)
 {
 	ElpidaInstance* instance = nullptr;
 	try
 	{
-		if (inputJsonData == nullptr)
+		if (executableDirectory == nullptr)
 		{
 			std::strncpy(lastError, "input data is null", sizeof(lastError));
 			return nullptr;
 		}
-		std::string json(inputJsonData, inputSize);
+
+		std::string directory(executableDirectory);
+		Process process(std::filesystem::path(directory) / "elpida-info-dumper", {directory, "-benchmarks"}, true,
+		                true);
+		AsyncPipeReader stdOutReader(process.GetStdOut());
+		AsyncPipeReader stdErrReader(process.GetStdErr());
+
+		stdOutReader.StartReading();
+		stdErrReader.StartReading();
+		process.GetStdOut().CloseWrite();
+		process.GetStdErr().CloseWrite();
+		process.WaitToExit();
+		stdOutReader.StopReading();
+		stdErrReader.StopReading();
+
+		auto error = stdErrReader.GetString();
+		if (!error.empty())
+		{
+			std::strncpy(lastError, error.c_str(), sizeof(lastError));
+			return nullptr;
+		}
 
 		instance = new ElpidaInstance{
-			EnvironmentInfo{
-				CpuInfoLoader::Load(),
-				MemoryInfoLoader::Load(),
-				OsInfoLoader::Load(),
-				TopologyLoader::LoadTopology(),
-				TimingCalculator::CalculateTiming()
-			},
-			ModelBuilderJson(json),
+			ModelBuilderJson(stdOutReader.GetString()),
 		};
-
-		instance->timingModel = TimingModel(
-			instance->environmentInfo.GetOverheadsInfo().GetNowOverhead(),
-			instance->environmentInfo.GetOverheadsInfo().GetLoopOverhead(),
-			instance->environmentInfo.GetOverheadsInfo().GetIterationsPerSecond()
-		);
-		instance->memoryModel = MemoryInfoModel(
-			instance->environmentInfo.GetMemoryInfo().GetTotalSize(),
-			instance->environmentInfo.GetMemoryInfo().GetPageSize()
-		);
-
-		instance->topologyModel = TopologyModel(
-			GetTopologyNodeModel(instance->environmentInfo.GetTopologyInfo().GetRoot()),
-			0
-		);
-		instance->benchmarkExecutionService = InProcessBenchmarkExecutionService();
-		instance->benchmarkExecutionService.SetElpidaInstance(instance);
-		instance->benchmarkRunConfigurationModel = BenchmarkRunConfigurationModel();
-
-		instance->benchmarkExecutionService.SetElpidaInstance(instance);
 
 		std::vector<std::string> missingBenchmarks;
 
 		auto benchmarksLoaded = FullBenchmarkInstancesLoader::Load(
 			instance->modelBuilderJson.GetBenchmarkGroups(),
-			instance->timingModel,
-			instance->topologyModel,
-			instance->memoryModel,
+			instance->modelBuilderJson.GetTimingModel(),
+			instance->modelBuilderJson.GetTopologyInfoModel(),
+			instance->modelBuilderJson.GetMemoryInfoModel(),
 			instance->benchmarkRunConfigurationModel,
 			instance->benchmarkExecutionService,
 			missingBenchmarks);
@@ -223,30 +210,24 @@ void Destroy(const ElpidaInstance* instance)
 }
 
 int RunBenchmark(ElpidaInstance* instance,
-                 const char* fileName,
-                 uint64_t groupIndex,
                  uint64_t fullIndex,
                  double* result)
 {
 	try
 	{
-		auto actualFileName = std::string(fileName) + ".so";
-		DynamicLoadedBenchmark dynamicLoadedBenchmark(actualFileName.c_str());
-		instance->benchmarkExecutionService.SetBenchmark(dynamicLoadedBenchmark.GetBenchmark(groupIndex));
-
-		// thread to avoid static init/deinit errors due to dlclose() (mainly openssl)
-		std::thread th([&]()
+		if (fullIndex >= instance->benchmarkInstances.size())
 		{
-			const auto benchmarkResult = instance->benchmarkInstances[fullIndex]->Run();
-			*result = benchmarkResult.GetScore();
-		});
-		th.join();
+			std::strncpy(lastError, "Invalid index", sizeof(lastError));
+			return EXIT_FAILURE;
+		}
 
+		auto fullBenchmarkResult = instance->benchmarkInstances[fullIndex]->Run();
+
+		*result = fullBenchmarkResult.GetScore();
 		return EXIT_SUCCESS;
 	}
 	catch (const std::exception& ex)
 	{
-		instance->benchmarkExecutionService.SetBenchmark(nullptr);
 		auto message = ex.what();
 
 		std::strncpy(lastError, message, sizeof(lastError));
@@ -254,27 +235,137 @@ int RunBenchmark(ElpidaInstance* instance,
 	}
 }
 
-int GetInfo(const ElpidaInstance* instance, char** buffer, uint64_t* size)
+static nlohmann::json Serialize(const TopologyNodeModel& topologyNode)
+{
+	json jNode;
+
+	jNode["type"] = static_cast<int>(topologyNode.GetType());
+	if (topologyNode.GetOsIndex().has_value())
+	{
+		jNode["osIndex"] = topologyNode.GetOsIndex().value();
+	}
+
+	switch (topologyNode.GetType())
+	{
+	case TopologyNodeType::L1ICache:
+	case TopologyNodeType::L1DCache:
+	case TopologyNodeType::L2ICache:
+	case TopologyNodeType::L2DCache:
+	case TopologyNodeType::L3ICache:
+	case TopologyNodeType::L3DCache:
+	case TopologyNodeType::L4Cache:
+	case TopologyNodeType::L5Cache:
+	case TopologyNodeType::NumaDomain:
+		{
+			if (topologyNode.GetSize().has_value())
+			{
+				jNode["size"] = topologyNode.GetSize().value();
+			}
+		}
+		break;
+	case TopologyNodeType::ProcessingUnit:
+		{
+			if (topologyNode.GetEfficiency().has_value())
+			{
+				jNode["efficiency"] = topologyNode.GetEfficiency().value();
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+	if (!topologyNode.GetMemoryChildren().empty())
+	{
+		json memoryChildren = json::array();
+
+		for (auto& child : topologyNode.GetMemoryChildren())
+		{
+			memoryChildren.push_back(Serialize(child));
+		}
+
+		jNode["memoryChildren"] = std::move(memoryChildren);
+	}
+
+	if (!topologyNode.GetChildren().empty())
+	{
+		json children = json::array();
+
+		for (auto& child : topologyNode.GetChildren())
+		{
+			children.push_back(Serialize(child));
+		}
+
+		jNode["children"] = std::move(children);
+	}
+
+	return jNode;
+}
+
+int GetInfo(ElpidaInstance* instance, char** buffer, uint64_t* size)
 {
 	try
 	{
 		json root;
-		root["cpu"] = JsonSerializer::Serialize(instance->environmentInfo.GetCpuInfo());
-		root["memory"] = JsonSerializer::Serialize(instance->environmentInfo.GetMemoryInfo());
-		root["os"] = JsonSerializer::Serialize(instance->environmentInfo.GetOsInfo());
-		root["topology"] = JsonSerializer::Serialize(instance->environmentInfo.GetTopologyInfo());
-		root["topology"]["fastestProcessor"] = 0;
-		root["timing"] = JsonSerializer::Serialize(instance->environmentInfo.GetOverheadsInfo());
+		{
+			auto& cpuInfo = instance->modelBuilderJson.GetCpuInfoModel();
+			json cpu;
 
-		json elpidaVersion;
-		elpidaVersion["version"] = ELPIDA_VERSION;
-		elpidaVersion["compilerName"] = ELPIDA_COMPILER_NAME;
-		elpidaVersion["compilerVersion"] = ELPIDA_COMPILER_VERSION;
-		root["elpidaVersion"] = std::move(elpidaVersion);
+			cpu["architecture"] = cpuInfo.GetArchitecture();
+			cpu["vendor"] = cpuInfo.GetVendorName();
+			cpu["modelName"] = cpuInfo.GetModelName();
+
+			root["cpu"] = std::move(cpu);
+		}
+		{
+			auto& memoryInfo = instance->modelBuilderJson.GetMemoryInfoModel();
+			json memory;
+
+			memory["pageSize"] = memoryInfo.GetPageSize();
+			memory["totalSize"] = memoryInfo.GetTotalSize();
+
+			root["memory"] = std::move(memory);
+		}
+		{
+			auto& osInfo = instance->modelBuilderJson.GetOsInfoModel();
+			json os;
+
+			os["category"] = osInfo.GetCategory();
+			os["name"] = osInfo.GetName();
+			os["version"] = osInfo.GetVersion();
+
+			root["os"] = std::move(os);
+		}
+		{
+			json topology;
+			topology["root"] = Serialize(instance->modelBuilderJson.GetTopologyInfoModel().GetRoot());
+			topology["fastestProcessor"] = 0;
+
+			root["topology"] = std::move(topology);
+		}
+		{
+			auto& timingInfo = instance->modelBuilderJson.GetTimingModel();
+			json jTiming;
+
+			jTiming["iterations"] = timingInfo.GetIterationsPerSecond();
+			jTiming["loopOverhead"] = timingInfo.GetLoopOverhead().count();
+			jTiming["nowOverhead"] = timingInfo.GetNowOverhead().count();
+
+			root["timing"] = std::move(jTiming);
+		}
+
+		{
+			json elpidaVersion;
+			elpidaVersion["version"] = ELPIDA_VERSION;
+			elpidaVersion["compilerName"] = ELPIDA_COMPILER_NAME;
+			elpidaVersion["compilerVersion"] = ELPIDA_COMPILER_VERSION;
+			root["elpidaVersion"] = std::move(elpidaVersion);
+		}
 
 		json benchmarkGroups = json::array();
 		for (auto& benchmarkInstance : instance->benchmarkInstances)
 		{
+			benchmarkInstance->Configure();
 			json benchmarkJ;
 			benchmarkJ["uuid"] = benchmarkInstance->GetUuid();
 			benchmarkJ["name"] = benchmarkInstance->GetName();
@@ -300,7 +391,7 @@ int GetInfo(const ElpidaInstance* instance, char** buffer, uint64_t* size)
 				thisBenchmarkConfigJ["name"] = configuration.GetName();
 				thisBenchmarkConfigJ["id"] = configuration.GetId();
 				thisBenchmarkConfigJ["type"] = configuration.GetType();
-				thisBenchmarkConfigJ["defaultValue"] = configuration.GetValue();
+				thisBenchmarkConfigJ["value"] = configuration.GetValue();
 				benchmarkConfigJ.push_back(thisBenchmarkConfigJ);
 			}
 
@@ -310,7 +401,7 @@ int GetInfo(const ElpidaInstance* instance, char** buffer, uint64_t* size)
 			benchmarkGroups.push_back(benchmarkJ);
 		}
 
-		root["benchmarkGroups"] = std::move(benchmarkGroups);
+		root["benchmarks"] = std::move(benchmarkGroups);
 
 		auto serialized = root.dump();
 

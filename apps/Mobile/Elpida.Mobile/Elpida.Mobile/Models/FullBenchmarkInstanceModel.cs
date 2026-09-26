@@ -7,7 +7,6 @@ namespace Elpida.Mobile.Models
 		public ConcurrencyMode ConcurrencyMode { get; set; } = ConcurrencyMode.None;
 		public bool IsMultiThread { get; set; }
 		public double BaseScore { get; set; }
-		public BenchmarkInfoModel BenchmarkInfo { get; set; } = new();
-		public List<BenchmarkConfigurationModel> Configurations { get; set; } = new();
+		public FullBenchmarkInfoModel BenchmarkInfo { get; set; } = new();
 	}
 }

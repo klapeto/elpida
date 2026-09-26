@@ -6,121 +6,95 @@ namespace Elpida.Mobile.Services
 {
 	public class ElpidaService
 	{
+		private ElpidaInfoDumpModel? _infoDump;
+		private IntPtr _instance;
+
 		[DllImport("Elpida")]
-		private static extern IntPtr Load(IntPtr inputJsonBuffer, ulong inputSize);
+		public static extern double CalculateTotalScore(double singleCoreScore, double multiCoreScore);
+		
+		[DllImport("Elpida")]
+		public static extern IntPtr Load([MarshalAs(UnmanagedType.LPStr)] string executablesPath);
+		
+		[DllImport("Elpida")]
+		public static extern int GetInfo(IntPtr instance, ref IntPtr buffer, ref ulong size);
+		
+		[DllImport("Elpida")]
+		public static extern int RunBenchmark(IntPtr instance, ulong size, ref double score);
+
+		[DllImport("Elpida")]
+		private static extern void DestroyBuffer(IntPtr buffer);
+
+		[DllImport("Elpida")]
+		public static extern double CalculateScore(double[] score, double[] baseScores, int size);
 		
 		[DllImport("Elpida")]
 		private static extern IntPtr GetLastError();
 		
 		[DllImport("Elpida")]
 		private static extern IntPtr Destroy(IntPtr instance);
-		
-		[DllImport("Elpida")]
-		private static extern int RunBenchmark(IntPtr instance, 
-			[MarshalAs(UnmanagedType.LPStr)]string fileName,
-			long groupIndex,
-			long fullIndex,
-			ref double result);
-		
-		[DllImport("Elpida")]
-		private static extern int GetInfo(IntPtr instance, ref IntPtr buffer, ref ulong size);
-		
-		[DllImport("Elpida")]
-		private static extern void DestroyBuffer(IntPtr buffer);
 
-		[DllImport("Elpida")]
-		public static extern double CalculateTotalScore(double singleCoreScore, double multiCoreScore);
-
-		[DllImport("Elpida")]
-		public static extern double CalculateScore(double[] score, double[] baseScores, int size);
-		
-		private IntPtr _instance;
-		private ElpidaInfoDumpModel? _infoDump;
-
-		public Task<double> RunBenchmarkAsync(string filename, 
-			int groupIndex,
-			int fullIndex,
+		public Task<double> RunBenchmarkAsync(int index,
 			CancellationToken cancellationToken)
 		{
 			return Task.Run(() =>
 			{
-				double result = 0;
-				
-				return RunBenchmark(_instance, filename, groupIndex, fullIndex, ref result) == 0 ? result : throw new ApplicationException($"Failed to run benchmark: {Marshal.PtrToStringAnsi(GetLastError())}");
+				if (_instance == IntPtr.Zero)
+				{
+					throw new ApplicationException($"Not initialized");
+				}
+
+				var score = 0.0;
+				var res = RunBenchmark(_instance, (ulong)index, ref score);
+				if (res != 0)
+				{
+					var error = Marshal.PtrToStringAnsi(GetLastError());
+					throw new ApplicationException($"Failed to run benchmark: {error}");
+				}
+
+				return score;
 			}, cancellationToken);
 		}
 
-		public Task LoadAsync()
+		public async Task<ElpidaInfoDumpModel> LoadAsync()
 		{
-			return Task.Run(() =>
+			if (_infoDump != null) return _infoDump;
+			
+			_instance = Load(Android.App.Application.Context.ApplicationInfo?.NativeLibraryDir);
+			if (_instance == IntPtr.Zero)
 			{
-				if (_instance != IntPtr.Zero)
-				{
-					return;
-				}
+				var error = Marshal.PtrToStringAnsi(GetLastError());
+				throw new ApplicationException($"Failed to load: {error}");
+			}
 
-				using var stream = FileSystem.OpenAppPackageFileAsync("benchmarks.json").GetAwaiter().GetResult();
-				using var reader = new StreamReader(stream);
-
-				var contents = reader.ReadToEnd() ;
-			
-				var inputBuffer = Marshal.StringToHGlobalAnsi(contents);
-				try
-				{
-					_instance = Load(inputBuffer, (ulong)contents.Length);
-					if (_instance == IntPtr.Zero)
-					{
-						var error = Marshal.PtrToStringAnsi(GetLastError());
-						throw new ApplicationException($"Failed to load: {error}");
-					}
-				}
-				finally
-				{
-					Marshal.FreeHGlobal(inputBuffer);
-				}
-			});
-			
-		}
-
-		public Task<ElpidaInfoDumpModel> GetInfoAsync()
-		{
-			if (_infoDump != null) return Task.FromResult(_infoDump);
-			return Task.Run(() =>
+			IntPtr buffer = IntPtr.Zero;
+			ulong size = 0;
+			var res = GetInfo(_instance, ref buffer, ref size);
+			if (res != 0)
 			{
-				if (_instance == IntPtr.Zero) throw new InvalidOperationException("Elpida instance is not loaded");
-			
-				var buffer = IntPtr.Zero;
-				ulong size = 0;
-				string str;
-				try
-				{
-					var res = GetInfo( _instance, ref buffer, ref size);
-					if (res != 0)
-					{
-						throw new ApplicationException($"Failed to get info: {Marshal.PtrToStringAnsi(GetLastError())}");
-					}
-					str = Marshal.PtrToStringAnsi(buffer, (int)size);
-					if (str == null) throw new ArgumentException("Elpida returned null system info");
-				}
-				finally
-				{
-					if (buffer != IntPtr.Zero)
-					{
-						DestroyBuffer(buffer);
-					}
-				}
+				DestroyBuffer(buffer);
+				var error = Marshal.PtrToStringAnsi(GetLastError());
+				throw new ApplicationException($"Failed to get info: {error}");
+			}
 
-				_infoDump = JsonSerializer.Deserialize<ElpidaInfoDumpModel>(str, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
+			try
+			{
+				var str = Marshal.PtrToStringAnsi(buffer, (int)size);
+				_infoDump = JsonSerializer.Deserialize<ElpidaInfoDumpModel>(str,
+					new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true
+					});
 				if (_infoDump == null) throw new ArgumentException("Elpida returned null system info");
 				_infoDump.Cpu.ModelName = DeviceInfo.Current.Model;
 				_infoDump.Cpu.Vendor = DeviceInfo.Current.Manufacturer;
 				_infoDump.Os.Name = DeviceInfo.Current.Platform.ToString();
 				_infoDump.Os.Version = DeviceInfo.Current.Version.ToString();
 				return _infoDump;
-			});
+			}
+			finally
+			{
+				DestroyBuffer(buffer);
+			}
 			
 		}
 	}

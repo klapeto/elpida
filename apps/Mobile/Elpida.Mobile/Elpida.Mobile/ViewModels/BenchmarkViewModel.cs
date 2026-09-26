@@ -128,10 +128,7 @@ namespace Elpida.Mobile.ViewModels
 						};
 						ExecutedBenchmarks++;
 						Progress = ExecutedBenchmarks / (double)BenchmarkCount;
-						var result = await _elpidaService.RunBenchmarkAsync(fullBenchmarkInstanceModel.BenchmarkInfo.Filename, 
-							fullBenchmarkInstanceModel.BenchmarkInfo.Index,
-							index, 
-							_cancel.Token);
+						var result = await _elpidaService.RunBenchmarkAsync(index, _cancel.Token);
 						runResults.Add(new ResultBenchmarkResultDto
 						{
 							Result = result,

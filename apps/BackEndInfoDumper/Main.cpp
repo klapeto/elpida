@@ -90,7 +90,13 @@ static bool IsExecutable(const std::filesystem::directory_entry& entry)
 #endif
 }
 
-static json SerializeBenchmarkGroups(const std::filesystem::path& path)
+static inline bool EndsWith(std::string const & value, std::string const & ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
+static json SerializeBenchmarkGroups(const std::filesystem::path& path, const std::string& suffix)
 {
 	if (!is_directory(path))
 	{
@@ -103,7 +109,10 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path)
 
 	for (auto& entry : std::filesystem::directory_iterator(path))
 	{
-		if (!entry.is_directory() && entry.is_regular_file() && IsExecutable(entry))
+		if (!entry.is_directory()
+			&& entry.is_regular_file()
+			&& IsExecutable(entry)
+			&& (suffix.empty() || EndsWith(entry.path().string(), suffix)))
 		{
 			try
 			{
@@ -129,7 +138,7 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path)
 	return rootJ;
 }
 
-static json GetJsonWithOnlyBenchmarks(const std::filesystem::path& benchmarkPath)
+static json GetJsonWithOnlyBenchmarks(const std::filesystem::path& benchmarkPath, const std::string& suffix)
 {
 
 	TimingInfo timing;
@@ -145,7 +154,7 @@ static json GetJsonWithOnlyBenchmarks(const std::filesystem::path& benchmarkPath
 	root["topology"] = JsonSerializer::Serialize(topology);
 	root["topology"]["fastestProcessor"] = 0;
 	root["timing"] = JsonSerializer::Serialize(timing);
-	root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarkPath);
+	root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarkPath, suffix);
 
 	return root;
 }
@@ -155,6 +164,7 @@ int main(int argC, char** argV)
 	OsUtilities::ConvertArgumentsToUTF8(argC, argV);
 
 	std::filesystem::path benchmarkPath;
+	std::string suffix;
 
 	if (argC > 1)
 	{
@@ -165,11 +175,16 @@ int main(int argC, char** argV)
 		benchmarkPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
 	}
 
+	if (argC > 2)
+	{
+		suffix = argV[2];
+	}
+
 	try
 	{
 		// The way this works is completely stupid but works and probably needs to work only once in this era.
 
-		ModelBuilderJson builderJson(GetJsonWithOnlyBenchmarks(benchmarkPath).dump());
+		ModelBuilderJson builderJson(GetJsonWithOnlyBenchmarks(benchmarkPath, suffix).dump());
 
 		OffProcessBenchmarkExecutionService service;
 		BenchmarkRunConfigurationModel runConfigurationModel;

@@ -19,14 +19,13 @@ namespace Elpida.Mobile.Services
 
 		public async Task LoadInitialDataAsync()
 		{
-			await _service.LoadAsync();
-			var info = await _service.GetInfoAsync();
+			var info = await _service.LoadAsync();
 			_mainPageViewModel.SystemInfo = new SystemInfoViewModel(info)
 			{
 				Loaded = true,
 			};
 
-			_benchmarkPageViewModel.BenchmarksInstancesModels = info.BenchmarkGroups;
+			_benchmarkPageViewModel.BenchmarksInstancesModels = [.. info.Benchmarks];
 			_benchmarkPageViewModel.Loaded = true;
 		}
 	}

@@ -1,0 +1,13 @@
+namespace Elpida.Mobile.Models
+{
+	public class FullBenchmarkInfoModel
+	{
+		public string Name { get; set; } = string.Empty;
+		public string Description { get; set; } = string.Empty;
+		public string ResultUnit { get; set; } = string.Empty;
+		public ResultType ResultType { get; set; } = ResultType.Custom;
+		public string Filename { get; set; } = string.Empty;
+		public int Index { get; set; }
+		public List<BenchmarkConfigurationModel> Configurations { get; set; } = new();
+	}
+}

@@ -83,7 +83,14 @@ static bool IsExecutable(const std::filesystem::directory_entry& entry)
 #endif
 }
 
-static json SerializeBenchmarkGroups(const std::filesystem::path& path)
+
+static bool EndsWith(std::string const & value, std::string const & ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
+static json SerializeBenchmarkGroups(const std::filesystem::path& path, const std::string& suffix)
 {
 	if (!is_directory(path))
 	{
@@ -96,7 +103,10 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path)
 
 	for (auto& entry : std::filesystem::directory_iterator(path))
 	{
-		if (!entry.is_directory() && entry.is_regular_file() && IsExecutable(entry))
+		if (!entry.is_directory()
+			&& entry.is_regular_file()
+			&& IsExecutable(entry)
+			&& (suffix.empty() || EndsWith(entry.path().string(), suffix)))
 		{
 			try
 			{
@@ -127,6 +137,7 @@ int main(int argC, char** argV)
 	OsUtilities::ConvertArgumentsToUTF8(argC, argV);
 
 	std::filesystem::path benchmarkPath;
+	std::string suffix;
 
 	if (argC > 1)
 	{
@@ -137,6 +148,16 @@ int main(int argC, char** argV)
 	else
 	{
 		benchmarkPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
+	}
+
+	if (argC > 2)
+	{
+		suffix = argV[2];
+		ValueUtilities::DeQuoteString(suffix);
+	}
+	else
+	{
+		suffix = "";
 	}
 
 	try
@@ -176,7 +197,7 @@ int main(int argC, char** argV)
 		root["topology"] = JsonSerializer::Serialize(topology);
 		root["topology"]["fastestProcessor"] = highestCore;
 		root["timing"] = JsonSerializer::Serialize(timing);
-		root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarkPath);
+		root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarkPath, suffix);
 
 		std::cout << root.dump();
 	}

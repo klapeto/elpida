@@ -8,14 +8,9 @@ namespace Elpida.Mobile.Services
 	{
 		private readonly ElpidaService _elpidaService;
 		private readonly HttpClient _client = new HttpClient();
-
-#if DEBUG
+		
 		private const string ApiKey = "Test API Key";
 		private const string ApiHost = "http://10.0.2.2:5000";
-#else
-		private const string ApiKey = "___ApiKey";
-		private const string ApiHost = "___Host";
-#endif
 		private const string Url = "api/v1/benchmarkresult";
 
 		public UploadService(ElpidaService elpidaService)
@@ -95,7 +90,7 @@ namespace Elpida.Mobile.Services
 
 		public async Task UploadResultsAsync(IEnumerable<ResultDto> results)
 		{
-			var infoDump = await _elpidaService.GetInfoAsync();
+			var infoDump = await _elpidaService.LoadAsync();
 			var result =await _client.PostAsJsonAsync(Url, new ResultBatchDto
 			{
 				Cpu = new ResultCpuDto

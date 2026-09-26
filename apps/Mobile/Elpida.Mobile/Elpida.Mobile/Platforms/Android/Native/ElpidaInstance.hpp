@@ -21,10 +21,8 @@
 #define ELPIDA_ELPIDAINSTANCE_HPP
 
 #include "ModelBuilderJson.hpp"
-#include "Elpida/Core/EnvironmentInfo.hpp"
 #include "Models/BenchmarkRunConfigurationModel.hpp"
-#include "Models/SystemInfo/TopologyModel.hpp"
-#include "InProcessBenchmarkExecutionService.hpp"
+#include "Core/OffProcessBenchmarkExecutionService.hpp"
 
 namespace Elpida::Application
 {
@@ -33,12 +31,8 @@ namespace Elpida::Application
 
 struct ElpidaInstance
 {
-	Elpida::EnvironmentInfo environmentInfo;
 	Elpida::Application::ModelBuilderJson modelBuilderJson;
-	Elpida::Application::TimingModel timingModel;
-	Elpida::Application::TopologyModel topologyModel;
-	Elpida::Application::MemoryInfoModel memoryModel;
-	Elpida::InProcessBenchmarkExecutionService benchmarkExecutionService;
+	Elpida::Application::OffProcessBenchmarkExecutionService benchmarkExecutionService;
 	Elpida::Application::BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
 	std::vector<std::unique_ptr<Elpida::Application::FullBenchmarkInstance>> benchmarkInstances;
 };

@@ -118,15 +118,10 @@
 
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/elpida-cli"/>
         <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libElpida.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libCompilationBenchmarks.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libCompressionBenchmarks.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libEncryptionBenchmarks.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libImageBenchmarks.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libMathBenchmarks.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libMemoryBenchmarks.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libStdLibBenchmarks.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libWebBenchmarks.so"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/elpida-info-dumper"/>
+        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/*-benchmarks"/>
     </ItemGroup>
 
 
@@ -138,8 +133,19 @@
     </ItemGroup>
 
     <Target Name="BuildNativeLibrary" BeforeTargets="Build" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-        <Exec Command="cmake -DCMAKE_BUILD_TYPE=Release -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -H$(ProjectDir)/Platforms/Android/Native -B$(ProjectDir)/Platforms/Android/libs/$(AndroidAbi) -DANDROID_ABI=$(AndroidAbi) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion) -DCMAKE_TOOLCHAIN_FILE=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)/build/cmake/android.toolchain.cmake -G Ninja"/>
+        <Exec Command="cmake -DCMAKE_BUILD_TYPE=Debug -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -H$(ProjectDir)/Platforms/Android/Native -B$(ProjectDir)/Platforms/Android/libs/$(AndroidAbi) -DANDROID_ABI=$(AndroidAbi) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion) -DCMAKE_TOOLCHAIN_FILE=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)/build/cmake/android.toolchain.cmake -G Ninja"/>
         <Exec Command="cmake --build $(ProjectDir)/Platforms/Android/libs/$(AndroidAbi)"/>
+    </Target>
+    
+    <Target Name="CopyBinaries" AfterTargets="BuildNativeLibrary" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+
+        <ItemGroup>
+            <Benchmarks Include="Platforms/Android/libs/$(AndroidAbi)/elpida/apps/Benchmarks/*-benchmarks"/>
+        </ItemGroup>
+        
+        <Copy SourceFiles="Platforms/Android/libs/$(AndroidAbi)/elpida/apps/CLI/elpida-cli" DestinationFiles="Platforms/Android/libs/$(AndroidAbi)/elpida-cli"/>
+        <Copy SourceFiles="Platforms/Android/libs/$(AndroidAbi)/elpida/apps/InfoDumper/elpida-info-dumper" DestinationFiles="Platforms/Android/libs/$(AndroidAbi)/elpida-info-dumper"/>
+        <Copy SourceFiles="@(Benchmarks)" DestinationFolder="Platforms/Android/libs/$(AndroidAbi)"/>
     </Target>
 
 </Project>

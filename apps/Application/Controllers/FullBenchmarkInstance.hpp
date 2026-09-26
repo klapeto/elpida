@@ -74,6 +74,8 @@ namespace Elpida::Application
 		[[nodiscard]]
 		bool IsMultiThread() const;
 
+		virtual void Configure() = 0;
+
 		[[nodiscard]]
 		virtual ConcurrencyMode GetMultiThreadConcurrencyMode() const
 		{
@@ -109,9 +111,6 @@ namespace Elpida::Application
 		std::string _uuid;
 		Score _baseScore;
 		bool _multiThread;
-
-		virtual void Configure() = 0;
-
 	private:
 		[[nodiscard]]
 		FullBenchmarkInstanceResult RunSingleThread() const;
