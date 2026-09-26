@@ -4,6 +4,7 @@ project("Elpida Information Dumper" VERSION ${ELPIDA_VERSION}
         LANGUAGES CXX C)
 
 set(ELPIDA_INFO_DUMPER_SOURCES
+        ArgumentsHelper.cpp
         Main.cpp)
 
 if (MSYS OR MINGW OR MSVC)

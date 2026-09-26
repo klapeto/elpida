@@ -155,7 +155,9 @@ int main(int argC, char** argV)
 
 		ELPIDA_OUT("Getting System information...");
 
-		ModelBuilderJson builderJson = ModelBuilderJson(InfoGetter::GetInfoData(benchmarksPath));
+		InfoGetter infoGetter;
+		infoGetter.SetBenchmarksPath(benchmarksPath);
+		ModelBuilderJson builderJson = ModelBuilderJson(infoGetter.GetData());
 
 		OffProcessBenchmarkExecutionService executionService;
 

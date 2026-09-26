@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Elpida.Mobile.iml" filepath="$PROJECT_DIR$/.idea/Elpida.Mobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/obj/Debug/net10.0-android/android/android.iml" filepath="$PROJECT_DIR$/obj/Debug/net10.0-android/android/android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/obj/Debug/net10.0-android/android-arm64/android-arm64.iml" filepath="$PROJECT_DIR$/obj/Debug/net10.0-android/android-arm64/android-arm64.iml" />
+      <module fileurl="file://$PROJECT_DIR$/obj/Debug/net10.0-android/android-x64/android-x64.iml" filepath="$PROJECT_DIR$/obj/Debug/net10.0-android/android-x64/android-x64.iml" />
+    </modules>
+  </component>
+</project>

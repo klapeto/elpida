@@ -55,47 +55,48 @@ namespace Elpida.Mobile.Services
 			}, cancellationToken);
 		}
 
-		public async Task<ElpidaInfoDumpModel> LoadAsync()
+		public Task<ElpidaInfoDumpModel> LoadAsync()
 		{
-			if (_infoDump != null) return _infoDump;
-			
-			_instance = Load(Android.App.Application.Context.ApplicationInfo?.NativeLibraryDir);
-			if (_instance == IntPtr.Zero)
+			if (_infoDump != null) return Task.FromResult(_infoDump);
+			return Task.Run(() =>
 			{
-				var error = Marshal.PtrToStringAnsi(GetLastError());
-				throw new ApplicationException($"Failed to load: {error}");
-			}
+				_instance = Load(Android.App.Application.Context.ApplicationInfo?.NativeLibraryDir);
+				if (_instance == IntPtr.Zero)
+				{
+					var error = Marshal.PtrToStringAnsi(GetLastError());
+					throw new ApplicationException($"Failed to load: {error}");
+				}
 
-			IntPtr buffer = IntPtr.Zero;
-			ulong size = 0;
-			var res = GetInfo(_instance, ref buffer, ref size);
-			if (res != 0)
-			{
-				DestroyBuffer(buffer);
-				var error = Marshal.PtrToStringAnsi(GetLastError());
-				throw new ApplicationException($"Failed to get info: {error}");
-			}
+				IntPtr buffer = IntPtr.Zero;
+				ulong size = 0;
+				var res = GetInfo(_instance, ref buffer, ref size);
+				if (res != 0)
+				{
+					DestroyBuffer(buffer);
+					var error = Marshal.PtrToStringAnsi(GetLastError());
+					throw new ApplicationException($"Failed to get info: {error}");
+				}
 
-			try
-			{
-				var str = Marshal.PtrToStringAnsi(buffer, (int)size);
-				_infoDump = JsonSerializer.Deserialize<ElpidaInfoDumpModel>(str,
-					new JsonSerializerOptions
-					{
-						PropertyNameCaseInsensitive = true
-					});
-				if (_infoDump == null) throw new ArgumentException("Elpida returned null system info");
-				_infoDump.Cpu.ModelName = DeviceInfo.Current.Model;
-				_infoDump.Cpu.Vendor = DeviceInfo.Current.Manufacturer;
-				_infoDump.Os.Name = DeviceInfo.Current.Platform.ToString();
-				_infoDump.Os.Version = DeviceInfo.Current.Version.ToString();
-				return _infoDump;
-			}
-			finally
-			{
-				DestroyBuffer(buffer);
-			}
-			
+				try
+				{
+					var str = Marshal.PtrToStringAnsi(buffer, (int)size);
+					_infoDump = JsonSerializer.Deserialize<ElpidaInfoDumpModel>(str,
+						new JsonSerializerOptions
+						{
+							PropertyNameCaseInsensitive = true
+						});
+					if (_infoDump == null) throw new ArgumentException("Elpida returned null system info");
+					_infoDump.Cpu.ModelName = DeviceInfo.Current.Model;
+					_infoDump.Cpu.Vendor = DeviceInfo.Current.Manufacturer;
+					_infoDump.Os.Name = DeviceInfo.Current.Platform.ToString();
+					_infoDump.Os.Version = DeviceInfo.Current.Version.ToString();
+					return _infoDump;
+				}
+				finally
+				{
+					DestroyBuffer(buffer);
+				}
+			});
 		}
 	}
 }

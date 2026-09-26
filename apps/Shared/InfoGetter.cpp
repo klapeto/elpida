@@ -28,11 +28,28 @@
 
 namespace Elpida
 {
-	std::string InfoGetter::GetInfoData(const std::filesystem::path& benchmarksPath)
+	std::string InfoGetter::GetData() const
 	{
-		auto pathString = benchmarksPath.string();
+		auto pathString = _benchmarksPath.string();
 		ValueUtilities::QuoteString(pathString);
-		Process process(OsUtilities::GetExecutableDirectory() / "elpida-info-dumper", { pathString }, true, true);
+
+		auto suffix = _benchmarksSuffix;
+		ValueUtilities::QuoteString(suffix);
+
+		auto executablePath = _infoGetterPath.empty() ? OsUtilities::GetExecutableDirectory() / "elpida-info-dumper" : _infoGetterPath;
+		Vector<String> args;
+		args.push_back("--benchmarks-directory=" + pathString);
+		if (!_benchmarksSuffix.empty())
+		{
+			args.push_back("--benchmarks-suffix=" + suffix);
+		}
+
+		if (_noThreadPinning)
+		{
+			args.emplace_back("--no-thread-pinning");
+		}
+
+		Process process(executablePath, args, true, true);
 		AsyncPipeReader stdOut(process.GetStdOut());
 		AsyncPipeReader stdErr(process.GetStdErr());
 
@@ -57,5 +74,11 @@ namespace Elpida
 				throw ElpidaException("Info dumper process failed with error: ", err);
 			}
 		}
+	}
+
+	InfoGetter::InfoGetter():
+		_noThreadPinning(false)
+	{
+
 	}
 } // Elpida

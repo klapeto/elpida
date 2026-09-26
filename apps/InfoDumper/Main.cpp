@@ -25,6 +25,7 @@
 #include <filesystem>
 
 #include "JsonSerializer.hpp"
+#include "ArgumentsHelper.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/OsInfoLoader.hpp"
@@ -37,6 +38,7 @@
 
 using namespace nlohmann;
 using namespace Elpida;
+using namespace Elpida::Application;
 
 static std::string GetBenchmarkInfo(const std::filesystem::path& path)
 {
@@ -136,57 +138,62 @@ int main(int argC, char** argV)
 {
 	OsUtilities::ConvertArgumentsToUTF8(argC, argV);
 
-	std::filesystem::path benchmarkPath;
-	std::string suffix;
-
-	if (argC > 1)
+	ArgumentsHelper helper;
 	{
-		std::string pathString = argV[1];
+		std::string returnText;
+		auto success = helper.ParseAndGetExitText(argC, argV, returnText);
+		if (!returnText.empty())
+		{
+			std::cout << returnText << std::endl;
+			return success ? EXIT_SUCCESS : EXIT_FAILURE;
+		}
+	}
+
+	std::filesystem::path benchmarksPath;
+
+	if (!helper.GetBenchmarksPath().empty())
+	{
+		std::string pathString = helper.GetBenchmarksPath().string();
 		ValueUtilities::DeQuoteString(pathString);
-		benchmarkPath = pathString;
+		benchmarksPath = pathString;
 	}
 	else
 	{
-		benchmarkPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
+		benchmarksPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
 	}
 
-	if (argC > 2)
-	{
-		suffix = argV[2];
-		ValueUtilities::DeQuoteString(suffix);
-	}
-	else
-	{
-		suffix = "";
-	}
-
+	std::string suffix = helper.GetBenchmarkSuffix();
+	ValueUtilities::DeQuoteString(suffix);
 	try
 	{
 		auto topology = TopologyLoader::LoadTopology();
-
-		topology.PinThreadToProcessor(0);
-		auto& cores = topology.GetAllCores();
-
-		Duration loopOverhead = Seconds(6546513);
 		unsigned int highestCore = 0;
 
-		for (auto& core : cores)
+		if (!helper.IsNoThreadPinning())
 		{
-			auto& pu = core.get().GetChildren().front();
+			topology.PinThreadToProcessor(0);
+			auto& cores = topology.GetAllCores();
 
-			Duration overhead;
+			Duration loopOverhead = Seconds(6546513);
 
-			topology.PinThreadToProcessor(pu.get()->GetOsIndex().value());
-			overhead = TimingCalculator::CalculateLoopOverheadFast();
-
-			if (overhead < loopOverhead)
+			for (auto& core : cores)
 			{
-				highestCore = pu->GetOsIndex().value();
-				loopOverhead = overhead;
-			}
-		}
+				auto& pu = core.get().GetChildren().front();
 
-		topology.PinThreadToProcessor(highestCore);
+				Duration overhead;
+
+				topology.PinThreadToProcessor(pu.get()->GetOsIndex().value());
+				overhead = TimingCalculator::CalculateLoopOverheadFast();
+
+				if (overhead < loopOverhead)
+				{
+					highestCore = pu->GetOsIndex().value();
+					loopOverhead = overhead;
+				}
+			}
+
+			topology.PinThreadToProcessor(highestCore);
+		}
 
 		auto timing = TimingCalculator::CalculateTiming();
 
@@ -197,7 +204,7 @@ int main(int argC, char** argV)
 		root["topology"] = JsonSerializer::Serialize(topology);
 		root["topology"]["fastestProcessor"] = highestCore;
 		root["timing"] = JsonSerializer::Serialize(timing);
-		root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarkPath, suffix);
+		root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarksPath, suffix);
 
 		std::cout << root.dump();
 	}

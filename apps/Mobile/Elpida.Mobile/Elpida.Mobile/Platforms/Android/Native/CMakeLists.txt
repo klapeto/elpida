@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project("Elpida")
 
-set(ELPIDA_ENABLE_CLI ON)
+set(ELPIDA_ENABLE_BENCHMARK_TOOLS ON)
 
 add_link_options(
         "-Wl,-z,max-page-size=16384"

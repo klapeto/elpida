@@ -116,15 +116,6 @@
         </Compile>
     </ItemGroup>
 
-
-    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/elpida-cli"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/libElpida.so"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/elpida-info-dumper"/>
-        <AndroidNativeLibrary Include="Platforms/Android/libs/$(AndroidAbi)/*-benchmarks"/>
-    </ItemGroup>
-
-
     <ItemGroup>
       <EmbeddedResource Update="Properties\Resources.resx">
         <Generator>ResXFileCodeGenerator</Generator>
@@ -132,20 +123,40 @@
       </EmbeddedResource>
     </ItemGroup>
 
-    <Target Name="BuildNativeLibrary" BeforeTargets="Build" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-        <Exec Command="cmake -DCMAKE_BUILD_TYPE=Debug -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -H$(ProjectDir)/Platforms/Android/Native -B$(ProjectDir)/Platforms/Android/libs/$(AndroidAbi) -DANDROID_ABI=$(AndroidAbi) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion) -DCMAKE_TOOLCHAIN_FILE=$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)/build/cmake/android.toolchain.cmake -G Ninja"/>
-        <Exec Command="cmake --build $(ProjectDir)/Platforms/Android/libs/$(AndroidAbi)"/>
+    <Target Name="BuildNativeLibrary"
+            BeforeTargets="_GeneratePackageManagerJava;_CompileFastDevDex;_BuildApkEmbed;_BuildApkFastDev"
+            DependsOnTargets="_ResolveMonoAndroidSdks"
+            Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <ItemGroup>
+            <NativeAbi Include="x86_64;arm64-v8a"/>
+        </ItemGroup>
+
+        <Exec Command="cmake -DCMAKE_BUILD_TYPE=Release -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -S &quot;$(ProjectDir)Platforms/Android/Native&quot; -B &quot;$(ProjectDir)Platforms/Android/libs/%(NativeAbi.Identity)&quot; -DANDROID_ABI=%(NativeAbi.Identity) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=&quot;$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)&quot; -DCMAKE_TOOLCHAIN_FILE=&quot;$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)/build/cmake/android.toolchain.cmake&quot; -G Ninja"/>
+        <Exec Command="cmake --build &quot;$(ProjectDir)Platforms/Android/libs/%(NativeAbi.Identity)&quot;"/>
     </Target>
     
     <Target Name="CopyBinaries" AfterTargets="BuildNativeLibrary" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-
         <ItemGroup>
-            <Benchmarks Include="Platforms/Android/libs/$(AndroidAbi)/elpida/apps/Benchmarks/*-benchmarks"/>
+            <X64Benchmarks Include="Platforms/Android/libs/x86_64/elpida/apps/Benchmarks/*-benchmarks"/>
+            <Arm64Benchmarks Include="Platforms/Android/libs/arm64-v8a/elpida/apps/Benchmarks/*-benchmarks"/>
         </ItemGroup>
-        
-        <Copy SourceFiles="Platforms/Android/libs/$(AndroidAbi)/elpida/apps/CLI/elpida-cli" DestinationFiles="Platforms/Android/libs/$(AndroidAbi)/elpida-cli"/>
-        <Copy SourceFiles="Platforms/Android/libs/$(AndroidAbi)/elpida/apps/InfoDumper/elpida-info-dumper" DestinationFiles="Platforms/Android/libs/$(AndroidAbi)/elpida-info-dumper"/>
-        <Copy SourceFiles="@(Benchmarks)" DestinationFolder="Platforms/Android/libs/$(AndroidAbi)"/>
+
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/InfoDumper/elpida-info-dumper" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida-info-dumper.so"/>
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/compilation-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/compilation-benchmarks.so"/>
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/compression-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/compression-benchmarks.so"/>
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/encryption-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/encryption-benchmarks.so"/>
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/image-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/image-benchmarks.so"/>
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/math-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/math-benchmarks.so"/>
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/memory-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/memory-benchmarks.so"/>
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/stdlib-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/stdlib-benchmarks.so"/>
+        <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/web-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/web-benchmarks.so"/>
+        <ItemGroup>
+            <AndroidNativeLibrary Include="@(NativeAbi->'Platforms/Android/libs/%(Identity)/libElpida.so');@(NativeAbi->'Platforms/Android/libs/%(Identity)/elpida-info-dumper.so');Platforms/Android/libs/*/*-benchmarks.so"/>
+        </ItemGroup>
+        <PropertyGroup>
+            <_BuildApkEmbedInputs>$(_BuildApkEmbedInputs);@(AndroidNativeLibrary)</_BuildApkEmbedInputs>
+            <_BuildApkFastDevStaticInputs>$(_BuildApkFastDevStaticInputs);@(AndroidNativeLibrary)</_BuildApkFastDevStaticInputs>
+        </PropertyGroup>
     </Target>
 
 </Project>

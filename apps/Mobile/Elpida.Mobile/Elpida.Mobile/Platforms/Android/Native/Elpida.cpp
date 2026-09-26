@@ -11,6 +11,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "Elpida/Core/ModuleExports.hpp"
 #include "ScoreCalculator.hpp"
+#include "InfoGetter.hpp"
 
 #include <iostream>
 #include <thread>
@@ -140,29 +141,16 @@ ElpidaInstance* Load(char* executableDirectory)
 			return nullptr;
 		}
 
-		std::string directory(executableDirectory);
-		Process process(std::filesystem::path(directory) / "elpida-info-dumper", {directory, "-benchmarks"}, true,
-		                true);
-		AsyncPipeReader stdOutReader(process.GetStdOut());
-		AsyncPipeReader stdErrReader(process.GetStdErr());
+		auto directory = std::filesystem::path(executableDirectory);
 
-		stdOutReader.StartReading();
-		stdErrReader.StartReading();
-		process.GetStdOut().CloseWrite();
-		process.GetStdErr().CloseWrite();
-		process.WaitToExit();
-		stdOutReader.StopReading();
-		stdErrReader.StopReading();
-
-		auto error = stdErrReader.GetString();
-		if (!error.empty())
-		{
-			std::strncpy(lastError, error.c_str(), sizeof(lastError));
-			return nullptr;
-		}
+		InfoGetter infoGetter;
+		infoGetter.SetInfoGetterPath(directory / "elpida-info-dumper.so");
+		infoGetter.SetBenchmarksPath(directory);
+		infoGetter.SetNoThreadPinning(true);
+		infoGetter.SetBenchmarksSuffix("-benchmarks.so");
 
 		instance = new ElpidaInstance{
-			ModelBuilderJson(stdOutReader.GetString()),
+			ModelBuilderJson(infoGetter.GetData()),
 		};
 
 		std::vector<std::string> missingBenchmarks;

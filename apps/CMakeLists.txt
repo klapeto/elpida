@@ -10,14 +10,16 @@ if (ELPIDA_ENABLE_CLI)
     add_subdirectory(CLI)
 endif ()
 
+option(ELPIDA_ENABLE_BENCHMARK_TOOLS "Whether to build benchmark executables and information dumpers" OFF)
+
 option(ELPIDA_ENABLE_APPLICATION_LIBRARIES "Whether to enable the application libraries" OFF)
 
-if (ELPIDA_ENABLE_QT OR ELPIDA_ENABLE_CLI OR ELPIDA_ENABLE_APPLICATION_LIBRARIES)
+if (ELPIDA_ENABLE_QT OR ELPIDA_ENABLE_CLI OR ELPIDA_ENABLE_APPLICATION_LIBRARIES OR ELPIDA_ENABLE_BENCHMARK_TOOLS)
     add_subdirectory(Shared)
     add_subdirectory(Application)
 endif ()
 
-if (ELPIDA_ENABLE_QT OR ELPIDA_ENABLE_CLI)
+if (ELPIDA_ENABLE_QT OR ELPIDA_ENABLE_CLI OR ELPIDA_ENABLE_BENCHMARK_TOOLS)
     add_subdirectory(InfoDumper)
     add_subdirectory(BackEndInfoDumper)
     add_subdirectory(Benchmarks)
