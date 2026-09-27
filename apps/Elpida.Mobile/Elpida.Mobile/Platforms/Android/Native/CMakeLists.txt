@@ -12,9 +12,9 @@ link_directories(
         ${CMAKE_SYSROOT}/usr/lib/${CMAKE_SYSTEM_PROCESSOR}-linux-android
 )
 
-add_subdirectory(../../../../../../.. ${CMAKE_CURRENT_BINARY_DIR}/elpida)
+add_subdirectory(../../../../../.. ${CMAKE_CURRENT_BINARY_DIR}/elpida)
 
-include_directories(Elpida PRIVATE ../../../../../../../include ../../../../../../../apps/Application)
+include_directories(Elpida PRIVATE ../../../../../../include ../../../../../../apps/Application)
 
 add_library(Elpida SHARED Elpida.cpp)
 target_link_libraries(Elpida
