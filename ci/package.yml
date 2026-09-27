@@ -192,6 +192,10 @@ Package Cli (aarch64-w64-mingw32):
     - .Package Windows
 
 Package (Android):
+  image: $IMAGE_NAME
+  stage: package
+  tags:
+    - amd64
   dependencies:
     - Build (Android)
   script:
