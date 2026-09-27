@@ -160,7 +160,7 @@ static ModelBuilderJson GetBasicInfo(const std::filesystem::path& benchmarksPath
 		{
 			InfoGetter infoGetter;
 			infoGetter.SetBenchmarksPath(benchmarksPath);
-			data = infoGetter.GetData(benchmarksPath);
+			data = infoGetter.GetData();
 		}
 		catch (const std::exception& ex)
 		{
