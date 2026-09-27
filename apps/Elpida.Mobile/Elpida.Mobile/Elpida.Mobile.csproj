@@ -11,11 +11,6 @@
         The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
         either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
         <!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
-
-        <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-            android-arm64;android-x64
-        </RuntimeIdentifiers>
-        
         <Company>klapeto</Company>
         <Product>Elpida.dev Mobile</Product>
         <OutputType>Exe</OutputType>
@@ -62,8 +57,7 @@
         <AndroidSdkPlatformToolsVersion Condition="'$(AndroidSdkPlatformToolsVersion)' == ''">34.0.0</AndroidSdkPlatformToolsVersion>
         <AndroidSdkPlatformVersion Condition=" '$(AndroidSdkPlatformVersion)' == '' ">android-21</AndroidSdkPlatformVersion>
 
-        <AndroidAbi Condition=" '$(RuntimeIdentifier)' == 'android-arm64' ">arm64-v8a</AndroidAbi>
-        <AndroidAbi Condition=" '$(RuntimeIdentifier)' == 'android-x64' ">x86_64</AndroidAbi>
+        <AndroidNdkDirectory Condition=" '$(AndroidNdkDirectory)' == '' ">$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)</AndroidNdkDirectory>
 
         <AndroidCommandLineToolsVersion Condition=" '$(AndroidCommandLineToolsVersion)' == '' ">19.0</AndroidCommandLineToolsVersion>
         <AndroidNdkVersion Condition="'$(AndroidNdkVersion)' == ''">27.0.12077973</AndroidNdkVersion>
@@ -131,7 +125,7 @@
             <NativeAbi Include="x86_64;arm64-v8a"/>
         </ItemGroup>
 
-        <Exec Command="cmake -DCMAKE_BUILD_TYPE=Release -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -S &quot;$(ProjectDir)Platforms/Android/Native&quot; -B &quot;$(ProjectDir)Platforms/Android/libs/%(NativeAbi.Identity)&quot; -DANDROID_ABI=%(NativeAbi.Identity) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=&quot;$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)&quot; -DCMAKE_TOOLCHAIN_FILE=&quot;$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)/build/cmake/android.toolchain.cmake&quot; -G Ninja"/>
+        <Exec Command="cmake -DCMAKE_BUILD_TYPE=Release -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -S &quot;$(ProjectDir)Platforms/Android/Native&quot; -B &quot;$(ProjectDir)Platforms/Android/libs/%(NativeAbi.Identity)&quot; -DANDROID_ABI=%(NativeAbi.Identity) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=&quot;$(AndroidNdkDirectory)&quot; -DCMAKE_TOOLCHAIN_FILE=&quot;$(AndroidNdkDirectory)/build/cmake/android.toolchain.cmake&quot; -G Ninja"/>
         <Exec Command="cmake --build &quot;$(ProjectDir)Platforms/Android/libs/%(NativeAbi.Identity)&quot;"/>
     </Target>
     

@@ -107,3 +107,22 @@ Build Docker Image (x86_64-w64-mingw32):
   dependencies:
     - Build Docker Image (Base)
   extends: .Build Docker Image
+
+Build Docker Image (Android):
+  image: docker:latest
+  stage: build-docker-images
+  tags:
+    - amd64
+  timeout: 5h 30m
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker build --build-arg IMAGE="$IMAGE_BASE_NAME" --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $IMAGE_NAME -t $IMAGE_NAME -f docker/build-environment-android/Dockerfile .
+    - docker push $IMAGE_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - docker/build-environment-android/Dockerfile

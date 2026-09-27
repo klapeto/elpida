@@ -191,3 +191,25 @@ Deploy Cli (aarch64-w64-mingw32):
   extends:
     - .Deploy Cli
     - .Deploy Windows
+
+Deploy (Android):
+  stage: deploy
+  tags:
+    - amd64
+  only:
+    - master
+    - staging
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+  script:
+    - cp "dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk" "dev.elpida.mobile-latest.apk"
+    - cp "SHA256SUMS" "dev.elpida.mobile-latest.apk.SHA256SUMS"
+    - mv "SHA256SUMS" "dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk.SHA256SUMS"
+  dependencies:
+    - Package (Android)
+  artifacts:
+    paths:
+      - dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk
+      - dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk.SHA256SUMS
+      - dev.elpida.mobile-latest.apk
+      - dev.elpida.mobile-latest.apk.SHA256SUMS

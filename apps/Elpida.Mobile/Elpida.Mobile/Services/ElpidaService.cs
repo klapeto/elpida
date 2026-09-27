@@ -67,7 +67,7 @@ namespace Elpida.Mobile.Services
 					throw new ApplicationException($"Failed to load: {error}");
 				}
 
-				IntPtr buffer = IntPtr.Zero;
+				var buffer = IntPtr.Zero;
 				ulong size = 0;
 				var res = GetInfo(_instance, ref buffer, ref size);
 				if (res != 0)

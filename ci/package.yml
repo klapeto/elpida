@@ -190,3 +190,16 @@ Package Cli (aarch64-w64-mingw32):
   extends:
     - .Package Cli
     - .Package Windows
+
+Package (Android):
+  dependencies:
+    - Build (Android)
+  script:
+    - dotnet publish -c Release --framework=net10.0-android --artifacts-path=$BUILD_DIR -o=$INSTALL_DIR -p:AndroidNdkDirectory=$NDK_DIR ./apps/Elpida.Mobile
+    - cp "$INSTALL_DIR/dev.elpida.mobile-Signed.apk" "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk"
+    - sha256sum "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk" > SHA256SUMS
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk
+      - SHA256SUMS
