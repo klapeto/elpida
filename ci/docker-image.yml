@@ -114,6 +114,8 @@ Build Docker Image (Android):
   tags:
     - amd64
   timeout: 5h 30m
+  variables:
+    TARGET_TRIPLE: android
   services:
     - docker:dind
   before_script:

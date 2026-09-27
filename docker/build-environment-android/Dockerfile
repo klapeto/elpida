@@ -47,8 +47,6 @@ RUN find "$NDK_SYSROOT/usr/lib/" -maxdepth 1 -name "lib*" -exec mv '{}' "$NDK_SY
 RUN dotnet workload install android
 RUN dotnet workload install maui-android
 
-RUN rm -rf ./hwloc
-RUN rm -rf ./llvm-project
-RUN rm -rf build-autotools-based.sh  build-base.sh  build-llvm.sh
+RUN rm -rf ./hwloc ./llvm-project build-autotools-based.sh  build-base.sh  build-llvm.sh
 
 CMD ["/bin/bash"]
