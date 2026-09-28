@@ -98,4 +98,4 @@ Build (Android):
   artifacts:
     expire_in: 2h30min
     paths:
-      - $BUILD_DIR
+      - $BUILD_DIR/bin
