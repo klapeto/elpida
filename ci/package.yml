@@ -201,6 +201,7 @@ Package (Android):
   variables:
     TARGET_TRIPLE: android
   script:
+    - git submodule update --init --depth=1
     - dotnet publish -c Release --framework=net10.0-android --artifacts-path=$BUILD_DIR -o=$INSTALL_DIR -p:AndroidNdkDirectory=$NDK_DIR ./apps/Elpida.Mobile
     - cp "$INSTALL_DIR/dev.elpida.mobile-Signed.apk" "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk"
     - sha256sum "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk" > SHA256SUMS
