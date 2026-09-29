@@ -47,6 +47,9 @@ RUN find "$NDK_SYSROOT/usr/lib/" -maxdepth 1 -name "lib*" -exec mv '{}' "$NDK_SY
 RUN dotnet workload install android
 RUN dotnet workload install maui-android
 
-RUN rm -rf ./hwloc ./llvm-project build-autotools-based.sh  build-base.sh  build-llvm.sh
+RUN wget -O glab.deb https://gitlab.com/gitlab-org/cli/-/releases/v1.120.0/downloads/glab_1.120.0_linux_amd64.deb
+RUN dpkg -i glab.deb
+
+RUN rm -rf ./hwloc ./llvm-project build-autotools-based.sh  build-base.sh  build-llvm.sh glab.deb
 
 CMD ["/bin/bash"]

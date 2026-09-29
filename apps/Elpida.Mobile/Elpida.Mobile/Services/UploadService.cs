@@ -9,15 +9,13 @@ namespace Elpida.Mobile.Services
 		private readonly ElpidaService _elpidaService;
 		private readonly HttpClient _client = new HttpClient();
 		
-		private const string ApiKey = "Test API Key";
-		private const string ApiHost = "http://10.0.2.2:5000";
 		private const string Url = "api/v1/benchmarkresult";
 
 		public UploadService(ElpidaService elpidaService)
 		{
 			_elpidaService = elpidaService;
-			_client.BaseAddress = new Uri($"{ApiHost}");
-			_client.DefaultRequestHeaders.Add("api_key", ApiKey);
+			_client.BaseAddress = new Uri(BuildSecrets.ApiHost);
+			_client.DefaultRequestHeaders.Add("api_key", BuildSecrets.ApiKey);
 		}
 
 		private static ResultCpuNodeDto GetTopologyNode(TopologyNodeModel node)

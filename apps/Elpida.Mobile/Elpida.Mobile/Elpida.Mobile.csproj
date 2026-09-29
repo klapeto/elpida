@@ -63,6 +63,9 @@
         <AndroidNdkVersion Condition="'$(AndroidNdkVersion)' == ''">27.0.12077973</AndroidNdkVersion>
         <JavaSdkVersion Condition="'$(JavaSdkVersion)' == ''">21.0.8</JavaSdkVersion>
         <MinimumSupportedJavaVersion Condition="'$(MinimumSupportedJavaVersion)' == ''">17.0</MinimumSupportedJavaVersion>
+
+        <ElpidaWebApiKey Condition="'$(ElpidaWebApiKey)' == ''">__TestAPIKey__</ElpidaWebApiKey>
+        <ElpidaWebApiUrl Condition="'$(ElpidaWebApiUrl)' == ''">http://10.0.2.2:5000</ElpidaWebApiUrl>
     </PropertyGroup>
 
     <ItemGroup>
@@ -116,6 +119,31 @@
         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
+
+    <Target Name="GenerateBuildSecrets" BeforeTargets="BeforeCompile">
+        <MakeDir Directories="$(IntermediateOutputPath)Generated" />
+
+        <PropertyGroup>
+            <SecretsCode>
+                namespace Elpida.Mobile%3B
+
+                internal static class BuildSecrets
+                {
+                public const string ApiKey = "$(ElpidaWebApiKey)"%3B
+                public const string ApiHost = "$(ElpidaWebApiUrl)"%3B
+                }
+
+            </SecretsCode>
+        </PropertyGroup>
+        <WriteLinesToFile
+                File="$(IntermediateOutputPath)Generated/BuildSecrets.g.cs"
+                Overwrite="true"
+                Lines="$(SecretsCode)" />
+
+        <ItemGroup>
+            <Compile Include="$(IntermediateOutputPath)Generated/BuildSecrets.g.cs" />
+        </ItemGroup>
+    </Target>
 
     <Target Name="BuildNativeLibrary"
             BeforeTargets="_GeneratePackageManagerJava;_CompileFastDevDex;_BuildApkEmbed;_BuildApkFastDev"
