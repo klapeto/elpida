@@ -1,6 +1,8 @@
 .Package Linux:
   image: $IMAGE_NAME
   stage: package
+  environment:
+    name: $DEPLOY_ENVIRONMENT
   tags:
     - amd64
   script:
@@ -18,6 +20,8 @@
 .Package Windows:
   image: $IMAGE_NAME
   stage: package
+  environment:
+    name: $DEPLOY_ENVIRONMENT
   tags:
     - amd64
   script:
@@ -194,6 +198,8 @@ Package Cli (aarch64-w64-mingw32):
 Package (Android):
   image: $IMAGE_NAME
   stage: package
+  environment:
+    name: $DEPLOY_ENVIRONMENT
   tags:
     - amd64
   dependencies:
