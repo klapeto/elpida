@@ -1,8 +1,6 @@
 .Package Linux:
   image: $IMAGE_NAME
   stage: package
-  environment:
-    name: $DEPLOY_ENVIRONMENT
   tags:
     - amd64
   script:
@@ -20,8 +18,6 @@
 .Package Windows:
   image: $IMAGE_NAME
   stage: package
-  environment:
-    name: $DEPLOY_ENVIRONMENT
   tags:
     - amd64
   script:
@@ -198,8 +194,6 @@ Package Cli (aarch64-w64-mingw32):
 Package (Android):
   image: $IMAGE_NAME
   stage: package
-  environment:
-    name: $DEPLOY_ENVIRONMENT
   tags:
     - amd64
   dependencies:
@@ -216,11 +210,11 @@ Package (Android):
       --artifacts-path="$BUILD_DIR"
       -o="$INSTALL_DIR"
       -p:AndroidNdkDirectory="$NDK_DIR"
-      -p:ApplicationVersion="$ELPIDA_VERSION_STRING"
+      -p:ApplicationVersion=$ELPIDA_VERSION_BUILD
       -p:ApplicationDisplayVersion="$ELPIDA_VERSION_STRING"
       -p:AndroidKeyStore=true
       -p:AndroidSigningKeyStore=./elpida.keystore
-      -p:AndroidSigningKeyAlias="$ELPIDA_ANDROID_KEYSTORE_ALIAS"
+      -p:AndroidSigningKeyAlias=$ELPIDA_ANDROID_KEYSTORE_ALIAS
       -p:AndroidSigningKeyPass="$ELPIDA_ANDROID_KEYSTORE_PASS"
       -p:AndroidSigningStorePass="$ELPIDA_ANDROID_KEYSTORE_PASS"
       -p:ElpidaWebApiKey="$ELPIDA_WEB_API_KEY"
