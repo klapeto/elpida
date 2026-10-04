@@ -94,7 +94,7 @@ Build (Android):
     TARGET_TRIPLE: android
   script:
     - git submodule update --init --depth=1
-    - dotnet build -c Release --artifacts-path=$BUILD_DIR -ο="$INSTALL_DIR" -p:AndroidNdkDirectory=$NDK_DIR ./apps/Elpida.Mobile
+    - dotnet build -c Release --artifacts-path=$BUILD_DIR -o="$INSTALL_DIR" -p:AndroidNdkDirectory=$NDK_DIR ./apps/Elpida.Mobile
   artifacts:
     expire_in: 2h30min
     paths:
