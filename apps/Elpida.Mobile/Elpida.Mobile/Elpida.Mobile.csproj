@@ -20,11 +20,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <NeutralLanguage>en-US</NeutralLanguage>
-
-        <!-- DEBUG -->
-        <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-        <RunAOTCompilation>False</RunAOTCompilation>
-        <PublishTrimmed>False</PublishTrimmed>
+        <BeforeGenerateAndroidManifest>BuildNativeLibrary</BeforeGenerateAndroidManifest>
 
         <!-- Enable XAML source generation for faster build times and improved performance.
              This generates C# code from XAML at compile time instead of runtime inflation.
@@ -63,9 +59,6 @@
         <AndroidNdkVersion Condition="'$(AndroidNdkVersion)' == ''">27.0.12077973</AndroidNdkVersion>
         <JavaSdkVersion Condition="'$(JavaSdkVersion)' == ''">21.0.8</JavaSdkVersion>
         <MinimumSupportedJavaVersion Condition="'$(MinimumSupportedJavaVersion)' == ''">17.0</MinimumSupportedJavaVersion>
-
-        <ElpidaWebApiKey Condition="'$(ElpidaWebApiKey)' == ''">__TestAPIKey__</ElpidaWebApiKey>
-        <ElpidaWebApiUrl Condition="'$(ElpidaWebApiUrl)' == ''">http://10.0.2.2:5000</ElpidaWebApiUrl>
     </PropertyGroup>
 
     <ItemGroup>
@@ -83,10 +76,6 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
-        <None Remove="Platforms\Android\Native\benchmarks.json"/>
-        <MauiAsset Update="Resources\Raw\benchmarks.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </MauiAsset>
     </ItemGroup>
 
     <ItemGroup>
@@ -120,34 +109,7 @@
       </EmbeddedResource>
     </ItemGroup>
 
-    <Target Name="GenerateBuildSecrets" BeforeTargets="BeforeCompile">
-        <MakeDir Directories="$(IntermediateOutputPath)Generated" />
-
-        <PropertyGroup>
-            <SecretsCode>
-                namespace Elpida.Mobile%3B
-
-                internal static class BuildSecrets
-                {
-                public const string ApiKey = "$(ElpidaWebApiKey)"%3B
-                public const string ApiHost = "$(ElpidaWebApiUrl)"%3B
-                }
-
-            </SecretsCode>
-        </PropertyGroup>
-        <WriteLinesToFile
-                File="$(IntermediateOutputPath)Generated/BuildSecrets.g.cs"
-                Overwrite="true"
-                Lines="$(SecretsCode)" />
-
-        <ItemGroup>
-            <Compile Include="$(IntermediateOutputPath)Generated/BuildSecrets.g.cs" />
-        </ItemGroup>
-    </Target>
-
     <Target Name="BuildNativeLibrary"
-            BeforeTargets="_GeneratePackageManagerJava;_CompileFastDevDex;_BuildApkEmbed;_BuildApkFastDev"
-            DependsOnTargets="_ResolveMonoAndroidSdks"
             Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <ItemGroup>
             <NativeAbi Include="x86_64;arm64-v8a"/>
@@ -175,10 +137,6 @@
         <ItemGroup>
             <AndroidNativeLibrary Include="@(NativeAbi->'Platforms/Android/libs/%(Identity)/libElpida.so');@(NativeAbi->'Platforms/Android/libs/%(Identity)/elpida-info-dumper.so');Platforms/Android/libs/*/*-benchmarks.so"/>
         </ItemGroup>
-        <PropertyGroup>
-            <_BuildApkEmbedInputs>$(_BuildApkEmbedInputs);@(AndroidNativeLibrary)</_BuildApkEmbedInputs>
-            <_BuildApkFastDevStaticInputs>$(_BuildApkFastDevStaticInputs);@(AndroidNativeLibrary)</_BuildApkFastDevStaticInputs>
-        </PropertyGroup>
     </Target>
 
 </Project>

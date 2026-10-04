@@ -44,7 +44,7 @@ namespace Elpida.Mobile.ViewModels
 
 		private readonly CancellationTokenSource _cancel = new();
 		private readonly MessageService _messageService;
-		private readonly SettingService _settingService;
+		private readonly SettingsService _settingsService;
 		private readonly UploadService _uploadService;
 
 		[ObservableProperty]
@@ -63,12 +63,12 @@ namespace Elpida.Mobile.ViewModels
 		}
 
 		public BenchmarkPageViewModel(ElpidaService elpidaService, UploadService uploadService,
-			MessageService messageService, SettingService settingService)
+			MessageService messageService, SettingsService settingsService)
 		{
 			_elpidaService = elpidaService;
 			_uploadService = uploadService;
 			_messageService = messageService;
-			_settingService = settingService;
+			_settingsService = settingsService;
 			OnRunItTimesChanged(_runItTimes);
 		}
 
@@ -79,12 +79,12 @@ namespace Elpida.Mobile.ViewModels
 		{
 			try
 			{
-				if (!_settingService.BenchmarkNotificationIssued)
+				if (!_settingsService.BenchmarkNotificationIssued)
 				{
 					await _messageService.DisplayAlertAsync(Resources.Information,
 						Resources.BenchmarkWarning,
 						Resources.Ok);
-					_settingService.BenchmarkNotificationIssued = true;
+					_settingsService.BenchmarkNotificationIssued = true;
 				}
 
 				if (Running)

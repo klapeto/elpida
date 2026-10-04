@@ -204,6 +204,33 @@ Deploy (Android):
   variables:
     TARGET_TRIPLE: android
   script:
+    - git submodule update --init --depth=1
+    - glab auth login --job-token $CI_JOB_TOKEN --hostname $CI_SERVER_FQDN --api-protocol $CI_SERVER_PROTOCOL
+    - glab -R $CI_PROJECT_PATH securefile download --name $ELPIDA_ANDROID_KEYSTORE_FILE_ID --path "$PWD/elpida.keystore"
+    - api_key=$(printf '%s' "$ELPIDA_WEB_API_KEY" | sed 's/[&|]/\\&/g') && 
+      api_url=$(printf '%s' "$ELPIDA_WEB_API_URL" | sed 's/[&|]/\\&/g') &&
+      sed -i \
+      -e "s|__TestAPIKey__|$api_key|g" \
+      -e "s|http://10\.0\.2\.2:5000|$api_url|g" \
+      apps/Elpida.Mobile/Elpida.Mobile/Services/SettingsService.cs
+    - dotnet publish
+      -c Release
+      --framework=net10.0-android
+      --artifacts-path="$BUILD_DIR"
+      -o="$INSTALL_DIR"
+      -p:AndroidNdkDirectory="$NDK_DIR"
+      -p:ApplicationVersion=$ELPIDA_VERSION_BUILD
+      -p:ApplicationDisplayVersion="$ELPIDA_VERSION_STRING"
+      -p:AndroidKeyStore=true
+      -p:AndroidSigningKeyStore="$PWD/elpida.keystore"
+      -p:AndroidSigningKeyAlias=$ELPIDA_ANDROID_KEYSTORE_ALIAS
+      -p:AndroidSigningKeyPass="$ELPIDA_ANDROID_KEYSTORE_PASS"
+      -p:AndroidSigningStorePass="$ELPIDA_ANDROID_KEYSTORE_PASS"
+      -p:ElpidaWebApiKey="$ELPIDA_WEB_API_KEY"
+      -p:ElpidaWebApiUrl="$ELPIDA_WEB_API_URL"
+      ./apps/Elpida.Mobile
+    - cp "$INSTALL_DIR/dev.elpida.mobile-Signed.apk" "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk"
+    - sha256sum "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk" > SHA256SUMS
     - cp "dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk" "dev.elpida.mobile-latest.apk"
     - cp "SHA256SUMS" "dev.elpida.mobile-latest.apk.SHA256SUMS"
     - mv "SHA256SUMS" "dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk.SHA256SUMS"

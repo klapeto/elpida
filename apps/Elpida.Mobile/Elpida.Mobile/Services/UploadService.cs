@@ -11,11 +11,11 @@ namespace Elpida.Mobile.Services
 		
 		private const string Url = "api/v1/benchmarkresult";
 
-		public UploadService(ElpidaService elpidaService)
+		public UploadService(ElpidaService elpidaService, SettingsService settingsService)
 		{
 			_elpidaService = elpidaService;
-			_client.BaseAddress = new Uri(BuildSecrets.ApiHost);
-			_client.DefaultRequestHeaders.Add("api_key", BuildSecrets.ApiKey);
+			_client.BaseAddress = new Uri(settingsService.ApiHost);
+			_client.DefaultRequestHeaders.Add("api_key", settingsService.ApiKey);
 		}
 
 		private static ResultCpuNodeDto GetTopologyNode(TopologyNodeModel node)

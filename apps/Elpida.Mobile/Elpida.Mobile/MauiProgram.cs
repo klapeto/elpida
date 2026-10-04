@@ -29,7 +29,7 @@ namespace Elpida.Mobile
 			builder.Services.AddSingleton<ElpidaService>();
 			builder.Services.AddSingleton<UploadService>();
 			builder.Services.AddSingleton<MessageService>();
-			builder.Services.AddTransient<SettingService>();
+			builder.Services.AddTransient<SettingsService>();
 
 			return builder.Build();
 		}

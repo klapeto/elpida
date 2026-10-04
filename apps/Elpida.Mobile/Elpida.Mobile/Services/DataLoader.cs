@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Elpida.Mobile.ViewModels;
 
 namespace Elpida.Mobile.Services
