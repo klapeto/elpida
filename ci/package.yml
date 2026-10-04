@@ -201,7 +201,7 @@ Package (Android):
   variables:
     TARGET_TRIPLE: android
   script:
-    - cp "$BUILD_DIR/dev.elpida.mobile-Signed.apk" "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk"
+    - cp "$INSTALL_DIR/dev.elpida.mobile-Signed.apk" "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk"
     - sha256sum "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk" > SHA256SUMS
   artifacts:
     expire_in: 2h30min
