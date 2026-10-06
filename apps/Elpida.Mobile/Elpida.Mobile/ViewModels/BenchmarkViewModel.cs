@@ -50,7 +50,7 @@ namespace Elpida.Mobile.ViewModels
 		[ObservableProperty]
 		private string _buttonText = Resources.Start;
 
-		private ElpidaService _elpidaService;
+		private readonly ElpidaService _elpidaService;
 		private bool _enteredEnergySaveMode;
 
 		partial void OnRunItTimesChanged(int value)
@@ -114,6 +114,7 @@ namespace Elpida.Mobile.ViewModels
 				for (var i = 0; i < RunItTimes; i++)
 				{
 					var runResults = new List<ResultBenchmarkResultDto>();
+					var taskResults = new List<BenchmarkTaskResultViewModel>();
 
 					var singleThreadScores = new List<(double, double)>();
 					var multiThreadScores = new List<(double, double)>();
@@ -134,6 +135,12 @@ namespace Elpida.Mobile.ViewModels
 							Result = result,
 							Uuid = fullBenchmarkInstanceModel.Uuid,
 						});
+						taskResults.Add(new BenchmarkTaskResultViewModel
+						{
+							Name = fullBenchmarkInstanceModel.Name,
+							Value = result,
+							Unit = fullBenchmarkInstanceModel.BenchmarkInfo.ResultUnit,
+						});
 
 						if (fullBenchmarkInstanceModel.IsMultiThread)
 							multiThreadScores.Add((result, fullBenchmarkInstanceModel.BaseScore));
@@ -153,6 +160,7 @@ namespace Elpida.Mobile.ViewModels
 						SingleThreadScore = new ResultViewModel { Value = singleTheadScore },
 						MultiThreadScore = new ResultViewModel { Value = multiThreadScore },
 						TotalScore = new ResultViewModel { Value = totalScore },
+						TaskResults = taskResults,
 					};
 					if (LastResult != null)
 					{

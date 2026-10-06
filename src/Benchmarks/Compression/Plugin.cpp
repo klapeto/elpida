@@ -30,7 +30,7 @@
 using namespace Elpida;
 using namespace Elpida::Benchmarks::Compression;
 
-ELPIDA_CREATE_BENCHMARK_GROUP_DECL
+ELPIDA_CREATE_BENCHMARK_GROUP_FUNC()
 {
 	Vector<UniquePtr<Benchmark>> vec;
 

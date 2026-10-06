@@ -96,11 +96,34 @@
                     </CollectionView.Header>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:BenchmarkResultViewModel">
-                            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto">
-                                <views:ResultView Grid.Column="0" BindingContext="{Binding TotalScore}" />
-                                <views:ResultView Grid.Column="1" BindingContext="{Binding SingleThreadScore}" />
-                                <views:ResultView Grid.Column="2" BindingContext="{Binding MultiThreadScore}" />
-                            </Grid>
+                            <VerticalStackLayout Spacing="6" Padding="0,8">
+                                <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto">
+                                    <views:ResultView Grid.Column="0" BindingContext="{Binding TotalScore}" />
+                                    <views:ResultView Grid.Column="1" BindingContext="{Binding SingleThreadScore}" />
+                                    <views:ResultView Grid.Column="2" BindingContext="{Binding MultiThreadScore}" />
+                                </Grid>
+                                <Button
+                                    HorizontalOptions="Center"
+                                    Padding="0"
+                                    Command="{Binding ToggleTaskResultsCommand}"
+                                    Text="{Binding TaskResultsToggleText}" />
+                                <VerticalStackLayout
+                                    BindableLayout.ItemsSource="{Binding TaskResults}"
+                                    IsVisible="{Binding IsTaskResultsExpanded}"
+                                    Spacing="4">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:BenchmarkTaskResultViewModel">
+                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                                <Label Grid.Column="0" Text="{Binding Name}" />
+                                                <Label Grid.Column="1"
+                                                       Text="{Binding Value, Converter={StaticResource SiValueConverter}, ConverterParameter=2}" />
+                                                <Label Grid.Column="2" Text="{Binding Unit}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                                <BoxView Color="{StaticResource Border}" HeightRequest="1" />
+                            </VerticalStackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

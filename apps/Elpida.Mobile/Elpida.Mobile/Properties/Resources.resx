@@ -139,6 +139,15 @@
     <data name="LastResults" xml:space="preserve">
         <value>Last results</value>
     </data>
+    <data name="BenchmarkDetails" xml:space="preserve">
+        <value>Benchmark details</value>
+    </data>
+    <data name="ShowBenchmarkDetails" xml:space="preserve">
+        <value>Show benchmark details</value>
+    </data>
+    <data name="HideBenchmarkDetails" xml:space="preserve">
+        <value>Hide benchmark details</value>
+    </data>
     <data name="Total" xml:space="preserve">
         <value>Total</value>
     </data>

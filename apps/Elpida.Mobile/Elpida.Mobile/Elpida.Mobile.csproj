@@ -135,7 +135,7 @@
         <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/stdlib-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/stdlib-benchmarks.so"/>
         <Copy SourceFiles="Platforms/Android/libs/%(NativeAbi.Identity)/elpida/apps/Benchmarks/web-benchmarks" DestinationFiles="Platforms/Android/libs/%(NativeAbi.Identity)/web-benchmarks.so"/>
         <ItemGroup>
-            <AndroidNativeLibrary Include="@(NativeAbi->'Platforms/Android/libs/%(Identity)/libElpida.so');@(NativeAbi->'Platforms/Android/libs/%(Identity)/elpida-info-dumper.so');Platforms/Android/libs/*/*-benchmarks.so"/>
+            <AndroidNativeLibrary Include="@(NativeAbi->'Platforms/Android/libs/%(Identity)/libElpida.so');@(NativeAbi->'Platforms/Android/libs/%(Identity)/elpida-info-dumper.so');Platforms/Android/libs/*/*-benchmarks.so;Platforms/Android/libs/*/*-benchmarks-lib.so"/>
         </ItemGroup>
     </Target>
 
