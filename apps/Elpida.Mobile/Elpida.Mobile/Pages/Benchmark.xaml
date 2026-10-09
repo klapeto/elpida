@@ -113,11 +113,16 @@
                                     Spacing="4">
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="viewmodels:BenchmarkTaskResultViewModel">
-                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                            <Grid ColumnDefinitions="*,Auto">
                                                 <Label Grid.Column="0" Text="{Binding Name}" />
-                                                <Label Grid.Column="1"
-                                                       Text="{Binding Value, Converter={StaticResource SiValueConverter}, ConverterParameter=2}" />
-                                                <Label Grid.Column="2" Text="{Binding Unit}" />
+                                                <Label Grid.Column="1">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="{Binding Value, Converter={StaticResource SiValueConverter}, ConverterParameter=2}"/>
+                                                            <Span Text="{Binding Unit}"/>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
                                             </Grid>
                                         </DataTemplate>
                                     </BindableLayout.ItemTemplate>

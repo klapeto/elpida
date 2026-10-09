@@ -42,7 +42,7 @@ namespace Elpida.Mobile.ViewModels
 		[ObservableProperty]
 		public bool _uploadResults = true;
 
-		private readonly CancellationTokenSource _cancel = new();
+		private CancellationTokenSource _cancel = new();
 		private readonly MessageService _messageService;
 		private readonly SettingsService _settingsService;
 		private readonly UploadService _uploadService;
@@ -77,31 +77,31 @@ namespace Elpida.Mobile.ViewModels
 		[RelayCommand(AllowConcurrentExecutions = true)]
 		public async Task RunBenchmark()
 		{
+			if (!_settingsService.BenchmarkNotificationIssued)
+			{
+				await _messageService.DisplayAlertAsync(Resources.Information,
+					Resources.BenchmarkWarning,
+					Resources.Ok);
+				_settingsService.BenchmarkNotificationIssued = true;
+			}
+
+			if (Running)
+			{
+				if (!_cancel.Token.IsCancellationRequested)
+				{
+					await _cancel.CancelAsync();
+					ExecutingBenchmark = new BenchmarkInfoViewModel
+					{
+						Name = Resources.WaitingForCancellation,
+					};
+					ButtonText = Resources.Cancelling;
+				}
+
+				return;
+			}
+			
 			try
 			{
-				if (!_settingsService.BenchmarkNotificationIssued)
-				{
-					await _messageService.DisplayAlertAsync(Resources.Information,
-						Resources.BenchmarkWarning,
-						Resources.Ok);
-					_settingsService.BenchmarkNotificationIssued = true;
-				}
-
-				if (Running)
-				{
-					if (_cancel.Token.IsCancellationRequested)
-					{
-						await _cancel.CancelAsync();
-						ExecutingBenchmark = new BenchmarkInfoViewModel
-						{
-							Name = Resources.WaitingForCancellation,
-						};
-						ButtonText = Resources.Cancelling;
-					}
-
-					return;
-				}
-
 				Running = true;
 				ButtonText = Resources.Stop;
 				BenchmarkCount = BenchmarksInstancesModels.Count * RunItTimes;
@@ -127,9 +127,9 @@ namespace Elpida.Mobile.ViewModels
 						{
 							Name = fullBenchmarkInstanceModel.Name,
 						};
-						ExecutedBenchmarks++;
 						Progress = ExecutedBenchmarks / (double)BenchmarkCount;
 						var result = await _elpidaService.RunBenchmarkAsync(index, _cancel.Token);
+						ExecutedBenchmarks++;
 						runResults.Add(new ResultBenchmarkResultDto
 						{
 							Result = result,
@@ -139,7 +139,7 @@ namespace Elpida.Mobile.ViewModels
 						{
 							Name = fullBenchmarkInstanceModel.Name,
 							Value = result,
-							Unit = fullBenchmarkInstanceModel.BenchmarkInfo.ResultUnit,
+							Unit = $"{fullBenchmarkInstanceModel.BenchmarkInfo.ResultUnit}{(fullBenchmarkInstanceModel.BenchmarkInfo.ResultType == ResultType.Throughput ? "/s" : string.Empty)}",
 						});
 
 						if (fullBenchmarkInstanceModel.IsMultiThread)
@@ -204,11 +204,12 @@ namespace Elpida.Mobile.ViewModels
 				DeviceDisplay.Current.KeepScreenOn = false;
 				Battery.Default.EnergySaverStatusChanged -= DefaultOnEnergySaverStatusChanged;
 				_enteredEnergySaveMode = false;
-				Running = false;
 				ExecutingBenchmark = null;
 				ExecutedBenchmarks = 0;
-				_cancel.TryReset();
+				_cancel.Dispose();
+				_cancel = new CancellationTokenSource();
 				ButtonText = Resources.Start;
+				Running = false;
 			}
 		}
 
