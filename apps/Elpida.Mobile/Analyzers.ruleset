@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Elpida C# rules" ToolsVersion="15.0">
+    <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+        <Rule Id="SA1309" Action="None" />  <!-- Fields should not start with underscore -->
+        <Rule Id="SA1027" Action="None" />  <!-- Use spaces -->
+        <Rule Id="SA1101" Action="None" />  <!-- Use 'this' prefix for member access -->
+        <Rule Id="SA1011" Action="None" />  <!-- Closing Angle bracked should be followed by space -->
+        <Rule Id="SA1111" Action="None" />  <!-- Closing parenthesis on method call should be -->
+        <Rule Id="SA1009" Action="None" />  <!-- Closing parenthesis should be placed corectly -->
+        <Rule Id="SA1008" Action="None" />  <!-- Opening parenthesis should be placed corectly -->
+        <Rule Id="SA1623" Action="None" />  <!-- Documentation should begin with Gets or Sets -->
+        <Rule Id="SA1629" Action="None" />  <!-- Documentation should end with period -->
+        
+        <Rule Id="SA1600" Action="None" />  <!-- Elements should be documented -->
+        <Rule Id="SA1602" Action="None" />  <!-- Enumerations should be documented -->
+        <Rule Id="CS1591" Action="None" />  <!-- Public members/types should be documented -->
+    </Rules>
+</RuleSet>

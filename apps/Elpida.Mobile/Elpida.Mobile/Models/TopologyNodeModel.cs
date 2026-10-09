@@ -1,3 +1,24 @@
+// =========================================================================
+//
+// Elpida Mobile
+//
+// Copyright (C) 2026 Ioannis Panagiotopoulos
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+//
+// You should have received a copy of the GNU General Public License
+// =========================================================================
+
 namespace Elpida.Mobile.Models
 {
 	public enum TopologyNodeType
@@ -17,15 +38,19 @@ namespace Elpida.Mobile.Models
 		L4Cache,
 		L5Cache,
 		ProcessingUnit,
-		Unknown = -1
+		Unknown = -1,
 	}
 
 	public class TopologyNodeModel
 	{
-		public List<TopologyNodeModel> Children { get; set;} = new List<TopologyNodeModel>();
-		public List<TopologyNodeModel> MemoryChildren { get; set;} = new List<TopologyNodeModel>();
-		public TopologyNodeType Type { get; set;}
-		public ulong? OsIndex { get; set;}
-		public ulong? Size { get; set;}
+		public List<TopologyNodeModel> Children { get; set; } = new ();
+
+		public List<TopologyNodeModel> MemoryChildren { get; set; } = new ();
+
+		public TopologyNodeType Type { get; set; }
+
+		public ulong? OsIndex { get; set; }
+
+		public ulong? Size { get; set; }
 	}
 }

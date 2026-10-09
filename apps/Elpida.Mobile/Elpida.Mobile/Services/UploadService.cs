@@ -1,3 +1,24 @@
+// =========================================================================
+//
+// Elpida Mobile
+//
+// Copyright (C) 2026 Ioannis Panagiotopoulos
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+//
+// You should have received a copy of the GNU General Public License
+// =========================================================================
+
 using System.Net.Http.Json;
 using Elpida.Mobile.Models;
 using Elpida.Mobile.Models.Web;
@@ -6,10 +27,9 @@ namespace Elpida.Mobile.Services
 {
 	public class UploadService
 	{
-		private readonly ElpidaService _elpidaService;
-		private readonly HttpClient _client = new HttpClient();
-		
 		private const string Url = "api/v1/benchmarkresult";
+		private readonly HttpClient _client = new ();
+		private readonly ElpidaService _elpidaService;
 
 		public UploadService(ElpidaService elpidaService, SettingsService settingsService)
 		{
@@ -18,10 +38,56 @@ namespace Elpida.Mobile.Services
 			_client.DefaultRequestHeaders.Add("api_key", settingsService.ApiKey);
 		}
 
+		public async Task UploadResultsAsync(IEnumerable<ResultDto> results)
+		{
+			var infoDump = await _elpidaService.LoadAsync();
+			var result = await _client.PostAsJsonAsync(
+					Url,
+					new ResultBatchDto
+					{
+						Cpu = new ResultCpuDto
+						{
+							Architecture = infoDump.Cpu.Architecture,
+							ModelName = infoDump.Cpu.ModelName,
+							Vendor = infoDump.Cpu.Vendor,
+						},
+						ElpidaVersion = new ResultElpidaDto
+						{
+							CompilerName = infoDump.ElpidaVersion.CompilerName,
+							CompilerVersion = infoDump.ElpidaVersion.CompilerVersion,
+							Version = infoDump.ElpidaVersion.Version,
+						},
+						Memory = new ResultMemoryDto
+						{
+							PageSize = infoDump.Memory.PageSize,
+							TotalSize = infoDump.Memory.TotalSize,
+						},
+						Os = new ResultOsDto
+						{
+							Category = infoDump.Os.Category,
+							Name = infoDump.Os.Name,
+							Version = infoDump.Os.Version,
+						},
+						Topology = new ResultTopologyDto
+						{
+							Root = GetTopologyNode(infoDump.Topology.Root),
+							TotalLogicalCores = infoDump.Topology.TotalLogicalCores,
+							TotalPhysicalCores = infoDump.Topology.TotalPhysicalCores,
+							TotalNumaNodes = infoDump.Topology.TotalNumaNodes,
+							TotalPackages = infoDump.Topology.TotalPackages,
+						},
+						Results = results.ToArray(),
+					}
+				)
+				.ConfigureAwait(false);
+
+			result.EnsureSuccessStatusCode();
+		}
+
 		private static ResultCpuNodeDto GetTopologyNode(TopologyNodeModel node)
 		{
 			ProcessorNodeType type;
-			
+
 			switch (node.Type)
 			{
 				case TopologyNodeType.Machine:
@@ -76,55 +142,14 @@ namespace Elpida.Mobile.Services
 					throw new ArgumentOutOfRangeException();
 			}
 
-			return new ResultCpuNodeDto()
+			return new ResultCpuNodeDto
 			{
 				Type = type,
 				Children = node.Children.Select(GetTopologyNode).ToArray(),
 				MemoryChildren = node.MemoryChildren.Select(GetTopologyNode).ToArray(),
 				OsIndex = node.OsIndex,
-				Size = node.Size
+				Size = node.Size,
 			};
-		}
-
-		public async Task UploadResultsAsync(IEnumerable<ResultDto> results)
-		{
-			var infoDump = await _elpidaService.LoadAsync();
-			var result =await _client.PostAsJsonAsync(Url, new ResultBatchDto
-			{
-				Cpu = new ResultCpuDto
-				{
-					Architecture = infoDump.Cpu.Architecture,
-					ModelName = infoDump.Cpu.ModelName,
-					Vendor = infoDump.Cpu.Vendor
-				},
-				ElpidaVersion = new ResultElpidaDto
-				{
-					CompilerName = infoDump.ElpidaVersion.CompilerName,
-					CompilerVersion = infoDump.ElpidaVersion.CompilerVersion,
-					Version = infoDump.ElpidaVersion.Version,
-				},
-				Memory = new ResultMemoryDto
-				{
-					PageSize = infoDump.Memory.PageSize,
-					TotalSize = infoDump.Memory.TotalSize,
-				},
-				Os = new ResultOsDto
-				{
-					Category = infoDump.Os.Category,
-					Name = infoDump.Os.Name,
-					Version = infoDump.Os.Version,
-				},
-				Topology = new ResultTopologyDto
-				{
-					Root = GetTopologyNode(infoDump.Topology.Root),
-					TotalLogicalCores = infoDump.Topology.TotalLogicalCores,
-					TotalPhysicalCores = infoDump.Topology.TotalPhysicalCores,
-					TotalNumaNodes = infoDump.Topology.TotalNumaNodes,
-					TotalPackages = infoDump.Topology.TotalPackages
-				},
-				Results = results.ToArray()
-			}).ConfigureAwait(false);
-			result.EnsureSuccessStatusCode();
 		}
 	}
 }

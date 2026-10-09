@@ -1,3 +1,24 @@
+// =========================================================================
+//
+// Elpida Mobile
+//
+// Copyright (C) 2026 Ioannis Panagiotopoulos
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+//
+// You should have received a copy of the GNU General Public License
+// =========================================================================
+
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,7 +34,7 @@ namespace Elpida.Mobile.ViewModels
 		public int _benchmarkCount;
 
 		[ObservableProperty]
-		public ObservableCollection<BenchmarkResultViewModel> _benchmarkResults = new();
+		public ObservableCollection<BenchmarkResultViewModel> _benchmarkResults = new ();
 
 		[ObservableProperty]
 		public TimeSpan _estimatedTime;
@@ -42,7 +63,7 @@ namespace Elpida.Mobile.ViewModels
 		[ObservableProperty]
 		public bool _uploadResults = true;
 
-		private CancellationTokenSource _cancel = new();
+		private readonly ElpidaService _elpidaService;
 		private readonly MessageService _messageService;
 		private readonly SettingsService _settingsService;
 		private readonly UploadService _uploadService;
@@ -50,20 +71,15 @@ namespace Elpida.Mobile.ViewModels
 		[ObservableProperty]
 		private string _buttonText = Resources.Start;
 
-		private readonly ElpidaService _elpidaService;
+		private CancellationTokenSource _cancel = new ();
 		private bool _enteredEnergySaveMode;
 
-		partial void OnRunItTimesChanged(int value)
-		{
-			EstimatedTime = TimeSpan.FromMinutes(value * 3.3);
-			if (value <= 0)
-			{
-				RunItTimes = 1;
-			}
-		}
-
-		public BenchmarkPageViewModel(ElpidaService elpidaService, UploadService uploadService,
-			MessageService messageService, SettingsService settingsService)
+		public BenchmarkPageViewModel(
+			ElpidaService elpidaService,
+			UploadService uploadService,
+			MessageService messageService,
+			SettingsService settingsService
+		)
 		{
 			_elpidaService = elpidaService;
 			_uploadService = uploadService;
@@ -72,16 +88,19 @@ namespace Elpida.Mobile.ViewModels
 			OnRunItTimesChanged(_runItTimes);
 		}
 
-		public List<FullBenchmarkInstanceModel> BenchmarksInstancesModels { get; set; } = new();
+		public List<FullBenchmarkInstanceModel> BenchmarksInstancesModels { get; set; } = new ();
 
 		[RelayCommand(AllowConcurrentExecutions = true)]
 		public async Task RunBenchmark()
 		{
 			if (!_settingsService.BenchmarkNotificationIssued)
 			{
-				await _messageService.DisplayAlertAsync(Resources.Information,
+				await _messageService.DisplayAlertAsync(
+					Resources.Information,
 					Resources.BenchmarkWarning,
-					Resources.Ok);
+					Resources.Ok
+				);
+
 				_settingsService.BenchmarkNotificationIssued = true;
 			}
 
@@ -94,12 +113,13 @@ namespace Elpida.Mobile.ViewModels
 					{
 						Name = Resources.WaitingForCancellation,
 					};
+
 					ButtonText = Resources.Cancelling;
 				}
 
 				return;
 			}
-			
+
 			try
 			{
 				Running = true;
@@ -120,40 +140,60 @@ namespace Elpida.Mobile.ViewModels
 					var multiThreadScores = new List<(double, double)>();
 					for (var index = 0; index < BenchmarksInstancesModels.Count; index++)
 					{
-						if (_cancel.Token.IsCancellationRequested) return;
+						if (_cancel.Token.IsCancellationRequested)
+						{
+							return;
+						}
 
 						var fullBenchmarkInstanceModel = BenchmarksInstancesModels[index];
 						ExecutingBenchmark = new BenchmarkInfoViewModel
 						{
 							Name = fullBenchmarkInstanceModel.Name,
 						};
+
 						Progress = ExecutedBenchmarks / (double)BenchmarkCount;
 						var result = await _elpidaService.RunBenchmarkAsync(index, _cancel.Token);
 						ExecutedBenchmarks++;
-						runResults.Add(new ResultBenchmarkResultDto
-						{
-							Result = result,
-							Uuid = fullBenchmarkInstanceModel.Uuid,
-						});
-						taskResults.Add(new BenchmarkTaskResultViewModel
-						{
-							Name = fullBenchmarkInstanceModel.Name,
-							Value = result,
-							Unit = $"{fullBenchmarkInstanceModel.BenchmarkInfo.ResultUnit}{(fullBenchmarkInstanceModel.BenchmarkInfo.ResultType == ResultType.Throughput ? "/s" : string.Empty)}",
-						});
+						runResults.Add(
+							new ResultBenchmarkResultDto
+							{
+								Result = result,
+								Uuid = fullBenchmarkInstanceModel.Uuid,
+							}
+						);
+
+						taskResults.Add(
+							new BenchmarkTaskResultViewModel
+							{
+								Name = fullBenchmarkInstanceModel.Name,
+								Value = result,
+								Unit =
+									$"{fullBenchmarkInstanceModel.BenchmarkInfo.ResultUnit}{(fullBenchmarkInstanceModel.BenchmarkInfo.ResultType == ResultType.Throughput ? "/s" : string.Empty)}",
+							}
+						);
 
 						if (fullBenchmarkInstanceModel.IsMultiThread)
+						{
 							multiThreadScores.Add((result, fullBenchmarkInstanceModel.BaseScore));
+						}
 						else
+						{
 							singleThreadScores.Add((result, fullBenchmarkInstanceModel.BaseScore));
+						}
 					}
 
 					var singleTheadScore = ElpidaService.CalculateScore(
 						singleThreadScores.Select(x => x.Item1).ToArray(),
-						singleThreadScores.Select(x => x.Item2).ToArray(), singleThreadScores.Count);
+						singleThreadScores.Select(x => x.Item2).ToArray(),
+						singleThreadScores.Count
+					);
+
 					var multiThreadScore = ElpidaService.CalculateScore(
 						multiThreadScores.Select(x => x.Item1).ToArray(),
-						multiThreadScores.Select(x => x.Item2).ToArray(), multiThreadScores.Count);
+						multiThreadScores.Select(x => x.Item2).ToArray(),
+						multiThreadScores.Count
+					);
+
 					var totalScore = ElpidaService.CalculateTotalScore(singleTheadScore, multiThreadScore);
 					var resultViewModel = new BenchmarkResultViewModel
 					{
@@ -162,34 +202,42 @@ namespace Elpida.Mobile.ViewModels
 						TotalScore = new ResultViewModel { Value = totalScore },
 						TaskResults = taskResults,
 					};
+
 					if (LastResult != null)
 					{
 						resultViewModel.TotalScore.RelativeChange =
-							(totalScore - LastResult.TotalScore.Value) / LastResult.TotalScore.Value * 100;
+							((totalScore - LastResult.TotalScore.Value) / LastResult.TotalScore.Value) * 100;
+
 						resultViewModel.SingleThreadScore.RelativeChange =
-							(singleTheadScore - LastResult.SingleThreadScore.Value) /
-							LastResult.SingleThreadScore.Value *
-							100;
+							((singleTheadScore - LastResult.SingleThreadScore.Value)
+							 / LastResult.SingleThreadScore.Value)
+							* 100;
+
 						resultViewModel.MultiThreadScore.RelativeChange =
-							(multiThreadScore - LastResult.MultiThreadScore.Value) /
-							LastResult.MultiThreadScore.Value *
-							100;
+							((multiThreadScore - LastResult.MultiThreadScore.Value) / LastResult.MultiThreadScore.Value)
+							* 100;
 					}
 
 					LastResult = resultViewModel;
 					BenchmarkResults.Add(LastResult);
-					resultList.Add(new ResultDto
-					{
-						TimeStamp = DateTime.UtcNow,
-						TotalScore = totalScore,
-						SingleThreadScore = singleTheadScore,
-						MultiThreadScore = multiThreadScore,
-						BenchmarkResults = runResults.ToArray(),
-					});
+					resultList.Add(
+						new ResultDto
+						{
+							TimeStamp = DateTime.UtcNow,
+							TotalScore = totalScore,
+							SingleThreadScore = singleTheadScore,
+							MultiThreadScore = multiThreadScore,
+							BenchmarkResults = runResults.ToArray(),
+						}
+					);
 				}
 
-				if (UploadResults && Battery.Default.EnergySaverStatus != EnergySaverStatus.On &&
-				    !_enteredEnergySaveMode) await _uploadService.UploadResultsAsync(resultList);
+				if (UploadResults
+				    && Battery.Default.EnergySaverStatus != EnergySaverStatus.On
+				    && !_enteredEnergySaveMode)
+				{
+					await _uploadService.UploadResultsAsync(resultList);
+				}
 			}
 			catch (OperationCanceledException)
 			{
@@ -210,6 +258,15 @@ namespace Elpida.Mobile.ViewModels
 				_cancel = new CancellationTokenSource();
 				ButtonText = Resources.Start;
 				Running = false;
+			}
+		}
+
+		partial void OnRunItTimesChanged(int value)
+		{
+			EstimatedTime = TimeSpan.FromMinutes(value * 3.3);
+			if (value <= 0)
+			{
+				RunItTimes = 1;
 			}
 		}
 
