@@ -26,50 +26,50 @@ target_link_libraries(Elpida
         elpida-shared
         log)
 
-add_library(compilation-benchmarks-lib MODULE Dummy.cpp)
-target_link_libraries(compilation-benchmarks-lib
+add_library(compilation-benchmarks-group MODULE Dummy.cpp)
+target_link_libraries(compilation-benchmarks-group
         elpida-core
         elpida-compilation-benchmarks
         musl-lite)
 
-add_library(web-benchmarks-lib MODULE Dummy.cpp)
-target_link_libraries(web-benchmarks-lib
+add_library(web-benchmarks-group MODULE Dummy.cpp)
+target_link_libraries(web-benchmarks-group
         elpida-core
         elpida-web-benchmarks
         musl-lite)
 
-add_library(memory-benchmarks-lib MODULE Dummy.cpp)
-target_link_libraries(memory-benchmarks-lib
+add_library(memory-benchmarks-group MODULE Dummy.cpp)
+target_link_libraries(memory-benchmarks-group
         elpida-core
         elpida-memory-benchmarks
         musl-lite)
 
-add_library(math-benchmarks-lib MODULE Dummy.cpp)
-target_link_libraries(math-benchmarks-lib
+add_library(math-benchmarks-group MODULE Dummy.cpp)
+target_link_libraries(math-benchmarks-group
         elpida-core
         elpida-math-benchmarks
         musl-lite)
 
-add_library(image-benchmarks-lib MODULE Dummy.cpp)
-target_link_libraries(image-benchmarks-lib
+add_library(image-benchmarks-group MODULE Dummy.cpp)
+target_link_libraries(image-benchmarks-group
         elpida-core
         elpida-image-benchmarks
         musl-lite)
 
-add_library(encryption-benchmarks-lib MODULE Dummy.cpp)
-target_link_libraries(encryption-benchmarks-lib
+add_library(encryption-benchmarks-group MODULE Dummy.cpp)
+target_link_libraries(encryption-benchmarks-group
         elpida-core
         elpida-encryption-benchmarks
         musl-lite)
 
-add_library(compression-benchmarks-lib MODULE Dummy.cpp)
-target_link_libraries(compression-benchmarks-lib
+add_library(compression-benchmarks-group MODULE Dummy.cpp)
+target_link_libraries(compression-benchmarks-group
         elpida-core
         elpida-compression-benchmarks
         musl-lite)
 
-add_library(stdLib-benchmarks-lib MODULE Dummy.cpp)
-target_link_libraries(stdLib-benchmarks-lib
+add_library(stdLib-benchmarks-group MODULE Dummy.cpp)
+target_link_libraries(stdLib-benchmarks-group
         elpida-core
         elpida-stdlib-benchmarks
         musl-lite)

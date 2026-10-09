@@ -221,16 +221,7 @@ ElpidaInstance* Load(char* executableDirectory)
 
 		auto directory = std::filesystem::path(executableDirectory);
 
-#ifdef ELPIDA_OFF_PROCESS
-		InfoGetter infoGetter;
-		infoGetter.SetInfoGetterPath(directory / "elpida-info-dumper.so");
-		infoGetter.SetBenchmarksPath(directory);
-		infoGetter.SetNoThreadPinning(true);
-		infoGetter.SetBenchmarksSuffix("-benchmarks.so");
-#endif
-
 		instance = new ElpidaInstance{
-#ifndef ELPIDA_OFF_PROCESS
 			EnvironmentInfo{
 				CpuInfoLoader::Load(),
 				MemoryInfoLoader::Load(),
@@ -238,12 +229,8 @@ ElpidaInstance* Load(char* executableDirectory)
 				TopologyLoader::LoadTopology(),
 				TimingCalculator::CalculateTiming()
 			},
-#else
-			ModelBuilderJson(infoGetter.GetData()),
-#endif
 		};
 
-#ifndef ELPIDA_OFF_PROCESS
 		instance->timingModel = TimingModel(
 			instance->environmentInfo.GetOverheadsInfo().GetNowOverhead(),
 			instance->environmentInfo.GetOverheadsInfo().GetLoopOverhead(),
@@ -272,25 +259,14 @@ ElpidaInstance* Load(char* executableDirectory)
 			0
 		);
 
-		instance->benchmarkGroupModels = GetBenchmarkGroups(directory, "-lib.so");
+		instance->benchmarkGroupModels = GetBenchmarkGroups(directory, "-group.so");
 
 		instance->benchmarkExecutionService = InProcessBenchmarkExecutionService();
 		instance->benchmarkExecutionService.SetElpidaInstance(instance);
 		instance->benchmarkRunConfigurationModel = BenchmarkRunConfigurationModel();
 		instance->benchmarkExecutionService.SetElpidaInstance(instance);
-#endif
 
 		std::vector<std::string> missingBenchmarks;
-#ifdef ELPIDA_OFF_PROCESS
-		auto benchmarksLoaded = FullBenchmarkInstancesLoader::Load(
-			instance->modelBuilderJson.GetBenchmarkGroups(),
-			instance->modelBuilderJson.GetTimingModel(),
-			instance->modelBuilderJson.GetTopologyInfoModel(),
-			instance->modelBuilderJson.GetMemoryInfoModel(),
-			instance->benchmarkRunConfigurationModel,
-			instance->benchmarkExecutionService,
-			missingBenchmarks);
-#else
 		auto benchmarksLoaded = FullBenchmarkInstancesLoader::Load(
 			instance->benchmarkGroupModels,
 			instance->timingModel,
@@ -299,8 +275,6 @@ ElpidaInstance* Load(char* executableDirectory)
 			instance->benchmarkRunConfigurationModel,
 			instance->benchmarkExecutionService,
 			missingBenchmarks);
-#endif
-
 
 		if (!missingBenchmarks.empty())
 		{
@@ -347,11 +321,6 @@ int RunBenchmark(ElpidaInstance* instance,
 			return EXIT_FAILURE;
 		}
 
-#ifdef ELPIDA_OFF_PROCESS
-		auto fullBenchmarkResult = instance->benchmarkInstances[fullIndex]->Run();
-
-		*result = fullBenchmarkResult.GetScore();
-#else
 		// thread to avoid static init/deinit errors due to dlclose() (mainly openssl)
 		std::thread th([&]()
 		{
@@ -365,8 +334,6 @@ int RunBenchmark(ElpidaInstance* instance,
 		});
 
 		th.join();
-
-#endif
 		return EXIT_SUCCESS;
 	}
 	catch (const std::exception& ex)
@@ -451,11 +418,7 @@ int GetInfo(ElpidaInstance* instance, char** buffer, uint64_t* size)
 	{
 		json root;
 		{
-#ifdef ELPIDA_OFF_PROCESS
-			auto& cpuInfo = instance->modelBuilderJson.GetCpuInfoModel();
-#else
 			auto& cpuInfo = instance->cpuInfoModel;
-#endif
 			json cpu;
 
 			cpu["architecture"] = cpuInfo.GetArchitecture();
@@ -465,11 +428,7 @@ int GetInfo(ElpidaInstance* instance, char** buffer, uint64_t* size)
 			root["cpu"] = std::move(cpu);
 		}
 		{
-#ifdef ELPIDA_OFF_PROCESS
-			auto& memoryInfo = instance->modelBuilderJson.GetMemoryInfoModel();
-#else
 			auto& memoryInfo = instance->memoryModel;
-#endif
 			json memory;
 
 			memory["pageSize"] = memoryInfo.GetPageSize();
@@ -478,11 +437,7 @@ int GetInfo(ElpidaInstance* instance, char** buffer, uint64_t* size)
 			root["memory"] = std::move(memory);
 		}
 		{
-#ifdef ELPIDA_OFF_PROCESS
-			auto& osInfo = instance->modelBuilderJson.GetOsInfoModel();
-#else
 			auto& osInfo = instance->osInfoModel;
-#endif
 			json os;
 
 			os["category"] = osInfo.GetCategory();
@@ -493,21 +448,15 @@ int GetInfo(ElpidaInstance* instance, char** buffer, uint64_t* size)
 		}
 		{
 			json topology;
-#ifdef ELPIDA_OFF_PROCESS
-			topology["root"] = Serialize(instance->modelBuilderJson.GetTopologyInfoModel().GetRoot());
-#else
+
 			topology["root"] = Serialize(instance->topologyModel.GetRoot());
-#endif
 			topology["fastestProcessor"] = 0;
 
 			root["topology"] = std::move(topology);
 		}
 		{
-#ifdef ELPIDA_OFF_PROCESS
-			auto& timingInfo = instance->modelBuilderJson.GetTimingModel();
-#else
 			auto& timingInfo = instance->timingModel;
-#endif
+
 			json jTiming;
 
 			jTiming["iterations"] = timingInfo.GetIterationsPerSecond();

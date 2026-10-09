@@ -35,7 +35,6 @@ namespace Elpida::Application
 
 struct ElpidaInstance
 {
-#ifndef ELPIDA_OFF_PROCESS
 	Elpida::EnvironmentInfo environmentInfo;
 	Elpida::Application::TimingModel timingModel;
 	Elpida::Application::TopologyModel topologyModel;
@@ -44,12 +43,8 @@ struct ElpidaInstance
 	Elpida::Application::CpuInfoModel cpuInfoModel;
 	Elpida::InProcessBenchmarkExecutionService benchmarkExecutionService;
 	std::vector<Elpida::Application::BenchmarkGroupModel> benchmarkGroupModels;
-#else
-	Elpida::Application::ModelBuilderJson modelBuilderJson;
-	Elpida::Application::OffProcessBenchmarkExecutionService benchmarkExecutionService;
-#endif
-	Elpida::Application::BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
-	std::vector<std::unique_ptr<Elpida::Application::FullBenchmarkInstance>> benchmarkInstances;
+    Elpida::Application::BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
+    std::vector<std::unique_ptr<Elpida::Application::FullBenchmarkInstance>> benchmarkInstances;
 };
 
 
