@@ -22,7 +22,7 @@
 #include "Elpida/Core/Float.hpp"
 #include "Elpida/Math/Matrix.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 	class MatrixInverse4Task : public MicroTask
@@ -50,8 +50,8 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
-		Math::Matrix<Float, 4, 4> _matrix;
-		Math::Matrix<Float, 4, 4> _input;
+		Elpida::Math::Matrix<Float, 4, 4> _matrix;
+		Elpida::Math::Matrix<Float, 4, 4> _input;
 		SharedPtr<AbstractTaskData> _inputData;
 	};
 

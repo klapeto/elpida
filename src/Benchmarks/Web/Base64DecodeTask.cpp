@@ -21,7 +21,7 @@
 
 #include <cstring>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 
 	void Base64DecodeTask::Prepare(SharedPtr<AbstractTaskData> inputData)

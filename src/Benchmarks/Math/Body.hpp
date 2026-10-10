@@ -22,7 +22,7 @@
 #ifndef ELPIDA_BODY_HPP
 #define ELPIDA_BODY_HPP
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 	template<typename T>

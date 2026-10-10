@@ -17,7 +17,7 @@
 
 #include "StrtoulTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 
 	void StrtoulTask::Prepare(SharedPtr<AbstractTaskData> inputData)

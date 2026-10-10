@@ -20,7 +20,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "SqrtTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	Vector<TaskConfiguration> SqrtBenchmark::GetRequiredConfiguration() const
 	{

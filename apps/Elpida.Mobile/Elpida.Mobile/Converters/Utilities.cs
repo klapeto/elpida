@@ -1,0 +1,56 @@
+// =========================================================================
+//
+// Elpida Mobile
+//
+// Copyright (C) 2026 Ioannis Panagiotopoulos
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// =========================================================================
+
+using System.Globalization;
+using System.Text;
+
+namespace Elpida.Mobile.Converters
+{
+	public class Utilities
+	{
+		public static string GetValueScaleString(
+			double value,
+			double[] denominators,
+			string[] prefixes,
+			int decimals,
+			CultureInfo culture
+		)
+		{
+			var sb = new StringBuilder();
+
+			var i = denominators.Length - 1;
+
+			while (i > 0)
+			{
+				if (value >= denominators[i])
+				{
+					break;
+				}
+
+				i--;
+			}
+
+			sb.Append((value / denominators[i]).ToString($"F{decimals}", culture));
+			sb.Append(' ');
+			sb.Append(prefixes[i]);
+
+			return sb.ToString();
+		}
+	}
+}

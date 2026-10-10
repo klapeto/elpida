@@ -21,6 +21,6 @@
 
 #include "SceneCreator.hpp"
 
-namespace Elpida::Graphics
+namespace Elpida::Benchmarks::Image::Graphics
 {
 } // Elpida

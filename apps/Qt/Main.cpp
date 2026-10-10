@@ -39,7 +39,7 @@
 #include "Models/BenchmarkRunConfigurationModel.hpp"
 #include "Models/Full/FullBenchmarkModel.hpp"
 
-#include "Core/BenchmarkExecutionService.hpp"
+#include "Core/OffProcessBenchmarkExecutionService.hpp"
 #include "Core/BenchmarkStatisticsService.hpp"
 #include "Core/ResultsHTMLReporter.hpp"
 #include "Controllers/CustomBenchmarkController.hpp"
@@ -158,7 +158,9 @@ static ModelBuilderJson GetBasicInfo(const std::filesystem::path& benchmarksPath
 	{
 		try
 		{
-			data = InfoGetter::GetInfoData(benchmarksPath);
+			InfoGetter infoGetter;
+			infoGetter.SetBenchmarksPath(benchmarksPath);
+			data = infoGetter.GetData();
 		}
 		catch (const std::exception& ex)
 		{
@@ -237,7 +239,7 @@ int main(int argc, char* argv[])
 
 		UpdateBenchmarkSettings(benchmarkGroups, settingsService);
 
-		BenchmarkExecutionService executionService;
+		OffProcessBenchmarkExecutionService executionService;
 
 		ResultSerializer resultSerializer(builderJson.GetCpuInfoModel(), builderJson.GetMemoryInfoModel(),
 				builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(), builderJson.GetTimingModel());

@@ -22,7 +22,7 @@
 #include "Elpida/Core/Float.hpp"
 #include "NBodySystem.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 	class NBodyTask : public MicroTask

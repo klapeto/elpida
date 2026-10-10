@@ -26,7 +26,7 @@
 #include <llvm/Support/MemoryBuffer.h>
 #include <clang/Lex/PreprocessorOptions.h>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compilation
 {
     void CompileWithClangTask::Prepare(SharedPtr<AbstractTaskData> inputData)
     {

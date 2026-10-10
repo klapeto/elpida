@@ -25,7 +25,7 @@
 #include <memory>
 #include <cstring>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compression
 {
 	static voidpf Allocate(voidpf opaque, uInt items, uInt size)
 	{

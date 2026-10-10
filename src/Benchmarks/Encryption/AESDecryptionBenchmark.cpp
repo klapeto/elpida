@@ -24,7 +24,7 @@
 #include "AESDecryptTask.hpp"
 #include "AESEncryptTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 	std::vector<TaskConfiguration> AESDecryptionBenchmark::GetRequiredConfiguration() const
 	{

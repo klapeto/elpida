@@ -19,7 +19,7 @@
 #include "AllocateMemoryTask.hpp"
 #include "MemsetTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	Vector<TaskConfiguration> MemsetBenchmark::GetRequiredConfiguration() const
 	{

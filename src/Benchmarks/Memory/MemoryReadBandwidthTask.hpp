@@ -25,7 +25,7 @@
 #include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/IterationMicroTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Memory
 {
 	class MemoryReadBandwidthTask : public IterationMicroTask
 	{

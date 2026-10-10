@@ -19,7 +19,7 @@
 #include "Base64EncodeTask.hpp"
 #include "GenerateLoremIpsum.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 	Vector<TaskConfiguration> Base64EncodeBenchmark::GetRequiredConfiguration() const
 	{

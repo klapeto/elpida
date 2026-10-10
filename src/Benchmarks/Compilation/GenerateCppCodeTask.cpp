@@ -22,7 +22,7 @@
 #include "GenerateCppCodeTask.hpp"
 #include <cstring>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compilation
 {
 	const char Source[] = "/*\n"
 						  " * musl as a whole is licensed under the following standard MIT license:\n"

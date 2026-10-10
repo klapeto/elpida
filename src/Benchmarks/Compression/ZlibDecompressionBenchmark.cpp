@@ -24,7 +24,7 @@
 #include "ZlibDecompressionTask.hpp"
 #include "ZlibCompressionTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compression
 {
 
 	Vector<TaskConfiguration> ZlibDecompressionBenchmark::GetRequiredConfiguration() const

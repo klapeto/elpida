@@ -30,7 +30,7 @@
 #include "ImageTaskData.hpp"
 #include "ImageBenchmarksConfig.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class ConvertToFloatTask : public Task
