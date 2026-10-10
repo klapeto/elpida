@@ -234,7 +234,7 @@ Deploy Android (android21):
     - Package (Android)
   artifacts:
     paths:
-      - dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk
-      - dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk.SHA256SUMS
-      - dev.elpida.mobile-latest.apk
-      - dev.elpida.mobile-latest.apk.SHA256SUMS
+      - $PACKAGE_FILENAME_DEPLOY.apk
+      - $PACKAGE_FILENAME.apk
+      - $PACKAGE_FILENAME_DEPLOY.apk.SHA256SUMS
+      - $PACKAGE_FILENAME.apk.SHA256SUMS
