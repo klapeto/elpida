@@ -21,7 +21,7 @@ namespace Elpida.Mobile.Services
 {
 	public class SettingsService
 	{
-		public string ApiHost { get; } = "http://10.0.2.2:5000";
+		public string ApiHost { get; } = "10.0.2.2:5000";
 
 		public string ApiKey { get; } = "__TestAPIKey__";
 

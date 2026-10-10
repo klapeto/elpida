@@ -26,19 +26,29 @@ namespace Elpida.Mobile.Services
 	public class UploadService
 	{
 		private const string Url = "api/v1/benchmarkresult";
-		private readonly HttpClient _client = new();
 		private readonly ElpidaService _elpidaService;
+		private readonly SettingsService _settingsService;
+		private HttpClient? _client;
 
-		public UploadService(ElpidaService elpidaService, SettingsService settingsService)
+		public UploadService(
+			ElpidaService elpidaService,
+			SettingsService settingsService
+		)
 		{
 			_elpidaService = elpidaService;
-			_client.BaseAddress = new Uri(settingsService.ApiHost);
-			_client.DefaultRequestHeaders.Add("api_key", settingsService.ApiKey);
+			_settingsService = settingsService;
 		}
 
 		public async Task UploadResultsAsync(IEnumerable<ResultDto> results)
 		{
 			var infoDump = await _elpidaService.LoadAsync();
+			if (_client == null)
+			{
+				_client = new HttpClient();
+				_client.BaseAddress = new Uri($"https://{_settingsService.ApiHost}");
+				_client.DefaultRequestHeaders.Add("api_key", _settingsService.ApiKey);
+			}
+
 			var result = await _client.PostAsJsonAsync(
 					Url,
 					new ResultBatchDto
