@@ -25,6 +25,7 @@
 #include <filesystem>
 
 #include "JsonSerializer.hpp"
+#include "ArgumentsHelper.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "Elpida/Platform/CpuInfoLoader.hpp"
 #include "Elpida/Platform/OsInfoLoader.hpp"
@@ -37,6 +38,7 @@
 
 using namespace nlohmann;
 using namespace Elpida;
+using namespace Elpida::Application;
 
 static std::string GetBenchmarkInfo(const std::filesystem::path& path)
 {
@@ -83,7 +85,14 @@ static bool IsExecutable(const std::filesystem::directory_entry& entry)
 #endif
 }
 
-static json SerializeBenchmarkGroups(const std::filesystem::path& path)
+
+static bool EndsWith(std::string const & value, std::string const & ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
+static json SerializeBenchmarkGroups(const std::filesystem::path& path, const std::string& suffix)
 {
 	if (!is_directory(path))
 	{
@@ -96,7 +105,10 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path)
 
 	for (auto& entry : std::filesystem::directory_iterator(path))
 	{
-		if (!entry.is_directory() && entry.is_regular_file() && IsExecutable(entry))
+		if (!entry.is_directory()
+			&& entry.is_regular_file()
+			&& IsExecutable(entry)
+			&& (suffix.empty() || EndsWith(entry.path().string(), suffix)))
 		{
 			try
 			{
@@ -126,46 +138,62 @@ int main(int argC, char** argV)
 {
 	OsUtilities::ConvertArgumentsToUTF8(argC, argV);
 
-	std::filesystem::path benchmarkPath;
-
-	if (argC > 1)
+	ArgumentsHelper helper;
 	{
-		std::string pathString = argV[1];
+		std::string returnText;
+		auto success = helper.ParseAndGetExitText(argC, argV, returnText);
+		if (!returnText.empty())
+		{
+			std::cout << returnText << std::endl;
+			return success ? EXIT_SUCCESS : EXIT_FAILURE;
+		}
+	}
+
+	std::filesystem::path benchmarksPath;
+
+	if (!helper.GetBenchmarksPath().empty())
+	{
+		std::string pathString = helper.GetBenchmarksPath().string();
 		ValueUtilities::DeQuoteString(pathString);
-		benchmarkPath = pathString;
+		benchmarksPath = pathString;
 	}
 	else
 	{
-		benchmarkPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
+		benchmarksPath = OsUtilities::GetExecutableDirectory() / "Benchmarks";
 	}
 
+	std::string suffix = helper.GetBenchmarkSuffix();
+	ValueUtilities::DeQuoteString(suffix);
 	try
 	{
 		auto topology = TopologyLoader::LoadTopology();
-
-		topology.PinThreadToProcessor(0);
-		auto& cores = topology.GetAllCores();
-
-		Duration loopOverhead = Seconds(6546513);
 		unsigned int highestCore = 0;
 
-		for (auto& core : cores)
+		if (!helper.IsNoThreadPinning())
 		{
-			auto& pu = core.get().GetChildren().front();
+			topology.PinThreadToProcessor(0);
+			auto& cores = topology.GetAllCores();
 
-			Duration overhead;
+			Duration loopOverhead = Seconds(6546513);
 
-			topology.PinThreadToProcessor(pu.get()->GetOsIndex().value());
-			overhead = TimingCalculator::CalculateLoopOverheadFast();
-
-			if (overhead < loopOverhead)
+			for (auto& core : cores)
 			{
-				highestCore = pu->GetOsIndex().value();
-				loopOverhead = overhead;
-			}
-		}
+				auto& pu = core.get().GetChildren().front();
 
-		topology.PinThreadToProcessor(highestCore);
+				Duration overhead;
+
+				topology.PinThreadToProcessor(pu.get()->GetOsIndex().value());
+				overhead = TimingCalculator::CalculateLoopOverheadFast();
+
+				if (overhead < loopOverhead)
+				{
+					highestCore = pu->GetOsIndex().value();
+					loopOverhead = overhead;
+				}
+			}
+
+			topology.PinThreadToProcessor(highestCore);
+		}
 
 		auto timing = TimingCalculator::CalculateTiming();
 
@@ -176,7 +204,7 @@ int main(int argC, char** argV)
 		root["topology"] = JsonSerializer::Serialize(topology);
 		root["topology"]["fastestProcessor"] = highestCore;
 		root["timing"] = JsonSerializer::Serialize(timing);
-		root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarkPath);
+		root["benchmarkGroups"] = SerializeBenchmarkGroups(benchmarksPath, suffix);
 
 		std::cout << root.dump();
 	}

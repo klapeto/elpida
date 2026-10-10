@@ -27,7 +27,7 @@
 #include "Elpida/Core/Ref.hpp"
 #include "Elpida/Core/Benchmark.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Memory
 {
 
 	class MemoryLatencyBenchmark : public Benchmark

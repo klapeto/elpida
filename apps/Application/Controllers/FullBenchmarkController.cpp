@@ -41,10 +41,10 @@
 #include <string>
 #include <cmath>
 
+#include "ScoreCalculator.hpp"
+
 namespace Elpida::Application
 {
-	static const double SingleCoreWeight = 1.1;
-	static const double MultiCoreWeight = 1.0;
 
 	FullBenchmarkController::FullBenchmarkController(FullBenchmarkModel& model,
 			const TimingModel& timingModel,
@@ -106,11 +106,11 @@ namespace Elpida::Application
 			{
 				for (std::size_t i = 0; i < _runConfigurationModel.GetIterationsToRun(); ++i)
 				{
-					Score singleThreadScore = 0.0;
-					Score multiThreadScore = 0.0;
-					std::size_t singleThreadScoresCount = 0;
-					std::size_t multiThreadScoresCount = 0;
 					std::vector<BenchmarkResultModel> benchmarkResults;
+					std::vector<double> singleThreadScores;
+					std::vector<double> singleThreadBaseScores;
+					std::vector<double> multiThreadScores;
+					std::vector<double> multiThreadBaseScores;
 
 					for (auto& benchmark : _benchmarks)
 					{
@@ -122,23 +122,26 @@ namespace Elpida::Application
 
 						if (benchmark->IsMultiThread())
 						{
-							multiThreadScore += 1.0 / (result.GetScore() / benchmark->GetBaseScore());
-							multiThreadScoresCount++;
+							multiThreadScores.push_back(result.GetScore());
+							multiThreadBaseScores.push_back(benchmark->GetBaseScore());
 						}
 						else
 						{
-							singleThreadScore += 1.0 / (result.GetScore() / benchmark->GetBaseScore());
-							singleThreadScoresCount++;
+							singleThreadScores.push_back(result.GetScore());
+							singleThreadBaseScores.push_back(benchmark->GetBaseScore());
 						}
 
 						benchmarkResults.push_back(std::move(result.GetBenchmarkResult()));
 					}
 
-					// harmonic mean since we are averaging performance ratios
-					singleThreadScore = singleThreadScoresCount / singleThreadScore;
-					multiThreadScore = multiThreadScoresCount / multiThreadScore;
+					const auto singleThreadScore = ScoreCalculator::CalculateBenchmarkScore(singleThreadScores.data(),
+						singleThreadBaseScores.data(),
+						singleThreadScores.size()); // evil code
+					const auto multiThreadScore = ScoreCalculator::CalculateBenchmarkScore(multiThreadScores.data(),
+						multiThreadBaseScores.data(),
+						multiThreadScores.size()); // evil code
 
-					auto totalScore = CalculateTotalScore(singleThreadScore, multiThreadScore);
+					const auto totalScore = ScoreCalculator::CalculateTotalScore(singleThreadScore, multiThreadScore);
 
 					auto result = FullBenchmarkResultModel(std::move(benchmarkResults), totalScore, singleThreadScore,
 							multiThreadScore);
@@ -178,11 +181,6 @@ namespace Elpida::Application
 			_model.SetRunning(false);
 			_running.store(false, std::memory_order_release);
 		});
-	}
-
-	Score FullBenchmarkController::CalculateTotalScore(Score singleCoreScore, Score multiCoreScore)
-	{
-		return std::pow(singleCoreScore, SingleCoreWeight) + std::pow(multiCoreScore, MultiCoreWeight);
 	}
 
 	void FullBenchmarkController::PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const

@@ -23,7 +23,7 @@
 #include "ImageBenchmarksConfig.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	void ConvertToFloatTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

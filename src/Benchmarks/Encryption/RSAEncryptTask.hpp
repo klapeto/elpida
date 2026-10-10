@@ -32,7 +32,7 @@
 
 #include "OpenSslPtr.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 
 	class RSAEncryptTask final : public MicroTask

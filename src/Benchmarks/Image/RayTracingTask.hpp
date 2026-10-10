@@ -24,7 +24,7 @@
 #include "Elpida/Graphics/Scene.hpp"
 #include "Elpida/Graphics/Camera.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class RayTracingTask : public MicroTask

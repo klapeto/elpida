@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="64"
+   height="64"
+   version="1.1"
+   viewBox="0 0 64 64"
+   id="svg16"
+   sodipodi:docname="cpu.svg"
+   inkscape:version="1.3.2 (1:1.3.2+202311252150+091e20ef0f)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview16"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="7.015625"
+     inkscape:cx="-7.6971047"
+     inkscape:cy="62.289532"
+     inkscape:window-width="3840"
+     inkscape:window-height="2055"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg16" />
+  <defs
+     id="defs4">
+    <linearGradient
+       id="chipGradient"
+       x1="62.8"
+       x2="186.41"
+       y1="72.8"
+       y2="198.84"
+       gradientTransform="matrix(0.41233,0,0,0.41233,-19.863,-23.486)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#D1D1D1"
+         offset="0"
+         id="stop1" />
+      <stop
+         stop-color="#8E8E8E"
+         offset=".45"
+         id="stop2" />
+      <stop
+         stop-color="#A9A9A9"
+         offset=".55"
+         id="stop3" />
+      <stop
+         stop-color="#595959"
+         offset="1"
+         id="stop4" />
+    </linearGradient>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter18"
+       x="-0.048249108"
+       y="-0.047753451"
+       width="1.0964982"
+       height="1.0955069">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.9684375"
+         id="feGaussianBlur18" />
+    </filter>
+  </defs>
+  <path
+     id="path17"
+     style="color:#000000;mix-blend-mode:normal;fill:#000000;fill-opacity:1;-inkscape-stroke:none;filter:url(#filter18)"
+     d="m 15.947454,9.9142499 c -3.323453,0 -6.0332041,2.7097511 -6.0332041,6.0332041 v 36.605468 c 0,3.323453 2.7097511,6.033203 6.0332041,6.033203 h 36.105468 c 3.323453,0 6.033203,-2.70975 6.033203,-6.033203 V 15.947454 c 0,-3.323453 -2.70975,-6.0332041 -6.033203,-6.0332041 z" />
+  <g
+     fill-rule="evenodd"
+     stroke-width="2"
+     id="g15"
+     style="stroke:#444444">
+    <path
+       d="M 0,13 H 64"
+       id="path4" />
+    <path
+       d="M 0,21 H 64"
+       id="path5" />
+    <path
+       d="M 0,29 H 64"
+       id="path6" />
+    <path
+       d="M 0,37 H 64"
+       id="path7" />
+    <path
+       d="M 0,45 H 64"
+       id="path8" />
+    <path
+       d="M 0,53 H 64"
+       id="path9" />
+    <path
+       d="M 53,0 V 64"
+       id="path10" />
+    <path
+       d="M 45,0 V 64"
+       id="path11" />
+    <path
+       d="M 37,0 V 64"
+       id="path12" />
+    <path
+       d="M 29,0 V 64"
+       id="path13" />
+    <path
+       d="M 21,0 V 64"
+       id="path14" />
+    <path
+       d="M 13,0 V 64"
+       id="path15" />
+  </g>
+  <rect
+     x="9"
+     y="9"
+     width="46"
+     height="46.5"
+     rx="4.9478998"
+     fill="url(#chipGradient)"
+     filter="url(#dropShadow)"
+     stroke-width="2.17"
+     id="rect15"
+     style="fill:url(#chipGradient);stroke:#444444" />
+</svg>

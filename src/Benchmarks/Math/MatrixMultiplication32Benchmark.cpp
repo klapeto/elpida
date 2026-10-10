@@ -20,7 +20,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "MatrixMultiplication32Task.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 	Vector<TaskConfiguration> MatrixMultiplication32Benchmark::GetRequiredConfiguration() const
 	{

@@ -20,7 +20,7 @@
 #include "Elpida/Core/Repeat.hpp"
 #include "Elpida/Core/Float.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 
 	void FloorTask::Prepare(SharedPtr<AbstractTaskData> inputData)

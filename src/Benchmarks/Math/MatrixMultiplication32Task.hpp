@@ -22,10 +22,8 @@
 #include "Elpida/Core/Float.hpp"
 #include "Elpida/Math/Matrix.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
-	using namespace Math;
-
 	class MatrixMultiplication32Task : public MicroTask
 	{
 	public:
@@ -51,9 +49,9 @@ namespace Elpida
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
-		Matrix<Float, 32, 32> _matrix;
-		Matrix<Float, 32, 32> _a;
-		Matrix<Float, 32, 32> _b;
+		Elpida::Math::Matrix<Float, 32, 32> _matrix;
+		Elpida::Math::Matrix<Float, 32, 32> _a;
+		Elpida::Math::Matrix<Float, 32, 32> _b;
 		SharedPtr<AbstractTaskData> _inputData;
 	};
 

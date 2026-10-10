@@ -28,7 +28,7 @@
 #include <random>
 #include <algorithm>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Memory
 {
 	static Size calculateNumberOfBitsOfNumber(Size number)
 	{

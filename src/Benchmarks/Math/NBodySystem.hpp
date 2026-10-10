@@ -27,7 +27,7 @@
 #include <vector>
 #include <cmath>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 	template<typename T>

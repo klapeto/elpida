@@ -20,7 +20,7 @@
 
 #include "Elpida/Core/MicroTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 
 	class SqrtTask : public MicroTask

@@ -17,7 +17,7 @@
 
 #include "NBodyTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 	static Body<Float> Jupiter()

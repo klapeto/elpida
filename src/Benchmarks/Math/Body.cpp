@@ -21,6 +21,6 @@
 
 #include "Body.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 } // Elpida

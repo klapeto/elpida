@@ -24,7 +24,7 @@
 
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	class Utilities
 	{

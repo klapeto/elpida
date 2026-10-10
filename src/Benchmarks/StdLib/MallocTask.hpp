@@ -22,7 +22,7 @@
 
 #include <vector>
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 
 	class MallocTask : public IterationMicroTask

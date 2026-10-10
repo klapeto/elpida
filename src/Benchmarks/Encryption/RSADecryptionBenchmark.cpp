@@ -22,7 +22,7 @@
 #include "RSADecryptTask.hpp"
 #include "RSAEncryptTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 	std::vector<TaskConfiguration> RSADecryptionBenchmark::GetRequiredConfiguration() const
 	{

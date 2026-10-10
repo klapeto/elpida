@@ -26,7 +26,7 @@
 #include "SvgRasterizationTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	std::vector<TaskConfiguration> SvgRasterizationBenchmark::GetRequiredConfiguration() const
 	{

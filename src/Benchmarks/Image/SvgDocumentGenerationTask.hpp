@@ -24,7 +24,7 @@
 
 #include "Elpida/Core/Task.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	class SvgDocumentGenerationTask: public Task
 	{

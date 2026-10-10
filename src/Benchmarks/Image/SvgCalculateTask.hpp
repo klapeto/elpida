@@ -27,7 +27,7 @@
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
 #include "Elpida/Svg/SvgConfig.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class SvgCalculateTask: public MicroTask

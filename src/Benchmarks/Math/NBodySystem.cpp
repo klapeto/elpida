@@ -21,6 +21,6 @@
 
 #include "NBodySystem.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 } // Elpida

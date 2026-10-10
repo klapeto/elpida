@@ -96,7 +96,6 @@ namespace Elpida::Application
 		std::vector<std::unique_ptr<FullBenchmarkInstance>> _benchmarks;
 		void GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const;
 		void PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const;
-		static Score CalculateTotalScore(Score singleCoreScore, Score multiCoreScore);
 	};
 
 } // Elpida

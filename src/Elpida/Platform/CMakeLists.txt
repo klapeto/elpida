@@ -37,6 +37,7 @@ add_library(elpida-platform
 add_library(elpida-jep106 jep106.c)
 
 target_link_libraries(elpida-platform PUBLIC elpida-core hwloc elpida-jep106)
+target_include_directories(elpida-platform PRIVATE ${HWLOC_INCLUDE_DIR})
 
 if (UNIX)
     include(${ELPIDA_ROOT_DIRECTORY}/cmake-modules/FindNUMA.cmake)

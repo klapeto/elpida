@@ -26,7 +26,7 @@
 #include <complex>
 #include "Elpida/Core/Float.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 	class FFTCalculator

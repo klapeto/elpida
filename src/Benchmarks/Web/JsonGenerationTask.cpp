@@ -23,7 +23,7 @@
 #include <cstring>
 #include "JsonGenerationTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 	static const char Header[] = R"([)";
 	static const char Element[] = R"({"test":"data","obj":{"a":true,"b":"random"},"arr":["a","b","c"]},)";

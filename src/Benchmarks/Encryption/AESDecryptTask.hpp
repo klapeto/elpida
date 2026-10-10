@@ -25,7 +25,7 @@
 #include <openssl/evp.h>
 #include "Elpida/Core/MicroTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 
 	class AESDecryptTask final : public MicroTask

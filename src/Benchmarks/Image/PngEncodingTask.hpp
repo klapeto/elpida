@@ -27,7 +27,7 @@
 #include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/Task.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class PngEncodingTask final : public Task

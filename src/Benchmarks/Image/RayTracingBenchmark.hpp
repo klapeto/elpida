@@ -20,7 +20,7 @@
 
 #include "Elpida/Core/Benchmark.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class RayTracingBenchmark: public Benchmark
