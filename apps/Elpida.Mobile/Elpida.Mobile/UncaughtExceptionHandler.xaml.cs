@@ -1,4 +1,4 @@
-// =========================================================================
+﻿// =========================================================================
 //
 // Elpida Mobile
 //
@@ -17,20 +17,20 @@
 // You should have received a copy of the GNU General Public License
 // =========================================================================
 
-namespace Elpida.Mobile.Models.Web
+using Java.Lang;
+using Object = Java.Lang.Object;
+using Thread = Java.Lang.Thread;
+
+namespace Elpida.Mobile
 {
-	public class BenchmarkInfoModel
+#if ANDROID
+	public class UncaughtExceptionHandler(Action<Throwable> callback)
+		: Object, Thread.IUncaughtExceptionHandler
 	{
-		public string Name { get; set; } = string.Empty;
-
-		public string Description { get; set; } = string.Empty;
-
-		public int Index { get; set; }
-
-		public BenchmarkConfigurationModel[] RequiredConfiguration { get; set; } = [];
-
-		public ResultType ResultType { get; set; }
-
-		public string ResultUnit { get; set; } = string.Empty;
+		public void UncaughtException(Thread t, Throwable e)
+		{
+			callback(e);
+		}
 	}
+#endif
 }

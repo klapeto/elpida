@@ -23,17 +23,21 @@ namespace Elpida.Mobile.ViewModels
 {
 	public class TimingViewModel
 	{
-		private readonly TimingModel _model;
+		public TimingViewModel()
+		{
+		}
 
 		public TimingViewModel(TimingModel model)
 		{
-			_model = model;
+			NowOverhead = model.NowOverhead;
+			LoopOverhead = model.LoopOverhead;
+			IterationsPerSecond = model.IterationsPerSecond;
 		}
 
-		public double NowOverhead => _model.NowOverhead;
+		public double NowOverhead { get; }
 
-		public double LoopOverhead => _model.LoopOverhead;
+		public double LoopOverhead { get; }
 
-		public ulong IterationsPerSecond => _model.IterationsPerSecond;
+		public ulong IterationsPerSecond { get; }
 	}
 }

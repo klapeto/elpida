@@ -17,24 +17,30 @@
 // You should have received a copy of the GNU General Public License
 // =========================================================================
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using Elpida.Mobile.Models;
 
 namespace Elpida.Mobile.ViewModels
 {
-	public class CpuInfoViewModel : ObservableObject
+	public class CpuInfoViewModel
 	{
-		private readonly CpuInfoModel _model;
+		public CpuInfoViewModel()
+		{
+			Architecture = string.Empty;
+			Vendor = string.Empty;
+			ModelName = string.Empty;
+		}
 
 		public CpuInfoViewModel(CpuInfoModel model)
 		{
-			_model = model;
+			Architecture = model.Architecture;
+			Vendor = model.Vendor;
+			ModelName = model.ModelName;
 		}
 
-		public string Architecture => _model.Architecture;
+		public string Architecture { get; }
 
-		public string Vendor => _model.Vendor;
+		public string Vendor { get; }
 
-		public string ModelName => _model.ModelName;
+		public string ModelName { get; }
 	}
 }

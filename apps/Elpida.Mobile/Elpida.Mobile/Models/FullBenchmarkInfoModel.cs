@@ -33,6 +33,6 @@ namespace Elpida.Mobile.Models
 
 		public int Index { get; set; }
 
-		public List<BenchmarkConfigurationModel> Configurations { get; set; } = new ();
+		public List<BenchmarkConfigurationModel> Configurations { get; set; } = [];
 	}
 }

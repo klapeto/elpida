@@ -26,7 +26,7 @@ namespace Elpida.Mobile.Services
 	public class UploadService
 	{
 		private const string Url = "api/v1/benchmarkresult";
-		private readonly HttpClient _client = new ();
+		private readonly HttpClient _client = new();
 		private readonly ElpidaService _elpidaService;
 
 		public UploadService(ElpidaService elpidaService, SettingsService settingsService)

@@ -28,49 +28,49 @@ namespace Elpida.Mobile.ViewModels
 {
 	public partial class BenchmarkPageViewModel : ObservableObject
 	{
-		[ObservableProperty]
-		public int _benchmarkCount;
-
-		[ObservableProperty]
-		public ObservableCollection<BenchmarkResultViewModel> _benchmarkResults = new ();
-
-		[ObservableProperty]
-		public TimeSpan _estimatedTime;
-
-		[ObservableProperty]
-		public int _executedBenchmarks;
-
-		[ObservableProperty]
-		public BenchmarkInfoViewModel? _executingBenchmark;
-
-		[ObservableProperty]
-		public BenchmarkResultViewModel? _lastResult;
-
-		[ObservableProperty]
-		public bool _loaded;
-
-		[ObservableProperty]
-		public double _progress;
-
-		[ObservableProperty]
-		public int _runItTimes = 1;
-
-		[ObservableProperty]
-		public bool _running;
-
-		[ObservableProperty]
-		public bool _uploadResults = true;
-
 		private readonly ElpidaService _elpidaService;
 		private readonly MessageService _messageService;
 		private readonly SettingsService _settingsService;
 		private readonly UploadService _uploadService;
 
 		[ObservableProperty]
+		private int _benchmarkCount;
+
+		[ObservableProperty]
+		private ObservableCollection<BenchmarkResultViewModel> _benchmarkResults = new();
+
+		[ObservableProperty]
 		private string _buttonText = Resources.Start;
 
-		private CancellationTokenSource _cancel = new ();
+		private CancellationTokenSource _cancel = new();
 		private bool _enteredEnergySaveMode;
+
+		[ObservableProperty]
+		private TimeSpan _estimatedTime;
+
+		[ObservableProperty]
+		private int _executedBenchmarks;
+
+		[ObservableProperty]
+		private BenchmarkInfoViewModel? _executingBenchmark;
+
+		[ObservableProperty]
+		private BenchmarkResultViewModel? _lastResult;
+
+		[ObservableProperty]
+		private bool _loaded;
+
+		[ObservableProperty]
+		private double _progress;
+
+		[ObservableProperty]
+		private int _runItTimes = 1;
+
+		[ObservableProperty]
+		private bool _running;
+
+		[ObservableProperty]
+		private bool _uploadResults = true;
 
 		public BenchmarkPageViewModel(
 			ElpidaService elpidaService,
@@ -86,7 +86,7 @@ namespace Elpida.Mobile.ViewModels
 			OnRunItTimesChanged(_runItTimes);
 		}
 
-		public List<FullBenchmarkInstanceModel> BenchmarksInstancesModels { get; set; } = new ();
+		public List<FullBenchmarkInstanceModel> BenchmarksInstancesModels { get; set; } = new();
 
 		[RelayCommand(AllowConcurrentExecutions = true)]
 		public async Task RunBenchmark()

@@ -46,7 +46,7 @@ namespace Elpida.Mobile.Converters
 			"n",
 			"μ",
 			"m",
-			"",
+			string.Empty,
 			"K",
 			"M",
 			"G",

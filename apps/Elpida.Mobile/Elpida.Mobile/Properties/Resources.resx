@@ -217,9 +217,6 @@
     <data name="MoreInfo" xml:space="preserve">
         <value>More info:</value>
     </data>
-	<data name="Version" xml:space="preserve">
-        <value>Version:</value>
-    </data>
 	<data name="Compiler" xml:space="preserve">
         <value>Compiler:</value>
     </data>

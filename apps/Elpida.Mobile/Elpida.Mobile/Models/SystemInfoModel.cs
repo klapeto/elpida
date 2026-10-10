@@ -21,16 +21,16 @@ namespace Elpida.Mobile.Models
 {
 	public class SystemInfoModel
 	{
-		public CpuInfoModel Cpu { get; set; } = new ();
+		public CpuInfoModel Cpu { get; set; } = new();
 
-		public MemoryInfoModel Memory { get; set; } = new ();
+		public MemoryInfoModel Memory { get; set; } = new();
 
-		public OsInfoModel Os { get; set; } = new ();
+		public OsInfoModel Os { get; set; } = new();
 
-		public TopologyModel Topology { get; set; } = new ();
+		public TopologyModel Topology { get; set; } = new();
 
-		public ElpidaVersionModel ElpidaVersion { get; set; } = new ();
+		public ElpidaVersionModel ElpidaVersion { get; set; } = new();
 
-		public TimingModel Timing { get; set; } = new ();
+		public TimingModel Timing { get; set; } = new();
 	}
 }

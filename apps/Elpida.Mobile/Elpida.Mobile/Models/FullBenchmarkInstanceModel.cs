@@ -31,6 +31,6 @@ namespace Elpida.Mobile.Models
 
 		public double BaseScore { get; set; }
 
-		public FullBenchmarkInfoModel BenchmarkInfo { get; set; } = new ();
+		public FullBenchmarkInfoModel BenchmarkInfo { get; set; } = new();
 	}
 }

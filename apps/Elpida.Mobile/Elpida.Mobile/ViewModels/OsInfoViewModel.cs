@@ -23,17 +23,24 @@ namespace Elpida.Mobile.ViewModels
 {
 	public class OsInfoViewModel
 	{
-		private readonly OsInfoModel _model;
+		public OsInfoViewModel()
+		{
+			Category = string.Empty;
+			Name = string.Empty;
+			Version = string.Empty;
+		}
 
 		public OsInfoViewModel(OsInfoModel model)
 		{
-			_model = model;
+			Category = model.Category;
+			Name = model.Name;
+			Version = model.Version;
 		}
 
-		public string Category => _model.Category;
+		public string Category { get; }
 
-		public string Name => _model.Name;
+		public string Name { get; }
 
-		public string Version => _model.Version;
+		public string Version { get; }
 	}
 }

@@ -17,25 +17,26 @@
 // You should have received a copy of the GNU General Public License
 // =========================================================================
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using Elpida.Mobile.Models;
 
 namespace Elpida.Mobile.ViewModels
 {
-	public partial class MemoryInfoViewModel : ObservableObject
+	public class MemoryInfoViewModel
 	{
-		[ObservableProperty]
-		public string _pageSize;
-
-		[ObservableProperty]
-		public string _totalSize;
-
-		private readonly MemoryInfoModel _model;
+		public MemoryInfoViewModel()
+		{
+			PageSize = string.Empty;
+			TotalSize = string.Empty;
+		}
 
 		public MemoryInfoViewModel(MemoryInfoModel model)
 		{
-			_totalSize = model.TotalSize.ToString();
-			_pageSize = model.PageSize.ToString();
+			PageSize = model.PageSize.ToString();
+			TotalSize = model.TotalSize.ToString();
 		}
+
+		public string PageSize { get; }
+
+		public string TotalSize { get; }
 	}
 }

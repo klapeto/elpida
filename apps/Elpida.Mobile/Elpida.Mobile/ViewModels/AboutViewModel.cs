@@ -17,14 +17,12 @@
 // You should have received a copy of the GNU General Public License
 // =========================================================================
 
-using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace Elpida.Mobile.ViewModels
 {
-	public class AboutViewModel : ObservableObject
+	public class AboutViewModel
 	{
-		public string Version { get; set; }
+		public string Version { get; set; } = string.Empty;
 
-		public string Compiler { get; set; }
+		public string Compiler { get; set; } = string.Empty;
 	}
 }

@@ -21,7 +21,7 @@ namespace Elpida.Mobile.Services
 {
 	public class MessageService
 	{
-		private AppShell _shell;
+		private AppShell? _shell;
 
 		public void SetShell(AppShell shell)
 		{
@@ -41,6 +41,11 @@ namespace Elpida.Mobile.Services
 			FlowDirection flowDirection
 		)
 		{
+			if (_shell == null)
+			{
+				throw new InvalidOperationException("Shell not set");
+			}
+
 			return _shell.Dispatcher.DispatchAsync(() =>
 				_shell.CurrentPage.DisplayAlertAsync(title, message, accept, cancel, flowDirection)
 			);
@@ -48,6 +53,11 @@ namespace Elpida.Mobile.Services
 
 		public Task DisplayAlertAsync(string title, string message, string cancel)
 		{
+			if (_shell == null)
+			{
+				throw new InvalidOperationException("Shell not set");
+			}
+
 			return _shell.Dispatcher.DispatchAsync(() =>
 				_shell.CurrentPage.DisplayAlertAsync(title, message, null, cancel, FlowDirection.MatchParent)
 			);
@@ -55,6 +65,11 @@ namespace Elpida.Mobile.Services
 
 		public Task<bool> DisplayAlertAsync(string title, string message, string accept, string cancel)
 		{
+			if (_shell == null)
+			{
+				throw new InvalidOperationException("Shell not set");
+			}
+
 			return _shell.Dispatcher.DispatchAsync(() =>
 				_shell.CurrentPage.DisplayAlertAsync(title, message, accept, cancel, FlowDirection.MatchParent)
 			);
@@ -62,6 +77,11 @@ namespace Elpida.Mobile.Services
 
 		public Task DisplayAlertAsync(string title, string message, string cancel, FlowDirection flowDirection)
 		{
+			if (_shell == null)
+			{
+				throw new InvalidOperationException("Shell not set");
+			}
+
 			return _shell.Dispatcher.DispatchAsync(() =>
 				_shell.CurrentPage.DisplayAlertAsync(title, message, null, cancel, flowDirection)
 			);
@@ -72,12 +92,17 @@ namespace Elpida.Mobile.Services
 			string message,
 			string accept = "OK",
 			string cancel = "Cancel",
-			string placeholder = null,
+			string? placeholder = null,
 			int maxLength = -1,
-			Keyboard keyboard = default,
+			Keyboard? keyboard = null,
 			string initialValue = ""
 		)
 		{
+			if (_shell == null)
+			{
+				throw new InvalidOperationException("Shell not set");
+			}
+
 			return _shell.Dispatcher.DispatchAsync(() =>
 				_shell.CurrentPage.DisplayPromptAsync(
 					title,

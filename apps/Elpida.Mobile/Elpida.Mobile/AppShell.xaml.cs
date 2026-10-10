@@ -19,17 +19,27 @@
 
 using Android.Runtime;
 using Elpida.Mobile.Services;
-using Java.Lang;
-using Object = Java.Lang.Object;
 using Thread = Java.Lang.Thread;
 
 namespace Elpida.Mobile
 {
 	public partial class AppShell : Shell
 	{
-		public AppShell(DataLoader dataLoader, MessageService messageService)
+		public AppShell(DataLoader? dataLoader, MessageService? messageService)
 		{
 			InitializeComponent();
+			if (dataLoader == null || messageService == null)
+			{
+				Dispatcher.Dispatch(() => CurrentPage.DisplayAlertAsync(
+						"Error",
+						"No app context",
+						"OK"
+					)
+				);
+
+				return;
+			}
+
 			messageService.SetShell(this);
 
 			AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
@@ -79,15 +89,4 @@ namespace Elpida.Mobile
 			dataLoader.LoadInitialDataAsync().ConfigureAwait(false);
 		}
 	}
-
-#if ANDROID
-	public class UncaughtExceptionHandler(Action<Throwable> callback)
-		: Object, Thread.IUncaughtExceptionHandler
-	{
-		public void UncaughtException(Thread t, Throwable e)
-		{
-			callback(e);
-		}
-	}
-#endif
 }

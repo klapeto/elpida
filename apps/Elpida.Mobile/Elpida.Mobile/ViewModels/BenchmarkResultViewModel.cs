@@ -27,13 +27,13 @@ namespace Elpida.Mobile.ViewModels
 		[ObservableProperty]
 		private bool _isTaskResultsExpanded;
 
-		public ResultViewModel TotalScore { get; set; } = new ();
+		public ResultViewModel TotalScore { get; set; } = new();
 
-		public ResultViewModel SingleThreadScore { get; set; } = new ();
+		public ResultViewModel SingleThreadScore { get; set; } = new();
 
-		public ResultViewModel MultiThreadScore { get; set; } = new ();
+		public ResultViewModel MultiThreadScore { get; set; } = new();
 
-		public List<BenchmarkTaskResultViewModel> TaskResults { get; set; } = new ();
+		public List<BenchmarkTaskResultViewModel> TaskResults { get; set; } = new();
 
 		public string TaskResultsToggleText =>
 			IsTaskResultsExpanded ? Resources.HideBenchmarkDetails : Resources.ShowBenchmarkDetails;

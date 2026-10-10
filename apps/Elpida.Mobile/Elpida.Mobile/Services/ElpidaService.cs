@@ -78,9 +78,15 @@ namespace Elpida.Mobile.Services
 				return Task.FromResult(_infoDump);
 			}
 
+			var libraryPath = Application.Context.ApplicationInfo?.NativeLibraryDir;
+			if (string.IsNullOrEmpty(libraryPath))
+			{
+				throw new ApplicationException("Library path is null or empty");
+			}
+
 			return Task.Run(() =>
 				{
-					_instance = Load(Application.Context.ApplicationInfo?.NativeLibraryDir);
+					_instance = Load(libraryPath);
 					if (_instance == IntPtr.Zero)
 					{
 						var error = Marshal.PtrToStringAnsi(GetLastError());

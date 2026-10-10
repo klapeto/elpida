@@ -21,7 +21,7 @@ namespace Elpida.Mobile.Models.Web
 {
 	public class ResultBatchDto
 	{
-		public ResultCpuDto Cpu { get; init; }
+		public ResultCpuDto Cpu { get; init; } = default!;
 
 		public ResultMemoryDto Memory { get; init; } = default!;
 

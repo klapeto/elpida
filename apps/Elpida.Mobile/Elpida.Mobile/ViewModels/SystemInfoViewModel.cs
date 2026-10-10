@@ -25,7 +25,7 @@ namespace Elpida.Mobile.ViewModels
 	public partial class SystemInfoViewModel : ObservableObject
 	{
 		[ObservableProperty]
-		public bool _loaded;
+		private bool _loaded;
 
 		public SystemInfoViewModel(SystemInfoModel model)
 		{
@@ -34,6 +34,15 @@ namespace Elpida.Mobile.ViewModels
 			OsInfo = new OsInfoViewModel(model.Os);
 			TopologyInfo = new TopologyViewModel(model.Topology);
 			TimingInfo = new TimingViewModel(model.Timing);
+		}
+
+		public SystemInfoViewModel()
+		{
+			CpuInfo = new CpuInfoViewModel();
+			MemoryInfo = new MemoryInfoViewModel();
+			OsInfo = new OsInfoViewModel();
+			TopologyInfo = new TopologyViewModel();
+			TimingInfo = new TimingViewModel();
 		}
 
 		public CpuInfoViewModel CpuInfo { get; }

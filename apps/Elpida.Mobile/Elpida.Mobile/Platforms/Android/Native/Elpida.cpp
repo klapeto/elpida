@@ -341,8 +341,8 @@ int RunBenchmark(ElpidaInstance* instance,
 		// thread to avoid static init/deinit errors due to dlclose() (mainly openssl)
 		std::thread th([&]()
 		{
-			auto& benchmarkInstance = instance->benchmarkInstances[fullIndex];
-			std::string actualFilename = benchmarkInstance->GetBenchmark().GetFilePath();
+			const auto& benchmarkInstance = instance->benchmarkInstances[fullIndex];
+			const std::string actualFilename = benchmarkInstance->GetBenchmark().GetFilePath();
 			DynamicLoadedBenchmark library(actualFilename.c_str());
 			auto benchmark = library.GetBenchmark(benchmarkInstance->GetBenchmark().GetBenchmarkIndex());
 			instance->benchmarkExecutionService.SetBenchmark(benchmark);

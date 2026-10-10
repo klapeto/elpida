@@ -104,7 +104,6 @@
                                 </Grid>
                                 <Button
                                     HorizontalOptions="Center"
-                                    Padding="0"
                                     Command="{Binding ToggleTaskResultsCommand}"
                                     Text="{Binding TaskResultsToggleText}" />
                                 <VerticalStackLayout

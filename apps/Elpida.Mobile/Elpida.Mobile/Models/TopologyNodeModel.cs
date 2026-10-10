@@ -41,9 +41,9 @@ namespace Elpida.Mobile.Models
 
 	public class TopologyNodeModel
 	{
-		public List<TopologyNodeModel> Children { get; set; } = new ();
+		public List<TopologyNodeModel> Children { get; set; } = new();
 
-		public List<TopologyNodeModel> MemoryChildren { get; set; } = new ();
+		public List<TopologyNodeModel> MemoryChildren { get; set; } = new();
 
 		public TopologyNodeType Type { get; set; }
 

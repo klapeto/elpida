@@ -21,6 +21,6 @@ namespace Elpida.Mobile.ViewModels
 {
 	public class BenchmarkInfoViewModel
 	{
-		public string Name { get; set; }
+		public string Name { get; init; } = string.Empty;
 	}
 }

@@ -21,10 +21,10 @@ namespace Elpida.Mobile.ViewModels
 {
 	public class BenchmarkTaskResultViewModel
 	{
-		public string Name { get; set; } = string.Empty;
+		public string Name { get; init; } = string.Empty;
 
-		public double Value { get; set; }
+		public double Value { get; init; }
 
-		public string Unit { get; set; } = string.Empty;
+		public string Unit { get; init; } = string.Empty;
 	}
 }

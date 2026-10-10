@@ -10,7 +10,9 @@
         <Rule Id="SA1008" Action="None" />  <!-- Opening parenthesis should be placed corectly -->
         <Rule Id="SA1623" Action="None" />  <!-- Documentation should begin with Gets or Sets -->
         <Rule Id="SA1629" Action="None" />  <!-- Documentation should end with period -->
-        
+        <Rule Id="SA1118" Action="None" />  <!-- The parameter spans multiple lines -->
+
+        <Rule Id="SA1601" Action="None" />  <!-- Partial elements should be documented -->
         <Rule Id="SA1600" Action="None" />  <!-- Elements should be documented -->
         <Rule Id="SA1602" Action="None" />  <!-- Enumerations should be documented -->
         <Rule Id="CS1591" Action="None" />  <!-- Public members/types should be documented -->

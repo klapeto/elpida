@@ -17,13 +17,11 @@
 // You should have received a copy of the GNU General Public License
 // =========================================================================
 
-using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace Elpida.Mobile.ViewModels
 {
-	public class ResultViewModel : ObservableObject
+	public class ResultViewModel
 	{
-		public double Value { get; set; }
+		public double Value { get; init; }
 
 		public double? RelativeChange { get; set; }
 	}

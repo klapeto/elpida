@@ -61,31 +61,38 @@ namespace Elpida.Mobile.ViewModels
 			[TopologyNodeType.ProcessingUnit] = Color.Parse("#c8caea"),
 		};
 
-		private readonly TopologyNodeModel _model;
+		public TopologyNodeViewModel()
+		{
+			Type = TopologyNodeType.Machine;
+			Children = new List<TopologyNodeViewModel>();
+			MemoryChildren = new List<TopologyNodeViewModel>();
+		}
 
 		public TopologyNodeViewModel(TopologyNodeModel model)
 		{
-			_model = model;
+			Type = model.Type;
+			OsIndex = model.OsIndex;
+			Size = model.Size;
 			Children = model.Children.Select(c => new TopologyNodeViewModel(c)).ToList();
 			MemoryChildren = model.MemoryChildren.Select(c => new TopologyNodeViewModel(c)).ToList();
 		}
 
-		public Color NodeColor => NodeColors[_model.Type];
+		public Color NodeColor => NodeColors[Type];
 
-		public string NodeName => NodeNames[_model.Type];
+		public string NodeName => NodeNames[Type];
 
-		public bool ShowSize => _model.Size.HasValue;
+		public bool ShowSize => Size.HasValue;
 
-		public bool ShowIndex => _model.Type == TopologyNodeType.ProcessingUnit;
+		public bool ShowIndex => Type == TopologyNodeType.ProcessingUnit;
 
 		public List<TopologyNodeViewModel> Children { get; }
 
 		public List<TopologyNodeViewModel> MemoryChildren { get; }
 
-		public TopologyNodeType Type => _model.Type;
+		public TopologyNodeType Type { get; }
 
-		public ulong? OsIndex => _model.OsIndex;
+		public ulong? OsIndex { get; }
 
-		public ulong? Size => _model.Size;
+		public ulong? Size { get; }
 	}
 }

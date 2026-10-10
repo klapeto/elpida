@@ -26,8 +26,8 @@ namespace Elpida.Mobile.Models
 	{
 		public string Architecture { get; set; } = string.Empty;
 
-		public string Vendor { get; set; }
+		public string Vendor { get; set; } = string.Empty;
 
-		public string ModelName { get; set; }
+		public string ModelName { get; set; } = string.Empty;
 	}
 }

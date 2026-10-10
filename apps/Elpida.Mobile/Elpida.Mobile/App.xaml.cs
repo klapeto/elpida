@@ -32,8 +32,8 @@ namespace Elpida.Mobile
 		{
 			return new Window(
 				new AppShell(
-					activationState.Context.Services.GetRequiredService<DataLoader>(),
-					activationState.Context.Services.GetRequiredService<MessageService>()
+					activationState?.Context.Services.GetRequiredService<DataLoader>(),
+					activationState?.Context.Services.GetRequiredService<MessageService>()
 				)
 			);
 		}
