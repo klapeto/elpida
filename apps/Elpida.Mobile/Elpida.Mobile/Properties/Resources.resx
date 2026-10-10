@@ -220,4 +220,18 @@
 	<data name="Compiler" xml:space="preserve">
         <value>Compiler:</value>
     </data>
+	<data name="Brief" xml:space="preserve">
+        <value>Brief</value>
+    </data>
+	<data name="PrivacyDisclaimer" xml:space="preserve">
+        <value>Privacy disclaimer</value>
+    </data>
+	<data name="VersionInfo" xml:space="preserve">
+        <value>Version info</value>
+    </data>
+	<data name="PrivacyDisclaimerText" xml:space="preserve">
+        <value><![CDATA[
+<section><p> We respect freedom and privacy. For this we do not store personal information anywhere. Results uploaded from the native application are anonymous and can be summarized in: </p><ul><li>Timestamp of the result</li><li>Elpida version and compiler that built it</li><li>System information including: <ul><li>CPU information</li><li>Operating system information including category (eg. Windows/Linux), name(eg. Windows 10 Pro/Ubuntu) and version(eg. 2004/ 18.04) </li></ul><li>Main memory information (Total size, page size)</li><li>The CPU Topology</li></ul><li>Benchmark information including the input data size used</li></ul><p> If you think the above information can identify you, you can always opt out from uploading by unchecking the option in the native application before start benchmarking. The option is very visible just above the 'Start' button so it is difficult to miss that. </p><p>You can always review the code all applications to review what data is sent via the repositories.</p><p> Both this website and Http Api server do not keep cookies. Neither it uses trackers. We do not care who you are, we do not need them, we do not use them. </p></section>        
+        ]]></value>
+    </data>
 </root>

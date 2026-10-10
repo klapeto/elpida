@@ -31,6 +31,7 @@
 #include "InfoGetter.hpp"
 
 #include <iostream>
+#include <exception>
 #include <thread>
 #include <dlfcn.h>
 #include <Elpida/Core/Config.hpp>
@@ -339,18 +340,31 @@ int RunBenchmark(ElpidaInstance* instance,
 		}
 
 		// thread to avoid static init/deinit errors due to dlclose() (mainly openssl)
+		std::exception_ptr benchmarkException;
 		std::thread th([&]()
 		{
-			const auto& benchmarkInstance = instance->benchmarkInstances[fullIndex];
-			const std::string actualFilename = benchmarkInstance->GetBenchmark().GetFilePath();
-			DynamicLoadedBenchmark library(actualFilename.c_str());
-			auto benchmark = library.GetBenchmark(benchmarkInstance->GetBenchmark().GetBenchmarkIndex());
-			instance->benchmarkExecutionService.SetBenchmark(benchmark);
-			const auto benchmarkResult = benchmarkInstance->Run();
-			*result = benchmarkResult.GetScore();
+			try
+			{
+				const auto& benchmarkInstance = instance->benchmarkInstances[fullIndex];
+				const std::string actualFilename = benchmarkInstance->GetBenchmark().GetFilePath();
+				DynamicLoadedBenchmark library(actualFilename.c_str());
+				auto benchmark = library.GetBenchmark(benchmarkInstance->GetBenchmark().GetBenchmarkIndex());
+				instance->benchmarkExecutionService.SetBenchmark(benchmark);
+				const auto benchmarkResult = benchmarkInstance->Run();
+				*result = benchmarkResult.GetScore();
+			}
+			catch (...)
+			{
+				benchmarkException = std::current_exception();
+			}
 		});
 
 		th.join();
+		if (benchmarkException)
+		{
+			std::rethrow_exception(benchmarkException);
+		}
+
 		return EXIT_SUCCESS;
 	}
 	catch (const std::exception& ex)
@@ -358,6 +372,11 @@ int RunBenchmark(ElpidaInstance* instance,
 		auto message = ex.what();
 
 		std::strncpy(lastError, message, sizeof(lastError));
+		return EXIT_FAILURE;
+	}
+	catch (...)
+	{
+		std::strncpy(lastError, "Unknown benchmark error", sizeof(lastError));
 		return EXIT_FAILURE;
 	}
 }

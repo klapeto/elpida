@@ -416,5 +416,29 @@ namespace Elpida.Mobile {
                 return ResourceManager.GetString("Compiler", resourceCulture);
             }
         }
+        
+        internal static string Brief {
+            get {
+                return ResourceManager.GetString("Brief", resourceCulture);
+            }
+        }
+        
+        internal static string PrivacyDisclaimer {
+            get {
+                return ResourceManager.GetString("PrivacyDisclaimer", resourceCulture);
+            }
+        }
+        
+        internal static string VersionInfo {
+            get {
+                return ResourceManager.GetString("VersionInfo", resourceCulture);
+            }
+        }
+        
+        internal static string PrivacyDisclaimerText {
+            get {
+                return ResourceManager.GetString("PrivacyDisclaimerText", resourceCulture);
+            }
+        }
     }
 }
