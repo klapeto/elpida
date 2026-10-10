@@ -254,19 +254,19 @@ namespace Elpida.Mobile {
                 return ResourceManager.GetString("LastResults", resourceCulture);
             }
         }
-
+        
         internal static string BenchmarkDetails {
             get {
                 return ResourceManager.GetString("BenchmarkDetails", resourceCulture);
             }
         }
-
+        
         internal static string ShowBenchmarkDetails {
             get {
                 return ResourceManager.GetString("ShowBenchmarkDetails", resourceCulture);
             }
         }
-
+        
         internal static string HideBenchmarkDetails {
             get {
                 return ResourceManager.GetString("HideBenchmarkDetails", resourceCulture);
@@ -408,6 +408,12 @@ namespace Elpida.Mobile {
         internal static string MoreInfo {
             get {
                 return ResourceManager.GetString("MoreInfo", resourceCulture);
+            }
+        }
+        
+        internal static string Compiler {
+            get {
+                return ResourceManager.GetString("Compiler", resourceCulture);
             }
         }
     }

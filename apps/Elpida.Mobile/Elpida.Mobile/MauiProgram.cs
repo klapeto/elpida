@@ -19,6 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // =========================================================================
 
+using Elpida.Mobile.Pages;
 using Elpida.Mobile.Services;
 using Elpida.Mobile.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -45,6 +46,7 @@ namespace Elpida.Mobile
 
 			builder.Services.AddSingleton<MainPageViewModel>();
 			builder.Services.AddSingleton<BenchmarkPageViewModel>();
+			builder.Services.AddSingleton<AboutViewModel>();
 			builder.Services.AddTransient<DataLoader>();
 			builder.Services.AddSingleton<ElpidaService>();
 			builder.Services.AddSingleton<UploadService>();

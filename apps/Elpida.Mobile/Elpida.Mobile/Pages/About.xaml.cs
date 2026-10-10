@@ -19,13 +19,16 @@
 // You should have received a copy of the GNU General Public License
 // =========================================================================
 
+using Elpida.Mobile.ViewModels;
+
 namespace Elpida.Mobile.Pages
 {
 	public partial class About : ContentPage
 	{
-		public About()
+		public About(AboutViewModel aboutViewModel)
 		{
 			InitializeComponent();
+			BindingContext = aboutViewModel;
 		}
 	}
 }

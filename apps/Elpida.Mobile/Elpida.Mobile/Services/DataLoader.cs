@@ -26,6 +26,7 @@ namespace Elpida.Mobile.Services
 	public class DataLoader
 	{
 		private readonly BenchmarkPageViewModel _benchmarkPageViewModel;
+		private readonly AboutViewModel _aboutViewModel;
 		private readonly MainPageViewModel _mainPageViewModel;
 		private readonly MessageService _messageService;
 		private readonly ElpidaService _service;
@@ -34,12 +35,14 @@ namespace Elpida.Mobile.Services
 			ElpidaService elpidaService,
 			MainPageViewModel mainPageViewModel,
 			BenchmarkPageViewModel benchmarkPageViewModel,
+			AboutViewModel aboutViewModel,
 			MessageService messageService
 		)
 		{
 			_mainPageViewModel = mainPageViewModel;
 			_benchmarkPageViewModel = benchmarkPageViewModel;
 			_messageService = messageService;
+			_aboutViewModel = aboutViewModel;
 			_service = elpidaService;
 		}
 
@@ -55,6 +58,8 @@ namespace Elpida.Mobile.Services
 
 				_benchmarkPageViewModel.BenchmarksInstancesModels = [.. info.Benchmarks];
 				_benchmarkPageViewModel.Loaded = true;
+				_aboutViewModel.Version = info.ElpidaVersion.Version;
+				_aboutViewModel.Compiler = $"{info.ElpidaVersion.CompilerName} {info.ElpidaVersion.CompilerVersion}";
 			}
 			catch (Exception e)
 			{
