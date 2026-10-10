@@ -192,7 +192,7 @@ Deploy Cli (aarch64-w64-mingw32):
     - .Deploy Cli
     - .Deploy Windows
 
-Deploy Android (android21):
+Deploy maui (android):
   stage: deploy
   image: $IMAGE_NAME
   tags:
