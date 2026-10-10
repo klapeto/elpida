@@ -203,7 +203,8 @@ Deploy Android (android21):
   environment:
     name: $DEPLOY_ENVIRONMENT
   variables:
-    TARGET_TRIPLE: android21
+    TARGET_TRIPLE: android
+    PACKAGE_SUFFIX: maui
   script:
     - git submodule update --init --depth=1
     - glab auth login --job-token $CI_JOB_TOKEN --hostname $CI_SERVER_FQDN --api-protocol $CI_SERVER_PROTOCOL
