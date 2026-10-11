@@ -45,7 +45,7 @@ namespace Elpida.Mobile.Services
 			if (_client == null)
 			{
 				_client = new HttpClient();
-				_client.BaseAddress = new Uri($"https://{_settingsService.ApiHost}");
+				_client.BaseAddress = new Uri(_settingsService.ApiHost);
 				_client.DefaultRequestHeaders.Add("api_key", _settingsService.ApiKey);
 			}
 
