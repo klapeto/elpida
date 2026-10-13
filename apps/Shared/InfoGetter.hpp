@@ -26,13 +26,40 @@
 
 namespace Elpida
 {
-
 	class InfoGetter
 	{
 	public:
-		static std::string GetInfoData(const std::filesystem::path& benchmarksPath);
+		[[nodiscard]]
+		std::string GetData() const;
+
+		void SetBenchmarksPath(const std::filesystem::path& benchmarksPath)
+		{
+			_benchmarksPath = benchmarksPath;
+		}
+
+		void SetInfoGetterPath(const std::filesystem::path& infoGetterPath)
+		{
+			_infoGetterPath = infoGetterPath;
+		}
+
+		void SetBenchmarksSuffix(const std::string& benchmarksSuffix)
+		{
+			_benchmarksSuffix = benchmarksSuffix;
+		}
+
+		void SetNoThreadPinning(const bool noThreadPinning)
+		{
+			_noThreadPinning = noThreadPinning;
+		}
+
+		InfoGetter();
+		~InfoGetter() = default;
+	private:
+		std::filesystem::path _benchmarksPath;
+		std::filesystem::path _infoGetterPath;
+		std::string _benchmarksSuffix;
+		bool _noThreadPinning;
 	};
+} // namespace Elpida
 
-} // Elpida
-
-#endif //ELPIDA_INFOGETTER_HPP
+#endif // ELPIDA_INFOGETTER_HPP

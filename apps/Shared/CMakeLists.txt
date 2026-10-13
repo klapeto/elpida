@@ -4,6 +4,7 @@ project("Elpida Shared" VERSION ${ELPIDA_VERSION}
         LANGUAGES CXX C)
 
 add_library(elpida-shared
+        ScoreCalculator.cpp
         JsonSerializer.cpp
         InfoGetter.cpp)
 

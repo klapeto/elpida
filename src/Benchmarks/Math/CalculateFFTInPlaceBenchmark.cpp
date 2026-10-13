@@ -24,7 +24,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "CalculateFFTInPlaceTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 	std::vector<TaskConfiguration> CalculateFFTInPlaceBenchmark::GetRequiredConfiguration() const
 	{

@@ -20,7 +20,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "RayTracingTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	Vector<TaskConfiguration> RayTracingBenchmark::GetRequiredConfiguration() const
 	{

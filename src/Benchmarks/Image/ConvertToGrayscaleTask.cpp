@@ -25,7 +25,7 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "ImageTaskData.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	void ConvertToGrayscaleTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

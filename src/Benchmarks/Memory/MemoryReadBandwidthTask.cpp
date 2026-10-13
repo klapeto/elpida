@@ -21,7 +21,7 @@
 
 #include "MemoryReadBandwidthTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Memory
 {
 	void MemoryReadBandwidthTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

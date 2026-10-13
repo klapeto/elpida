@@ -20,7 +20,7 @@
 #include <cstring>
 #include <random>
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	void MallocTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

@@ -26,10 +26,10 @@
 #include "Elpida/Core/Float.hpp"
 #include "Elpida/Math/DynamicMatrix.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
-	using namespace Math;
+	using namespace Elpida::Benchmarks::Math;
 
 	class DynamicMatrixMultiplicationTask final : public MicroTask
 	{
@@ -47,9 +47,9 @@ namespace Elpida
 	private:
 		std::size_t _rows;
 		std::size_t _columns;
-		DynamicMatrix<Float> _matrix;
-		DynamicMatrix<Float> _a;
-		DynamicMatrix<Float> _b;
+		Elpida::Math::DynamicMatrix<Float> _matrix;
+		Elpida::Math::DynamicMatrix<Float> _a;
+		Elpida::Math::DynamicMatrix<Float> _b;
 		SharedPtr<AbstractTaskData> _output;
 	protected:
 		TaskInfo DoGetInfo() const override;

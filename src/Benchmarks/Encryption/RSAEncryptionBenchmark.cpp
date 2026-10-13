@@ -21,7 +21,7 @@
 #include "GenerateLoremIpsum.hpp"
 #include "RSAEncryptTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 	std::vector<TaskConfiguration> RSAEncryptionBenchmark::GetRequiredConfiguration() const
 	{

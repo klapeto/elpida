@@ -26,7 +26,7 @@
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/RawTaskData.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class ImageTaskData : public RawTaskData

@@ -29,7 +29,7 @@
 
 #include <optional>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compression
 {
 
 	class ZlibDecompressionTask: public MicroTask

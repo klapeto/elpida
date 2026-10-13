@@ -10,6 +10,8 @@
     - cmake -S .
       -B "$BUILD_DIR"
       -DCMAKE_BUILD_TYPE=Release
+      -DELPIDA_ENABLE_QT=ON
+      -DELPIDA_ENABLE_CLI=ON
       -DCMAKE_SYSROOT=/opt/sysroots/$TARGET_TRIPLE
       -DTARGET_PREFIX=$TARGET_TRIPLE-
       -DCMAKE_TOOLCHAIN_FILE=./cmake-modules/llvm-cross.cmake
@@ -83,3 +85,17 @@ Build (aarch64-w64-mingw32):
   dependencies:
     - Build Docker Image (aarch64-w64-mingw32)
   extends: .Build
+
+Build (Android):
+  dependencies:
+    - Build Docker Image (Android)
+  extends: .Build
+  variables:
+    TARGET_TRIPLE: android
+  script:
+    - git submodule update --init --depth=1
+    - dotnet build -c Release --artifacts-path=$BUILD_DIR -o="$INSTALL_DIR" -p:AndroidNdkDirectory=$NDK_DIR ./apps/Elpida.Mobile
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - $INSTALL_DIR

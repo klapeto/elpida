@@ -1,0 +1,4 @@
+# Build Binaries
+bin/**
+obj/**
+Platforms/Android/libs/

@@ -30,7 +30,7 @@
 #include "FileWriteTask.hpp"
 #include "PngEncodingTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	std::vector<TaskConfiguration> SvgRasterizationFromFileBenchmark::GetRequiredConfiguration() const
 	{

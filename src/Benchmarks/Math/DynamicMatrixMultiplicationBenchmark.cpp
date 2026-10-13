@@ -24,7 +24,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "DynamicMatrixMultiplicationTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 	std::vector<TaskConfiguration> DynamicMatrixMultiplicationBenchmark::GetRequiredConfiguration() const
 	{

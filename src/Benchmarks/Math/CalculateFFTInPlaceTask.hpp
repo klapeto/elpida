@@ -27,7 +27,7 @@
 #include <vector>
 #include <complex>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 	class CalculateFFTInPlaceTask final : public MicroTask

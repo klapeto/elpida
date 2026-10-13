@@ -24,7 +24,7 @@
 
 #include <algorithm>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Memory
 {
 	Vector<UniquePtr<Task>>
 	MemoryLatencyBenchmark::GetTasks(BenchmarkRunContext& context) const

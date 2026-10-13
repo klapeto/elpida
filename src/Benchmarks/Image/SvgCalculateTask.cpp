@@ -22,7 +22,7 @@
 #include "SvgCalculateTask.hpp"
 #include "Elpida/Core/SimpleTaskData.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	void SvgCalculateTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

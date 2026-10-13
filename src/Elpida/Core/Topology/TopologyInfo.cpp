@@ -124,6 +124,7 @@ namespace Elpida
 
 	void TopologyInfo::PinThreadToProcessor(unsigned int processorId) const
 	{
+#ifndef ELPIDA_UNIX
 		auto set = hwloc_bitmap_alloc();
 		if (set == nullptr)
 		{
@@ -146,10 +147,21 @@ namespace Elpida
 			throw;
 		}
 		hwloc_bitmap_free(set);
+#else
+		cpu_set_t set;
+
+		CPU_ZERO(&set);
+		CPU_SET(processorId, &set);
+		if (sched_setaffinity(0, sizeof(set), &set) == -1)
+		{
+			throw ElpidaException("Failed to set thread bind to (", processorId, "): ", strerror(errno));
+		}
+#endif
 	}
 
 	void TopologyInfo::PinProcessToProcessors(const std::vector<Ref<const ProcessingUnitNode>>& processors) const
 	{
+#ifndef ELPIDA_UNIX
 		auto set = hwloc_bitmap_alloc();
 
 		if (set == nullptr)
@@ -166,22 +178,38 @@ namespace Elpida
 					throw ElpidaException("Failed to set process bitmap: ", strerror(errno));
 				}
 			}
+
 			if (hwloc_set_cpubind((hwloc_topology_t)_topologyObj, set, 0) == -1)
 			{
 				throw ElpidaException("Failed to set process bind: ", strerror(errno));
 			}
+
 		}
 		catch (...)
 		{
 			hwloc_bitmap_free(set);
 			throw;
 		}
-
 		hwloc_bitmap_free(set);
+#else
+		cpu_set_t set;
+
+		CPU_ZERO(&set);
+		for (auto& processor : processors)
+		{
+			CPU_SET(processor.get().GetOsIndex().value(), &set);
+		}
+
+		if (sched_setaffinity(0, sizeof(set), &set) == -1)
+		{
+			throw ElpidaException("Failed to pin thread to processors: ", strerror(errno));
+		}
+#endif
 	}
 
 	void TopologyInfo::ClearThreadPinning() const
 	{
+#ifndef ELPIDA_UNIX
 		auto set = hwloc_bitmap_alloc();
 		if (set == nullptr)
 		{
@@ -207,6 +235,20 @@ namespace Elpida
 			throw;
 		}
 		hwloc_bitmap_free(set);
+#else
+		cpu_set_t set;
+
+		CPU_ZERO(&set);
+		for (auto& processor : _allProcessingUnits)
+		{
+			CPU_SET(processor.get().GetOsIndex().value(), &set);
+		}
+
+		if (sched_setaffinity(0, sizeof(set), &set) == -1)
+		{
+			throw ElpidaException("Failed to clear pinning:", strerror(errno));
+		}
+#endif
 	}
 
 } // Elpida

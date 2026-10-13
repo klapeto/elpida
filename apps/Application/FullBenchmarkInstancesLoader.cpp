@@ -40,7 +40,7 @@ namespace Elpida::Application
 			std::vector<std::string>& missingBenchmarks)
 	{
 
-		auto  generators = BenchmarkData::GetData();
+		auto generators = BenchmarkData::GetData();
 
 		// wierd code to sort it correctly : Aphabetically and single/multi
 		std::vector<std::tuple<std::unique_ptr<FullBenchmarkInstance>, BenchmarkData::GeneratorData, const BenchmarkModel*>> firstBatch;

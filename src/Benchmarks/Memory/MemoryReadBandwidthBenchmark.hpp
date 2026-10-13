@@ -27,7 +27,7 @@
 #include "Elpida/Core/UniquePtr.hpp"
 #include "Elpida/Core/Benchmark.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Memory
 {
 
 	class MemoryReadBandwidthBenchmark : public Benchmark

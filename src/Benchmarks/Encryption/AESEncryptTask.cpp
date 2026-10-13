@@ -26,7 +26,7 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 	AESEncryptTask::AESEncryptTask(std::string key)
 			:_key(std::move(key)), _initializationVector{ 0xdb, 0x57, 0x0b, 0x26, 0xda, 0x59, 0x54, 0x0d, 0x6e, 0xb7, 0x89, 0xbc, 0xa1, 0x4c, 0x20, 0xa2 }, _finalSize(0)

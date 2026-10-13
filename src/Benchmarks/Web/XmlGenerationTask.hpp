@@ -24,7 +24,7 @@
 
 #include "Elpida/Core/Task.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 
 	class XmlGenerationTask : public Task

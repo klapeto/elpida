@@ -24,7 +24,7 @@
 #include "ParseJsonTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 	Vector<TaskConfiguration> JsonParseBenchmark::GetRequiredConfiguration() const
 	{

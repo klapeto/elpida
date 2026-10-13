@@ -24,7 +24,7 @@
 
 #include "Elpida/Core/Benchmark.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compression
 {
 
 	class ZlibDecompressionBenchmark: public Benchmark

@@ -22,7 +22,7 @@
 
 #include <string>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 
 	class Base64DecodeTask : public MicroTask

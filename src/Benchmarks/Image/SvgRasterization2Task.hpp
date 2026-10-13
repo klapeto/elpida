@@ -27,7 +27,7 @@
 #include "Elpida/Svg/SvgSuperSampler.hpp"
 #include "Elpida/Svg/SvgBackDrop.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class SvgRasterization2Task: public MicroTask

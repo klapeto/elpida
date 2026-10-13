@@ -19,7 +19,7 @@
 
 #include <random>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 
 	void MatrixMultiplication32Task::Prepare(SharedPtr<AbstractTaskData> inputData)

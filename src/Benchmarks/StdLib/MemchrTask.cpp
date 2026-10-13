@@ -19,7 +19,7 @@
 
 #include <cstring>
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 
 	const char Character = 'o';

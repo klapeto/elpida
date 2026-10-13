@@ -27,7 +27,7 @@
 #include "ImageTaskData.hpp"
 #include "Utilities.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	void SvgRasterization2Task::Prepare(SharedPtr<AbstractTaskData> inputData)

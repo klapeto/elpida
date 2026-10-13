@@ -24,7 +24,7 @@
 
 #include "Elpida/Core/Benchmark.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Compilation
 {
 
 	class ClangCompilationBenchmark : public Benchmark
@@ -33,7 +33,7 @@ namespace Elpida
 		[[nodiscard]]
 		std::vector<TaskConfiguration> GetRequiredConfiguration() const override;
 
-		ClangCompilationBenchmark() = default;
+		ClangCompilationBenchmark();
 		~ClangCompilationBenchmark() override = default;
 	protected:
 

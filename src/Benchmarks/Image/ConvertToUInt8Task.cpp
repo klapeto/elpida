@@ -27,7 +27,7 @@
 
 #include <cstdint>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	void ConvertToUInt8Task::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{

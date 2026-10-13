@@ -30,9 +30,9 @@
 
 #include <cmath>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
-	using namespace Graphics;
+	using namespace Elpida::Graphics;
 
 	class SceneCreator
 	{

@@ -42,7 +42,7 @@
 #endif
 
 #ifndef ELPIDA_WEB_API_URL
-#define ELPIDA_WEB_API_URL "localhost"
+#define ELPIDA_WEB_API_URL "https://localhost"
 #endif
 
 namespace Elpida::Application
@@ -60,7 +60,7 @@ namespace Elpida::Application
 #ifdef ELPIDA_DEBUG_SERVER
 		static inline const char* apiUrl = "http://localhost:5000";
 #else
-		static inline const char* apiUrl = "https://" ELPIDA_WEB_API_URL;
+		static inline const char* apiUrl = ELPIDA_WEB_API_URL;
 #endif
 		static inline const char* resultPath = "/api/v1/benchmarkresult";
 		static inline const char* contentType = "application/json";

@@ -22,7 +22,7 @@
 #include "Elpida/Core/MicroTask.hpp"
 #include "boost/regex.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 
 	class RegexTask : public MicroTask

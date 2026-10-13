@@ -20,7 +20,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "FloorTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	Vector<TaskConfiguration> FloorBenchmark::GetRequiredConfiguration() const
 	{

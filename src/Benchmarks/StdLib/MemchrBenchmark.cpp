@@ -19,7 +19,7 @@
 #include "AllocateMemoryTask.hpp"
 #include "MemchrTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	Vector<TaskConfiguration> MemchrBenchmark::GetRequiredConfiguration() const
 	{

@@ -20,7 +20,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "MatrixInverse4Task.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 	Vector<TaskConfiguration> MatrixInverse4Benchmark::GetRequiredConfiguration() const
 	{

@@ -20,7 +20,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "NBodyTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Math
 {
 	Vector<TaskConfiguration> NBodyBenchmark::GetRequiredConfiguration() const
 	{

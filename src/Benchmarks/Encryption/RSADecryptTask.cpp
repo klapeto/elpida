@@ -27,7 +27,7 @@
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Utilities.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Encryption
 {
 
 	static const unsigned char privateKeyDer[] = {

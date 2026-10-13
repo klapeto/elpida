@@ -24,7 +24,7 @@
 #include "SvgCalculateTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	std::vector<TaskConfiguration> SvgParseBenchmark::GetRequiredConfiguration() const

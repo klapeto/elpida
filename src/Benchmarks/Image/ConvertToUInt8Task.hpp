@@ -29,7 +29,7 @@
 #include "Elpida/Core/Task.hpp"
 #include "ImageBenchmarksConfig.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 
 	class ConvertToUInt8Task: public Task

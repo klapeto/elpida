@@ -26,7 +26,7 @@
 #include "Elpida/Core/Size.hpp"
 #include "Elpida/Core/MicroTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Memory
 {
 
 	class MemoryLatencyTask : public MicroTask

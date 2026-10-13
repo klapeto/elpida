@@ -20,7 +20,7 @@
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 #include "MallocTask.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::StdLib
 {
 	Vector<TaskConfiguration> MallocBenchmark::GetRequiredConfiguration() const
 	{

@@ -190,3 +190,21 @@ Package Cli (aarch64-w64-mingw32):
   extends:
     - .Package Cli
     - .Package Windows
+
+Package (Android):
+  image: $IMAGE_NAME
+  stage: package
+  tags:
+    - amd64
+  dependencies:
+    - Build (Android)
+  variables:
+    TARGET_TRIPLE: android
+  script:
+    - cp "$INSTALL_DIR/dev.elpida.mobile-Signed.apk" "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk"
+    - sha256sum "./dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk" > SHA256SUMS
+  artifacts:
+    expire_in: 2h30min
+    paths:
+      - dev.elpida.mobile-$ELPIDA_VERSION_STRING.apk
+      - SHA256SUMS

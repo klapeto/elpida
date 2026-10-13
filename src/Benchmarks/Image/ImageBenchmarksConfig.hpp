@@ -25,7 +25,7 @@
 #include "Elpida/Core/Float.hpp"
 #include <cstdint>
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	using FloatChannel = Float;
 	using IntChannel = uint8_t;

@@ -15,12 +15,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ELPIDA_REGEXBENCHMARK_HPP
-#define ELPIDA_REGEXBENCHMARK_HPP
+#ifndef ELPIDA_STDREGEXBENCHMARK_HPP
+#define ELPIDA_STDREGEXBENCHMARK_HPP
 
 #include "Elpida/Core/Benchmark.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Web
 {
 
 	class RegexBenchmark: public Benchmark

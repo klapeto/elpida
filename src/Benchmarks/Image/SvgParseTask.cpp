@@ -22,7 +22,7 @@
 #include "SvgParseTask.hpp"
 #include "Elpida/Core/SimpleTaskData.hpp"
 
-namespace Elpida
+namespace Elpida::Benchmarks::Image
 {
 	void SvgParseTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
