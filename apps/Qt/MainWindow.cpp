@@ -24,6 +24,7 @@
 #include <QFileDialog>
 
 #include "Elpida/Core/Config.hpp"
+#include "Elpida/BenchmarksVersion.hpp"
 
 #include "Controllers/FullBenchmarkController.hpp"
 #include "Controllers/MemoryBenchmarkController.hpp"
@@ -47,13 +48,14 @@ namespace Elpida::Application
 {
 	constexpr const char* documentationUrl = "https://dev-hood.gitlab.io/elpida/elpida/";
 	constexpr const char* aboutText = "<h2>Elpida " ELPIDA_VERSION "</h2>"
-									  "<p>Elpida is an Open Source (GPLv3) Benchmarking framework for measuring "
-									  "performance of computer hardware or algorithms.</p>"
-									  "<p>It's goal is to be as transparent and open as possible "
-									  "as well as extensible by the community. It comes with a library (libelpida), a Qt application and a "
-									  "set of predefined benchmarks for measuring computer hardware capabilities.</p>"
-									  "<p>Copyright (C) 2023  Ioannis Panagiotopoulos</p>"
-									  "More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
+		"<h2>Benchmarks version " ELPIDA_BENCHMARKS_VERSION "</h2>"
+		"<p>Elpida is an Open Source (GPLv3) Benchmarking framework for measuring "
+		"performance of computer hardware or algorithms.</p>"
+		"<p>It's goal is to be as transparent and open as possible "
+		"as well as extensible by the community. It comes with a library (libelpida), a Qt application and a "
+		"set of predefined benchmarks for measuring computer hardware capabilities.</p>"
+		"<p>Copyright (C) 2026  Ioannis Panagiotopoulos</p>"
+		"More info at: <a href=\"" ELPIDA_WEBSITE_URL "\">" ELPIDA_WEBSITE_URL "</a>";
 
 	MainWindow::MainWindow(
 			const OsInfoModel& osInfoModel,

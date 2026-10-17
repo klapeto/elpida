@@ -58,6 +58,7 @@ namespace Elpida.Mobile.Services
 				_benchmarkPageViewModel.Loaded = true;
 				_aboutViewModel.Version = info.ElpidaVersion.Version;
 				_aboutViewModel.Compiler = $"{info.ElpidaVersion.CompilerName} {info.ElpidaVersion.CompilerVersion}";
+				_aboutViewModel.BenchmarksVersion = info.ElpidaVersion.BenchmarksVersion;
 			}
 			catch (Exception e)
 			{

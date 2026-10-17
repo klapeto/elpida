@@ -30,8 +30,8 @@
 #include "Models/SystemInfo/TopologyNodeModel.hpp"
 #include "Models/SystemInfo/OsInfoModel.hpp"
 #include "Models/SystemInfo/TimingModel.hpp"
-#include "Models/Benchmark/BenchmarkModel.hpp"
 #include "Models/Full/FullBenchmarkResultModel.hpp"
+#include "Elpida/BenchmarksVersion.hpp"
 
 using namespace nlohmann;
 using namespace Elpida;
@@ -99,6 +99,7 @@ namespace Elpida::Application
 		jElpida["version"] = ELPIDA_VERSION;
 		jElpida["compilerName"] = ELPIDA_COMPILER_NAME;
 		jElpida["compilerVersion"] = ELPIDA_COMPILER_VERSION;
+		jElpida["benchmarksVersion"] = ELPIDA_BENCHMARKS_VERSION;
 
 		return jElpida;
 	}

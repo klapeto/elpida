@@ -28,6 +28,7 @@
 #include "Core/OffProcessBenchmarkExecutionService.hpp"
 #include "Core/BenchmarkStatisticsService.hpp"
 #include "Core/ResultsHTMLReporter.hpp"
+#include "Elpida/BenchmarksVersion.hpp"
 #include "Controllers/BenchmarkRunConfigurationController.hpp"
 #include "Controllers/FullBenchmarkController.hpp"
 #include "ModelBuilderJson.hpp"
@@ -78,14 +79,15 @@ static void setupPlatformSpecifics()
 using namespace Elpida;
 using namespace Elpida::Application;
 
-template<typename TCallable>
+template <typename TCallable>
 static void WriteResultsToFile(TCallable callable, const std::filesystem::path& filePath)
 {
 	std::fstream file(filePath, std::ios::out | std::ios::trunc);
 	file << callable();
 }
 
-static const char* GetOutputFormatStr(OutputFormat format){
+static const char* GetOutputFormatStr(OutputFormat format)
+{
 	switch (format)
 	{
 	case OutputFormat::Default:
@@ -140,7 +142,10 @@ int main(int argC, char** argV)
 		}
 
 		ELPIDA_OUT("======================================================");
-		ELPIDA_OUT("  Elpida Benchmark ver. " << ELPIDA_VERSION << " (" << ELPIDA_COMPILER_NAME << " " << ELPIDA_COMPILER_VERSION << ")");
+		ELPIDA_OUT(
+			"  Elpida ver. " << ELPIDA_VERSION << " (" << ELPIDA_COMPILER_NAME << " " << ELPIDA_COMPILER_VERSION <<
+			")");
+		ELPIDA_OUT("  Elpida benchmarks ver. " << ELPIDA_BENCHMARKS_VERSION);
 		ELPIDA_OUT("======================================================");
 
 		ELPIDA_OUT("Run config:");
@@ -162,14 +167,15 @@ int main(int argC, char** argV)
 		OffProcessBenchmarkExecutionService executionService;
 
 		ResultSerializer resultSerializer(builderJson.GetCpuInfoModel(), builderJson.GetMemoryInfoModel(),
-				builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(), builderJson.GetTimingModel());
+										  builderJson.GetTopologyInfoModel(), builderJson.GetOsInfoModel(),
+										  builderJson.GetTimingModel());
 
 		auto benchmarkGroups = builderJson.GetBenchmarkGroups();
 
 		CliSettingsService settingsService;
 		BenchmarkRunConfigurationModel benchmarkRunConfigurationModel;
 		BenchmarkRunConfigurationController benchmarkRunConfigurationController(benchmarkRunConfigurationModel,
-				settingsService);
+			settingsService);
 
 		benchmarkRunConfigurationModel.SetDelaySecondsBetweenRuns(helper.GetSecondsBetweenRuns());
 		benchmarkRunConfigurationModel.SetIterationsToRun(helper.GetIterationsToRun());
@@ -181,7 +187,7 @@ int main(int argC, char** argV)
 		CliPathsService pathsService(helper.GetReportPath());
 
 		ResultsHTMLReporter htmlReporter(benchmarkRunConfigurationModel, builderJson.GetCpuInfoModel(),
-				builderJson.GetOsInfoModel(), benchmarkStatisticsService, pathsService);
+										 builderJson.GetOsInfoModel(), benchmarkStatisticsService, pathsService);
 
 		DataUploader uploader(resultSerializer);
 
@@ -191,24 +197,24 @@ int main(int argC, char** argV)
 
 		FullBenchmarkModel fullBenchmarkModel;
 		FullBenchmarkController fullBenchmarkController(fullBenchmarkModel,
-				builderJson.GetTimingModel(),
-				builderJson.GetTopologyInfoModel(),
-				builderJson.GetMemoryInfoModel(),
-				benchmarkRunConfigurationModel,
-				executionService,
-				resultSerializer,
-				htmlReporter,
-				pathsService,
-				desktopService,
-				uploader,
-				messageService,
-				benchmarkGroups);
+														builderJson.GetTimingModel(),
+														builderJson.GetTopologyInfoModel(),
+														builderJson.GetMemoryInfoModel(),
+														benchmarkRunConfigurationModel,
+														executionService,
+														resultSerializer,
+														htmlReporter,
+														pathsService,
+														desktopService,
+														uploader,
+														messageService,
+														benchmarkGroups);
 
 		if (!fullBenchmarkController.GetMissingBenchmarks().empty())
 		{
 			std::ostringstream message;
 			message << "The following benchmarks are missing: ";
-			for (auto& benchmark: fullBenchmarkController.GetMissingBenchmarks())
+			for (auto& benchmark : fullBenchmarkController.GetMissingBenchmarks())
 			{
 				message << benchmark << ", ";
 			}
@@ -218,7 +224,7 @@ int main(int argC, char** argV)
 
 		if (!builderJson.GetFailedToLoadBenchmarkGroups().empty())
 		{
-			for (auto& [file, reason]: builderJson.GetFailedToLoadBenchmarkGroups())
+			for (auto& [file, reason] : builderJson.GetFailedToLoadBenchmarkGroups())
 			{
 				std::cerr << "Failed to load benchmark group File: " << file << std::endl << "Reason:" << reason;
 			}
@@ -243,13 +249,13 @@ int main(int argC, char** argV)
 					return;
 				}
 				std::cout << "Currently executing: " << name << "\t(Progress: " << i++ << "/" << total << ")"
-						  << std::endl;
+					<< std::endl;
 			});
 		}
 
 		ELPIDA_OUT("Starting benchmarking. Estimated execution time: " << std::setprecision(2)
-							 << ValueUtilities::GetTimeScaleValue(Seconds((5.0 * total)
-							 + (helper.GetSecondsBetweenRuns() * helper.GetIterationsToRun()))));
+			<< ValueUtilities::GetTimeScaleValue(Seconds((5.0 * total)
+				+ (helper.GetSecondsBetweenRuns() * helper.GetIterationsToRun()))));
 
 		fullBenchmarkController.RunAsync();
 		fullBenchmarkController.WaitToCompleteRun();
@@ -267,7 +273,7 @@ int main(int argC, char** argV)
 				std::vector<FullBenchmarkResultModel> results;
 				results.reserve(fullBenchmarkModel.Size());
 
-				for (auto& item: fullBenchmarkModel.GetItems())
+				for (auto& item : fullBenchmarkModel.GetItems())
 				{
 					results.push_back(item.GetValue());
 				}

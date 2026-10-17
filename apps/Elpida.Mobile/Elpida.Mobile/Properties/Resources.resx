@@ -220,6 +220,9 @@
 	<data name="Compiler" xml:space="preserve">
         <value>Compiler:</value>
     </data>
+	<data name="BenchmarksVersion" xml:space="preserve">
+        <value>Benchmarks version:</value>
+    </data>
 	<data name="Brief" xml:space="preserve">
         <value>Brief</value>
     </data>

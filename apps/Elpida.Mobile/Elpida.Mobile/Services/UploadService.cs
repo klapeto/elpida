@@ -64,6 +64,7 @@ namespace Elpida.Mobile.Services
 							CompilerName = infoDump.ElpidaVersion.CompilerName,
 							CompilerVersion = infoDump.ElpidaVersion.CompilerVersion,
 							Version = infoDump.ElpidaVersion.Version,
+							BenchmarksVersion = infoDump.ElpidaVersion.BenchmarksVersion,
 						},
 						Memory = new ResultMemoryDto
 						{

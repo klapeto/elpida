@@ -417,6 +417,12 @@ namespace Elpida.Mobile {
             }
         }
         
+        internal static string BenchmarksVersion {
+            get {
+                return ResourceManager.GetString("BenchmarksVersion", resourceCulture);
+            }
+        }
+        
         internal static string Brief {
             get {
                 return ResourceManager.GetString("Brief", resourceCulture);

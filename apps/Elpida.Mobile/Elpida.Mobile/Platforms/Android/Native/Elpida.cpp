@@ -35,6 +35,7 @@
 #include <thread>
 #include <dlfcn.h>
 #include <Elpida/Core/Config.hpp>
+#include <Elpida/BenchmarksVersion.hpp>
 
 #include "DynamicLoadedBenchmark.hpp"
 #include "Elpida/Platform/AsyncPipeReader.hpp"
@@ -507,6 +508,7 @@ int GetInfo(ElpidaInstance* instance, char** buffer, uint64_t* size)
 			elpidaVersion["version"] = ELPIDA_VERSION;
 			elpidaVersion["compilerName"] = ELPIDA_COMPILER_NAME;
 			elpidaVersion["compilerVersion"] = ELPIDA_COMPILER_VERSION;
+			elpidaVersion["benchmarksVersion"] = ELPIDA_BENCHMARKS_VERSION;
 			root["elpidaVersion"] = std::move(elpidaVersion);
 		}
 

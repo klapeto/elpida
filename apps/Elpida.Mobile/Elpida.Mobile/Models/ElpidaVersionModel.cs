@@ -26,5 +26,7 @@ namespace Elpida.Mobile.Models
 		public string CompilerName { get; set; } = string.Empty;
 
 		public string CompilerVersion { get; set; } = string.Empty;
+
+		public string BenchmarksVersion { get; set; } = string.Empty;
 	}
 }

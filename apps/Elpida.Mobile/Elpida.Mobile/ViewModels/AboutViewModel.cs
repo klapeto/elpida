@@ -24,5 +24,7 @@ namespace Elpida.Mobile.ViewModels
 		public string Version { get; set; } = string.Empty;
 
 		public string Compiler { get; set; } = string.Empty;
+
+		public string BenchmarksVersion { get; set; } = string.Empty;
 	}
 }
