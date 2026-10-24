@@ -117,7 +117,7 @@ function(generate_product_version outfiles)
         set(PRODUCT_FILE_DESCRIPTION "${PRODUCT_NAME}")
     endif()
 
-    string(UUID directory NAMESPACE "BC407793-28E8-44DA-B931-AFC09DD2E0DF" NAME ${PRODUCT_NAME})
+    string(UUID directory NAMESPACE "BC407793-28E8-44DA-B931-AFC09DD2E0DF" NAME ${PRODUCT_NAME} TYPE SHA1)
     set (_VersionInfoFile ${CMAKE_CURRENT_BINARY_DIR}/${directory}/VersionInfo.h)
     set (_VersionResourceFile ${CMAKE_CURRENT_BINARY_DIR}/${directory}/VersionResource.rc)
     configure_file(

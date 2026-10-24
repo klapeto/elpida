@@ -21,7 +21,10 @@
 
 #include "QtDesktopService.hpp"
 
+#include "Elpida/Core/ValueUtilities.hpp"
+
 #include <QDesktopServices>
+#include <QDir>
 #include <QUrl>
 
 namespace Elpida::Application
@@ -33,7 +36,7 @@ namespace Elpida::Application
 
 	void QtDesktopService::OpenFile(const std::filesystem::path& path) const
 	{
-		QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromStdString(path.generic_string())));
+		QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::fromNativeSeparators(QString::fromStdString(ValueUtilities::PathToUtf8(path)))));
 	}
 } // Application
 // Elpida

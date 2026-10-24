@@ -28,6 +28,7 @@
 #include "Elpida/Core/ValueUtilities.hpp"
 
 #include "Elpida/Platform/OsUtilities.hpp"
+#include "Utf8Converter.Windows.hpp"
 
 #include <sstream>
 #include <windows.h>
@@ -36,25 +37,14 @@ namespace Elpida
 {
 	using Vu = ValueUtilities;
 
-	static
-#if UNICODE
-	std::wstring
-#else
-	std::string
-#endif
-	GetCommandLineString(const std::filesystem::path& path, const Vector<String>& args)
+	static std::wstring GetCommandLineString(const std::filesystem::path& path, const Vector<String>& args)
 	{
-#if UNICODE
 		std::wostringstream accumulator;
 		accumulator << path.native();
-#else
-		std::ostringstream accumulator;
-		accumulator << path.string();
-#endif
 
 		for (auto& arg: args)
 		{
-			accumulator << " " << OsUtilities::GetWinApiStringFromString(arg);
+			accumulator << L" " << Utf8Converter::ToWide(arg);
 		}
 
 		return accumulator.str();
@@ -84,7 +74,7 @@ namespace Elpida
 		auto cmd = GetCommandLineString(actualPath, args);
 		success = CreateProcess(
 				nullptr,							// application name
-				const_cast<LPTSTR>(cmd.c_str()),	// command line
+				cmd.data(),							// command line (must be writable)
 				nullptr,							// process security attributes
 				nullptr,							// primary thread security attributes
 				TRUE,								// handles are inherited

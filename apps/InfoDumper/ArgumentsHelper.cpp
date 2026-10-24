@@ -126,7 +126,7 @@ namespace Elpida::Application
 				return true;
 			case 'b':
 			case BenchmarksDirectory:
-				_benchmarksPath = GetValueOrDefault(optarg);
+				_benchmarksPath = ValueUtilities::PathFromUtf8(GetValueOrDefault(optarg));
 				if (_benchmarksPath.empty())
 				{
 					returnText = "'benchmarks-directory' cannot be empty.";

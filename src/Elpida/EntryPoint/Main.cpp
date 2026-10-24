@@ -161,6 +161,7 @@ int main(int argC, char** argV)
 	try
 	{
 		OsUtilities::ConvertArgumentsToUTF8(argC, argV);
+		OsUtilities::SetupConsoleUTF8Output();
 
 		std::locale::global(std::locale::classic());
 		ArgumentsHelper helper;

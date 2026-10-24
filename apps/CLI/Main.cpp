@@ -105,7 +105,7 @@ static const char* GetBooleanStr(bool value)
 
 static std::string GetOutputPathStr(const std::filesystem::path& path)
 {
-	return path.empty() ? "None (Std Out)" : path.string();
+	return path.empty() ? "None (Std Out)" : ValueUtilities::PathToUtf8(path);
 }
 
 int main(int argC, char** argV)
@@ -115,6 +115,7 @@ int main(int argC, char** argV)
 	try
 	{
 		OsUtilities::ConvertArgumentsToUTF8(argC, argV);
+		OsUtilities::SetupConsoleUTF8Output();
 
 		std::locale::global(std::locale::classic());
 		ArgumentsHelper helper;
@@ -132,9 +133,9 @@ int main(int argC, char** argV)
 		std::filesystem::path benchmarksPath;
 		if (!helper.GetBenchmarksPath().empty())
 		{
-			std::string pathString = helper.GetBenchmarksPath().string();
+			std::string pathString = ValueUtilities::PathToUtf8(helper.GetBenchmarksPath());
 			ValueUtilities::DeQuoteString(pathString);
-			benchmarksPath = pathString;
+			benchmarksPath = ValueUtilities::PathFromUtf8(pathString);
 		}
 		else
 		{
@@ -155,8 +156,8 @@ int main(int argC, char** argV)
 		ELPIDA_OUT(" - Output format: " << GetOutputFormatStr(helper.GetOutputFormat()));
 		ELPIDA_OUT(" - Output path: " << GetOutputPathStr(helper.GetResultPath()));
 		ELPIDA_OUT(" - Generate report: " << GetBooleanStr(helper.IsGenerateReport()));
-		ELPIDA_OUT(" - Report export path: " << helper.GetReportPath());
-		ELPIDA_OUT(" - Benchmarks path: " << helper.GetBenchmarksPath());
+		ELPIDA_OUT(" - Report export path: " << ValueUtilities::PathToUtf8(helper.GetReportPath()));
+		ELPIDA_OUT(" - Benchmarks path: " << ValueUtilities::PathToUtf8(helper.GetBenchmarksPath()));
 
 		ELPIDA_OUT("Getting System information...");
 

@@ -26,10 +26,6 @@
 #include "Elpida/Core/String.hpp"
 #include <filesystem>
 
-#if defined(ELPIDA_WINDOWS)
-#include <windows.h>
-#endif
-
 namespace Elpida
 {
 
@@ -42,18 +38,9 @@ namespace Elpida
 		static unsigned int GetNumaNodeIdForProcessor(unsigned int processorId);
 
 		static bool ConvertArgumentsToUTF8(int& originalArgC, char**& originalArgV);
+		static void SetupConsoleUTF8Output();
 
 #if defined(ELPIDA_WINDOWS)
-		static std::string GetStringFromWinApiBuffer(LPCTSTR buffer, DWORD size);
-
-		static
-#if UNICODE
-		std::wstring
-#else
-		std::string
-#endif
-		GetWinApiStringFromString(const std::string& str);
-
 		static std::string ReadRegistryKeyFromHKLM(const std::string& subKey, const std::string& key);
 #endif
 	};

@@ -27,6 +27,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <filesystem>
 #include <locale>
 #include <limits>
 #include <chrono>
@@ -263,9 +264,18 @@ namespace Elpida
 			}
 		}
 
-		static String WstringTostring(const WString& wstring);
+		// std::filesystem::path::string() and path(std::string) use the ANSI code page on Windows.
+		// Internally all strings are utf8, so always convert between paths and strings with these.
+		static String PathToUtf8(const std::filesystem::path& path)
+		{
+			const auto str = path.u8string();
+			return { str.begin(), str.end() };
+		}
 
-		static WString StringToWstring(const String& string);
+		static std::filesystem::path PathFromUtf8(const String& str)
+		{
+			return std::filesystem::u8path(str);
+		}
 
 		static void QuoteString(std::string& str)
 		{
@@ -302,10 +312,21 @@ namespace Elpida
 				Size arraySize,
 				int decimals);
 
+		template<typename T>
+		inline static void appendToStream(std::ostringstream& str, const T& value)
+		{
+			str << value;
+		}
+
+		inline static void appendToStream(std::ostringstream& str, const std::filesystem::path& value)
+		{
+			str << PathToUtf8(value);
+		}
+
 		template<typename T, typename ... TRest>
 		inline static void concatenateToStringImpl(std::ostringstream& str, T first, TRest&& ... rest)
 		{
-			str << first;
+			appendToStream(str, first);
 			concatenateToStringImpl(str, std::forward<TRest>(rest)...);
 		}
 
@@ -318,7 +339,7 @@ namespace Elpida
 		template<typename T>
 		inline static void concatenateToStringImpl(std::ostringstream& str, T arg)
 		{
-			str << arg;
+			appendToStream(str, arg);
 		}
 	};
 

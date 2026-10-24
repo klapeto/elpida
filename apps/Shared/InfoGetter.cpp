@@ -30,7 +30,7 @@ namespace Elpida
 {
 	std::string InfoGetter::GetData() const
 	{
-		auto pathString = _benchmarksPath.string();
+		auto pathString = ValueUtilities::PathToUtf8(_benchmarksPath);
 		ValueUtilities::QuoteString(pathString);
 
 		auto suffix = _benchmarksSuffix;

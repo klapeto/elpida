@@ -50,6 +50,11 @@ namespace Elpida
 		return true;
 	}
 
+	void OsUtilities::SetupConsoleUTF8Output()
+	{
+		// Terminals are assumed to be utf8 already
+	}
+
 	unsigned int OsUtilities::GetNumaNodeIdForProcessor(unsigned int processorId)
 	{
 #ifdef ELPIDA_HAVE_NUMA

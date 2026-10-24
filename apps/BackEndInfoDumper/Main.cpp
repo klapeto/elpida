@@ -47,7 +47,7 @@ using namespace Elpida::Application;
 
 static std::string GetBenchmarkInfo(const std::filesystem::path& path)
 {
-	Process process(path.string(), { "--dump-info" }, true, true);
+	Process process(path, { "--dump-info" }, true, true);
 	AsyncPipeReader outReader(process.GetStdOut());
 	AsyncPipeReader errReader(process.GetStdErr());
 	outReader.StartReading();
@@ -112,20 +112,20 @@ static json SerializeBenchmarkGroups(const std::filesystem::path& path, const st
 		if (!entry.is_directory()
 			&& entry.is_regular_file()
 			&& IsExecutable(entry)
-			&& (suffix.empty() || EndsWith(entry.path().string(), suffix)))
+			&& (suffix.empty() || EndsWith(ValueUtilities::PathToUtf8(entry.path()), suffix)))
 		{
 			try
 			{
 				const auto& exePath = entry.path();
 				auto strOut = GetBenchmarkInfo(exePath);
 				auto json = json::parse(strOut);
-				json["filePath"] = exePath.string();
+				json["filePath"] = ValueUtilities::PathToUtf8(exePath);
 				loaded.push_back(std::move(json));    //validation?
 			}
 			catch (const std::exception& ex)
 			{
 				json failedGroup;
-				failedGroup["file"] = entry.path().string();
+				failedGroup["file"] = ValueUtilities::PathToUtf8(entry.path());
 				failedGroup["reason"] = ex.what();
 				failedToLoad.push_back(std::move(failedGroup));
 			}
@@ -162,13 +162,14 @@ static json GetJsonWithOnlyBenchmarks(const std::filesystem::path& benchmarkPath
 int main(int argC, char** argV)
 {
 	OsUtilities::ConvertArgumentsToUTF8(argC, argV);
+	OsUtilities::SetupConsoleUTF8Output();
 
 	std::filesystem::path benchmarkPath;
 	std::string suffix;
 
 	if (argC > 1)
 	{
-		benchmarkPath = argV[1];
+		benchmarkPath = ValueUtilities::PathFromUtf8(argV[1]);
 	}
 	else
 	{

@@ -11,6 +11,7 @@ add_library(elpida-platform
 
         OsUtilities.Unix.cpp
         OsUtilities.Windows.cpp
+        Utf8Converter.Windows.cpp
 
         OsInfoLoader.Unix.cpp
         OsInfoLoader.Windows.cpp

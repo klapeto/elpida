@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
 		{
 			std::string pathString = argv[1];
 			ValueUtilities::DeQuoteString(pathString);
-			benchmarksPath = pathString;
+			benchmarksPath = ValueUtilities::PathFromUtf8(pathString);
 		}
 		else
 		{

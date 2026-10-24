@@ -21,6 +21,7 @@
 
 #include "QtPathsService.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
+#include "Elpida/Core/ValueUtilities.hpp"
 
 #include <QStandardPaths>
 
@@ -33,7 +34,7 @@ namespace Elpida::Application
 
 	QtPathsService::QtPathsService()
 	{
-		_downloadPath = std::filesystem::path(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation).toStdString());
+		_downloadPath = ValueUtilities::PathFromUtf8(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation).toStdString());
 		_executablePath = OsUtilities::GetExecutableDirectory();
 	}
 

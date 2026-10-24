@@ -24,8 +24,6 @@
 #include <iomanip>
 #include <sstream>
 
-#include <locale>
-#include <codecvt>
 
 namespace Elpida
 {
@@ -48,17 +46,5 @@ namespace Elpida
 		returnString << std::fixed << std::setprecision(decimals) << value / denominators[i] << " "
 					 << prefixes[i];
 		return returnString.str();
-	}
-
-	WString ValueUtilities::StringToWstring(const String& string)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-		return converter.from_bytes(string);
-	}
-
-	String ValueUtilities::WstringTostring(const WString& wstring)
-	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-		return converter.to_bytes(wstring);
 	}
 } // Elpida

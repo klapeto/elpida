@@ -93,9 +93,9 @@ namespace Elpida::Application
 		return accumulator.str();
 	}
 
-	static const char* GetValueOrDefault(const char* value)
+	static const char* GetValueOrDefault(const char* value, const char* defaultValue = "")
 	{
-		return value ? value : "";
+		return value ? value : defaultValue;
 	}
 
 	bool ArgumentsHelper::ParseAndGetExitText(int argC, char** argV, std::string& returnText)
@@ -157,7 +157,7 @@ namespace Elpida::Application
 			case 'r':
 			case Report:
 				_generateReport = true;
-				_reportPath = GetValueOrDefault(optarg);
+				_reportPath = ValueUtilities::PathFromUtf8(GetValueOrDefault(optarg, _reportPath.c_str()));
 				break;
 			case 'i':
 			case Iterations:
@@ -165,7 +165,7 @@ namespace Elpida::Application
 				break;
 			case 'b':
 			case BenchmarksDirectory:
-				_benchmarksPath = GetValueOrDefault(optarg);
+				_benchmarksPath = ValueUtilities::PathFromUtf8(GetValueOrDefault(optarg));
 				if (_benchmarksPath.empty())
 				{
 					returnText = "'benchmarks-directory' cannot be empty.";
@@ -174,7 +174,7 @@ namespace Elpida::Application
 				break;
 			case 'o':
 			case ResultPath:
-				_resultPath = GetValueOrDefault(optarg);
+				_resultPath = ValueUtilities::PathFromUtf8(GetValueOrDefault(optarg));
 				if (_resultPath.empty())
 				{
 					returnText = "'results-output' cannot be empty.";

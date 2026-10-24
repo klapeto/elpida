@@ -26,12 +26,125 @@
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
+#include "Utf8Converter.Windows.hpp"
 
 #include <windows.h>
 #include <strsafe.h>
 
+#include <cstring>
+#include <iostream>
+#include <streambuf>
+
 namespace Elpida
 {
+	// Writes utf8 text to a Windows console with WriteConsoleW, so it is displayed
+	// correctly regardless of the console code page (which is usually the OEM one).
+	class ConsoleUTF8StreamBuffer final : public std::streambuf
+	{
+	 public:
+		explicit ConsoleUTF8StreamBuffer(HANDLE handle)
+				: _handle(handle)
+		{
+			setp(_buffer, _buffer + sizeof(_buffer));
+		}
+
+	 protected:
+		int_type overflow(int_type ch) override
+		{
+			if (Flush() != 0) return traits_type::eof();
+
+			if (!traits_type::eq_int_type(ch, traits_type::eof()))
+			{
+				*pptr() = traits_type::to_char_type(ch);
+				pbump(1);
+			}
+			return traits_type::not_eof(ch);
+		}
+
+		int sync() override
+		{
+			return Flush();
+		}
+
+	 private:
+		HANDLE _handle;
+		char _buffer[1024];
+
+		// Returns the length up to the last complete utf8 sequence, so we never split a character between writes.
+		static std::size_t GetCompleteUTF8Length(const char* data, std::size_t size)
+		{
+			for (std::size_t i = 1; i <= 3 && i <= size; ++i)
+			{
+				const auto c = static_cast<unsigned char>(data[size - i]);
+				if ((c & 0xC0) == 0x80) continue;	// continuation byte
+
+				const std::size_t expected = c >= 0xF0 ? 4 : c >= 0xE0 ? 3 : c >= 0xC0 ? 2 : 1;
+				return expected > i ? size - i : size;
+			}
+			return size;
+		}
+
+		int Flush()
+		{
+			const auto size = static_cast<std::size_t>(pptr() - pbase());
+			const auto completeSize = GetCompleteUTF8Length(pbase(), size);
+
+			if (completeSize > 0)
+			{
+				std::wstring wide;
+				try
+				{
+					wide = Utf8Converter::ToWide({ pbase(), completeSize });
+				}
+				catch (...)
+				{
+					return -1;
+				}
+
+				const auto wideSize = static_cast<DWORD>(wide.size());
+				DWORD offset = 0;
+				while (offset < wideSize)
+				{
+					DWORD written = 0;
+					if (!WriteConsoleW(_handle, wide.data() + offset, wideSize - offset, &written, nullptr)
+						|| written == 0)
+					{
+						return -1;
+					}
+					offset += written;
+				}
+			}
+
+			const auto remaining = size - completeSize;
+			std::memmove(_buffer, pbase() + completeSize, remaining);
+			setp(_buffer, _buffer + sizeof(_buffer));
+			pbump(static_cast<int>(remaining));
+			return 0;
+		}
+	};
+
+	static void RedirectStreamToConsole(std::ostream& stream, DWORD stdHandle)
+	{
+		const auto handle = GetStdHandle(stdHandle);
+		DWORD mode;
+		if (handle == nullptr || handle == INVALID_HANDLE_VALUE || !GetConsoleMode(handle, &mode))
+		{
+			// Redirected to a file/pipe: keep writing raw utf8 bytes
+			return;
+		}
+
+		stream.flush();
+		// Intentionally never deleted: std streams are used (and flushed) until the very end of the process
+		stream.rdbuf(new ConsoleUTF8StreamBuffer(handle));
+	}
+
+	void OsUtilities::SetupConsoleUTF8Output()
+	{
+		RedirectStreamToConsole(std::cout, STD_OUTPUT_HANDLE);
+		RedirectStreamToConsole(std::cerr, STD_ERROR_HANDLE);
+		RedirectStreamToConsole(std::clog, STD_ERROR_HANDLE);
+	}
+
 	unsigned int OsUtilities::GetNumaNodeIdForProcessor(unsigned int processorId)
 	{
 		UCHAR NodeNumber;
@@ -84,61 +197,45 @@ namespace Elpida
 #endif
 	}
 
-	std::string OsUtilities::GetStringFromWinApiBuffer(LPCTSTR buffer, DWORD size) {
+	static std::string GetErrorString(DWORD errorId)
+	{
+		if (errorId == 0) return {};
 
-#if UNICODE
-		return ValueUtilities::WstringTostring({ buffer, static_cast<std::size_t>(size) });
-#else
-		return { reinterpret_cast<const char*>(buffer), static_cast<std::size_t>(size)};
-#endif
-	}
+		LPWSTR messageBuffer = nullptr;
+		const auto size = FormatMessageW(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				nullptr,
+				errorId,
+				0,	// Let Windows pick: neutral -> thread -> user -> system -> en-US
+				reinterpret_cast<LPWSTR>(&messageBuffer),
+				0,
+				nullptr);
 
-#if UNICODE
-std::wstring
-#else
-std::string
-#endif
-	OsUtilities::GetWinApiStringFromString(const std::string &str) {
-#if UNICODE
-		return ValueUtilities::StringToWstring(str);
-#else
-		return str;
-#endif
+		if (size == 0) return ValueUtilities::Cs("Error getting string of the error: ", std::to_string(GetLastError()) , " (original error: " ,std::to_string(errorId), ")");
+
+		std::string message;
+		try
+		{
+			message = Utf8Converter::ToUtf8({ messageBuffer, static_cast<std::size_t>(size) });
+		}
+		catch (...)
+		{
+			LocalFree(messageBuffer);
+			throw;
+		}
+		LocalFree(messageBuffer);
+
+		// System messages end with "\r\n"
+		while (!message.empty() && (message.back() == '\n' || message.back() == '\r' || message.back() == ' '))
+		{
+			message.pop_back();
+		}
+		return message;
 	}
 
 	std::string OsUtilities::GetLastErrorString()
 	{
-		const DWORD errorId = GetLastError();
-
-		if (errorId == 0) return {};
-
-		LPTSTR messageBuffer = nullptr;
-		try
-		{
-			const auto size = FormatMessage(
-					FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-					nullptr,
-					errorId,
-					MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
-					reinterpret_cast<LPTSTR>(&messageBuffer),
-					0,
-					nullptr);
-
-			if (size == 0) return ValueUtilities::Cs("Error getting string of the error: ", std::to_string(GetLastError()) , " (original error: " ,std::to_string(errorId), ")");
-
-			std::string message = GetStringFromWinApiBuffer(messageBuffer, size);
-			LocalFree(messageBuffer);
-			return message;
-		}
-		catch (...)
-		{
-			if (messageBuffer != nullptr)
-			{
-				LocalFree(messageBuffer);
-			}
-
-			throw;
-		}
+		return GetErrorString(GetLastError());
 	}
 
 	std::filesystem::path OsUtilities::GetExecutableDirectory()
@@ -148,74 +245,65 @@ std::string
 
 	std::filesystem::path OsUtilities::GetExecutablePath()
 	{
-		TCHAR buffer[MAX_PATH];
+		wchar_t buffer[MAX_PATH];
 
-		const auto length = GetModuleFileName(NULL, buffer, sizeof(buffer));
+		// The size is in characters, not bytes
+		const auto length = GetModuleFileNameW(nullptr, buffer, MAX_PATH);
 		if (length == MAX_PATH || GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 		{
 			throw ElpidaException("Failed to get the executable path. Path required larger buffer");
 		}
-
-		std::string pathStr = GetStringFromWinApiBuffer(buffer, length);
-
-		return std::filesystem::path(pathStr);
+		// Construct from the native string directly to avoid any narrow string encoding guesses
+		return std::filesystem::path(std::wstring(buffer, length));
 	}
 
 	std::string OsUtilities::ReadRegistryKeyFromHKLM(const std::string& subKey, const std::string& key)
 	{
-		// Modified version of https://stackoverflow.com/a/50821858
-		const auto regSubKey = GetWinApiStringFromString(subKey);
-		const auto regValue = GetWinApiStringFromString(key);
-		size_t bufferSize = 0xFFF; // If too small, will be resized down below.
-		std::wstring valueBuf; // Contiguous buffer since C++11.
-		valueBuf.resize(bufferSize);
-		auto cbData = static_cast<DWORD>(bufferSize * sizeof(TCHAR));
+		const auto regSubKey = Utf8Converter::ToWide(subKey);
+		const auto regValue = Utf8Converter::ToWide(key);
 
 		HKEY hKey = {};
-		auto result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, regSubKey.c_str(), 0, KEY_READ, &hKey);
-
+		auto result = RegOpenKeyExW(HKEY_LOCAL_MACHINE, regSubKey.c_str(), 0, KEY_READ, &hKey);
 		if (result != ERROR_SUCCESS)
 		{
-			throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", GetLastErrorString());
+			// Reg* functions return the error code instead of setting the last error
+			throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", GetErrorString(result));
 		}
 
-		result = RegQueryValueEx(hKey,
-				regValue.c_str(),
-				nullptr,
-				nullptr,
-				reinterpret_cast<LPBYTE>(valueBuf.data()),
-				&cbData);
-
-		while (result == ERROR_MORE_DATA)
+		std::wstring valueBuf(0xFFF, L'\0');
+		DWORD cbData;
+		do
 		{
-			// Get a buffer that is big enough.
-			cbData /= sizeof(TCHAR);
-			if (cbData > static_cast<DWORD>(bufferSize))
-			{
-				bufferSize = static_cast<size_t>(cbData);
-			}
-			else
-			{
-				bufferSize *= 2;
-				cbData = static_cast<DWORD>(bufferSize * sizeof(TCHAR));
-			}
-			valueBuf.resize(bufferSize);
-			result = RegQueryValueEx(hKey,
+			cbData = static_cast<DWORD>(valueBuf.size() * sizeof(wchar_t));
+			result = RegQueryValueExW(hKey,
 					regValue.c_str(),
 					nullptr,
 					nullptr,
 					reinterpret_cast<LPBYTE>(valueBuf.data()),
 					&cbData);
-		}
-		if (result == ERROR_SUCCESS)
-		{
-			cbData /= sizeof(TCHAR);
-			valueBuf.resize(static_cast<size_t>(cbData - 1)); // remove end null character
-			RegCloseKey(hKey);
-			return ValueUtilities::WstringTostring(valueBuf);
-		}
+
+			if (result == ERROR_MORE_DATA)
+			{
+				// cbData now holds the required size in bytes
+				valueBuf.resize(cbData / sizeof(wchar_t) + 1);
+			}
+		} while (result == ERROR_MORE_DATA);
+
 		RegCloseKey(hKey);
-		throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", OsUtilities::GetLastErrorString());
+
+		if (result != ERROR_SUCCESS)
+		{
+			throw ElpidaException("Failed to get Registry key: '", subKey, "' and value: '", key, "'. Reason: ", GetErrorString(result));
+		}
+
+		valueBuf.resize(cbData / sizeof(wchar_t));
+		// String values may or may not be stored with the null terminator
+		while (!valueBuf.empty() && valueBuf.back() == L'\0')
+		{
+			valueBuf.pop_back();
+		}
+
+		return Utf8Converter::ToUtf8(valueBuf);
 	}
 
 } // Elpida
