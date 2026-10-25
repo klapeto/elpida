@@ -93,9 +93,9 @@ namespace Elpida::Application
 		return accumulator.str();
 	}
 
-	static const char* GetValueOrDefault(const char* value, const char* defaultValue = "")
+	static const char* GetValueOrDefault(const char* value)
 	{
-		return value ? value : defaultValue;
+		return value ? value : "";
 	}
 
 	bool ArgumentsHelper::ParseAndGetExitText(int argC, char** argV, std::string& returnText)
@@ -157,7 +157,10 @@ namespace Elpida::Application
 			case 'r':
 			case Report:
 				_generateReport = true;
-				_reportPath = ValueUtilities::PathFromUtf8(GetValueOrDefault(optarg, _reportPath.c_str()));
+				if (optarg)
+				{
+					_reportPath = ValueUtilities::PathFromUtf8(GetValueOrDefault(optarg));
+				}
 				break;
 			case 'i':
 			case Iterations:
