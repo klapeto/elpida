@@ -1,0 +1,2499 @@
+Index: compiler-rt/lib/builtins/emutls.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/compiler-rt/lib/builtins/emutls.c b/compiler-rt/lib/builtins/emutls.c
+--- a/compiler-rt/lib/builtins/emutls.c	(revision Staged)
++++ b/compiler-rt/lib/builtins/emutls.c	(date 1792690918097)
+@@ -182,10 +182,14 @@
+   }
+ }
+ 
++#if _WIN32_WINNT >= 0x0600
+ static BOOL CALLBACK emutls_init(PINIT_ONCE p0, PVOID p1, PVOID *p2) {
+   (void)p0;
+   (void)p1;
+   (void)p2;
++#else
++static BOOL emutls_init(void) {
++#endif
+   emutls_mutex =
+       (LPCRITICAL_SECTION)_aligned_malloc(sizeof(CRITICAL_SECTION), 16);
+   if (!emutls_mutex) {
+@@ -205,8 +209,27 @@
+ }
+ 
+ static __inline void emutls_init_once(void) {
++#if _WIN32_WINNT >= 0x0600
+   static INIT_ONCE once;
+   InitOnceExecuteOnce(&once, emutls_init, NULL, NULL);
++#else
++  // InitOnceExecuteOnce is unavailable before Vista. Emulate it with
++  // interlocked operations: 0 = uninitialized, 1 = in progress, 2 = done.
++  // Like InitOnceExecuteOnce, a failed initialization may be retried.
++  static volatile LONG once = 0;
++  for (;;) {
++    LONG state = InterlockedCompareExchange(&once, 1, 0);
++    if (state == 2)
++      return;
++    if (state == 0) {
++      InterlockedExchange(&once, emutls_init() ? 2 : 0);
++      return;
++    }
++    // Unlike SwitchToThread, Sleep also yields to lower priority threads,
++    // which may be the one running the initialization.
++    Sleep(1);
++  }
++#endif
+ }
+ 
+ static __inline void emutls_lock(void) { EnterCriticalSection(emutls_mutex); }
+Index: libcxx/cmake/config-ix.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/cmake/config-ix.cmake b/libcxx/cmake/config-ix.cmake
+--- a/libcxx/cmake/config-ix.cmake	(revision Staged)
++++ b/libcxx/cmake/config-ix.cmake	(date 1792857813455)
+@@ -5,6 +5,7 @@
+ include(CheckCCompilerFlag)
+ include(CheckCXXCompilerFlag)
+ include(CheckCSourceCompiles)
++include(CheckCXXSourceCompiles)
+ 
+ # The compiler driver may be implicitly trying to link against libunwind.
+ # This is normally ok (libcxx relies on an unwinder), but if libunwind is
+@@ -103,6 +104,26 @@
+ 
+ check_symbol_exists(__PICOLIBC__ "string.h" PICOLIBC)
+ 
++# Whether the targeted Windows version predates Vista, which lacks SRW locks,
++# condition variables, one-time initialization and locale_t support in msvcrt.
++if(MINGW)
++  # cmake_push_check_state() doesn't save CMAKE_TRY_COMPILE_TARGET_TYPE, so
++  # restore it by hand; otherwise later check_library_exists() calls would
++  # never link and always succeed.
++  set(_libcxx_saved_try_compile_target_type "${CMAKE_TRY_COMPILE_TARGET_TYPE}")
++  set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
++  # Check with the C++ compiler and flags, as thread_win32.cpp chooses its
++  # implementation by the _WIN32_WINNT it sees.
++  check_cxx_source_compiles("
++#include <windows.h>
++#if _WIN32_WINNT >= 0x0600
++#error Targeting Vista or later
++#endif
++int main() { return 0; }" LIBCXX_TARGETS_WIN32_PRE_VISTA)
++  set(CMAKE_TRY_COMPILE_TARGET_TYPE "${_libcxx_saved_try_compile_target_type}")
++  unset(_libcxx_saved_try_compile_target_type)
++endif()
++
+ # Check libraries
+ if(WIN32 AND NOT MINGW)
+   # TODO(compnerd) do we want to support an emulation layer that allows for the
+Index: libcxx/include/__locale_dir/support/windows.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/include/__locale_dir/support/windows.h b/libcxx/include/__locale_dir/support/windows.h
+--- a/libcxx/include/__locale_dir/support/windows.h	(revision Staged)
++++ b/libcxx/include/__locale_dir/support/windows.h	(date 1792847267527)
+@@ -26,6 +26,18 @@
+ #  pragma GCC system_header
+ #endif
+ 
++// msvcrt.dll only provides _create_locale since Windows 8 (mingw-w64 looks it
++// up at runtime, returning null before that), and per-thread locales not at
++// all. So that all Windows versions take the same path, a locale is
++// represented by its name only, and functions taking a locale switch the
++// process locale to it while they run. This also affects C library calls made
++// concurrently on other threads, outside of the library.
++#if defined(__MINGW32__) && !defined(_UCRT) && __MSVCRT_VERSION__ < 0x0800
++#  define _LIBCPP_MSVCRT_HAS_NO_LOCALE_T 1
++#else
++#  define _LIBCPP_MSVCRT_HAS_NO_LOCALE_T 0
++#endif
++
+ _LIBCPP_BEGIN_NAMESPACE_STD
+ namespace __locale {
+ 
+@@ -108,20 +120,20 @@
+   }
+ 
+   friend bool operator==(const __locale_t& __left, const __locale_t& __right) {
+-    return __left.__locale_ == __right.__locale_;
++    return __left.__id() == __right.__id();
+   }
+ 
+-  friend bool operator==(const __locale_t& __left, int __right) { return __left.__locale_ == nullptr && __right == 0; }
++  friend bool operator==(const __locale_t& __left, int __right) { return __left.__id() == nullptr && __right == 0; }
+ 
+   friend bool operator==(const __locale_t& __left, long long __right) {
+-    return __left.__locale_ == nullptr && __right == 0;
++    return __left.__id() == nullptr && __right == 0;
+   }
+ 
+-  friend bool operator==(const __locale_t& __left, std::nullptr_t) { return __left.__locale_ == nullptr; }
++  friend bool operator==(const __locale_t& __left, std::nullptr_t) { return __left.__id() == nullptr; }
+ 
+-  friend bool operator==(int __left, const __locale_t& __right) { return __left == 0 && nullptr == __right.__locale_; }
++  friend bool operator==(int __left, const __locale_t& __right) { return __left == 0 && nullptr == __right.__id(); }
+ 
+-  friend bool operator==(std::nullptr_t, const __locale_t& __right) { return nullptr == __right.__locale_; }
++  friend bool operator==(std::nullptr_t, const __locale_t& __right) { return nullptr == __right.__id(); }
+ 
+   friend bool operator!=(const __locale_t& __left, const __locale_t& __right) { return !(__left == __right); }
+ 
+@@ -135,7 +147,7 @@
+ 
+   friend bool operator!=(std::nullptr_t __left, const __locale_t& __right) { return !(__left == __right); }
+ 
+-  operator bool() const { return __locale_ != nullptr; }
++  operator bool() const { return __id() != nullptr; }
+ 
+   const char* __get_locale() const { return __locale_str_; }
+ 
+@@ -148,6 +160,13 @@
+   }
+ 
+ private:
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++  // The locale is identified by its name, which it owns.
++  const void* __id() const { return __locale_str_; }
++#else
++  const void* __id() const { return __locale_; }
++#endif
++
+   ::_locale_t __locale_;
+   const char* __locale_str_;
+   __lconv_storage* __lc_ = nullptr;
+@@ -155,7 +174,11 @@
+ 
+ #if defined(_LIBCPP_BUILDING_LIBRARY)
+ _LIBCPP_EXPORTED_FROM_ABI __locale_t __newlocale(int __mask, const char* __locale, __locale_t __base);
++#  if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++inline _LIBCPP_HIDE_FROM_ABI void __freelocale(__locale_t __loc) { ::free(const_cast<char*>(__loc.__get_locale())); }
++#  else
+ inline _LIBCPP_HIDE_FROM_ABI void __freelocale(__locale_t __loc) { ::_free_locale(__loc); }
++#  endif
+ inline _LIBCPP_HIDE_FROM_ABI char* __setlocale(int __category, const char* __locale) {
+   char* __new_locale = ::setlocale(__category, __locale);
+   if (__new_locale == nullptr)
+@@ -182,6 +205,18 @@
+ _LIBCPP_EXPORTED_FROM_ABI long double __strtold(const char*, char**, __locale_t);
+ #endif
+ 
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++_LIBCPP_EXPORTED_FROM_ABI double __strtod(const char*, char**, __locale_t);
++
++// The locale only affects which leading whitespace is skipped.
++inline _LIBCPP_HIDE_FROM_ABI long long __strtoll(const char* __nptr, char** __endptr, int __base, __locale_t) {
++  return ::_strtoi64(__nptr, __endptr, __base);
++}
++inline _LIBCPP_HIDE_FROM_ABI unsigned long long
++__strtoull(const char* __nptr, char** __endptr, int __base, __locale_t) {
++  return ::_strtoui64(__nptr, __endptr, __base);
++}
++#else
+ inline _LIBCPP_HIDE_FROM_ABI double __strtod(const char* __nptr, char** __endptr, __locale_t __loc) {
+   return ::_strtod_l(__nptr, __endptr, __loc);
+ }
+@@ -193,15 +228,49 @@
+ __strtoull(const char* __nptr, char** __endptr, int __base, __locale_t __loc) {
+   return ::_strtoui64_l(__nptr, __endptr, __base, __loc);
+ }
++#endif
+ 
+ //
+ // Character manipulation functions
+ //
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++// Digits are the same in all locales.
++inline _LIBCPP_HIDE_FROM_ABI int __isdigit(int __c, __locale_t) { return static_cast<unsigned>(__c - '0') < 10; }
++
++inline _LIBCPP_HIDE_FROM_ABI int __isxdigit(int __c, __locale_t) {
++  return static_cast<unsigned>(__c - '0') < 10 || static_cast<unsigned>((__c | 0x20) - 'a') < 6;
++}
++#else
+ inline _LIBCPP_HIDE_FROM_ABI int __isdigit(int __c, __locale_t __loc) { return _isdigit_l(__c, __loc); }
+ 
+ inline _LIBCPP_HIDE_FROM_ABI int __isxdigit(int __c, __locale_t __loc) { return _isxdigit_l(__c, __loc); }
++#endif
+ 
+-#if defined(_LIBCPP_BUILDING_LIBRARY)
++#if defined(_LIBCPP_BUILDING_LIBRARY) && _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++int __toupper(int, __locale_t);
++int __tolower(int, __locale_t);
++int __strcoll(const char*, const char*, __locale_t);
++size_t __strxfrm(char*, const char*, size_t, __locale_t);
++
++#  if _LIBCPP_HAS_WIDE_CHARACTERS
++int __iswctype(wint_t, wctype_t, __locale_t);
++int __iswspace(wint_t, __locale_t);
++int __iswprint(wint_t, __locale_t);
++int __iswcntrl(wint_t, __locale_t);
++int __iswupper(wint_t, __locale_t);
++int __iswlower(wint_t, __locale_t);
++int __iswalpha(wint_t, __locale_t);
++// TODO: use locale to determine blank characters
++inline _LIBCPP_HIDE_FROM_ABI int __iswblank(wint_t __c, __locale_t /*loc*/) { return (__c == L' ' || __c == L'\t'); }
++int __iswdigit(wint_t, __locale_t);
++int __iswpunct(wint_t, __locale_t);
++int __iswxdigit(wint_t, __locale_t);
++wint_t __towupper(wint_t, __locale_t);
++wint_t __towlower(wint_t, __locale_t);
++int __wcscoll(const wchar_t*, const wchar_t*, __locale_t);
++size_t __wcsxfrm(wchar_t*, const wchar_t*, size_t, __locale_t);
++#  endif // _LIBCPP_HAS_WIDE_CHARACTERS
++#elif defined(_LIBCPP_BUILDING_LIBRARY)
+ inline _LIBCPP_HIDE_FROM_ABI int __toupper(int __c, __locale_t __loc) { return ::_toupper_l(__c, __loc); }
+ 
+ inline _LIBCPP_HIDE_FROM_ABI int __tolower(int __c, __locale_t __loc) { return ::_tolower_l(__c, __loc); }
+@@ -240,7 +309,9 @@
+   return ::_wcsxfrm_l(__dest, __src, __n, __loc);
+ }
+ #  endif // _LIBCPP_HAS_WIDE_CHARACTERS
++#endif
+ 
++#if defined(_LIBCPP_BUILDING_LIBRARY)
+ #  if defined(__MINGW32__) && __MSVCRT_VERSION__ < 0x0800
+ _LIBCPP_EXPORTED_FROM_ABI size_t __strftime(char*, size_t, const char*, const struct tm*, __locale_t);
+ #  else
+@@ -264,9 +335,13 @@
+ _LIBCPP_EXPORTED_FROM_ABI size_t
+ __mbrtowc(wchar_t* __restrict, const char* __restrict, size_t, mbstate_t* __restrict, __locale_t);
+ 
++#  if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++int __mbtowc(wchar_t*, const char*, size_t, __locale_t);
++#  else
+ inline _LIBCPP_HIDE_FROM_ABI int __mbtowc(wchar_t* __pwc, const char* __pmb, size_t __max, __locale_t __loc) {
+   return ::_mbtowc_l(__pwc, __pmb, __max, __loc);
+ }
++#  endif
+ 
+ _LIBCPP_EXPORTED_FROM_ABI size_t __mbrlen(const char* __restrict, size_t, mbstate_t* __restrict, __locale_t);
+ 
+@@ -280,14 +355,18 @@
+ _LIBCPP_EXPORTED_FROM_ABI
+ _LIBCPP_ATTRIBUTE_FORMAT(__printf__, 3, 4) int __asprintf(char** __ret, __locale_t __loc, const char* __format, ...);
+ 
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++_LIBCPP_EXPORTED_FROM_ABI _LIBCPP_ATTRIBUTE_FORMAT(__scanf__, 3, 4) int __sscanf(
++    const char* __dest, __locale_t __loc, const char* __format, ...);
++#else
+ _LIBCPP_DIAGNOSTIC_PUSH
+ _LIBCPP_CLANG_DIAGNOSTIC_IGNORED("-Wgcc-compat")
+ _LIBCPP_GCC_DIAGNOSTIC_IGNORED("-Wformat-nonliteral") // GCC doesn't support [[gnu::format]] on variadic templates
+-#ifdef _LIBCPP_COMPILER_CLANG_BASED
+-#  define _LIBCPP_VARIADIC_ATTRIBUTE_FORMAT(...) _LIBCPP_ATTRIBUTE_FORMAT(__VA_ARGS__)
+-#else
+-#  define _LIBCPP_VARIADIC_ATTRIBUTE_FORMAT(...) /* nothing */
+-#endif
++#  ifdef _LIBCPP_COMPILER_CLANG_BASED
++#    define _LIBCPP_VARIADIC_ATTRIBUTE_FORMAT(...) _LIBCPP_ATTRIBUTE_FORMAT(__VA_ARGS__)
++#  else
++#    define _LIBCPP_VARIADIC_ATTRIBUTE_FORMAT(...) /* nothing */
++#  endif
+ 
+ template <class... _Args>
+ _LIBCPP_HIDE_FROM_ABI _LIBCPP_VARIADIC_ATTRIBUTE_FORMAT(__scanf__, 3, 4) int __sscanf(
+@@ -295,9 +374,21 @@
+   return ::_sscanf_l(__dest, __format, __loc, std::forward<_Args>(__args)...);
+ }
+ _LIBCPP_DIAGNOSTIC_POP
+-#undef _LIBCPP_VARIADIC_ATTRIBUTE_FORMAT
++#  undef _LIBCPP_VARIADIC_ATTRIBUTE_FORMAT
++#endif
+ 
+-#if defined(_LIBCPP_BUILDING_LIBRARY)
++#if defined(_LIBCPP_BUILDING_LIBRARY) && _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++// Without per-thread locales, switching locales affects the whole process.
++// Locale switches are serialized, and nothing may run under a different
++// locale while one is in effect, so every guard holds a process-wide lock.
++struct __locale_guard {
++  __locale_guard(__locale_t __l);
++  ~__locale_guard();
++  __locale_guard(const __locale_guard&)            = delete;
++  __locale_guard& operator=(const __locale_guard&) = delete;
++  char* __locale_all = nullptr;
++};
++#elif defined(_LIBCPP_BUILDING_LIBRARY)
+ struct __locale_guard {
+   _LIBCPP_HIDE_FROM_ABI __locale_guard(__locale_t __l) : __status(_configthreadlocale(_ENABLE_PER_THREAD_LOCALE)) {
+     // Setting the locale can be expensive even when the locale given is
+Index: libcxx/include/__config
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/include/__config b/libcxx/include/__config
+--- a/libcxx/include/__config	(revision Staged)
++++ b/libcxx/include/__config	(date 1792690906640)
+@@ -892,7 +892,8 @@
+ 
+ // The glibc and Bionic implementation of pthreads implements
+ // pthread_mutex_destroy as nop for regular mutexes. Additionally, Win32
+-// mutexes have no destroy mechanism.
++// mutexes have no destroy mechanism, except before Vista, where they are
++// emulated with heap-allocated critical sections.
+ //
+ // This optimization can't be performed on Apple platforms, where
+ // pthread_mutex_destroy can allow the kernel to release resources.
+@@ -903,14 +904,15 @@
+ // clang-format off
+ #  if (_LIBCPP_HAS_THREAD_API_PTHREAD && defined(__GLIBC__)) ||                                                        \
+       (_LIBCPP_HAS_THREAD_API_C11 && defined(__Fuchsia__)) ||                                                          \
+-       _LIBCPP_HAS_THREAD_API_WIN32
++      (_LIBCPP_HAS_THREAD_API_WIN32 && !_LIBCPP_WIN32_PRE_VISTA)
+ // clang-format on
+ #    define _LIBCPP_HAS_TRIVIAL_MUTEX_DESTRUCTION 1
+ #  else
+ #    define _LIBCPP_HAS_TRIVIAL_MUTEX_DESTRUCTION 0
+ #  endif
+ 
+-// Destroying a condvar is a nop on Windows.
++// Destroying a condvar is a nop on Windows, except before Vista, where the
++// condvar is emulated with heap-allocated state.
+ //
+ // This optimization can't be performed on Apple platforms, where
+ // pthread_cond_destroy can allow the kernel to release resources.
+@@ -918,7 +920,7 @@
+ //
+ // TODO(EricWF): This is potentially true for some pthread implementations
+ // as well.
+-#  if (_LIBCPP_HAS_THREAD_API_C11 && defined(__Fuchsia__)) || _LIBCPP_HAS_THREAD_API_WIN32
++#  if (_LIBCPP_HAS_THREAD_API_C11 && defined(__Fuchsia__)) || (_LIBCPP_HAS_THREAD_API_WIN32 && !_LIBCPP_WIN32_PRE_VISTA)
+ #    define _LIBCPP_HAS_TRIVIAL_CONDVAR_DESTRUCTION 1
+ #  else
+ #    define _LIBCPP_HAS_TRIVIAL_CONDVAR_DESTRUCTION 0
+Index: libcxx/include/__config_site.in
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/include/__config_site.in b/libcxx/include/__config_site.in
+--- a/libcxx/include/__config_site.in	(revision Staged)
++++ b/libcxx/include/__config_site.in	(date 1792690901921)
+@@ -20,6 +20,7 @@
+ #cmakedefine01 _LIBCPP_HAS_THREAD_API_PTHREAD
+ #cmakedefine01 _LIBCPP_HAS_THREAD_API_EXTERNAL
+ #cmakedefine01 _LIBCPP_HAS_THREAD_API_WIN32
++#cmakedefine01 _LIBCPP_WIN32_PRE_VISTA
+ #define _LIBCPP_HAS_THREAD_API_C11 0 // FIXME: Is this guarding dead code?
+ #cmakedefine _LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS
+ #cmakedefine01 _LIBCPP_HAS_VENDOR_AVAILABILITY_ANNOTATIONS
+Index: libcxx/include/fstream
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/include/fstream b/libcxx/include/fstream
+--- a/libcxx/include/fstream	(revision Staged)
++++ b/libcxx/include/fstream	(date 1792768968177)
+@@ -212,6 +212,17 @@
+ #    include <typeinfo>
+ #    include <version>
+ 
++// msvcrt.dll only provides _fseeki64 since Vista, and mingw-w64 looks it up at
++// runtime. Implement it directly instead, so that all Windows versions take the
++// same path.
++#    if defined(__MINGW32__) && !defined(_UCRT) && __MSVCRT_VERSION__ < 0x0800
++#      define _LIBCPP_FSEEKI64_EMULATED 1
++#      include <cerrno>
++#      include <io.h> // _filelengthi64
++#    else
++#      define _LIBCPP_FSEEKI64_EMULATED 0
++#    endif
++
+ #    if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
+ #      pragma GCC system_header
+ #    endif
+@@ -975,7 +986,24 @@
+ 
+ template <class _CharT, class _Traits>
+ int basic_filebuf<_CharT, _Traits>::__fseek(FILE* __file, pos_type __offset, int __whence) {
+-#    if defined(_LIBCPP_MSVCRT_LIKE)
++#    if _LIBCPP_FSEEKI64_EMULATED
++  fpos_t __pos;
++  if (__whence == SEEK_CUR) {
++    if (fgetpos(__file, &__pos))
++      return -1;
++    __pos += static_cast<fpos_t>(__offset);
++  } else if (__whence == SEEK_END) {
++    // Flush pending writes, which may extend the file.
++    fflush(__file);
++    __pos = static_cast<fpos_t>(_filelengthi64(_fileno(__file)) + static_cast<__int64>(__offset));
++  } else if (__whence == SEEK_SET) {
++    __pos = static_cast<fpos_t>(__offset);
++  } else {
++    errno = EINVAL;
++    return -1;
++  }
++  return fsetpos(__file, &__pos);
++#    elif defined(_LIBCPP_MSVCRT_LIKE)
+   return _fseeki64(__file, __offset, __whence);
+ #    elif defined(_NEWLIB_VERSION)
+   return fseek(__file, __offset, __whence);
+Index: libcxx/src/filesystem/file_descriptor.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/filesystem/file_descriptor.h b/libcxx/src/filesystem/file_descriptor.h
+--- a/libcxx/src/filesystem/file_descriptor.h	(revision Staged)
++++ b/libcxx/src/filesystem/file_descriptor.h	(date 1792768987159)
+@@ -268,10 +268,23 @@
+ }
+ 
+ inline bool posix_fchmod(const FileDescriptor& fd, const StatT& st, error_code& ec) {
++#if defined(_LIBCPP_WIN32API)
++#  if _WIN32_WINNT < _WIN32_WINNT_VISTA
++#    define _LIBCPP_FCHMOD_BY_PATH
++#  endif
++#endif
++#if defined(_LIBCPP_FCHMOD_BY_PATH)
++  // fchmod is unavailable before Vista; see posix_compat.h.
++  if (detail::fchmodat(fd.fd, fd.name.c_str(), st.st_mode, 0) == -1) {
++    ec = get_last_error();
++    return true;
++  }
++#else
+   if (detail::fchmod(fd.fd, st.st_mode) == -1) {
+     ec = get_last_error();
+     return true;
+   }
++#endif
+   ec.clear();
+   return false;
+ }
+Index: libcxx/src/filesystem/posix_compat.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/filesystem/posix_compat.h b/libcxx/src/filesystem/posix_compat.h
+--- a/libcxx/src/filesystem/posix_compat.h	(revision Staged)
++++ b/libcxx/src/filesystem/posix_compat.h	(date 1792857806751)
+@@ -147,6 +147,45 @@
+ };
+ 
+ inline int stat_handle(HANDLE h, StatT* buf) {
++#  if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // A single GetFileInformationByHandle call provides everything but the
++  // reparse tag.
++  BY_HANDLE_FILE_INFORMATION info;
++  if (!GetFileInformationByHandle(h, &info))
++    return -1;
++  memset(buf, 0, sizeof(*buf));
++  buf->st_mtim = filetime_to_timespec(info.ftLastWriteTime);
++  buf->st_atim = filetime_to_timespec(info.ftLastAccessTime);
++  buf->st_mode = 0555; // Read-only
++  if (!(info.dwFileAttributes & FILE_ATTRIBUTE_READONLY))
++    buf->st_mode |= 0222; // Write
++  if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
++    buf->st_mode |= _S_IFDIR;
++  } else {
++    buf->st_mode |= _S_IFREG;
++  }
++  if (info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
++    // FileAttributeTagInfo is unavailable before Vista; read the reparse tag
++    // from the reparse point data instead.
++    // If that fails, as it may for reparse points owned by filter drivers
++    // (e.g. cloud files), the file is not a symlink.
++    std::unique_ptr<uint8_t[]> reparse(new uint8_t[MAXIMUM_REPARSE_DATA_BUFFER_SIZE]);
++    DWORD out;
++    if (DeviceIoControl(
++            h, FSCTL_GET_REPARSE_POINT, nullptr, 0, reparse.get(), MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &out, 0)) {
++      DWORD reparse_tag;
++      memcpy(&reparse_tag, reparse.get(), sizeof(reparse_tag));
++      if (reparse_tag == IO_REPARSE_TAG_SYMLINK)
++        buf->st_mode = (buf->st_mode & ~_S_IFMT) | _S_IFLNK;
++    }
++  }
++  buf->st_nlink = info.nNumberOfLinks;
++  buf->st_size  = (static_cast<uint64_t>(info.nFileSizeHigh) << 32) | info.nFileSizeLow;
++  buf->st_dev   = info.dwVolumeSerialNumber;
++  memcpy(&buf->st_ino.id[0], &info.nFileIndexHigh, 4);
++  memcpy(&buf->st_ino.id[4], &info.nFileIndexLow, 4);
++  return 0;
++#  else
+   FILE_BASIC_INFO basic;
+   if (!GetFileInformationByHandleEx(h, FileBasicInfo, &basic, sizeof(basic)))
+     return -1;
+@@ -180,6 +219,7 @@
+   memcpy(&buf->st_ino.id[0], &info.nFileIndexHigh, 4);
+   memcpy(&buf->st_ino.id[4], &info.nFileIndexLow, 4);
+   return 0;
++#  endif
+ }
+ 
+ inline int stat_file(const wchar_t* path, StatT* buf, DWORD flags) {
+@@ -207,6 +247,15 @@
+ }
+ 
+ inline int symlink_file_dir(const wchar_t* oldname, const wchar_t* newname, bool is_dir) {
++#  if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // CreateSymbolicLinkW only exists on Vista and later, so creating symlinks
++  // is unsupported regardless of the running system.
++  (void)oldname;
++  (void)newname;
++  (void)is_dir;
++  SetLastError(ERROR_NOT_SUPPORTED);
++  return -1;
++#  else
+   path dest(oldname);
+   dest.make_preferred();
+   oldname     = dest.c_str();
+@@ -219,6 +268,7 @@
+   if (CreateSymbolicLinkW(newname, oldname, flags))
+     return 0;
+   return -1;
++#  endif
+ }
+ 
+ inline int symlink_file(const wchar_t* oldname, const wchar_t* newname) {
+@@ -236,6 +286,17 @@
+ }
+ 
+ inline int remove(const wchar_t* path) {
++#  if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // FileDispositionInfo is unavailable before Vista. RemoveDirectoryW removes
++  // a directory symlink or junction itself rather than its target.
++  DWORD attributes = GetFileAttributesW(path);
++  if (attributes == INVALID_FILE_ATTRIBUTES)
++    return -1;
++  BOOL removed = (attributes & FILE_ATTRIBUTE_DIRECTORY) ? RemoveDirectoryW(path) : DeleteFileW(path);
++  if (!removed)
++    return -1;
++  return 0;
++#  else
+   detail::WinHandle h(path, DELETE, FILE_FLAG_OPEN_REPARSE_POINT);
+   if (!h)
+     return -1;
+@@ -244,6 +305,7 @@
+   if (!SetFileInformationByHandle(h, FileDispositionInfo, &info, sizeof(info)))
+     return -1;
+   return 0;
++#  endif
+ }
+ 
+ inline int truncate_handle(HANDLE h, off_t length) {
+@@ -339,18 +401,71 @@
+   if (!h) {
+     return nullptr;
+   }
++#  if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // GetFinalPathNameByHandleW only exists on Vista and later. Use
++  // GetFullPathNameW instead, which doesn't resolve reparse points; the result
++  // is checked for them below.
++  auto get_path = [&](wchar_t* buf, DWORD size) -> DWORD { return GetFullPathNameW(path, size, buf, nullptr); };
++#  else
++  auto get_path = [&](wchar_t* buf, DWORD size) -> DWORD {
++    return GetFinalPathNameByHandleW(h, buf, size, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
++  };
++#  endif
+   size_t buff_size = MAX_PATH + 10;
+   std::unique_ptr<wchar_t, decltype(&::free)> buff(static_cast<wchar_t*>(malloc(buff_size * sizeof(wchar_t))), &::free);
+-  DWORD retval = GetFinalPathNameByHandleW(h, buff.get(), buff_size, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
++  DWORD retval = get_path(buff.get(), buff_size);
+   if (retval > buff_size) {
+     buff_size = retval;
+     buff.reset(static_cast<wchar_t*>(malloc(buff_size * sizeof(wchar_t))));
+-    retval = GetFinalPathNameByHandleW(h, buff.get(), buff_size, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
++    retval = get_path(buff.get(), buff_size);
+   }
+   if (!retval) {
+     return nullptr;
+   }
+   wchar_t* ptr = buff.get();
++#  if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // Without GetFinalPathNameByHandleW, symlinks and junctions can't be
++  // resolved. Fail if any component past the root (X:\, \\server\share\ or
++  // their \\?\ forms) is one. Other reparse points, like cloud files or
++  // deduplicated files, don't redirect the path and are fine.
++  size_t root_len     = 3;
++  int root_components = 0;
++  if (!wcsncmp(ptr, L"\\\\?\\UNC\\", 8)) {
++    root_len        = 8;
++    root_components = 2;
++  } else if (!wcsncmp(ptr, L"\\\\?\\", 4)) {
++    root_len = 7;
++  } else if (!wcsncmp(ptr, L"\\\\", 2)) {
++    root_len        = 2;
++    root_components = 2;
++  }
++  size_t len = wcslen(ptr);
++  for (; root_len < len && root_components > 0; ++root_len)
++    if (ptr[root_len] == L'\\')
++      --root_components;
++  // FindFirstFileW fails for a path with a trailing separator, as in a
++  // directory given as "dir\", so leave it out.
++  size_t end = len;
++  while (end > root_len && ptr[end - 1] == L'\\')
++    --end;
++  for (size_t i = root_len + 1; i <= end; ++i) {
++    if (i < end && ptr[i] != L'\\')
++      continue;
++    // FindFirstFileW reports the reparse tag in dwReserved0.
++    wchar_t saved = ptr[i];
++    ptr[i]        = L'\0';
++    WIN32_FIND_DATAW data;
++    HANDLE find = FindFirstFileW(ptr, &data);
++    ptr[i]      = saved;
++    if (find == INVALID_HANDLE_VALUE)
++      return nullptr;
++    FindClose(find);
++    if ((data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) && IsReparseTagNameSurrogate(data.dwReserved0)) {
++      SetLastError(ERROR_NOT_SUPPORTED);
++      return nullptr;
++    }
++  }
++#  endif
+   if (!wcsncmp(ptr, L"\\\\?\\", 4)) {
+     if (ptr[5] == ':') { // \\?\X: -> X:
+       memmove(&ptr[0], &ptr[4], (wcslen(&ptr[4]) + 1) * sizeof(wchar_t));
+@@ -366,6 +481,7 @@
+ #  define AT_SYMLINK_NOFOLLOW 1
+ using ModeT = int;
+ 
++#  if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ inline int fchmod_handle(HANDLE h, int perms) {
+   FILE_BASIC_INFO basic;
+   if (!GetFileInformationByHandleEx(h, FileBasicInfo, &basic, sizeof(basic)))
+@@ -378,6 +494,7 @@
+     return -1;
+   return 0;
+ }
++#  endif
+ 
+ inline int fchmodat(int /*fd*/, const wchar_t* path, int perms, int flag) {
+   DWORD attributes = GetFileAttributesW(path);
+@@ -388,10 +505,18 @@
+     // of the symlink, we need to open a handle to it, without the
+     // FILE_FLAG_OPEN_REPARSE_POINT flag, to open the destination of the
+     // symlink, and operate on it via the handle.
++#  if _WIN32_WINNT < _WIN32_WINNT_VISTA
++    // Setting attributes via a handle requires SetFileInformationByHandle,
++    // and resolving the symlink by path requires GetFinalPathNameByHandleW,
++    // both of which are unavailable before Vista.
++    SetLastError(ERROR_NOT_SUPPORTED);
++    return -1;
++#  else
+     detail::WinHandle h(path, FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES, 0);
+     if (!h)
+       return -1;
+     return fchmod_handle(h, perms);
++#  endif
+   } else {
+     // For a non-symlink, or if operating on the symlink itself instead of
+     // its target, we can use SetFileAttributesW, saving a few calls.
+@@ -405,10 +530,12 @@
+   return 0;
+ }
+ 
++#  if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ inline int fchmod(int fd, int perms) {
+   HANDLE h = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
+   return fchmod_handle(h, perms);
+ }
++#  endif
+ 
+ #  define MAX_SYMLINK_SIZE MAXIMUM_REPARSE_DATA_BUFFER_SIZE
+ using SSizeT = ::int64_t;
+Index: libcxx/src/support/win32/locale_win32.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/support/win32/locale_win32.cpp b/libcxx/src/support/win32/locale_win32.cpp
+--- a/libcxx/src/support/win32/locale_win32.cpp	(revision Staged)
++++ b/libcxx/src/support/win32/locale_win32.cpp	(date 1792343480934)
+@@ -15,16 +15,82 @@
+ #include <ctime>   // std::strftime
+ #include <cwchar>  // wide char manipulation
+ 
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++#  include <cctype>
++#  include <cstring>
++#  include <cwctype>
++
++#  define NOMINMAX
++#  define WIN32_LEAN_AND_MEAN
++#  include <windows.h>
++#endif
++
+ _LIBCPP_BEGIN_NAMESPACE_STD
+ namespace __locale {
+ 
+ //
+ // Locale management
+ //
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++// Serializes all use of the process locale by the library. It is never
++// destroyed, so that it remains usable by static destructors.
++static LPCRITICAL_SECTION __locale_lock() {
++  static const LPCRITICAL_SECTION __cs = [] {
++    static CRITICAL_SECTION __storage;
++    InitializeCriticalSection(&__storage);
++    return &__storage;
++  }();
++  return __cs;
++}
++
++__locale_guard::__locale_guard(__locale_t __l) {
++  EnterCriticalSection(__locale_lock());
++  // Setting the locale is expensive, so only do it when the process locale is
++  // not already the one we want. Locale names are canonicalized on creation.
++  const char* __lc = ::setlocale(LC_ALL, nullptr);
++  if (std::strcmp(__l.__get_locale(), __lc) != 0) {
++    __locale_all = _strdup(__lc);
++    if (__locale_all == nullptr || ::setlocale(LC_ALL, __l.__get_locale()) == nullptr) {
++      free(__locale_all);
++      LeaveCriticalSection(__locale_lock());
++      std::__throw_bad_alloc();
++    }
++  }
++}
++
++__locale_guard::~__locale_guard() {
++  if (__locale_all != nullptr) {
++    ::setlocale(LC_ALL, __locale_all);
++    free(__locale_all);
++  }
++  LeaveCriticalSection(__locale_lock());
++}
++
++// FIXME: base and mask currently unused. Needs manual work to construct the new locale
++__locale_t __newlocale(int /*mask*/, const char* locale, __locale_t /*base*/) {
++  // Validate the name by switching to it, and keep the canonical name that
++  // setlocale reports for it, as __locale_guard compares against that.
++  char* __name = nullptr;
++  EnterCriticalSection(__locale_lock());
++  const char* __lc = ::setlocale(LC_ALL, nullptr);
++  if (std::strcmp(locale, __lc) == 0) {
++    __name = _strdup(__lc);
++  } else if (char* __current = _strdup(__lc)) {
++    if (const char* __canonical = ::setlocale(LC_ALL, locale)) {
++      __name = _strdup(__canonical);
++      ::setlocale(LC_ALL, __current);
++    }
++    free(__current);
++  }
++  LeaveCriticalSection(__locale_lock());
++  return {nullptr, __name};
++}
++#else
+ // FIXME: base and mask currently unused. Needs manual work to construct the new locale
+ __locale_t __newlocale(int /*mask*/, const char* locale, __locale_t /*base*/) {
+   return {::_create_locale(LC_ALL, locale), locale};
+ }
++#endif
+ 
+ __lconv_t* __localeconv(__locale_t& loc) {
+   __locale_guard __current(loc);
+@@ -48,10 +114,76 @@
+   return std::strtold(nptr, endptr);
+ }
+ #endif
++
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++double __strtod(const char* nptr, char** endptr, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::strtod(nptr, endptr);
++}
++#endif
+ 
+ //
+ // Character manipulation functions
+ //
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++int __toupper(int c, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::toupper(c);
++}
++
++int __tolower(int c, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::tolower(c);
++}
++
++int __strcoll(const char* s1, const char* s2, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::strcoll(s1, s2);
++}
++
++size_t __strxfrm(char* dest, const char* src, size_t n, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::strxfrm(dest, src, n);
++}
++
++#  if _LIBCPP_HAS_WIDE_CHARACTERS
++int __iswctype(wint_t c, wctype_t type, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::iswctype(c, type);
++}
++
++int __iswspace(wint_t c, __locale_t loc) { return __iswctype(c, _SPACE, loc); }
++int __iswprint(wint_t c, __locale_t loc) { return __iswctype(c, _BLANK | _PUNCT | _ALPHA | _DIGIT, loc); }
++int __iswcntrl(wint_t c, __locale_t loc) { return __iswctype(c, _CONTROL, loc); }
++int __iswupper(wint_t c, __locale_t loc) { return __iswctype(c, _UPPER, loc); }
++int __iswlower(wint_t c, __locale_t loc) { return __iswctype(c, _LOWER, loc); }
++int __iswalpha(wint_t c, __locale_t loc) { return __iswctype(c, _ALPHA, loc); }
++int __iswdigit(wint_t c, __locale_t loc) { return __iswctype(c, _DIGIT, loc); }
++int __iswpunct(wint_t c, __locale_t loc) { return __iswctype(c, _PUNCT, loc); }
++int __iswxdigit(wint_t c, __locale_t loc) { return __iswctype(c, _HEX, loc); }
++
++wint_t __towupper(wint_t c, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::towupper(c);
++}
++
++wint_t __towlower(wint_t c, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::towlower(c);
++}
++
++int __wcscoll(const wchar_t* ws1, const wchar_t* ws2, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::wcscoll(ws1, ws2);
++}
++
++size_t __wcsxfrm(wchar_t* dest, const wchar_t* src, size_t n, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::wcsxfrm(dest, src, n);
++}
++#  endif // _LIBCPP_HAS_WIDE_CHARACTERS
++#endif   // _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++
+ #if defined(__MINGW32__) && __MSVCRT_VERSION__ < 0x0800
+ size_t __strftime(char* ret, size_t n, const char* format, const struct tm* tm, __locale_t loc) {
+   __locale_guard __current(loc);
+@@ -112,6 +244,13 @@
+   return std::mbrtowc(pwc, s, n, ps);
+ }
+ 
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++int __mbtowc(wchar_t* pwc, const char* pmb, size_t max, __locale_t loc) {
++  __locale_guard __current(loc);
++  return std::mbtowc(pwc, pmb, max);
++}
++#endif
++
+ size_t __mbrlen(const char* __restrict s, size_t n, mbstate_t* __restrict ps, __locale_t loc) {
+   __locale_guard __current(loc);
+   return std::mbrlen(s, n, ps);
+@@ -174,6 +313,23 @@
+   return count;
+ }
+ 
++#if _LIBCPP_MSVCRT_HAS_NO_LOCALE_T
++int __sscanf(const char* dest, __locale_t loc, const char* format, ...) {
++  va_list ap;
++  va_start(ap, format);
++  int result;
++  {
++    __locale_guard __current(loc);
++    _LIBCPP_DIAGNOSTIC_PUSH
++    _LIBCPP_CLANG_DIAGNOSTIC_IGNORED("-Wformat-nonliteral")
++    result = std::vsscanf(dest, format, ap);
++    _LIBCPP_DIAGNOSTIC_POP
++  }
++  va_end(ap);
++  return result;
++}
++#endif
++
+ int __asprintf(char** ret, __locale_t loc, const char* format, ...) {
+   va_list ap;
+   va_start(ap, format);
+Index: libcxx/src/support/win32/support.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/support/win32/support.cpp b/libcxx/src/support/win32/support.cpp
+--- a/libcxx/src/support/win32/support.cpp	(revision Staged)
++++ b/libcxx/src/support/win32/support.cpp	(date 1792935802037)
+@@ -13,6 +13,31 @@
+ #include <cstring> // strcpy, wcsncpy
+ #include <cwchar>  // mbstate_t
+ 
++#if defined(__MINGW32__) && !defined(_UCRT) && __MSVCRT_VERSION__ < 0x0800 && _WIN32_WINNT < 0x0600
++#  include <cerrno>  // EILSEQ, ERANGE
++#  include <climits> // MB_LEN_MAX
++
++// msvcrt.dll does not provide wcrtomb_s before Vista. Implement the subset
++// used here on top of wcrtomb.
++static errno_t __libcpp_wcrtomb_s(size_t* size, char* dst, size_t dst_size, wchar_t c, mbstate_t* ps) {
++  char buf[MB_LEN_MAX];
++  size_t n = wcrtomb(buf, c, ps);
++  if (n == static_cast<size_t>(-1))
++    return EILSEQ;
++  if (dst) {
++    if (n > dst_size)
++      return ERANGE;
++    memcpy(dst, buf, n);
++  }
++  *size = n;
++  return 0;
++}
++#else
++static errno_t __libcpp_wcrtomb_s(size_t* size, char* dst, size_t dst_size, wchar_t c, mbstate_t* ps) {
++  return wcrtomb_s(size, dst, dst_size, c, ps);
++}
++#endif
++
+ // Returns >= 0: the number of wide characters found in the
+ // multi byte sequence src (of src_size_bytes), that fit in the buffer dst
+ // (of max_dest_chars elements size). The count returned excludes the
+@@ -106,9 +131,9 @@
+       break;
+     wchar_t c = (*src)[source_converted];
+     if (dst)
+-      result = wcrtomb_s(&char_size, dst + dest_converted, dest_remaining, c, ps);
++      result = __libcpp_wcrtomb_s(&char_size, dst + dest_converted, dest_remaining, c, ps);
+     else
+-      result = wcrtomb_s(&char_size, nullptr, 0, c, ps);
++      result = __libcpp_wcrtomb_s(&char_size, nullptr, 0, c, ps);
+     // If result is zero there is no error and char_size contains the
+     // size of the multi-byte-sequence converted.
+     // Otherwise result indicates an errno type error.
+Index: libcxx/src/support/win32/thread_win32.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/support/win32/thread_win32.cpp b/libcxx/src/support/win32/thread_win32.cpp
+--- a/libcxx/src/support/win32/thread_win32.cpp	(revision Staged)
++++ b/libcxx/src/support/win32/thread_win32.cpp	(date 1792932710610)
+@@ -14,20 +14,31 @@
+ #include <windows.h>
+ #include <process.h>
+ #include <fibersapi.h>
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++#  include <cstdlib>
++#  include <winternl.h>
++// NtQueryInformationThread is imported from ntdll. Ask the linker for it, as
++// #pragma comment(lib) would, so that users of the static library get it too.
++__asm__(".section .drectve\n\t.ascii \" -defaultlib:ntdll\"\n\t.text");
++#endif
+ 
+ _LIBCPP_BEGIN_NAMESPACE_STD
+ 
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ static_assert(sizeof(__libcpp_mutex_t) == sizeof(SRWLOCK), "");
+ static_assert(alignof(__libcpp_mutex_t) == alignof(SRWLOCK), "");
++#endif
+ 
+ static_assert(sizeof(__libcpp_recursive_mutex_t) == sizeof(CRITICAL_SECTION), "");
+ static_assert(alignof(__libcpp_recursive_mutex_t) == alignof(CRITICAL_SECTION), "");
+ 
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ static_assert(sizeof(__libcpp_condvar_t) == sizeof(CONDITION_VARIABLE), "");
+ static_assert(alignof(__libcpp_condvar_t) == alignof(CONDITION_VARIABLE), "");
+ 
+ static_assert(sizeof(__libcpp_exec_once_flag) == sizeof(INIT_ONCE), "");
+ static_assert(alignof(__libcpp_exec_once_flag) == alignof(INIT_ONCE), "");
++#endif
+ 
+ static_assert(sizeof(__libcpp_thread_id) == sizeof(DWORD), "");
+ static_assert(alignof(__libcpp_thread_id) == alignof(DWORD), "");
+@@ -63,6 +74,7 @@
+   return 0;
+ }
+ 
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ int __libcpp_mutex_lock(__libcpp_mutex_t* __m) {
+   AcquireSRWLockExclusive((PSRWLOCK)__m);
+   return 0;
+@@ -133,6 +145,304 @@
+     return GetLastError();
+   return 0;
+ }
++#else
++// SRW locks, condition variables and one-time initialization are unavailable
++// before Vista. A __libcpp_mutex_t instead points to a lazily allocated
++// critical section, and a __libcpp_condvar_t to a lazily allocated queue of
++// waiters, which keeps both types pointer-sized and constant-initializable.
++
++// Spin count used for the critical sections, matching what the system uses
++// for its own heap locks.
++static const DWORD __libcpp_critical_section_spin_count = 4000;
++
++static LPCRITICAL_SECTION __libcpp_critical_section_create() {
++  auto* __cs = static_cast<LPCRITICAL_SECTION>(malloc(sizeof(CRITICAL_SECTION)));
++  if (__cs && !InitializeCriticalSectionAndSpinCount(__cs, __libcpp_critical_section_spin_count)) {
++    free(__cs);
++    return nullptr;
++  }
++  return __cs;
++}
++
++static void __libcpp_critical_section_free(LPCRITICAL_SECTION __cs) {
++  DeleteCriticalSection(__cs);
++  free(__cs);
++}
++
++static LPCRITICAL_SECTION __libcpp_mutex_get(__libcpp_mutex_t* __m) {
++  void* __p = __atomic_load_n(__m, __ATOMIC_ACQUIRE);
++  if (__p)
++    return static_cast<LPCRITICAL_SECTION>(__p);
++  LPCRITICAL_SECTION __cs = __libcpp_critical_section_create();
++  if (!__cs)
++    return nullptr;
++  if (!__atomic_compare_exchange_n(__m, &__p, __cs, false, __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE)) {
++    // Another thread installed its critical section first.
++    __libcpp_critical_section_free(__cs);
++    return static_cast<LPCRITICAL_SECTION>(__p);
++  }
++  return __cs;
++}
++
++int __libcpp_mutex_lock(__libcpp_mutex_t* __m) {
++  LPCRITICAL_SECTION __cs = __libcpp_mutex_get(__m);
++  if (!__cs)
++    return ENOMEM;
++  EnterCriticalSection(__cs);
++  return 0;
++}
++
++bool __libcpp_mutex_trylock(__libcpp_mutex_t* __m) {
++  LPCRITICAL_SECTION __cs = __libcpp_mutex_get(__m);
++  return __cs && TryEnterCriticalSection(__cs) != 0;
++}
++
++int __libcpp_mutex_unlock(__libcpp_mutex_t* __m) {
++  LeaveCriticalSection(static_cast<LPCRITICAL_SECTION>(*__m));
++  return 0;
++}
++
++int __libcpp_mutex_destroy(__libcpp_mutex_t* __m) {
++  if (*__m) {
++    __libcpp_critical_section_free(static_cast<LPCRITICAL_SECTION>(*__m));
++    *__m = nullptr;
++  }
++  return 0;
++}
++
++// Thread exit hook of the mingw-w64 CRT: runs __dtor with the key's value on
++// thread exit if it is non-null.
++extern "C" int ___w64_mingwthr_add_key_dtor(DWORD __key, void (*__dtor)(void*));
++
++// Condition Variable
++//
++// Each waiter blocks on an auto-reset event owned by its thread. Waiters are
++// queued before the mutex is released, so no wakeup can be lost, and are
++// woken in FIFO order. A waiter is dequeued by whoever wakes it; a waiter that
++// times out dequeues itself, unless it raced with a wakeup, in which case it
++// consumes the pending event so that the event is unsignaled on its next wait.
++struct __libcpp_condvar_waiter {
++  __libcpp_condvar_waiter* __next;
++  __libcpp_condvar_waiter* __prev;
++  HANDLE __event;
++  bool __queued;
++};
++
++struct __libcpp_condvar_impl {
++  CRITICAL_SECTION __lock;
++  __libcpp_condvar_waiter* __head;
++  __libcpp_condvar_waiter* __tail;
++};
++
++static __libcpp_condvar_impl* __libcpp_condvar_get(__libcpp_condvar_t* __cv) {
++  void* __p = __atomic_load_n(__cv, __ATOMIC_ACQUIRE);
++  if (__p)
++    return static_cast<__libcpp_condvar_impl*>(__p);
++  auto* __impl = static_cast<__libcpp_condvar_impl*>(malloc(sizeof(__libcpp_condvar_impl)));
++  if (!__impl)
++    return nullptr;
++  if (!InitializeCriticalSectionAndSpinCount(&__impl->__lock, __libcpp_critical_section_spin_count)) {
++    free(__impl);
++    return nullptr;
++  }
++  __impl->__head = nullptr;
++  __impl->__tail = nullptr;
++  if (!__atomic_compare_exchange_n(__cv, &__p, __impl, false, __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE)) {
++    // Another thread installed its queue first.
++    DeleteCriticalSection(&__impl->__lock);
++    free(__impl);
++    return static_cast<__libcpp_condvar_impl*>(__p);
++  }
++  return __impl;
++}
++
++static void __libcpp_condvar_unlink(__libcpp_condvar_impl* __impl, __libcpp_condvar_waiter* __w) {
++  if (__w->__prev)
++    __w->__prev->__next = __w->__next;
++  else
++    __impl->__head = __w->__next;
++  if (__w->__next)
++    __w->__next->__prev = __w->__prev;
++  else
++    __impl->__tail = __w->__prev;
++  __w->__queued = false;
++}
++
++static DWORD __libcpp_condvar_event_key = TLS_OUT_OF_INDEXES;
++static __libcpp_exec_once_flag __libcpp_condvar_event_key_once = _LIBCPP_EXEC_ONCE_INITIALIZER;
++
++static void __libcpp_condvar_event_close(void* __event) {
++  // The CRT leaves the value in place after running this. Clear it, so that a
++  // wait in a later thread exit destructor creates a new event rather than
++  // using the closed handle.
++  TlsSetValue(__libcpp_condvar_event_key, nullptr);
++  CloseHandle(static_cast<HANDLE>(__event));
++}
++
++static void __libcpp_condvar_event_key_init() {
++  DWORD __key = TlsAlloc();
++  if (__key == TLS_OUT_OF_INDEXES)
++    return;
++  if (___w64_mingwthr_add_key_dtor(__key, &__libcpp_condvar_event_close) != 0) {
++    TlsFree(__key);
++    return;
++  }
++  __libcpp_condvar_event_key = __key;
++}
++
++// Returns the calling thread's wait event, creating it on first use.
++static HANDLE __libcpp_condvar_event() {
++  __libcpp_execute_once(&__libcpp_condvar_event_key_once, &__libcpp_condvar_event_key_init);
++  if (__libcpp_condvar_event_key == TLS_OUT_OF_INDEXES)
++    return nullptr;
++  HANDLE __event = static_cast<HANDLE>(TlsGetValue(__libcpp_condvar_event_key));
++  if (!__event) {
++    __event = CreateEventW(nullptr, FALSE, FALSE, nullptr);
++    if (__event && !TlsSetValue(__libcpp_condvar_event_key, __event)) {
++      CloseHandle(__event);
++      __event = nullptr;
++    }
++  }
++  return __event;
++}
++
++int __libcpp_condvar_signal(__libcpp_condvar_t* __cv) {
++  auto* __impl = static_cast<__libcpp_condvar_impl*>(__atomic_load_n(__cv, __ATOMIC_ACQUIRE));
++  if (!__impl)
++    return 0; // Nobody ever waited.
++  HANDLE __event = nullptr;
++  EnterCriticalSection(&__impl->__lock);
++  if (__libcpp_condvar_waiter* __w = __impl->__head) {
++    __event = __w->__event;
++    __libcpp_condvar_unlink(__impl, __w);
++  }
++  LeaveCriticalSection(&__impl->__lock);
++  if (__event)
++    SetEvent(__event);
++  return 0;
++}
++
++int __libcpp_condvar_broadcast(__libcpp_condvar_t* __cv) {
++  auto* __impl = static_cast<__libcpp_condvar_impl*>(__atomic_load_n(__cv, __ATOMIC_ACQUIRE));
++  if (!__impl)
++    return 0; // Nobody ever waited.
++  EnterCriticalSection(&__impl->__lock);
++  __libcpp_condvar_waiter* __w = __impl->__head;
++  for (__libcpp_condvar_waiter* __i = __w; __i; __i = __i->__next)
++    __i->__queued = false;
++  __impl->__head = nullptr;
++  __impl->__tail = nullptr;
++  LeaveCriticalSection(&__impl->__lock);
++  // A dequeued waiter stays blocked until its event is set, so the list stays
++  // valid as long as each next pointer is read before setting the event.
++  while (__w) {
++    __libcpp_condvar_waiter* __next = __w->__next;
++    SetEvent(__w->__event);
++    __w = __next;
++  }
++  return 0;
++}
++
++static int __libcpp_condvar_wait_ms(__libcpp_condvar_t* __cv, __libcpp_mutex_t* __m, DWORD __timeout_ms) {
++  __libcpp_condvar_impl* __impl = __libcpp_condvar_get(__cv);
++  if (!__impl)
++    return ENOMEM;
++  __libcpp_condvar_waiter __w;
++  __w.__event = __libcpp_condvar_event();
++  if (!__w.__event)
++    return GetLastError();
++
++  EnterCriticalSection(&__impl->__lock);
++  __w.__next   = nullptr;
++  __w.__prev   = __impl->__tail;
++  __w.__queued = true;
++  if (__impl->__tail)
++    __impl->__tail->__next = &__w;
++  else
++    __impl->__head = &__w;
++  __impl->__tail = &__w;
++  LeaveCriticalSection(&__impl->__lock);
++
++  __libcpp_mutex_unlock(__m);
++  int __ec     = 0;
++  DWORD __wait = WaitForSingleObject(__w.__event, __timeout_ms);
++  if (__wait != WAIT_OBJECT_0) {
++    __ec = __wait == WAIT_TIMEOUT ? ETIMEDOUT : GetLastError();
++    EnterCriticalSection(&__impl->__lock);
++    bool __queued = __w.__queued;
++    if (__queued)
++      __libcpp_condvar_unlink(__impl, &__w);
++    LeaveCriticalSection(&__impl->__lock);
++    if (!__queued) {
++      // A wakeup raced with the timeout; reset it.
++      WaitForSingleObject(__w.__event, INFINITE);
++      __ec = 0;
++    }
++  }
++  __libcpp_mutex_lock(__m);
++  return __ec;
++}
++
++int __libcpp_condvar_wait(__libcpp_condvar_t* __cv, __libcpp_mutex_t* __m) {
++  return __libcpp_condvar_wait_ms(__cv, __m, INFINITE);
++}
++
++int __libcpp_condvar_timedwait(__libcpp_condvar_t* __cv, __libcpp_mutex_t* __m, __libcpp_timespec_t* __ts) {
++  using namespace std::chrono;
++
++  auto duration   = seconds(__ts->tv_sec) + nanoseconds(__ts->tv_nsec);
++  auto abstime    = system_clock::time_point(duration_cast<system_clock::duration>(duration));
++  auto timeout_ms = ceil<milliseconds>(abstime - system_clock::now());
++
++  // system_clock only advances once per timer tick here, and the wait itself
++  // can end up to a tick early. Callers such as wait_for check whether the
++  // timeout expired with steady_clock, so wait one tick longer, lest the wait
++  // end before the deadline and be reported as a wakeup.
++  static const DWORD __tick_ms = [] {
++    DWORD __adjustment, __increment;
++    BOOL __disabled;
++    if (!GetSystemTimeAdjustment(&__adjustment, &__increment, &__disabled))
++      return DWORD(16);
++    return static_cast<DWORD>((__increment + 9999) / 10000); // 100 ns units
++  }();
++
++  DWORD __ms = 0;
++  if (timeout_ms.count() > 0)
++    __ms = timeout_ms.count() < INFINITE - __tick_ms ? static_cast<DWORD>(timeout_ms.count()) + __tick_ms
++                                                     : INFINITE - 1;
++  return __libcpp_condvar_wait_ms(__cv, __m, __ms);
++}
++
++int __libcpp_condvar_destroy(__libcpp_condvar_t* __cv) {
++  if (*__cv) {
++    auto* __impl = static_cast<__libcpp_condvar_impl*>(*__cv);
++    DeleteCriticalSection(&__impl->__lock);
++    free(__impl);
++    *__cv = nullptr;
++  }
++  return 0;
++}
++
++// Execute Once
++int __libcpp_execute_once(__libcpp_exec_once_flag* __flag, void (*__init_routine)(void)) {
++  // The flag is null when not run yet, 1 while running and 2 once done.
++  void* const __running = reinterpret_cast<void*>(1);
++  void* const __done    = reinterpret_cast<void*>(2);
++  if (__atomic_load_n(__flag, __ATOMIC_ACQUIRE) == __done)
++    return 0;
++  void* __state = nullptr;
++  if (__atomic_compare_exchange_n(__flag, &__state, __running, false, __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE)) {
++    __init_routine();
++    __atomic_store_n(__flag, __done, __ATOMIC_RELEASE);
++    return 0;
++  }
++  // Unlike SwitchToThread, Sleep also yields to lower priority threads, which
++  // may be the one running the initialization.
++  while (__atomic_load_n(__flag, __ATOMIC_ACQUIRE) != __done)
++    Sleep(1);
++  return 0;
++}
++#endif
+ 
+ // Thread ID
+ bool __libcpp_thread_id_equal(__libcpp_thread_id __lhs, __libcpp_thread_id __rhs) { return __lhs == __rhs; }
+@@ -169,7 +479,28 @@
+ 
+ __libcpp_thread_id __libcpp_thread_get_current_id() { return GetCurrentThreadId(); }
+ 
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ __libcpp_thread_id __libcpp_thread_get_id(const __libcpp_thread_t* __t) { return GetThreadId(*__t); }
++#else
++// GetThreadId is unavailable before Vista; query the thread's client ID
++// through ntdll instead.
++struct __libcpp_thread_basic_information {
++  LONG __exit_status;
++  PVOID __teb_base_address;
++  HANDLE __unique_process;
++  HANDLE __unique_thread;
++  ULONG_PTR __affinity_mask;
++  LONG __priority;
++  LONG __base_priority;
++};
++
++__libcpp_thread_id __libcpp_thread_get_id(const __libcpp_thread_t* __t) {
++  __libcpp_thread_basic_information __info;
++  if (!NT_SUCCESS(NtQueryInformationThread(*__t, ThreadBasicInformation, &__info, sizeof(__info), nullptr)))
++    return 0;
++  return static_cast<__libcpp_thread_id>(reinterpret_cast<ULONG_PTR>(__info.__unique_thread));
++}
++#endif
+ 
+ int __libcpp_thread_join(__libcpp_thread_t* __t) {
+   if (WaitForSingleObjectEx(*__t, INFINITE, FALSE) == WAIT_FAILED)
+@@ -195,6 +526,7 @@
+ }
+ 
+ // Thread Local Storage
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ int __libcpp_tls_create(__libcpp_tls_key* __key, void(_LIBCPP_TLS_DESTRUCTOR_CC* __at_exit)(void*)) {
+   DWORD index = FlsAlloc(__at_exit);
+   if (index == FLS_OUT_OF_INDEXES)
+@@ -210,5 +542,90 @@
+     return GetLastError();
+   return 0;
+ }
++#else
++// Fiber local storage is unavailable before Vista. Use thread local storage
++// instead. The mingw-w64 CRT can run a destructor on thread exit, but calls it
++// with the default calling convention, and only with the key's value. So a
++// single sentinel key is registered with it, set on every thread that stores a
++// value, and its destructor runs the destructors of all keys.
++using __libcpp_tls_dtor_t = void(_LIBCPP_TLS_DESTRUCTOR_CC*)(void*);
++
++struct __libcpp_tls_dtor_entry {
++  __libcpp_tls_dtor_entry* __next;
++  DWORD __key;
++  __libcpp_tls_dtor_t __dtor;
++};
++
++// Keys are never freed, so entries are only ever prepended.
++static __libcpp_tls_dtor_entry* __libcpp_tls_dtor_list = nullptr;
++static DWORD __libcpp_tls_dtor_sentinel                = TLS_OUT_OF_INDEXES;
++static __libcpp_exec_once_flag __libcpp_tls_dtor_sentinel_once = _LIBCPP_EXEC_ONCE_INITIALIZER;
++
++// Matches PTHREAD_DESTRUCTOR_ITERATIONS: destructors may store new values.
++static const int __libcpp_tls_dtor_iterations = 4;
++
++static void __libcpp_tls_run_dtors(void*) {
++  for (int __i = 0; __i < __libcpp_tls_dtor_iterations; ++__i) {
++    bool __ran = false;
++    for (auto* __e = __atomic_load_n(&__libcpp_tls_dtor_list, __ATOMIC_ACQUIRE); __e; __e = __e->__next) {
++      void* __p = TlsGetValue(__e->__key);
++      if (__p) {
++        TlsSetValue(__e->__key, nullptr);
++        __e->__dtor(__p);
++        __ran = true;
++      }
++    }
++    if (!__ran)
++      break;
++  }
++}
++
++static void __libcpp_tls_dtor_sentinel_init() {
++  DWORD __key = TlsAlloc();
++  if (__key == TLS_OUT_OF_INDEXES)
++    return;
++  if (___w64_mingwthr_add_key_dtor(__key, &__libcpp_tls_run_dtors) != 0) {
++    TlsFree(__key);
++    return;
++  }
++  __atomic_store_n(&__libcpp_tls_dtor_sentinel, __key, __ATOMIC_RELEASE);
++}
++
++int __libcpp_tls_create(__libcpp_tls_key* __key, void(_LIBCPP_TLS_DESTRUCTOR_CC* __at_exit)(void*)) {
++  DWORD index = TlsAlloc();
++  if (index == TLS_OUT_OF_INDEXES)
++    return GetLastError();
++  if (__at_exit) {
++    __libcpp_execute_once(&__libcpp_tls_dtor_sentinel_once, &__libcpp_tls_dtor_sentinel_init);
++    auto* __e = static_cast<__libcpp_tls_dtor_entry*>(malloc(sizeof(__libcpp_tls_dtor_entry)));
++    if (__libcpp_tls_dtor_sentinel == TLS_OUT_OF_INDEXES || !__e) {
++      free(__e);
++      TlsFree(index);
++      return ERROR_NOT_ENOUGH_MEMORY;
++    }
++    __e->__key  = index;
++    __e->__dtor = __at_exit;
++    __e->__next = __atomic_load_n(&__libcpp_tls_dtor_list, __ATOMIC_RELAXED);
++    while (!__atomic_compare_exchange_n(
++        &__libcpp_tls_dtor_list, &__e->__next, __e, true, __ATOMIC_RELEASE, __ATOMIC_RELAXED)) {
++    }
++  }
++  *__key = index;
++  return 0;
++}
++
++void* __libcpp_tls_get(__libcpp_tls_key __key) { return TlsGetValue(__key); }
++
++int __libcpp_tls_set(__libcpp_tls_key __key, void* __p) {
++  if (!TlsSetValue(__key, __p))
++    return GetLastError();
++  // Make sure the destructors run when this thread exits.
++  DWORD __sentinel = __atomic_load_n(&__libcpp_tls_dtor_sentinel, __ATOMIC_ACQUIRE);
++  if (__p && __sentinel != TLS_OUT_OF_INDEXES && !TlsGetValue(__sentinel) &&
++      !TlsSetValue(__sentinel, reinterpret_cast<void*>(1)))
++    return GetLastError();
++  return 0;
++}
++#endif
+ 
+ _LIBCPP_END_NAMESPACE_STD
+Index: libcxx/src/chrono.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/chrono.cpp b/libcxx/src/chrono.cpp
+--- a/libcxx/src/chrono.cpp	(revision Staged)
++++ b/libcxx/src/chrono.cpp	(date 1792768910228)
+@@ -73,7 +73,9 @@
+ 
+ #if defined(_LIBCPP_WIN32API)
+ 
+-#  if _WIN32_WINNT < _WIN32_WINNT_WIN8
++// Pre-Vista builds use the same clock on all Windows versions, rather than
++// looking up GetSystemTimePreciseAsFileTime at runtime.
++#  if _WIN32_WINNT < _WIN32_WINNT_WIN8 && !_LIBCPP_WIN32_PRE_VISTA
+ 
+ namespace {
+ 
+@@ -109,7 +111,7 @@
+ #  if (_WIN32_WINNT >= _WIN32_WINNT_WIN8 && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)) ||                      \
+       (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+   GetSystemTimePreciseAsFileTime(&ft);
+-#  elif !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
++#  elif !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) || _LIBCPP_WIN32_PRE_VISTA
+   GetSystemTimeAsFileTime(&ft);
+ #  else
+   GetSystemTimeAsFileTimeFunc.fp(&ft);
+Index: libcxx/src/random.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/random.cpp b/libcxx/src/random.cpp
+--- a/libcxx/src/random.cpp	(revision Staged)
++++ b/libcxx/src/random.cpp	(date 1792768924142)
+@@ -22,6 +22,17 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
++#if defined(_LIBCPP_USING_WIN32_RANDOM) && defined(__MINGW32__) && !defined(_UCRT) && __MSVCRT_VERSION__ < 0x0800
++// msvcrt.dll only provides rand_s since Vista, and mingw-w64 looks it up at
++// runtime. Call the function it is built on directly instead, so that all
++// Windows versions take the same path.
++#  define _LIBCPP_USING_RTLGENRANDOM
++#  define NOMINMAX
++#  define WIN32_LEAN_AND_MEAN
++#  include <windows.h>
++#  include <ntsecapi.h>
++#endif
++
+ #if defined(_LIBCPP_USING_GETENTROPY)
+ #  include <sys/random.h>
+ #elif defined(_LIBCPP_USING_DEV_RANDOM)
+@@ -128,10 +139,16 @@
+ 
+ unsigned random_device::operator()() {
+   unsigned r;
++#  if defined(_LIBCPP_USING_RTLGENRANDOM)
++  if (!RtlGenRandom(&r, sizeof(r)))
++    std::__throw_system_error(EINVAL, "random_device RtlGenRandom failed.");
++  return r;
++#  else
+   errno_t err = rand_s(&r);
+   if (err)
+     std::__throw_system_error(err, "random_device rand_s failed.");
+   return r;
++#  endif
+ }
+ 
+ #elif defined(_LIBCPP_USING_FUCHSIA_CPRNG)
+Index: libcxx/src/system_error.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/src/system_error.cpp b/libcxx/src/system_error.cpp
+--- a/libcxx/src/system_error.cpp	(revision Staged)
++++ b/libcxx/src/system_error.cpp	(date 1792770870806)
+@@ -142,11 +142,16 @@
+ #if _LIBCPP_HAS_THREADS
+ 
+ //  GLIBC also uses 1024 as the maximum buffer size internally.
+-constexpr size_t strerror_buff_size = 1024;
++[[maybe_unused]] constexpr size_t strerror_buff_size = 1024;
+ 
+ string do_strerror_r(int ev);
+ 
+-#  if defined(_LIBCPP_MSVCRT_LIKE)
++#  if defined(__MINGW32__) && !defined(_UCRT) && __MSVCRT_VERSION__ < 0x0800
++// msvcrt.dll only provides strerror_s since Vista, and mingw-w64 looks it up at
++// runtime. Its strerror returns a per-thread buffer, so it is thread-safe and
++// can be used on all Windows versions instead.
++string do_strerror_r(int ev) { return string(::strerror(ev)); }
++#  elif defined(_LIBCPP_MSVCRT_LIKE)
+ string do_strerror_r(int ev) {
+   char buffer[strerror_buff_size];
+   if (::strerror_s(buffer, strerror_buff_size, ev) == 0)
+Index: libcxx/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libcxx/CMakeLists.txt b/libcxx/CMakeLists.txt
+--- a/libcxx/CMakeLists.txt	(revision Staged)
++++ b/libcxx/CMakeLists.txt	(date 1792768898139)
+@@ -671,6 +671,10 @@
+ 
+   if (MINGW)
+     target_link_libraries(${target} PRIVATE "${MINGW_LIBRARIES}")
++    if (LIBCXX_TARGETS_WIN32_PRE_VISTA)
++      # NtQueryInformationThread replaces GetThreadId before Vista.
++      target_link_libraries(${target} PRIVATE ntdll)
++    endif()
+   endif()
+ 
+   if (MSVC)
+@@ -742,6 +746,7 @@
+ config_define(${LIBCXX_HAS_EXTERNAL_THREAD_API} _LIBCPP_HAS_THREAD_API_EXTERNAL)
+ config_define(${LIBCXX_HAS_WIN32_THREAD_API} _LIBCPP_HAS_THREAD_API_WIN32)
+ config_define(${LIBCXX_HAS_MUSL_LIBC} _LIBCPP_HAS_MUSL_LIBC)
++config_define_if(LIBCXX_TARGETS_WIN32_PRE_VISTA _LIBCPP_WIN32_PRE_VISTA)
+ config_define_if(LIBCXX_NO_VCRUNTIME _LIBCPP_NO_VCRUNTIME)
+ config_define(${LIBCXX_ENABLE_FILESYSTEM} _LIBCPP_HAS_FILESYSTEM)
+ config_define(${LIBCXX_ENABLE_RANDOM_DEVICE} _LIBCPP_HAS_RANDOM_DEVICE)
+Index: libunwind/src/AddressSpace.hpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libunwind/src/AddressSpace.hpp b/libunwind/src/AddressSpace.hpp
+--- a/libunwind/src/AddressSpace.hpp	(revision Staged)
++++ b/libunwind/src/AddressSpace.hpp	(date 1792934877799)
+@@ -112,7 +112,9 @@
+ #elif defined(_LIBUNWIND_SUPPORT_DWARF_UNWIND) && defined(_WIN32)
+ 
+ #include <windows.h>
++#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+ #include <psapi.h>
++#endif
+ 
+ #elif defined(_LIBUNWIND_USE_DL_ITERATE_PHDR) ||                               \
+       defined(_LIBUNWIND_USE_DL_UNWIND_FIND_EXIDX)
+@@ -541,6 +543,23 @@
+   if (info.arm_section && info.arm_section_length)
+     return true;
+ #elif defined(_LIBUNWIND_SUPPORT_DWARF_UNWIND) && defined(_WIN32)
++#if _WIN32_WINNT < _WIN32_WINNT_WIN7
++  // Before Windows 7, EnumProcessModules is only provided by psapi.dll. Look up
++  // the module containing targetAddr directly instead, which only needs
++  // kernel32.dll.
++  HMODULE mods[1];
++  DWORD needed = sizeof(mods);
++
++  if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
++                              GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
++                          (LPCWSTR)targetAddr, &mods[0])) {
++    DWORD err = GetLastError();
++    _LIBUNWIND_TRACE_UNWINDING("findUnwindSections: GetModuleHandleExW failed, "
++                               "returned error %d", (int)err);
++    (void)err;
++    return false;
++  }
++#else
+   HMODULE mods[1024];
+   HANDLE process = GetCurrentProcess();
+   DWORD needed;
+@@ -552,6 +571,7 @@
+     (void)err;
+     return false;
+   }
++#endif
+ 
+   for (unsigned i = 0; i < (needed / sizeof(HMODULE)); i++) {
+     PIMAGE_DOS_HEADER pidh = (PIMAGE_DOS_HEADER)mods[i];
+Index: libunwind/src/RWMutex.hpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libunwind/src/RWMutex.hpp b/libunwind/src/RWMutex.hpp
+--- a/libunwind/src/RWMutex.hpp	(revision Staged)
++++ b/libunwind/src/RWMutex.hpp	(date 1792934877807)
+@@ -34,6 +34,46 @@
+   bool unlock() { return true; }
+ };
+ 
++#elif defined(_WIN32) && _WIN32_WINNT < _WIN32_WINNT_VISTA
++
++// SRW locks are unavailable before Vista; use a critical section instead.
++// It is initialized lazily so that the mutex stays constant-initialized, as
++// it may be used during unwinding before dynamic initialization has run.
++// Shared locking is exclusive.
++class _LIBUNWIND_HIDDEN RWMutex {
++public:
++  bool lock_shared() { return lock(); }
++  bool unlock_shared() { return unlock(); }
++  bool lock() {
++    init();
++    EnterCriticalSection(&_lock);
++    return true;
++  }
++  bool unlock() {
++    LeaveCriticalSection(&_lock);
++    return true;
++  }
++
++private:
++  void init() {
++    // 0 = uninitialized, 1 = initialization in progress, 2 = initialized.
++    if (__atomic_load_n(&_state, __ATOMIC_ACQUIRE) == 2)
++      return;
++    if (InterlockedCompareExchange(&_state, 1, 0) == 0) {
++      InitializeCriticalSection(&_lock);
++      InterlockedExchange(&_state, 2);
++      return;
++    }
++    // Unlike SwitchToThread, Sleep also yields to lower priority threads,
++    // which may be the one running the initialization.
++    while (__atomic_load_n(&_state, __ATOMIC_ACQUIRE) != 2)
++      Sleep(1);
++  }
++
++  CRITICAL_SECTION _lock = {};
++  LONG _state = 0;
++};
++
+ #elif defined(_WIN32)
+ 
+ class _LIBUNWIND_HIDDEN RWMutex {
+Index: llvm/include/llvm/Support/Windows/WindowsSupport.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/include/llvm/Support/Windows/WindowsSupport.h b/llvm/include/llvm/Support/Windows/WindowsSupport.h
+--- a/llvm/include/llvm/Support/Windows/WindowsSupport.h	(revision Staged)
++++ b/llvm/include/llvm/Support/Windows/WindowsSupport.h	(date 1792939134042)
+@@ -21,11 +21,18 @@
+ #ifndef LLVM_SUPPORT_WINDOWSSUPPORT_H
+ #define LLVM_SUPPORT_WINDOWSSUPPORT_H
+ 
++#ifdef __MINGW32__
++#include <_mingw.h> // Defines the toolchain's default _WIN32_WINNT.
++#endif
++
++// Builds targeting Windows XP keep that target and avoid Vista and later APIs.
++#if !defined(_WIN32_WINNT) || _WIN32_WINNT >= 0x0600
+ // mingw-w64 tends to define it as 0x0502 in its headers.
+ #undef _WIN32_WINNT
+ 
+ // Require at least Windows 7 API.
+ #define _WIN32_WINNT 0x0601
++
+ #define WIN32_LEAN_AND_MEAN
+ #ifndef NOMINMAX
+ #define NOMINMAX
+Index: llvm/lib/Support/Windows/Memory.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/Windows/Memory.inc b/llvm/lib/Support/Windows/Memory.inc
+--- a/llvm/lib/Support/Windows/Memory.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Memory.inc	(date 1792935044706)
+@@ -61,6 +61,10 @@
+ // Also large pages need to be manually enabled on your OS. If all this is
+ // sucessfull, we return the minimal large memory page size.
+ static size_t enableProcessLargePages() {
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // GetLargePageMinimum is unavailable before Vista.
++  return 0;
++#else
+   HANDLE Token = 0;
+   size_t LargePageMin = GetLargePageMinimum();
+   if (LargePageMin)
+@@ -86,6 +90,7 @@
+   if (E == ERROR_SUCCESS)
+     return LargePageMin;
+   return 0;
++#endif
+ }
+ 
+ namespace llvm {
+Index: llvm/lib/Support/Windows/Path.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/Windows/Path.inc b/llvm/lib/Support/Windows/Path.inc
+--- a/llvm/lib/Support/Windows/Path.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Path.inc	(date 1792935044700)
+@@ -27,6 +27,9 @@
+ #include "llvm/Support/Windows/WindowsSupport.h"
+ #include <shellapi.h>
+ #include <shlobj.h>
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++#include <winternl.h>
++#endif
+ 
+ #undef max
+ 
+@@ -362,6 +365,182 @@
+   return is_local_internal(WidePath, result);
+ }
+ 
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++// GetFinalPathNameByHandleW and SetFileInformationByHandle are unavailable
++// before Vista. Use the ntdll functions they are built on instead.
++
++#ifndef VOLUME_NAME_DOS
++#define VOLUME_NAME_DOS 0x0
++#endif
++#ifndef VOLUME_NAME_NT
++#define VOLUME_NAME_NT 0x2
++#endif
++
++#ifndef STATUS_INFO_LENGTH_MISMATCH
++#define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004L)
++#endif
++#ifndef STATUS_BUFFER_OVERFLOW
++#define STATUS_BUFFER_OVERFLOW ((NTSTATUS)0x80000005L)
++#endif
++
++static std::error_code mapNtStatus(NTSTATUS Status) {
++  return mapWindowsError(RtlNtStatusToDosError(Status));
++}
++
++// Sets file information of the given class on a handle, as
++// SetFileInformationByHandle does.
++static std::error_code setFileInformation(HANDLE H, void *Info, ULONG Size,
++                                          FILE_INFORMATION_CLASS Class) {
++  IO_STATUS_BLOCK IO;
++  NTSTATUS Status = NtSetInformationFile(H, &IO, Info, Size, Class);
++  if (!NT_SUCCESS(Status))
++    return mapNtStatus(Status);
++  return std::error_code();
++}
++
++static std::error_code setDispositionInfo(HANDLE H, bool Delete) {
++  FILE_DISPOSITION_INFORMATION Disposition;
++  Disposition.DoDeleteFile = Delete;
++  return setFileInformation(H, &Disposition, sizeof(Disposition),
++                            FileDispositionInformation);
++}
++
++// Returns the NT path of the file, e.g. \Device\HarddiskVolume1\foo.
++static std::error_code ntPathFromHandle(HANDLE H,
++                                        SmallVectorImpl<wchar_t> &Buffer) {
++  // Like GetFinalPathNameByHandleW, only support files on disk. Querying the
++  // name of a synchronous pipe can block while another thread reads from it.
++  if (::GetFileType(H) != FILE_TYPE_DISK)
++    return mapWindowsError(ERROR_INVALID_FUNCTION);
++  // OBJECT_NAME_INFORMATION is followed by the name it points to.
++  std::vector<uint64_t> Info(
++      (sizeof(OBJECT_NAME_INFORMATION) + MAX_PATH * sizeof(wchar_t)) /
++      sizeof(uint64_t));
++  ULONG Len = 0;
++  NTSTATUS Status;
++  for (;;) {
++    Status = NtQueryObject(H, ObjectNameInformation, Info.data(),
++                           Info.size() * sizeof(uint64_t), &Len);
++    if (Status != STATUS_INFO_LENGTH_MISMATCH &&
++        Status != STATUS_BUFFER_OVERFLOW)
++      break;
++    if (Len <= Info.size() * sizeof(uint64_t))
++      return mapNtStatus(Status);
++    Info.resize((Len + sizeof(uint64_t) - 1) / sizeof(uint64_t));
++  }
++  if (!NT_SUCCESS(Status))
++    return mapNtStatus(Status);
++  const UNICODE_STRING &Name =
++      reinterpret_cast<OBJECT_NAME_INFORMATION *>(Info.data())->Name;
++  if (!Name.Buffer)
++    return mapWindowsError(ERROR_INVALID_HANDLE);
++  Buffer.assign(Name.Buffer, Name.Buffer + Name.Length / sizeof(wchar_t));
++  return std::error_code();
++}
++
++// Converts an NT path to a \\?\ prefixed DOS path, using the drive letters
++// and UNC paths of the network redirectors.
++static std::error_code dosPathFromNtPath(ArrayRef<wchar_t> NtPath,
++                                         SmallVectorImpl<wchar_t> &Buffer) {
++  auto HasPrefix = [&](const wchar_t *Prefix, size_t Len) {
++    return NtPath.size() >= Len && !_wcsnicmp(NtPath.data(), Prefix, Len) &&
++           (NtPath.size() == Len || NtPath[Len] == L'\\' ||
++            Prefix[Len - 1] == L'\\');
++  };
++
++  for (const wchar_t *Redirector :
++       {L"\\Device\\Mup\\", L"\\Device\\LanmanRedirector\\"}) {
++    size_t Len = ::wcslen(Redirector);
++    if (!HasPrefix(Redirector, Len))
++      continue;
++    // Skip components like ";Z:000000000000c3a1" for mapped network drives.
++    const wchar_t *Rest = NtPath.begin() + Len, *End = NtPath.end();
++    while (Rest != End && *Rest == L';') {
++      Rest = std::find(Rest, End, L'\\');
++      if (Rest != End)
++        ++Rest;
++    }
++    static const wchar_t UNCPrefix[] = L"\\\\?\\UNC\\";
++    Buffer.assign(UNCPrefix, UNCPrefix + std::size(UNCPrefix) - 1);
++    Buffer.append(Rest, End);
++    return std::error_code();
++  }
++
++  wchar_t Drives[26 * 4 + 1];
++  DWORD DrivesLen = ::GetLogicalDriveStringsW(std::size(Drives), Drives);
++  if (DrivesLen == 0 || DrivesLen >= std::size(Drives))
++    return mapWindowsError(::GetLastError());
++  for (const wchar_t *Drive = Drives; *Drive; Drive += ::wcslen(Drive) + 1) {
++    wchar_t DriveName[] = {Drive[0], L':', L'\0'};
++    wchar_t Device[MAX_PATH];
++    if (!::QueryDosDeviceW(DriveName, Device, std::size(Device)))
++      continue;
++    size_t Len = ::wcslen(Device);
++    if (!HasPrefix(Device, Len))
++      continue;
++    static const wchar_t Prefix[] = L"\\\\?\\";
++    Buffer.assign(Prefix, Prefix + std::size(Prefix) - 1);
++    Buffer.append(DriveName, DriveName + 2);
++    Buffer.append(NtPath.begin() + Len, NtPath.end());
++    // Add the root directory to a bare drive, as in \\?\X:\.
++    if (Buffer.size() == 6)
++      Buffer.push_back(L'\\');
++    return std::error_code();
++  }
++  // The file is on a volume without a drive letter.
++  return mapWindowsError(ERROR_PATH_NOT_FOUND);
++}
++
++static std::error_code realPathFromHandle(HANDLE H,
++                                          SmallVectorImpl<wchar_t> &Buffer,
++                                          DWORD flags = VOLUME_NAME_DOS) {
++  SmallVector<wchar_t, MAX_PATH> NtPath;
++  if (std::error_code EC = ntPathFromHandle(H, NtPath))
++    return EC;
++  if (flags == VOLUME_NAME_NT) {
++    Buffer.assign(NtPath.begin(), NtPath.end());
++  } else {
++    if (std::error_code EC = dosPathFromNtPath(NtPath, Buffer))
++      return EC;
++    // Like FILE_NAME_NORMALIZED, expand short names.
++    Buffer.push_back(L'\0');
++    SmallVector<wchar_t, MAX_PATH> LongPath;
++    LongPath.resize_for_overwrite(LongPath.capacity());
++    DWORD CountChars =
++        ::GetLongPathNameW(Buffer.data(), LongPath.data(), LongPath.size());
++    if (CountChars > LongPath.size()) {
++      LongPath.resize_for_overwrite(CountChars);
++      CountChars =
++          ::GetLongPathNameW(Buffer.data(), LongPath.data(), LongPath.size());
++    }
++    Buffer.pop_back();
++    if (CountChars && CountChars < LongPath.size())
++      Buffer.assign(LongPath.begin(), LongPath.begin() + CountChars);
++  }
++  // Callers expect the path to be null terminated.
++  Buffer.push_back(L'\0');
++  Buffer.pop_back();
++  return std::error_code();
++}
++
++// Returns a path that identifies the file, for hashing into its UniqueID. The
++// NT path from NtQueryObject is the path the file was opened with, so unlike
++// GetFinalPathNameByHandleW with VOLUME_NAME_NT, it differs depending on the
++// case and on whether short names were used. Use the DOS path, which has the
++// short names expanded, in upper case.
++static std::error_code identifyingPathFromHandle(
++    HANDLE H, SmallVectorImpl<wchar_t> &Buffer) {
++  SmallVector<wchar_t, MAX_PATH> Path;
++  if (std::error_code EC = realPathFromHandle(H, Path))
++    return EC;
++  Buffer.resize_for_overwrite(Path.size());
++  if (!Path.empty() &&
++      !::LCMapStringW(LOCALE_INVARIANT, LCMAP_UPPERCASE, Path.data(),
++                      Path.size(), Buffer.data(), Buffer.size()))
++    return mapWindowsError(::GetLastError());
++  return std::error_code();
++}
++#else
+ static std::error_code realPathFromHandle(HANDLE H,
+                                           SmallVectorImpl<wchar_t> &Buffer,
+                                           DWORD flags = VOLUME_NAME_DOS) {
+@@ -380,6 +559,16 @@
+     return mapWindowsError(GetLastError());
+   return std::error_code();
+ }
++
++static std::error_code setDispositionInfo(HANDLE H, bool Delete) {
++  FILE_DISPOSITION_INFO Disposition;
++  Disposition.DeleteFile = Delete;
++  if (!SetFileInformationByHandle(H, FileDispositionInfo, &Disposition,
++                                  sizeof(Disposition)))
++    return mapWindowsError(::GetLastError());
++  return std::error_code();
++}
++#endif
+ 
+ static std::error_code realPathFromHandle(HANDLE H,
+                                           SmallVectorImpl<char> &RealPath) {
+@@ -426,11 +615,8 @@
+   // network file. On Windows 7 the function realPathFromHandle() below fails
+   // if the FILE_DISPOSITION_INFO flag was already set to 'DeleteFile = true' by
+   // a prior call.
+-  FILE_DISPOSITION_INFO Disposition;
+-  Disposition.DeleteFile = false;
+-  if (!SetFileInformationByHandle(Handle, FileDispositionInfo, &Disposition,
+-                                  sizeof(Disposition)))
+-    return mapWindowsError(::GetLastError());
++  if (std::error_code EC = setDispositionInfo(Handle, false))
++    return EC;
+   if (!Delete)
+     return std::error_code();
+ 
+@@ -450,11 +636,7 @@
+ 
+   // The file is on a local drive, we can safely set FILE_DISPOSITION_INFO's
+   // flag.
+-  Disposition.DeleteFile = true;
+-  if (!SetFileInformationByHandle(Handle, FileDispositionInfo, &Disposition,
+-                                  sizeof(Disposition)))
+-    return mapWindowsError(::GetLastError());
+-  return std::error_code();
++  return setDispositionInfo(Handle, true);
+ }
+ 
+ static std::error_code rename_internal(HANDLE FromHandle, const Twine &To,
+@@ -463,6 +645,25 @@
+   if (auto EC = widenPath(To, ToWide))
+     return EC;
+ 
++#if _WIN32_WINNT < 0x0600
++  // Unlike SetFileInformationByHandle, NtSetInformationFile takes an NT path.
++  UNICODE_STRING NtTo;
++  if (!RtlDosPathNameToNtPathName_U(ToWide.data(), &NtTo, nullptr, nullptr))
++    return mapWindowsError(ERROR_INVALID_NAME);
++  auto FreeNtTo = make_scope_exit([&NtTo] { RtlFreeUnicodeString(&NtTo); });
++
++  std::vector<char> RenameInfoBuf(sizeof(FILE_RENAME_INFORMATION) -
++                                  sizeof(wchar_t) + NtTo.Length);
++  FILE_RENAME_INFORMATION &RenameInfo =
++      *reinterpret_cast<FILE_RENAME_INFORMATION *>(RenameInfoBuf.data());
++  RenameInfo.ReplaceIfExists = ReplaceIfExists;
++  RenameInfo.RootDirectory = 0;
++  RenameInfo.FileNameLength = NtTo.Length;
++  std::copy(NtTo.Buffer, NtTo.Buffer + NtTo.Length / sizeof(wchar_t),
++            &RenameInfo.FileName[0]);
++  return setFileInformation(FromHandle, &RenameInfo, RenameInfoBuf.size(),
++                            FileRenameInformation);
++#else
+   std::vector<char> RenameInfoBuf(sizeof(FILE_RENAME_INFO) - sizeof(wchar_t) +
+                                   (ToWide.size() * sizeof(wchar_t)));
+   FILE_RENAME_INFO &RenameInfo =
+@@ -482,6 +683,7 @@
+   }
+ 
+   return std::error_code();
++#endif
+ }
+ 
+ static std::error_code rename_handle(HANDLE FromHandle, const Twine &To) {
+@@ -738,8 +940,12 @@
+   // drivers, such as ImDisk. (See
+   // https://github.com/rust-lang/rust/pull/86447.)
+   uint64_t PathHash;
++#if _WIN32_WINNT < 0x0600
++  if (std::error_code EC = identifyingPathFromHandle(FileHandle, ntPath)) {
++#else
+   if (std::error_code EC =
+           realPathFromHandle(FileHandle, ntPath, VOLUME_NAME_NT)) {
++#endif
+     // If realPathFromHandle failed, fall back on the fields
+     // nFileIndex{High,Low} instead. They're not necessarily stable on all file
+     // systems as they're only documented as being unique/stable as long as the
+@@ -946,8 +1152,14 @@
+ }
+ 
+ static bool hasFlushBufferKernelBug() {
++#if _WIN32_WINNT < 0x0600
++  // Builds targeting Windows XP always apply the workaround, so that all
++  // Windows versions take the same path.
++  return true;
++#else
+   static bool Ret{GetWindowsOSVersion() < llvm::VersionTuple(10, 0, 0, 17763)};
+   return Ret;
++#endif
+ }
+ 
+ static bool isEXE(StringRef Magic) {
+@@ -1374,6 +1586,62 @@
+   return std::error_code();
+ }
+ 
++#if _WIN32_WINNT < 0x0600
++// Removes the file or directory Path, which is null terminated without the
++// terminator counted in its size. Read-only files are removed too.
++static std::error_code removeItem(SmallVectorImpl<wchar_t> &Path,
++                                  DWORD Attrs) {
++  if (Attrs & FILE_ATTRIBUTE_READONLY)
++    ::SetFileAttributesW(Path.data(), Attrs & ~FILE_ATTRIBUTE_READONLY);
++  bool Removed = (Attrs & FILE_ATTRIBUTE_DIRECTORY)
++                     ? ::RemoveDirectoryW(Path.data())
++                     : ::DeleteFileW(Path.data());
++  if (!Removed)
++    return mapWindowsError(::GetLastError());
++  return std::error_code();
++}
++
++// Removes the directory Path and everything in it, as remove_directories does.
++// Junctions are removed without descending into them. Before Vista, the shell
++// (SHFileOperationW) follows them instead, and deletes what they point to.
++// Continues after errors, and returns the first one.
++static std::error_code removeTree(SmallVectorImpl<wchar_t> &Path,
++                                  DWORD Attrs) {
++  if (!(Attrs & FILE_ATTRIBUTE_DIRECTORY) ||
++      (Attrs & FILE_ATTRIBUTE_REPARSE_POINT))
++    return removeItem(Path, Attrs);
++
++  std::error_code Result;
++  size_t Len = Path.size();
++  static const wchar_t Pattern[] = L"\\*";
++  Path.append(Pattern, Pattern + std::size(Pattern));
++  WIN32_FIND_DATAW Data;
++  HANDLE Find = ::FindFirstFileW(Path.data(), &Data);
++  Path.truncate(Len);
++  if (Find == INVALID_HANDLE_VALUE) {
++    Result = mapWindowsError(::GetLastError());
++  } else {
++    do {
++      const wchar_t *Name = Data.cFileName;
++      if (!::wcscmp(Name, L".") || !::wcscmp(Name, L".."))
++        continue;
++      Path.push_back(L'\\');
++      Path.append(Name, Name + ::wcslen(Name) + 1);
++      Path.pop_back();
++      std::error_code EC = removeTree(Path, Data.dwFileAttributes);
++      if (EC && !Result)
++        Result = EC;
++      Path.truncate(Len);
++    } while (::FindNextFileW(Find, &Data));
++    ::FindClose(Find);
++  }
++  Path.push_back(L'\0');
++  Path.pop_back();
++  std::error_code EC = removeItem(Path, Attrs);
++  return Result ? Result : EC;
++}
++#endif
++
+ std::error_code remove_directories(const Twine &path, bool IgnoreErrors) {
+   SmallString<128> NativePath;
+   llvm::sys::path::native(path, NativePath, path::Style::windows_backslash);
+@@ -1383,6 +1651,18 @@
+   if (EC && !IgnoreErrors)
+     return EC;
+ 
++#if _WIN32_WINNT < 0x0600
++  // IFileOperation is unavailable before Vista, and SHFileOperationW follows
++  // junctions, so remove the tree by hand.
++  DWORD Attrs = ::GetFileAttributesW(Path16.data());
++  if (Attrs == INVALID_FILE_ATTRIBUTES)
++    EC = mapWindowsError(::GetLastError());
++  else
++    EC = removeTree(Path16, Attrs);
++  if (EC && !IgnoreErrors)
++    return EC;
++  return std::error_code();
++#else
+   // SHFileOperation() accepts a list of paths, and so must be double null-
+   // terminated to indicate the end of the list.  The buffer is already null
+   // terminated, but since that null character is not considered part of the
+@@ -1422,6 +1702,7 @@
+   if (FAILED(HR) && !IgnoreErrors)
+     return mapWindowsError(HRESULT_CODE(HR));
+   return std::error_code();
++#endif
+ }
+ 
+ static void expandTildeExpr(SmallVectorImpl<char> &Path) {
+@@ -1488,8 +1769,25 @@
+ } // end namespace fs
+ 
+ namespace path {
+-static bool getKnownFolderPath(KNOWNFOLDERID folderId,
++#if _WIN32_WINNT < 0x0600
++// SHGetKnownFolderPath is unavailable before Vista; use the equivalent CSIDL.
++static bool getKnownFolderPath(KNOWNFOLDERID folderId, int csidl,
++                               SmallVectorImpl<char> &result) {
++  (void)folderId;
++  wchar_t path[MAX_PATH];
++  if (::SHGetFolderPathW(nullptr, csidl | CSIDL_FLAG_CREATE, nullptr,
++                         SHGFP_TYPE_CURRENT, path) != S_OK)
++    return false;
++
++  bool ok = !UTF16ToUTF8(path, ::wcslen(path), result);
++  if (ok)
++    llvm::sys::path::make_preferred(result);
++  return ok;
++}
++#else
++static bool getKnownFolderPath(KNOWNFOLDERID folderId, int csidl,
+                                SmallVectorImpl<char> &result) {
++  (void)csidl;
+   wchar_t *path = nullptr;
+   if (::SHGetKnownFolderPath(folderId, KF_FLAG_CREATE, nullptr, &path) != S_OK)
+     return false;
+@@ -1500,19 +1798,20 @@
+     llvm::sys::path::make_preferred(result);
+   return ok;
+ }
++#endif
+ 
+ bool home_directory(SmallVectorImpl<char> &result) {
+-  return getKnownFolderPath(FOLDERID_Profile, result);
++  return getKnownFolderPath(FOLDERID_Profile, CSIDL_PROFILE, result);
+ }
+ 
+ bool user_config_directory(SmallVectorImpl<char> &result) {
+   // Either local or roaming appdata may be suitable in some cases, depending
+   // on the data. Local is more conservative, Roaming may not always be correct.
+-  return getKnownFolderPath(FOLDERID_LocalAppData, result);
++  return getKnownFolderPath(FOLDERID_LocalAppData, CSIDL_LOCAL_APPDATA, result);
+ }
+ 
+ bool cache_directory(SmallVectorImpl<char> &result) {
+-  return getKnownFolderPath(FOLDERID_LocalAppData, result);
++  return getKnownFolderPath(FOLDERID_LocalAppData, CSIDL_LOCAL_APPDATA, result);
+ }
+ 
+ static bool getTempDirEnvVar(const wchar_t *Var, SmallVectorImpl<char> &Res) {
+Index: llvm/lib/Support/Windows/Process.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/Windows/Process.inc b/llvm/lib/Support/Windows/Process.inc
+--- a/llvm/lib/Support/Windows/Process.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Process.inc	(date 1792935300770)
+@@ -469,17 +469,28 @@
+   return GetPseudoRandomNumber();
+ }
+ 
+-typedef NTSTATUS(WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+ #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
+ 
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++// Builds targeting Windows XP don't look up functions at runtime. RtlGetVersion
++// is available on all supported versions; ntdll is linked in.
++extern "C" NTSYSAPI NTSTATUS NTAPI RtlGetVersion(PRTL_OSVERSIONINFOW);
++#else
++typedef NTSTATUS(WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
++#endif
++
+ static RTL_OSVERSIONINFOEXW GetWindowsVer() {
+   auto getVer = []() -> RTL_OSVERSIONINFOEXW {
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++    auto getVer = &::RtlGetVersion;
++#else
+     HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
+     assert(hMod);
+ 
+     auto getVer =
+         (RtlGetVersionPtr)(void *)::GetProcAddress(hMod, "RtlGetVersion");
+     assert(getVer);
++#endif
+ 
+     RTL_OSVERSIONINFOEXW info{};
+     info.dwOSVersionInfoSize = sizeof(info);
+Index: llvm/lib/Support/Windows/Signals.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/Windows/Signals.inc b/llvm/lib/Support/Windows/Signals.inc
+--- a/llvm/lib/Support/Windows/Signals.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Signals.inc	(date 1792935434405)
+@@ -111,8 +111,21 @@
+ }
+ 
+ static bool load64BitDebugHelp(void) {
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // LOAD_LIBRARY_SEARCH_SYSTEM32 is unsupported on Windows XP. Load the DLL
++  // from the system directory by its full path instead, which works the same
++  // on all Windows versions.
++  char Path[MAX_PATH];
++  static const char Name[] = "\\Dbghelp.dll";
++  UINT Len = ::GetSystemDirectoryA(Path, MAX_PATH);
++  if (Len == 0 || Len + sizeof(Name) > MAX_PATH)
++    return false;
++  memcpy(Path + Len, Name, sizeof(Name));
++  HMODULE hLib = ::LoadLibraryExA(Path, NULL, 0);
++#else
+   HMODULE hLib =
+       ::LoadLibraryExA("Dbghelp.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
++#endif
+   if (hLib) {
+     fMiniDumpWriteDump = (fpMiniDumpWriteDump)(void *)::GetProcAddress(
+         hLib, "MiniDumpWriteDump");
+@@ -597,6 +610,43 @@
+   return Key;
+ }
+ 
++/// Read a string (REG_SZ or REG_EXPAND_SZ, unexpanded) or REG_DWORD value of
++/// Key, as RegGetValueW does with RRF_RT_REG_SZ or RRF_RT_REG_DWORD. Strings
++/// are null terminated, and their size includes the terminator.
++static LONG getRegValue(HKEY Key, LPCWSTR Name, bool String, PVOID Data,
++                        LPDWORD DataSize) {
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // RegGetValueW is unavailable before Vista.
++  DWORD Avail = Data ? *DataSize : 0;
++  DWORD Type;
++  LONG R = ::RegQueryValueExW(Key, Name, NULL, &Type,
++                              static_cast<LPBYTE>(Data), DataSize);
++  if (R != ERROR_SUCCESS)
++    return R;
++  if (String ? Type != REG_SZ && Type != REG_EXPAND_SZ : Type != REG_DWORD)
++    return ERROR_UNSUPPORTED_TYPE;
++  if (!String)
++    return ERROR_SUCCESS;
++  if (!Data) {
++    *DataSize += sizeof(wchar_t);
++    return ERROR_SUCCESS;
++  }
++  wchar_t *Str = static_cast<wchar_t *>(Data);
++  DWORD Len = *DataSize / sizeof(wchar_t);
++  if (Len && Str[Len - 1] == L'\0')
++    return ERROR_SUCCESS;
++  if ((Len + 1) * sizeof(wchar_t) > Avail)
++    return ERROR_MORE_DATA;
++  Str[Len] = L'\0';
++  *DataSize = (Len + 1) * sizeof(wchar_t);
++  return ERROR_SUCCESS;
++#else
++  return ::RegGetValueW(Key, NULL, Name,
++                        String ? RRF_RT_REG_SZ : RRF_RT_REG_DWORD, NULL, Data,
++                        DataSize);
++#endif
++}
++
+ /// Populate ResultDirectory with the value for "DumpFolder" for a given
+ /// Windows Registry key.
+ ///
+@@ -610,14 +660,14 @@
+ 
+   DWORD BufferLengthBytes = 0;
+ 
+-  if (ERROR_SUCCESS != ::RegGetValueW(Key, 0, L"DumpFolder", REG_EXPAND_SZ,
+-                                      NULL, NULL, &BufferLengthBytes))
++  if (ERROR_SUCCESS != getRegValue(Key, L"DumpFolder", /*String=*/true, NULL,
++                                   &BufferLengthBytes))
+     return false;
+ 
+   SmallVector<wchar_t, MAX_PATH> Buffer(BufferLengthBytes);
+ 
+-  if (ERROR_SUCCESS != ::RegGetValueW(Key, 0, L"DumpFolder", REG_EXPAND_SZ,
+-                                      NULL, Buffer.data(), &BufferLengthBytes))
++  if (ERROR_SUCCESS != getRegValue(Key, L"DumpFolder", /*String=*/true,
++                                   Buffer.data(), &BufferLengthBytes))
+     return false;
+ 
+   DWORD ExpandBufferSize = ::ExpandEnvironmentStringsW(Buffer.data(), NULL, 0);
+@@ -657,16 +707,15 @@
+ 
+   DWORD DumpType;
+   DWORD TypeSize = sizeof(DumpType);
+-  if (ERROR_SUCCESS != ::RegGetValueW(Key, NULL, L"DumpType", RRF_RT_REG_DWORD,
+-                                      NULL, &DumpType, &TypeSize))
++  if (ERROR_SUCCESS != getRegValue(Key, L"DumpType", /*String=*/false,
++                                   &DumpType, &TypeSize))
+     return false;
+ 
+   switch (DumpType) {
+   case 0: {
+     DWORD Flags = 0;
+-    if (ERROR_SUCCESS != ::RegGetValueW(Key, NULL, L"CustomDumpFlags",
+-                                        RRF_RT_REG_DWORD, NULL, &Flags,
+-                                        &TypeSize))
++    if (ERROR_SUCCESS != getRegValue(Key, L"CustomDumpFlags",
++                                     /*String=*/false, &Flags, &TypeSize))
+       return false;
+ 
+     ResultType = static_cast<MINIDUMP_TYPE>(Flags);
+Index: llvm/lib/Support/Windows/Threading.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/Windows/Threading.inc b/llvm/lib/Support/Windows/Threading.inc
+--- a/llvm/lib/Support/Windows/Threading.inc	(revision Staged)
++++ b/llvm/lib/Support/Windows/Threading.inc	(date 1792935528774)
+@@ -16,6 +16,9 @@
+ 
+ #include "llvm/Support/Windows/WindowsSupport.h"
+ #include <process.h>
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++#include <winternl.h>
++#endif
+ 
+ #include <bitset>
+ 
+@@ -50,7 +53,27 @@
+   }
+ }
+ 
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++// GetThreadId is unavailable before Vista; query the thread's client ID
++// through ntdll instead.
++DWORD llvm_thread_get_id_impl(HANDLE hThread) {
++  struct {
++    NTSTATUS ExitStatus;
++    PVOID TebBaseAddress;
++    CLIENT_ID ClientId;
++    ULONG_PTR AffinityMask;
++    LONG Priority;
++    LONG BasePriority;
++  } Info;
++  if (!NT_SUCCESS(::NtQueryInformationThread(hThread, ThreadBasicInformation,
++                                             &Info, sizeof(Info), nullptr)))
++    return 0;
++  return static_cast<DWORD>(
++      reinterpret_cast<ULONG_PTR>(Info.ClientId.UniqueThread));
++}
++#else
+ DWORD llvm_thread_get_id_impl(HANDLE hThread) { return ::GetThreadId(hThread); }
++#endif
+ 
+ DWORD llvm_thread_get_current_id_impl() { return ::GetCurrentThreadId(); }
+ 
+@@ -136,6 +159,28 @@
+   }
+ };
+ 
++#if _WIN32_WINNT < _WIN32_WINNT_WIN7
++// Processor groups, and GetLogicalProcessorInformationEx to enumerate them,
++// are unavailable before Windows 7. Treat the processors of the process
++// affinity mask as a single group, each processor being its own core.
++static ArrayRef<ProcessorGroup> getProcessorGroups() {
++  auto computeGroups = []() {
++    DWORD_PTR ProcessAffinityMask = 0, SystemAffinityMask = 0;
++    if (!::GetProcessAffinityMask(GetCurrentProcess(), &ProcessAffinityMask,
++                                  &SystemAffinityMask))
++      return std::vector<ProcessorGroup>();
++    ProcessorGroup G;
++    G.ID = 0;
++    G.AllThreads = llvm::popcount(SystemAffinityMask);
++    G.UsableThreads = llvm::popcount(ProcessAffinityMask);
++    G.ThreadsPerCore = 1;
++    G.Affinity = ProcessAffinityMask;
++    return std::vector<ProcessorGroup>{G};
++  };
++  static auto Groups = computeGroups();
++  return ArrayRef<ProcessorGroup>(Groups);
++}
++#else
+ template <typename F>
+ static bool IterateProcInfo(LOGICAL_PROCESSOR_RELATIONSHIP Relationship, F Fn) {
+   DWORD Len = 0;
+@@ -244,6 +289,7 @@
+   static auto Groups = computeGroups();
+   return ArrayRef<ProcessorGroup>(Groups);
+ }
++#endif
+ 
+ template <typename R, typename UnaryPredicate>
+ static unsigned aggregate(R &&Range, UnaryPredicate P) {
+@@ -296,6 +342,10 @@
+ void llvm::ThreadPoolStrategy::apply_thread_strategy(
+     unsigned ThreadPoolNum) const {
+ 
++#if _WIN32_WINNT < _WIN32_WINNT_WIN7
++  // There is only a single processor group before Windows 7.
++  (void)ThreadPoolNum;
++#else
+   // After Windows 11 and Windows Server 2022, let the OS do the scheduling,
+   // since a process automatically gains access to all processor groups.
+   if (llvm::RunningWindows11OrGreater())
+@@ -309,11 +359,20 @@
+   Affinity.Group = Groups[*Socket].ID;
+   Affinity.Mask = Groups[*Socket].Affinity;
+   SetThreadGroupAffinity(GetCurrentThread(), &Affinity, nullptr);
++#endif
+ }
+ 
+ llvm::BitVector llvm::get_thread_affinity_mask() {
+   GROUP_AFFINITY Affinity{};
++#if _WIN32_WINNT < _WIN32_WINNT_WIN7
++  // The affinity of a thread can't be queried before Windows 7. Threads start
++  // with the affinity of the process, which LLVM doesn't change.
++  ArrayRef<ProcessorGroup> Groups = getProcessorGroups();
++  if (!Groups.empty())
++    Affinity.Mask = Groups[0].Affinity;
++#else
+   GetThreadGroupAffinity(GetCurrentThread(), &Affinity);
++#endif
+ 
+   static unsigned All =
+       aggregate(getProcessorGroups(),
+Index: llvm/lib/Support/raw_ostream.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/raw_ostream.cpp b/llvm/lib/Support/raw_ostream.cpp
+--- a/llvm/lib/Support/raw_ostream.cpp	(revision Staged)
++++ b/llvm/lib/Support/raw_ostream.cpp	(date 1792935528798)
+@@ -705,10 +705,17 @@
+     return false;
+ 
+   // On Windows 7 and earlier, WriteConsoleW has a low maximum amount of data
+-  // that can be written to the console at a time.
++  // that can be written to the console at a time. Builds targeting Windows XP
++  // always limit it, so that all Windows versions take the same path. There
++  // the limit is lower still, as console I/O goes through a 64 KB heap shared
++  // with CSRSS, and writes of more than about 26 KB fail.
++#if _WIN32_WINNT < _WIN32_WINNT_VISTA
++  size_t MaxWriteSize = 8192;
++#else
+   size_t MaxWriteSize = WideText.size();
+   if (!RunningWindows8OrGreater())
+     MaxWriteSize = 32767;
++#endif
+ 
+   size_t WCharsWritten = 0;
+   do {
+Index: llvm/lib/Support/raw_socket_stream.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/llvm/lib/Support/raw_socket_stream.cpp b/llvm/lib/Support/raw_socket_stream.cpp
+--- a/llvm/lib/Support/raw_socket_stream.cpp	(revision Staged)
++++ b/llvm/lib/Support/raw_socket_stream.cpp	(date 1792935528803)
+@@ -208,6 +208,13 @@
+ manageTimeout(const std::chrono::milliseconds &Timeout,
+               const std::function<int()> &getActiveFD,
+               const std::optional<int> &CancelFD = std::nullopt) {
++#if defined(_WIN32) && _WIN32_WINNT < _WIN32_WINNT_VISTA
++  // WSAPoll is unavailable before Vista.
++  (void)Timeout;
++  (void)getActiveFD;
++  (void)CancelFD;
++  return std::make_error_code(std::errc::not_supported);
++#else
+   struct pollfd FD[2];
+   FD[0].events = POLLIN;
+ #ifdef _WIN32
+@@ -266,6 +273,7 @@
+   if (FD[0].revents & POLLNVAL)
+     return std::make_error_code(std::errc::bad_file_descriptor);
+   return std::error_code();
++#endif
+ }
+ 
+ Expected<std::unique_ptr<raw_socket_stream>>
