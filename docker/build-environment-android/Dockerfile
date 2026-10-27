@@ -44,8 +44,8 @@ RUN find "$NDK_SYSROOT/usr/lib/" -maxdepth 1 -name "lib*" -exec mv '{}' "$NDK_SY
 RUN ./build-llvm.sh "x86_64-linux-android21" "$NDK_SYSROOT"
 RUN find "$NDK_SYSROOT/usr/lib/" -maxdepth 1 -name "lib*" -exec mv '{}' "$NDK_SYSROOT/usr/lib/x86_64-linux-android" \;
 
-RUN dotnet workload install android
-RUN dotnet workload install maui-android
+RUN dotnet workload install android --version 10.0.100 # newer versions have this issue https://github.com/dotnet/maui/issues/38507
+RUN dotnet workload install maui-android --version 10.0.100
 
 RUN wget -O glab.deb https://gitlab.com/gitlab-org/cli/-/releases/v1.120.0/downloads/glab_1.120.0_linux_amd64.deb
 RUN dpkg -i glab.deb
