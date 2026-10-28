@@ -27,6 +27,8 @@
           - scripts/docker/cross.linux.cmake.template
           - scripts/docker/generate-toolchain-file.sh
           - scripts/docker/packages
+          - scripts/docker/llvm.xp.lib.final.patch
+          - scripts/docker/llvm.xp.toolchain.final.patch
 
 Build Docker Image (x86_64-linux-gnu):
   tags:

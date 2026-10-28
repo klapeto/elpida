@@ -18,7 +18,7 @@ ENV PKG_CONFIG_PATH=/opt/sysroots/$TARGET_TRIPLE/usr/lib/$TARGET_TRIPLE/pkgconfi
 WORKDIR /tmp/llvm-mingw
 ADD ./scripts/docker/llvm.xp.toolchain.final.patch ./
 RUN patch -p1 -d ./llvm-project < llvm.xp.toolchain.final.patch # Conditional?
-RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt
+RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt --with-default-win32-winnt=0x0501
 
 WORKDIR /tmp/
 ADD ./scripts/docker/packages ./scripts/docker/generate-sysroot.sh ./
