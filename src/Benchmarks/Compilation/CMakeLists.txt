@@ -95,7 +95,7 @@ target_link_libraries(elpida-compilation-benchmarks PUBLIC elpida-core elpida-co
         musl-lite)
 
 if (WIN32)
-    target_link_libraries(elpida-compilation-benchmarks PUBLIC ntdll version)
+    target_link_libraries(elpida-compilation-benchmarks PUBLIC ntdll version psapi)
 endif()
 
 if (LINUX)
