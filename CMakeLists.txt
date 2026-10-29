@@ -44,7 +44,7 @@ elseif (MSYS OR MSVC OR MINGW)
     add_compile_definitions(-DUNICODE=1)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
-    add_link_options(-Wl,--major-subsystem-version,5 -Wl,--minor-subsystem-version,1) # We support XP and above
+    add_link_options(-Wl,--major-subsystem-version,5 -Wl,--minor-subsystem-version,1 -lpsapi -lntdll) # for windows XP support
 #    add_compile_definitions(-DWIN32=1)
 #    add_compile_definitions(-DWINVER=0x0600) # We support XP and above
 #    add_compile_definitions(-D_WIN32_WINNT=0x0600) # We support XP and above
