@@ -258,9 +258,11 @@ int main(int argC, char** argV)
 			<< ValueUtilities::GetTimeScaleValue(Seconds((5.0 * total)
 				+ (helper.GetSecondsBetweenRuns() * helper.GetIterationsToRun()))));
 
+		auto startTime = Timer::now();
 		fullBenchmarkController.RunAsync();
 		fullBenchmarkController.WaitToCompleteRun();
-
+		auto endTime = Timer::now();
+		auto duration = ToDuration(endTime - startTime);
 		auto& resultPath = helper.GetResultPath();
 
 		auto writeResults = [&]()
@@ -290,6 +292,7 @@ int main(int argC, char** argV)
 		{
 			WriteResultsToFile(writeResults, resultPath);
 		}
+		ELPIDA_OUT("Benchmark completed. Execution time: " << std::setprecision(2) << ValueUtilities::GetTimeScaleValue(duration));
 	}
 	catch (const std::exception& ex)
 	{

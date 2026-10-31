@@ -12,7 +12,7 @@ else ()
     set(ARCH "generic")
 endif ()
 
-add_library(musl-platform
+add_library(musl-platform OBJECT
         platform/errno-location.c
 )
 

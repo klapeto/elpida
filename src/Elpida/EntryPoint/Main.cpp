@@ -44,6 +44,29 @@
 
 #include "Elpida/Core/ModuleExports.hpp"
 
+#if defined(_WIN32)
+#include <windows.h>
+
+extern "C" int mi_init_hooks();
+
+static void enable_lfh_all_heaps(void)
+{
+	// Older windows have performance issues when doing multiple allocations on multiple threads
+	HANDLE heaps[64];
+	DWORD n = GetProcessHeaps(64, heaps);
+	if (n > 64)
+	{
+		n = 64;
+	}
+	for (DWORD i = 0; i < n; i++)
+	{
+		ULONG mode = 2; /* 2 = LFH */
+		HeapSetInformation(heaps[i], HeapCompatibilityInformation,
+						   &mode, sizeof(mode));
+	}
+}
+#endif
+
 using namespace nlohmann;
 using namespace Elpida;
 
@@ -158,6 +181,11 @@ ELPIDA_CREATE_BENCHMARK_GROUP_FUNC();
 
 int main(int argC, char** argV)
 {
+#ifdef _WIN32
+	enable_lfh_all_heaps();
+	mi_init_hooks();
+#endif
+
 	try
 	{
 		OsUtilities::ConvertArgumentsToUTF8(argC, argV);

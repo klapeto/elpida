@@ -1,3 +1,4 @@
+add_subdirectory(Mimalloc)
 add_subdirectory(Musl)
 add_subdirectory(Elpida)
 add_subdirectory(CommonTasks)

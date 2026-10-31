@@ -3,7 +3,6 @@ project("Elpida Benchmark Entry Point" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
-
 add_library(elpida-entry-point
         Main.cpp
         ArgumentsHelper.cpp
@@ -12,4 +11,4 @@ add_library(elpida-entry-point
         ResultFormatter.cpp
 )
 
-target_link_libraries(elpida-entry-point PUBLIC elpida-core elpida-platform)
+target_link_libraries(elpida-entry-point PUBLIC elpida-core elpida-platform musl-lite musl-platform mimalloc)

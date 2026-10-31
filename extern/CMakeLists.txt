@@ -37,5 +37,9 @@ set(LIBPNG_INCLUDE_DIRECTORIES
 set(BOOST_REGEX_STANDALONE ON)
 add_subdirectory(${ELPIDA_EXTERN_PATH}/boost-regex ${CMAKE_CURRENT_BINARY_DIR}/boost-regex)
 
+if (WIN32)
+    add_subdirectory(minhook)
+endif ()
+
 include(../cmake-modules/openssl.cmake)
 #include(../cmake-modules/hwloc.cmake)

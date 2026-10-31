@@ -92,3 +92,6 @@ add_subdirectory(extern)
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
+
+# Packages are made from the bin directory, so the licenses go along with the binaries
+install(FILES LICENSE THIRD_PARTY_NOTICES.txt DESTINATION bin)
