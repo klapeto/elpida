@@ -213,7 +213,7 @@ target_compile_definitions(mimalloc PRIVATE MI_DEBUG=0 MI_STATS=0)
 
 - mimalloc is MIT (`src/Mimalloc/LICENSE`), MinHook is BSD-2-Clause including the Hacker Disassembler Engine
   (`extern/minhook/LICENSE.txt`). Both are compatible with Elpida's GPLv3.
-- Binaries must carry their notices: `THIRD_PARTY_NOTICES.txt` (repo root) holds the license texts of all third-party
+- Binaries must carry their notices: `src/THIRD_PARTY_NOTICES.txt` holds the license texts of all third-party
   code in the shipped binaries, and the root `CMakeLists.txt` installs it with `LICENSE` into `bin`, which is what CI
   packages.
 - The file is maintained by hand; versions are locked, so it rarely changes. When a dependency is added or a version
