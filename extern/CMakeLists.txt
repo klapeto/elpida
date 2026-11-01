@@ -38,7 +38,16 @@ set(BOOST_REGEX_STANDALONE ON)
 add_subdirectory(${ELPIDA_EXTERN_PATH}/boost-regex ${CMAKE_CURRENT_BINARY_DIR}/boost-regex)
 
 if (WIN32)
-    add_subdirectory(minhook)
+    # Detours ships no CMake build, only the core sources are needed for hooking
+    set(DETOURS_SOURCE_DIR ${ELPIDA_EXTERN_PATH}/detours/src)
+    add_library(detours STATIC
+            ${DETOURS_SOURCE_DIR}/detours.cpp
+            ${DETOURS_SOURCE_DIR}/disasm.cpp
+            ${DETOURS_SOURCE_DIR}/modules.cpp
+    )
+    target_include_directories(detours PUBLIC ${DETOURS_SOURCE_DIR})
+    # -fms-extensions: MSVC integer suffixes (ui64). Detours redefines ERROR_DYNAMIC_CODE_BLOCKED from winerror.h
+    target_compile_options(detours PRIVATE -fms-extensions -Wno-macro-redefined -Wno-ignored-attributes)
 endif ()
 
 include(../cmake-modules/openssl.cmake)

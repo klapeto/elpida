@@ -65,13 +65,19 @@ terms of the MIT license. A copy of the license can be found in the file
 #include "profile/pprof.c"
 
 #if defined(_WIN32)
-#include "MinHook.h"
+#include <windows.h>
+
+// detours.h redefines ERROR_DYNAMIC_CODE_BLOCKED from winerror.h
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmacro-redefined"
+#include "detours.h"
+#pragma clang diagnostic pop
 
 #include <stdio.h>
 #include <malloc.h>
 #include <mbstring.h>
 
-// Original CRT functions (MinHook trampolines). Memory allocated by the CRT before the hooks
+// Original CRT functions (Detours trampolines). Memory allocated by the CRT before the hooks
 // were installed is not owned by mimalloc and must be handed back to these.
 static void (*__o_free)(void*);
 static void* (*__o_realloc)(void*, size_t);
@@ -294,49 +300,85 @@ void* __h__aligned_offset_recalloc(void* p, size_t count, size_t size, size_t al
 #define MI_CRT_MODULE L"msvcrt"
 #endif
 
+#define MI_MAX_HOOKS 32
+
+typedef struct mi_hook_s
+{
+	void* target;
+	void** pointer;
+} mi_hook_t;
+
+typedef struct mi_hook_alias_s
+{
+	void** from;
+	void** to;
+} mi_hook_alias_t;
+
+static mi_hook_t mi_hooks[MI_MAX_HOOKS];
+static mi_hook_alias_t mi_hook_aliases[MI_MAX_HOOKS];
+static int mi_hook_count;
+static int mi_hook_alias_count;
+
+// Detours writes the trampoline into the attached pointer on commit, so hooks that do not keep the
+// original still need storage that outlives mi_init_hooks().
+static void* mi_hook_unused_originals[MI_MAX_HOOKS];
+
 // Hooks the function exported by the CRT dll so every caller (including the CRT itself and other
 // modules) is redirected. Functions the dll does not export (eg. emulated by mingw) are hooked
 // at the implementation linked into this module instead.
 static int mi_hook(void* local, void* detour, void** original, const char* name)
 {
-	void* target = NULL;
-	MH_STATUS status = MH_CreateHookApiEx(MI_CRT_MODULE, name, detour, original, &target);
-
-	if (status == MH_ERROR_ALREADY_CREATED)
-	{
-		// export is an alias of an already hooked function
-		return 0;
-	}
-
-	if (status == MH_ERROR_MODULE_NOT_FOUND || status == MH_ERROR_FUNCTION_NOT_FOUND)
+	void* target = (void*)GetProcAddress(GetModuleHandleW(MI_CRT_MODULE), name);
+	if (target == NULL)
 	{
 		target = local;
-		status = MH_CreateHook(target, detour, original);
 	}
 
-	if (status != MH_OK)
+	// resolve the same way DetourAttach does, so aliases are recognized
+	target = DetourCodeFromPointer(target, NULL);
+
+	for (int i = 0; i < mi_hook_count; ++i)
 	{
-		printf("Failed to hook %s: %s.\n", name, MH_StatusToString(status));
+		if (mi_hooks[i].target == target)
+		{
+			// export is an alias of an already hooked function
+			if (original != NULL)
+			{
+				mi_hook_aliases[mi_hook_alias_count++] = (mi_hook_alias_t){ mi_hooks[i].pointer, original };
+			}
+			return 0;
+		}
+	}
+
+	if (mi_hook_count == MI_MAX_HOOKS)
+	{
+		printf("Failed to hook %s: too many hooks.\n", name);
 		return 1;
 	}
 
-	if (MH_QueueEnableHook(target) != MH_OK)
+	void** pointer = original != NULL ? original : &mi_hook_unused_originals[mi_hook_count];
+	*pointer = target;
+
+	LONG error = DetourAttach(pointer, detour);
+	if (error != NO_ERROR)
 	{
-		printf("Failed to enable %s.\n", name);
+		printf("Failed to hook %s: %ld.\n", name, error);
 		return 1;
 	}
 
+	mi_hooks[mi_hook_count++] = (mi_hook_t){ target, pointer };
 	return 0;
 }
 
-#define MI_HOOK(fun) mi_hook((void*)&fun, (void*)&__h_##fun, NULL, #fun)
-#define MI_HOOK_ORIG(fun) mi_hook((void*)&fun, (void*)&__h_##fun, (void**)&__o_##fun, #fun)
+#define MI_HOOK(fun) if (mi_hook((void*)&fun, (void*)&__h_##fun, NULL, #fun)) goto abort
+#define MI_HOOK_ORIG(fun) if (mi_hook((void*)&fun, (void*)&__h_##fun, (void**)&__o_##fun, #fun)) goto abort
 
 int mi_init_hooks()
 {
-	if (MH_Initialize() != MH_OK)
+	LONG error = DetourTransactionBegin();
+	if (error != NO_ERROR)
 	{
-		printf("Failed to initialize MinHook.\n");
+		printf("Failed to begin hook transaction: %ld.\n", error);
 		return 1;
 	}
 
@@ -362,13 +404,23 @@ int mi_init_hooks()
 	MI_HOOK_ORIG(_aligned_offset_recalloc);
 
 	// enable all hooks at once so malloc/free are never mixed between allocators
-	if (MH_ApplyQueued() != MH_OK)
+	error = DetourTransactionCommit();
+	if (error != NO_ERROR)
 	{
-		printf("Failed to apply hooks.\n");
+		printf("Failed to apply hooks: %ld.\n", error);
 		return 1;
 	}
 
+	for (int i = 0; i < mi_hook_alias_count; ++i)
+	{
+		*mi_hook_aliases[i].to = *mi_hook_aliases[i].from;
+	}
+
 	return 0;
+
+abort:
+	DetourTransactionAbort();
+	return 1;
 }
 #elif !defined(__BIONIC__)
 void* malloc(size_t size)
