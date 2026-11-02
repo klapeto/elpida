@@ -183,13 +183,17 @@ int main(int argC, char** argV)
 
 				Duration overhead;
 
-				topology.PinThreadToProcessor(pu.get()->GetOsIndex().value());
-				overhead = TimingCalculator::CalculateLoopOverheadFast();
-
-				if (overhead < loopOverhead)
+				auto osIndex = pu.get()->GetOsIndex();
+				if (osIndex.has_value())
 				{
-					highestCore = pu->GetOsIndex().value();
-					loopOverhead = overhead;
+					topology.PinThreadToProcessor(osIndex.value());
+					overhead = TimingCalculator::CalculateLoopOverheadFast();
+
+					if (overhead < loopOverhead)
+					{
+						highestCore = osIndex.value();
+						loopOverhead = overhead;
+					}
 				}
 			}
 
