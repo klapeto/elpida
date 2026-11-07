@@ -1,0 +1,476 @@
+diff --git a/build-compiler-rt.sh b/build-compiler-rt.sh
+index f80272c..2bfdf1f 100755
+--- a/build-compiler-rt.sh
++++ b/build-compiler-rt.sh
+@@ -57,7 +57,8 @@ mkdir -p "$PREFIX"
+ PREFIX="$(cd "$PREFIX" && pwd)"
+ export PATH="$PREFIX/bin:$PATH"
+ 
+-: ${ARCHS:=${TOOLCHAIN_ARCHS-i686 x86_64 armv7 aarch64}}
++: ${ARCHS:=${TOOLCHAIN_ARCHS-i686 x86_64 armv7 aarch64 riscv64}}
++: ${TARGET_OSES:=${TOOLCHAIN_TARGET_OSES-w64-mingw32 linux-gnu linux-android}}
+ 
+ ANY_ARCH=$(echo $ARCHS | awk '{print $1}')
+ CLANG_RESOURCE_DIR="$("$PREFIX/bin/$ANY_ARCH-w64-mingw32-clang" --print-resource-dir)"
+@@ -91,55 +92,129 @@ if [ -h "$CLANG_RESOURCE_DIR/include" ]; then
+     INSTALL_PREFIX="$WORKDIR/install"
+ fi
+ 
+-
+ for arch in $ARCHS; do
+-    [ -z "$CLEAN" ] || rm -rf build-$arch$BUILD_SUFFIX
+-    mkdir -p build-$arch$BUILD_SUFFIX
+-    cd build-$arch$BUILD_SUFFIX
+-    [ -n "$NO_RECONF" ] || rm -rf CMake*
+-    cmake \
+-        ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
+-        -DCMAKE_BUILD_TYPE=Release \
+-        -DCMAKE_INSTALL_PREFIX="$CLANG_RESOURCE_DIR" \
+-        -DCMAKE_C_COMPILER=$arch-w64-mingw32-clang \
+-        -DCMAKE_CXX_COMPILER=$arch-w64-mingw32-clang++ \
+-        -DCMAKE_SYSTEM_NAME=Windows \
+-        -DCMAKE_AR="$PREFIX/bin/llvm-ar" \
+-        -DCMAKE_RANLIB="$PREFIX/bin/llvm-ranlib" \
+-        -DCMAKE_C_COMPILER_WORKS=1 \
+-        -DCMAKE_CXX_COMPILER_WORKS=1 \
+-        -DCMAKE_C_COMPILER_TARGET=$arch-w64-windows-gnu \
+-        -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE \
+-        -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE \
+-        -DCOMPILER_RT_BUILD_BUILTINS=$BUILD_BUILTINS \
+-        -DCOMPILER_RT_EXCLUDE_ATOMIC_BUILTIN=FALSE \
+-        -DLLVM_CONFIG_PATH="" \
+-        -DCMAKE_FIND_ROOT_PATH=$PREFIX/$arch-w64-mingw32 \
+-        -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+-        -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY \
+-        -DSANITIZER_CXX_ABI=libc++ \
+-        -DCMAKE_C_FLAGS_INIT="$CFGUARD_CFLAGS" \
+-        -DCMAKE_CXX_FLAGS_INIT="$CFGUARD_CFLAGS" \
+-        $SRC_DIR
+-    cmake --build . ${CORES:+-j${CORES}}
+-    cmake --install . --prefix "$INSTALL_PREFIX"
+-    mkdir -p "$PREFIX/$arch-w64-mingw32/bin"
+-    if [ -n "$SANITIZERS" ]; then
+-        case $arch in
+-        aarch64)
+-            # asan doesn't work on aarch64 or armv7; make this clear by omitting
+-            # the installed files altogether.
+-            rm "$INSTALL_PREFIX/lib/windows/libclang_rt.asan"*aarch64*
+-            ;;
+-        armv7)
+-            rm "$INSTALL_PREFIX/lib/windows/libclang_rt.asan"*arm*
+-            ;;
+-        *)
+-            mv "$INSTALL_PREFIX/lib/windows/"*.dll "$PREFIX/$arch-w64-mingw32/bin"
++    for target_os in $TARGET_OSES; do
++        build_folder=build-$arch-$target_os$BUILD_SUFFIX
++        [ -z "$CLEAN" ] || rm -rf $build_folder
++        mkdir -p $build_folder
++        cd $build_folder
++        [ -n "$NO_RECONF" ] || rm -rf CMake*
++
++        case $target_os in
++        *mingw*)
++        cmake \
++            ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
++            -DCMAKE_BUILD_TYPE=Release \
++            -DCMAKE_INSTALL_PREFIX="$CLANG_RESOURCE_DIR" \
++            -DCMAKE_C_COMPILER=$arch-$target_os-clang \
++            -DCMAKE_CXX_COMPILER=$arch-$target_os-clang++ \
++            -DCMAKE_SYSTEM_NAME=Windows \
++            -DCMAKE_AR="$PREFIX/bin/llvm-ar" \
++            -DCMAKE_RANLIB="$PREFIX/bin/llvm-ranlib" \
++            -DCMAKE_C_COMPILER_WORKS=1 \
++            -DCMAKE_CXX_COMPILER_WORKS=1 \
++            -DCMAKE_C_COMPILER_TARGET=$arch-$target_os-gnu \
++            -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE \
++            -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE \
++            -DCOMPILER_RT_BUILD_BUILTINS=$BUILD_BUILTINS \
++            -DCOMPILER_RT_EXCLUDE_ATOMIC_BUILTIN=FALSE \
++            -DLLVM_CONFIG_PATH="" \
++            -DCMAKE_FIND_ROOT_PATH=$PREFIX/$arch-$target_os \
++            -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
++            -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY \
++            -DSANITIZER_CXX_ABI=libc++ \
++            -DCMAKE_C_FLAGS_INIT="$CFGUARD_CFLAGS" \
++            -DCMAKE_CXX_FLAGS_INIT="$CFGUARD_CFLAGS" \
++            $SRC_DIR
+             ;;
++        *android*)
++
++                case $arch in
++                 *i686*)
++                 abi=x86
++                ;;
++                *x86_64*)
++                 abi=x86_64
++                ;;
++                *riscv64*)
++                 abi=riscv64
++                ;;
++                *armv7*)
++                 abi=armeabi-v7a
++                ;;
++                *aarch64*)
++                 abi=arm64-v8a
++                ;;
++                esac
++        cmake \
++            ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
++            -DCMAKE_BUILD_TYPE=Release \
++            -DCMAKE_INSTALL_PREFIX="$CLANG_RESOURCE_DIR" \
++            -DCMAKE_C_COMPILER=$arch-$target_os-clang \
++            -DCMAKE_CXX_COMPILER=$arch-$target_os-clang++ \
++            -DCMAKE_SYSTEM_NAME=Android \
++            -DCMAKE_AR="$PREFIX/bin/llvm-ar" \
++            -DCMAKE_RANLIB="$PREFIX/bin/llvm-ranlib" \
++            -DCMAKE_C_COMPILER_WORKS=1 \
++            -DCMAKE_CXX_COMPILER_WORKS=1 \
++            -DCMAKE_C_COMPILER_TARGET=$arch-$target_os \
++            -DCMAKE_SYSTEM_VERSION=21 \
++            -DANDROID_NATIVE_API_LEVEL=21 \
++            -DANDROID_PLATFORM=android-21 \
++            -DANDROID_ABI=$abi \
++            -DCMAKE_ANDROID_ARCH_ABI=$abi \
++            -DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=/home/klapeto/Λήψεις/toolchain/ \
++            -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE \
++            -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE \
++            -DCOMPILER_RT_BUILD_BUILTINS=$BUILD_BUILTINS \
++            -DCOMPILER_RT_EXCLUDE_ATOMIC_BUILTIN=FALSE \
++            -DLLVM_CONFIG_PATH="" \
++            -DSANITIZER_CXX_ABI=libc++ \
++            $SRC_DIR
++        ;;
++        *gnu*)
++            cmake \
++            ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
++            -DCMAKE_BUILD_TYPE=Release \
++            -DCMAKE_INSTALL_PREFIX="$CLANG_RESOURCE_DIR" \
++            -DCMAKE_C_COMPILER=$arch-$target_os-clang \
++            -DCMAKE_CXX_COMPILER=$arch-$target_os-clang++ \
++            -DCMAKE_SYSTEM_NAME=Linux \
++            -DCMAKE_AR="$PREFIX/bin/llvm-ar" \
++            -DCMAKE_RANLIB="$PREFIX/bin/llvm-ranlib" \
++            -DCMAKE_C_COMPILER_WORKS=1 \
++            -DCMAKE_CXX_COMPILER_WORKS=1 \
++            -DCMAKE_C_COMPILER_TARGET=$arch-$target_os \
++            -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE \
++            -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE \
++            -DCOMPILER_RT_BUILD_BUILTINS=$BUILD_BUILTINS \
++            -DCOMPILER_RT_EXCLUDE_ATOMIC_BUILTIN=FALSE \
++            -DLLVM_CONFIG_PATH="" \
++            -DSANITIZER_CXX_ABI=libc++ \
++            $SRC_DIR
++        ;;
+         esac
+-    fi
+-    cd ..
++
++        cmake --build . ${CORES:+-j${CORES}}
++        cmake --install . --prefix "$INSTALL_PREFIX"
++        mkdir -p "$PREFIX/$arch-$target_os/bin"
++        if [ -n "$SANITIZERS" ]; then
++            case $arch in
++            aarch64)
++                # asan doesn't work on aarch64 or armv7; make this clear by omitting
++                # the installed files altogether.
++                rm "$INSTALL_PREFIX/lib/windows/libclang_rt.asan"*aarch64*
++                ;;
++            armv7)
++                rm "$INSTALL_PREFIX/lib/windows/libclang_rt.asan"*arm*
++                ;;
++            *)
++                mv "$INSTALL_PREFIX/lib/windows/"*.dll "$PREFIX/$arch-$target_os/bin"
++                ;;
++            esac
++        fi
++        cd ..
++    done
+ done
+ 
+ if [ "$INSTALL_PREFIX" != "$CLANG_RESOURCE_DIR" ]; then
+diff --git a/build-libcxx.sh b/build-libcxx.sh
+index e9f1c0f..1747a27 100755
+--- a/build-libcxx.sh
++++ b/build-libcxx.sh
+@@ -48,7 +48,8 @@ PREFIX="$(cd "$PREFIX" && pwd)"
+ 
+ export PATH="$PREFIX/bin:$PATH"
+ 
+-: ${ARCHS:=${TOOLCHAIN_ARCHS-i686 x86_64 armv7 aarch64}}
++: ${ARCHS:=${TOOLCHAIN_ARCHS-i686 x86_64 armv7 aarch64 riscv64}}
++: ${TARGET_OSES:=${TOOLCHAIN_TARGET_OSES-w64-mingw32 linux-gnu linux-android}}
+ 
+ if [ ! -d llvm-project/libunwind ] || [ -n "$SYNC" ]; then
+     CHECKOUT_ONLY=1 ./build-llvm.sh
+@@ -75,46 +76,123 @@ else
+ fi
+ 
+ for arch in $ARCHS; do
+-    [ -z "$CLEAN" ] || rm -rf build-$arch
+-    mkdir -p build-$arch
+-    cd build-$arch
+-    [ -n "$NO_RECONF" ] || rm -rf CMake*
+-    cmake \
+-        ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
+-        -DCMAKE_BUILD_TYPE=Release \
+-        -DCMAKE_INSTALL_PREFIX="$PREFIX/$arch-w64-mingw32" \
+-        -DCMAKE_C_COMPILER=$arch-w64-mingw32-clang \
+-        -DCMAKE_CXX_COMPILER=$arch-w64-mingw32-clang++ \
+-        -DCMAKE_CXX_COMPILER_TARGET=$arch-w64-windows-gnu \
+-        -DCMAKE_SYSTEM_NAME=Windows \
+-        -DCMAKE_C_COMPILER_WORKS=TRUE \
+-        -DCMAKE_CXX_COMPILER_WORKS=TRUE \
+-        -DLLVM_PATH="$LLVM_PATH" \
+-        -DCMAKE_AR="$PREFIX/bin/llvm-ar" \
+-        -DCMAKE_RANLIB="$PREFIX/bin/llvm-ranlib" \
+-        -DLLVM_ENABLE_RUNTIMES="libunwind;libcxxabi;libcxx" \
+-        -DLIBUNWIND_USE_COMPILER_RT=TRUE \
+-        -DLIBUNWIND_ENABLE_SHARED=$BUILD_SHARED \
+-        -DLIBUNWIND_ENABLE_STATIC=$BUILD_STATIC \
+-        -DLIBCXX_USE_COMPILER_RT=ON \
+-        -DLIBCXX_ENABLE_SHARED=$BUILD_SHARED \
+-        -DLIBCXX_ENABLE_STATIC=$BUILD_STATIC \
+-        -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE \
+-        -DLIBCXX_CXX_ABI=libcxxabi \
+-        -DLIBCXX_LIBDIR_SUFFIX="" \
+-        -DLIBCXX_INCLUDE_TESTS=FALSE \
+-        -DLIBCXX_INSTALL_MODULES=ON \
+-        -DLIBCXX_INSTALL_MODULES_DIR="$PREFIX/share/libc++/v1" \
+-        -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE \
+-        -DLIBCXXABI_USE_COMPILER_RT=ON \
+-        -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
+-        -DLIBCXXABI_ENABLE_SHARED=OFF \
+-        -DLIBCXXABI_LIBDIR_SUFFIX="" \
+-        -DCMAKE_C_FLAGS_INIT="$CFGUARD_CFLAGS" \
+-        -DCMAKE_CXX_FLAGS_INIT="$CFGUARD_CFLAGS" \
+-        ..
++    for target_os in $TARGET_OSES; do
++        [ -z "$CLEAN" ] || rm -rf build-$arch
++        mkdir -p build-$arch
++        cd build-$arch
++        [ -n "$NO_RECONF" ] || rm -rf CMake*
+ 
+-    cmake --build . ${CORES:+-j${CORES}}
+-    cmake --install .
+-    cd ..
++        case $target_os in
++        *mingw*)
++      cmake \
++            ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
++            -DCMAKE_BUILD_TYPE=Release \
++            -DCMAKE_INSTALL_PREFIX="$PREFIX/$arch-$target_os" \
++            -DCMAKE_C_COMPILER=$arch-$target_os-clang \
++            -DCMAKE_CXX_COMPILER=$arch-$target_os-clang++ \
++            -DCMAKE_CXX_COMPILER_TARGET=$arch-$target_os-gnu \
++            -DCMAKE_SYSTEM_NAME=Windows \
++            -DCMAKE_C_COMPILER_WORKS=TRUE \
++            -DCMAKE_CXX_COMPILER_WORKS=TRUE \
++            -DLLVM_PATH="$LLVM_PATH" \
++            -DCMAKE_AR="$PREFIX/bin/llvm-ar" \
++            -DCMAKE_RANLIB="$PREFIX/bin/llvm-ranlib" \
++            -DLLVM_ENABLE_RUNTIMES="libunwind;libcxxabi;libcxx" \
++            -DLIBUNWIND_USE_COMPILER_RT=TRUE \
++            -DLIBUNWIND_ENABLE_SHARED=$BUILD_SHARED \
++            -DLIBUNWIND_ENABLE_STATIC=$BUILD_STATIC \
++            -DLIBCXX_USE_COMPILER_RT=ON \
++            -DLIBCXX_ENABLE_SHARED=$BUILD_SHARED \
++            -DLIBCXX_ENABLE_STATIC=$BUILD_STATIC \
++            -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE \
++            -DLIBCXX_CXX_ABI=libcxxabi \
++            -DLIBCXX_LIBDIR_SUFFIX="" \
++            -DLIBCXX_INCLUDE_TESTS=FALSE \
++            -DLIBCXX_INSTALL_MODULES=ON \
++            -DLIBCXX_INSTALL_MODULES_DIR="$PREFIX/share/libc++/v1" \
++            -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE \
++            -DLIBCXXABI_USE_COMPILER_RT=ON \
++            -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
++            -DLIBCXXABI_ENABLE_SHARED=OFF \
++            -DLIBCXXABI_LIBDIR_SUFFIX="" \
++            -DCMAKE_C_FLAGS_INIT="$CFGUARD_CFLAGS" \
++            -DCMAKE_CXX_FLAGS_INIT="$CFGUARD_CFLAGS" \
++            ..
++            ;;
++        *android*)
++            system_name=Android
++                  cmake \
++            ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
++            -DCMAKE_BUILD_TYPE=Release \
++            -DCMAKE_INSTALL_PREFIX="$PREFIX/$arch-$target_os" \
++            -DCMAKE_C_COMPILER=$arch-$target_os-clang \
++            -DCMAKE_CXX_COMPILER=$arch-$target_os-clang++ \
++            -DCMAKE_CXX_COMPILER_TARGET=$arch-$target_os \
++            -DCMAKE_SYSTEM_NAME=Android \
++            -DCMAKE_C_COMPILER_WORKS=TRUE \
++            -DCMAKE_CXX_COMPILER_WORKS=TRUE \
++            -DLLVM_PATH="$LLVM_PATH" \
++            -DCMAKE_AR="$PREFIX/bin/llvm-ar" \
++            -DCMAKE_RANLIB="$PREFIX/bin/llvm-ranlib" \
++            -DLLVM_ENABLE_RUNTIMES="libunwind;libcxxabi;libcxx" \
++            -DLIBUNWIND_USE_COMPILER_RT=TRUE \
++            -DLIBUNWIND_ENABLE_SHARED=$BUILD_SHARED \
++            -DLIBUNWIND_ENABLE_STATIC=$BUILD_STATIC \
++            -DLIBCXX_USE_COMPILER_RT=ON \
++            -DLIBCXX_ENABLE_SHARED=$BUILD_SHARED \
++            -DLIBCXX_ENABLE_STATIC=$BUILD_STATIC \
++            -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE \
++            -DLIBCXX_CXX_ABI=libcxxabi \
++            -DLIBCXX_LIBDIR_SUFFIX="" \
++            -DLIBCXX_INCLUDE_TESTS=FALSE \
++            -DLIBCXX_INSTALL_MODULES=ON \
++            -DLIBCXX_INSTALL_MODULES_DIR="$PREFIX/share/libc++/v1" \
++            -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE \
++            -DLIBCXXABI_USE_COMPILER_RT=ON \
++            -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
++            -DLIBCXXABI_ENABLE_SHARED=OFF \
++            -DLIBCXXABI_LIBDIR_SUFFIX=""
++            ..
++        ;;
++        *gnu*)
++            system_name=Android
++                  cmake \
++            ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
++            -DCMAKE_BUILD_TYPE=Release \
++            -DCMAKE_INSTALL_PREFIX="$PREFIX/$arch-$target_os" \
++            -DCMAKE_C_COMPILER=$arch-$target_os-clang \
++            -DCMAKE_CXX_COMPILER=$arch-$target_os-clang++ \
++            -DCMAKE_CXX_COMPILER_TARGET=$arch-$target_os \
++            -DCMAKE_SYSTEM_NAME=Linux \
++            -DCMAKE_C_COMPILER_WORKS=TRUE \
++            -DCMAKE_CXX_COMPILER_WORKS=TRUE \
++            -DLLVM_PATH="$LLVM_PATH" \
++            -DCMAKE_AR="$PREFIX/bin/llvm-ar" \
++            -DCMAKE_RANLIB="$PREFIX/bin/llvm-ranlib" \
++            -DLLVM_ENABLE_RUNTIMES="libunwind;libcxxabi;libcxx" \
++            -DLIBUNWIND_USE_COMPILER_RT=TRUE \
++            -DLIBUNWIND_ENABLE_SHARED=$BUILD_SHARED \
++            -DLIBUNWIND_ENABLE_STATIC=$BUILD_STATIC \
++            -DLIBCXX_USE_COMPILER_RT=ON \
++            -DLIBCXX_ENABLE_SHARED=$BUILD_SHARED \
++            -DLIBCXX_ENABLE_STATIC=$BUILD_STATIC \
++            -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE \
++            -DLIBCXX_CXX_ABI=libcxxabi \
++            -DLIBCXX_LIBDIR_SUFFIX="" \
++            -DLIBCXX_INCLUDE_TESTS=FALSE \
++            -DLIBCXX_INSTALL_MODULES=ON \
++            -DLIBCXX_INSTALL_MODULES_DIR="$PREFIX/share/libc++/v1" \
++            -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE \
++            -DLIBCXXABI_USE_COMPILER_RT=ON \
++            -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
++            -DLIBCXXABI_ENABLE_SHARED=OFF \
++            -DLIBCXXABI_LIBDIR_SUFFIX=""
++            ..
++        ;;
++        esac
++
++        cmake --build . ${CORES:+-j${CORES}}
++        cmake --install .
++        cd ..
++    done
+ done
+diff --git a/build-lldb-mi.sh b/build-lldb-mi.sh
+index 042ef4b..7a25b85 100755
+--- a/build-lldb-mi.sh
++++ b/build-lldb-mi.sh
+@@ -142,6 +142,7 @@ cmake \
+     ${CMAKE_GENERATOR+-G} "$CMAKE_GENERATOR" \
+     -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+     -DCMAKE_BUILD_TYPE=Release \
++    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+     $CMAKEFLAGS \
+     ..
+ 
+diff --git a/build-llvm.sh b/build-llvm.sh
+index ed2fca2..ed69870 100755
+--- a/build-llvm.sh
++++ b/build-llvm.sh
+@@ -320,7 +320,7 @@ cmake \
+     -DCMAKE_BUILD_TYPE=Release \
+     -DLLVM_ENABLE_ASSERTIONS=$ASSERTS \
+     -DLLVM_ENABLE_PROJECTS="$PROJECTS" \
+-    -DLLVM_TARGETS_TO_BUILD="ARM;AArch64;X86;NVPTX" \
++    -DLLVM_TARGETS_TO_BUILD="ARM;AArch64;X86;NVPTX;RISCV" \
+     -DLLVM_INSTALL_TOOLCHAIN_ONLY=$TOOLCHAIN_ONLY \
+     -DLLVM_LINK_LLVM_DYLIB=$LINK_DYLIB \
+     -DLLVM_TOOLCHAIN_TOOLS="llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size;llvm-cxxfilt" \
+diff --git a/build-mingw-w64-libraries.sh b/build-mingw-w64-libraries.sh
+index 7549be4..9ff8a2d 100755
+--- a/build-mingw-w64-libraries.sh
++++ b/build-mingw-w64-libraries.sh
+@@ -54,9 +54,10 @@ cd mingw-w64/mingw-w64-libraries
+ for lib in winpthreads winstorecompat; do
+     cd $lib
+     for arch in $ARCHS; do
+-        [ -z "$CLEAN" ] || rm -rf build-$arch
+-        mkdir -p build-$arch
+-        cd build-$arch
++        build_folder=build-$arch-w64-mingw32
++        [ -z "$CLEAN" ] || rm -rf $build_folder
++        mkdir -p $build_folder
++        cd $build_folder
+         arch_prefix="$PREFIX/$arch-w64-mingw32"
+         ../configure --host=$arch-w64-mingw32 --prefix="$arch_prefix" --libdir="$arch_prefix/lib" \
+             CFLAGS="$USE_CFLAGS" \
+diff --git a/build-mingw-w64.sh b/build-mingw-w64.sh
+index 06a7091..9187689 100755
+--- a/build-mingw-w64.sh
++++ b/build-mingw-w64.sh
+@@ -114,9 +114,10 @@ fi
+ 
+ cd mingw-w64-crt
+ for arch in $ARCHS; do
+-    [ -z "$CLEAN" ] || rm -rf build-$arch
+-    mkdir -p build-$arch
+-    cd build-$arch
++    build_folder=build-$arch-w64-mingw32
++    [ -z "$CLEAN" ] || rm -rf $build_folder
++    mkdir -p $build_folder
++    cd $build_folder
+     case $arch in
+     armv7)
+         FLAGS="--disable-lib32 --disable-lib64 --enable-libarm32"
+diff --git a/install-wrappers.sh b/install-wrappers.sh
+index 31ed31e..af3ad0d 100755
+--- a/install-wrappers.sh
++++ b/install-wrappers.sh
+@@ -42,8 +42,8 @@ fi
+ mkdir -p "$PREFIX"
+ PREFIX="$(cd "$PREFIX" && pwd)"
+ 
+-: ${ARCHS:=${TOOLCHAIN_ARCHS-i686 x86_64 armv7 aarch64}}
+-: ${TARGET_OSES:=${TOOLCHAIN_TARGET_OSES-mingw32 mingw32uwp}}
++: ${ARCHS:=${TOOLCHAIN_ARCHS-i686 x86_64 armv7 aarch64 riscv64}}
++: ${TARGET_OSES:=${TOOLCHAIN_TARGET_OSES-w64-mingw32 w64-mingw32uwp linux-gnu linux-android}}
+ 
+ if [ -n "$HOST" ] && [ -z "$CC" ]; then
+     CC=$HOST-gcc
+@@ -145,9 +145,9 @@ cd "$PREFIX/bin"
+ for arch in $ARCHS; do
+     for target_os in $TARGET_OSES; do
+         for exec in clang clang++ gcc g++ c++ as; do
+-            ln -sf clang-target-wrapper$CTW_SUFFIX $arch-w64-$target_os-$exec$CTW_LINK_SUFFIX
++            ln -sf clang-target-wrapper$CTW_SUFFIX $arch-$target_os-$exec$CTW_LINK_SUFFIX
+         done
+-        ln -sf clang-scan-deps-wrapper$CTW_SUFFIX $arch-w64-$target_os-clang-scan-deps$CTW_LINK_SUFFIX
++        ln -sf clang-scan-deps-wrapper$CTW_SUFFIX $arch-$target_os-clang-scan-deps$CTW_LINK_SUFFIX
+         for exec in addr2line ar ranlib nm objcopy readelf size strings strip llvm-ar llvm-ranlib; do
+             if [ -n "$EXEEXT" ]; then
+                 link_target=llvm-wrapper
+@@ -161,14 +161,14 @@ for arch in $ARCHS; do
+                     ;;
+                 esac
+             fi
+-            ln -sf $link_target$EXEEXT $arch-w64-$target_os-$exec$EXEEXT || true
++            ln -sf $link_target$EXEEXT $arch-$target_os-$exec$EXEEXT || true
+         done
+         # windres and dlltool can't use llvm-wrapper, as that loses the original
+         # target arch prefix.
+-        ln -sf llvm-windres$EXEEXT $arch-w64-$target_os-windres$EXEEXT
+-        ln -sf llvm-dlltool$EXEEXT $arch-w64-$target_os-dlltool$EXEEXT
++        ln -sf llvm-windres$EXEEXT $arch-$target_os-windres$EXEEXT
++        ln -sf llvm-dlltool$EXEEXT $arch-$target_os-dlltool$EXEEXT
+         for exec in ld objdump; do
+-            ln -sf $exec-wrapper.sh $arch-w64-$target_os-$exec
++            ln -sf $exec-wrapper.sh $arch-$target_os-$exec
+         done
+     done
+ done

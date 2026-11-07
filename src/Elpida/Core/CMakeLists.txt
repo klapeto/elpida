@@ -63,7 +63,7 @@ if (NOT ANDROID)
     target_include_directories(elpida-core PRIVATE ${HWLOC_INCLUDE_DIR})
 endif ()
 
-target_link_libraries(elpida-core PUBLIC hwloc)
+target_link_libraries(elpida-core PUBLIC HWLOC::HWLOC)
 
 if (ELPIDA_INSTALL_CORE_LIBRARIES)
     install(TARGETS elpida-core elpida-overheads-calculator ARCHIVE)

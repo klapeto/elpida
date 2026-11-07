@@ -19,8 +19,9 @@ LFH**, so mimalloc is the current choice.
 |---|---|
 | `src/Mimalloc/` | mimalloc sources (single-file build via `static.c`), MIT license in `LICENSE` |
 | `src/Mimalloc/static.c` | includes all of mimalloc; `_WIN32`: hook detours and `mi_init_hooks()`, otherwise: direct `malloc`/`free`/... overrides |
-| `src/Mimalloc/CMakeLists.txt` | builds the `mimalloc` OBJECT library (an empty INTERFACE library on Android), links `minhook` on `WIN32` |
-| `extern/minhook/` | MinHook (git submodule, static library), used to patch the CRT functions at runtime; added only on `WIN32` by `extern/CMakeLists.txt` |
+| `src/Mimalloc/CMakeLists.txt` | builds the `mimalloc` OBJECT library (an empty INTERFACE library on Android), links `detours` on `WIN32` |
+| `extern/detours/` | Microsoft Detours (git submodule), used to patch the CRT functions at runtime |
+| `extern/CMakeLists.txt` | builds the `detours` static library on `WIN32` from `detours.cpp`, `disasm.cpp` and `modules.cpp` (Detours ships no CMake build) |
 | `src/Elpida/EntryPoint/CMakeLists.txt` | `elpida-entry-point` links `mimalloc` |
 | `src/Elpida/EntryPoint/Main.cpp` | calls `mi_init_hooks()` first thing in `main()` on `_WIN32` |
 
@@ -52,26 +53,45 @@ The POSIX-only detours (`posix_memalign`, `aligned_alloc`, `reallocarray`, `mema
 `_dupenv_s` and `_wdupenv_s` are not hooked. XP's `msvcrt.dll` does not export them (they arrived in msvcr80), and the
 mingw headers only declare them in `crtdbg.h`.
 
+### Why Detours
+
+The hooks were first implemented with MinHook, which only supports x86 and x64. Detours also supports ARM64 (and ARM,
+ARM64EC), is MIT licensed and only uses Win32 APIs that exist on XP (`VirtualAlloc`/`VirtualProtect`/`VirtualQuery`,
+`FlushInstructionCache`, `Get`/`SetThreadContext`, `GetProcAddress`, `LoadLibraryEx`).
+
+The submodule is pinned to a commit on `main`, not to the `v4.0.1` tag: that tag is from 2018 and later ARM64 fixes
+are only on `main`. The sources build unmodified with llvm-mingw; `-fms-extensions` is needed for MSVC integer
+suffixes (`ui64`), and the `ERROR_DYNAMIC_CODE_BLOCKED` redefinition warning from `detours.h` is silenced (also around
+the include in `static.c`).
+
 ### `mi_hook()`
 
 ```c
 static int mi_hook(void* local, void* detour, void** original, const char* name)
 ```
 
-1. `MH_CreateHookApiEx(MI_CRT_MODULE, name, ...)` patches the export by name inside the CRT DLL. `MI_CRT_MODULE` is
-   `L"msvcrt"`, or `L"ucrtbase"` when building with `_UCRT`.
-2. `MH_ERROR_ALREADY_CREATED` is treated as success, because some exports are aliases of each other (e.g. `strdup` /
-   `_strdup`).
-3. If the DLL does not export the function (`MH_ERROR_MODULE_NOT_FOUND` / `MH_ERROR_FUNCTION_NOT_FOUND`), the copy
-   linked into the exe (`&fun`) is hooked instead. This is the case for functions mingw emulates in `libmsvcrt.a`
-   because XP's msvcrt lacks them: `_recalloc`, `_aligned_*` and `_aligned_offset_*`.
-4. The hook is queued with `MH_QueueEnableHook`. `mi_init_hooks()` applies all of them at once with `MH_ApplyQueued()`,
-   so `malloc` and `free` are never hooked separately.
+1. The export is looked up by name with `GetProcAddress(GetModuleHandleW(MI_CRT_MODULE), name)`, so the code inside
+   the CRT DLL is patched. `MI_CRT_MODULE` is `L"msvcrt"`, or `L"ucrtbase"` when building with `_UCRT` (llvm-mingw
+   uses msvcrt for both i386 and aarch64).
+2. If the DLL does not export the function, the copy linked into the exe (`&fun`) is hooked instead. This is the case
+   for functions mingw emulates in `libmsvcrt.a` because XP's msvcrt lacks them: `_recalloc`, `_aligned_*` and
+   `_aligned_offset_*`.
+3. The target is resolved with `DetourCodeFromPointer` (as `DetourAttach` does) and compared to the already hooked
+   ones, because some exports are aliases of each other (e.g. `strdup` / `_strdup`). An alias is skipped; if it wants
+   the original, its `__o_<fun>` is copied from the first hook after commit. Detours has no duplicate detection of its
+   own: a second attach would overwrite the first patch and leak a trampoline.
+4. `DetourAttach` is called inside the transaction started by `mi_init_hooks()`. `DetourTransactionCommit()` applies
+   all hooks at once, so `malloc` and `free` are never hooked separately. If any hook fails, the whole transaction is
+   aborted and the CRT allocator stays in use: a partially hooked CRT (e.g. `_aligned_malloc` without
+   `_aligned_free`) would mix allocators.
 
-Macros:
+Detours writes the trampoline into the attached pointer on commit, not on attach. Every hook therefore needs a pointer
+that outlives the call: `__o_<fun>` for `MI_HOOK_ORIG`, a slot in `mi_hook_unused_originals` for `MI_HOOK`.
+
+Macros (both abort the transaction on failure):
 
 - `MI_HOOK(fun)`: hook without keeping the original.
-- `MI_HOOK_ORIG(fun)`: also stores the original (MinHook trampoline) in `__o_<fun>`.
+- `MI_HOOK_ORIG(fun)`: also stores the original (Detours trampoline) in `__o_<fun>`.
 
 ### Pointers mimalloc does not own
 
@@ -153,14 +173,17 @@ Why:
 
 mimalloc gets all of its memory from `VirtualAlloc` (`prim/windows/prim.c`), never from
 `HeapCreate`/`HeapAlloc`. There is no mimalloc heap to switch to LFH. `enable_lfh_all_heaps()` would only affect
-allocations that bypass mimalloc (CRT allocations made before the hooks, direct `HeapAlloc` users, MinHook).
+allocations that bypass mimalloc (CRT allocations made before the hooks, direct `HeapAlloc` users).
 
-### Extra process heap (5 → 6)
+### Never remove the hooks
 
-With hooks enabled the process has one more heap. It is MinHook's private heap, created in `MH_Initialize()`
-(`extern/minhook/src/hook.c`, `HeapCreate(0, 0, 0)`). It is harmless and small. **Do not call `MH_Uninitialize()` at
-exit**: it removes the hooks, and later frees of mimalloc memory (atexit handlers, static destructors, CRT teardown)
-would go to the CRT `free` and crash.
+**Do not detach the hooks at exit** (`DetourDetach`): later frees of mimalloc memory (atexit handlers, static
+destructors, CRT teardown) would go to the CRT `free` and crash.
+
+With MinHook the process had one more heap (MinHook's private `HeapCreate` heap). Detours allocates its trampolines
+with `VirtualAlloc` and its bookkeeping with `operator new`. The bookkeeping is allocated by the CRT before the commit
+and deleted after it through the hooked `free`. This is safe because `__o_free` is set in the same commit, before the
+deletes, and `mi_cfree` hands the foreign pointers back to it.
 
 ### Aligned-OS-memory warning
 
@@ -211,14 +234,14 @@ target_compile_definitions(mimalloc PRIVATE MI_DEBUG=0 MI_STATS=0)
 
 ## Licensing
 
-- mimalloc is MIT (`src/Mimalloc/LICENSE`), MinHook is BSD-2-Clause including the Hacker Disassembler Engine
-  (`extern/minhook/LICENSE.txt`). Both are compatible with Elpida's GPLv3.
+- mimalloc is MIT (`src/Mimalloc/LICENSE`), Detours is MIT (`extern/detours/LICENSE`). Both are compatible with
+  Elpida's GPLv3.
 - Binaries must carry their notices: `src/THIRD_PARTY_NOTICES.txt` holds the license texts of all third-party
   code in the shipped binaries, and the root `CMakeLists.txt` installs it with `LICENSE` into `bin`, which is what CI
   packages.
 - The file is maintained by hand; versions are locked, so it rarely changes. When a dependency is added or a version
   changes, update its section. Where each part came from:
-  - In-repo code (mimalloc, MinHook, musl, zlib, libpng, json.hpp, getopt): the license files and headers in `src/`,
+  - In-repo code (mimalloc, Detours, musl, zlib, libpng, json.hpp, getopt): the license files and headers in `src/`,
     `extern/` and `include/`.
   - OpenSSL 3.6.0, cpp-httplib 0.14.3, Boost, LLVM 21.1.0, mingw-w64 runtime, winpthreads, GCC Runtime Library
     Exception (gcc 10.5.0): the upstream license files at those versions.
@@ -258,16 +281,18 @@ These can also be set in code with `mi_option_set(...)` before `mi_init_hooks()`
 6. **Watch for allocator-mismatch crashes**: if msvcrt or another DLL frees memory internally with `HeapFree` instead
    of its exported `free`, mimalloc pointers would reach the Windows heap. Nothing like this has been seen since the
    `MI_OWNS`/`mi_cfree` fallback, but it is the first suspect for any new heap-related crash.
-7. **Keep or drop `enable_lfh_all_heaps()`**: it is currently commented out in `main()`. With mimalloc it only affects
-   allocations that bypass mimalloc and costs nothing; if kept, call it before `mi_init_hooks()`.
+7. **Keep or drop `enable_lfh_all_heaps()`**: it is currently called in `main()`, before `mi_init_hooks()`. With
+   mimalloc it only affects allocations that bypass mimalloc and costs nothing; if kept, keep it before
+   `mi_init_hooks()`.
 8. **Watch musl duplicates on link changes**: musl's `strdup`/`strndup`/`wcsdup` do not clash today only because they
    share an archive with `static.c.o`. If `mimalloc` objects are ever linked directly next to `musl-lite` objects,
    expect duplicate-symbol errors; drop one side.
 9. **Clean up `static.c`**: on Windows, remove the unused POSIX `__h_*` detours (`__h_posix_memalign`, `__h_realpath`,
    ...) and the unhooked `__h__strndup`, `__h__dupenv_s`, `__h__wdupenv_s`. On Linux, remove the Windows-only
    overrides in the `#else` branch (`_expand`, `_msize`, `_recalloc`, `_strdup`, `_aligned_*`, `_dupenv_s`, ...).
-10. **Other Windows targets**: decide whether the hooks should also run on x86_64/aarch64 Windows builds, or only on
-    XP. Test the `ucrtbase` path (`_UCRT`) if so.
+10. **Test on real hardware**: the Detours port compiles and links for i386 and aarch64 but has not been run yet.
+    Check on XP and on Windows on ARM that `mi_init_hooks()` returns 0 and `MIMALLOC_SHOW_STATS=1` shows the
+    allocations. Test the `ucrtbase` path (`_UCRT`) if a UCRT build is ever made.
 11. **Linux on old distros**: test on the oldest supported distro (bionic). If any `invalid pointer` errors appear, add
     the `__libc_*` forwarders (see [Linux](#linux-link-time-override)).
 12. **Linux performance**: compare mimalloc against plain glibc malloc on an optimized Linux build, as was done for XP.
