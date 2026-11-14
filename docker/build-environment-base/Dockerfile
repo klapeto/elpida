@@ -79,7 +79,9 @@ RUN git clone --depth=1 -b v6.10.0 git://code.qt.io/qt/qt5.git qt6 && \
     ./init-repository --module-subset=qtcharts,qtsvg,qtbase && \
     mkdir -p build
 
-RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git && \
+# LLVM libraries of the Compilation benchmark (scripts/docker/build-llvm.sh). Pinned: the benchmark measures this
+# code, so every target must use exactly the same LLVM.
+RUN git clone --depth=1 -b llvmorg-19.1.7 https://github.com/llvm/llvm-project.git && \
     mkdir -p ./llvm-project/llvm/build
 
 RUN git clone --recursive https://gitlab.freedesktop.org/xorg/lib/libxcb-cursor.git && \

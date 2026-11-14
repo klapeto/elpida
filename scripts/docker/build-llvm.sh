@@ -22,7 +22,15 @@ this_dir="$(readlink -f "$(dirname "$0")")"
 . ${this_dir}/build-base.sh
 
 if [ ! -d ./llvm-project ]; then
-    git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git
+    # pinned: the Compilation benchmark measures this code, so every target must use the exact same LLVM
+    git clone --depth=1 -b llvmorg-19.1.7 https://github.com/llvm/llvm-project.git
+fi
+
+# Benchmark code parity: remove the Lexer's SSE2/SSE4.2/AltiVec paths so every host lexes with the same code
+if git -C ./llvm-project apply --reverse --check "${this_dir}/llvm.parity.patch" 2>/dev/null; then
+    echo "llvm.parity.patch already applied"
+else
+    git -C ./llvm-project apply "${this_dir}/llvm.parity.patch"
 fi
 
 mkdir -p ./llvm-project/llvm/build
@@ -31,7 +39,22 @@ cd ./llvm-project/llvm/build
 # we need -fno-builtin because on arm64 windows the compilation benchmark crashes (wtf?)
 CFLAGS="-fno-builtin $CFLAGS"
 
+# Benchmark code parity (docs/development/code-parity.md), same as the root CMakeLists.txt
+CFLAGS="$("${this_dir}/parity-flags.sh" "$TARGET_TRIPLE") $CFLAGS"
+# xxh3 (used by StringMap for every identifier) has a NEON path on aarch64
+CFLAGS="-DLLVM_XXH_USE_NEON=0 $CFLAGS"
+
+ANDROID_FLAGS=""
+case $TARGET_TRIPLE in
+*-android*)
+    android_api=${TARGET_TRIPLE##*-android}
+    android_api=${android_api#eabi}
+    ANDROID_FLAGS="-DANDROID=ON${android_api:+ -DANDROID_NATIVE_API_LEVEL=$android_api}"
+    ;;
+esac
+
 cmake -S .. \
+  $ANDROID_FLAGS \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
   -DCMAKE_C_COMPILER="$CC" \

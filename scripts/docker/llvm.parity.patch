@@ -1,0 +1,50 @@
+--- a/clang/lib/Lex/Lexer.cpp	2026-11-08 22:18:37.756245864 +0200
++++ b/clang/lib/Lex/Lexer.cpp	2026-11-08 22:18:37.765216004 +0200
+@@ -47,7 +47,7 @@
+ #include <tuple>
+ #include <utility>
+ 
+-#ifdef __SSE4_2__
++#if 0 // Elpida benchmark parity: was __SSE4_2__
+ #include <nmmintrin.h>
+ #endif
+ 
+@@ -1904,7 +1904,7 @@
+ static const char *
+ fastParseASCIIIdentifier(const char *CurPtr,
+                          [[maybe_unused]] const char *BufferEnd) {
+-#ifdef __SSE4_2__
++#if 0 // Elpida benchmark parity: was __SSE4_2__
+   alignas(16) static constexpr char AsciiIdentifierRange[16] = {
+       '_', '_', 'A', 'Z', 'a', 'z', '0', '9',
+   };
+@@ -2826,9 +2826,9 @@
+   return true;
+ }
+ 
+-#ifdef __SSE2__
++#if 0 // Elpida benchmark parity: was __SSE2__
+ #include <emmintrin.h>
+-#elif __ALTIVEC__
++#elif 0 // Elpida benchmark parity: was __ALTIVEC__
+ #include <altivec.h>
+ #undef bool
+ #endif
+@@ -2897,7 +2897,7 @@
+       }
+       if (C == '/') goto FoundSlash;
+ 
+-#ifdef __SSE2__
++#if 0 // Elpida benchmark parity: was __SSE2__
+       __m128i Slashes = _mm_set1_epi8('/');
+       while (CurPtr + 16 < BufferEnd) {
+         int Mask = _mm_movemask_epi8(*(const __m128i *)CurPtr);
+@@ -2916,7 +2916,7 @@
+         }
+         CurPtr += 16;
+       }
+-#elif __ALTIVEC__
++#elif 0 // Elpida benchmark parity: was __ALTIVEC__
+       __vector unsigned char LongUTF = {0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
+                                         0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
+                                         0x80, 0x80, 0x80, 0x80};

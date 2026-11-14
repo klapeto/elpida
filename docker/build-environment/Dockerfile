@@ -15,20 +15,24 @@ ENV LLVM_VERSION=$LLVM_VERSION
 ENV PKG_CONFIG_SYSROOT_DIR=/opt/sysroots/$TARGET_TRIPLE
 ENV PKG_CONFIG_PATH=/opt/sysroots/$TARGET_TRIPLE/usr/lib/$TARGET_TRIPLE/pkgconfig/
 
+# Benchmark code parity flags for the runtimes and the LLVM libraries (docs/development/code-parity.md)
+ADD ./scripts/docker/parity-flags.sh /tmp/
+
 WORKDIR /tmp/llvm-mingw
 ADD ./scripts/docker/llvm.xp.toolchain.v3.patch ./scripts/docker/llvm-mingw.xp.patch ./
 RUN patch -p1 -d ./llvm-project < llvm.xp.toolchain.v3.patch
 RUN patch -p1 < llvm-mingw.xp.patch
-RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt --with-default-win32-winnt=0x0501
+# The runtimes get linked into the benchmarks, so they get the parity flags
+RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt --with-default-win32-winnt=0x0501 --additional-cflags-script=/tmp/parity-flags.sh
 
 WORKDIR /tmp/
 ADD ./scripts/docker/packages ./scripts/docker/generate-sysroot.sh ./
 RUN ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/packages
 
 ADD ./scripts/docker/build-base.sh ./scripts/docker/build-autotools-based.sh ./
-RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero--disable-gl --disable-libudev"
+RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero --disable-gl --disable-libudev"
 
-ADD ./scripts/docker/build-llvm.sh ./scripts/docker/llvm.xp.lib.v3.patch ./
+ADD ./scripts/docker/build-llvm.sh ./scripts/docker/llvm.parity.patch ./scripts/docker/llvm.xp.lib.v3.patch ./
 RUN patch -p1 -d ./llvm-project < llvm.xp.lib.v3.patch
 RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 

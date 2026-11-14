@@ -79,7 +79,7 @@ RUN git clone --depth=1 -b v6.10.0 git://code.qt.io/qt/qt5.git qt6 && \
     ./init-repository --module-subset=qtcharts,qtsvg,qtbase && \
     mkdir -p build
 
-RUN git clone --depth=1 -b release/19.x https://github.com/llvm/llvm-project.git && \
+RUN git clone --depth=1 -b llvmorg-19.1.7 https://github.com/llvm/llvm-project.git && \
     mkdir -p ./llvm-project/llvm/build
 
 RUN git clone --recursive https://gitlab.freedesktop.org/xorg/lib/libxcb-cursor.git && \
@@ -108,17 +108,20 @@ ENV LLVM_VERSION=$LLVM_VERSION
 ENV PKG_CONFIG_SYSROOT_DIR=/opt/sysroots/$TARGET_TRIPLE
 ENV PKG_CONFIG_PATH=/opt/sysroots/$TARGET_TRIPLE/usr/lib/$TARGET_TRIPLE/pkgconfig/
 
+# Benchmark code parity flags for the runtimes and the LLVM libraries (docs/development/code-parity.md)
+ADD ./scripts/docker/parity-flags.sh /tmp/
+
 WORKDIR /tmp/llvm-mingw
-RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt
+RUN TARGET_TRIPLES="$TARGET_TRIPLE" ./build-all.sh /opt/toolchains/llvm --with-default-msvcrt=msvcrt --additional-cflags-script=/tmp/parity-flags.sh
 
 WORKDIR /tmp/
 ADD ./scripts/docker/packages ./scripts/docker/generate-sysroot.sh ./
 RUN ./generate-sysroot.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" /tmp/packages
 
 ADD ./scripts/docker/build-base.sh ./scripts/docker/build-autotools-based.sh ./
-RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero--disable-gl --disable-libudev"
+RUN ./build-autotools-based.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE" "$PWD/hwloc" "--enable-plugins=no --disable-readme --disable-cairo --disable-libxml2 --disable-io --disable-pci --disable-opencl --disable-cuda --disable-nvml --disable-rsmi --disable-levelzero --disable-gl --disable-libudev"
 
-ADD ./scripts/docker/build-llvm.sh ./
+ADD ./scripts/docker/build-llvm.sh ./scripts/docker/llvm.parity.patch ./
 RUN ./build-llvm.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
 ADD ./scripts/docker/build-linux-specific.sh ./
