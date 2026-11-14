@@ -48,7 +48,11 @@ See [parity-checks.md](parity-checks.md) for the tool and what was already fixed
   calls from the timed code into the platform's `strerror` and (Windows) `rand`/`srand`:
   - Compilation: `strerror`; on Windows `rand` from `createUniquePath` (`GlobalModuleIndex::writeIndex` →
     `LockFileManager`).
-  These are reachable, not necessarily executed in the loop (error paths, one-time init, rare cases).
+  These are reachable, not executed: an `LD_PRELOAD` shim counting calls during full single- and multi-thread
+  Compilation runs (x86_64 Linux, 2026-11-14) saw 0 calls to `rand`, `srand` and `strerror` (error paths and LLVM's
+  temporary-file code). Windows runs the same code path. **Accepted, not changed** (decided 2026-11-14): musl's
+  `strerror` table uses musl's (Linux) errno numbers, which differ from msvcrt's, and musl's `rand` keeps one global
+  seed where msvcrt keeps one per thread; neither can affect results.
   Fixed 2026-11-14: ctype and `snprintf`/`vsnprintf`/`sprintf`/`vsprintf` now come from musl-lite on every target
   (they were glibc's `__ctype_*_loc`, msvcrt's `isalpha`/`tolower`/..., and glibc's or mingw-w64's gdtoa-based
   printf, from LLVM, OpenSSL's `CONF_parse_list`, nlohmann's error messages and libc++'s `std::to_string`). See
