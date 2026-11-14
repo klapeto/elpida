@@ -9,27 +9,20 @@
 #include "shgetc.h"
 #include "floatscan.h"
 
-#if LDBL_MANT_DIG == 53 && LDBL_MAX_EXP == 1024
+// Elpida: compute in double on every target, as musl does where long double is the same as double (e.g. arm, Windows
+// arm64). Upstream computes in long double, which is x87 80-bit on x86, IEEE binary128 in software on aarch64
+// Linux/Android and Android x86_64, and 64-bit elsewhere, so strtod did different work per ABI
+// (docs/development/code-parity.md). strtof and strtod still return the correctly rounded result; long double results
+// (wcstold) are limited to double precision. musl-lite does not provide strtold.
+#define FS_MANT_DIG DBL_MANT_DIG
+#define FS_MIN_EXP DBL_MIN_EXP
+#define FS_MAX DBL_MAX
+#define FS_MIN DBL_MIN
+#define FS_EPSILON DBL_EPSILON
 
 #define LD_B1B_DIG 2
 #define LD_B1B_MAX 9007199, 254740991
 #define KMAX 128
-
-#elif LDBL_MANT_DIG == 64 && LDBL_MAX_EXP == 16384
-
-#define LD_B1B_DIG 3
-#define LD_B1B_MAX 18, 446744073, 709551615
-#define KMAX 2048
-
-#elif LDBL_MANT_DIG == 113 && LDBL_MAX_EXP == 16384
-
-#define LD_B1B_DIG 4
-#define LD_B1B_MAX 10384593, 717069655, 257060992, 658440191
-#define KMAX 2048
-
-#else
-#error Unsupported long double representation
-#endif
 
 #define MASK (KMAX-1)
 
@@ -60,7 +53,7 @@ static long long scanexp(FILE *f, int pok)
 }
 
 
-static long double decfloat(FILE *f, int c, int bits, int emin, int sign, int pok)
+static double decfloat(FILE *f, int c, int bits, int emin, int sign, int pok)
 {
 	uint32_t x[KMAX];
 	static const uint32_t th[] = { LD_B1B_MAX };
@@ -73,9 +66,9 @@ static long double decfloat(FILE *f, int c, int bits, int emin, int sign, int po
 	int e2;
 	int emax = -emin-bits+3;
 	int denormal = 0;
-	long double y;
-	long double frac=0;
-	long double bias=0;
+	double y;
+	double frac=0;
+	double bias=0;
 	static const int p10s[] = { 10, 100, 1000, 10000,
 		100000, 1000000, 10000000, 100000000 };
 
@@ -141,14 +134,14 @@ static long double decfloat(FILE *f, int c, int bits, int emin, int sign, int po
 
 	/* Optimize small integers (w/no exponent) and over/under-flow */
 	if (lrp==dc && dc<10 && (bits>30 || x[0]>>bits==0))
-		return sign * (long double)x[0];
+		return sign * (double)x[0];
 	if (lrp > -emin/2) {
 		errno = ERANGE;
-		return sign * LDBL_MAX * LDBL_MAX;
+		return sign * FS_MAX * FS_MAX;
 	}
-	if (lrp < emin-2*LDBL_MANT_DIG) {
+	if (lrp < emin-2*FS_MANT_DIG) {
 		errno = ERANGE;
-		return sign * LDBL_MIN * LDBL_MIN;
+		return sign * FS_MIN * FS_MIN;
 	}
 
 	/* Align incomplete final B1B digit */
@@ -165,11 +158,11 @@ static long double decfloat(FILE *f, int c, int bits, int emin, int sign, int po
 
 	/* Optimize small to mid-size integers (even in exp. notation) */
 	if (lnz<9 && lnz<=rp && rp < 18) {
-		if (rp == 9) return sign * (long double)x[0];
-		if (rp < 9) return sign * (long double)x[0] / p10s[8-rp];
+		if (rp == 9) return sign * (double)x[0];
+		if (rp < 9) return sign * (double)x[0] / p10s[8-rp];
 		int bitlim = bits-3*(int)(rp-9);
 		if (bitlim>30 || x[0]>>bitlim==0)
-			return sign * (long double)x[0] * p10s[rp-10];
+			return sign * (double)x[0] * p10s[rp-10];
 	}
 
 	/* Drop trailing zeros */
@@ -257,22 +250,22 @@ static long double decfloat(FILE *f, int c, int bits, int emin, int sign, int po
 	/* Assemble desired bits into floating point variable */
 	for (y=i=0; i<LD_B1B_DIG; i++) {
 		if ((a+i & MASK)==z) x[(z=(z+1 & MASK))-1] = 0;
-		y = 1000000000.0L * y + x[a+i & MASK];
+		y = 1000000000.0 * y + x[a+i & MASK];
 	}
 
 	y *= sign;
 
 	/* Limit precision for denormal results */
-	if (bits > LDBL_MANT_DIG+e2-emin) {
-		bits = LDBL_MANT_DIG+e2-emin;
+	if (bits > FS_MANT_DIG+e2-emin) {
+		bits = FS_MANT_DIG+e2-emin;
 		if (bits<0) bits=0;
 		denormal = 1;
 	}
 
 	/* Calculate bias term to force rounding, move out lower bits */
-	if (bits < LDBL_MANT_DIG) {
-		bias = copysignl(scalbn(1, 2*LDBL_MANT_DIG-bits-1), y);
-		frac = fmodl(y, scalbn(1, LDBL_MANT_DIG-bits));
+	if (bits < FS_MANT_DIG) {
+		bias = copysign(scalbn(1, 2*FS_MANT_DIG-bits-1), y);
+		frac = fmod(y, scalbn(1, FS_MANT_DIG-bits));
 		y -= frac;
 		y += bias;
 	}
@@ -290,33 +283,33 @@ static long double decfloat(FILE *f, int c, int bits, int emin, int sign, int po
 			else
 				frac += 0.75*sign;
 		}
-		if (LDBL_MANT_DIG-bits >= 2 && !fmodl(frac, 1))
+		if (FS_MANT_DIG-bits >= 2 && !fmod(frac, 1))
 			frac++;
 	}
 
 	y += frac;
 	y -= bias;
 
-	if ((e2+LDBL_MANT_DIG & INT_MAX) > emax-5) {
-		if (fabsl(y) >= 2/LDBL_EPSILON) {
-			if (denormal && bits==LDBL_MANT_DIG+e2-emin)
+	if ((e2+FS_MANT_DIG & INT_MAX) > emax-5) {
+		if (fabs(y) >= 2/FS_EPSILON) {
+			if (denormal && bits==FS_MANT_DIG+e2-emin)
 				denormal = 0;
 			y *= 0.5;
 			e2++;
 		}
-		if (e2+LDBL_MANT_DIG>emax || (denormal && frac))
+		if (e2+FS_MANT_DIG>emax || (denormal && frac))
 			errno = ERANGE;
 	}
 
-	return scalbnl(y, e2);
+	return scalbn(y, e2);
 }
 
-static long double hexfloat(FILE *f, int bits, int emin, int sign, int pok)
+static double hexfloat(FILE *f, int bits, int emin, int sign, int pok)
 {
 	uint32_t x = 0;
-	long double y = 0;
-	long double scale = 1;
-	long double bias = 0;
+	double y = 0;
+	double scale = 1;
+	double bias = 0;
 	int gottail = 0, gotrad = 0, gotdig = 0;
 	long long rp = 0;
 	long long dc = 0;
@@ -347,7 +340,11 @@ static long double hexfloat(FILE *f, int bits, int emin, int sign, int pok)
 			else d = c-'0';
 			if (dc<8) {
 				x = x*16 + d;
-			} else if (dc < LDBL_MANT_DIG/4+1) {
+			} else if (dc < FS_MANT_DIG/4+2) {
+				// Elpida: +2, upstream +1. The digits after these only add a sticky half digit (below), which must
+				// lie below the rounding bit. With a leading digit 1, the 53-bit significand ends with digit 14
+				// (dc 13) and the rounding bit is in digit 15, so it has to be kept exactly. Upstream's 14 digits
+				// put the sticky bit on the rounding bit, e.g. 0x1.000000000000081p0 rounded to 1 instead of up.
 				y += d*(scale/=16);
 			} else if (d && !gottail) {
 				y += 0.5*scale;
@@ -387,11 +384,11 @@ static long double hexfloat(FILE *f, int bits, int emin, int sign, int pok)
 	if (!x) return sign * 0.0;
 	if (e2 > -emin) {
 		errno = ERANGE;
-		return sign * LDBL_MAX * LDBL_MAX;
+		return sign * FS_MAX * FS_MAX;
 	}
-	if (e2 < emin-2*LDBL_MANT_DIG) {
+	if (e2 < emin-2*FS_MANT_DIG) {
 		errno = ERANGE;
-		return sign * LDBL_MIN * LDBL_MIN;
+		return sign * FS_MIN * FS_MIN;
 	}
 
 	while (x < 0x80000000) {
@@ -410,20 +407,20 @@ static long double hexfloat(FILE *f, int bits, int emin, int sign, int pok)
 		if (bits<0) bits=0;
 	}
 
-	if (bits < LDBL_MANT_DIG)
-		bias = copysignl(scalbn(1, 32+LDBL_MANT_DIG-bits-1), sign);
+	if (bits < FS_MANT_DIG)
+		bias = copysign(scalbn(1, 32+FS_MANT_DIG-bits-1), sign);
 
 	if (bits<32 && y && !(x&1)) x++, y=0;
 
-	y = bias + sign*(long double)x + sign*y;
+	y = bias + sign*(double)x + sign*y;
 	y -= bias;
 
 	if (!y) errno = ERANGE;
 
-	return scalbnl(y, e2);
+	return scalbn(y, e2);
 }
 
-long double _MuslLite_floatscan(FILE *f, int prec, int pok)
+double _MuslLite_floatscan(FILE *f, int prec, int pok)
 {
 	int sign = 1;
 	size_t i;
@@ -441,8 +438,8 @@ long double _MuslLite_floatscan(FILE *f, int prec, int pok)
 		emin = DBL_MIN_EXP-bits;
 		break;
 	case 2:
-		bits = LDBL_MANT_DIG;
-		emin = LDBL_MIN_EXP-bits;
+		bits = FS_MANT_DIG;
+		emin = FS_MIN_EXP-bits;
 		break;
 	default:
 		return 0;
