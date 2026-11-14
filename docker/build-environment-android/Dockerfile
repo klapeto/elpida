@@ -31,6 +31,9 @@ RUN TARGET_TRIPLES=x86_64-linux-gnu ./install-wrappers.sh $TOOLCHAIN
 # is built without zstd ("is compressed with ELFCOMPRESS_ZSTD, but lld is not built with zstd support" when linking
 # the static benchmarks). Their debug info isn't needed, so it's stripped; llvm-strip removes the sections without
 # decompressing them.
+# TODO: the next time the base image has to rebuild anyway (LLVM or Qt update), add libzstd-dev to its apt packages
+# (docker/build-environment-base/Dockerfile) so build-llvm.sh builds lld with zstd (LLVM_ENABLE_ZSTD is on when found;
+# the final images already have libzstd1), and drop this strip. Not done on its own: it rebuilds every image.
 ADD ./scripts/docker/parity-flags.sh /tmp/
 RUN triples=""; \
     for api in $ANDROID_BENCHMARKS_API $ANDROID_APP_API; do \

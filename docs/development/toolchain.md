@@ -132,6 +132,9 @@ script on 2026-11-10.
     (about 20 minutes for x86_64 Linux locally). The jobs only run when the Docker files change. Accepted (2026-11-14)
     instead of a registry cache with `mode=max`, which would also store the large builder layers.
 - `docker/build-environment-android`: see [android-toolchain.md](android-toolchain.md).
+  Its toolchain stage strips the debug sections of the NDK's prebuilt libraries: NDK r29 compresses them with zstd
+  and the base image's lld is built without zstd. **TODO:** the next time the base image rebuilds anyway (LLVM or
+  Qt update), add `libzstd-dev` to its packages and drop the strip; on its own it isn't worth rebuilding every image.
 - `.devcontainer`: the base image and the target image (x86_64 Linux by default) in one Dockerfile, as stages, since a
   dev container builds from a single file; keep it in sync with the two Dockerfiles. Its final stage is the CI image
   plus `gdb` and the libraries `elpida-qt` links dynamically (X11/xcb, xkbcommon, fontconfig, libnuma, …) and a font,
