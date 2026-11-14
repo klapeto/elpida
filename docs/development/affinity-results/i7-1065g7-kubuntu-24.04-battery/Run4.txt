@@ -1,0 +1,135 @@
+Getting system information...
+Pinned mode: --affinity=3 (the info dumper's fastest processor)
+18 benchmarks, 3 runs per mode, about 11 minutes
+
+  AES Decryption (Single thread) [pinned 1/3] 117.52 MB/s
+  AES Decryption (Single thread) [OS-scheduled 1/3] 117.81 MB/s
+  AES Decryption (Single thread) [OS-scheduled 2/3] 118.03 MB/s
+  AES Decryption (Single thread) [pinned 2/3] 117.72 MB/s
+  AES Decryption (Single thread) [pinned 3/3] 117.93 MB/s
+  AES Decryption (Single thread) [OS-scheduled 3/3] 117.70 MB/s
+  AES Encryption (Single thread) [pinned 1/3] 116.57 MB/s
+  AES Encryption (Single thread) [OS-scheduled 1/3] 116.62 MB/s
+  AES Encryption (Single thread) [OS-scheduled 2/3] 116.47 MB/s
+  AES Encryption (Single thread) [pinned 2/3] 116.43 MB/s
+  AES Encryption (Single thread) [pinned 3/3] 116.28 MB/s
+  AES Encryption (Single thread) [OS-scheduled 3/3] 116.35 MB/s
+  Base64 Decode (Single thread) [pinned 1/3] 39.03 MB/s
+  Base64 Decode (Single thread) [OS-scheduled 1/3] 38.99 MB/s
+  Base64 Decode (Single thread) [OS-scheduled 2/3] 39.01 MB/s
+  Base64 Decode (Single thread) [pinned 2/3] 38.97 MB/s
+  Base64 Decode (Single thread) [pinned 3/3] 38.92 MB/s
+  Base64 Decode (Single thread) [OS-scheduled 3/3] 39.10 MB/s
+  Base64 Encode (Single thread) [pinned 1/3] 203.04 MB/s
+  Base64 Encode (Single thread) [OS-scheduled 1/3] 203.16 MB/s
+  Base64 Encode (Single thread) [OS-scheduled 2/3] 202.10 MB/s
+  Base64 Encode (Single thread) [pinned 2/3] 202.98 MB/s
+  Base64 Encode (Single thread) [pinned 3/3] 202.76 MB/s
+  Base64 Encode (Single thread) [OS-scheduled 3/3] 202.86 MB/s
+  C++ Compilation (Single thread) [pinned 1/3] 845.20 mFiles/s
+  C++ Compilation (Single thread) [OS-scheduled 1/3] 853.77 mFiles/s
+  C++ Compilation (Single thread) [OS-scheduled 2/3] 851.06 mFiles/s
+  C++ Compilation (Single thread) [pinned 2/3] 849.91 mFiles/s
+  C++ Compilation (Single thread) [pinned 3/3] 852.75 mFiles/s
+  C++ Compilation (Single thread) [OS-scheduled 3/3] 854.72 mFiles/s
+  FFT (Single thread) [pinned 1/3] 21.33 Mnumbers/s
+  FFT (Single thread) [OS-scheduled 1/3] 21.33 Mnumbers/s
+  FFT (Single thread) [OS-scheduled 2/3] 21.22 Mnumbers/s
+  FFT (Single thread) [pinned 2/3] 21.33 Mnumbers/s
+  FFT (Single thread) [pinned 3/3] 21.09 Mnumbers/s
+  FFT (Single thread) [OS-scheduled 3/3] 21.08 Mnumbers/s
+  Json Parsing (Single thread) [pinned 1/3] 85.17 Mchars/s
+  Json Parsing (Single thread) [OS-scheduled 1/3] 85.07 Mchars/s
+  Json Parsing (Single thread) [OS-scheduled 2/3] 84.83 Mchars/s
+  Json Parsing (Single thread) [pinned 2/3] 85.23 Mchars/s
+  Json Parsing (Single thread) [pinned 3/3] 84.69 Mchars/s
+  Json Parsing (Single thread) [OS-scheduled 3/3] 85.11 Mchars/s
+  Matrix Inverse (Single thread) [pinned 1/3] 50.11 MNumbers/s
+  Matrix Inverse (Single thread) [OS-scheduled 1/3] 49.11 MNumbers/s
+  Matrix Inverse (Single thread) [OS-scheduled 2/3] 47.76 MNumbers/s
+  Matrix Inverse (Single thread) [pinned 2/3] 49.04 MNumbers/s
+  Matrix Inverse (Single thread) [pinned 3/3] 50.06 MNumbers/s
+  Matrix Inverse (Single thread) [OS-scheduled 3/3] 50.10 MNumbers/s
+  Matrix Multiplication (Single thread) [pinned 1/3] 416.58 MNumbers/s
+  Matrix Multiplication (Single thread) [OS-scheduled 1/3] 411.01 MNumbers/s
+  Matrix Multiplication (Single thread) [OS-scheduled 2/3] 417.12 MNumbers/s
+  Matrix Multiplication (Single thread) [pinned 2/3] 417.50 MNumbers/s
+  Matrix Multiplication (Single thread) [pinned 3/3] 410.75 MNumbers/s
+  Matrix Multiplication (Single thread) [OS-scheduled 3/3] 416.31 MNumbers/s
+  NBody (Single thread) [pinned 1/3] 84.49 MIterations/s
+  NBody (Single thread) [OS-scheduled 1/3] 84.40 MIterations/s
+  NBody (Single thread) [OS-scheduled 2/3] 84.17 MIterations/s
+  NBody (Single thread) [pinned 2/3] 84.57 MIterations/s
+  NBody (Single thread) [pinned 3/3] 65.73 MIterations/s
+  NBody (Single thread) [OS-scheduled 3/3] 84.58 MIterations/s
+  RSA Decryption (Single thread) [pinned 1/3] 16.31 KB/s
+  RSA Decryption (Single thread) [OS-scheduled 1/3] 16.30 KB/s
+  RSA Decryption (Single thread) [OS-scheduled 2/3] 16.25 KB/s
+  RSA Decryption (Single thread) [pinned 2/3] 16.19 KB/s
+  RSA Decryption (Single thread) [pinned 3/3] 16.16 KB/s
+  RSA Decryption (Single thread) [OS-scheduled 3/3] 16.33 KB/s
+  RSA Encryption (Single thread) [pinned 1/3] 612.49 KB/s
+  RSA Encryption (Single thread) [OS-scheduled 1/3] 603.70 KB/s
+  RSA Encryption (Single thread) [OS-scheduled 2/3] 612.46 KB/s
+  RSA Encryption (Single thread) [pinned 2/3] 610.61 KB/s
+  RSA Encryption (Single thread) [pinned 3/3] 612.85 KB/s
+  RSA Encryption (Single thread) [OS-scheduled 3/3] 612.67 KB/s
+  Ray Tracing (Single thread) [pinned 1/3] 3.04 MRays/s
+  Ray Tracing (Single thread) [OS-scheduled 1/3] 3.04 MRays/s
+  Ray Tracing (Single thread) [OS-scheduled 2/3] 3.03 MRays/s
+  Ray Tracing (Single thread) [pinned 2/3] 3.04 MRays/s
+  Ray Tracing (Single thread) [pinned 3/3] 3.03 MRays/s
+  Ray Tracing (Single thread) [OS-scheduled 3/3] 3.03 MRays/s
+  Regex (Single thread) [pinned 1/3] 86.09 MChars/s
+  Regex (Single thread) [OS-scheduled 1/3] 87.17 MChars/s
+  Regex (Single thread) [OS-scheduled 2/3] 84.30 MChars/s
+  Regex (Single thread) [pinned 2/3] 84.59 MChars/s
+  Regex (Single thread) [pinned 3/3] 86.18 MChars/s
+  Regex (Single thread) [OS-scheduled 3/3] 86.11 MChars/s
+  SVG Rasterization (Single thread) [pinned 1/3] 840.40 Kpixels/s
+  SVG Rasterization (Single thread) [OS-scheduled 1/3] 841.11 Kpixels/s
+  SVG Rasterization (Single thread) [OS-scheduled 2/3] 840.38 Kpixels/s
+  SVG Rasterization (Single thread) [pinned 2/3] 840.66 Kpixels/s
+  SVG Rasterization (Single thread) [pinned 3/3] 840.02 Kpixels/s
+  SVG Rasterization (Single thread) [OS-scheduled 3/3] 842.56 Kpixels/s
+  Xml Parsing (Single thread) [pinned 1/3] 153.01 Mchars/s
+  Xml Parsing (Single thread) [OS-scheduled 1/3] 153.42 Mchars/s
+  Xml Parsing (Single thread) [OS-scheduled 2/3] 151.10 Mchars/s
+  Xml Parsing (Single thread) [pinned 2/3] 152.72 Mchars/s
+  Xml Parsing (Single thread) [pinned 3/3] 151.85 Mchars/s
+  Xml Parsing (Single thread) [OS-scheduled 3/3] 153.41 Mchars/s
+  Zlib Compression (Single thread) [pinned 1/3] 32.78 MB/s
+  Zlib Compression (Single thread) [OS-scheduled 1/3] 32.74 MB/s
+  Zlib Compression (Single thread) [OS-scheduled 2/3] 32.80 MB/s
+  Zlib Compression (Single thread) [pinned 2/3] 32.57 MB/s
+  Zlib Compression (Single thread) [pinned 3/3] 32.74 MB/s
+  Zlib Compression (Single thread) [OS-scheduled 3/3] 32.82 MB/s
+  Zlib Decompression (Single thread) [pinned 1/3] 118.39 MB/s
+  Zlib Decompression (Single thread) [OS-scheduled 1/3] 118.36 MB/s
+  Zlib Decompression (Single thread) [OS-scheduled 2/3] 116.92 MB/s
+  Zlib Decompression (Single thread) [pinned 2/3] 116.26 MB/s
+  Zlib Decompression (Single thread) [pinned 3/3] 117.63 MB/s
+  Zlib Decompression (Single thread) [OS-scheduled 3/3] 117.65 MB/s
+
+Benchmark                                             Pinned (3)    CV%            OS-scheduled    CV%   Diff%
+AES Decryption (Single thread)                       117.72 MB/s    0.2             117.85 MB/s    0.1     0.1
+AES Encryption (Single thread)                       116.43 MB/s    0.1             116.48 MB/s    0.1     0.0
+Base64 Decode (Single thread)                         38.97 MB/s    0.2              39.03 MB/s    0.2     0.2
+Base64 Encode (Single thread)                        202.93 MB/s    0.1             202.70 MB/s    0.3    -0.1
+C++ Compilation (Single thread)                  849.29 mFiles/s    0.4         853.18 mFiles/s    0.2     0.5
+FFT (Single thread)                             21.25 Mnumbers/s    0.7        21.21 Mnumbers/s    0.6    -0.2
+Json Parsing (Single thread)                      85.03 Mchars/s    0.3          85.00 Mchars/s    0.2    -0.0
+Matrix Inverse (Single thread)                  49.73 MNumbers/s    1.2        48.99 MNumbers/s    2.4    -1.5
+Matrix Multiplication (Single thread)          414.94 MNumbers/s    0.9       414.81 MNumbers/s    0.8    -0.0
+NBody (Single thread)                        78.26 MIterations/s   13.9     84.39 MIterations/s    0.2     7.8
+RSA Decryption (Single thread)                        16.22 KB/s    0.5              16.29 KB/s    0.3     0.5
+RSA Encryption (Single thread)                       611.99 KB/s    0.2             609.61 KB/s    0.8    -0.4
+Ray Tracing (Single thread)                         3.04 MRays/s    0.1            3.03 MRays/s    0.1    -0.2
+Regex (Single thread)                             85.62 MChars/s    1.0          85.86 MChars/s    1.7     0.3
+SVG Rasterization (Single thread)               840.36 Kpixels/s    0.0        841.35 Kpixels/s    0.1     0.1
+Xml Parsing (Single thread)                      152.52 Mchars/s    0.4         152.65 Mchars/s    0.9     0.1
+Zlib Compression (Single thread)                      32.70 MB/s    0.3              32.79 MB/s    0.1     0.3
+Zlib Decompression (Single thread)                   117.43 MB/s    0.9             117.64 MB/s    0.6     0.2
+
+Single-thread score: pinned 2.41, OS-scheduled 2.42 (0.2%)
+Diff% > 0: faster when the OS schedules. Compare it with the CV% (run-to-run spread): a difference smaller than the spread is noise.

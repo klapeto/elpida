@@ -1,8 +1,10 @@
-# mimalloc on Windows XP and Linux (branch `winxp-support`)
+# mimalloc
 
-Notes on replacing the system allocator with mimalloc. On Windows (mainly the XP i386 llvm-mingw `msvcrt.dll` build)
-the CRT is hooked at runtime; on Linux the allocation functions are overridden at link time (see
-[Linux](#linux-link-time-override)). Android is excluded (see [Android](#android-excluded)).
+Replacing the system allocator with mimalloc on every platform. On Windows (mainly the XP i386 llvm-mingw
+`msvcrt.dll` build) the CRT is hooked at runtime. On Linux the allocation functions are overridden at link time (see
+[Linux](#linux-link-time-override)), and Android uses the same override in its static benchmark executables (see
+[Android](#android-link-time-override-in-the-executables)). Using the same allocator everywhere is part of
+[benchmark code parity](code-parity.md).
 
 ## Why
 
@@ -19,7 +21,7 @@ LFH**, so mimalloc is the current choice.
 |---|---|
 | `src/Mimalloc/` | mimalloc sources (single-file build via `static.c`), MIT license in `LICENSE` |
 | `src/Mimalloc/static.c` | includes all of mimalloc; `_WIN32`: hook detours and `mi_init_hooks()`, otherwise: direct `malloc`/`free`/... overrides |
-| `src/Mimalloc/CMakeLists.txt` | builds the `mimalloc` OBJECT library (an empty INTERFACE library on Android), links `detours` on `WIN32` |
+| `src/Mimalloc/CMakeLists.txt` | builds the `mimalloc` OBJECT library, links `detours` on `WIN32` |
 | `extern/detours/` | Microsoft Detours (git submodule), used to patch the CRT functions at runtime |
 | `extern/CMakeLists.txt` | builds the `detours` static library on `WIN32` from `detours.cpp`, `disasm.cpp` and `modules.cpp` (Detours ships no CMake build) |
 | `src/Elpida/EntryPoint/CMakeLists.txt` | `elpida-entry-point` links `mimalloc` |
@@ -112,7 +114,11 @@ back to it:
 
 On Linux no hooks are needed. The `#else` branch of `static.c` defines `malloc`, `free`, `calloc`, `realloc`,
 `reallocarray`, `aligned_alloc`, `posix_memalign`, `memalign`, `valloc`, `pvalloc`, `malloc_usable_size`, `strdup`,
-`strndup`, `realpath`, `wcsdup`, ... directly, forwarding to `mi_*`.
+`strndup`, `wcsdup`, ... directly, forwarding to `mi_*`.
+
+**No `realpath` override**: `mi_realpath()` itself calls `realpath()`, so overriding it recursed forever (with tail calls
+this is a silent infinite loop, not a crash). Any `realpath(path, NULL)` hung, on Linux as well. libc's `realpath`
+already allocates through the overridden `malloc`, so the override is not needed.
 
 Why this works: ELF executables export symbols that shared libraries reference, and the executable comes first in
 symbol lookup. Because `malloc` etc. are defined in the executable, glibc itself, libc++ and every other shared
@@ -144,28 +150,49 @@ blocks) call these directly, bypassing `malloc`. Modern glibc does not need them
 define them. If `mi_free: invalid pointer` ever appears on an old distro (Ubuntu bionic and older), add those
 forwarders, or enable `MI_MALLOC_OVERRIDE` and drop the hand-written block.
 
-## Android: excluded
+## Android: link-time override in the executables
 
-On Android, `src/Mimalloc/CMakeLists.txt` defines `mimalloc` as an empty INTERFACE library, so Android stays on
-bionic's allocator (Scudo on newer versions, jemalloc on older ones).
+Android used to be excluded: the benchmarks were `MODULE` libraries `dlopen`ed into the .NET app process, where a
+`malloc` defined in a library cannot replace bionic's (the global group, `app_process` and `libc.so`, comes first).
 
-Why:
+Now Android runs the same benchmark executables as the desktop apps, packaged as `lib*.so` so they are extracted to
+the executable native library directory (see `apps/Elpida.Mobile/Elpida.Mobile/Platforms/Android/Native/CMakeLists.txt`).
+They are **statically linked** (built for API 29), so the override is the same as on Linux. In a static link every
+reference, including bionic's own, binds to the first definition (the root `--allow-multiple-definition`). The only
+bionic difference in `static.c` is that `malloc_usable_size` takes a `const void*`.
 
-- **No process-wide replacement**: the benchmark groups are `MODULE` libraries `dlopen`ed by `Elpida.so`. The
-  Android linker searches the global group (`app_process`, bionic `libc.so`) before the library itself, so a
-  `malloc` defined in the library is not even used by its own code.
-- **`-Bsymbolic` only goes so far**: linking a module with `-Wl,-Bsymbolic` makes its own calls bind to its own
-  `malloc`. C++ `new`/`delete` would also need static libc++ (`c++_static`). Two allocators would then coexist in
-  the process:
-  - bionic memory freed in the module (`getline`, `asprintf`, `realpath(NULL, ...)`, ...) can be handled with the XP
-    fallback: `if (!mi_cfree(p)) real_free(p);`, with `real_free` from `dlsym(RTLD_NEXT, "free")`;
-  - module memory freed by `Elpida.so` or bionic (e.g. a `unique_ptr<Benchmark>` or result strings created in a
-    module and destroyed by the host) reaches bionic's allocator, which aborts. This cannot be fixed from the
-    module side.
-- **Process-wide alternatives are not viable**: `LD_PRELOAD` via `wrap.sh` only works for debuggable apps, and
-  bionic's allocator dispatch is not public API.
-- **Less need**: bionic's allocators already use per-thread caches. Android does not have XP's single global heap
-  lock.
+### TLS model
+
+mimalloc defaults to `MI_TLS_MODEL_PTHREADS` on Android (`pthread_getspecific()` for the per-thread heap). Linux uses
+`MI_TLS_MODEL_LOCAL` (`__thread`). Measured on the emulator, malloc+free(48) costs 4.55 ns with the pthread model and
+2.80 ns with `__thread`, the same as Linux (2.85 ns). This showed up as about 5% in XML and JSON parsing.
+`src/Mimalloc/CMakeLists.txt` therefore defines `MI_TLS_MODEL_LOCAL` for Android API >= 29.
+
+Below API 29 Android has no ELF TLS in the dynamic loader, so `__thread` becomes emulated TLS. With mimalloc that
+crashes: `__emutls_get_address()` allocates the TLS block with `malloc`, which recurses into mimalloc until the stack
+overflows. The static executables avoid that: their TLS is set up by the `libc.a` inside them (current bionic), not by
+the device's loader. Verified on Android 5.0 (API 21, `Nexus_6` emulator) and Android 17 (API 37, `Pixel_9a`).
+
+Verified with a test program linked with `static.c`: `mi_is_in_heap_region()` was true for memory from `malloc`,
+`strdup`, `asprintf`, `realpath(NULL)`, `getline` and `malloc` on another thread, both statically and dynamically
+linked.
+
+`libElpida.so`, which the app P/Invokes, and the tools (`elpida-info-dumper`) are built separately for API 21 and never
+link mimalloc.
+
+### Code parity differences (accepted)
+
+Upstream mimalloc compiles differently per libc. These are left as they are to keep changes to external code minimal:
+
+- **Thread id.** `__mi_prim_thread_id()` reads bionic's TLS slot 1 on Android and uses the thread pointer itself
+  elsewhere. On aarch64 that is one extra load in `mi_free`'s fast path on Android (`mrs` + `ldr` vs `mrs`); on x86_64
+  both are one load (`%fs:0x8` vs `%fs:0x0`).
+- **Lock size.** `mi_lock_t` wraps `pthread_mutex_t` (48 bytes on glibc aarch64, 40 on bionic aarch64, 24 on glibc
+  armv7, 4 on bionic armv7) or `SRWLOCK`/`CRITICAL_SECTION`, so the structures that embed locks have different field
+  offsets. The effect is only which fields share a cache line.
+
+The OS layer also differs (`mmap`/`mmap64`, `__errno_location`/`__errno`, NUMA, init and error output), as do the
+platform lock and `pthread_atfork` calls themselves.
 
 ## Findings
 
@@ -257,6 +284,10 @@ target_compile_definitions(mimalloc PRIVATE MI_DEBUG=0 MI_STATS=0)
 
 ## Useful runtime knobs
 
+mimalloc ignores its `MIMALLOC_*` environment variables (it is built with `MI_NO_GETENV`), so a machine's environment
+cannot change the allocator's behaviour. For diagnostics, configure with `-DELPIDA_MIMALLOC_ALLOW_ENVIRONMENT=ON` to
+make these work again. Never publish results from such a build.
+
 ```
 MIMALLOC_SHOW_STATS=1           # print stats at exit
 MIMALLOC_VERBOSE=0              # quieter output
@@ -296,6 +327,4 @@ These can also be set in code with `mi_option_set(...)` before `mi_init_hooks()`
 11. **Linux on old distros**: test on the oldest supported distro (bionic). If any `invalid pointer` errors appear, add
     the `__libc_*` forwarders (see [Linux](#linux-link-time-override)).
 12. **Linux performance**: compare mimalloc against plain glibc malloc on an optimized Linux build, as was done for XP.
-13. **Android (deferred)**: excluded for now (see [Android](#android-excluded)). If revisited, start with one
-    self-contained benchmark module linked with `-Bsymbolic`, static libc++ and the `mi_cfree` fallback, and make
-    sure nothing it allocates is freed by the host.
+13. **Android**: done, see [Android](#android-link-time-override-in-the-executables).

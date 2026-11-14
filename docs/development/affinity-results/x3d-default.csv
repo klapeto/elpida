@@ -1,0 +1,109 @@
+benchmark,unit,mode,run,result
+"AES Decryption (Single thread)",B,pinned,1,236477692.23724076
+"AES Decryption (Single thread)",B,scheduled,1,236220376.2063477
+"AES Decryption (Single thread)",B,scheduled,2,236283699.14632267
+"AES Decryption (Single thread)",B,pinned,2,236426352.82677063
+"AES Decryption (Single thread)",B,pinned,3,236022045.48208058
+"AES Decryption (Single thread)",B,scheduled,3,236020351.96248755
+"AES Encryption (Single thread)",B,pinned,1,233519419.29004899
+"AES Encryption (Single thread)",B,scheduled,1,233530028.65277383
+"AES Encryption (Single thread)",B,scheduled,2,233443948.69823998
+"AES Encryption (Single thread)",B,pinned,2,233552197.34518835
+"AES Encryption (Single thread)",B,pinned,3,233823775.04867724
+"AES Encryption (Single thread)",B,scheduled,3,233419784.63388726
+"Base64 Decode (Single thread)",B,pinned,1,115299018.59038238
+"Base64 Decode (Single thread)",B,scheduled,1,108977707.74344558
+"Base64 Decode (Single thread)",B,scheduled,2,111904678.61512263
+"Base64 Decode (Single thread)",B,pinned,2,115304251.8736777
+"Base64 Decode (Single thread)",B,pinned,3,106901692.06503429
+"Base64 Decode (Single thread)",B,scheduled,3,105501173.28209199
+"Base64 Encode (Single thread)",B,pinned,1,346708951.02966148
+"Base64 Encode (Single thread)",B,scheduled,1,345172216.16403788
+"Base64 Encode (Single thread)",B,scheduled,2,346138351.5378049
+"Base64 Encode (Single thread)",B,pinned,2,346750770.84450692
+"Base64 Encode (Single thread)",B,pinned,3,346629892.38026029
+"Base64 Encode (Single thread)",B,scheduled,3,344207737.72990888
+"C++ Compilation (Single thread)",Files,pinned,1,1.7361478097910568
+"C++ Compilation (Single thread)",Files,scheduled,1,1.7177460510011164
+"C++ Compilation (Single thread)",Files,scheduled,2,1.7180956641880649
+"C++ Compilation (Single thread)",Files,pinned,2,1.7271370682753271
+"C++ Compilation (Single thread)",Files,pinned,3,1.724852839036533
+"C++ Compilation (Single thread)",Files,scheduled,3,1.7167335861834505
+"FFT (Single thread)",numbers,pinned,1,48190454.213857971
+"FFT (Single thread)",numbers,scheduled,1,48065980.495593414
+"FFT (Single thread)",numbers,scheduled,2,48032466.36343427
+"FFT (Single thread)",numbers,pinned,2,48279193.045971349
+"FFT (Single thread)",numbers,pinned,3,48160570.691399857
+"FFT (Single thread)",numbers,scheduled,3,48066141.600511566
+"Json Parsing (Single thread)",chars,pinned,1,155546472.38654342
+"Json Parsing (Single thread)",chars,scheduled,1,155610955.45230371
+"Json Parsing (Single thread)",chars,scheduled,2,156571787.89182788
+"Json Parsing (Single thread)",chars,pinned,2,155448707.72398078
+"Json Parsing (Single thread)",chars,pinned,3,155678449.52502802
+"Json Parsing (Single thread)",chars,scheduled,3,147502432.08967724
+"Matrix Inverse (Single thread)",Numbers,pinned,1,98318320.620103315
+"Matrix Inverse (Single thread)",Numbers,scheduled,1,98125535.689298421
+"Matrix Inverse (Single thread)",Numbers,scheduled,2,96342830.137991875
+"Matrix Inverse (Single thread)",Numbers,pinned,2,96335748.198693171
+"Matrix Inverse (Single thread)",Numbers,pinned,3,96175302.383340746
+"Matrix Inverse (Single thread)",Numbers,scheduled,3,97237944.63702026
+"Matrix Multiplication (Single thread)",Numbers,pinned,1,900293267.6760869
+"Matrix Multiplication (Single thread)",Numbers,scheduled,1,899941090.63719368
+"Matrix Multiplication (Single thread)",Numbers,scheduled,2,889475476.23529792
+"Matrix Multiplication (Single thread)",Numbers,pinned,2,891860496.21263218
+"Matrix Multiplication (Single thread)",Numbers,pinned,3,899159666.90902686
+"Matrix Multiplication (Single thread)",Numbers,scheduled,3,898827140.39044642
+"NBody (Single thread)",Iterations,pinned,1,152866249.33607382
+"NBody (Single thread)",Iterations,scheduled,1,152037998.63232818
+"NBody (Single thread)",Iterations,scheduled,2,151857015.87550735
+"NBody (Single thread)",Iterations,pinned,2,153469793.36450103
+"NBody (Single thread)",Iterations,pinned,3,153435694.70657012
+"NBody (Single thread)",Iterations,scheduled,3,153379310.67281964
+"RSA Decryption (Single thread)",B,pinned,1,26498.305632948144
+"RSA Decryption (Single thread)",B,scheduled,1,26479.820755091805
+"RSA Decryption (Single thread)",B,scheduled,2,26237.189261599349
+"RSA Decryption (Single thread)",B,pinned,2,26408.629090661678
+"RSA Decryption (Single thread)",B,pinned,3,26478.789338948922
+"RSA Decryption (Single thread)",B,scheduled,3,26245.436447375461
+"RSA Encryption (Single thread)",B,pinned,1,919508.08185917081
+"RSA Encryption (Single thread)",B,scheduled,1,921373.85328649171
+"RSA Encryption (Single thread)",B,scheduled,2,911065.53309428832
+"RSA Encryption (Single thread)",B,pinned,2,921077.47088807658
+"RSA Encryption (Single thread)",B,pinned,3,922757.86953889125
+"RSA Encryption (Single thread)",B,scheduled,3,912649.49856215017
+"Ray Tracing (Single thread)",Rays,pinned,1,6891399.3019473553
+"Ray Tracing (Single thread)",Rays,scheduled,1,6814073.9005254572
+"Ray Tracing (Single thread)",Rays,scheduled,2,6811473.1320789065
+"Ray Tracing (Single thread)",Rays,pinned,2,6876707.8352635037
+"Ray Tracing (Single thread)",Rays,pinned,3,6878405.3838747526
+"Ray Tracing (Single thread)",Rays,scheduled,3,6816939.931404314
+"Regex (Single thread)",Chars,pinned,1,153029187.68609607
+"Regex (Single thread)",Chars,scheduled,1,152948250.4604359
+"Regex (Single thread)",Chars,scheduled,2,153403963.94306728
+"Regex (Single thread)",Chars,pinned,2,153105601.60969239
+"Regex (Single thread)",Chars,pinned,3,152742179.17623907
+"Regex (Single thread)",Chars,scheduled,3,153299301.88699847
+"SVG Rasterization (Single thread)",pixels,pinned,1,1556758.1686506777
+"SVG Rasterization (Single thread)",pixels,scheduled,1,1556159.2049761037
+"SVG Rasterization (Single thread)",pixels,scheduled,2,1555598.6143674892
+"SVG Rasterization (Single thread)",pixels,pinned,2,1555702.0823238103
+"SVG Rasterization (Single thread)",pixels,pinned,3,1556677.8992522599
+"SVG Rasterization (Single thread)",pixels,scheduled,3,1543776.0892109291
+"Xml Parsing (Single thread)",chars,pinned,1,337713074.7453078
+"Xml Parsing (Single thread)",chars,scheduled,1,334317973.04634339
+"Xml Parsing (Single thread)",chars,scheduled,2,337653873.58901215
+"Xml Parsing (Single thread)",chars,pinned,2,336895406.7914626
+"Xml Parsing (Single thread)",chars,pinned,3,336494397.25410128
+"Xml Parsing (Single thread)",chars,scheduled,3,327171300.51551372
+"Zlib Compression (Single thread)",B,pinned,1,81225721.090751946
+"Zlib Compression (Single thread)",B,scheduled,1,79201556.685631484
+"Zlib Compression (Single thread)",B,scheduled,2,86125635.983115152
+"Zlib Compression (Single thread)",B,pinned,2,84741204.703795373
+"Zlib Compression (Single thread)",B,pinned,3,80758721.303095564
+"Zlib Compression (Single thread)",B,scheduled,3,81172724.62831752
+"Zlib Decompression (Single thread)",B,pinned,1,291025255.56661624
+"Zlib Decompression (Single thread)",B,scheduled,1,290225752.43020564
+"Zlib Decompression (Single thread)",B,scheduled,2,290619129.82060689
+"Zlib Decompression (Single thread)",B,pinned,2,282577390.15978742
+"Zlib Decompression (Single thread)",B,pinned,3,291959802.13684899
+"Zlib Decompression (Single thread)",B,scheduled,3,291591171.44740343
