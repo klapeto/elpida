@@ -63,6 +63,7 @@ Linux x86_64 (7950X3D, 32 logical processors), CLI with one benchmark group, upl
 | Android phone (user, 8 cores), normal run | uploaded, no warning |
 | Android phone, notification shade opened during the run | not uploaded (7 of 8) |
 | Windows (user), job CPU rate hard cap (`scripts/Windows/job-cpu-cap.ps1`) | quota detected, not uploaded |
+| Windows (user), job CPU max rate (`-MinMax`) | the run stops on unstable timing (the max rate throttles in bursts) |
 
 The notification shade takes the app out of the top-app state: Android moves it to the `foreground` cpuset, which on
 many phones leaves out the fastest core. The app stays visible, so `Window.Stopped` (the "left the screen" check)
@@ -80,7 +81,8 @@ powershell -ExecutionPolicy Bypass -NoExit -File .\scripts\Windows\job-cpu-cap.p
 ```
 
 `-Percent` is a share of all logical processors, so 25 on 16 gives a quota of 4.0. `-MinMax` sets the max rate
-instead of the hard cap. `-Percent 100` must not warn. A job can't be removed from a process, so close the window
+instead of the hard cap, with a min rate of 1% (`-MinRate`): Windows refuses a min rate of 0 with error 87. Under a
+max rate the benchmarks stop on unstable timing, so the run doesn't get to the upload. `-Percent 100` must not warn. A job can't be removed from a process, so close the window
 afterwards. A Windows container (`docker run --isolation=process --cpus=2`) uses the same hard cap.
 
-Not tested: `-MinMax`, cgroup v1.
+Not tested: cgroup v1.
