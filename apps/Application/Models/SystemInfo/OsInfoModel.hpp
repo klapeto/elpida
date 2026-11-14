@@ -42,8 +42,12 @@ namespace Elpida::Application
 		[[nodiscard]]
 		const std::string& GetVersion() const;
 
+		/// "none", or the VM it runs in (Elpida::VirtualizationDetector)
+		[[nodiscard]]
+		const std::string& GetVirtualization() const;
+
 		OsInfoModel() = default;
-		OsInfoModel(std::string category, std::string name, std::string version);
+		OsInfoModel(std::string category, std::string name, std::string version, std::string virtualization);
 		OsInfoModel(const OsInfoModel&) = delete;
 		OsInfoModel(OsInfoModel&&) = default;
 		OsInfoModel& operator=(const OsInfoModel&) = delete;
@@ -53,6 +57,7 @@ namespace Elpida::Application
 		std::string _category;
 		std::string _name;
 		std::string _version;
+		std::string _virtualization;
 	};
 
 } // Application

@@ -140,6 +140,7 @@ namespace Elpida
 		os["category"] = osInfo.GetCategory();
 		os["name"] = osInfo.GetName();
 		os["version"] = osInfo.GetVersion();
+		os["virtualization"] = osInfo.GetVirtualization();
 
 		return os;
 	}

@@ -39,7 +39,11 @@ namespace Elpida
 		[[nodiscard]]
 		const String& GetVersion() const;
 
-		OsInfo(String category, String name, String version);
+		/// "none", or the VM it runs in (VirtualizationDetector)
+		[[nodiscard]]
+		const String& GetVirtualization() const;
+
+		OsInfo(String category, String name, String version, String virtualization);
 		OsInfo(const OsInfo&) = default;
 		OsInfo(OsInfo&&) noexcept = default;
 		OsInfo& operator=(const OsInfo&) = default;
@@ -49,6 +53,7 @@ namespace Elpida
 		String _category;
 		String _name;
 		String _version;
+		String _virtualization;
 	};
 
 } // Elpida

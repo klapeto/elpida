@@ -49,7 +49,8 @@ namespace Elpida::Application
 		return {
 				os.at("category").get<std::string>(),
 				os.at("name").get<std::string>(),
-				os.at("version").get<std::string>()
+				os.at("version").get<std::string>(),
+				os.value("virtualization", std::string("unknown"))
 		};
 	}
 

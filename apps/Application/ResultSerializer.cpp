@@ -77,6 +77,8 @@ namespace Elpida::Application
 		os["category"] = osInfo.GetCategory();
 		os["name"] = osInfo.GetName();
 		os["version"] = osInfo.GetVersion();
+		// The server keeps results from VMs but leaves them out of the statistics
+		os["virtualization"] = osInfo.GetVirtualization();
 
 		return os;
 	}

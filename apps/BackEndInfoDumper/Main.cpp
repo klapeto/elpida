@@ -144,7 +144,7 @@ static json GetJsonWithOnlyBenchmarks(const std::filesystem::path& benchmarkPath
 	TimingInfo timing;
 	MemoryInfo memoryInfo(0, 0);
 	TopologyInfo topology(std::make_unique<TopologyNode>(NodeType::Machine), {}, {}, {}, {}, {}, nullptr);
-	OsInfo osInfo("", "", "");
+	OsInfo osInfo("", "", "", "");
 	CpuInfo cpuInfo("", "", "");
 
 	json root;

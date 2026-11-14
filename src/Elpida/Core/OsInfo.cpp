@@ -25,8 +25,9 @@
 
 namespace Elpida
 {
-	OsInfo::OsInfo(String category, String name, String version)
-		: _category(std::move(category)), _name(std::move(name)), _version(std::move(version))
+	OsInfo::OsInfo(String category, String name, String version, String virtualization)
+		: _category(std::move(category)), _name(std::move(name)), _version(std::move(version)),
+		  _virtualization(std::move(virtualization))
 	{
 	}
 	const String& OsInfo::GetCategory() const
@@ -40,5 +41,9 @@ namespace Elpida
 	const String& OsInfo::GetVersion() const
 	{
 		return _version;
+	}
+	const String& OsInfo::GetVirtualization() const
+	{
+		return _virtualization;
 	}
 } // Elpida

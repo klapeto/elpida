@@ -24,4 +24,5 @@ Internal documentation for developers. The user documentation is the website in 
 | [android-toolchain.md](android-toolchain.md) | Step by step: building the Android targets, their libraries and the app's native code |
 | [mimalloc.md](mimalloc.md) | Replacing the system allocator with mimalloc on Windows (XP), Linux and Android |
 | [single-thread-affinity.md](single-thread-affinity.md) | Final decision: single-thread benchmarks run without affinity everywhere; measurements; `elpida-affinity-test` |
+| [virtualization-detection.md](virtualization-detection.md) | Detecting virtual machines: results from VMs are uploaded with a flag and left out of the statistics |
 | [known-issues.md](known-issues.md) | Open problems and remaining divergences |

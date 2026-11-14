@@ -25,8 +25,9 @@
 
 namespace Elpida::Application
 {
-	OsInfoModel::OsInfoModel(std::string category, std::string name, std::string version)
-		: _category(std::move(category)), _name(std::move(name)), _version(std::move(version))
+	OsInfoModel::OsInfoModel(std::string category, std::string name, std::string version, std::string virtualization)
+		: _category(std::move(category)), _name(std::move(name)), _version(std::move(version)),
+		  _virtualization(std::move(virtualization))
 	{
 	}
 	const std::string& OsInfoModel::GetCategory() const
@@ -40,5 +41,9 @@ namespace Elpida::Application
 	const std::string& OsInfoModel::GetVersion() const
 	{
 		return _version;
+	}
+	const std::string& OsInfoModel::GetVirtualization() const
+	{
+		return _virtualization;
 	}
 } // Application

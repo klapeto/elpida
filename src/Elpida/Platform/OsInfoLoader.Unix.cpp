@@ -24,6 +24,7 @@
 #if defined(ELPIDA_UNIX)
 
 #include "Elpida/Platform/OsInfoLoader.hpp"
+#include "Elpida/Platform/VirtualizationDetector.hpp"
 
 #include <sys/utsname.h>
 #include <fstream>
@@ -90,7 +91,8 @@ namespace Elpida
 		return {
 			unameInfo.sysname,
 			name,
-			unameInfo.release
+			unameInfo.release,
+			VirtualizationDetector::Detect()
 		};
 	}
 } // Elpida

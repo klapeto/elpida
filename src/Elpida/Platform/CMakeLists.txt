@@ -16,6 +16,9 @@ add_library(elpida-platform
         OsInfoLoader.Unix.cpp
         OsInfoLoader.Windows.cpp
 
+        VirtualizationDetector.Unix.cpp
+        VirtualizationDetector.Windows.cpp
+
         MemoryInfoLoader.Unix.cpp
         MemoryInfoLoader.Windows.cpp
 

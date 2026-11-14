@@ -76,6 +76,7 @@ namespace Elpida.Mobile.Services
 							Category = infoDump.Os.Category,
 							Name = infoDump.Os.Name,
 							Version = infoDump.Os.Version,
+							Virtualization = infoDump.Os.Virtualization,
 						},
 						Topology = new ResultTopologyDto
 						{

@@ -26,5 +26,8 @@ namespace Elpida.Mobile.Models
 		public string Name { get; set; } = string.Empty;
 
 		public string Version { get; set; } = string.Empty;
+
+		/// <summary>"none", or the VM it runs in (e.g. "android-emulator").</summary>
+		public string Virtualization { get; set; } = "unknown";
 	}
 }

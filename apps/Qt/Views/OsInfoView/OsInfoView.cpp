@@ -31,6 +31,13 @@ namespace Elpida::Application
 		_ui->lblCategoryValue->setText(QString::fromStdString(osInfo.GetCategory()));
 		_ui->lblNameValue->setText(QString::fromStdString(osInfo.GetName()));
 		_ui->lblVersionValue->setText(QString::fromStdString(osInfo.GetVersion()));
+
+		// "none" on bare metal; results from a VM are uploaded but don't count in the statistics
+		auto& virtualization = osInfo.GetVirtualization();
+		_ui->lblVirtualizationValue->setText(virtualization == "none"
+				? tr("No")
+				: tr("Yes (%1): results don't count in the online statistics")
+						.arg(QString::fromStdString(virtualization)));
 	}
 
 	OsInfoView::~OsInfoView()

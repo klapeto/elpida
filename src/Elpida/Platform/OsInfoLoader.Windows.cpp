@@ -24,6 +24,7 @@
 #if defined(ELPIDA_WINDOWS)
 
 #include "Elpida/Platform/OsInfoLoader.hpp"
+#include "Elpida/Platform/VirtualizationDetector.hpp"
 #include "Elpida/Platform/OsUtilities.hpp"
 #include "Elpida/Core/ValueUtilities.hpp"
 #include "Elpida/Core/ElpidaException.hpp"
@@ -87,7 +88,8 @@ namespace Elpida
 		return {
 			"Windows",
 			name,
-			version
+			version,
+			VirtualizationDetector::Detect()
 		};
 	}
 } // Elpida

@@ -365,6 +365,7 @@ int GetInfo(ElpidaInstance* instance, char** buffer, uint64_t* size)
 			os["category"] = osInfo.GetCategory();
 			os["name"] = osInfo.GetName();
 			os["version"] = osInfo.GetVersion();
+			os["virtualization"] = osInfo.GetVirtualization();
 
 			root["os"] = std::move(os);
 		}

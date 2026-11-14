@@ -26,5 +26,8 @@ namespace Elpida.Mobile.Models.Web
 		public string Name { get; init; } = default!;
 
 		public string Version { get; init; } = default!;
+
+		/// <summary>"none", or the VM it runs in; the server leaves results from VMs out of the statistics.</summary>
+		public string Virtualization { get; init; } = default!;
 	}
 }
