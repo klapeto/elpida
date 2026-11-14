@@ -20,7 +20,7 @@ add_library(elpida-math-benchmarks
         NBodyTask.cpp
 )
 
-target_compile_options(elpida-math-benchmarks PRIVATE -ffast-math)
+# no -ffast-math: it lets each target reassociate and vectorize differently (docs/development/code-parity.md)
 target_link_libraries(elpida-math-benchmarks PUBLIC elpida-core elpida-platform elpida-math musl-lite)
 
 if (ELPIDA_INSTALL_PREDEFINED_BENCHMARK_LIBRARIES)

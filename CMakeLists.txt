@@ -28,9 +28,45 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin")
 
+    # Benchmark code parity (docs/development/code-parity.md): make the generated code independent of per-target
+    # compiler defaults. Keep in sync with scripts/docker/parity-flags.sh (toolchain runtimes and LLVM libraries).
+    # -fno-math-errno: clang defaults differ (on for glibc/mingw, off for Android/musl). musl never sets errno in
+    #                  math functions, and with this sqrt() etc. map to the ISA's instruction on every target.
+    # -ffp-contract=off: do not fuse a*b+c into FMA only on the targets that have it.
+    # -fomit-frame-pointer: clang keeps frame pointers by default on Android (all ABIs) and aarch64 Linux only.
+    set(ELPIDA_PARITY_FLAGS "-fno-math-errno -ffp-contract=off -fomit-frame-pointer")
+    if (CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64|ARM64)$")
+        # Outline atomics pick LSE or LL/SC at runtime depending on the CPU.
+        # x18 is reserved on Android and Windows (platform register) but allocatable on Linux: reserve it everywhere.
+        # Cortex-A53 errata: clang enables the 835769 workaround (a nop between a memory access and a 64-bit
+        # multiply-accumulate) and the linker's 843419 fix by default for Android only. Enable them everywhere: they
+        # are needed on real A53 cores (Raspberry Pi 3, older phones) anyway. lld has the 843419 fix for ELF only.
+        set(ELPIDA_PARITY_FLAGS "${ELPIDA_PARITY_FLAGS} -mno-outline-atomics -ffixed-x18 -mfix-cortex-a53-835769")
+        if (NOT WIN32)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--fix-cortex-a53-843419")
+            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--fix-cortex-a53-843419")
+        endif ()
+    elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64)$")
+        # Fixed baseline: the Android triple otherwise enables SSE4.2/POPCNT/CX16 by default
+        set(ELPIDA_PARITY_FLAGS "${ELPIDA_PARITY_FLAGS} -march=x86-64 -mtune=generic -mno-sse3 -mno-ssse3 -mno-sse4.1 -mno-sse4.2 -mno-popcnt -mno-cx16")
+    elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^(i386|i586|i686)$")
+        # Fixed baseline (llvm-mingw default). The Android triple otherwise uses i686+SSSE3
+        set(ELPIDA_PARITY_FLAGS "${ELPIDA_PARITY_FLAGS} -march=pentium4 -mtune=generic -mno-sse3 -mno-ssse3")
+    endif ()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ELPIDA_PARITY_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ELPIDA_PARITY_FLAGS}")
+
     # if we link with musl, allow this
-    # -lgcc is needed for i386 soft float routines
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
+
+    # Binary size: drop unreachable functions/data at link time (mostly LLVM/Clang code in the Compilation benchmark,
+    # whose libraries are already built with function sections). Only unreachable code is removed, so the executed
+    # code does not change. lld accepts --gc-sections for ELF and MinGW (/OPT:REF).
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections")
+    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--gc-sections")
 else ()
     message(FATAL_ERROR "'${CMAKE_CXX_COMPILER_ID}' compiler is currently unsupported. Elpida requires specific compiler functionality that currently only GCC/Clang provide. If you think another compiler can be supported, please let us know in the issues page.")
 endif ()
@@ -55,13 +91,21 @@ elseif (MSYS OR MSVC OR MINGW)
 #    add_compile_definitions(-D_WIN32_WINNT=0x0600) # We support XP and above
 endif ()
 
-if (LINUX)
+if (LINUX AND NOT ANDROID) # Android builds with llvm-cross.cmake are LINUX too
     set(ELPIDA_LINUX 1)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgcc")
+    # No -lgcc: it came before compiler-rt on the link line, so lld took the compiler builtins (e.g. __mulsc3 in the FFT
+    # benchmark) from the sysroot's libgcc instead of compiler-rt like every other platform (docs/development/code-parity.md)
+
+    # Link libc++/libc++abi (-static-libstdc++) and libunwind (-static-libgcc) statically, like Windows (-static), so
+    # no executable depends on the toolchain's libc++.so/libunwind.so (and whatever they pull in). A fully static build
+    # is not possible: Qt loads GL/EGL/xcb with dlopen. Qt itself is built static, so no shared library uses libc++.
+    add_link_options(-static-libstdc++ -static-libgcc)
 endif ()
 
 if (ANDROID)
     set(ELPIDA_ANDROID 1)
+    # The NDK toolchain file defines it and some code checks it (httplib); no benchmark code does
+    add_compile_definitions(ANDROID)
 endif()
 
 # Enable debug stuff if we build debug
