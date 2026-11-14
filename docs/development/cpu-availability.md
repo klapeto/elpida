@@ -62,9 +62,25 @@ Linux x86_64 (7950X3D, 32 logical processors), CLI with one benchmark group, upl
 | Windows (user), affinity changed on the running CLI | not uploaded |
 | Android phone (user, 8 cores), normal run | uploaded, no warning |
 | Android phone, notification shade opened during the run | not uploaded (7 of 8) |
+| Windows (user), job CPU rate hard cap (`scripts/Windows/job-cpu-cap.ps1`) | quota detected, not uploaded |
 
 The notification shade takes the app out of the top-app state: Android moves it to the `foreground` cpuset, which on
 many phones leaves out the fastest core. The app stays visible, so `Window.Stopped` (the "left the screen" check)
 doesn't fire; only this check catches it.
 
-Not tested: Windows job quota, cgroup v1.
+## Testing a Windows job quota
+
+`scripts/Windows/job-cpu-cap.ps1` puts a PowerShell window into a job object with a CPU rate limit; programs started
+from it inherit the job:
+
+```powershell
+powershell -ExecutionPolicy Bypass -NoExit -File .\scripts\Windows\job-cpu-cap.ps1 -Percent 25
+# in that window:
+.\elpida-cli.exe ...
+```
+
+`-Percent` is a share of all logical processors, so 25 on 16 gives a quota of 4.0. `-MinMax` sets the max rate
+instead of the hard cap. `-Percent 100` must not warn. A job can't be removed from a process, so close the window
+afterwards. A Windows container (`docker run --isolation=process --cpus=2`) uses the same hard cap.
+
+Not tested: `-MinMax`, cgroup v1.
