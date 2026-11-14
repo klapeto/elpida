@@ -38,8 +38,8 @@ namespace Elpida::Benchmarks::Math
 		_a = Elpida::Math::DynamicMatrix<Float>(_rows, _columns);
 		_b = Elpida::Math::DynamicMatrix<Float>(_columns, _rows);
 
-		std::random_device randomDevice;
-		std::mt19937 generator(randomDevice());
+		// Fixed seed: the same input on every run and platform (docs/development/known-issues.md#non-deterministic-input)
+		auto generator = std::mt19937(12345); // NOLINT(*-msc51-cpp)
 
 		std::normal_distribution distribution(0.0, 100.0);
 

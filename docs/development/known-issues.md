@@ -19,7 +19,10 @@ Several tasks generate their input with `std::random_device` seeds, `std::normal
 `std::uniform_int_distribution` or `std::shuffle`:
 
 - `Math/MatrixMultiplication32Task.cpp`, `Math/DynamicMatrixMultiplicationTask.cpp`,
-  `Math/CalculateFFTInPlaceTask.cpp`: `random_device` + `normal_distribution`.
+  `Math/CalculateFFTInPlaceTask.cpp`: **fixed since 2026-11-14**: `mt19937(12345)` + libc++'s `normal_distribution`,
+  so the same input on every run and platform (libc++ is the same everywhere and its `log`/`sqrt` are musl-lite's;
+  x86_64 Linux vs Windows differ only in the Windows ABI's `xmm6`+ saves in `log`). A libc++ upgrade may change the
+  generated values.
 - `Memory/MemoryLatencyTask.cpp`: `random_device` + `mt19937_64` + `std::shuffle` of the page order.
 - `Svg/SvgSuperSampler.cpp`: fixed seed, but `uniform_real_distribution`.
 - RSA: OpenSSL's random PKCS#1 padding (encryption) and blinding (decryption), so the output differs on every run.
@@ -28,14 +31,14 @@ The timing doesn't depend on the values: matrix multiplication and FFT do the sa
 any input, and the inputs never come near denormals. With the same libc++ everywhere the algorithms are the same, so
 this doesn't bias scores.
 
-**Decided 2026-11-14: left as is.** Fixed seeds would only matter for cross-platform input/output checksums, which
+**Decided 2026-11-14:** the Math seeds are fixed (above); the rest is left as is. Cross-platform input/output checksums
 are not planned: `scripts/parity/disasm-parity.py` already shows that the platforms run the same code. Memory latency
-stays random on purpose: it is lmbench's algorithm (fixed bit-reversed line order within a page, a random page order
-per run, one pointer cycle through all pages), and a fixed page order would make every run use the same single
-sample. If checksums are wanted later: fix the three Math seeds (and use in-house distributions, so a libc++ upgrade
-can't change the inputs) and leave RSA out. A different idea that works with random input: let each benchmark verify
-its own result (decompressed data equals the input, decrypted equals plaintext, inverse FFT returns the input), which
-would catch a broken task scoring high on any platform.
+stays random on purpose: it is lmbench's algorithm (fixed bit-reversed line order within a page, a random page order per
+run, one pointer cycle through all pages), and a fixed page order would make every run use the same single sample. If
+checksums are wanted later: use in-house distributions for the Math inputs (so a libc++ upgrade can't change them) and
+leave RSA out. A different idea that works with random input: let each benchmark verify its own result (decompressed
+data equals the input, decrypted equals plaintext, inverse FFT returns the input), which would catch a broken task
+scoring high on any platform.
 
 ## Found by the parity checks
 
