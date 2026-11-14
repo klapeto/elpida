@@ -91,3 +91,14 @@ COPY --from=toolchain /opt/toolchains/llvm /opt/toolchains/llvm
 ENV ELPIDA_TOOLCHAIN=/opt/toolchains/llvm
 
 # No NDK: Elpida's native code uses the toolchain above, and .NET for Android's Mono AOT (Release) brings its own tools.
+
+# Pinned: newer workload versions have https://github.com/dotnet/maui/issues/38507
+RUN dotnet workload install android --version 10.0.100
+RUN dotnet workload install maui-android --version 10.0.100
+
+# glab: ci/deploy.yml downloads the signing keystore (a secure file) with it
+RUN wget -O /tmp/glab.deb https://gitlab.com/gitlab-org/cli/-/releases/v1.120.0/downloads/glab_1.120.0_linux_amd64.deb && \
+    dpkg -i /tmp/glab.deb && \
+    rm /tmp/glab.deb
+
+CMD ["/bin/bash"]
