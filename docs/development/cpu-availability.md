@@ -59,5 +59,6 @@ Linux x86_64 (7950X3D, 32 logical processors), CLI with one benchmark group, upl
 | Docker without limits | no warning |
 | Qt (Xvfb), `taskset -c 0-3` | Continue/Cancel dialog, then the not-uploaded message |
 | Android emulator (API 21), shared loader | allowed 4, online 4, not restricted |
+| Windows (user), affinity changed on the running CLI | not uploaded |
 
-Not tested: Windows (affinity and job quota), cgroup v1, Android on a real device with the shared loader.
+Not tested: Windows job quota, cgroup v1, Android on a real device with the shared loader.
