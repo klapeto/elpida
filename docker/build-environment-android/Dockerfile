@@ -27,6 +27,10 @@ RUN TARGET_TRIPLES=x86_64-linux-gnu ./install-wrappers.sh $TOOLCHAIN
 
 # Toolchain targets <triple><api>-clang with their sysroots (bionic from the NDK), then compiler-rt and libc++ with the
 # benchmark code parity flags (docs/development/code-parity.md)
+# The NDK's prebuilt libraries (r29: libc.a, libdl.a, ...) have zstd-compressed debug sections, and the base image's lld
+# is built without zstd ("is compressed with ELFCOMPRESS_ZSTD, but lld is not built with zstd support" when linking
+# the static benchmarks). Their debug info isn't needed, so it's stripped; llvm-strip removes the sections without
+# decompressing them.
 ADD ./scripts/docker/parity-flags.sh /tmp/
 RUN triples=""; \
     for api in $ANDROID_BENCHMARKS_API $ANDROID_APP_API; do \
@@ -34,6 +38,10 @@ RUN triples=""; \
     done; \
     export TARGET_TRIPLES="$triples"; \
     ANDROID_NDK_VERSION=$ANDROID_NDK_VERSION ./build-android-sysroots.sh $TOOLCHAIN && \
+    for triple in $triples; do \
+        find "$TOOLCHAIN/$triple/usr/lib" -type f \( -name "*.a" -o -name "*.o" -o -name "*.so" \) \
+            -exec "$TOOLCHAIN/bin/llvm-strip" --strip-debug {} + || exit 1; \
+    done && \
     ./install-wrappers.sh $TOOLCHAIN && \
     ./build-compiler-rt.sh $TOOLCHAIN --additional-cflags-script=/tmp/parity-flags.sh && \
     ./build-libcxx.sh $TOOLCHAIN --additional-cflags-script=/tmp/parity-flags.sh
