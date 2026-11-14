@@ -85,9 +85,12 @@ namespace Elpida::Application
 
 	FullBenchmarkInstanceResult FullBenchmarkInstance::RunSingleThread() const
 	{
+		// No affinity: the OS puts the thread on its fastest core (Intel Thread Director/ITMT, AMD preferred cores, EAS
+		// on ARM). Pinning to the info dumper's "fastest processor" depended on a short idle measurement that can pick
+		// a slow core, can't be done on Android (cpusets, paused cores) and keeps the thread on a core that gets hot.
 		auto benchmarkResult = _executionService.Execute(
 				_benchmark,
-				{ _topologyModel.GetFastestProcessor() },
+				{},
 				_timingModel.GetNowOverhead().count(),
 				_timingModel.GetLoopOverhead().count(),
 				false,
