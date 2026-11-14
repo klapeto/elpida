@@ -27,8 +27,10 @@
           - scripts/docker/cross.linux.cmake.template
           - scripts/docker/generate-toolchain-file.sh
           - scripts/docker/packages
-          - scripts/docker/llvm.xp.lib.final.patch
-          - scripts/docker/llvm.xp.toolchain.final.patch
+          - scripts/docker/llvm.xp.lib.v3.patch
+          - scripts/docker/llvm.xp.toolchain.v3.patch
+          - scripts/docker/llvm.parity.patch
+          - scripts/docker/parity-flags.sh
 
 Build Docker Image (x86_64-linux-gnu):
   tags:
@@ -130,3 +132,9 @@ Build Docker Image (Android):
       changes:
         paths:
           - docker/build-environment-android/Dockerfile
+          - ci/docker-image.yml
+          - scripts/docker/build-base.sh
+          - scripts/docker/build-autotools-based.sh
+          - scripts/docker/build-llvm.sh
+          - scripts/docker/llvm.parity.patch
+          - scripts/docker/parity-flags.sh

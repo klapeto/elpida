@@ -93,10 +93,13 @@ WORKDIR /tmp/
 
 RUN apt-get install -y libgl1-mesa-dev
 
+# Host Qt (QT_HOST_PATH of the target builds). The build tree (~25 GB) is removed in the same layer, otherwise it stays
+# in the image; the target images reuse the qt6 sources with a new build tree (build-qt.sh).
 WORKDIR /tmp/qt6/build
-RUN ../configure
-RUN cmake --build . --parallel
-RUN cmake --install .
+RUN ../configure && \
+    cmake --build . --parallel && \
+    cmake --install . && \
+    rm -rf /tmp/qt6/build/*
 
 WORKDIR /
 

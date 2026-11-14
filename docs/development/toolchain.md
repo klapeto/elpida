@@ -108,6 +108,32 @@ is `<sysroot>/usr/lib/cmake/llvm`). They are built by `scripts/docker/build-llvm
 The libraries of the Linux and Windows targets in `/mnt/Dev/toolchains/llvm-mingw` were rebuilt with the current
 script on 2026-11-10.
 
+## Docker images
+
+- `docker/build-environment-base`: Ubuntu focal with the host compiler (llvm-mingw `build-llvm.sh`, LLVM 21), the host
+  Qt (`QT_HOST_PATH`) and the sources the target images build from (hwloc, Qt, LLVM 19.1.7, libxcb-cursor). The host
+  Qt build tree is deleted in the same layer (it was ~25 GB). About 11 GB.
+- `docker/build-environment` (one per target, `TARGET_TRIPLE`), two stages (2026-11-14):
+  1. Builder on the base image: applies `llvm.xp.toolchain.v3.patch` and builds the target's runtimes with
+     `build-all.sh --no-tools` (after `strip-llvm.sh`, `install-wrappers.sh` and `build-mingw-w64-tools.sh`, which
+     `--no-tools` skips). The host compiler is not rebuilt: the patch only changes the runtimes and Windows-only code
+     in `llvm/lib/Support`. Then the sysroot, hwloc, LLVM 19.1.7 libraries and the target Qt, as before.
+  2. The final image: plain focal with the toolchain (including the target sysroot), the host Qt, CMake, Ninja and
+     the packages CI builds use (git, make, perl, pkg-config, ca-certificates, and the host Qt's GL/EGL/pcre2
+     libraries). An `ldd` check fails the image build if a toolchain or host Qt binary misses a library. x86_64 Linux:
+     3.6 GB instead of 40.6 GB.
+  - The sysroot keeps `usr/share/pkgconfig` (`xproto.pc` and the other X11 protocol `.pc` files Qt's xcb plugins need)
+    and `PKG_CONFIG_PATH` lists only the target's `.pc` directories. The old single-stage images deleted
+    `usr/share` and worked only because the host's `x11proto-dev` (from `libgl1-mesa-dev`) was there for pkg-config
+    to fall back to.
+  - CI's inline cache (`BUILDKIT_INLINE_CACHE`) only covers the final stage, so an image job rebuilds the builder stage
+    (about 20 minutes for x86_64 Linux locally). The jobs only run when the Docker files change.
+- `docker/build-environment-android`: see [android-toolchain.md](android-toolchain.md). `.devcontainer`: a single-stage
+  development image, not changed.
+- Test locally from a clean context (the committed tree): `git archive HEAD docker scripts ci | tar -x -C <dir>`, then
+  `docker build -f <dir>/docker/build-environment-base/Dockerfile <dir>` and the target image with
+  `--build-arg IMAGE=<base tag> --build-arg TARGET_TRIPLE=<triple>`.
+
 ## Checks
 
 ```sh
