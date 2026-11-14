@@ -244,12 +244,12 @@
         <value>Cancel</value>
     </data>
     <data name="CpuRestrictedWarning" xml:space="preserve">
-        <value>Android currently lets Elpida use only {0} of the {1} online CPU cores, so the results would be lower. They will not be uploaded. Keep Elpida open on the screen while benchmarking. If you think this is wrong, please report it to us: https://gitlab.com/dev-hood/elpida/elpida/-/issues. Continue anyway?</value>
+        <value>Android currently lets Elpida use only {0} of the {1} online CPU cores, so the results would be lower. They will not be uploaded. Keep Elpida in front while benchmarking: don't open the notification panel, the recent apps screen or other apps. If you think this is wrong, please report it to us: https://gitlab.com/dev-hood/elpida/elpida/-/issues. Continue anyway?</value>
     </data>
     <data name="ResultsNotUploadedCpuRestricted" xml:space="preserve">
-        <value>The results were not uploaded: during the run Android limited Elpida to {0} of the {1} online CPU cores, so they are lower than this device can do. Keep Elpida open on the screen while benchmarking. If you think this is wrong, please report it to us: https://gitlab.com/dev-hood/elpida/elpida/-/issues</value>
+        <value>The results were not uploaded: during the run Android limited Elpida to {0} of the {1} online CPU cores, so they are lower than this device can do. Keep Elpida in front while benchmarking: don't open the notification panel, the recent apps screen or other apps. If you think this is wrong, please report it to us: https://gitlab.com/dev-hood/elpida/elpida/-/issues</value>
     </data>
     <data name="ResultsNotUploadedBackground" xml:space="preserve">
-        <value>The results were not uploaded: Elpida left the screen during the run, and Android limits the CPU use of apps that are not on screen.</value>
+        <value>The results were not uploaded: Elpida left the screen during the run, and Android limits the CPU use of apps that are not on screen. Keep Elpida in front while benchmarking: don't open the notification panel, the recent apps screen or other apps.</value>
     </data>
 </root>
