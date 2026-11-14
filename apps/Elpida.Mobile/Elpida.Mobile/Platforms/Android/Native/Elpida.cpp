@@ -20,25 +20,20 @@
 #include "JsonSerializer.hpp"
 #include "ModelBuilderJson.hpp"
 #include "Core/BenchmarkExecutionService.hpp"
-#include "Elpida/Platform/CpuInfoLoader.hpp"
-#include "Elpida/Platform/OsInfoLoader.hpp"
-#include "Elpida/Platform/MemoryInfoLoader.hpp"
-#include "Elpida/Platform/TopologyLoader.hpp"
-#include "Elpida/Core/TimingCalculator.hpp"
-#include "Elpida/Core/BenchmarkRunContext.hpp"
-#include "Elpida/Core/ModuleExports.hpp"
 #include "ScoreCalculator.hpp"
 #include "InfoGetter.hpp"
 
-#include <iostream>
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
 #include <exception>
-#include <thread>
-#include <dlfcn.h>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
+#include <sched.h>
+#include <unistd.h>
 #include <Elpida/Core/Config.hpp>
 #include <Elpida/BenchmarksVersion.hpp>
-
-#include "DynamicLoadedBenchmark.hpp"
-#include "Elpida/Platform/AsyncPipeReader.hpp"
 
 using namespace Elpida;
 using namespace Elpida::Application;
@@ -46,99 +41,96 @@ using namespace nlohmann;
 
 char lastError[512];
 
-extern "C" {
-static TopologyNodeType TranslateNativeTopologyType(NodeType nativeNodeType)
+// Number of CPUs in a CPU list such as "0-3,6,7". -1 if it can't be parsed.
+static int CountCpuList(const std::string& list)
 {
-	switch (nativeNodeType)
+	int count = 0;
+	std::istringstream ranges(list);
+	std::string range;
+	while (std::getline(ranges, range, ','))
 	{
-	case NodeType::Machine:
-		return Elpida::Application::TopologyNodeType::Machine;
-	case NodeType::Package:
-		return Elpida::Application::TopologyNodeType::Package;
-	case NodeType::NumaDomain:
-		return Elpida::Application::TopologyNodeType::NumaDomain;
-	case NodeType::Group:
-		return Elpida::Application::TopologyNodeType::Group;
-	case NodeType::Die:
-		return Elpida::Application::TopologyNodeType::Die;
-	case NodeType::Core:
-		return Elpida::Application::TopologyNodeType::Core;
-	case NodeType::L1ICache:
-		return Elpida::Application::TopologyNodeType::L1ICache;
-	case NodeType::L1DCache:
-		return Elpida::Application::TopologyNodeType::L1DCache;
-	case NodeType::L2ICache:
-		return Elpida::Application::TopologyNodeType::L2ICache;
-	case NodeType::L2DCache:
-		return Elpida::Application::TopologyNodeType::L2DCache;
-	case NodeType::L3ICache:
-		return Elpida::Application::TopologyNodeType::L3ICache;
-	case NodeType::L3DCache:
-		return Elpida::Application::TopologyNodeType::L3DCache;
-	case NodeType::L4Cache:
-		return Elpida::Application::TopologyNodeType::L4Cache;
-	case NodeType::L5Cache:
-		return Elpida::Application::TopologyNodeType::L5Cache;
-	case NodeType::ProcessingUnit:
-		return Elpida::Application::TopologyNodeType::ProcessingUnit;
-	case NodeType::Unknown:
-		break;
-	}
-	return Elpida::Application::TopologyNodeType::ProcessingUnit;
-}
-
-static std::optional<std::size_t> GetEfficiency(const TopologyNode& node)
-{
-	if (node.GetType() == NodeType::ProcessingUnit)
-	{
-		auto& cpu = static_cast<const ProcessingUnitNode&>(node);
-		if (cpu.GetCpuKind())
+		auto dash = range.find('-');
+		try
 		{
-			return cpu.GetCpuKind()->get().GetEfficiency();
+			if (dash == std::string::npos)
+			{
+				std::stoi(range);
+				count += 1;
+			}
+			else
+			{
+				count += std::stoi(range.substr(dash + 1)) - std::stoi(range.substr(0, dash)) + 1;
+			}
+		}
+		catch (const std::exception&)
+		{
+			return -1;
 		}
 	}
-	return std::nullopt;
+	return count;
 }
 
-static std::optional<std::size_t> GetNodeSize(const TopologyNode& node)
+// Number of CPUs in a sysfs CPU list file (/sys/devices/system/cpu/online). -1 if unreadable.
+static int CountCpuListFile(const char* path)
 {
-	switch (node.GetType())
+	std::ifstream file(path);
+	std::string list;
+	if (!file || !std::getline(file, list))
 	{
-	case NodeType::L1ICache:
-	case NodeType::L1DCache:
-	case NodeType::L2ICache:
-	case NodeType::L2DCache:
-	case NodeType::L3ICache:
-	case NodeType::L3DCache:
-	case NodeType::L4Cache:
-	case NodeType::L5Cache:
-		return static_cast<const CpuCacheNode&>(node).GetSize();
-	case NodeType::NumaDomain:
-		return static_cast<const NumaNode&>(node).GetLocalMemorySize();
-	default:
-		return std::nullopt;
+		return -1;
 	}
+	return CountCpuList(list);
 }
 
-static TopologyNodeModel GetTopologyNodeModel(const TopologyNode& node)
+// The CPUs the calling thread may run on: Cpus_allowed_list of /proc/<pid>/task/<tid>/status. -1 if unreadable.
+static int CountAllowedCpus()
 {
-	std::vector<TopologyNodeModel> children;
-	for (auto& child : node.GetChildren())
+	std::ifstream file("/proc/self/task/" + std::to_string(gettid()) + "/status");
+	std::string line;
+	const std::string key = "Cpus_allowed_list:";
+	while (file && std::getline(file, line))
 	{
-		children.push_back(GetTopologyNodeModel(*child));
+		if (line.compare(0, key.size(), key) == 0)
+		{
+			auto start = line.find_first_not_of(" \t", key.size());
+			return start == std::string::npos ? -1 : CountCpuList(line.substr(start));
+		}
+	}
+	return -1;
+}
+
+extern "C" {
+// Which CPUs this process (and the benchmark processes it starts, which inherit it) may run on. Android decides that per
+// app state (cpusets: top-app, foreground, background, ...).
+// allowed: the CPUs this thread is permitted to run on (cpuset and affinity). Read from Cpus_allowed_list and not from
+// sched_getaffinity(), which also leaves out CPUs the kernel has paused (idle big cores on recent Android kernels; they
+// stay "online" in sysfs and come back under load): that made 6 of 8 cores look restricted on an idle phone.
+// online/possible: from sysfs, -1 if unknown.
+int GetCpuAvailability(int* allowed, int* online, int* possible)
+{
+	if (allowed == nullptr || online == nullptr || possible == nullptr)
+	{
+		std::strncpy(lastError, "input data is null", sizeof(lastError));
+		return -1;
 	}
 
-	std::vector<TopologyNodeModel> memoryChildren;
-	for (auto& child : node.GetMemoryChildren())
+	*allowed = CountAllowedCpus();
+	if (*allowed < 0)
 	{
-		memoryChildren.push_back(GetTopologyNodeModel(*child));
+		// Fallback: sched_getaffinity() (may undercount paused CPUs, see above)
+		cpu_set_t set;
+		CPU_ZERO(&set);
+		if (sched_getaffinity(0, sizeof(set), &set) == -1)
+		{
+			std::snprintf(lastError, sizeof(lastError), "sched_getaffinity failed: %s", std::strerror(errno));
+			return -1;
+		}
+		*allowed = CPU_COUNT(&set);
 	}
 
-	return TopologyNodeModel(TranslateNativeTopologyType(node.GetType()),
-							 node.GetOsIndex(), GetNodeSize(node),
-							 GetEfficiency(node),
-							 std::move(children),
-							 std::move(memoryChildren));
+	*online = CountCpuListFile("/sys/devices/system/cpu/online");
+	*possible = CountCpuListFile("/sys/devices/system/cpu/possible");
+	return 0;
 }
 
 double CalculateTotalScore(double singleCoreScore, double multiCoreScore)
@@ -152,81 +144,6 @@ double CalculateScore(const double score[], const double baseScores[], const uin
 }
 
 
-static bool EndsWith(std::string const& value, std::string const& ending)
-{
-	if (ending.size() > value.size()) return false;
-	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
-}
-
-static std::vector<BenchmarkModel> GetBenchmarkModels(const std::string& path,
-													  const Vector<UniquePtr<Benchmark>>& benchmarks)
-{
-	std::vector<BenchmarkModel> models;
-	auto index = 0;
-	for (const auto& benchmark : benchmarks)
-	{
-		std::vector<BenchmarkConfigurationModel> configurationModels;
-		auto info = benchmark->GetInfo();
-		for (auto& configuration : benchmark->GetRequiredConfiguration())
-		{
-			configurationModels.emplace_back(configuration.GetName(),
-											 info.GetName() + "/" + configuration.GetName(),
-											 configuration.GetValue(),
-											 static_cast<Application::ConfigurationType>(configuration.GetType())
-			);
-		}
-		models.emplace_back(info.GetName(),
-							info.GetDescription(),
-							info.GetResultUnit(),
-							info.GetResultType(),
-							path,
-							index++,
-							std::move(configurationModels));
-	}
-	return models;
-}
-
-static std::vector<BenchmarkGroupModel> GetBenchmarkGroups(const std::filesystem::path& path, const std::string& suffix)
-{
-	if (!is_directory(path))
-	{
-		return {};
-	}
-
-	std::vector<BenchmarkGroupModel> loaded;
-	for (auto& entry : std::filesystem::directory_iterator(path))
-	{
-		if (!entry.is_directory()
-			&& entry.is_regular_file()
-			&& (suffix.empty() || EndsWith(entry.path().string(), suffix)))
-		{
-			try
-			{
-				const auto& exePath = entry.path();
-				auto lib = dlopen(exePath.string().c_str(), RTLD_NOW);
-				if (lib == nullptr)
-				{
-					throw ElpidaException("Failed to load benchmark group: ", dlerror());
-				}
-
-				auto func = reinterpret_cast<ELPIDA_CREATE_BENCHMARK_GROUP_PTR>(dlsym(lib, "CreateBenchmarkGroup"));
-				if (func == nullptr)
-				{
-					throw ElpidaException("Failed to load benchmark group function: ", dlerror());
-				}
-
-				auto loadedGroup = func();
-				loaded.emplace_back(loadedGroup->GetName(), GetBenchmarkModels(exePath, loadedGroup->GetBenchmarks()));
-			}
-			catch (const std::exception& ex)
-			{
-				// LOlg
-			}
-		}
-	}
-	return loaded;
-}
-
 ElpidaInstance* Load(char* executableDirectory)
 {
 	ElpidaInstance* instance = nullptr;
@@ -238,52 +155,43 @@ ElpidaInstance* Load(char* executableDirectory)
 			return nullptr;
 		}
 
+		// Same flow as the desktop CLI/Qt apps (docs/development/android.md): the system information, the timing
+		// overheads and the benchmark list come from the elpida-info-dumper executable, and every benchmark runs as its
+		// own process (OffProcessBenchmarkExecutionService). The executables are packaged as lib*.so so that Android
+		// extracts them to the (executable) native library directory.
 		auto directory = std::filesystem::path(executableDirectory);
 
+		InfoGetter infoGetter;
+		infoGetter.SetInfoGetterPath(directory / "libelpida-info-dumper.so");
+		infoGetter.SetBenchmarksPath(directory);
+		infoGetter.SetBenchmarksSuffix("-benchmarks.so");
+		// Android limits the CPUs an app may run on (cpusets), so the dumper's search for the fastest core (pinning
+		// to every core in turn) fails on many phones. Don't pin, as the in-process code before didn't either
+		// (fastestProcessor = 0).
+		infoGetter.SetNoThreadPinning(true);
+		ModelBuilderJson builderJson(infoGetter.GetData());
+
+		// the models are move-only; builderJson is not used after this
 		instance = new ElpidaInstance{
-			EnvironmentInfo{
-				CpuInfoLoader::Load(),
-				MemoryInfoLoader::Load(),
-				OsInfoLoader::Load(),
-				TopologyLoader::LoadTopology(),
-				TimingCalculator::CalculateTiming()
-			},
+			std::move(builderJson.GetTimingModel()),
+			std::move(builderJson.GetTopologyInfoModel()),
+			std::move(builderJson.GetMemoryInfoModel()),
+			std::move(builderJson.GetOsInfoModel()),
+			std::move(builderJson.GetCpuInfoModel()),
 		};
 
-		instance->timingModel = TimingModel(
-			instance->environmentInfo.GetOverheadsInfo().GetNowOverhead(),
-			instance->environmentInfo.GetOverheadsInfo().GetLoopOverhead(),
-			instance->environmentInfo.GetOverheadsInfo().GetIterationsPerSecond()
-		);
-
-		instance->memoryModel = MemoryInfoModel(
-			instance->environmentInfo.GetMemoryInfo().GetTotalSize(),
-			instance->environmentInfo.GetMemoryInfo().GetPageSize()
-		);
-
-		instance->osInfoModel = OsInfoModel(
-			instance->environmentInfo.GetOsInfo().GetCategory(),
-			instance->environmentInfo.GetOsInfo().GetName(),
-			instance->environmentInfo.GetOsInfo().GetVersion()
-		);
-
-		instance->cpuInfoModel = CpuInfoModel(
-			instance->environmentInfo.GetCpuInfo().GetArchitecture(),
-			instance->environmentInfo.GetCpuInfo().GetVendorName(),
-			instance->environmentInfo.GetCpuInfo().GetModelName()
-		);
-
-		instance->topologyModel = TopologyModel(
-			GetTopologyNodeModel(instance->environmentInfo.GetTopologyInfo().GetRoot()),
-			0
-		);
-
-		instance->benchmarkGroupModels = GetBenchmarkGroups(directory, "-group.so");
-
-		instance->benchmarkExecutionService = InProcessBenchmarkExecutionService();
-		instance->benchmarkExecutionService.SetElpidaInstance(instance);
+		instance->benchmarkGroupModels = std::move(builderJson.GetBenchmarkGroups());
 		instance->benchmarkRunConfigurationModel = BenchmarkRunConfigurationModel();
-		instance->benchmarkExecutionService.SetElpidaInstance(instance);
+
+		if (!builderJson.GetFailedToLoadBenchmarkGroups().empty())
+		{
+			std::ostringstream stream;
+			for (auto& [file, reason] : builderJson.GetFailedToLoadBenchmarkGroups())
+			{
+				stream << file << ": " << reason << ", ";
+			}
+			throw std::runtime_error("Failed to load benchmark groups: " + stream.str());
+		}
 
 		std::vector<std::string> missingBenchmarks;
 		auto benchmarksLoaded = FullBenchmarkInstancesLoader::Load(
@@ -340,31 +248,8 @@ int RunBenchmark(ElpidaInstance* instance,
 			return EXIT_FAILURE;
 		}
 
-		// thread to avoid static init/deinit errors due to dlclose() (mainly openssl)
-		std::exception_ptr benchmarkException;
-		std::thread th([&]()
-		{
-			try
-			{
-				const auto& benchmarkInstance = instance->benchmarkInstances[fullIndex];
-				const std::string actualFilename = benchmarkInstance->GetBenchmark().GetFilePath();
-				DynamicLoadedBenchmark library(actualFilename.c_str());
-				auto benchmark = library.GetBenchmark(benchmarkInstance->GetBenchmark().GetBenchmarkIndex());
-				instance->benchmarkExecutionService.SetBenchmark(benchmark);
-				const auto benchmarkResult = benchmarkInstance->Run();
-				*result = benchmarkResult.GetScore();
-			}
-			catch (...)
-			{
-				benchmarkException = std::current_exception();
-			}
-		});
-
-		th.join();
-		if (benchmarkException)
-		{
-			std::rethrow_exception(benchmarkException);
-		}
+		const auto benchmarkResult = instance->benchmarkInstances[fullIndex]->Run();
+		*result = benchmarkResult.GetScore();
 
 		return EXIT_SUCCESS;
 	}

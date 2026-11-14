@@ -51,6 +51,14 @@ namespace Elpida.Mobile.Converters
 
 		public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
+			// Not loaded yet (e.g. MemoryInfoViewModel.TotalSize is string.Empty until the system info arrives).
+			// Convert.ToDouble("") throws, and in Release builds the compiled bindings let that escape MainPage's
+			// constructor, leaving the app on the splash screen.
+			if (value is null || value is string text && string.IsNullOrWhiteSpace(text))
+			{
+				return string.Empty;
+			}
+
 			return Utilities.GetValueScaleString(
 				System.Convert.ToDouble(value),
 				ScaleValues,

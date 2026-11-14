@@ -446,5 +446,35 @@ namespace Elpida.Mobile {
                 return ResourceManager.GetString("PrivacyDisclaimerText", resourceCulture);
             }
         }
+        
+        internal static string Continue {
+            get {
+                return ResourceManager.GetString("Continue", resourceCulture);
+            }
+        }
+        
+        internal static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        internal static string CpuRestrictedWarning {
+            get {
+                return ResourceManager.GetString("CpuRestrictedWarning", resourceCulture);
+            }
+        }
+        
+        internal static string ResultsNotUploadedCpuRestricted {
+            get {
+                return ResourceManager.GetString("ResultsNotUploadedCpuRestricted", resourceCulture);
+            }
+        }
+        
+        internal static string ResultsNotUploadedBackground {
+            get {
+                return ResourceManager.GetString("ResultsNotUploadedBackground", resourceCulture);
+            }
+        }
     }
 }

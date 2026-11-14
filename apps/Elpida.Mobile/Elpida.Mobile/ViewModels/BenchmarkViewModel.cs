@@ -44,6 +44,9 @@ namespace Elpida.Mobile.ViewModels
 
 		private CancellationTokenSource _cancel = new();
 		private bool _enteredEnergySaveMode;
+		private bool _leftForeground;
+		private CpuAvailability? _restrictedCpus;
+		private Microsoft.Maui.Controls.Window? _window;
 
 		[ObservableProperty]
 		private TimeSpan _estimatedTime;
@@ -118,9 +121,30 @@ namespace Elpida.Mobile.ViewModels
 				return;
 			}
 
+			// Android limits the CPUs of apps per state (cpusets): fewer cores would make the results lower
+			var cpus = TryGetCpuAvailability();
+			if (cpus is { IsRestricted: true }
+			    && !await _messageService.DisplayAlertAsync(
+				    Resources.Information,
+				    string.Format(Resources.CpuRestrictedWarning, cpus.Allowed, cpus.Online),
+				    Resources.Continue,
+				    Resources.Cancel
+			    ))
+			{
+				return;
+			}
+
 			try
 			{
 				Running = true;
+				_restrictedCpus = cpus is { IsRestricted: true } ? cpus : null;
+				_leftForeground = false;
+				_window = Microsoft.Maui.Controls.Application.Current?.Windows.FirstOrDefault();
+				if (_window != null)
+				{
+					_window.Stopped += WindowOnStopped;
+				}
+
 				ButtonText = Resources.Stop;
 				BenchmarkCount = BenchmarksInstancesModels.Count * RunItTimes;
 				ExecutedBenchmarks = 0;
@@ -150,7 +174,9 @@ namespace Elpida.Mobile.ViewModels
 						};
 
 						Progress = ExecutedBenchmarks / (double)BenchmarkCount;
+						CheckCpuAvailability();
 						var result = await _elpidaService.RunBenchmarkAsync(index, _cancel.Token);
+						CheckCpuAvailability();
 						ExecutedBenchmarks++;
 						runResults.Add(
 							new ResultBenchmarkResultDto
@@ -232,9 +258,25 @@ namespace Elpida.Mobile.ViewModels
 
 				if (UploadResults
 				    && Battery.Default.EnergySaverStatus != EnergySaverStatus.On
-				    && !_enteredEnergySaveMode)
+				    && !_enteredEnergySaveMode
+				    && _restrictedCpus == null
+				    && !_leftForeground)
 				{
 					await _uploadService.UploadResultsAsync(resultList);
+				}
+				else if (UploadResults && (_restrictedCpus != null || _leftForeground))
+				{
+					await _messageService.DisplayAlertAsync(
+						Resources.Information,
+						_restrictedCpus != null
+							? string.Format(
+								Resources.ResultsNotUploadedCpuRestricted,
+								_restrictedCpus.Allowed,
+								_restrictedCpus.Online
+							)
+							: Resources.ResultsNotUploadedBackground,
+						Resources.Ok
+					);
 				}
 			}
 			catch (OperationCanceledException)
@@ -250,6 +292,11 @@ namespace Elpida.Mobile.ViewModels
 				DeviceDisplay.Current.KeepScreenOn = false;
 				Battery.Default.EnergySaverStatusChanged -= DefaultOnEnergySaverStatusChanged;
 				_enteredEnergySaveMode = false;
+				if (_window != null)
+				{
+					_window.Stopped -= WindowOnStopped;
+					_window = null;
+				}
 				ExecutingBenchmark = null;
 				ExecutedBenchmarks = 0;
 				_cancel.Dispose();
@@ -271,6 +318,37 @@ namespace Elpida.Mobile.ViewModels
 		private void DefaultOnEnergySaverStatusChanged(object? sender, EnergySaverStatusChangedEventArgs e)
 		{
 			_enteredEnergySaveMode = e.EnergySaverStatus == EnergySaverStatus.On;
+		}
+
+		private void WindowOnStopped(object? sender, EventArgs e)
+		{
+			// Not on screen anymore: Android moves the app (and the benchmark processes) to a restricted cpuset
+			_leftForeground = true;
+		}
+
+		/// <summary>
+		/// Checked before and after every benchmark; a restriction during the run keeps the results from being uploaded.
+		/// </summary>
+		private void CheckCpuAvailability()
+		{
+			var cpus = TryGetCpuAvailability();
+			if (cpus is { IsRestricted: true } && (_restrictedCpus == null || cpus.Allowed < _restrictedCpus.Allowed))
+			{
+				_restrictedCpus = cpus;
+			}
+		}
+
+		private static CpuAvailability? TryGetCpuAvailability()
+		{
+			try
+			{
+				return ElpidaService.GetCpuAvailability();
+			}
+			catch (Exception)
+			{
+				// Unknown: don't block the benchmark
+				return null;
+			}
 		}
 	}
 }

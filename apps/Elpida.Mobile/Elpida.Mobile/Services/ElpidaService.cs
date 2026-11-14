@@ -44,6 +44,25 @@ namespace Elpida.Mobile.Services
 		[DllImport("Elpida")]
 		public static extern double CalculateScore(double[] score, double[] baseScores, int size);
 
+		[DllImport("Elpida")]
+		private static extern int GetCpuAvailability(ref int allowed, ref int online, ref int possible);
+
+		/// <summary>
+		/// The CPUs the benchmark processes may run on right now. Android limits them per app state (e.g. when the app is
+		/// not on screen), which would make the results lower.
+		/// </summary>
+		public static CpuAvailability GetCpuAvailability()
+		{
+			int allowed = 0, online = 0, possible = 0;
+			if (GetCpuAvailability(ref allowed, ref online, ref possible) != 0)
+			{
+				var error = Marshal.PtrToStringAnsi(GetLastError());
+				throw new ApplicationException($"Failed to get the available CPUs: {error}");
+			}
+
+			return new CpuAvailability(allowed, online, possible);
+		}
+
 		public Task<double> RunBenchmarkAsync(
 			int index,
 			CancellationToken cancellationToken

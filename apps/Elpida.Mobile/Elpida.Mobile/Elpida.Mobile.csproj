@@ -49,15 +49,26 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 
+        <!-- The ABIs the native code is built for (NativeAbi in BuildNativeLibrary). .NET's default leaves out android-arm. -->
+        <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">android-arm;android-arm64;android-x64</RuntimeIdentifiers>
+
         <AndroidSdkBuildToolsVersion Condition=" '$(AndroidSdkBuildToolsVersion)' == '' ">34.0.0</AndroidSdkBuildToolsVersion>
         <AndroidSdkPlatformToolsVersion Condition="'$(AndroidSdkPlatformToolsVersion)' == ''">34.0.0</AndroidSdkPlatformToolsVersion>
         <AndroidSdkPlatformVersion Condition=" '$(AndroidSdkPlatformVersion)' == '' ">android-21</AndroidSdkPlatformVersion>
 
-        <AndroidNdkDirectory Condition=" '$(AndroidNdkDirectory)' == '' ">$(AndroidSdkDirectory)/ndk/$(AndroidNdkVersion)</AndroidNdkDirectory>
 
         <AndroidCommandLineToolsVersion Condition=" '$(AndroidCommandLineToolsVersion)' == '' ">19.0</AndroidCommandLineToolsVersion>
-        <AndroidNdkVersion Condition="'$(AndroidNdkVersion)' == ''">27.0.12077973</AndroidNdkVersion>
         <JavaSdkVersion Condition="'$(JavaSdkVersion)' == ''">21.0.8</JavaSdkVersion>
+
+        <!-- Native code is built with the same llvm-mingw toolchain as every other platform (docs/development/android-toolchain.md).
+             The Android targets are created by llvm-mingw's build-android-sysroots.sh. -->
+        <ElpidaToolchainDirectory Condition="'$(ElpidaToolchainDirectory)' == ''">$(ELPIDA_TOOLCHAIN)</ElpidaToolchainDirectory>
+        <ElpidaToolchainDirectory Condition="'$(ElpidaToolchainDirectory)' == ''">/mnt/Dev/toolchains/llvm-mingw</ElpidaToolchainDirectory>
+        <!-- API levels of the two native builds (see Platforms/Android/Native/CMakeLists.txt). The toolchain targets for
+             both must exist (ANDROID_API of build-android-sysroots.sh). The benchmarks are static executables, so 29
+             does not limit the devices; the app part must match the minSdk (SupportedOSPlatformVersion). -->
+        <ElpidaAndroidBenchmarksApi Condition="'$(ElpidaAndroidBenchmarksApi)' == ''">29</ElpidaAndroidBenchmarksApi>
+        <ElpidaAndroidAppApi Condition="'$(ElpidaAndroidAppApi)' == ''">21</ElpidaAndroidAppApi>
         <MinimumSupportedJavaVersion Condition="'$(MinimumSupportedJavaVersion)' == ''">17.0</MinimumSupportedJavaVersion>
     </PropertyGroup>
 
@@ -112,16 +123,25 @@
     <Target Name="BuildNativeLibrary"
             Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <ItemGroup>
-            <NativeAbi Include="x86_64;arm64-v8a"/>
+            <NativeAbi Include="x86_64" Triple="x86_64-linux-android"/>
+            <NativeAbi Include="arm64-v8a" Triple="aarch64-linux-android"/>
+            <NativeAbi Include="armeabi-v7a" Triple="armv7a-linux-androideabi"/>
+            <NativePart Include="benchmarks" Api="$(ElpidaAndroidBenchmarksApi)"/>
+            <NativePart Include="app" Api="$(ElpidaAndroidAppApi)"/>
+            <NativeBuild Include="@(NativeAbi)" Part="%(NativePart.Identity)" Api="%(NativePart.Api)"/>
         </ItemGroup>
 
-        <Exec Command="cmake -DCMAKE_BUILD_TYPE=Release -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_BENCHMARK_TOOLS=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -S &quot;$(ProjectDir)Platforms/Android/Native&quot; -B &quot;$(ProjectDir)Platforms/Android/libs/%(NativeAbi.Identity)&quot; -DANDROID_ABI=%(NativeAbi.Identity) -DANDROID_PLATFORM=$(AndroidSdkPlatformVersion) -DANDROID_NDK=&quot;$(AndroidNdkDirectory)&quot; -DCMAKE_TOOLCHAIN_FILE=&quot;$(AndroidNdkDirectory)/build/cmake/android.toolchain.cmake&quot; -G Ninja"/>
-        <Exec Command="cmake --build &quot;$(ProjectDir)Platforms/Android/libs/%(NativeAbi.Identity)&quot;"/>
+        <Exec EnvironmentVariables="PATH=$(ElpidaToolchainDirectory)/bin:$(PATH)"
+              Command="cmake -DCMAKE_BUILD_TYPE=Release -DELPIDA_ENABLE_CLI=OFF -DELPIDA_ENABLE_QT=OFF -DELPIDA_ENABLE_APPLICATION_LIBRARIES=ON -DELPIDA_ANDROID_PART=%(NativeBuild.Part) -S &quot;$(ProjectDir)Platforms/Android/Native&quot; -B &quot;$(ProjectDir)Platforms/Android/libs/%(NativeBuild.Identity)/%(NativeBuild.Part)&quot; -DCMAKE_TOOLCHAIN_FILE=&quot;$(ProjectDir)../../../cmake-modules/llvm-cross.cmake&quot; -DTARGET_PREFIX=%(NativeBuild.Triple)%(NativeBuild.Api)- -DCMAKE_SYSROOT=&quot;$(ElpidaToolchainDirectory)/%(NativeBuild.Triple)%(NativeBuild.Api)&quot; -G Ninja"/>
+        <Exec EnvironmentVariables="PATH=$(ElpidaToolchainDirectory)/bin:$(PATH)"
+              Command="cmake --build &quot;$(ProjectDir)Platforms/Android/libs/%(NativeBuild.Identity)/%(NativeBuild.Part)&quot;"/>
     </Target>
     
     <Target Name="CopyBinaries" AfterTargets="BuildNativeLibrary" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <ItemGroup>
-            <AndroidNativeLibrary Include="@(NativeAbi->'Platforms/Android/libs/%(Identity)/libElpida.so');Platforms/Android/libs/*/*-benchmarks-group.so"/>
+            <!-- libElpida.so is P/Invoked; the others are executables (lib*.so so that Android extracts them) -->
+            <!-- explicit Abi: it cannot be inferred from the path because of the app/ and benchmarks/ directories -->
+            <AndroidNativeLibrary Include="Platforms/Android/libs/%(NativeAbi.Identity)/app/libElpida.so;Platforms/Android/libs/%(NativeAbi.Identity)/app/libelpida-info-dumper.so;Platforms/Android/libs/%(NativeAbi.Identity)/app/libstdlib-benchmarks.so;Platforms/Android/libs/%(NativeAbi.Identity)/benchmarks/lib*-benchmarks.so" Abi="%(NativeAbi.Identity)"/>
         </ItemGroup>
     </Target>
 

@@ -10,13 +10,19 @@ if (TARGET_PREFIX)
     list(GET TARGET_PARTS 1 TARGET_OS)
     list(GET TARGET_PARTS 2 TARGET_ENV)
 
-    if (CMAKE_SYSTEM_PROCESSOR STREQUAL armv7)
+    if (CMAKE_SYSTEM_PROCESSOR STREQUAL armv7 OR CMAKE_SYSTEM_PROCESSOR STREQUAL armv7a)
         # needed to avoid llvm detect aarch64
         set(CMAKE_SYSTEM_PROCESSOR arm)
     endif()
 
     if (TARGET_OS STREQUAL "w64")
         set(CMAKE_SYSTEM_NAME Windows)
+    elseif (TARGET_OS STREQUAL "linux" AND TARGET_ENV MATCHES "^android")
+        # llvm-mingw Android targets (e.g. TARGET_PREFIX=aarch64-linux-android29-, see llvm-mingw's
+        # build-android-sysroots.sh). CMAKE_SYSTEM_NAME=Android would make CMake look for an NDK, so this is a Linux
+        # build with ANDROID set, which is what the Elpida CMake files check.
+        set(CMAKE_SYSTEM_NAME Linux)
+        set(ANDROID ON)
     elseif (TARGET_OS STREQUAL "linux")
         set(CMAKE_SYSTEM_NAME Linux)
     else ()
