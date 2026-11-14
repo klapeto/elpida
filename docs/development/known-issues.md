@@ -20,13 +20,22 @@ Several tasks generate their input with `std::random_device` seeds, `std::normal
 
 - `Math/MatrixMultiplication32Task.cpp`, `Math/DynamicMatrixMultiplicationTask.cpp`,
   `Math/CalculateFFTInPlaceTask.cpp`: `random_device` + `normal_distribution`.
-- `Memory/MemoryLatencyTask.cpp`: `random_device` + `mt19937_64` + `std::shuffle`.
+- `Memory/MemoryLatencyTask.cpp`: `random_device` + `mt19937_64` + `std::shuffle` of the page order.
 - `Svg/SvgSuperSampler.cpp`: fixed seed, but `uniform_real_distribution`.
+- RSA: OpenSSL's random PKCS#1 padding (encryption) and blinding (decryption), so the output differs on every run.
 
-The timing hardly depends on the values (no denormals, the memory latency chain is always one full cycle), and with
-the same libc++ version everywhere the algorithms are the same, so this doesn't bias scores. But the input differs on
-every run, which prevents reproducing a run or verifying parity with input/output checksums. Fix: fixed seeds and
-in-house distributions (raw `mt19937` output, Box–Muller, Fisher–Yates).
+The timing doesn't depend on the values: matrix multiplication and FFT do the same operations in the same order for
+any input, and the inputs never come near denormals. With the same libc++ everywhere the algorithms are the same, so
+this doesn't bias scores.
+
+**Decided 2026-11-14: left as is.** Fixed seeds would only matter for cross-platform input/output checksums, which
+are not planned: `scripts/parity/disasm-parity.py` already shows that the platforms run the same code. Memory latency
+stays random on purpose: it is lmbench's algorithm (fixed bit-reversed line order within a page, a random page order
+per run, one pointer cycle through all pages), and a fixed page order would make every run use the same single
+sample. If checksums are wanted later: fix the three Math seeds (and use in-house distributions, so a libc++ upgrade
+can't change the inputs) and leave RSA out. A different idea that works with random input: let each benchmark verify
+its own result (decompressed data equals the input, decrypted equals plaintext, inverse FFT returns the input), which
+would catch a broken task scoring high on any platform.
 
 ## Found by the parity checks
 
