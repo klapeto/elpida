@@ -60,5 +60,11 @@ Linux x86_64 (7950X3D, 32 logical processors), CLI with one benchmark group, upl
 | Qt (Xvfb), `taskset -c 0-3` | Continue/Cancel dialog, then the not-uploaded message |
 | Android emulator (API 21), shared loader | allowed 4, online 4, not restricted |
 | Windows (user), affinity changed on the running CLI | not uploaded |
+| Android phone (user, 8 cores), normal run | uploaded, no warning |
+| Android phone, notification shade opened during the run | not uploaded (7 of 8) |
 
-Not tested: Windows job quota, cgroup v1, Android on a real device with the shared loader.
+The notification shade takes the app out of the top-app state: Android moves it to the `foreground` cpuset, which on
+many phones leaves out the fastest core. The app stays visible, so `Window.Stopped` (the "left the screen" check)
+doesn't fire; only this check catches it.
+
+Not tested: Windows job quota, cgroup v1.
