@@ -276,6 +276,11 @@ static bool mi_cpuid(uint32_t* regs4, uint32_t level, uint32_t sublevel) {
 #endif
 
 void _mi_detect_cpu_features(void) {
+  #if !defined(_MSC_VER)
+  // Elpida: only the MSVC branch of mi_popcount() reads _mi_cpu_has_popcnt; clang uses __builtin_popcount on the fixed
+  // CPU baseline. Skip cpuid so the allocator does no CPU detection (docs/development/code-parity.md).
+  return;
+  #endif
   uint32_t cpu_info[4];
   if (mi_cpuid(cpu_info, 1, 0)) {
     _mi_cpu_has_popcnt = ((cpu_info[2] & (1 << 23)) != 0); // bit 23 of ECX : see <https://en.wikipedia.org/wiki/CPUID#EAX=1:_Processor_Info_and_Feature_Bits>

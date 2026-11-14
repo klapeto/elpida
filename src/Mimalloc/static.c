@@ -422,7 +422,7 @@ abort:
 	DetourTransactionAbort();
 	return 1;
 }
-#elif !defined(__BIONIC__)
+#else // link-time override (also bionic: only linked into executables, which come first in symbol lookup)
 void* malloc(size_t size)
 {
 	return mi_malloc(size);
@@ -473,7 +473,11 @@ void* pvalloc(size_t size)
 	return mi_pvalloc(size);
 }
 
+#if defined(__BIONIC__)
+size_t malloc_usable_size(const void* p) // bionic declares it const
+#else
 size_t malloc_usable_size(void* p)
+#endif
 {
 	return mi_usable_size(p);
 }
@@ -488,10 +492,8 @@ char* strndup(const char* s, size_t n)
 	return mi_strndup(s, n);
 }
 
-char* realpath(const char* fname, char* resolved_name)
-{
-	return mi_realpath(fname, resolved_name);
-}
+// No realpath() override: mi_realpath() calls realpath() itself, so overriding it recurses forever. libc's
+// realpath(NULL) already allocates through the overridden malloc.
 
 void* reallocf(void* p, size_t newsize)
 {
