@@ -17,7 +17,7 @@ The messages say what is restricted and why, and ask users who think it's wrong 
   and runs anyway. Android shows its own dialog (`BenchmarkViewModel`).
 - **Before and after every benchmark** (`FullBenchmarkController`, from the thread that starts the benchmark
   processes, which inherit its affinity). If it was restricted at any point, the results aren't uploaded and a
-  warning says why. A run with upload off still gets the warning before it, not after.
+  warning says why. The CLI prints it to stderr, also with `--quiet`, so stdout stays only the results. A run with upload off still gets the warning before it, not after.
 - Unknown (the values can't be read) doesn't block.
 
 ## What is checked

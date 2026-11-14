@@ -33,12 +33,11 @@ namespace Elpida::Application
 
 	}
 
+	// On stderr, also with --quiet (which only keeps stdout to the results), like errors: e.g. why the results
+	// weren't uploaded
 	void CliMessageService::ShowWarning(const std::string& message)
 	{
-		if (!_isQuiet)
-		{
-			std::cout << message << std::endl;
-		}
+		std::cerr << message << std::endl;
 	}
 
 	void CliMessageService::ShowError(const std::string& message)
