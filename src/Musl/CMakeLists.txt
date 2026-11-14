@@ -16,7 +16,7 @@ add_library(musl-platform
         platform/errno-location.c
 )
 
-file(GLOB MUSL_SOURCES src/internal/*.c src/math/*.c src/stdio/*.c src/stdlib/*.c src/string/*.c)
+file(GLOB MUSL_SOURCES src/ctype/*.c src/internal/*.c src/math/*.c src/stdio/*.c src/stdlib/*.c src/string/*.c)
 
 add_library(musl-lite OBJECT ${MUSL_SOURCES})
 

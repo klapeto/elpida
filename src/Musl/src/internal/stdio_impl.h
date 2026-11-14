@@ -47,6 +47,9 @@ struct _IO_FILE {
 };
 
 hidden int _MuslLite_toread(FILE *);
+hidden int _MuslLite_towrite(FILE *);
+hidden size_t _MuslLite_fwritex(const unsigned char *, size_t, FILE *);
+hidden int _MuslLite_vfprintf(FILE *__restrict, const char *__restrict, __isoc_va_list);
 
 #if defined(__PIC__) && (100*__GNUC__+__GNUC_MINOR__ >= 303)
 __attribute__((visibility("protected")))
