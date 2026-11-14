@@ -17,13 +17,14 @@
 
 #include "MemsetTask.hpp"
 
-#include <cstring>
+#include "PlatformLibc.hpp"
 
 namespace Elpida::Benchmarks::StdLib
 {
 
 	void MemsetTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		PlatformLibc::LoadCrt(); // Windows: the C runtime selected with ELPIDA_STDLIB_CRT
 		_inputData = std::move(inputData);
 	}
 
@@ -43,7 +44,7 @@ namespace Elpida::Benchmarks::StdLib
 		auto size = _inputData->GetSize();
 		Exec([&]()
 		{
-			std::memset(data, 0, size);
+			PlatformLibc::Memset(data, 0, size);
 		});
 	}
 

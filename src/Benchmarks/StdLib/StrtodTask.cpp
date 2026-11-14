@@ -17,11 +17,13 @@
 
 #include <random>
 #include "StrtodTask.hpp"
+#include "PlatformLibc.hpp"
 
 namespace Elpida::Benchmarks::StdLib
 {
 	void StrtodTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		PlatformLibc::LoadCrt(); // Windows: the C runtime selected with ELPIDA_STDLIB_CRT
 		_inputData = std::move(inputData);
 	}
 
@@ -39,7 +41,7 @@ namespace Elpida::Benchmarks::StdLib
 	{
 		Exec([&]()
 		{
-			auto value = std::strtod("53215.1513123", nullptr);
+			auto value = PlatformLibc::Strtod("53215.1513123", nullptr);
 		});
 	}
 

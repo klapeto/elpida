@@ -47,7 +47,9 @@
 #if defined(_WIN32)
 #include <windows.h>
 
+#if defined(ELPIDA_PARITY_RUNTIME)
 extern "C" int mi_init_hooks();
+#endif
 
 static void enable_lfh_all_heaps(void)
 {
@@ -183,7 +185,9 @@ int main(int argC, char** argV)
 {
 #ifdef _WIN32
 	enable_lfh_all_heaps();
+#if defined(ELPIDA_PARITY_RUNTIME)
 	mi_init_hooks();
+#endif
 #endif
 
 	try

@@ -19,7 +19,6 @@
 #include "Elpida/Core/Config.hpp"
 #include "Elpida/Core/Vector.hpp"
 #include "Elpida/Core/ModuleExports.hpp"
-#include "MallocBenchmark.hpp"
 #include "StrtodBenchmark.hpp"
 #include "StrtoulBenchmark.hpp"
 #include "MemsetBenchmark.hpp"
@@ -36,7 +35,6 @@ ELPIDA_CREATE_BENCHMARK_GROUP_FUNC()
 {
 	Vector<UniquePtr<Benchmark>> vec;
 
-	vec.push_back(std::make_unique<MallocBenchmark>());
 	vec.push_back(std::make_unique<StrtodBenchmark>());
 	vec.push_back(std::make_unique<StrtoulBenchmark>());
 	vec.push_back(std::make_unique<MemsetBenchmark>());

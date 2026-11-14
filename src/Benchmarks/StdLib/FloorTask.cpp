@@ -17,6 +17,8 @@
 
 #include "FloorTask.hpp"
 
+#include "PlatformLibc.hpp"
+#include "Elpida/Core/Optimization.hpp"
 #include "Elpida/Core/Repeat.hpp"
 #include "Elpida/Core/Float.hpp"
 
@@ -25,6 +27,7 @@ namespace Elpida::Benchmarks::StdLib
 
 	void FloorTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		PlatformLibc::LoadCrt(); // Windows: the C runtime selected with ELPIDA_STDLIB_CRT
 		_inputData = std::move(inputData);
 	}
 
@@ -43,7 +46,8 @@ namespace Elpida::Benchmarks::StdLib
 		Float y = 1561131321.1513123;
 		Exec([&]()
 		{
-			REPEAT_10000(y = std::floor(y));
+			REPEAT_10000(y = PlatformLibc::Floorf(y));
+			DoNotOptimize(y);
 		});
 	}
 

@@ -4,8 +4,6 @@ project("Elpida StdLib benchmarks" VERSION ${ELPIDA_VERSION}
         LANGUAGES CXX C)
 
 add_library(elpida-stdlib-benchmarks
-        MallocTask.cpp
-        MallocBenchmark.cpp
         StrtodTask.cpp
         StrtodBenchmark.cpp
         MemsetTask.cpp
@@ -22,6 +20,7 @@ add_library(elpida-stdlib-benchmarks
         FloorBenchmark.cpp
         RegexTask.cpp
         RegexBenchmark.cpp
+        PlatformLibc.cpp
         Plugin.cpp
 )
 

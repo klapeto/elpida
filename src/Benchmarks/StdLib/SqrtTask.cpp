@@ -17,7 +17,8 @@
 
 #include "SqrtTask.hpp"
 
-#include <cmath>
+#include "PlatformLibc.hpp"
+#include "Elpida/Core/Optimization.hpp"
 #include "Elpida/Core/Repeat.hpp"
 #include "Elpida/Core/Float.hpp"
 
@@ -25,6 +26,7 @@ namespace Elpida::Benchmarks::StdLib
 {
 	void SqrtTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		PlatformLibc::LoadCrt(); // Windows: the C runtime selected with ELPIDA_STDLIB_CRT
 		_inputData = std::move(inputData);
 	}
 
@@ -43,7 +45,8 @@ namespace Elpida::Benchmarks::StdLib
 		Float x = 156113132146186435.1513123;
 		Exec([&]()
 		{
-			REPEAT_10000(x = std::sqrt(x));
+			REPEAT_10000(x = PlatformLibc::Sqrtf(x));
+			DoNotOptimize(x);
 		});
 	}
 

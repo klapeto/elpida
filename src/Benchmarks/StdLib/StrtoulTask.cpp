@@ -16,12 +16,14 @@
  */
 
 #include "StrtoulTask.hpp"
+#include "PlatformLibc.hpp"
 
 namespace Elpida::Benchmarks::StdLib
 {
 
 	void StrtoulTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		PlatformLibc::LoadCrt(); // Windows: the C runtime selected with ELPIDA_STDLIB_CRT
 		_inputData = std::move(inputData);
 	}
 
@@ -39,7 +41,7 @@ namespace Elpida::Benchmarks::StdLib
 	{
 		Exec([&]()
 		{
-			auto value = std::strtoul("1524515736", nullptr, 10);
+			auto value = PlatformLibc::Strtoul("1524515736", nullptr, 10);
 		});
 	}
 

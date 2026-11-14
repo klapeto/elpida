@@ -15,29 +15,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ELPIDA_MALLOCBENCHMARK_HPP
-#define ELPIDA_MALLOCBENCHMARK_HPP
+#ifndef ELPIDA_OPTIMIZATION_HPP
+#define ELPIDA_OPTIMIZATION_HPP
 
-#include "Elpida/Core/Benchmark.hpp"
-
-namespace Elpida::Benchmarks::StdLib
+namespace Elpida
 {
-
-	class MallocBenchmark : public Benchmark
+	/// Forces the compiler to treat 'value' as read and modified, so computations
+	/// producing it cannot be removed or constant-folded. It emits no instructions
+	/// apart from keeping 'value' in memory at this point.
+	template<typename T>
+	inline void DoNotOptimize(T& value)
 	{
-	public:
-		[[nodiscard]]
-		Vector<TaskConfiguration> GetRequiredConfiguration() const override;
+		asm volatile("" : "+m"(value) : : "memory");
+	}
+}
 
-		MallocBenchmark() = default;
-		~MallocBenchmark() override = default;
-	protected:
-		[[nodiscard]]
-		Vector<UniquePtr<Task>> GetTasks(BenchmarkRunContext& context) const override;
-		void DoGetBenchmarkInfo(String& name, String& description, size_t& taskToUseAsScoreIndex,
-				std::vector<TaskInfo>& taskInfos) const override;
-	};
-
-} // Elpida
-
-#endif //ELPIDA_MALLOCBENCHMARK_HPP
+#endif //ELPIDA_OPTIMIZATION_HPP

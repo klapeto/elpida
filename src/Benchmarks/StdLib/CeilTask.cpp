@@ -17,7 +17,8 @@
 
 #include "CeilTask.hpp"
 
-#include <cmath>
+#include "PlatformLibc.hpp"
+#include "Elpida/Core/Optimization.hpp"
 #include "Elpida/Core/Repeat.hpp"
 #include "Elpida/Core/Float.hpp"
 
@@ -26,6 +27,7 @@ namespace Elpida::Benchmarks::StdLib
 
 	void CeilTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		PlatformLibc::LoadCrt(); // Windows: the C runtime selected with ELPIDA_STDLIB_CRT
 		_inputData = std::move(inputData);
 	}
 
@@ -44,7 +46,8 @@ namespace Elpida::Benchmarks::StdLib
 		Float y = 1561131321.1513123;
 		Exec([&]()
 		{
-			REPEAT_10000(y = std::ceil(y));
+			REPEAT_10000(y = PlatformLibc::Ceilf(y));
+			DoNotOptimize(y);
 		});
 	}
 

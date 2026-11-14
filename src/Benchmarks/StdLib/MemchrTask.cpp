@@ -18,6 +18,7 @@
 #include "MemchrTask.hpp"
 
 #include <cstring>
+#include "PlatformLibc.hpp"
 
 namespace Elpida::Benchmarks::StdLib
 {
@@ -26,6 +27,7 @@ namespace Elpida::Benchmarks::StdLib
 
 	void MemchrTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
+		PlatformLibc::LoadCrt(); // Windows: the C runtime selected with ELPIDA_STDLIB_CRT
 		_inputData = std::move(inputData);
 		std::memset(_inputData->GetData(), 0, _inputData->GetSize());
 		_inputData->GetData()[_inputData->GetSize() - 1] = Character;
@@ -47,7 +49,7 @@ namespace Elpida::Benchmarks::StdLib
 		auto size = _inputData->GetSize();
 		Exec([&]()
 		{
-			volatile auto x = std::memchr(data, Character, size);
+			volatile auto x = PlatformLibc::Memchr(data, Character, size);
 		});
 	}
 
