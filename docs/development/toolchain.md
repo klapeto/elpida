@@ -129,7 +129,8 @@ script on 2026-11-10.
     `usr/share` and worked only because the host's `x11proto-dev` (from `libgl1-mesa-dev`) was there for pkg-config
     to fall back to.
   - CI's inline cache (`BUILDKIT_INLINE_CACHE`) only covers the final stage, so an image job rebuilds the builder stage
-    (about 20 minutes for x86_64 Linux locally). The jobs only run when the Docker files change.
+    (about 20 minutes for x86_64 Linux locally). The jobs only run when the Docker files change. Accepted (2026-11-14)
+    instead of a registry cache with `mode=max`, which would also store the large builder layers.
 - `docker/build-environment-android`: see [android-toolchain.md](android-toolchain.md). `.devcontainer`: a single-stage
   development image, not changed.
 - Test locally from a clean context (the committed tree): `git archive HEAD docker scripts ci | tar -x -C <dir>`, then
