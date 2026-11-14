@@ -32,9 +32,12 @@ In order; the first match wins.
    `0x40000000`. Uses `__cpuid_count`, not `__get_cpuid_count`: the latter checks the leaf against the basic maximum
    leaf and never executes the hypervisor leaves.
    - `Microsoft Hv` with the `CreatePartitions` privilege (leaf `0x40000003` EBX bit 0) is the Hyper-V **root
-     partition**: the host. Windows 10/11 with virtualization-based security (on by default on Windows 11) or the
-     Hyper-V role runs its host OS on Hyper-V, so the hypervisor bit is set on bare metal. This check keeps those
-     machines `none`; `systemd-detect-virt` does the same.
+     partition**, and CPUID doesn't decide; the firmware check (step 5) does. Windows 10/11 with virtualization-based
+     security (on by default on Windows 11) or the Hyper-V role runs its host OS on Hyper-V, so the hypervisor bit is
+     set on bare metal; the real firmware strings keep those machines `none`. But a VM with nested virtualization
+     whose Windows uses VBS (Azure, Microsoft Dev Box) is the root partition of its own nested Hyper-V too: it
+     reported `none` until 2026-11-14, when the root partition stopped ending the check. Its firmware says
+     `Microsoft Corporation` / `Virtual Machine`.
    - `Microsoft Hv` without it is a guest. KVM with Hyper-V enlightenments also reports `Microsoft Hv` and puts its
      own id at `0x40000100`, so that is checked for `KVMKVMKVM`.
 4. **Linux:** `/sys/hypervisor/type` (Xen, including paravirtualized guests).
@@ -62,7 +65,15 @@ A static test program built from the detector sources, in throwaway QEMU VMs (Ub
 | Hidden, SMBIOS `Microsoft Corporation` / `Surface Laptop 5` | `none` |
 | Android emulator (API 21, x86_64) | `android-emulator` |
 
-Not tested: Windows on bare metal with VBS (the root partition check), Windows guests, WSL, ARM VMs.
+On Windows (the user's machines):
+
+| Machine | Result |
+|---|---|
+| Windows 11 laptop (bare metal, VBS) | `none` |
+| Windows XP in libvirt/KVM | `kvm` |
+| Microsoft Dev Box (Azure, nested virtualization) | `hyperv` (was `none` before the fix above) |
+
+Not tested: WSL, ARM VMs.
 
 ## Limits
 

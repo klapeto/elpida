@@ -67,9 +67,10 @@ namespace Elpida::Virtualization
 		return vendor;    // stops at the first NUL ("KVMKVMKVM")
 	}
 
-	/// The hypervisor CPUID reports, "none" for none or for the Hyper-V root partition (a Windows host with VBS or the
-	/// Hyper-V role runs on the hypervisor too; only the root partition may create partitions), or "" when the CPU
-	/// doesn't say (hidden hypervisor bit), so the caller checks the firmware next.
+	/// The hypervisor CPUID reports, or "" when it doesn't tell: no hypervisor bit (none, or a hidden one) or the
+	/// Hyper-V root partition. A Windows host with VBS or the Hyper-V role runs on the hypervisor too, and only the root
+	/// partition may create partitions. But a VM with nested virtualization (Azure, Microsoft Dev Box) whose Windows
+	/// uses VBS is the root partition of its own nested Hyper-V, so the caller checks the firmware next either way.
 	inline std::string DetectFromCpuid()
 	{
 		if (Cpuid(0).eax < 1 || (Cpuid(1).ecx & (1u << 31)) == 0)
@@ -84,7 +85,7 @@ namespace Elpida::Virtualization
 		{
 			if (maxLeaf >= 0x40000003 && (Cpuid(0x40000003).ebx & 1u) != 0)
 			{
-				return "none";    // CreatePartitions: the root partition, i.e. the host
+				return {};    // CreatePartitions: the root partition; host or nested, the firmware tells
 			}
 			// KVM and others with Hyper-V enlightenments report "Microsoft Hv" here and their own id at 0x40000100
 			auto second = HypervisorVendor(0x40000100);
