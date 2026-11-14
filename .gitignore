@@ -12,3 +12,8 @@
 /AppDir/**
 /appimage-builder-cache/**
 *.AppImage
+
+# Python bytecode (scripts/parity)
+__pycache__/
+# Android signing key
+/apps/Elpida.Mobile/elpida.keystore
