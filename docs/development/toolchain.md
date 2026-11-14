@@ -76,7 +76,9 @@ GCC's `libatomic` whenever the sysroot contains it (other packages pull in `liba
 its symbols, and `libc++.so.1` then fails to load on systems without `libatomic1` (e.g. a fresh Kubuntu 24.04).
 Check with `readelf -d libc++.so.1 | grep NEEDED`. Elpida itself links libc++, libc++abi and libunwind statically on
 Linux (`-static-libstdc++ -static-libgcc`, root `CMakeLists.txt`), like Windows (`-static`) and Android (static-only
-runtimes), so its executables need only glibc and the system libraries Qt loads.
+runtimes), so its executables need only glibc and the system libraries Qt loads. The Linux packages therefore no
+longer add `libatomic.so` by hand (`scripts/Linux/getDependencies.sh`, removed 2026-11-14); they bundle what the
+executables list as `NEEDED` (libnuma, Qt's libraries).
 
 **Every** runtime rebuild must pass `--additional-cflags-script`, `build-all.sh` included. A `build-all.sh` without it
 (2026-11-11) silently rebuilt every target's runtimes with clang's defaults: SSE4 in Android x86_64 compiler-rt

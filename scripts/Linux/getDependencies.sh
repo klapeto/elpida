@@ -59,15 +59,12 @@ function getDependencies() {
     libraryPaths=$(expr "$libraryPaths" : 'libraries: =\(.*\)')
     libraryPaths=(${libraryPaths//:/ })
 
-    local additionalLibs="libatomic.so"
-
-    doGetDependencies "$binaryFile" "$additionalLibs"
+    doGetDependencies "$binaryFile"
 }
 
 function doGetDependencies() {
 
     local binaryFile="$1"
-    local additionalLibs="$2"
 
     log "Getting dependencies of $binaryFile"
 
@@ -78,8 +75,6 @@ function doGetDependencies() {
         log "  No libraries are linked to $binaryFile"
         return
     fi
-
-    libs="$libs $additionalLibs"
 
     local libFound=0
     for lib in $libs; do
