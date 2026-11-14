@@ -131,8 +131,12 @@ script on 2026-11-10.
   - CI's inline cache (`BUILDKIT_INLINE_CACHE`) only covers the final stage, so an image job rebuilds the builder stage
     (about 20 minutes for x86_64 Linux locally). The jobs only run when the Docker files change. Accepted (2026-11-14)
     instead of a registry cache with `mode=max`, which would also store the large builder layers.
-- `docker/build-environment-android`: see [android-toolchain.md](android-toolchain.md). `.devcontainer`: a single-stage
-  development image, not changed.
+- `docker/build-environment-android`: see [android-toolchain.md](android-toolchain.md).
+- `.devcontainer`: the base image and the target image (x86_64 Linux by default) in one Dockerfile, as stages, since a
+  dev container builds from a single file; keep it in sync with the two Dockerfiles. Its final stage is the CI image
+  plus `gdb` and the libraries `elpida-qt` links dynamically (X11/xcb, xkbcommon, fontconfig, libnuma, …) and a font,
+  so the GUI runs in the container on the host's X server (it needs X access, e.g. `xhost +local:`). 3.65 GB; built
+  and `elpida-qt` run on 2026-11-14.
 - Test locally from a clean context (the committed tree): `git archive HEAD docker scripts ci | tar -x -C <dir>`, then
   `docker build -f <dir>/docker/build-environment-base/Dockerfile <dir>` and the target image with
   `--build-arg IMAGE=<base tag> --build-arg TARGET_TRIPLE=<triple>`.
