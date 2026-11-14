@@ -33,6 +33,7 @@
 #include <sched.h>
 #include <unistd.h>
 #include <Elpida/Core/Config.hpp>
+#include <Elpida/Platform/CpuAvailabilityLoader.hpp>
 #include <Elpida/BenchmarksVersion.hpp>
 
 using namespace Elpida;
@@ -82,30 +83,12 @@ static int CountCpuListFile(const char* path)
 	return CountCpuList(list);
 }
 
-// The CPUs the calling thread may run on: Cpus_allowed_list of /proc/<pid>/task/<tid>/status. -1 if unreadable.
-static int CountAllowedCpus()
-{
-	std::ifstream file("/proc/self/task/" + std::to_string(gettid()) + "/status");
-	std::string line;
-	const std::string key = "Cpus_allowed_list:";
-	while (file && std::getline(file, line))
-	{
-		if (line.compare(0, key.size(), key) == 0)
-		{
-			auto start = line.find_first_not_of(" \t", key.size());
-			return start == std::string::npos ? -1 : CountCpuList(line.substr(start));
-		}
-	}
-	return -1;
-}
-
 extern "C" {
 // Which CPUs this process (and the benchmark processes it starts, which inherit it) may run on. Android decides that per
 // app state (cpusets: top-app, foreground, background, ...).
-// allowed: the CPUs this thread is permitted to run on (cpuset and affinity). Read from Cpus_allowed_list and not from
-// sched_getaffinity(), which also leaves out CPUs the kernel has paused (idle big cores on recent Android kernels; they
-// stay "online" in sysfs and come back under load): that made 6 of 8 cores look restricted on an idle phone.
-// online/possible: from sysfs, -1 if unknown.
+// allowed/online: Elpida::CpuAvailabilityLoader (the same check the desktop apps use; allowed comes from
+// Cpus_allowed_list, not sched_getaffinity(), which leaves out cores the kernel has paused). possible: from sysfs.
+// -1 if unknown.
 int GetCpuAvailability(int* allowed, int* online, int* possible)
 {
 	if (allowed == nullptr || online == nullptr || possible == nullptr)
@@ -114,21 +97,14 @@ int GetCpuAvailability(int* allowed, int* online, int* possible)
 		return -1;
 	}
 
-	*allowed = CountAllowedCpus();
-	if (*allowed < 0)
+	auto availability = CpuAvailabilityLoader::Load();
+	if (availability.allowed < 0)
 	{
-		// Fallback: sched_getaffinity() (may undercount paused CPUs, see above)
-		cpu_set_t set;
-		CPU_ZERO(&set);
-		if (sched_getaffinity(0, sizeof(set), &set) == -1)
-		{
-			std::snprintf(lastError, sizeof(lastError), "sched_getaffinity failed: %s", std::strerror(errno));
-			return -1;
-		}
-		*allowed = CPU_COUNT(&set);
+		std::strncpy(lastError, "could not read the allowed CPUs", sizeof(lastError));
+		return -1;
 	}
-
-	*online = CountCpuListFile("/sys/devices/system/cpu/online");
+	*allowed = availability.allowed;
+	*online = availability.online;
 	*possible = CountCpuListFile("/sys/devices/system/cpu/possible");
 	return 0;
 }

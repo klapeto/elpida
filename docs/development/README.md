@@ -25,4 +25,5 @@ Internal documentation for developers. The user documentation is the website in 
 | [mimalloc.md](mimalloc.md) | Replacing the system allocator with mimalloc on Windows (XP), Linux and Android |
 | [single-thread-affinity.md](single-thread-affinity.md) | Final decision: single-thread benchmarks run without affinity everywhere; measurements; `elpida-affinity-test` |
 | [virtualization-detection.md](virtualization-detection.md) | Detecting virtual machines: results from VMs are uploaded with a flag and left out of the statistics |
+| [cpu-availability.md](cpu-availability.md) | Not uploading results from a restricted CPU (affinity, cpusets, quotas) on every platform |
 | [known-issues.md](known-issues.md) | Open problems and remaining divergences |

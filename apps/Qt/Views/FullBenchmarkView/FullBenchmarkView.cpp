@@ -22,6 +22,10 @@
 
 #include "Models/Full/FullBenchmarkModel.hpp"
 #include "Controllers/FullBenchmarkController.hpp"
+#include "Models/BenchmarkRunConfigurationModel.hpp"
+#include "Core/CpuRestriction.hpp"
+
+#include <QMessageBox>
 
 namespace Elpida::Application
 {
@@ -177,6 +181,19 @@ namespace Elpida::Application
 		}
 		else
 		{
+			auto restriction = CpuRestriction::Check();
+			if (restriction.has_value())
+			{
+				auto message = CpuRestriction::GetWarning(*restriction,
+						_benchmarkRunConfigurationModel.IsUploadResults());
+				auto answer = QMessageBox::warning(this, tr("CPU restricted"),
+						QString::fromStdString(message + "\n\nContinue anyway?"),
+						QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
+				if (answer != QMessageBox::Yes)
+				{
+					return;
+				}
+			}
 			_controller.RunAsync();
 		}
 	}

@@ -25,12 +25,14 @@
 #include "Models/Full/FullBenchmarkModel.hpp"
 #include "Controller.hpp"
 #include "FullBenchmarkInstance.hpp"
+#include "Elpida/Platform/CpuAvailabilityLoader.hpp"
 
 #include <thread>
 #include <atomic>
 #include <filesystem>
 #include <vector>
 #include <memory>
+#include <optional>
 
 namespace Elpida::Application
 {
@@ -95,7 +97,8 @@ namespace Elpida::Application
 
 		std::vector<std::unique_ptr<FullBenchmarkInstance>> _benchmarks;
 		void GenerateHtmlReport(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const;
-		void PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const;
+		void PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration,
+				const std::optional<CpuAvailability>& cpuRestriction) const;
 	};
 
 } // Elpida

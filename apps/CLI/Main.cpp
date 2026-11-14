@@ -31,6 +31,7 @@
 #include "Elpida/BenchmarksVersion.hpp"
 #include "Controllers/BenchmarkRunConfigurationController.hpp"
 #include "Controllers/FullBenchmarkController.hpp"
+#include "Core/CpuRestriction.hpp"
 #include "ModelBuilderJson.hpp"
 #include "ResultSerializer.hpp"
 #include "DataUploader.hpp"
@@ -229,6 +230,13 @@ int main(int argC, char** argV)
 			{
 				std::cerr << "Failed to load benchmark group File: " << file << std::endl << "Reason:" << reason;
 			}
+		}
+
+		// The run goes ahead; the controller doesn't upload and prints why
+		auto cpuRestriction = CpuRestriction::Check();
+		if (cpuRestriction.has_value())
+		{
+			std::cerr << "Warning: " << CpuRestriction::GetWarning(*cpuRestriction, helper.IsUpload()) << std::endl;
 		}
 
 		std::size_t i = 0;

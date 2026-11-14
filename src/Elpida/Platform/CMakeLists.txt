@@ -19,6 +19,9 @@ add_library(elpida-platform
         VirtualizationDetector.Unix.cpp
         VirtualizationDetector.Windows.cpp
 
+        CpuAvailabilityLoader.Unix.cpp
+        CpuAvailabilityLoader.Windows.cpp
+
         MemoryInfoLoader.Unix.cpp
         MemoryInfoLoader.Windows.cpp
 

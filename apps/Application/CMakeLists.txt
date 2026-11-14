@@ -38,6 +38,8 @@ set(ELPIDA_APPLICATION_SOURCES
         Models/Benchmark/TaskModel.cpp
 
         Core/MessageService.cpp
+        Core/CpuRestriction.cpp
+        Core/CpuRestriction.hpp
         Core/BenchmarkExecutionService.cpp
         Core/OffProcessBenchmarkExecutionService.cpp
         Core/Promise.cpp

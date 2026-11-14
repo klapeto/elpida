@@ -30,6 +30,7 @@
 #include "Core/ResultsHTMLReporter.hpp"
 #include "Core/PathsService.hpp"
 #include "Core/DesktopService.hpp"
+#include "Core/CpuRestriction.hpp"
 #include "ResultSerializer.hpp"
 #include "DataUploader.hpp"
 
@@ -102,6 +103,20 @@ namespace Elpida::Application
 			_model.SetRunning(true);
 			std::vector<FullBenchmarkResultModel> thisResults;
 			thisResults.reserve(_runConfigurationModel.GetIterationsToRun());
+
+			// Checked from this thread, which starts the benchmark processes (they inherit its affinity), before and
+			// after every benchmark: a restriction at any point keeps the results from being uploaded
+			std::optional<CpuAvailability> cpuRestriction;
+			auto checkCpuAvailability = [&cpuRestriction]
+			{
+				auto restriction = CpuRestriction::Check();
+				if (restriction.has_value())
+				{
+					cpuRestriction = cpuRestriction.has_value()
+							? CpuRestriction::Worse(*cpuRestriction, *restriction)
+							: *restriction;
+				}
+			};
 			try
 			{
 				for (std::size_t i = 0; i < _runConfigurationModel.GetIterationsToRun(); ++i)
@@ -116,7 +131,9 @@ namespace Elpida::Application
 					{
 						_model.SetCurrentRunningBenchmark(benchmark->GetName());
 
+						checkCpuAvailability();
 						auto result = benchmark->Run();
+						checkCpuAvailability();
 						result.GetBenchmarkResult().SetUuid(benchmark->GetUuid());
 						result.GetBenchmarkResult().SetInstanceName(benchmark->GetName());
 
@@ -176,14 +193,15 @@ namespace Elpida::Application
 			}
 
 			auto end = Timer::now();
-			PostHandleResults(thisResults, end - start);
+			PostHandleResults(thisResults, end - start, cpuRestriction);
 
 			_model.SetRunning(false);
 			_running.store(false, std::memory_order_release);
 		});
 	}
 
-	void FullBenchmarkController::PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration) const
+	void FullBenchmarkController::PostHandleResults(const std::vector<FullBenchmarkResultModel>& thisResults, Duration duration,
+			const std::optional<CpuAvailability>& cpuRestriction) const
 	{
 		if (!thisResults.empty())
 		{
@@ -198,7 +216,11 @@ namespace Elpida::Application
 					_messageService.ShowError(std::string("Failed to crate report: ") + ex.what());
 				}
 			}
-			if (_runConfigurationModel.IsUploadResults() && _missingBenchmarks.empty())
+			if (_runConfigurationModel.IsUploadResults() && cpuRestriction.has_value())
+			{
+				_messageService.ShowWarning(CpuRestriction::GetNotUploadedMessage(*cpuRestriction));
+			}
+			else if (_runConfigurationModel.IsUploadResults() && _missingBenchmarks.empty())
 			{
 				try
 				{
