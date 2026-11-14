@@ -139,5 +139,13 @@ Fixed:
 - i386 and riscv64 Linux report the same violations as x86_64 Linux, i386 Windows the msvcrt equivalents. See
   [known-issues.md](known-issues.md#found-by-the-parity-checks).
 
+## Findings (2026-11-14, ctype and snprintf in musl-lite)
+
+- x86_64 Linux and x86_64/i386 Windows: the ctype and `snprintf` violations are gone; what's left is `strerror` and
+  (Windows) `rand`/`srand`. The Windows JSON task now reaches musl's `printf_core` instead of `__mingw_pformat`.
+- The tool counted every `__imp_` symbol as an import. musl-lite now defines `__imp_isalpha` and the like itself, so
+  only `__imp_` slots inside the PE's IAT (data directory 12; lld merges `.idata` into `.rdata`) are imports; the
+  others are followed to the function they point to, also for i386's `calll *0x...`.
+
 Accepted: mimalloc's thread id and lock size per libc, see
 [mimalloc.md](mimalloc.md#code-parity-differences-accepted). Still open: see [known-issues.md](known-issues.md#found-by-the-parity-checks).

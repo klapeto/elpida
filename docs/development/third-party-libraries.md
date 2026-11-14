@@ -5,7 +5,7 @@ See [code-parity.md](code-parity.md) for the policy and the compiler flags.
 
 ## musl-lite (`src/Musl`)
 
-- Pure C sources for `string`, `stdlib`, `math` and parts of `stdio`. There are no `.s`/`.S` files and no
+- Pure C sources for `string`, `stdlib`, `math`, `ctype` and parts of `stdio`. There are no `.s`/`.S` files and no
   arch-specific `src/<arch>/` overrides. The only inline asm is the empty FP barrier in `arch/aarch64/fp_arch.h`.
 - Compiled with `-ffreestanding -nostdinc` and linked into `elpida-entry-point`, so every benchmark executable except
   `stdlib-benchmarks` gets it ([the StdLib exception](code-parity.md#the-stdlib-benchmarks)).
@@ -49,6 +49,36 @@ See [code-parity.md](code-parity.md) for the policy and the compiler flags.
     digit landed on the rounding bit and `0x1.000000000000081p0` rounded down. Fixed (`+2`). Upstream musl presumably
     has it on targets where `long double` is `double`; not checked.
   - Linux and Android (x86_64 and aarch64) now run identical `strtod` code apart from the platform errno.
+- (2026-11-14) `snprintf`, `vsnprintf`, `sprintf` and `vsprintf` (`src/stdio/vfprintf.c` and friends, from musl
+  1.2.5). Before, these were glibc's, mingw-w64's (`__mingw_vsnprintf` → `__mingw_pformat` and gdtoa, linked
+  statically) or bionic's, reached from nlohmann's error messages, LLVM's `format`/`write_double` and libc++'s
+  `std::to_string`. Changes to upstream:
+  - The formatter is internal (`_MuslLite_vfprintf`), only used through vsnprintf's string `FILE`: musl-lite's `FILE`
+    is not the platform's, so `vfprintf`/`fprintf`/`printf` on real streams stay the platform's.
+  - Floating point is formatted in `double` (`fmt_fp`), like `floatscan`: upstream uses `long double`, a different
+    type per target. `%Lf` arguments are converted to double.
+  - Fixed `%.12a` (13 hex digits printed instead of rounding to 12): upstream skips the rounding at exactly
+    `LDBL_MANT_DIG/4-1` digits, which only matters where `long double` is `double` (so upstream musl has it on those
+    targets).
+  - No `%m` (it would call the platform's `strerror`) and `%lc`/`%ls` handle ASCII only (`EILSEQ` otherwise), as in
+    the C locale of glibc and msvcrt. No locking (the string `FILE` never locks).
+  - Windows: strong aliases `__mingw_snprintf`, `__mingw_vsnprintf`, `__mingw_sprintf`, `__mingw_vsprintf` (mingw-w64's
+    `stdio.h` redirects to them with `__USE_MINGW_ANSI_STDIO`, which libc++ turns on). No linked code uses the MS-only
+    `%I64d` formats (checked in the binaries' strings), which musl doesn't support.
+  - Verified against glibc on x86_64 (53M checks), i386, aarch64, armv7 and riscv64 (8.9M each, qemu): `%e/%f/%g/%a`
+    with flags, widths and precisions 0-40, 300 and 330 on random bit patterns, decimal-like and scaled values,
+    specials and halfway cases, plus integer and string conversions and truncation. Identical output and return
+    values, except `%a` of subnormals: glibc prints `0x0.0000000000001p-1022`, musl `0x1p-1074` (both valid).
+  - `ecvt`/`fcvt`/`gcvt`, which use `sprintf`, now use musl-lite's too. `include/stdarg.h` and `include/stddef.h` were
+    added (upstream musl) for these sources.
+- (2026-11-14) ctype: `isalnum` ... `isxdigit`, `tolower`, `toupper` (`src/ctype`, musl 1.2.5 without the `_l`
+  variants) and glibc's table functions `__ctype_b_loc`, `__ctype_tolower_loc`, `__ctype_toupper_loc`, which code
+  compiled against glibc's `ctype.h` reads directly (LLVM, OpenSSL). On Windows `src/ctype/windows-imports.c`
+  defines the `__imp_` pointers, because mingw-w64's headers call msvcrt.dll's locale-aware functions through them.
+  - The `tolower`/`toupper` tables hold glibc's values outside the letters (the byte itself; upstream musl has 0),
+    so glibc-compiled code gets glibc's results.
+  - Verified against glibc's C locale for -1..255, functions and all three tables. For -128..-2 (undefined behaviour)
+    the functions return the value itself like msvcrt; glibc's tables map them to the byte (`c + 256`).
 
 ## OpenSSL 3.6.0 (`cmake-modules/openssl.cmake`)
 

@@ -142,9 +142,11 @@ class Binary:
         self.address_of = {}
         self.whole = None  # address -> instructions of the whole image (ARM)
         self.iat = {}  # IAT entry address -> imported symbol (COFF)
+        self.imp_symbols = {}  # __imp_ symbol -> address (COFF): an IAT entry, or a pointer the image defines itself
+        self.local_pointers = {}  # address of an __imp_ pointer defined in the image -> the function it points to
         self.coff_underscore = self.format == "coff-i386"
         self._read_symbols()
-        self.thunks = {}  # lld thunk symbol -> the function it jumps to
+        self.thunks = {}  # lld thunk symbol (or locally defined __imp_ pointer) -> the function it jumps to
         for name in self.functions:
             m = THUNK_RE.match(name)
             if m and m.group(1) in self.functions:
@@ -157,6 +159,7 @@ class Binary:
         self.loaded = []  # (address, file offset, size) of the sections in the file (ELF)
         self.pointer_size = 8 if "64" in self.format else 4
         self._read_elf_layout()
+        self._read_pe_imports()
         if "riscv" in self.format:
             self._read_riscv_plt()
         self.display = self._demangle(sorted(self.functions))
@@ -195,9 +198,7 @@ class Binary:
             address, kind, name = parts
             self.symbols.add(name)
             if name.startswith("__imp_"):
-                imported = name[6:]
-                self.iat[int(address, 16)] = imported[1:] if self.coff_underscore and imported.startswith("_") \
-                    else imported
+                self.imp_symbols[name] = int(address, 16)
             if kind in "TtWw":
                 self.functions.add(name)
                 self.function_at.setdefault(int(address, 16), name)
@@ -241,6 +242,49 @@ class Binary:
                 _, sh_type, flags, addr, offset, size = struct.unpack_from("<IIIIII", table, i * shentsize)
             if flags & 2 and sh_type != 8:  # SHF_ALLOC, not SHT_NOBITS
                 self.loaded.append((addr, offset, size))
+
+    def _read_pe_imports(self):
+        """Sort the __imp_ symbols into IAT entries (imports) and pointers the image defines itself (e.g. musl-lite's
+        __imp_isalpha, which replaces msvcrt's). lld merges .idata into .rdata, so the IAT data directory tells."""
+        if not self.imp_symbols:
+            return
+        with open(self.path, "rb") as f:
+            data = f.read(4096)
+            pe, = struct.unpack_from("<I", data, 0x3C)
+            sections, = struct.unpack_from("<H", data, pe + 6)
+            optional_size, = struct.unpack_from("<H", data, pe + 20)
+            optional = pe + 24
+            magic, = struct.unpack_from("<H", data, optional)
+            if magic == 0x20B:  # PE32+
+                image_base, = struct.unpack_from("<Q", data, optional + 24)
+                directories = optional + 112
+            else:
+                image_base, = struct.unpack_from("<I", data, optional + 28)
+                directories = optional + 96
+            iat_rva, iat_size = struct.unpack_from("<II", data, directories + 12 * 8)
+            table = optional + optional_size
+            for i in range(sections):
+                _, virtual_size, rva, raw_size, raw_offset = struct.unpack_from("<8sIIII", data, table + i * 40)
+                self.loaded.append((image_base + rva, raw_offset, min(virtual_size, raw_size)))
+        iat = (image_base + iat_rva, image_base + iat_rva + iat_size)
+        for name, address in self.imp_symbols.items():
+            imported = name[6:]
+            if self.coff_underscore and imported.startswith("_"):
+                imported = imported[1:]
+            if iat[0] <= address < iat[1]:
+                self.iat[address] = imported
+                continue
+            target = self.function_at.get(self.pointer_at(address))
+            if target:
+                self.thunks[name] = target
+                self.local_pointers[address] = target
+            else:
+                self.iat[address] = imported  # unknown: treat it as an import, as before
+
+    def local_pointer_call(self, insn):
+        """The function an indirect call through a locally defined __imp_ pointer reaches (i386 `calll *0x50e490`)"""
+        m = ABS_INDIRECT_RE.match(re.sub(r"\s+", " ", COMMENT_RE.sub("", insn)).strip())
+        return self.local_pointers.get(int(m.group(1), 16)) if m else None
 
     def pointer_at(self, address):
         """The pointer stored at an address of the image (e.g. a GOT slot), as the loader would see it"""
@@ -359,7 +403,7 @@ class Binary:
             target = ref.group(1)
             if target.endswith("@plt"):
                 return target[:-4]
-            if target.startswith("__imp_"):
+            if target.startswith("__imp_") and target not in self.thunks:
                 name = target[6:]
                 return name[1:] if self.coff_underscore and name.startswith("_") else name
         m = COMMENT_ADDR_RE.search(insn)
@@ -457,12 +501,15 @@ class Binary:
                         if SUSPICIOUS_CALLS.match(imported):
                             self.flags[symbol].append(f"{text.split()[0]} {imported} (imported)")
                         continue
-                    for ref in REF_RE.finditer(insn):
-                        target = ref.group(1)
+                    targets = [(m.group(1), m.group(2)) for m in REF_RE.finditer(insn)]
+                    if self.local_pointer_call(insn):
+                        targets.append((self.local_pointer_call(insn), None))
+                    for target, offset in targets:
                         # symbol+offset is data, a jump inside a function or objdump's guess for an adrp page
-                        if ref.group(2) or target == symbol or target not in self.functions:
+                        if not offset:
+                            target = self.thunks.get(target, target)
+                        if offset or target == symbol or target not in self.functions:
                             continue
-                        target = self.thunks.get(target, target)
                         self.edges[symbol].add(target)
                         if SUSPICIOUS_CALLS.match(self.name(target)):
                             self.flag_calls[symbol].append((f"{text.split()[0]} {self.name(target)}", target))
@@ -511,6 +558,9 @@ class Binary:
                 # PLT stub, GOT slot or IAT entry: the same on both sides only if the import is
                 refs = {}
                 text = REF_RE.sub("", text).strip() + f" ; <import {imported}>"
+            elif self.local_pointer_call(insn):
+                # i386 call through an __imp_ pointer the image defines: the address differs between builds
+                text = re.sub(r"0x[0-9a-fA-F]+", "", text).strip() + f" ; <{self.name(self.local_pointer_call(insn))}>"
             # A symbol named in the comment (e.g. the target of a RIP-relative lea) is kept as an annotation
             comment_refs = [m for k, m in refs.items() if k not in text]
 

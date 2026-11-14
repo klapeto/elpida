@@ -22,8 +22,8 @@ see [below](#the-stdlib-benchmarks).
 
 - The same compiler (llvm-mingw clang) and the same libc++ version on every target, Android included. The NDK's own
   clang and libc++ are not used.
-- mimalloc as the allocator and musl-lite for string/stdlib/math functions on every target. The platform libc is
-  not used in the timed code.
+- mimalloc as the allocator and musl-lite for string/stdlib/math/ctype functions and `snprintf` on every target. The
+  platform libc is not used in the timed code.
 - No runtime CPU dispatch anywhere. No compile-time SIMD `#ifdef`s that differ between targets of the same
   architecture.
 - No `-ffast-math`. FP contraction off. math-errno set explicitly.
@@ -140,7 +140,7 @@ working set: 17.9 ns with THP (70 MB on huge pages), 24.2 ns without. Windows us
 
 | Component | Used by | Status |
 |---|---|---|
-| musl-lite (`src/Musl`) | string, stdlib and math functions everywhere | Clean: pure C, no asm |
+| musl-lite (`src/Musl`) | string, stdlib, math, ctype and `snprintf` functions everywhere | Clean: pure C, no asm |
 | OpenSSL 3.6.0 (`no-asm`) | Encryption | Clean: no CPU dispatch. `BN_ULONG` is 32/64-bit per target (unavoidable). |
 | zlib 1.3.1 | Compression, PNG | Clean |
 | libpng 1.6.50 | Image | Clean: `PNG_HARDWARE_OPTIMIZATIONS` is `OFF` |

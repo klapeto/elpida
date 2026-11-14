@@ -45,18 +45,14 @@ See [parity-checks.md](parity-checks.md) for the tool and what was already fixed
   on from libc++/boost) and won't run on older distributions. The Docker image uses focal (2.31), which doesn't have
   the `__isoc23_*` names.
 - **Platform C library calls musl-lite doesn't cover (2026-11-12, every Linux and Windows target):** `report` flags
-  calls from the timed code into the platform's ctype, `snprintf`, `strerror` and (Windows) `rand`/`srand`:
-  - Compilation: glibc `__ctype_b_loc`/`__ctype_tolower_loc`/`__ctype_toupper_loc` (msvcrt `isalpha`, `isdigit`,
-    `tolower`, ... on Windows) from LLVM's regex engine, `IEEEFloat::convertFromStringSpecials`, `Sema::AddModeAttr`,
-    the demangler and path parsing; `snprintf` from `write_double`/`openFileForRead`; `strerror`; on Windows `rand`
-    from `createUniquePath` (`GlobalModuleIndex::writeIndex` → `LockFileManager`).
-  - Encryption (x86_64, riscv64): `__ctype_b_loc` from `CONF_parse_list`, in OpenSSL's one-time module setup.
-  - Web: `snprintf` from nlohmann's error messages (`get_token_string`, `exception_message`).
-  These are reachable, not necessarily executed in the loop (error paths, one-time init, rare cases). On Linux the
-  glibc ctype functions only return a table pointer; on Windows msvcrt's are full, locale-aware calls. Android links
-  bionic statically, so the same calls are bionic code and are not reported. Options: add musl's ctype (including its
-  glibc-compatible `__ctype_*_loc`) and `snprintf`/`vsnprintf` to musl-lite, or measure with instruction counts
-  whether they run in the timed loop at all.
+  calls from the timed code into the platform's `strerror` and (Windows) `rand`/`srand`:
+  - Compilation: `strerror`; on Windows `rand` from `createUniquePath` (`GlobalModuleIndex::writeIndex` →
+    `LockFileManager`).
+  These are reachable, not necessarily executed in the loop (error paths, one-time init, rare cases).
+  Fixed 2026-11-14: ctype and `snprintf`/`vsnprintf`/`sprintf`/`vsprintf` now come from musl-lite on every target
+  (they were glibc's `__ctype_*_loc`, msvcrt's `isalpha`/`tolower`/..., and glibc's or mingw-w64's gdtoa-based
+  printf, from LLVM, OpenSSL's `CONF_parse_list`, nlohmann's error messages and libc++'s `std::to_string`). See
+  [third-party-libraries.md](third-party-libraries.md#musl-lite-srcmusl).
 - **Outline atomics in bionic's `libc.a`** are reached from the timed code through mimalloc's locks
   (`pthread_mutex_lock` → `__aarch64_cas4_acq`). The report lists them as violations on Android aarch64.
 
