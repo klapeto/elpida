@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="Elpida.Mobile">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-10-10T14:20:00.978353417Z">
+        <DropdownSelection timestamp="2026-10-11T12:03:52.612858687Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/klapeto/.android/avd/Pixel_9a.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/klapeto/.android/avd/Nexus_6.avd" />
             </handle>
           </Target>
         </DropdownSelection>

@@ -47,11 +47,104 @@ namespace Elpida
 			return _bounds;
 		}
 
-		[[nodiscard]]
-		bool IsPointInsideEvenOdd(const SvgPoint& point) const;
+		// Defined here so that SvgSuperSampler can inline them: called once per sub-sample, an out-of-line call
+		// costs the Windows x86_64 ABI's xmm6-xmm9 saves every time (docs/development/parity-checks.md). always_inline
+		// keeps the inlining decision the same on every target.
+		[[nodiscard, gnu::always_inline]]
+		bool IsPointInsideEvenOdd(const SvgPoint& point) const
+		{
+			bool inside = false;
 
-		[[nodiscard]]
-		bool IsPointInsideNonZero(const SvgPoint& point) const;
+			auto y = point.GetY();
+			auto x = point.GetX();
+
+			for (const auto& edge: _edges)
+			{
+				auto& a = edge.GetA();
+				auto& b = edge.GetB();
+
+				auto aX = a.GetX();
+				auto aY = a.GetY();
+				auto bX = b.GetX();
+				auto bY = b.GetY();
+
+				if (aY > y)
+				{
+					break;
+				}
+
+				if (point == a || point == b)
+				{
+					// Is exactly at a corner
+					inside = true;
+					break;
+				}
+
+				if (bY > y)
+				{
+					const auto determinant = (x - aX) * (bY - aY) - (bX - aX) * (y - aY);
+					if (determinant == 0)
+					{
+						// Is directly at line
+						inside = true;
+						break;
+					}
+
+					if (determinant < 0 != (bY < aY))
+					{
+						inside = !inside;
+					}
+				}
+			}
+			return inside;
+		}
+
+		[[nodiscard, gnu::always_inline]]
+		bool IsPointInsideNonZero(const SvgPoint& point) const
+		{
+			int inside = 0;
+			auto y = point.GetY();
+			auto x = point.GetX();
+			for (const auto& _edge: _edges)
+			{
+				auto& a = _edge.GetA();
+				auto& b = _edge.GetB();
+
+				auto aX = a.GetX();
+				auto aY = a.GetY();
+				auto bX = b.GetX();
+				auto bY = b.GetY();
+
+				if (aY > y)
+				{
+					break;
+				}
+
+				if (point == a || point == b)
+				{
+					// Is exactly at a corner
+					inside = true;
+					break;
+				}
+
+				if (bY > y)
+				{
+					const auto determinant = (x - aX) * (bY - aY) - (bX - aX) * (y - aY);
+					if (determinant == 0)
+					{
+						// Is directly at line
+						inside = true;
+						break;
+					}
+
+					if (determinant < 0 != (bY < aY))
+					{
+						inside += _edge.GetDirection();
+					}
+				}
+			}
+			return inside != 0;
+		}
 
 		void Transform(const SvgTransform& transform);
 

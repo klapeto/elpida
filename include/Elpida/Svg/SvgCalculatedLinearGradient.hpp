@@ -70,6 +70,26 @@ namespace Elpida
 				const SvgLinearEquation& normalB) const;
 	};
 
+	// Inline (in the header) so that the per-sample color lookup inlines into SvgSuperSampler: an out-of-line call
+	// returns SvgColor (16 bytes) in xmm0/xmm1 on x86_64 Linux but through memory on Windows, which made this
+	// wrapper about twice as expensive there (docs/development/parity-checks.md). always_inline: clang's inlining
+	// cost counts those memory copies, so without it the Windows build kept SvgCalculatedPaint's as a call.
+	[[gnu::always_inline]] inline SvgColor SvgCalculatedLinearGradient::CalculateColor(const SvgPoint& point) const
+	{
+		// TODO: Eliminate branch, measure impact
+		switch (_spreadType)
+		{
+		case SvgSpreadType::Pad:
+			return CalculatePad(point);
+		case SvgSpreadType::Reflect:
+			return CalculateReflect(point);
+		case SvgSpreadType::Repeat:
+			return CalculateRepeat(point);
+		default:
+			return CalculatePad(point);
+		}
+	}
+
 } // Elpida
 
 #endif //ELPIDA_SVGCALCULATEDLINEARGRADIENT_HPP

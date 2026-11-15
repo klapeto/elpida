@@ -147,5 +147,117 @@ Fixed:
   only `__imp_` slots inside the PE's IAT (data directory 12; lld merges `.idata` into `.rdata`) are imports; the
   others are followed to the function they point to, also for i386's `calll *0x...`.
 
+## Findings (2026-11-15, CI binaries, all targets)
+
+The checks ran on the binaries of CI pipeline 3068900155 (the Docker toolchain), all 8 desktop targets and the 3
+Android ABIs.
+
+- `report`: only the known items (`strerror`/`rand`/`srand`, bionic's outline atomics on Android aarch64) and one
+  new reachable-but-never-run path: LLVM's `sys::Process::GetMallocUsage()` calls the platform's `mallinfo` (glibc,
+  msvcrt, bionic's scudo, which runs `cpuid`). It's only called with LLVM's `-track-memory`, which is off
+  (`llvm/lib/Support/Timer.cpp`). See [known-issues.md](known-issues.md#found-by-the-parity-checks).
+- Linux vs Android, same architecture: the known OS layer, libc type sizes and, on x86_64, `long double` (musl's
+  `pop_arg` for `%Lf`, never used).
+- The tool crashed on COFF symbol tables with non-UTF-8 names (some read-only data in the CI Windows binaries); it now
+  replaces those bytes.
+- `compare` didn't compare functions whose names contain `std::size_t` and friends between ELF and PE: 64-bit Windows
+  is LLP64, so they demangle as `unsigned long long` (`Matrix<float, 4ull, 4ull>`) there and `unsigned long` on Linux,
+  and were listed as "only in A/B". When one side is a PE, both are now written with `long`, in the names and in the
+  call targets. Before this, matrix inverse and Base64 looked identical between Linux and Windows.
+
+## Linux vs Windows on one machine (2026-11-15)
+
+The same code is compiled with the same compiler and flags for both, but the two x86_64 ABIs differ (System V on
+Linux, Microsoft x64 on Windows), and clang applies the ABI when it writes the IR, before optimization. Inlining
+removes a call, not the shape it gave the code, so the optimizer starts from different IR and can decide differently
+(vectorize or not, inline or not). The differences that mattered:
+
+| | Linux (System V) | Windows (Microsoft x64) |
+|---|---|---|
+| Struct of two floats returned (`std::complex<float>`, `SvgPoint`) | `<2 x float>` in `xmm0` | 64-bit integer in `rax` |
+| 16-byte struct returned (`SvgColor`) | `xmm0` + `xmm1` | memory (hidden pointer) |
+| SSE registers a function must preserve | none | `xmm6`-`xmm15` |
+| `long` | 64-bit | 32-bit |
+| `operator new`/`delete` reach mimalloc | directly (`malloc` is mimalloc's) | through the CRT's `malloc`/`free`, patched at runtime (`static.c`) |
+
+aarch64 Linux and Windows use the same rules for these (HFA in `s0`-`s3`, same callee-saved registers), so this is an
+x86_64 (and i386, not measured) topic.
+
+### How it was measured
+
+i9-10900K, Ubuntu 26.04, `performance` governor, one core (`--affinity=2`), single-threaded, the benchmark
+executables run directly with the full run's configuration (`apps/Application/FullBenchmarkInstances`), Linux and
+Windows interleaved, median of 7 rounds. The Windows builds ran under Wine 10 (GE-Proton's `files/bin/wine64`): the
+timed code makes no Windows API calls, so it runs natively. `scripts/parity/linux-vs-windows.sh` does this. The
+spread is mostly under 2%; Base64 decode and matrix multiplication vary up to 10% between runs on Linux (code and
+data placement), so differences of 1-2% are noise. The FFT and SVG results were the same on a Ryzen 7950X3D.
+Multi-thread results under Wine say nothing about Windows (Linux schedules the threads), and nothing here replaces a
+run on real Windows.
+
+Profiling under Wine: `perf record` sees the samples but not the PE's symbols (`[JIT]`); map the `perf script -F ip`
+addresses inside `ImageBase` (0x140000000) to `llvm-nm -n` of the `.exe`.
+
+### Results (Windows / Linux score)
+
+| Benchmark | Before | After | Cause | Change |
+|---|---|---|---|---|
+| FFT | 0.909 | 1.050 | `complex<float>` returned in `rax`: the butterfly was packed on Linux, scalar on Windows | `FFTCalculator` does the arithmetic on the real and imaginary parts |
+| JSON parsing | 0.876 | 0.950 | `new`/`delete` went through the CRT hook and `mi_cfree`'s ownership check | `mimalloc-new-delete.h` in the entry point |
+| XML parsing | 0.942 | 0.973 | same | same |
+| SVG rasterization | 0.952 | 0.987 | `xmm6`+ saves once per sub-sample, `SvgColor` through memory | point test and color wrappers inlined |
+| Matrix inverse 4x4 | 0.962 | 0.982 | `CalculateMinor` saved `xmm6`-`xmm15` on every call | inverse chain inlined |
+| C++ compilation | 0.969 | 0.974 | allocation (partly fixed), the rest not analyzed | |
+| RSA decryption | 0.977 | 0.977 | not analyzed | |
+| RSA encryption | 0.985 | 0.984 | | |
+| Regex | 1.009 | 0.981 | `new`/`delete`: Linux gained 3.8%, Windows 0.8% | |
+| Ray tracing | 1.004 | 0.984 | same code before and after; data placement (allocation order changed) | |
+| Base64 decode | 1.081 | 1.021 | code placement: identical code, moves with `-falign-functions=64`, 10% spread | |
+| NBody, Base64 encode, Zlib, AES, matrix multiplication | 0.993-1.007 | 0.993-1.007 | | |
+
+Score changes on the same CPU (both platforms change, so the base scores must be recalculated):
+
+| Benchmark | Linux | Windows |
+|---|---|---|
+| FFT | 2.16x | 2.44x |
+| Matrix inverse 4x4 | +24% | +27% |
+| SVG rasterization | +3.8% | +7.7% |
+| XML parsing | +5.3% | +8.7% |
+| Regex | +3.8% | +0.8% |
+| JSON parsing | +2.9% | +9.9% |
+
+### The causes and the changes
+
+- **FFT:** libc++'s `operator*`/`operator-` for `complex<float>` return `<2 x float>` on Linux and `i64` on Windows.
+  The integer packing (`movd`/`shlq`/`orq`) stays after inlining and the SLP vectorizer judged packing not worth it.
+  `FFTCalculator` now does the complex arithmetic on the real and imaginary parts, in `std::complex`'s order, so the
+  results are bit-identical (only `__mulsc3`'s NaN recovery is gone, which finite input never reaches). Both
+  targets vectorize the loop and differ only in the prologue. The 2.16x on Linux comes from the loop no longer
+  checking every product for NaN and no longer reloading the vector's data pointer.
+- **SVG rasterization:** `SvgPolygon::IsPointInsideEvenOdd` (62% of the cycles) ran the same loop on both but saved
+  `xmm6`-`xmm9` on every call, once per sub-sample. The per-sample color wrappers (`SvgCalculatedPaint::CalculateColor`,
+  the gradients' `CalculateColor`) return `SvgColor` through memory on Windows and took about twice the time there.
+  They are in the headers now and `[[gnu::always_inline]]`, so they inline into `SvgSuperSampler` on every target.
+  The attribute is needed: clang's inlining cost counts the Windows memory copies, and without it the Windows build
+  kept `SvgCalculatedPaint::CalculateColor` as a call. The rendered PNGs are byte-identical (old/new, Linux/Windows).
+  Left: the call to `CalculatePad`, a real function with its loop, whose `SvgColor` still goes through memory.
+- **Matrix inverse:** `Matrix<float, 4, 4>::CalculateMinor` uses all 16 SSE registers; called once per inverse, it
+  saved and restored ten of them each time on Windows (78 stack accesses against 59). The inverse chain in
+  `Matrix.hpp` is `[[gnu::always_inline]]` now, so it inlines into the timed loop.
+- **Allocation:** on Windows libc++'s `operator new`/`delete` call the CRT's `malloc`/`free`, which mimalloc patches
+  at runtime (`static.c`): `free` went through `__h_free` and `mi_cfree`, which first looks up whether the pointer is
+  mimalloc's, and took twice the time of Linux's `mi_free`. The parity entry point now includes
+  `mimalloc-new-delete.h`, so `operator delete` is a jump to `mi_free` on every platform. `new` and `delete` always pair
+  up, so `mi_free` never gets a CRT pointer; C code (`malloc`/`free`) still goes through the hooks.
+- **Not changed, mimalloc's TLS:** on Windows mimalloc finds the thread's heap through a `TlsAlloc` slot
+  (`MI_TLS_MODEL_WIN32`: load the slot number, read the TEB, check for the expansion slots), on Linux with one load at
+  a fixed offset. JSON still spends about 1.5x the time in `mi_new` on Windows. `MI_TLS_MODEL_LOCAL` (the exe's static
+  TLS: `_tls_index`, `%gs:0x58`, the slot) was tried and made no consistent difference (JSON -1.5%, XML and regex
+  +0.5-0.8%), so mimalloc is left as is.
+- **Not changed, `long`:** zlib's `uLong` arithmetic (`adler32_z`, `crc32_z`) and boost's reference counts use 32-bit
+  instructions on Windows; on x86_64 they cost the same.
+- **Code placement:** the same functions start at different offsets in the two builds, and the 10900K (Comet Lake,
+  with the JCC erratum microcode) is sensitive to where loops and jumps fall. `-falign-functions=64
+  -mbranches-within-32B-boundaries` moved Base64 decode from 1.09 to 1.03 and changed nothing else; not adopted.
+
 Accepted: mimalloc's thread id and lock size per libc, see
 [mimalloc.md](mimalloc.md#code-parity-differences-accepted). Still open: see [known-issues.md](known-issues.md#found-by-the-parity-checks).

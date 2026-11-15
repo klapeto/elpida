@@ -30,25 +30,7 @@
 
 namespace Elpida
 {
-	SvgColor SvgCalculatedPaint::CalculateColor(const SvgPoint& point) const
-	{
-		if (_color)
-		{
-			return std::get<SvgColor>(_state);
-		}
-
-		// TODO: Create a delegate: Measure impact
-		if (_gradientType == SvgGradientType::Linear)
-		{
-			return std::get<SvgCalculatedLinearGradient>(_state).CalculateColor(point);
-		}
-		else
-		{
-			return std::get<SvgCalculatedRadialGradient>(_state).CalculateColor(point);
-		}
-	}
-
-	SvgCalculatedPaint::SvgCalculatedPaint(const SvgPaint& paint,
+		SvgCalculatedPaint::SvgCalculatedPaint(const SvgPaint& paint,
 			const SvgBounds& elementBounds,
 			const SvgDocument& document,
 			const SvgCalculationContext& calculationContext)

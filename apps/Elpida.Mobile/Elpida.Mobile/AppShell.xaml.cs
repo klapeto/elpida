@@ -87,6 +87,8 @@ namespace Elpida.Mobile
 #endif
 
 			dataLoader.LoadInitialDataAsync().ConfigureAwait(false);
+
+			BenchmarkTab.IsEnabled = true;
 		}
 	}
 }

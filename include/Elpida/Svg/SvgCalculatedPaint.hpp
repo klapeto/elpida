@@ -82,6 +82,28 @@ namespace Elpida
 				const SvgGradient** gradientStops);
 		static std::vector<SvgCalculatedGradientStop> CalculateStops(const SvgGradient& gradientStops, const SvgCalculationContext& calculationContext);
 	};
+
+	// Inline (in the header) so that the per-sample color lookup inlines into SvgSuperSampler: an out-of-line call
+	// returns SvgColor (16 bytes) in xmm0/xmm1 on x86_64 Linux but through memory on Windows, which made this
+	// wrapper about twice as expensive there (docs/development/parity-checks.md). always_inline: clang's inlining
+	// cost counts those memory copies, so without it the Windows build kept SvgCalculatedPaint's as a call.
+	[[gnu::always_inline]] inline SvgColor SvgCalculatedPaint::CalculateColor(const SvgPoint& point) const
+	{
+		if (_color)
+		{
+			return std::get<SvgColor>(_state);
+		}
+
+		// TODO: Create a delegate: Measure impact
+		if (_gradientType == SvgGradientType::Linear)
+		{
+			return std::get<SvgCalculatedLinearGradient>(_state).CalculateColor(point);
+		}
+		else
+		{
+			return std::get<SvgCalculatedRadialGradient>(_state).CalculateColor(point);
+		}
+	}
 } // Elpida
 
 #endif //ELPIDA_SVG_SVGRASTERIZERPAINT_HPP

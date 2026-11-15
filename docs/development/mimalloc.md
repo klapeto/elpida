@@ -25,7 +25,15 @@ LFH**, so mimalloc is the current choice.
 | `extern/detours/` | Microsoft Detours (git submodule), used to patch the CRT functions at runtime |
 | `extern/CMakeLists.txt` | builds the `detours` static library on `WIN32` from `detours.cpp`, `disasm.cpp` and `modules.cpp` (Detours ships no CMake build) |
 | `src/Elpida/EntryPoint/CMakeLists.txt` | `elpida-entry-point` links `mimalloc` |
-| `src/Elpida/EntryPoint/Main.cpp` | calls `mi_init_hooks()` first thing in `main()` on `_WIN32` |
+| `src/Elpida/EntryPoint/Main.cpp` | calls `mi_init_hooks()` first thing in `main()` on `_WIN32`; includes `mimalloc-new-delete.h` (parity entry point only) |
+
+`operator new`/`delete` call mimalloc directly (`mi_new`, `mi_free`) on every platform, through
+`mimalloc-new-delete.h` in the parity entry point. Without it they went through libc++'s `operator new`, which calls
+`malloc`: on Windows that is the patched CRT function, so every `delete` went through `__h_free` and `mi_cfree`'s
+ownership check, twice the time of Linux's `mi_free` (JSON parsing was 12% slower on Windows, see
+[parity-checks.md](parity-checks.md#linux-vs-windows-on-one-machine-2026-11-15)). `new` and `delete` always pair up, so
+`mi_free` never sees a CRT pointer; C allocations still go through the hooks. Detours' bookkeeping, allocated with
+`operator new` before `mi_init_hooks()`, now comes from mimalloc as well and goes back to it.
 
 ### Why hooks instead of overriding symbols
 

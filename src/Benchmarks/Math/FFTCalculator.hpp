@@ -85,19 +85,33 @@ namespace Elpida::Benchmarks::Math
 			}
 
 			// butterfly updates
+			// The complex arithmetic is written out on the real and imaginary parts instead of std::complex's
+			// operators: those return std::complex<float> by value, which the x86_64 Linux ABI passes as a vector of
+			// two floats and the Windows ABI as a 64-bit integer, and that difference stays after inlining. Linux got
+			// a vectorized loop and Windows a scalar one, about 18% slower on the same CPU
+			// (docs/development/parity-checks.md). This is the same arithmetic, in the same order, as std::complex's
+			// operator* (a*c - b*d, a*d + b*c), so the results are identical; only the NaN recovery of operator*
+			// (__mulsc3) is gone, which finite input never reaches.
+			// std::complex<T> is layout-compatible with T[2] ([complex.numbers.general]).
+			auto values = reinterpret_cast<T*>(x.data());
 			for (std::size_t L = 2; L <= n; L = L + L)
 			{
 				for (std::size_t j = 0; j < L / 2; j++)
 				{
 					Float jth = 2 * Pi * j / L;
-					auto w = std::complex<T>(std::cos(jth), -std::sin(jth));
+					const T wReal = std::cos(jth);
+					const T wImag = -std::sin(jth);
 					for (std::size_t k = 0; k < n / L; k++)
 					{
-						auto tao = w * (x[k * L + j + L / 2]);
-						x[k * L + j + L / 2] = x[k * L + j] - tao;
-						x[k * L + j] = x[k * L + j] + tao;
+						T* a = values + 2 * (k * L + j);
+						T* b = values + 2 * (k * L + j + L / 2);
+						const T taoReal = wReal * b[0] - wImag * b[1];
+						const T taoImag = wReal * b[1] + wImag * b[0];
+						b[0] = a[0] - taoReal;
+						b[1] = a[1] - taoImag;
+						a[0] = a[0] + taoReal;
+						a[1] = a[1] + taoImag;
 					}
-
 				}
 			}
 		}

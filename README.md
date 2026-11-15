@@ -30,5 +30,18 @@ The above will install the elpida on the `./install` folder of the source folder
 LD_LIBRARY_PATH=/opt/sysroots/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu:/opt/sysroots/x86_64-linux-gnu/usr/lib:$LD_LIBRARY_PATH ./install/bin/elpida-qt
 ```
 
+/mnt/Dev/toolchains/llvm-mingw/x86_64-linux-gnu/usr/lib/x86_64-linux-gnu:/mnt/Dev/toolchains/llvm-mingw/x86_64-linux-gnu/usr/lib:$LD_LIBRARY_PATH
+
+TARGET_TRIPLES="x86_64-linux-android29 aarch64-linux-android29 armv7a-linux-androideabi29 x86_64-linux-android21 aarch64-linux-android21 armv7a-linux-androideabi21 aarch64-w64-mingw32 x86_64-w64-mingw32 i386-w64-mingw32 x86_64-linux-gnu i386-linux-gnu armv7-linux-gnueabihf aarch64-linux-gnu riscv64-linux-gnu" ANDROID_NDK="/home/klapeto/Android/Sdk/ndk/29.0.14206865/" ./build-all.sh --with-default-msvcrt=msvcrt --with-default-win32-winnt=0x0501 --additional-cflags-script=$PWD/parity-flags.sh /mnt/Dev/toolchains/llvm-mingw/
+
+TARGET_TRIPLES="x86_64-linux-android29 " ANDROID_NDK="/home/klapeto/Android/Sdk/ndk/29.0.14206865/" ./build-all.sh --with-default-msvcrt=msvcrt --with-default-win32-winnt=0x0501 --additional-cflags-script=$PWD/parity-flags.sh /mnt/Dev/toolchains/llvm-mingw/
+
+
+./elpida-affinity-test --repeats=3 --csv=x3d-default.csv                          # info dumper's pick (option 1)
+./elpida-affinity-test --repeats=3 --no-detect --processor=10 --csv=x3d-cpu10.csv  # OS ranking's pick (option 2)
+./elpida-affinity-test --repeats=3 --no-detect --processor=0 --csv=x3d-cpu0.csv    # V-Cache CCD, for comparison
+
+E2E tests---
+
 ## License
 Elpida Library, Qt Front end and Default Benchmarks are licensed under GPL v3. For more information see the LICENSE file.

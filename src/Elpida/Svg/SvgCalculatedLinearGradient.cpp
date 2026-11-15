@@ -82,23 +82,7 @@ namespace Elpida
 		_transform.Multiply(actualTransform);
 	}
 
-	SvgColor SvgCalculatedLinearGradient::CalculateColor(const SvgPoint& point) const
-	{
-		// TODO: Eliminate branch, measure impact
-		switch (_spreadType)
-		{
-		case SvgSpreadType::Pad:
-			return CalculatePad(point);
-		case SvgSpreadType::Reflect:
-			return CalculateReflect(point);
-		case SvgSpreadType::Repeat:
-			return CalculateRepeat(point);
-		default:
-			return CalculatePad(point);
-		}
-	}
-
-	SvgColor SvgCalculatedLinearGradient::CalculatePad(const SvgPoint& point) const
+		SvgColor SvgCalculatedLinearGradient::CalculatePad(const SvgPoint& point) const
 	{
 		const SvgCalculatedGradientStop* stopA = nullptr;
 		const SvgCalculatedGradientStop* stopB = nullptr;

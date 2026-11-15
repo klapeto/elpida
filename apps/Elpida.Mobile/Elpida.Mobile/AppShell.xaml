@@ -16,7 +16,9 @@
             <ShellContent ContentTemplate="{DataTemplate pages:MainPage}" />
         </Tab>
         <Tab
+	        x:Name="BenchmarkTab"
             Title="{x:Static strings:Resources.Benchmark}"
+            IsEnabled="false"
             Icon="cpu_o.png"
             Route="Benchmark">
             <ShellContent ContentTemplate="{DataTemplate pages:Benchmark}" />

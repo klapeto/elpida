@@ -80,7 +80,7 @@ namespace Elpida::Benchmarks::Compilation
     {
         _diagnosticIds = new clang::DiagnosticIDs();
         _diagnosticOptions = new clang::DiagnosticOptions();
-        _diagnosticsEngine = std::make_unique<clang::DiagnosticsEngine>(_diagnosticIds, _diagnosticOptions);
+        _diagnosticsEngine = std::make_unique<clang::DiagnosticsEngine>(_diagnosticIds, _diagnosticOptions, new clang::TextDiagnosticPrinter(llvm::errs(), _diagnosticOptions.get()));
 
         clang::CompilerInvocation::CreateFromArgs(_compiler.getInvocation(), {"-O3", "test.cpp"}, *_diagnosticsEngine);
         _compiler.getInvocation().getTargetOpts().Triple = "x86_64-none-none";

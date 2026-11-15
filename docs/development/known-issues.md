@@ -69,6 +69,16 @@ See [parity-checks.md](parity-checks.md) for the tool and what was already fixed
   (they were glibc's `__ctype_*_loc`, msvcrt's `isalpha`/`tolower`/..., and glibc's or mingw-w64's gdtoa-based
   printf, from LLVM, OpenSSL's `CONF_parse_list`, nlohmann's error messages and libc++'s `std::to_string`). See
   [third-party-libraries.md](third-party-libraries.md#musl-lite-srcmusl).
+- **`mallinfo` (2026-11-15, every target):** LLVM's `sys::Process::GetMallocUsage()` in the Compilation benchmark calls
+  the platform's `mallinfo` (mimalloc doesn't provide it; on Android it is bionic's scudo, which runs `cpuid`).
+  Reachable, not executed: only `-track-memory` calls it. Accepted like `strerror`.
+- **x86_64 Linux vs Windows ABI (2026-11-15):** structs of floats returned by value come back in SSE registers on
+  Linux and in `rax` or memory on Windows, Windows saves `xmm6`-`xmm15` in every function that uses them, and
+  `operator new`/`delete` went through the CRT hooks on Windows. Fixed where it cost score: FFT (Windows was 9%
+  slower), JSON (12%), SVG (5%), XML (6%), matrix inverse (4%). Left, all 1.5-5% on Windows: JSON (mimalloc's
+  `TlsAlloc` slot), C++ compilation, XML, RSA decryption, regex, ray tracing, matrix inverse. Measured under Wine on
+  one machine, not yet on real Windows. See
+  [parity-checks.md](parity-checks.md#linux-vs-windows-on-one-machine-2026-11-15).
 - **Outline atomics in bionic's `libc.a`** are reached from the timed code through mimalloc's locks
   (`pthread_mutex_lock` → `__aarch64_cas4_acq`). The report lists them as violations on Android aarch64.
 

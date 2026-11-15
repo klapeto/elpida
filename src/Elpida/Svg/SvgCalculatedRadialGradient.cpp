@@ -59,22 +59,7 @@ namespace Elpida
 		 _transform.Inverse(gradient.GetGradientTransform());	// We will inverse transform the points to calculate the colors.
 	}
 
-	SvgColor SvgCalculatedRadialGradient::CalculateColor(const SvgPoint &point) const
-	{
-		// TODO: Eliminate branch, measure impact
-		switch (_spreadType)
-		{
-			case SvgSpreadType::Pad:
-				return CalculatePad(point);
-			case SvgSpreadType::Reflect:
-				return CalculateReflect(point);
-			case SvgSpreadType::Repeat:
-				return CalculateRepeat(point);
-		}
-		return {};
-	}
-
-	SvgColor SvgCalculatedRadialGradient::CalculatePad(const SvgPoint &point) const
+		SvgColor SvgCalculatedRadialGradient::CalculatePad(const SvgPoint &point) const
 	{
 		const SvgCalculatedGradientStop *stopA = nullptr;
 		const SvgCalculatedGradientStop *stopB = nullptr;

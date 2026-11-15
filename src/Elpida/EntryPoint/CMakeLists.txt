@@ -16,6 +16,8 @@ set(ELPIDA_ENTRY_POINT_SOURCES
 add_library(elpida-entry-point ${ELPIDA_ENTRY_POINT_SOURCES})
 target_link_libraries(elpida-entry-point PUBLIC elpida-core elpida-platform musl-lite musl-platform mimalloc)
 target_compile_definitions(elpida-entry-point PRIVATE ELPIDA_PARITY_RUNTIME=1)
+# Main.cpp includes mimalloc-new-delete.h (operator new/delete straight to mimalloc)
+target_include_directories(elpida-entry-point PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../Mimalloc/include)
 
 # The StdLib benchmarks, which measure the platform's own C library and allocator (glibc, msvcrt, bionic): no
 # musl-lite, no mimalloc. See docs/development/code-parity.md#the-stdlib-benchmarks.

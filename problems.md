@@ -25,3 +25,13 @@
    - had to remove "-static"
 - Windows i686:
  - Floor function is replaced with int3 spam (breakpoints) (I missed a change on musl code and INT64 was long instead of long long)
+
+
+
+ - Profile to check if everything goes through the code.
+ - Check if there are platform dynamic code paths (e.g. `LoadLibrary`)
+
+
+git clone -b winxp-support https://gitlab.com/dev-hood/elpida/elpida.git && cd elpida && git submodule update --init --recursive && mkdir build && cd build
+
+cmake -DQT_HOST_PATH=/usr -DCMAKE_TOOLCHAIN_FILE=cmake-modules/llvm-cross.cmake -DCMAKE_SYSROOT=/opt/toolchains/llvm/i386-w64-mingw32 -DTARGET_PREFIX=i386-w64-mingw32- -DELPIDA_ENABLE_CLI=ON ..

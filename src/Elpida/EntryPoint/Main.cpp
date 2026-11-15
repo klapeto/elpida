@@ -44,6 +44,15 @@
 
 #include "Elpida/Core/ModuleExports.hpp"
 
+#if defined(ELPIDA_PARITY_RUNTIME)
+// operator new/delete straight to mimalloc, the same on every platform. Without this, libc++'s operator new calls
+// malloc: on Linux that is mimalloc's malloc, but on Windows it is the CRT's malloc/free, patched at runtime to
+// mimalloc (static.c), so every delete went through the hook and mi_cfree's ownership check. That made allocation
+// heavy benchmarks (JSON parsing) up to 12% slower on Windows (docs/development/parity-checks.md). new and delete
+// always pair up, so mi_free never gets a CRT pointer; C code (malloc/free) still goes through the hooks.
+#include "mimalloc-new-delete.h"
+#endif
+
 #if defined(_WIN32)
 #include <windows.h>
 

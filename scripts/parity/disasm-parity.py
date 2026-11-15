@@ -123,7 +123,8 @@ def find_tool(name, toolchain):
 
 
 def run(cmd, stdin=None):
-    result = subprocess.run(cmd, input=stdin, capture_output=True, text=True)
+    # errors="replace": COFF symbol tables can have a few non-UTF-8 names (read-only data like \xab\x1f\x03)
+    result = subprocess.run(cmd, input=stdin, capture_output=True, text=True, errors="replace")
     if result.returncode != 0 and not result.stdout:
         sys.exit(f"error: {' '.join(cmd[:3])}...: {result.stderr.strip()}")
     return result.stdout
@@ -687,8 +688,22 @@ def load(path, args):
     return binary, roots
 
 
-def by_name(binary, symbols):
-    return {binary.name(s): s for s in symbols}
+def by_name(binary, symbols, canonical=None):
+    if canonical is None:
+        return {binary.name(s): s for s in symbols}
+    return {canonical(binary.name(s)): s for s in symbols}
+
+
+# 64-bit Windows is LLP64: std::size_t, std::uint64_t, ... are `unsigned long long` there and `unsigned long` on
+# 64-bit Linux and Android, so templates and signatures over them demangle differently (`Matrix<float, 4ul, 4ul>`
+# vs `Matrix<float, 4ull, 4ull>`, `Decode(unsigned char const*, unsigned long long)`). When comparing an ELF with a PE,
+# both sides are written with `long` so those functions are matched and compared instead of listed as "only in".
+_LLP64_TYPES = re.compile(r"\blong long\b")
+_LLP64_LITERALS = re.compile(r"\b(\d+)(u?)ll\b")
+
+
+def llp64_canonical(text):
+    return _LLP64_LITERALS.sub(r"\1\2l", _LLP64_TYPES.sub("long", text))
 
 
 def cmd_report(args):
@@ -734,23 +749,29 @@ def cmd_compare(args):
     b, roots_b = load(args.b, args)
     print(f"A: {args.a} ({a.format})")
     print(f"B: {args.b} ({b.format})")
+    canonical = None
     if a.format != b.format:
         print("note: different object formats (ABI); register allocation and calling sequences will differ. "
               "Consider --mnemonics.")
+        if "coff" in a.format or "coff" in b.format or "pe" in a.format or "pe" in b.format:
+            canonical = llp64_canonical
     different = 0
     for root_name in sorted(set(roots_a) | set(roots_b)):
         if root_name not in roots_a or root_name not in roots_b:
             print(f"ONLY IN {'A' if root_name in roots_a else 'B'}  {root_name}")
             different += 1
             continue
-        funcs_a = by_name(a, a.closure(roots_a[root_name]) - a.stopped)
-        funcs_b = by_name(b, b.closure(roots_b[root_name]) - b.stopped)
+        funcs_a = by_name(a, a.closure(roots_a[root_name]) - a.stopped, canonical)
+        funcs_b = by_name(b, b.closure(roots_b[root_name]) - b.stopped, canonical)
         only_a = sorted(set(funcs_a) - set(funcs_b))
         only_b = sorted(set(funcs_b) - set(funcs_a))
         changed = []
         for name in sorted(set(funcs_a) & set(funcs_b)):
             la = a.normalized(funcs_a[name], args.mnemonics)
             lb = b.normalized(funcs_b[name], args.mnemonics)
+            if canonical:
+                la = [canonical(line) for line in la]
+                lb = [canonical(line) for line in lb]
             if la != lb:
                 changed.append((name, la, lb))
         same = len(set(funcs_a) & set(funcs_b)) - len(changed)

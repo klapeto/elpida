@@ -51,6 +51,10 @@ namespace Elpida::Math
 			return _values[i];
 		}
 
+		// The inverse chain is always inlined into the caller (the benchmark's timed loop). Out of line,
+		// CalculateMinor uses all 16 SSE registers, and the Windows x86_64 ABI makes it save and restore
+		// xmm6-xmm15 on every call: 4% slower than Linux (docs/development/parity-checks.md).
+		[[gnu::always_inline]]
 		Matrix<T, R, C> CalculateInverse() const
 		{
 			auto det = CalculateDeterminant();
@@ -60,6 +64,7 @@ namespace Elpida::Math
 			return adJoint * (1.0 / det);
 		}
 
+		[[gnu::always_inline]]
 		void CalculateInverse(Matrix<T, R, C>& out) const
 		{
 			auto det = CalculateDeterminant();
@@ -75,6 +80,7 @@ namespace Elpida::Math
 			out *= (1.0 / det);
 		}
 
+		[[gnu::always_inline]]
 		Matrix<T, R, C> CalculateMinor() const
 		{
 			Matrix<T, R, C> out;
@@ -89,6 +95,7 @@ namespace Elpida::Math
 			return out;
 		}
 
+		[[gnu::always_inline]]
 		void CalculateMinor(Matrix<T, R, C>& out) const
 		{
 			Matrix<T, R - 1, C - 1> tmp;
@@ -102,6 +109,7 @@ namespace Elpida::Math
 			}
 		}
 
+		[[gnu::always_inline]]
 		Matrix<T, R, C> CalculateCofactors() const
 		{
 			auto minor = CalculateMinor();
@@ -116,6 +124,7 @@ namespace Elpida::Math
 			return minor;
 		}
 
+		[[gnu::always_inline]]
 		void CalculateCofactors(Matrix<T, R, C>& out) const
 		{
 			CalculateMinor(out);
@@ -129,6 +138,7 @@ namespace Elpida::Math
 			}
 		}
 
+		[[gnu::always_inline]]
 		Matrix<T, R, C> CalculateTranspose() const
 		{
 			static_assert(R == C);
@@ -146,6 +156,7 @@ namespace Elpida::Math
 			return out;
 		}
 
+		[[gnu::always_inline]]
 		void CalculateTranspose(Matrix<T, R, C>& out) const
 		{
 			static_assert(R == C);
@@ -160,6 +171,7 @@ namespace Elpida::Math
 			}
 		}
 
+		[[gnu::always_inline]]
 		void CalculateRemovedRowColumn(std::size_t row, std::size_t column, Matrix<T, R - 1, C - 1>& out) const
 		{
 			for (std::size_t i = 0, io = 0; i < R; ++i)
@@ -177,6 +189,7 @@ namespace Elpida::Math
 			}
 		}
 
+		[[gnu::always_inline]]
 		Matrix<T, R - 1, C - 1> CalculateRemovedRowColumn(std::size_t row, std::size_t column) const
 		{
 			Matrix<T, R - 1, C - 1> out;
@@ -184,6 +197,7 @@ namespace Elpida::Math
 			return out;
 		}
 
+		[[gnu::always_inline]]
 		T CalculateDeterminant() const
 		{
 			static_assert(R == C);
@@ -257,6 +271,7 @@ namespace Elpida::Math
 			return *this;
 		}
 
+		[[gnu::always_inline]]
 		Matrix<T, R, C> operator*(T value) const
 		{
 			auto copy = *this;
