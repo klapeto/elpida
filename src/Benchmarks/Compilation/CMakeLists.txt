@@ -8,7 +8,23 @@ project("Elpida Compilation benchmarks" VERSION ${ELPIDA_VERSION}
 find_package(LLVM REQUIRED CONFIG)
 find_package(Clang REQUIRED)
 
+# The source the benchmark compiles, embedded so every platform compiles the same bytes
+set(COMPILATION_BENCHMARK_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/Assets/CompilationBenchmarkSource.cpp")
+set(COMPILATION_BENCHMARK_SOURCE_CPP "${CMAKE_CURRENT_BINARY_DIR}/CompilationBenchmarkSourceEmbedded.cpp")
+add_custom_command(
+        OUTPUT "${COMPILATION_BENCHMARK_SOURCE_CPP}"
+        COMMAND ${CMAKE_COMMAND}
+        -DINPUT=${COMPILATION_BENCHMARK_SOURCE}
+        -DOUTPUT=${COMPILATION_BENCHMARK_SOURCE_CPP}
+        -DNAMESPACE=Elpida::Benchmarks::Compilation
+        -DNAME=CompilationBenchmarkSource
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake-modules/EmbedFile.cmake"
+        DEPENDS "${COMPILATION_BENCHMARK_SOURCE}" "${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake-modules/EmbedFile.cmake"
+        COMMENT "Embedding CompilationBenchmarkSource.cpp"
+        VERBATIM)
+
 add_library(elpida-compilation-benchmarks
+        "${COMPILATION_BENCHMARK_SOURCE_CPP}"
         Plugin.cpp
         GenerateCppCodeTask.cpp
         CompileWithClangTask.cpp

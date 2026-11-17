@@ -82,9 +82,20 @@ namespace Elpida::Benchmarks::Compilation
         _diagnosticOptions = new clang::DiagnosticOptions();
         _diagnosticsEngine = std::make_unique<clang::DiagnosticsEngine>(_diagnosticIds, _diagnosticOptions, new clang::TextDiagnosticPrinter(llvm::errs(), _diagnosticOptions.get()));
 
-        clang::CompilerInvocation::CreateFromArgs(_compiler.getInvocation(), {"-O3", "test.cpp"}, *_diagnosticsEngine);
-        _compiler.getInvocation().getTargetOpts().Triple = "x86_64-none-none";
-        _compiler.getInvocation().resetNonModularOptions();
+        // These are cc1 arguments: what the clang driver passes for `clang++ -O3 -c test.cpp -target x86_64-none-none`
+        // (clang++ -### ...), minus paths, debug info and -disable-free (it would leak on every run). Without them
+        // cc1 keeps the IR verifier on and value names in the IR, and runs no loop/SLP vectorizer.
+        clang::CompilerInvocation::CreateFromArgs(_compiler.getInvocation(), {
+                "-triple", "x86_64-none-none", "-O3", "-emit-obj", "-clear-ast-before-backend",
+                "-disable-llvm-verifier", "-discard-value-names", "-mrelocation-model", "static",
+                "-mframe-pointer=all", "-fmath-errno", "-ffp-contract=on", "-fno-rounding-math",
+                "-mconstructor-aliases", "-funwind-tables=2", "-target-cpu", "x86-64", "-tune-cpu", "generic",
+                "-fdeprecated-macro", "-fgnuc-version=4.2.1", "-fcxx-exceptions", "-fexceptions",
+                "-vectorize-loops", "-vectorize-slp", "-faddrsig", "-x", "c++", "test.cpp"
+        }, *_diagnosticsEngine);
+
+        // The source buffer is remapped again for every run: the source manager must not free it after a compile.
+        _compiler.getInvocation().getPreprocessorOpts().RetainRemappedFileBuffers = true;
 
         _compiler.setDiagnostics(new clang::DiagnosticsEngine(
                 _diagnosticIds,

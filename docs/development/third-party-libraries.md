@@ -135,8 +135,11 @@ the NDK's libc++ are not used.
 
 - The benchmark links the LLVM/Clang 19.1.7 libraries built by `scripts/docker/build-llvm.sh` (the 21.1.8 toolchain
   only compiles Elpida). See [toolchain.md](toolchain.md#llvm-libraries-for-the-compilation-benchmark).
-- `CompileWithClangTask` forces `Triple = "x86_64-none-none"` with `-O3`, so every host does the same frontend,
-  optimizer and codegen work.
+- `CompileWithClangTask` passes the cc1 arguments of `clang++ -O3 -c -target x86_64-none-none` (triple, CPU and
+  options fixed), so every host does the same frontend, optimizer and codegen work. Until 2026-11-16 it reset the
+  codegen options, which ran the IR verifier after every pass and disabled vectorization; see
+  [compilation-benchmark.md](compilation-benchmark.md).
+- The compiled source is `src/Benchmarks/Compilation/Assets/CompilationBenchmarkSource.cpp`, embedded at build time.
 - `clang/lib/Lex/Lexer.cpp` has compile-time SIMD paths: `#ifdef __SSE4_2__` (identifier lexing) and
   `#ifdef __SSE2__`/`__ALTIVEC__` (block comment skipping). x86 used SSE2 there, other architectures the scalar loop.
   `scripts/docker/llvm.parity.patch` (applied by `build-llvm.sh`) disables all of them. The scalar comment loop is

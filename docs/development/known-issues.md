@@ -90,8 +90,12 @@ See [parity-checks.md](parity-checks.md) for the tool and what was already fixed
 - **boost-regex locale backend** comes from libc++'s per-OS implementation. See
   [third-party-libraries.md](third-party-libraries.md#boost-regex-externboost-regex-standalone).
 - **32-bit vs 64-bit**: e.g. OpenSSL's `BN_ULONG`. Unavoidable.
+- **C++ Compilation Windows/Linux 0.96** (i9-10900K, Wine), with the old and the new source. Not analyzed.
 
 ## Not verified
+
+- The C++ Compilation time budget (about 2.5 s per compile on a Pentium 4 Northwood) is extrapolated from the
+  7950X3D, 10900K and older E5200 results; run the new source on an E5200 and a Pentium 4.
 
 - The full Android app build through `dotnet` (the csproj changes) and whether .NET 10 for Android still supports
   API 21.
