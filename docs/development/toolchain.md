@@ -108,10 +108,11 @@ is `<sysroot>/usr/lib/cmake/llvm`). They are built by `scripts/docker/build-llvm
 - builds only the X86 backend (the benchmark always compiles for `x86_64-none-none`), with assertions off.
 - no longer adds `-fno-builtin` (removed 2026-11-16, see [compilation-benchmark.md](compilation-benchmark.md)).
 
-The libraries of the Linux and Windows targets in `/mnt/Dev/toolchains/llvm-mingw` were rebuilt on 2026-11-10, still
-with `-fno-builtin`. **TODO:** rebuild the LLVM libraries of every target (Docker images and the local toolchain)
-without it, then run the Compilation benchmark on arm64 Windows (the reason the flag was added; the musl-lite header
-bug behind it is fixed).
+The LLVM libraries of every target in `/mnt/Dev/toolchains/llvm-mingw` were rebuilt without `-fno-builtin` on
+2026-11-17 (`libclangAST.a` on x86_64 Linux: 45k `memcpy` calls → 1.2k); all targets build and the Compilation
+benchmark runs on x86_64, i386, aarch64, armv7 and riscv64 Linux. **TODO:** the Docker images still have the old
+libraries until their next rebuild; run the Compilation benchmark on arm64 Windows (the reason the flag was added;
+the musl-lite header bug behind it is fixed).
 
 ## Docker images
 

@@ -14,8 +14,8 @@ Open problems and remaining divergences. See [code-parity.md](code-parity.md) fo
   functions, the ones that need one).
 
 - **LLVM libraries without `-fno-builtin` (2026-11-16):** `build-llvm.sh` no longer passes it; the libraries in the
-  Docker images and `/mnt/Dev/toolchains/llvm-mingw` still have it until rebuilt. Then run the Compilation benchmark
-  on arm64 Windows. See [compilation-benchmark.md](compilation-benchmark.md).
+  local toolchain was rebuilt on 2026-11-17, the Docker images still have it until rebuilt. Run the Compilation
+  benchmark on arm64 Windows. See [compilation-benchmark.md](compilation-benchmark.md).
 
 ## Non-deterministic input
 
