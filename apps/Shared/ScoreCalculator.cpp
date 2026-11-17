@@ -24,12 +24,13 @@
 
 namespace Elpida
 {
-	static constexpr double SingleCoreWeight = 1.1;
-	static constexpr double MultiCoreWeight = 1.0;
-
+	// Geometric mean of the single and multi-thread scores: a scale factor or other base scores multiply every total by
+	// the same constant, so rankings don't change. The multi-thread score already contains the per-core speed
+	// (multi ≈ single × scaling), so the total is single × sqrt(scaling): doubling the single-thread speed doubles it,
+	// doubling the cores adds about 41%.
 	double ScoreCalculator::CalculateTotalScore(double singleCoreScore, double multiCoreScore)
 	{
-		return std::pow(singleCoreScore, SingleCoreWeight) + std::pow(multiCoreScore, MultiCoreWeight);
+		return std::sqrt(singleCoreScore * multiCoreScore);
 	}
 
 	// Geometric mean of the score / base score ratios. The base scores then only set the scale: how two machines
