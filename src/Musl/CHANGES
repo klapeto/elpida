@@ -1,3 +1,5 @@
 Removed unused files
 No Asm
-Removed GNU_C code
+src/string: the __GNUC__ word-at-a-time code was removed at import and restored from musl 1.2.5 on 2026-11-16, except
+  in memset.c: its plain C loop (upstream's non-GNUC path) is kept, clang vectorizes it and it measured faster
+Renamed internal __name functions to _MuslLite_name

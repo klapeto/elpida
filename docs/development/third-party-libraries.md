@@ -7,6 +7,9 @@ See [code-parity.md](code-parity.md) for the policy and the compiler flags.
 
 - Pure C sources for `string`, `stdlib`, `math`, `ctype` and parts of `stdio`. There are no `.s`/`.S` files and no
   arch-specific `src/<arch>/` overrides. The only inline asm is the empty FP barrier in `arch/aarch64/fp_arch.h`.
+- `src/string` has upstream's word-at-a-time (`__GNUC__`, `may_alias`) code, except `memset`, which keeps upstream's
+  plain C loop: clang vectorizes it and it measured faster
+  ([run-to-run-spread.md](run-to-run-spread.md#decisions-2026-11-16)).
 - Compiled with `-ffreestanding -nostdinc` and linked into `elpida-entry-point`, so every benchmark executable except
   `stdlib-benchmarks` gets it ([the StdLib exception](code-parity.md#the-stdlib-benchmarks)).
   With the root `-Wl,--allow-multiple-definition`, musl's `memcpy`, `memset`, `memchr`, `strtod`, `strtoul`, `ceilf`,
