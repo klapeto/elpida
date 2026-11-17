@@ -195,7 +195,13 @@ int main(int argC, char** argV)
 #ifdef _WIN32
 	enable_lfh_all_heaps();
 #if defined(ELPIDA_PARITY_RUNTIME)
-	mi_init_hooks();
+	// Without mimalloc the benchmarks would measure msvcrt's allocator, and the results would not be comparable with
+	// the other platforms (docs/development/code-parity.md): refuse to run. The reason is already on stderr.
+	if (mi_init_hooks() != 0)
+	{
+		std::cerr << "mimalloc could not replace the C runtime's allocator" << std::endl;
+		return EXIT_FAILURE;
+	}
 #endif
 #endif
 

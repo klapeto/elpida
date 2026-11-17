@@ -237,6 +237,12 @@ int main(int argc, char* argv[])
 
 		auto benchmarkGroups = builderJson.GetBenchmarkGroups();
 
+		// Before anything that needs the groups: when none load, the controllers throw and the reasons would be lost
+		for (auto& [file, reason] : builderJson.GetFailedToLoadBenchmarkGroups())
+		{
+			QMessageBox::critical(nullptr, "Failed to load benchmark group", QString::fromStdString("File: " + file + "\nReason:" + reason));
+		}
+
 		UpdateBenchmarkSettings(benchmarkGroups, settingsService);
 
 		OffProcessBenchmarkExecutionService executionService;
@@ -335,13 +341,6 @@ int main(int argc, char* argv[])
 
 		splash.finish(&mainWindow);
 
-		if (!builderJson.GetFailedToLoadBenchmarkGroups().empty())
-		{
-			for (auto& [file,reason] : builderJson.GetFailedToLoadBenchmarkGroups())
-			{
-				QMessageBox::critical(&mainWindow, "Failed to load benchmark group", QString::fromStdString("File: " + file + "\nReason:" + reason));
-			}
-		}
 
 		ThreadQueue::Current().lock()->Run();
 

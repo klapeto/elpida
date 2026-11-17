@@ -326,7 +326,7 @@ static void* mi_hook_unused_originals[MI_MAX_HOOKS];
 // Hooks the function exported by the CRT dll so every caller (including the CRT itself and other
 // modules) is redirected. Functions the dll does not export (eg. emulated by mingw) are hooked
 // at the implementation linked into this module instead.
-static int mi_hook(void* local, void* detour, void** original, const char* name)
+static void* mi_hook_target(void* local, const char* name)
 {
 	void* target = (void*)GetProcAddress(GetModuleHandleW(MI_CRT_MODULE), name);
 	if (target == NULL)
@@ -335,7 +335,23 @@ static int mi_hook(void* local, void* detour, void** original, const char* name)
 	}
 
 	// resolve the same way DetourAttach does, so aliases are recognized
-	target = DetourCodeFromPointer(target, NULL);
+	return DetourCodeFromPointer(target, NULL);
+}
+
+// Whether Detours can patch the function, tried in a transaction that is then aborted. One failed DetourAttach makes
+// the whole commit fail, so optional hooks are checked before the real transaction.
+static int mi_can_hook(void* local, void* detour, const char* name)
+{
+	void* target = mi_hook_target(local, name);
+	if (DetourTransactionBegin() != NO_ERROR) return 0;
+	LONG error = DetourAttach(&target, detour);
+	DetourTransactionAbort();
+	return error == NO_ERROR;
+}
+
+static int mi_hook(void* local, void* detour, void** original, const char* name)
+{
+	void* target = mi_hook_target(local, name);
 
 	for (int i = 0; i < mi_hook_count; ++i)
 	{
@@ -352,7 +368,7 @@ static int mi_hook(void* local, void* detour, void** original, const char* name)
 
 	if (mi_hook_count == MI_MAX_HOOKS)
 	{
-		printf("Failed to hook %s: too many hooks.\n", name);
+		fprintf(stderr, "Failed to hook %s: too many hooks.\n", name);
 		return 1;
 	}
 
@@ -362,7 +378,7 @@ static int mi_hook(void* local, void* detour, void** original, const char* name)
 	LONG error = DetourAttach(pointer, detour);
 	if (error != NO_ERROR)
 	{
-		printf("Failed to hook %s: %ld.\n", name, error);
+		fprintf(stderr, "Failed to hook %s: %ld.\n", name, error);
 		return 1;
 	}
 
@@ -372,13 +388,23 @@ static int mi_hook(void* local, void* detour, void** original, const char* name)
 
 #define MI_HOOK(fun) if (mi_hook((void*)&fun, (void*)&__h_##fun, NULL, #fun)) goto abort
 #define MI_HOOK_ORIG(fun) if (mi_hook((void*)&fun, (void*)&__h_##fun, (void**)&__o_##fun, #fun)) goto abort
+#define MI_CAN_HOOK(fun) mi_can_hook((void*)&fun, (void*)&__h_##fun, #fun)
 
+// Returns 0 when mimalloc replaces the CRT allocator, otherwise prints the reason to stderr (never stdout: the
+// benchmarks' --dump-info output is JSON) and returns 1.
 int mi_init_hooks()
 {
+	// Optional: no Elpida executable imports them, so only code inside the CRT could call them. Skipped when Detours
+	// can't patch them: arm64 msvcrt's _aligned_msize is too short (ERROR_INVALID_BLOCK, Windows 11 22000).
+	const int hookRecalloc = MI_CAN_HOOK(_recalloc);
+	const int hookAlignedRecalloc = MI_CAN_HOOK(_aligned_recalloc);
+	const int hookAlignedOffsetRecalloc = MI_CAN_HOOK(_aligned_offset_recalloc);
+	const int hookAlignedMsize = MI_CAN_HOOK(_aligned_msize);
+
 	LONG error = DetourTransactionBegin();
 	if (error != NO_ERROR)
 	{
-		printf("Failed to begin hook transaction: %ld.\n", error);
+		fprintf(stderr, "Failed to begin hook transaction: %ld.\n", error);
 		return 1;
 	}
 
@@ -390,24 +416,24 @@ int mi_init_hooks()
 	MI_HOOK(wcsdup);
 	MI_HOOK_ORIG(_expand);
 	MI_HOOK_ORIG(_msize);
-	MI_HOOK_ORIG(_recalloc);
+	if (hookRecalloc) MI_HOOK_ORIG(_recalloc);
 	MI_HOOK(_strdup);
 	MI_HOOK(_wcsdup);
 	MI_HOOK(_mbsdup);
 	MI_HOOK(_aligned_malloc);
 	MI_HOOK_ORIG(_aligned_realloc);
-	MI_HOOK_ORIG(_aligned_recalloc);
-	MI_HOOK_ORIG(_aligned_msize);
+	if (hookAlignedRecalloc) MI_HOOK_ORIG(_aligned_recalloc);
+	if (hookAlignedMsize) MI_HOOK_ORIG(_aligned_msize);
 	MI_HOOK_ORIG(_aligned_free);
 	MI_HOOK(_aligned_offset_malloc);
 	MI_HOOK_ORIG(_aligned_offset_realloc);
-	MI_HOOK_ORIG(_aligned_offset_recalloc);
+	if (hookAlignedOffsetRecalloc) MI_HOOK_ORIG(_aligned_offset_recalloc);
 
 	// enable all hooks at once so malloc/free are never mixed between allocators
 	error = DetourTransactionCommit();
 	if (error != NO_ERROR)
 	{
-		printf("Failed to apply hooks: %ld.\n", error);
+		fprintf(stderr, "Failed to apply hooks: %ld.\n", error);
 		return 1;
 	}
 
