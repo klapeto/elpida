@@ -32,16 +32,18 @@ namespace Elpida
 		return std::pow(singleCoreScore, SingleCoreWeight) + std::pow(multiCoreScore, MultiCoreWeight);
 	}
 
+	// Geometric mean of the score / base score ratios. The base scores then only set the scale: how two machines
+	// compare doesn't depend on which machine the base scores come from (with the harmonic mean used before, it did).
 	double ScoreCalculator::CalculateBenchmarkScore(const double score[], const double baseScores[], const std::size_t size)
 	{
-		double totalScore = 0.0;
+		if (size == 0) return 0.0;
+
+		double logSum = 0.0;
 		for (std::size_t i = 0; i < size; ++i)
 		{
-			const auto thisScore = score[i];
-			const auto thisBaseScore = baseScores[i];
-			totalScore += 1.0 / (thisScore / thisBaseScore);
+			logSum += std::log(score[i] / baseScores[i]);
 		}
-		return size / totalScore;
+		return std::exp(logSum / static_cast<double>(size));
 	}
 
 } // Elpida
