@@ -3,7 +3,23 @@ project("Elpida image benchmarks" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
+# The SVG rasterization benchmark document, embedded so every platform renders the same bytes without an asset file
+set(SVG_BENCHMARK_DOCUMENT "${CMAKE_CURRENT_SOURCE_DIR}/Assets/SvgBenchmarkDocument.svg")
+set(SVG_BENCHMARK_DOCUMENT_CPP "${CMAKE_CURRENT_BINARY_DIR}/SvgBenchmarkDocument.cpp")
+add_custom_command(
+        OUTPUT "${SVG_BENCHMARK_DOCUMENT_CPP}"
+        COMMAND ${CMAKE_COMMAND}
+        -DINPUT=${SVG_BENCHMARK_DOCUMENT}
+        -DOUTPUT=${SVG_BENCHMARK_DOCUMENT_CPP}
+        -DNAMESPACE=Elpida::Benchmarks::Image
+        -DNAME=SvgBenchmarkDocument
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake-modules/EmbedFile.cmake"
+        DEPENDS "${SVG_BENCHMARK_DOCUMENT}" "${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake-modules/EmbedFile.cmake"
+        COMMENT "Embedding SvgBenchmarkDocument.svg"
+        VERBATIM)
+
 add_library(elpida-image-benchmarks
+        "${SVG_BENCHMARK_DOCUMENT_CPP}"
         PngEncodingTask.cpp
         PngDecodingTask.cpp
         PngEncodingBenchmark.cpp

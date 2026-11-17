@@ -348,3 +348,19 @@ functions (`longest_match`, `deflate_slow`, `fill_window`) start on 64 bytes in 
 same two unaligned builds went the other way (after faster). A change anywhere in front of a benchmark's code can
 move its score by a few percent on some CPUs.
 
+## SVG rasterization with the tiled rasterizer (2026-11-16)
+
+The SVG rasterization benchmark now uses `SvgTiledRasterizer` (32x32 tiles, exact area coverage, RGBA8) on the
+embedded `src/Benchmarks/Image/Assets/SvgBenchmarkDocument.svg` (a minified `Elpida_Background.svg`, 1920x1080; see
+`scripts/svg/minify-svg.py`). The sub-sampled point-in-polygon rasterizers measured above are no longer timed.
+
+First version on the i9-10900K (Ubuntu 26.04, Wine/Proton GE 10-32, core 2, 9 interleaved rounds): Windows / Linux
+**0.941** (214 vs 228 Mpixels/s). About 90% of the time is in `RenderTile`, mostly in the per-pixel loop that applied
+the fill rule, called `SvgCalculatedPaint::CalculateColor` and composited. That loop contained calls (`floorf` for
+even-odd, the gradient functions), so the two calling conventions spilled and kept different values in registers.
+
+Change: per row, a call-free coverage pass (even-odd `floor` replaced by truncation, equal for non-negative values),
+then compositing with the color hoisted out of the loop for solid paints (new `SvgCalculatedPaint::IsSolidColor()`);
+only gradients still call per pixel. Output is bit-identical. Result: Windows / Linux **1.005** (247.8 vs 246.4,
+spread 1.5% both), Linux +8%, Windows +16%; 10 threads 2.32 G both. The Wine PNG is byte-identical to Linux.
+

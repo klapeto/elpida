@@ -40,8 +40,6 @@ namespace Elpida::Application
 
 	void SvgRasterization::Configure()
 	{
-		_benchmark.GetConfigurations()[0].SetValue("1");
-		_benchmark.GetConfigurations()[1].SetValue("0.06");
-		_benchmark.GetConfigurations()[2].SetValue("32");
+		_benchmark.GetConfigurations()[0].SetValue("1.0");
 	}
 } // Elpida::Application

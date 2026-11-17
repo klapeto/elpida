@@ -31,9 +31,7 @@ namespace Elpida::Benchmarks::Image
 	std::vector<TaskConfiguration> SvgRasterizationBenchmark::GetRequiredConfiguration() const
 	{
 		return {
-				TaskConfiguration("Shape count", ConfigurationType::Integer, "1"),
 				TaskConfiguration("SVG output scale", ConfigurationType::Float, "1.0"),
-				TaskConfiguration("SVG rasterization sub samples", ConfigurationType::Integer, "16")
 		};
 	}
 
@@ -43,11 +41,11 @@ namespace Elpida::Benchmarks::Image
 
 		auto& configuration = context.GetConfiguration();
 
-		returnTasks.push_back(CreateTask<SvgDocumentGenerationTask>(configuration.at(0).AsInteger()));
+		returnTasks.push_back(CreateTask<SvgDocumentGenerationTask>());
 		returnTasks.push_back(CreateTask<ParseXmlTask>());
 		returnTasks.push_back(CreateTask<SvgParseTask>());
-		returnTasks.push_back(CreateTask<SvgCalculateTask>(configuration.at(1).AsFloat()));
-		returnTasks.push_back(CreateTask<SvgRasterizationTask>(configuration.at(2).AsInteger()));
+		returnTasks.push_back(CreateTask<SvgCalculateTask>(configuration.at(0).AsFloat()));
+		returnTasks.push_back(CreateTask<SvgRasterizationTask>());
 
 		return returnTasks;
 	}
@@ -59,13 +57,13 @@ namespace Elpida::Benchmarks::Image
 			std::vector<TaskInfo>& taskInfos) const
 	{
 		name = "Svg Rasterization";
-		description = "Rasterizes a calculated Svg document.";
+		description = "Rasterizes the built-in Svg document.";
 		taskToUseAsScoreIndex = 4;
 
-		taskInfos.push_back(SvgDocumentGenerationTask(1).GetInfo());
+		taskInfos.push_back(SvgDocumentGenerationTask().GetInfo());
 		taskInfos.push_back(ParseXmlTask().GetInfo());
 		taskInfos.push_back(SvgParseTask().GetInfo());
 		taskInfos.push_back(SvgCalculateTask(1.0).GetInfo());
-		taskInfos.push_back(SvgRasterizationTask(16).GetInfo());
+		taskInfos.push_back(SvgRasterizationTask().GetInfo());
 	}
 } // Elpida

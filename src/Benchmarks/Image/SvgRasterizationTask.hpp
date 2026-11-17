@@ -24,8 +24,10 @@
 
 #include "Elpida/Core/MicroTask.hpp"
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
-#include "Elpida/Svg/SvgSuperSampler.hpp"
-#include "Elpida/Svg/SvgBackDrop.hpp"
+#include "Elpida/Svg/SvgTiledRasterizer.hpp"
+
+#include <cstdint>
+#include <vector>
 
 namespace Elpida::Benchmarks::Image
 {
@@ -41,7 +43,7 @@ namespace Elpida::Benchmarks::Image
 		[[nodiscard]]
 		Size GetProcessedDataSize() const override;
 
-		explicit SvgRasterizationTask(std::size_t subSamples);
+		SvgRasterizationTask();
 		~SvgRasterizationTask() override = default;
 	protected:
 		void DoRunImpl() override;
@@ -56,8 +58,8 @@ namespace Elpida::Benchmarks::Image
 	private:
 		SharedPtr<AbstractTaskData> _inputData;
 		SvgCalculatedDocument* _inputDocument;
-		SvgBackDrop _rasterizedImage;
-		SvgSuperSampler _superSampler;
+		SvgTiledRasterizer _rasterizer;
+		std::vector<std::uint8_t> _rasterizedImage;	// premultiplied RGBA8
 	};
 
 } // Elpida

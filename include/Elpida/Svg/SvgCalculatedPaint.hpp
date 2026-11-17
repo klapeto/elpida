@@ -53,6 +53,12 @@ namespace Elpida
 		virtual void Transform(const SvgTransform& transform);
 
 		[[nodiscard]]
+		bool IsSolidColor() const
+		{
+			return _color;
+		}
+
+		[[nodiscard]]
 		SvgFloat Opacity() const
 		{
 			return _opacity;

@@ -33,7 +33,7 @@ namespace Elpida::Benchmarks::Image
 		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
 
-		explicit SvgDocumentGenerationTask(std::size_t elementCount);
+		SvgDocumentGenerationTask() = default;
 		~SvgDocumentGenerationTask() override = default;
 	protected:
 		void DoRun() override;
@@ -41,7 +41,6 @@ namespace Elpida::Benchmarks::Image
 		TaskInfo DoGetInfo() const override;
 	private:
 		std::shared_ptr<AbstractTaskData> _outputData;
-		std::size_t _elementCount;
 	};
 
 } // Elpida

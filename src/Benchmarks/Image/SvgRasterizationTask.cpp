@@ -22,7 +22,6 @@
 #include "SvgRasterizationTask.hpp"
 
 #include "Elpida/Core/SimpleTaskData.hpp"
-#include "Elpida/Svg/SvgDirectRasterizer.hpp"
 #include "Elpida/Svg/SvgCalculatedDocument.hpp"
 #include "ImageTaskData.hpp"
 #include "Utilities.hpp"
@@ -37,24 +36,27 @@ namespace Elpida::Benchmarks::Image
 		auto ptr = dynamic_cast<SimpleTaskData<SvgCalculatedDocument>*>(_inputData.get());
 
 		_inputDocument = &ptr->GetUnderlyingData();
-		_rasterizedImage = SvgBackDrop(std::ceil(_inputDocument->GetViewPort().GetWidth()), std::ceil(_inputDocument->GetViewPort().GetHeight()));
+		_rasterizedImage.clear();
 	}
 
 	SharedPtr<AbstractTaskData> SvgRasterizationTask::Finalize()
 	{
-		auto ptr = std::make_unique<ImageTaskData>(_inputData->GetAllocator(), _rasterizedImage.GetWidth(), _rasterizedImage.GetHeight(), 4, sizeof(Float));
+		const auto pixelCount = _rasterizer.GetWidth() * _rasterizer.GetHeight();
+		auto ptr = std::make_unique<ImageTaskData>(_inputData->GetAllocator(), _rasterizer.GetWidth(),
+				_rasterizer.GetHeight(), 4, sizeof(Float));
 
-		ptr->Allocate(_rasterizedImage.GetColorData().size() * 4 * sizeof(Float));
+		// Straight (non premultiplied) float RGBA, as the other image tasks expect
+		ptr->Allocate(pixelCount * 4 * sizeof(Float));
 		auto data = reinterpret_cast<Float*>(ptr->GetData());
-		auto& colorData = _rasterizedImage.GetColorData();
-		for (std::size_t i = 0; i < colorData.size(); ++i)
+		for (std::size_t i = 0; i < pixelCount * 4; i += 4)
 		{
-			auto colorIndex = i * 4;
-			auto& color = colorData[i];
-			data[colorIndex] = color.R();
-			data[colorIndex + 1] = color.G();
-			data[colorIndex + 2] = color.B();
-			data[colorIndex + 3] = color.A();
+			const auto* pixel = _rasterizedImage.data() + i;
+			const Float alpha = pixel[3] / Float(255.0);
+			const Float scale = pixel[3] > 0 ? Float(1.0) / pixel[3] : Float(0.0);
+			data[i] = pixel[0] * scale;
+			data[i + 1] = pixel[1] * scale;
+			data[i + 2] = pixel[2] * scale;
+			data[i + 3] = alpha;
 		}
 
 		return ptr;
@@ -69,14 +71,13 @@ namespace Elpida::Benchmarks::Image
 	{
 		Exec([&]()
 		{
-			 SvgDirectRasterizer::Rasterize(*_inputDocument, _rasterizedImage, _superSampler);
+			_rasterizer.Rasterize(*_inputDocument, _rasterizedImage);
 		});
 	}
 
-	SvgRasterizationTask::SvgRasterizationTask(std::size_t subSamples)
-			:  _inputDocument(nullptr)
+	SvgRasterizationTask::SvgRasterizationTask()
+			:_inputDocument(nullptr)
 	{
-		_superSampler = SvgSuperSampler(subSamples);
 	}
 
 	TaskInfo SvgRasterizationTask::DoGetInfo() const
@@ -96,6 +97,6 @@ namespace Elpida::Benchmarks::Image
 
 	UniquePtr<Task> SvgRasterizationTask::DoDuplicate() const
 	{
-		return std::make_unique<SvgRasterizationTask>(_superSampler.GetSampleCount());
+		return std::make_unique<SvgRasterizationTask>();
 	}
 } // Elpida
