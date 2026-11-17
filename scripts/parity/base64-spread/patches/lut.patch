@@ -1,0 +1,46 @@
+--- a/src/Benchmarks/Web/Base64.cpp
++++ b/src/Benchmarks/Web/Base64.cpp
+@@ -41,6 +41,17 @@
+ 											"abcdefghijklmnopqrstuvwxyz"
+ 											"0123456789+/";
+ 
++	// TEST: reverse lookup table instead of base64_chars.find()
++	struct Base64Reverse
++	{
++		unsigned char table[256];
++		constexpr Base64Reverse() : table()
++		{
++			for (unsigned i = 0; i < 64; ++i) table[(unsigned char)"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = (unsigned char)i;
++		}
++	};
++	static constexpr Base64Reverse base64_reverse{};
++
+ 	static inline bool is_base64(unsigned char c)
+ 	{
+ 		return (isalnum(c) || (c == '+') || (c == '/'));
+@@ -109,7 +120,6 @@
+ 		std::string ret;
+ 
+ 		// store local reference to avoid dereferencing from static memory
+-		auto& base64Chars= base64_chars;
+ 
+ 		// predict the size needed
+ 		ret.reserve((std::size_t)(size * 0.75));
+@@ -120,7 +130,7 @@
+ 			in_++;
+ 			if (i == 4) {
+ 				for (i = 0; i < 4; i++)
+-					char_array_4[i] = base64Chars.find(char_array_4[i]);
++					char_array_4[i] = base64_reverse.table[char_array_4[i]];
+ 
+ 				char_array_3[0] = (char_array_4[0] << 2)
+ 								  + ((char_array_4[1] & 0x30) >> 4);
+@@ -139,7 +149,7 @@
+ 				char_array_4[j] = 0;
+ 
+ 			for (j = 0; j < 4; j++)
+-				char_array_4[j] = base64Chars.find(char_array_4[j]);
++				char_array_4[j] = base64_reverse.table[char_array_4[j]];
+ 
+ 			char_array_3[0] = (char_array_4[0] << 2)
+ 							  + ((char_array_4[1] & 0x30) >> 4);

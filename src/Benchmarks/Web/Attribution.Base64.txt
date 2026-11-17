@@ -25,4 +25,13 @@ Ren� Nyffenegger
  Ren� Nyffenegger rene.nyffenegger@adp-gmbh.ch
 
 
- Minor modifications made to adapt to new signatures.
+ Altered: adapted to new signatures, and the encoding and decoding loops rewritten (lookup table,
+ output written through a pointer, whole groups). See the list of modifications in Base64.cpp.
+
+ The rewritten loops use techniques of these implementations (no code copied):
+  - OpenSSL, crypto/evp/encode.c, Copyright The OpenSSL Project Authors, Apache License 2.0
+    (decoding table with 0xFF for invalid characters, one (a | b | c | d) & 0x80 check per group of 4)
+  - Go, encoding/base64, Copyright The Go Authors, BSD-style license
+    (256-entry decodeMap with 0xFF for invalid characters, OR check per group, output sized in advance)
+  - modp_b64 (stringencoders), Copyright Nick Galbreath, MIT License; also used in Chromium
+    (per-group table lookups with one bad-character check per group, output written through a pointer)

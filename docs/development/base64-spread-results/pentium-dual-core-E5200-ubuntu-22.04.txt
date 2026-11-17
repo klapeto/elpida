@@ -1,0 +1,29 @@
+== machine
+Model name: Pentium(R) Dual-Core CPU E5200 @ 2.50GHz  | 2 threads | Linux 5.4.0-216-generic
+governor: performance | driver: acpi-cpufreq | load: 1.49 0.87 0.34
+temperature at start: 
+aslr: 2 | perf_event_paranoid: 1
+
+== Base64 decode, 15 interleaved rounds, not pinned
+  find         n=15 median   2.1278e+07  spread   0.1%  vs first  1.000  min 2.128e+07 max 2.129e+07
+  findindex    n=15 median   6.0164e+07  spread   2.8%  vs first  2.827  min 5.934e+07 max 6.102e+07
+  lut          n=15 median   9.6258e+07  spread   2.1%  vs first  4.524  min 9.495e+07 max 9.694e+07
+  raw: find=2.128e+07,2.129e+07,2.128e+07,2.128e+07,2.128e+07,2.128e+07,2.128e+07,2.129e+07,2.128e+07,2.128e+07,2.128e+07,2.128e+07,2.128e+07,2.128e+07,2.128e+07;findindex=6.015e+07,6.102e+07,6.075e+07,6.003e+07,6.031e+07,5.934e+07,5.971e+07,6.102e+07,6.01e+07,6.028e+07,5.971e+07,6.048e+07,6.007e+07,6.1e+07,6.016e+07;lut=9.534e+07,9.54e+07,9.568e+07,9.639e+07,9.568e+07,9.687e+07,9.664e+07,9.646e+07,9.682e+07,9.626e+07,9.495e+07,9.618e+07,9.685e+07,9.694e+07,9.617e+07
+
+== Base64 decode, 15 interleaved rounds, pinned to CPU 0, perf stat
+  find         n=15 median   2.1263e+07  spread   0.4%  vs first  1.000  min 2.119e+07 max 2.127e+07  IPC 1.78  misp/1k instr 6.63-6.65
+  findindex    n=15 median    6.051e+07  spread   2.4%  vs first  2.846  min 5.963e+07 max 6.106e+07  IPC 1.60  misp/1k instr 7.40-7.93
+  lut          n=15 median    9.635e+07  spread   1.5%  vs first  4.531  min 9.552e+07 max 9.695e+07  IPC 2.10  misp/1k instr 2.59-2.61
+  raw: find=2.127e+07,2.119e+07,2.126e+07,2.123e+07,2.127e+07,2.127e+07,2.126e+07,2.127e+07,2.127e+07,2.126e+07,2.126e+07,2.127e+07,2.126e+07,2.127e+07,2.126e+07;findindex=6.096e+07,6.088e+07,6.101e+07,6.086e+07,6.032e+07,6.106e+07,6.051e+07,6.044e+07,6.047e+07,5.966e+07,6.002e+07,6.009e+07,6.098e+07,6.096e+07,5.963e+07;lut=9.694e+07,9.648e+07,9.687e+07,9.552e+07,9.658e+07,9.606e+07,9.635e+07,9.695e+07,9.609e+07,9.657e+07,9.639e+07,9.609e+07,9.621e+07,9.623e+07,9.633e+07
+
+== other web benchmarks (find build), 15 rounds each, not pinned
+  XML_Parsing  n=15 median   5.9321e+07  spread   1.5%  vs first  1.000  min 5.884e+07 max 5.975e+07
+  raw: XML_Parsing=5.899e+07,5.927e+07,5.965e+07,5.962e+07,5.903e+07,5.932e+07,5.931e+07,5.963e+07,5.975e+07,5.946e+07,5.966e+07,5.884e+07,5.919e+07,5.955e+07,5.929e+07
+  Json_Parsing n=15 median   2.7657e+07  spread   3.0%  vs first  1.000  min 2.721e+07 max 2.804e+07
+  raw: Json_Parsing=2.744e+07,2.766e+07,2.754e+07,2.804e+07,2.77e+07,2.75e+07,2.776e+07,2.771e+07,2.752e+07,2.761e+07,2.804e+07,2.721e+07,2.76e+07,2.766e+07,2.794e+07
+  Base64_Encode n=15 median   9.4708e+07  spread   1.8%  vs first  1.000  min 9.395e+07 max 9.567e+07
+  raw: Base64_Encode=9.567e+07,9.453e+07,9.444e+07,9.488e+07,9.395e+07,9.504e+07,9.447e+07,9.471e+07,9.482e+07,9.469e+07,9.52e+07,9.42e+07,9.451e+07,9.472e+07,9.471e+07
+  Regex_(Boost) n=15 median   3.2648e+07  spread   6.0%  vs first  1.000  min 3.113e+07 max 3.308e+07
+  raw: Regex_(Boost)=3.308e+07,3.243e+07,3.249e+07,3.293e+07,3.285e+07,3.201e+07,3.113e+07,3.232e+07,3.265e+07,3.288e+07,3.285e+07,3.253e+07,3.288e+07,3.303e+07,3.17e+07
+
+temperature at end: 

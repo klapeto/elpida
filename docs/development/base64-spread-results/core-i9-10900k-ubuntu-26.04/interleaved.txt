@@ -1,0 +1,14 @@
+Base64 decode, 15 interleaved rounds, not pinned, performance governor (2026-11-15). Raw values to 3 digits: the
+full-precision file was in /tmp on the test machine.
+  find       median   5.4295e+07  spread 11.0%  vs find: 1.000
+  findindex  median   2.3758e+08  spread 19.4%  vs find: 4.376
+  lut        median   3.2532e+08  spread  3.0%  vs find: 5.992
+  raw: find=5.16e+07,5.37e+07,5.76e+07,5.22e+07,5.26e+07,5.48e+07,5.59e+07,5.28e+07,5.22e+07,5.43e+07,5.69e+07,5.75e+07,5.73e+07,5.42e+07,5.58e+07
+       findindex=2.38e+08,2.39e+08,2.36e+08,2.36e+08,2.38e+08,2.37e+08,2.36e+08,1.93e+08,2.39e+08,2.38e+08,2.35e+08,2.39e+08,2.38e+08,2.38e+08,2.36e+08
+       lut=3.28e+08,3.26e+08,3.19e+08,3.25e+08,3.23e+08,3.28e+08,3.24e+08,3.25e+08,3.23e+08,3.29e+08,3.26e+08,3.27e+08,3.25e+08,3.27e+08,3.25e+08
+
+Other web benchmarks, find build, 10 rounds each, not pinned, performance governor:
+  XML parsing    median 1.9668e+08  spread 2.4%
+  JSON parsing   median 1.0704e+08  spread 2.8%
+  Base64 encode  median 2.9755e+08  spread 0.4%
+  Regex          median 1.0193e+08  spread 1.3%

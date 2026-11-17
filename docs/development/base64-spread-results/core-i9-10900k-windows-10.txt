@@ -1,0 +1,27 @@
+== machine
+Intel(R) Core(TM) i9-10900K CPU @ 3.70GHz | 20 logical processors | Microsoft Windows 10 Pro 10.0.19045
+power plan: Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (Υψηλές επιδόσεις)
+load: 0%
+
+== Base64 decode, 15 interleaved rounds, not pinned
+  find           n=15 median    6.024E+07  spread   6.9%  vs first  1.000  min 5.625E+07 max 6.038E+07
+  findindex      n=15 median   2.4799E+08  spread  17.3%  vs first  4.117  min 2.057E+08 max 2.487E+08
+  lut            n=15 median   3.1818E+08  spread   2.6%  vs first  5.282  min 3.119E+08 max 3.201E+08
+  raw: find=6.013E+07,6.026E+07,6.03E+07,6.031E+07,6.025E+07,5.937E+07,6.024E+07,6.038E+07,5.726E+07,6.03E+07,5.625E+07,5.761E+07,6.031E+07,5.958E+07,5.936E+07;findindex=2.469E+08,2.485E+08,2.479E+08,2.485E+08,2.487E+08,2.35E+08,2.487E+08,2.057E+08,2.48E+08,2.484E+08,2.483E+08,2.486E+08,2.475E+08,2.432E+08,2.467E+08;lut=3.182E+08,3.201E+08,3.185E+08,3.192E+08,3.148E+08,3.182E+08,3.2E+08,3.191E+08,3.188E+08,3.175E+08,3.158E+08,3.173E+08,3.138E+08,3.119E+08,3.168E+08
+
+== Base64 decode, 15 interleaved rounds, pinned to CPU 2
+  find           n=15 median   5.9267E+07  spread  10.7%  vs first  1.000  min 5.296E+07 max 5.93E+07
+  findindex      n=15 median   2.4366E+08  spread   2.5%  vs first  4.111  min 2.382E+08 max 2.442E+08
+  lut            n=15 median   3.1378E+08  spread   1.5%  vs first  5.294  min 3.099E+08 max 3.147E+08
+  raw: find=5.913E+07,5.296E+07,5.927E+07,5.929E+07,5.911E+07,5.93E+07,5.389E+07,5.93E+07,5.927E+07,5.927E+07,5.928E+07,5.929E+07,5.335E+07,5.33E+07,5.927E+07;findindex=2.427E+08,2.433E+08,2.437E+08,2.437E+08,2.433E+08,2.437E+08,2.437E+08,2.436E+08,2.382E+08,2.434E+08,2.423E+08,2.438E+08,2.44E+08,2.439E+08,2.442E+08;lut=3.129E+08,3.125E+08,3.14E+08,3.112E+08,3.136E+08,3.142E+08,3.099E+08,3.138E+08,3.147E+08,3.147E+08,3.143E+08,3.135E+08,3.128E+08,3.145E+08,3.142E+08
+
+== other web benchmarks (find build), 15 rounds each, not pinned
+  XML_Parsing    n=15 median   1.9527E+08  spread   1.0%  vs first  1.000  min 1.938E+08 max 1.958E+08
+  raw: XML_Parsing=1.953E+08,1.948E+08,1.948E+08,1.953E+08,1.938E+08,1.958E+08,1.948E+08,1.951E+08,1.947E+08,1.954E+08,1.956E+08,1.948E+08,1.957E+08,1.954E+08,1.955E+08
+  Json_Parsing   n=15 median   1.0393E+08  spread   0.8%  vs first  1.000  min 1.035E+08 max 1.044E+08
+  raw: Json_Parsing=1.035E+08,1.041E+08,1.039E+08,1.039E+08,1.035E+08,1.041E+08,1.037E+08,1.044E+08,1.038E+08,1.041E+08,1.035E+08,1.041E+08,1.038E+08,1.036E+08,1.041E+08
+  Base64_Encode  n=15 median   2.9503E+08  spread   2.5%  vs first  1.000  min 2.906E+08 max 2.981E+08
+  raw: Base64_Encode=2.946E+08,2.976E+08,2.973E+08,2.929E+08,2.963E+08,2.972E+08,2.918E+08,2.91E+08,2.906E+08,2.95E+08,2.927E+08,2.961E+08,2.963E+08,2.924E+08,2.981E+08
+  Regex          n=15 median   1.0072E+08  spread   1.4%  vs first  1.000  min 9.96E+07 max 1.01E+08
+  raw: Regex=1.003E+08,1.007E+08,1.01E+08,1.006E+08,1.01E+08,1.01E+08,1.009E+08,1.009E+08,1.01E+08,1.008E+08,1.006E+08,9.972E+07,9.96E+07,1.005E+08,1.007E+08
+

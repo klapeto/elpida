@@ -1,0 +1,29 @@
+== machine
+Model name: Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz  | 8 threads | Linux 6.8.0-149-generic
+governor: performance | driver: intel_pstate | load: 1.60 0.71 0.26
+temperature at start: iwlwifi_1=40C x86_pkg_temp=47C 
+aslr: 2 | perf_event_paranoid: 1
+
+== Base64 decode, 15 interleaved rounds, not pinned
+  find         n=15 median    4.801e+07  spread   2.1%  vs first  1.000  min 4.753e+07 max 4.856e+07
+  findindex    n=15 median   2.5102e+08  spread   7.6%  vs first  5.228  min 2.431e+08 max 2.622e+08
+  lut          n=15 median   3.4052e+08  spread   6.2%  vs first  7.093  min 3.347e+08 max 3.559e+08
+  raw: find=4.784e+07,4.851e+07,4.843e+07,4.791e+07,4.792e+07,4.8e+07,4.797e+07,4.827e+07,4.753e+07,4.801e+07,4.817e+07,4.856e+07,4.844e+07,4.754e+07,4.847e+07;findindex=2.622e+08,2.62e+08,2.617e+08,2.57e+08,2.538e+08,2.511e+08,2.511e+08,2.505e+08,2.495e+08,2.51e+08,2.431e+08,2.491e+08,2.499e+08,2.497e+08,2.499e+08;lut=3.559e+08,3.409e+08,3.364e+08,3.384e+08,3.36e+08,3.409e+08,3.347e+08,3.418e+08,3.431e+08,3.369e+08,3.416e+08,3.389e+08,3.38e+08,3.435e+08,3.405e+08
+
+== Base64 decode, 15 interleaved rounds, pinned to CPU 2, perf stat
+  find         n=15 median   4.8046e+07  spread   3.2%  vs first  1.000  min 4.702e+07 max 4.856e+07  IPC 2.62  misp/1k instr 5.15-5.41
+  findindex    n=15 median   2.6183e+08  spread   3.4%  vs first  5.450  min 2.537e+08 max 2.625e+08  IPC 4.52  misp/1k instr 0.01-0.03
+  lut          n=15 median   3.5525e+08  spread   1.6%  vs first  7.394  min 3.519e+08 max 3.576e+08  IPC 5.06  misp/1k instr 0.07-0.12
+  raw: find=4.852e+07,4.702e+07,4.779e+07,4.792e+07,4.856e+07,4.758e+07,4.856e+07,4.795e+07,4.805e+07,4.835e+07,4.855e+07,4.754e+07,4.806e+07,4.796e+07,4.805e+07;findindex=2.622e+08,2.618e+08,2.623e+08,2.54e+08,2.622e+08,2.551e+08,2.623e+08,2.617e+08,2.625e+08,2.624e+08,2.537e+08,2.618e+08,2.584e+08,2.624e+08,2.616e+08;lut=3.539e+08,3.56e+08,3.535e+08,3.552e+08,3.519e+08,3.547e+08,3.573e+08,3.542e+08,3.54e+08,3.569e+08,3.553e+08,3.559e+08,3.576e+08,3.571e+08,3.544e+08
+
+== other web benchmarks (find build), 15 rounds each, not pinned
+  XML_Parsing  n=15 median   1.8387e+08  spread   2.6%  vs first  1.000  min 1.816e+08 max 1.864e+08
+  raw: XML_Parsing=1.862e+08,1.864e+08,1.818e+08,1.838e+08,1.833e+08,1.84e+08,1.834e+08,1.84e+08,1.839e+08,1.841e+08,1.837e+08,1.816e+08,1.839e+08,1.841e+08,1.839e+08
+  Json_Parsing n=15 median   9.9738e+07  spread   2.4%  vs first  1.000  min 9.759e+07 max 1e+08
+  raw: Json_Parsing=9.964e+07,1e+08,9.994e+07,9.974e+07,9.899e+07,9.975e+07,9.974e+07,9.99e+07,9.861e+07,9.984e+07,9.922e+07,9.953e+07,9.941e+07,9.994e+07,9.759e+07
+  Base64_Encode n=15 median   2.4661e+08  spread   1.1%  vs first  1.000  min 2.445e+08 max 2.472e+08
+  raw: Base64_Encode=2.445e+08,2.469e+08,2.466e+08,2.466e+08,2.465e+08,2.461e+08,2.466e+08,2.472e+08,2.468e+08,2.461e+08,2.464e+08,2.468e+08,2.465e+08,2.466e+08,2.465e+08
+  Regex_(Boost) n=15 median   9.9595e+07  spread   6.1%  vs first  1.000  min 9.496e+07 max 1.01e+08
+  raw: Regex_(Boost)=1.01e+08,1.004e+08,9.899e+07,9.538e+07,9.832e+07,1.01e+08,9.968e+07,9.959e+07,9.915e+07,1.006e+08,1e+08,1.007e+08,9.775e+07,9.872e+07,9.496e+07
+
+temperature at end: iwlwifi_1=42C x86_pkg_temp=72C 

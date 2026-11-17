@@ -1,0 +1,29 @@
+== machine
+Model name: Cortex-A72 Raspberry Pi 4 Model B Rev 1.4 | 4 threads | Linux 6.8.0-1065-raspi
+governor: performance | driver: cpufreq-dt | load: 0.22 0.28 0.21
+temperature at start: cpu-thermal=70C throttled=0x0
+aslr: 2 | perf_event_paranoid: 1
+
+== Base64 decode, 15 interleaved rounds, not pinned
+  find         n=15 median   1.3695e+07  spread   1.1%  vs first  1.000  min 1.356e+07 max 1.371e+07
+  findindex    n=15 median   5.7237e+07  spread   1.2%  vs first  4.179  min 5.664e+07 max 5.733e+07
+  lut          n=15 median   8.0183e+07  spread   2.4%  vs first  5.855  min 7.838e+07 max 8.034e+07
+  raw: find=1.369e+07,1.369e+07,1.356e+07,1.37e+07,1.37e+07,1.366e+07,1.366e+07,1.371e+07,1.366e+07,1.37e+07,1.366e+07,1.37e+07,1.37e+07,1.367e+07,1.37e+07;findindex=5.725e+07,5.725e+07,5.706e+07,5.721e+07,5.715e+07,5.664e+07,5.731e+07,5.713e+07,5.733e+07,5.724e+07,5.73e+07,5.73e+07,5.729e+07,5.669e+07,5.716e+07;lut=8.006e+07,8.006e+07,8.024e+07,8.03e+07,8.018e+07,8.016e+07,8.018e+07,7.845e+07,8.034e+07,7.838e+07,8.018e+07,8.034e+07,8.019e+07,8.027e+07,7.844e+07
+
+== Base64 decode, 15 interleaved rounds, pinned to CPU 2, perf stat
+  find         n=15 median   1.3625e+07  spread   2.1%  vs first  1.000  min 1.341e+07 max 1.37e+07  IPC 1.71  misp/1k instr 4.99-4.99
+  findindex    n=15 median   5.6971e+07  spread   2.3%  vs first  4.181  min 5.598e+07 max 5.729e+07  IPC 1.69  misp/1k instr 5.74-5.84
+  lut          n=15 median   7.9133e+07  spread   4.3%  vs first  5.808  min 7.685e+07 max 8.022e+07  IPC 1.95  misp/1k instr 2.89-2.97
+  raw: find=1.37e+07,1.37e+07,1.37e+07,1.362e+07,1.366e+07,1.368e+07,1.367e+07,1.359e+07,1.366e+07,1.362e+07,1.362e+07,1.354e+07,1.344e+07,1.341e+07,1.346e+07;findindex=5.729e+07,5.722e+07,5.724e+07,5.717e+07,5.672e+07,5.713e+07,5.718e+07,5.697e+07,5.712e+07,5.685e+07,5.692e+07,5.598e+07,5.669e+07,5.66e+07,5.634e+07;lut=8.005e+07,8.022e+07,8.004e+07,7.812e+07,7.984e+07,7.819e+07,7.971e+07,7.981e+07,7.978e+07,7.913e+07,7.772e+07,7.874e+07,7.911e+07,7.833e+07,7.685e+07
+
+== other web benchmarks (find build), 15 rounds each, not pinned
+  XML_Parsing  n=15 median   4.3251e+07  spread   7.4%  vs first  1.000  min 4.111e+07 max 4.432e+07
+  raw: XML_Parsing=4.381e+07,4.175e+07,4.432e+07,4.332e+07,4.156e+07,4.316e+07,4.356e+07,4.325e+07,4.409e+07,4.285e+07,4.392e+07,4.111e+07,4.308e+07,4.357e+07,4.288e+07
+  Json_Parsing n=15 median   1.8987e+07  spread   6.7%  vs first  1.000  min 1.81e+07 max 1.937e+07
+  raw: Json_Parsing=1.916e+07,1.834e+07,1.928e+07,1.892e+07,1.886e+07,1.898e+07,1.911e+07,1.824e+07,1.937e+07,1.886e+07,1.916e+07,1.899e+07,1.81e+07,1.908e+07,1.904e+07
+  Base64_Encode n=15 median   6.6939e+07  spread  16.5%  vs first  1.000  min 5.906e+07 max 7.011e+07
+  raw: Base64_Encode=6.866e+07,6.932e+07,6.458e+07,6.694e+07,7.011e+07,6.321e+07,6.471e+07,6.363e+07,6.968e+07,6.498e+07,6.888e+07,6.419e+07,6.829e+07,6.855e+07,5.906e+07
+  Regex_(Boost) n=15 median   2.2666e+07  spread  10.4%  vs first  1.000  min 2.152e+07 max 2.388e+07
+  raw: Regex_(Boost)=2.267e+07,2.18e+07,2.263e+07,2.348e+07,2.152e+07,2.305e+07,2.191e+07,2.264e+07,2.343e+07,2.388e+07,2.217e+07,2.344e+07,2.344e+07,2.369e+07,2.249e+07
+
+temperature at end: cpu-thermal=82C throttled=0xe0008
