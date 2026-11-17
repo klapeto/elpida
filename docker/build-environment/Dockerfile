@@ -66,7 +66,9 @@ RUN find "/opt/sysroots/$TARGET_TRIPLE/usr/share" -mindepth 1 -maxdepth 1 ! -nam
     "/opt/sysroots/$TARGET_TRIPLE/usr/sbom" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/doc" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/metatypes" && \
-    if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ]; then \
+    # A foreign Linux sysroot's executables can't run here. Windows sysroots keep bin: it has the LLVM DLLs
+    # (libLTO.dll) that the LLVM CMake package checks for.
+    if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ] && [ "${TARGET_TRIPLE%-w64-mingw32}" = "$TARGET_TRIPLE" ]; then \
         rm -rf "/opt/sysroots/$TARGET_TRIPLE/bin" \
         "/opt/sysroots/$TARGET_TRIPLE/sbin" \
         "/opt/sysroots/$TARGET_TRIPLE/usr/bin" \

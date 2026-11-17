@@ -69,7 +69,13 @@ function doGetDependencies() {
     log "Getting dependencies of $binaryFile"
 
     local libs
-    libs=$(objdump -p "$binaryFile" | awk '/NEEDED/ {print $NF}')
+    # The CI image has no binutils, only the toolchain's llvm-objdump (same NEEDED output)
+    local objdumpTool
+    objdumpTool=$(command -v objdump || command -v llvm-objdump) || {
+        echo "Error: neither objdump nor llvm-objdump found" >&2
+        exit 1
+    }
+    libs=$("$objdumpTool" -p "$binaryFile" | awk '/NEEDED/ {print $NF}')
 
     if [ -z "$libs" ]; then
         log "  No libraries are linked to $binaryFile"
