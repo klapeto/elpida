@@ -100,9 +100,10 @@ See [parity-checks.md](parity-checks.md) for the tool and what was already fixed
 
 ## Not verified
 
-- XML parsing after builtins were enabled (i9-10900K): −4.5% on Windows (Wine), −1.8% on Linux, equal on the
-  7950X3D; Windows/Linux 1.024 → 0.995. The `unordered_map` insert with an inlined string hash; not analyzed. See
-  [parity-checks.md](parity-checks.md#builtins-on-2026-11-16).
+- XML parsing after builtins were enabled (i9-10900K): −4.2% on Windows (Wine), equal on Linux. About half was
+  libc++'s hash table calling musl-lite's `memset` for tiny bucket arrays, fixed 2026-11-17 (small-size path in
+  `memset.c`); Windows is still −2.1%, Windows/Linux 0.991. See
+  [parity-checks.md](parity-checks.md#xml-and-small-memset-calls-2026-11-17).
 - The C++ Compilation time budget (about 2.5 s per compile on a Pentium 4 Northwood) is extrapolated from the
   7950X3D, 10900K and older E5200 results; run the new source on an E5200 and a Pentium 4.
 

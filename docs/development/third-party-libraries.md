@@ -9,7 +9,9 @@ See [code-parity.md](code-parity.md) for the policy and the compiler flags.
   arch-specific `src/<arch>/` overrides. The only inline asm is the empty FP barrier in `arch/aarch64/fp_arch.h`.
 - `src/string` has upstream's word-at-a-time (`__GNUC__`, `may_alias`) code, except `memset`, which keeps upstream's
   plain C loop: clang vectorizes it and it measured faster
-  ([run-to-run-spread.md](run-to-run-spread.md#decisions-2026-11-16)).
+  ([run-to-run-spread.md](run-to-run-spread.md#decisions-2026-11-16)). Ours adds a path for 8 to 32 bytes
+  (overlapping 8-byte stores) for the small `memset` calls clang generates from zeroing loops
+  ([parity-checks.md](parity-checks.md#xml-and-small-memset-calls-2026-11-17)).
 - Compiled with `-ffreestanding -nostdinc` and linked into `elpida-entry-point`, so every benchmark executable except
   `stdlib-benchmarks` gets it ([the StdLib exception](code-parity.md#the-stdlib-benchmarks)).
   With the root `-Wl,--allow-multiple-definition`, musl's `memcpy`, `memset`, `memchr`, `strtod`, `strtoul`, `ceilf`,

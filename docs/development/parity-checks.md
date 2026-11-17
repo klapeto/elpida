@@ -418,3 +418,29 @@ the same, but the profile moves: libc++'s `unordered_map<string, string>` insert
 21% of the time because the string hash (`__murmur2_or_cityhash`, 1.8% before) is now inlined into it. libc++ header
 code compiled differently with builtins; not analyzed further (a Wine profile needs `perf` with
 `perf_event_paranoid` lowered on the test machine).
+
+### XML and small `memset` calls (2026-11-17)
+
+Cause found. With builtins, clang's loop idiom recognition turns the bucket-clearing loop of libc++'s
+`__hash_table::__do_rehash` into a call to `memset`; with `-fno-builtin` it stayed two inline 16-byte stores. Every
+`XmlMap` (one per element with attributes) rehashes on its first insert and clears 2 or 5 bucket pointers (16-40
+bytes). musl-lite's C `memset` writes such sizes with byte stores at both ends and a 4-byte loop. On the 7950X3D
+`memset` went from 0.3% to 2.5% of the XML profile (other builtin gains hid it there). In this rebuild the string hash
+was not inlined (`__murmur2_or_cityhash` 1.0% → 1.25%), so the profile shift described above was not reproduced.
+
+Fix: `src/Musl/src/string/memset.c` writes 8 to 32 bytes with overlapping 8-byte stores (plain C, the same on every
+architecture; real C libraries have such a small-size path). Checked against a reference for every size 0-300 at every
+alignment (ASan/UBSan clean); `memset` 2.5% → 0.85% of the XML profile.
+
+XML on the i9-10900K (core 2, 15 interleaved rounds, Linux / Windows under Wine), against the `-fno-builtin` build:
+
+| | `-fno-builtin` | builtins | builtins + `memset` fix |
+|---|---|---|---|
+| Linux | 1.000 | 0.994 | 1.020 |
+| Windows | 1.000 | 0.958 | 0.979 |
+| Windows / Linux | 1.032 | 0.994 | 0.991 |
+
+Full run, fix / without (5 interleaved rounds, same setup): XML +2.0% / +2.5%, regex +1.6% / +1.7%, the rest within
+±1.5% except FFT (Linux +1.3%, Windows −3.8%; Windows/Linux 1.057 → 1.004) and zlib decompression (Linux +2.5%, Windows
+−2.3%; 1.021 → 0.974). Neither calls `memset` in the timed code (only in setup), so these two are code placement,
+like the zlib results above.
