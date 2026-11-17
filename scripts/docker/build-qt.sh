@@ -33,6 +33,15 @@ if [ ! -d ./qt6 ]; then
     cd ..
 fi
 
+# Lets Qt build against older Linux sysroots (bionic, docs/development/toolchain.md#linux-sysroots-and-glibc):
+# xkbcommon 0.8 (Qt asks for 0.9.0 but calls nothing newer) and FreeType 2.8 (two FT_Done_MM_Var calls, a 2.9 function,
+# get the version check Qt already has for FT_Set_Named_Instance). No effect with newer libraries.
+if git -C ./qt6/qtbase apply --reverse --check "${this_dir}/qt.old-distros.patch" 2>/dev/null; then
+    echo "qt.old-distros.patch already applied"
+else
+    git -C ./qt6/qtbase apply "${this_dir}/qt.old-distros.patch"
+fi
+
 mkdir -p qt6/build
 cd qt6/build
 rm -rf ./*

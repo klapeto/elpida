@@ -1,0 +1,48 @@
+diff --git a/src/gui/configure.cmake b/src/gui/configure.cmake
+index 7f6c48fb047..4b814375ee0 100644
+--- a/src/gui/configure.cmake
++++ b/src/gui/configure.cmake
+@@ -179,10 +179,10 @@ if((X11_SUPPORTED) OR QT_FIND_ALL_PACKAGES_ALWAYS)
+ endif()
+ qt_add_qmake_lib_dependency(xcb_xinput xcb)
+ if((X11_SUPPORTED) OR QT_FIND_ALL_PACKAGES_ALWAYS)
+-    qt_find_package(XKB 0.9.0 MODULE PROVIDED_TARGETS XKB::XKB MODULE_NAME gui QMAKE_LIB xkbcommon)
++    qt_find_package(XKB 0.8.0 MODULE PROVIDED_TARGETS XKB::XKB MODULE_NAME gui QMAKE_LIB xkbcommon)
+ endif()
+ if((X11_SUPPORTED) OR QT_FIND_ALL_PACKAGES_ALWAYS)
+-    qt_find_package(XKB_COMMON_X11 0.9.0 MODULE
++    qt_find_package(XKB_COMMON_X11 0.8.0 MODULE
+         PROVIDED_TARGETS PkgConfig::XKB_COMMON_X11 MODULE_NAME gui QMAKE_LIB xkbcommon_x11)
+ endif()
+ if((X11_SUPPORTED) OR QT_FIND_ALL_PACKAGES_ALWAYS)
+diff --git a/src/gui/text/freetype/qfontengine_ft.cpp b/src/gui/text/freetype/qfontengine_ft.cpp
+index 63d9c2893dc..7ab19fc7a7b 100644
+--- a/src/gui/text/freetype/qfontengine_ft.cpp
++++ b/src/gui/text/freetype/qfontengine_ft.cpp
+@@ -376,7 +376,11 @@ QFreetypeFace *QFreetypeFace::getFace(const QFontEngine::FaceId &face_id,
+                     FT_Set_Var_Design_Coordinates(face, var->num_axis, coords.data());
+                 }
+ 
++#if (FREETYPE_MAJOR*10000 + FREETYPE_MINOR*100 + FREETYPE_PATCH) >= 20900
+                 FT_Done_MM_Var(qt_getFreetype(), var);
++#else
++                free(var);
++#endif
+             }
+ 
+             FT_Done_Face(tmpFace);
+@@ -445,8 +449,13 @@ QFreetypeFace *QFreetypeFace::getFace(const QFontEngine::FaceId &face_id,
+ void QFreetypeFace::cleanup()
+ {
+     hbFace.reset();
+-    if (mm_var)
++    if (mm_var) {
++#if (FREETYPE_MAJOR*10000 + FREETYPE_MINOR*100 + FREETYPE_PATCH) >= 20900
+         FT_Done_MM_Var(qt_getFreetype(), mm_var);
++#else
++        free(mm_var);
++#endif
++    }
+     mm_var = nullptr;
+     FT_Done_Face(face);
+     face = nullptr;

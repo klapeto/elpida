@@ -1,5 +1,11 @@
 ARG IMAGE=build-base
-ARG DEB_DISTRIBUTION=focal
+# DEB_DISTRIBUTION: the Ubuntu release of the target sysroot. Its glibc is the oldest one Elpida's Linux binaries run
+# on (docs/development/toolchain.md#linux-sysroots-and-glibc). bionic = glibc 2.27; riscv64 has no bionic port, CI
+# passes focal for it.
+ARG DEB_DISTRIBUTION=bionic
+# HOST_DISTRIBUTION: the OS of the final image. The host toolchain and Qt come from the base image, which is built on
+# focal, so they need focal's glibc whatever the sysroot is.
+ARG HOST_DISTRIBUTION=focal
 
 # Stage 1: builds the target's runtimes, sysroot, hwloc, LLVM libraries and Qt on top of the base image (host compiler,
 # host Qt and the sources). Its sources and build trees are not part of the final image.
@@ -48,7 +54,7 @@ ADD ./scripts/docker/build-linux-specific.sh ./
 RUN apt-get install -y gperf dpkg-dev
 RUN ./build-linux-specific.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
-ADD ./scripts/docker/build-qt.sh ./scripts/docker/generate-toolchain-file.sh ./scripts/docker/cross.linux.cmake.template ./
+ADD ./scripts/docker/build-qt.sh ./scripts/docker/qt.old-distros.patch ./scripts/docker/generate-toolchain-file.sh ./scripts/docker/cross.linux.cmake.template ./
 RUN ./generate-toolchain-file.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 RUN ./build-qt.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
@@ -70,7 +76,7 @@ RUN find "/opt/sysroots/$TARGET_TRIPLE/usr/share" -mindepth 1 -maxdepth 1 ! -nam
 
 # Stage 2: the image the CI build jobs run in: the toolchain (with the target sysroot), the host Qt, CMake and Ninja on
 # a plain Ubuntu, without stage 1's sources and build trees (~40 GB -> a few GB).
-FROM ubuntu:$DEB_DISTRIBUTION
+FROM ubuntu:$HOST_DISTRIBUTION
 LABEL authors="klapeto"
 
 ARG DEB_DISTRIBUTION

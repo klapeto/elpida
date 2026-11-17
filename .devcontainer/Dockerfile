@@ -1,10 +1,13 @@
 # Development container: docker/build-environment-base and docker/build-environment (x86_64-linux-gnu by default) in
 # one file, because a dev container builds from a single Dockerfile. Keep the stages in sync with those two files.
 # The final stage is the CI image plus gdb and the libraries elpida-qt needs to run here (docs/development/toolchain.md).
-ARG DEB_DISTRIBUTION=focal
+# DEB_DISTRIBUTION: Ubuntu release of the target sysroot (oldest glibc the binaries run on), HOST_DISTRIBUTION: the
+# container's OS. See docker/build-environment/Dockerfile.
+ARG DEB_DISTRIBUTION=bionic
+ARG HOST_DISTRIBUTION=focal
 
 # Stage 1: docker/build-environment-base
-FROM ubuntu:$DEB_DISTRIBUTION AS base
+FROM ubuntu:$HOST_DISTRIBUTION AS base
 
 ARG DEB_DISTRIBUTION
 ARG HOST_TRIPLE=x86_64-linux-gnu
@@ -143,7 +146,7 @@ ADD ./scripts/docker/build-linux-specific.sh ./
 RUN apt-get install -y gperf dpkg-dev
 RUN ./build-linux-specific.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
-ADD ./scripts/docker/build-qt.sh ./scripts/docker/generate-toolchain-file.sh ./scripts/docker/cross.linux.cmake.template ./
+ADD ./scripts/docker/build-qt.sh ./scripts/docker/qt.old-distros.patch ./scripts/docker/generate-toolchain-file.sh ./scripts/docker/cross.linux.cmake.template ./
 RUN ./generate-toolchain-file.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 RUN ./build-qt.sh "$TARGET_TRIPLE" "/opt/sysroots/$TARGET_TRIPLE"
 
@@ -163,7 +166,7 @@ RUN find "/opt/sysroots/$TARGET_TRIPLE/usr/share" -mindepth 1 -maxdepth 1 ! -nam
 
 
 # Stage 3: the final stage of docker/build-environment plus the development extras
-FROM ubuntu:$DEB_DISTRIBUTION
+FROM ubuntu:$HOST_DISTRIBUTION
 LABEL authors="klapeto"
 
 ARG DEB_DISTRIBUTION

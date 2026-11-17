@@ -27,23 +27,41 @@ A Linux binary needs at least the glibc it was linked against: every glibc funct
 (glibc 2.38 turns `strtol`/`sscanf` into `__isoc23_*`, 2.34 moved `pthread_*`/`dl*` into libc with new versions). So
 the sysroot's glibc decides the oldest distribution Elpida runs on, not the code.
 
-The Linux sysroots are Ubuntu **focal** (glibc 2.31), in Docker (`DEB_DISTRIBUTION=focal`) and, since 2026-11-13, in
-`/mnt/Dev/toolchains/llvm-mingw` (before: noble, glibc 2.38; binaries failed on Ubuntu 20.04/22.04). The fork's
-`build-gnu-sysroots.sh` defaults to noble, so always pass `DEB_DISTRIBUTION=focal`. A new sysroot needs everything
+The Linux sysroots are Ubuntu **bionic** (glibc 2.27) since 2026-11-17, except riscv64, which stays on **focal**
+(glibc 2.31; bionic has no riscv64 port, and the first riscv64 distributions had 2.31 anyway). History: noble (2.38)
+until 2026-11-13, binaries failed on Ubuntu 20.04/22.04; then focal, where the Qt GUI needed 2.31 and the CLI 2.29.
+With bionic the CLI and the benchmarks need at most **2.25** (OpenSSL's `getentropy`; it is a weak symbol, but its
+version entry is not, so older glibc refuses to load it) and the Qt GUI **2.27** (Qt's `copy_file_range`, `expf`,
+`logf`, `powf`): Ubuntu 18.04, Debian 10, RHEL/Alma/Rocky 8 and newer. Checked 2026-11-17: x86_64, i386, aarch64 and
+armv7 builds run the CLI and the benchmarks in `ubuntu:18.04` containers (arm under qemu); the x86_64 GUI starts there
+(Xvfb).
+
+Qt 6.10 needs `scripts/docker/qt.old-distros.patch` (applied by `build-qt.sh`) for bionic: it asks for xkbcommon
+0.9.0 (bionic has 0.8.0) but calls no function newer than 0.8, and calls `FT_Done_MM_Var` (FreeType 2.9; bionic has
+2.8.1) without the version check it has for `FT_Set_Named_Instance` in the same file. Everything else Qt checks is
+new enough; harfbuzz and pcre2 are not in the sysroot, so Qt builds its bundled copies (the GUI no longer needs
+`libpcre2-16`).
+
+In Docker, `DEB_DISTRIBUTION` (default bionic; `ci/docker-image.yml` passes `SYSROOT_DISTRIBUTION`, focal for
+riscv64) selects the sysroot. The final image's OS is `HOST_DISTRIBUTION` (focal): the host clang and Qt come from the
+base image, built on focal, and need its glibc. Locally the sysroots in `/mnt/Dev/toolchains/llvm-mingw` were switched
+the same way on 2026-11-17 (focal backups in `/mnt/Dev/toolchains/sysroots-focal-backup-2026-11-17`).
+
+The fork's `build-gnu-sysroots.sh` defaults to noble, so always pass `DEB_DISTRIBUTION`. A new sysroot needs everything
 installed in it rebuilt, with clean build directories (the `.deb` files keep their old timestamps, so incremental builds
 keep objects compiled against the old headers):
 
 ```sh
 cd /mnt/Dev/sources/llvm-mingw
 mv $TOOLCHAIN/<triple> <backup>
-DEB_DISTRIBUTION=focal TARGET_TRIPLES=<triple> ./build-gnu-sysroots.sh $TOOLCHAIN
+DEB_DISTRIBUTION=bionic TARGET_TRIPLES=<triple> ./build-gnu-sysroots.sh $TOOLCHAIN
 for s in build-compiler-rt.sh build-libcxx.sh build-openmp.sh; do
     CLEAN=1 TARGET_TRIPLES=<triple> ./$s $TOOLCHAIN --additional-cflags-script=$ELPIDA/scripts/docker/parity-flags.sh
 done
 # then hwloc (build-autotools-based.sh) and the LLVM libraries (build-llvm.sh), see below
 ```
 
-Check a build (must be 2.31 or lower):
+Check a build (must be 2.27 or lower; 2.31 for riscv64):
 
 ```sh
 objdump -T <binary> | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -1
