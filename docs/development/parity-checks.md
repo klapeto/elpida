@@ -261,3 +261,90 @@ Score changes on the same CPU (both platforms change, so the base scores must be
 
 Accepted: mimalloc's thread id and lock size per libc, see
 [mimalloc.md](mimalloc.md#code-parity-differences-accepted). Still open: see [known-issues.md](known-issues.md#found-by-the-parity-checks).
+
+### On real Windows (2026-11-15)
+
+The same before/after builds on the same 10900K's Windows partition (Windows 10 Pro 20H2, VBS off), single-thread
+the same way as on Linux (one core, 7 rounds, before and after interleaved), plus two full runs with `elpida-cli`
+each. Linux is the native run on the same machine. Before = 6125c403, after = 2ee5c5e8.
+
+Full run scores (two runs each):
+
+| | Single-thread | Multi-thread | Total |
+|---|---|---|---|
+| Windows before | 3.14 / 3.16 | 15.9 / 16.1 | 19.4 / 19.7 |
+| Windows after | 3.52 / 3.55 | 17.6 / 17.4 | 21.6 / 21.4 |
+| Linux before | 3.22 / 3.21 | 16.1 / 15.9 | 19.7 / 19.6 |
+| Linux after | 3.52 / 3.50 | 17.1 / 17.2 | 21.1 / 21.2 |
+
+Single-thread Windows / Linux on real Windows, against what Wine predicted:
+
+| Benchmark | Before | After | Under Wine (after) |
+|---|---|---|---|
+| FFT | 0.906 | 1.049 | 1.050 |
+| JSON parsing | 0.890 | 0.958 | 0.950 |
+| XML parsing | 0.951 | 0.988 | 0.973 |
+| SVG rasterization | 0.949 | 0.984 | 0.987 |
+| Matrix inverse 4x4 | 0.973 | 1.008 | 0.982 |
+| C++ compilation | 0.962 | 0.971 | 0.974 |
+| Regex | 1.005 | 0.975 | 0.981 |
+| Ray tracing | 1.007 | 0.980 | 0.984 |
+| Base64 decode | 1.035 | 1.124 | 1.021 |
+| the others | 0.986-1.003 | 0.985-1.000 | |
+
+Wine predicts real Windows to about 2% for single-thread code, so the Wine method above holds. The single-thread
+gap is closed (0.976 before, 1.005 after). Multi-thread differs per benchmark from 0.965 (C++ compilation) to 1.145
+(matrix inverse; matrix multiplication and RSA decryption +8-9%) with Windows 2% ahead in total; the single-thread
+code runs at the same speed, so that is the OS (thread scheduling and placement). Results:
+`results-windows-20261115-095508` (`out/test-2026-11-15/elpida-parity-windows.zip`, `run.ps1`) and
+`out/test-2026-11-15/results-linux-20261115-024054`.
+
+### Run-to-run spread
+
+(max - min) / median of the rounds above, one core of the 10900K. Windows without its round 7: something else ran
+during it and matrix multiplication, NBody, RSA, regex, SVG and XML dropped to 20-70% in that round only.
+
+| Benchmark | Linux before | Linux after | Windows before | Windows after |
+|---|---|---|---|---|
+| AES Decryption | 0.1% | 0.1% | 0.5% | 0.5% |
+| AES Encryption | 0.1% | 0.2% | 0.6% | 0.4% |
+| Base64 Decode | 11.1% | 10.1% | 7.7% | 0.4% |
+| Base64 Encode | 1.6% | 0.4% | 4.2% | 0.5% |
+| C++ Compilation | 3.4% | 1.4% | 1.1% | 2.6% |
+| FFT | 1.2% | 0.7% | 0.8% | 0.4% |
+| Json Parsing | 5.1% | 1.2% | 0.4% | 0.7% |
+| Matrix inverse 4x4 | 2.5% | 3.0% | 4.0% | 1.4% |
+| Matrix mult 32x32 | 2.8% | 1.0% | 2.3% | 1.1% |
+| NBody | 0.1% | 0.5% | 0.3% | 1.0% |
+| RSA Decryption | 0.8% | 1.7% | 0.2% | 0.3% |
+| RSA Encryption | 0.1% | 1.3% | 0.3% | 0.2% |
+| Ray Tracing | 0.2% | 0.3% | 0.5% | 0.3% |
+| Regex | 1.4% | 1.7% | 0.8% | 0.6% |
+| SVG Rasterization | 0.3% | 0.4% | 0.8% | 0.4% |
+| XML Parsing | 0.9% | 1.2% | 0.9% | 0.6% |
+| Zlib compression | 0.8% | 0.9% | 0.5% | 1.7% |
+| Zlib decompression | 0.4% | 0.5% | 2.6% | 0.4% |
+
+Within one binary the code offsets are fixed (ASLR moves whole pages), so this spread comes from what changes
+between processes. The inputs are fixed (seeds), and the fast and slow rounds of before and after do not coincide
+(the state of the machine is not it). It is the address layout: ASLR, and mimalloc's random start of its aligned
+allocations. Both must be off for the runs to repeat, and fixing them is not a fix (one lucky or unlucky layout per
+binary). Part of the spread measured on the 10900K was the `powersave` governor: with `performance` the other web benchmarks are
+0.4-2.8%.
+
+Base64 decode was the outlier (11-12%): `base64_chars.find()`'s `memchr` loop exits after a data-dependent number of
+steps, and how well the branch predictor learns that depended on the layout. It also gave the same 10900K a 1.109
+Windows/Linux ratio and reversed the order of two CPUs. The decoder now uses a lookup table, and both encode and decode are written like production Base64 code. Measurements on six
+machines, the mechanism, Ice Lake against Comet Lake and the test scripts: [base64-decode-spread.md](base64-decode-spread.md).
+Every other benchmark, checked the same way under `perf stat`: [run-to-run-spread.md](run-to-run-spread.md).
+
+### Zlib compression and code placement
+
+After / before was 0.977 on Linux and 0.979 on Windows. The timed loop does not allocate (`deflate` into a stack
+buffer, `MemoryStream::Write` after `Reset` keeps its capacity) and zlib's code is the same in both builds, only
+0x2a0 bytes later in after (32 bytes modulo 64; the entry point grew). Built with `-falign-functions=64`, the hot
+functions (`longest_match`, `deflate_slow`, `fill_window`) start on 64 bytes in both, and the difference is gone
+(15 rounds on the 10900K: before 1.000, after 0.969, before aligned 0.997, after aligned 0.998). On the 7950X3D the
+same two unaligned builds went the other way (after faster). A change anywhere in front of a benchmark's code can
+move its score by a few percent on some CPUs.
+

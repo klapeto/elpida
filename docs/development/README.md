@@ -18,6 +18,7 @@ Internal documentation for developers. The user documentation is the website in 
 |---|---|
 | [code-parity.md](code-parity.md) | The parity policy, compiler flags, CPU baselines and a summary of every component |
 | [parity-checks.md](parity-checks.md) | `scripts/parity/disasm-parity.py`: checking and comparing the code the timed tasks run |
+| [run-to-run-spread.md](run-to-run-spread.md) | Spread of every benchmark on the i9-10900K under `perf stat`: the three layout mechanisms, matrix inverse's store-forwarding stalls, open decisions |
 | [third-party-libraries.md](third-party-libraries.md) | Audit of each library the benchmarks use, for runtime CPU dispatch and per-target code |
 | [toolchain.md](toolchain.md) | The llvm-mingw toolchain, the LLVM libraries of the Compilation benchmark, rebuilding |
 | [android.md](android.md) | How Android runs the benchmarks: static executables, TLS, ABIs, supported devices |
