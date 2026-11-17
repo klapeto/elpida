@@ -15,7 +15,7 @@ Open problems and remaining divergences. See [code-parity.md](code-parity.md) fo
 
 - **LLVM libraries without `-fno-builtin` (2026-11-16):** `build-llvm.sh` no longer passes it; the libraries in the
   local toolchain was rebuilt on 2026-11-17, the Docker images still have it until rebuilt. The arm64 Windows crash
-  behind the flag (musl-lite's 32-bit `wchar_t` there) is fixed 2026-11-18; confirm with a run on arm64 Windows. See
+  behind the flag (musl-lite's 32-bit `wchar_t` there) is fixed 2026-11-18, confirmed on arm64 Windows hardware. See
   [compilation-benchmark.md](compilation-benchmark.md).
 
 ## Non-deterministic input
