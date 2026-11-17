@@ -27,7 +27,11 @@
 #endif
 
 #ifndef __cplusplus
+#ifdef WIN32
+TYPEDEF unsigned short wchar_t;
+#else
 TYPEDEF unsigned wchar_t;
+#endif
 #endif
 TYPEDEF unsigned wint_t;
 

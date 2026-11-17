@@ -2,5 +2,6 @@ Removed unused files
 No Asm
 src/string: the __GNUC__ word-at-a-time code was removed at import and restored from musl 1.2.5 on 2026-11-16, except
   in memset.c: its plain C loop (upstream's non-GNUC path) is kept, clang vectorizes it and it measured faster
+arch/aarch64/bits/alltypes.h.in: wchar_t is unsigned short on WIN32, as in x86_64 and i386 (2026-11-18)
 src/string/memset.c: 8 to 32 bytes are written with overlapping 8-byte stores (Elpida, 2026-11-17)
 Renamed internal __name functions to _MuslLite_name

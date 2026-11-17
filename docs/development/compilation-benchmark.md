@@ -50,10 +50,15 @@ mov    %rbx, %rsi
 call   memcpy
 ```
 
-The flag in `build-llvm.sh` had the comment "on arm64 windows the compilation benchmark crashes". The cause back then
-was musl-lite's headers declaring `long` as 64-bit on Windows; they are LLP64-correct now (`arch/*/bits/alltypes.h.in`
-on `WIN32`, which clang predefines for mingw targets; checked with `static_assert`s on x86_64 and aarch64 Windows).
-To be confirmed on arm64 Windows (local toolchain rebuilt 2026-11-17; not run yet, no arm64 Windows machine here).
+The flag in `build-llvm.sh` had the comment "on arm64 windows the compilation benchmark crashes". `long` was not the
+cause (musl-lite's headers are LLP64-correct on `WIN32`, which clang predefines for mingw targets). The first arm64
+Windows run without the flag (2026-11-18) crashed with `0xC0000005` in LLVM's X86 `FixupBWInstPass::
+getSuperRegDestIfDead`: with builtins, the compiler turned its loop over a 0-terminated list of 16-bit register
+numbers into `wcslen`, which is right for Windows' 16-bit `wchar_t`, but musl-lite's aarch64 `alltypes.h.in` declared
+`wchar_t` 32-bit on Windows too (x86_64 and i386 had the `WIN32` case), so its `wcslen` (which replaces msvcrt's)
+scanned 4-byte units past the end of the list. `-fno-builtin` only hid it by stopping the `wcslen` call. Fixed:
+`wchar_t` is `unsigned short` on aarch64 Windows as on x86_64; every wide-character function of musl-lite was wrong
+there before.
 
 **Change (2026-11-16):** `-fno-builtin` removed from the root `CMakeLists.txt` and from `build-llvm.sh`. Only the code
 that implements or measures libc functions keeps it: musl-lite (`-ffreestanding`) and the StdLib benchmarks. Old
