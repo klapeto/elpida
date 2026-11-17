@@ -106,9 +106,12 @@ is `<sysroot>/usr/lib/cmake/llvm`). They are built by `scripts/docker/build-llvm
 - applies `scripts/docker/llvm.parity.patch`, which disables the Lexer's SSE2/SSE4.2/AltiVec paths;
 - adds `-DLLVM_XXH_USE_NEON=0` and the parity flags (the same per-architecture flags as the root `CMakeLists.txt`);
 - builds only the X86 backend (the benchmark always compiles for `x86_64-none-none`), with assertions off.
+- no longer adds `-fno-builtin` (removed 2026-11-16, see [compilation-benchmark.md](compilation-benchmark.md)).
 
-The libraries of the Linux and Windows targets in `/mnt/Dev/toolchains/llvm-mingw` were rebuilt with the current
-script on 2026-11-10.
+The libraries of the Linux and Windows targets in `/mnt/Dev/toolchains/llvm-mingw` were rebuilt on 2026-11-10, still
+with `-fno-builtin`. **TODO:** rebuild the LLVM libraries of every target (Docker images and the local toolchain)
+without it, then run the Compilation benchmark on arm64 Windows (the reason the flag was added; the musl-lite header
+bug behind it is fixed).
 
 ## Docker images
 

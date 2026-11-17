@@ -36,9 +36,6 @@ fi
 mkdir -p ./llvm-project/llvm/build
 cd ./llvm-project/llvm/build
 
-# we need -fno-builtin because on arm64 windows the compilation benchmark crashes (wtf?)
-CFLAGS="-fno-builtin $CFLAGS"
-
 # Benchmark code parity (docs/development/code-parity.md), same as the root CMakeLists.txt
 CFLAGS="$("${this_dir}/parity-flags.sh" "$TARGET_TRIPLE") $CFLAGS"
 # xxh3 (used by StringMap for every identifier) has a NEON path on aarch64

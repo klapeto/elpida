@@ -364,3 +364,57 @@ then compositing with the color hoisted out of the loop for solid paints (new `S
 only gradients still call per pixel. Output is bit-identical. Result: Windows / Linux **1.005** (247.8 vs 246.4,
 spread 1.5% both), Linux +8%, Windows +16%; 10 threads 2.32 G both. The Wine PNG is byte-identical to Linux.
 
+## Builtins on (2026-11-16)
+
+`-fno-builtin` was removed from the root `CMakeLists.txt` and from `scripts/docker/build-llvm.sh` (the LLVM libraries
+of the Compilation benchmark); musl-lite (`-ffreestanding`) and the StdLib benchmarks keep it. Reason and the
+Compilation benchmark: [compilation-benchmark.md](compilation-benchmark.md#-fno-builtin-in-the-llvm-libraries).
+
+With builtins, clang inlines fixed-size `memcpy`/`memset`/`memcmp`, turns `sqrtf` into an instruction and may replace
+one library call with another. Which replacements are allowed depends on the target's library info. Checked on five
+targets with the parity flags (x86_64 Linux, Windows and Android, aarch64 Linux and Windows): 16-byte `memcpy` and
+`memcmp() == 0` inlined everywhere, `sin`+`cos` → `sincos` everywhere (musl-lite has it), `pow`, `exp2`, `strcpy`,
+`strlen` stay calls, `printf("...\n")` → `puts` on Linux and Android only (not on a timed path).
+
+A/B, x86_64 Linux and Windows, LLVM 19.1.7 libraries rebuilt both ways from the same tree (scratch builds,
+`build-llvm.sh` settings):
+
+- `disasm-parity.py report`: the same violations before and after, all in the Compilation benchmark: `rand`/`srand`
+  (Linux, `llvm::sys::Process::GetRandomNumber`) and `strerror` (Windows), on error paths.
+- `disasm-parity.py --mnemonics compare` Linux vs Windows: the same verdicts and almost the same counts per task. The
+  functions that became one-sided are inlining decisions (a function inlined on one OS and called on the other, as
+  before) and one library call: `bcmp` on Linux only (`memcmp() == 0`; clang assumes `bcmp` only for some targets). It
+  resolves to musl-lite's `src/string/bcmp.c`, which calls musl's `memcmp`.
+
+i9-10900K, Ubuntu 26.04 and Wine (Proton GE 10-32), core 2, 5 interleaved rounds, governor powersave, medians:
+
+| Benchmark | new/old Linux | new/old Windows | Win/Lin old | Win/Lin new |
+|---|---|---|---|---|
+| AES Decryption | 1.004 | 1.003 | 1.002 | 1.001 |
+| AES Encryption | 1.000 | 1.002 | 0.996 | 0.999 |
+| Base64 Decode | 0.998 | 0.999 | 0.997 | 0.998 |
+| Base64 Encode | 1.002 | 1.010 | 0.991 | 0.999 |
+| C++ Compilation | **1.442** | **1.426** | 0.972 | 0.961 |
+| FFT | 0.999 | 1.000 | 1.054 | 1.056 |
+| Json Parsing | 1.024 | 1.015 | 0.937 | 0.930 |
+| Matrix inverse 4x4 | 0.986 | 1.019 | 0.971 | 1.004 |
+| Matrix mult 32x32 | 0.981 | 0.986 | 1.000 | 1.005 |
+| NBody | 0.996 | 1.000 | 0.994 | 0.997 |
+| Ray Tracing | 1.001 | 1.009 | 0.975 | 0.983 |
+| Regex | 1.011 | 1.011 | 1.000 | 0.999 |
+| RSA Decryption | 1.000 | 1.000 | 0.980 | 0.980 |
+| RSA Encryption | 1.013 | 1.001 | 0.999 | 0.987 |
+| SVG Rasterization | 1.021 | 1.028 | 1.005 | 1.011 |
+| XML Parsing | 0.982 | 0.958 | 1.025 | 0.999 |
+| Zlib compression | 0.998 | 0.997 | 1.000 | 0.998 |
+| Zlib decompression | 0.986 | 1.012 | 0.995 | 1.022 |
+
+The Compilation benchmark gains 44% on both. The rest moves within ±2%, except XML on Windows and matrix
+multiplication (−1.5 to −2%). Windows/Linux stays the same or gets closer (matrix inverse 0.971 → 1.004).
+
+XML repeated (2026-11-17, 15 interleaved rounds, same setup): new/old Linux 0.982 (spread 3.9%/10.3%), Windows 0.955
+(spread 1.9%/1.5%), Windows/Linux 1.024 → 0.995. The Windows loss is real. On the 7950X3D (Linux) old and new score
+the same, but the profile moves: libc++'s `unordered_map<string, string>` insert of the attributes goes from 13% to
+21% of the time because the string hash (`__murmur2_or_cityhash`, 1.8% before) is now inlined into it. libc++ header
+code compiled differently with builtins; not analyzed further (a Wine profile needs `perf` with
+`perf_event_paranoid` lowered on the test machine).

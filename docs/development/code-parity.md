@@ -75,7 +75,6 @@ llvm-mingw build scripts use for the runtimes (`--additional-cflags-script=`, se
 
 | Flag | Why |
 |---|---|
-| `-fno-builtin` | Calls go to musl-lite instead of being replaced by compiler builtins. (Explicit `__builtin_*` calls, which libc++ `<cmath>` uses, are not affected; see below.) |
 | `-fno-math-errno` | clang's default differs per target: on for glibc and mingw, off for Android and musl. musl never sets `errno` in math functions. With it off, `sqrt()` and the like map to the ISA's instruction on every target. |
 | `-ffp-contract=off` | Otherwise `a*b+c` is fused into an FMA only on targets that have one (always on aarch64, never on baseline x86). |
 | `-fomit-frame-pointer` | clang keeps frame pointers by default on Android (every ABI) and aarch64 Linux, and omits them elsewhere. Without it, every function of the Android x86_64 benchmarks had an extra `push %rbp; mov %rsp,%rbp`. Unwinding uses `.eh_frame`/`.pdata`, so exceptions are not affected. |
@@ -94,6 +93,13 @@ only in names (see [parity-checks.md](parity-checks.md#limitations)), and every 
 Removed: `-ffast-math` from `src/Benchmarks/Math/CMakeLists.txt`. It lets every target reassociate and vectorize
 differently.
 
+Removed (2026-11-16): the global `-fno-builtin`. It turned every fixed-size copy into a call to musl's C `memcpy`
+(35 million calls per compile in the Compilation benchmark, 17% of its time), which real software is not built with.
+Builtins are on for all code except musl-lite (`-ffreestanding`, it implements the functions) and the StdLib
+benchmarks (they measure the platform's functions). Clang may now also replace library calls (for example
+`memcmp() == 0` → `bcmp` on Linux); the parity checks and measurements are in
+[parity-checks.md](parity-checks.md#builtins-on-2026-11-16).
+
 ### CPU baselines
 
 | Architecture | Baseline | Note |
@@ -107,8 +113,8 @@ differently.
 ### `<cmath>` and compiler builtins
 
 libc++ implements `std::floor`, `std::ceil`, `std::sqrt` and friends with `__builtin_floor` and similar
-(`include/c++/v1/__math/rounding_functions.h`). `-fno-builtin` does not stop explicit `__builtin_*` calls, so the
-compiler can inline or constant-fold them. On x86_64 Linux the `floor()` and `ceil()` benchmarks compiled to empty
+(`include/c++/v1/__math/rounding_functions.h`). Even `-fno-builtin` (which the StdLib benchmarks use) does not stop
+explicit `__builtin_*` calls, so the compiler can inline or constant-fold them. On x86_64 Linux the `floor()` and `ceil()` benchmarks compiled to empty
 loops.
 
 The StdLib math benchmarks therefore call the C functions directly (through `PlatformLibc.hpp`) and keep the

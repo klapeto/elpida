@@ -13,6 +13,10 @@ Open problems and remaining divergences. See [code-parity.md](code-parity.md) fo
   rebuilt with the current flags. The Android and Linux LLVM libraries now match (same remaining frame-pointer
   functions, the ones that need one).
 
+- **LLVM libraries without `-fno-builtin` (2026-11-16):** `build-llvm.sh` no longer passes it; the libraries in the
+  Docker images and `/mnt/Dev/toolchains/llvm-mingw` still have it until rebuilt. Then run the Compilation benchmark
+  on arm64 Windows. See [compilation-benchmark.md](compilation-benchmark.md).
+
 ## Non-deterministic input
 
 Several tasks generate their input with `std::random_device` seeds, `std::normal_distribution`,
@@ -90,10 +94,15 @@ See [parity-checks.md](parity-checks.md) for the tool and what was already fixed
 - **boost-regex locale backend** comes from libc++'s per-OS implementation. See
   [third-party-libraries.md](third-party-libraries.md#boost-regex-externboost-regex-standalone).
 - **32-bit vs 64-bit**: e.g. OpenSSL's `BN_ULONG`. Unavoidable.
+- **`bcmp` on Linux** (2026-11-16): with builtins on, clang turns `memcmp() == 0` into `bcmp` only for some targets.
+  It resolves to musl-lite's `bcmp.c`, which calls `memcmp`, so the same code runs plus one call.
 - **C++ Compilation Windows/Linux 0.96** (i9-10900K, Wine), with the old and the new source. Not analyzed.
 
 ## Not verified
 
+- XML parsing after builtins were enabled (i9-10900K): −4.5% on Windows (Wine), −1.8% on Linux, equal on the
+  7950X3D; Windows/Linux 1.024 → 0.995. The `unordered_map` insert with an inlined string hash; not analyzed. See
+  [parity-checks.md](parity-checks.md#builtins-on-2026-11-16).
 - The C++ Compilation time budget (about 2.5 s per compile on a Pentium 4 Northwood) is extrapolated from the
   7950X3D, 10900K and older E5200 results; run the new source on an E5200 and a Pentium 4.
 

@@ -22,11 +22,9 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(ELPIDA_COMPILER_GCC 1) #most flags work here
 
-    # ubuntu does not ship static libs for GL/EGL to be able to static link...
-    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin -static")
-    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin -static")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-builtin")
+    # No global -fno-builtin: it turns every fixed-size copy (struct copies, memcpy-based bit casts) into a call to
+    # memcpy, which real software is not built with. Only the code that implements or measures libc functions builds
+    # without builtins: musl-lite (-ffreestanding) and the StdLib benchmarks.
 
     # Benchmark code parity (docs/development/code-parity.md): make the generated code independent of per-target
     # compiler defaults. Keep in sync with scripts/docker/parity-flags.sh (toolchain runtimes and LLVM libraries).
