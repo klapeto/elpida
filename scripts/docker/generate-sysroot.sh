@@ -80,11 +80,35 @@ if [ ! -f ./SysrootGenerator ] || [ ! -x ./SysrootGenerator ]; then
     chmod +x ./SysrootGenerator
 fi
 
+# bionic has libnuma for armhf only in its updates pocket, which SysrootGenerator does not read with the release
+NUMA_FROM_UPDATES=0
+if [ "$DEBIAN_ARCH" = "armhf" ] && [ "$DEB_DISTRIBUTION" = "bionic" ]; then
+    NUMA_FROM_UPDATES=1
+fi
+
+if [ "$NUMA_FROM_UPDATES" = "1" ]; then
+    PACKAGES=`grep -vx libnuma-dev "$PACKAGES_FILE" | paste -sd,`
+else
+    PACKAGES=`paste -sd, "$PACKAGES_FILE"`
+fi
+
 ./SysrootGenerator --path "$SYSROOT" \
     --arch "$DEBIAN_ARCH" \
     --distribution "$DEB_DISTRIBUTION" \
     --sources "$DEB_SOURCES" \
     --http-timeout=300 \
     --cache-path ./cache \
-    --packages `paste -sd, "$PACKAGES_FILE"` \
+    --packages "$PACKAGES" \
     --store-install-state
+
+if [ "$NUMA_FROM_UPDATES" = "1" ]; then
+    ./SysrootGenerator --path "$SYSROOT" \
+        --arch "$DEBIAN_ARCH" \
+        --distribution "$DEB_DISTRIBUTION-updates" \
+        --sources "$DEB_SOURCES" \
+        --http-timeout=300 \
+        --cache-path ./cache-updates \
+        --packages libnuma1,libnuma-dev \
+        --no-dependencies \
+        --store-install-state
+fi
