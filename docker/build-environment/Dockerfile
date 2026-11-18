@@ -67,12 +67,17 @@ RUN find "/opt/sysroots/$TARGET_TRIPLE/usr/share" -mindepth 1 -maxdepth 1 ! -nam
     "/opt/sysroots/$TARGET_TRIPLE/usr/doc" \
     "/opt/sysroots/$TARGET_TRIPLE/usr/metatypes" && \
     # A foreign Linux sysroot's executables can't run here. Windows sysroots keep bin: it has the LLVM DLLs
-    # (libLTO.dll) that the LLVM CMake package checks for.
+    # (libLTO.dll) that the LLVM CMake package checks for. The Clang CMake package checks that its tools exist, so
+    # they are left as empty files.
     if [ "$TARGET_TRIPLE" != $(gcc -dumpmachine) ] && [ "${TARGET_TRIPLE%-w64-mingw32}" = "$TARGET_TRIPLE" ]; then \
         rm -rf "/opt/sysroots/$TARGET_TRIPLE/bin" \
         "/opt/sysroots/$TARGET_TRIPLE/sbin" \
         "/opt/sysroots/$TARGET_TRIPLE/usr/bin" \
-        "/opt/sysroots/$TARGET_TRIPLE/usr/sbin"; \
+        "/opt/sysroots/$TARGET_TRIPLE/usr/sbin" && \
+        mkdir -p "/opt/sysroots/$TARGET_TRIPLE/usr/bin" && \
+        for tool in $(grep -ohE '_IMPORT_PREFIX}/bin/[^"]+' "/opt/sysroots/$TARGET_TRIPLE/usr/lib/cmake/clang/ClangTargets-release.cmake"); do \
+            touch "/opt/sysroots/$TARGET_TRIPLE/usr/bin/${tool##*/}"; \
+        done; \
     fi
 
 
