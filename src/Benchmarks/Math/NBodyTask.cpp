@@ -80,7 +80,7 @@ namespace Elpida::Benchmarks::Math
 	void NBodyTask::Prepare(SharedPtr<AbstractTaskData> inputData)
 	{
 		_inputData = std::move(inputData);
-		_system = NBodySystem<Float>({
+		_system = NBodySystem<Float, 5>({
 				Sun(), Jupiter(), Saturn(), Uranus(), Neptune()
 		});
 	}

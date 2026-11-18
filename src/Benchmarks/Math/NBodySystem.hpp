@@ -24,13 +24,13 @@
 
 #include "Body.hpp"
 
-#include <vector>
+#include <array>
 #include <cmath>
 
 namespace Elpida::Benchmarks::Math
 {
 
-	template<typename T>
+	template<typename T, std::size_t N>
 	class NBodySystem
 	{
 	public:
@@ -38,8 +38,7 @@ namespace Elpida::Benchmarks::Math
 		T Energy() const
 		{
 			T e = 0.0;
-			auto size = _bodies.size();
-			for (std::size_t i = 0; i < size; i++)
+			for (std::size_t i = 0; i < N; i++)
 			{
 				auto& bodyI = _bodies[i];
 
@@ -48,7 +47,7 @@ namespace Elpida::Benchmarks::Math
 					  + bodyI.GetVy() * bodyI.GetVy()
 					  + bodyI.GetVz() * bodyI.GetVz());
 
-				for (std::size_t j = i + 1; j < size; j++)
+				for (std::size_t j = i + 1; j < N; j++)
 				{
 					auto& bodyJ = _bodies[j];
 					auto dx = bodyI.GetX() - bodyJ.GetX();
@@ -65,12 +64,10 @@ namespace Elpida::Benchmarks::Math
 
 		void Advance(T dt)
 		{
-			auto size = _bodies.size();
-
-			for (std::size_t i = 0; i < size; i++)
+			for (std::size_t i = 0; i < N; i++)
 			{
 				auto& bodyI = _bodies[i];
-				for (std::size_t j = i + 1; j < size; j++)
+				for (std::size_t j = i + 1; j < N; j++)
 				{
 					auto& bodyJ = _bodies[j];
 
@@ -91,7 +88,7 @@ namespace Elpida::Benchmarks::Math
 				}
 			}
 
-			for (std::size_t i = 0; i < size; i++)
+			for (std::size_t i = 0; i < N; i++)
 			{
 				auto& body = _bodies[i];
 				body.GetX() += dt * body.GetVx();
@@ -102,8 +99,8 @@ namespace Elpida::Benchmarks::Math
 
 		NBodySystem() = default;
 
-		explicit NBodySystem(std::vector<Body<T>>&& bodies)
-				:_bodies(std::move(bodies))
+		explicit NBodySystem(std::array<Body<T>, N>&& bodies)
+				: _bodies(std::move(bodies))
 		{
 			T px = 0.0;
 			T py = 0.0;
@@ -120,7 +117,8 @@ namespace Elpida::Benchmarks::Math
 		}
 
 	private:
-		std::vector<Body<T>> _bodies;
+		// alignas(64) is needed because this is affected by false sharing between threads and has reduced multithread performance
+		alignas(64) std::array<Body<T>, N> _bodies;
 	};
 
 } // Elpida

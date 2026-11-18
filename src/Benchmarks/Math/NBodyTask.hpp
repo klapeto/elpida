@@ -50,7 +50,7 @@ namespace Elpida::Benchmarks::Math
 		[[nodiscard]]
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
-		NBodySystem<Float> _system;
+		NBodySystem<Float, 5> _system;
 		SharedPtr<AbstractTaskData> _inputData;
 	};
 

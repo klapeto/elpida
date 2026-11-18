@@ -111,6 +111,11 @@ namespace Elpida::Benchmarks::Math
 			return *this;
 		}
 
+		Body()
+			: _x(0), _y(0), _z(0), _vx(0), _vy(0), _vz(0), _mass(0)
+		{
+		}
+
 		Body(T x, T y, T z, T vx, T vy, T vz, T mass)
 				:_x(x), _y(y), _z(z), _vx(vx), _vy(vy), _vz(vz), _mass(mass)
 		{
