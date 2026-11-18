@@ -34,7 +34,7 @@ With bionic the CLI and the benchmarks need at most **2.25** (OpenSSL's `getentr
 version entry is not, so older glibc refuses to load it) and the Qt GUI **2.27** (Qt's `copy_file_range`, `expf`,
 `logf`, `powf`): Ubuntu 18.04, Debian 10, RHEL/Alma/Rocky 8 and newer. Checked 2026-11-17: x86_64, i386, aarch64 and
 armv7 builds run the CLI and the benchmarks in `ubuntu:18.04` containers (arm under qemu); the x86_64 GUI starts there
-(Xvfb).
+(Xvfb). 2026-11-18: the x86_64 CLI and GUI packages work on a real Ubuntu 18.04 machine.
 
 Qt 6.10 needs `scripts/docker/qt.old-distros.patch` (applied by `build-qt.sh`) for bionic: it asks for xkbcommon
 0.9.0 (bionic has 0.8.0) but calls no function newer than 0.8, and calls `FT_Done_MM_Var` (FreeType 2.9; bionic has
