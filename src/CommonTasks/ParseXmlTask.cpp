@@ -62,6 +62,8 @@ namespace Elpida
 
 		Exec([&]()
 		{
+			// Release the previous result first, so only one parsed document is alive (keeps the footprint in cache)
+			_parsedElement = XmlElement();
 			_parsedElement = XmlParser::Parse(ptr, size);
 		});
 	}

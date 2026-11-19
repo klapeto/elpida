@@ -56,6 +56,8 @@ namespace Elpida::Benchmarks::Web
 
 		Exec([&]()
 		{
+			// Release the previous result first, so only one parsed document is alive (keeps the footprint in cache)
+			_parsedElement = nullptr;
 			_parsedElement = nlohmann::json::parse(str);
 		});
 	}
