@@ -234,7 +234,7 @@ namespace Elpida
 			}
 			else if (type == NextNode::Cdata)
 			{
-				std::ostringstream buffer;
+				std::string buffer;
 				bool spaceNeeded = false;
 				stream.SkipSpace();
 				while (!stream.Eof())
@@ -254,18 +254,18 @@ namespace Elpida
 					{
 						if (spaceNeeded)
 						{
-							buffer << ' ';
+							buffer.append(" ");
 							spaceNeeded = false;
 						}
-						buffer << c;
+						buffer.append(1 , c);
 					}
 					stream.Next();
 				}
-				children.push_back(XmlElement("", {}, buffer.str(), {}));
+				children.push_back(XmlElement("", {}, std::move(buffer), {}));
 			}
 			else
 			{
-				std::ostringstream buffer;
+				std::string buffer;
 				bool spaceNeeded = false;
 				stream.SkipSpace();
 				while (!stream.Eof())
@@ -282,14 +282,14 @@ namespace Elpida
 					{
 						if (spaceNeeded)
 						{
-							buffer << ' ';
+							buffer.append(" ");
 							spaceNeeded = false;
 						}
-						buffer << c;
+						buffer.append(1, c);
 					}
 					stream.Next();
 				}
-				children.push_back(XmlElement("", {}, buffer.str(), {}));
+				children.push_back(XmlElement("", {}, std::move(buffer), {}));
 			}
 		}
 
