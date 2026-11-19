@@ -20,6 +20,7 @@ Internal documentation for developers. The user documentation is the website in 
 | [parity-checks.md](parity-checks.md) | `scripts/parity/disasm-parity.py`: checking and comparing the code the timed tasks run |
 | [base64-decode-spread.md](base64-decode-spread.md) | Base64 decode's 11% run-to-run spread: address layout and branch prediction, measurements on six machines; the lookup table and the production-style rewrite of encode and decode |
 | [run-to-run-spread.md](run-to-run-spread.md) | Spread of every benchmark on the i9-10900K under `perf stat`: the three layout mechanisms, matrix inverse's store-forwarding stalls, open decisions |
+| [web-benchmark-inputs.md](web-benchmark-inputs.md) | The real-world inputs of the Json, XML and Regex benchmarks: sources, cache footprint, measurements on an i9-10900K, an i3-330M and a Raspberry Pi 4 |
 | [compilation-benchmark.md](compilation-benchmark.md) | The C++ Compilation benchmark: the cc1 options fix, `-fno-builtin` in the LLVM libraries, the new source and its time budget |
 | [third-party-libraries.md](third-party-libraries.md) | Audit of each library the benchmarks use, for runtime CPU dispatch and per-target code |
 | [toolchain.md](toolchain.md) | The llvm-mingw toolchain, the LLVM libraries of the Compilation benchmark, rebuilding |
