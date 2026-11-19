@@ -40,5 +40,22 @@
         line and check the output.
     </p>
 </section>
+<section>
+    <h2>Getting consistent results</h2>
+    <p>
+        Scores can vary between runs when the operating system changes the CPU speed while the benchmarks run. On some
+        machines, especially older ones, this can make single benchmarks run at half speed or less in one run and at full
+        speed in the next.
+    </p>
+    <ul>
+        <li><strong>Linux</strong>: Set the CPU frequency governor to 'performance' before running, for example with
+            <code>sudo cpupower frequency-set -g performance</code> (the 'cpupower' tool is in the 'linux-tools'
+            package on Ubuntu). The setting lasts until the next reboot.
+        </li>
+        <li><strong>Windows</strong>: Select the 'High performance' power plan in the power options.</li>
+        <li>Keep laptops connected to power.</li>
+        <li>Close other programs and let the machine idle while the benchmarks run.</li>
+    </ul>
+</section>
 </body>
 </html>
