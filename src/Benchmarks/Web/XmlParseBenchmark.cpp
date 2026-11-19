@@ -20,7 +20,7 @@
 #include "XmlParseBenchmark.hpp"
 
 #include "ParseXmlTask.hpp"
-#include "XmlGenerationTask.hpp"
+#include "EmbeddedDocumentTask.hpp"
 #include "Elpida/Core/BenchmarkRunContext.hpp"
 
 namespace Elpida::Benchmarks::Web
@@ -28,18 +28,14 @@ namespace Elpida::Benchmarks::Web
 
 	Vector<TaskConfiguration> XmlParseBenchmark::GetRequiredConfiguration() const
 	{
-		return {
-				TaskConfiguration("File size", ConfigurationType::Integer, "128"),
-		};
+		return {};
 	}
 
 	Vector<UniquePtr<Task>> XmlParseBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
 		std::vector<std::unique_ptr<Task>> returnTasks;
 
-		auto& configuration = context.GetConfiguration();
-
-		returnTasks.push_back(CreateTask<XmlGenerationTask>(configuration.at(0).AsInteger()));
+		returnTasks.push_back(CreateTask<EmbeddedDocumentTask>(XmlBenchmarkDocument, XmlBenchmarkDocument_SIZE));
 		returnTasks.push_back(CreateTask<ParseXmlTask>());
 
 		return returnTasks;
@@ -52,7 +48,7 @@ namespace Elpida::Benchmarks::Web
 		description = "Parses an XML document to determine the parsing speed.";
 		taskToUseAsScoreIndex = 1;
 
-		taskInfos.push_back(XmlGenerationTask(1).GetInfo());
+		taskInfos.push_back(EmbeddedDocumentTask(XmlBenchmarkDocument, XmlBenchmarkDocument_SIZE).GetInfo());
 		taskInfos.push_back(ParseXmlTask().GetInfo());
 	}
 

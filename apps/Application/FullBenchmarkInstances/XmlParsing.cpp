@@ -40,7 +40,6 @@ namespace Elpida::Application
 
 	void XmlParsing::Configure()
 	{
-		_benchmark.GetConfigurations()[0].SetValue("2048");
 	}
 
 	ConcurrencyMode XmlParsing::GetMultiThreadConcurrencyMode() const

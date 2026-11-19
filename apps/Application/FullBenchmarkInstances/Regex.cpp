@@ -40,7 +40,6 @@ namespace Elpida::Application
 
 	void Regex::Configure()
 	{
-		_benchmark.GetConfigurations()[0].SetValue("2048");
 	}
 
 	ConcurrencyMode Regex::GetMultiThreadConcurrencyMode() const

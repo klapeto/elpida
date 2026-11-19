@@ -16,25 +16,21 @@
 #include "RegexBenchmark.hpp"
 
 #include "Elpida/Core/BenchmarkRunContext.hpp"
-#include "GenerateLoremIpsum.hpp"
+#include "EmbeddedDocumentTask.hpp"
 #include "RegexTask.hpp"
 
 namespace Elpida::Benchmarks::Web
 {
 	Vector<TaskConfiguration> RegexBenchmark::GetRequiredConfiguration() const
 	{
-		return {
-				TaskConfiguration("Data size", ConfigurationType::Integer, "2048"),
-		};
+		return {};
 	}
 
 	Vector<UniquePtr<Task>> RegexBenchmark::GetTasks(BenchmarkRunContext& context) const
 	{
 		std::vector<std::unique_ptr<Task>> returnTasks;
 
-		auto& configuration = context.GetConfiguration();
-
-		returnTasks.push_back(CreateTask<GenerateLoremIpsum>(configuration.at(0).AsInteger()));
+		returnTasks.push_back(CreateTask<EmbeddedDocumentTask>(RegexBenchmarkText, RegexBenchmarkText_SIZE));
 		returnTasks.push_back(CreateTask<RegexTask>());
 
 		return returnTasks;
@@ -47,7 +43,7 @@ namespace Elpida::Benchmarks::Web
 		description = "Searches text with regex";
 		taskToUseAsScoreIndex = 1;
 
-		taskInfos.push_back(GenerateLoremIpsum(2048).GetInfo());
+		taskInfos.push_back(EmbeddedDocumentTask(RegexBenchmarkText, RegexBenchmarkText_SIZE).GetInfo());
 		taskInfos.push_back(RegexTask().GetInfo());
 	}
 } // Elpida

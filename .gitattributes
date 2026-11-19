@@ -1,0 +1,2 @@
+# Embedded benchmark inputs are part of the benchmark: keep their bytes exact on every checkout (no line ending conversion)
+src/Benchmarks/*/Assets/** -text

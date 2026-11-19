@@ -3,13 +3,33 @@ project("Elpida Web benchmarks" VERSION ${ELPIDA_VERSION}
         HOMEPAGE_URL ${ELPIDA_WEBSITE}
         LANGUAGES CXX C)
 
+# The real-world inputs of the Json, XML and Regex benchmarks, embedded so every platform processes the same bytes
+# (sources and licenses in Assets/README.md)
+set(WEB_BENCHMARK_EMBEDDED_SOURCES)
+foreach (ASSET JsonBenchmarkDocument.json XmlBenchmarkDocument.xml RegexBenchmarkText.txt)
+    get_filename_component(ASSET_NAME "${ASSET}" NAME_WLE)
+    set(ASSET_INPUT "${CMAKE_CURRENT_SOURCE_DIR}/Assets/${ASSET}")
+    set(ASSET_CPP "${CMAKE_CURRENT_BINARY_DIR}/${ASSET_NAME}.cpp")
+    add_custom_command(
+            OUTPUT "${ASSET_CPP}"
+            COMMAND ${CMAKE_COMMAND}
+            -DINPUT=${ASSET_INPUT}
+            -DOUTPUT=${ASSET_CPP}
+            -DNAMESPACE=Elpida::Benchmarks::Web
+            -DNAME=${ASSET_NAME}
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake-modules/EmbedFile.cmake"
+            DEPENDS "${ASSET_INPUT}" "${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake-modules/EmbedFile.cmake"
+            COMMENT "Embedding ${ASSET}"
+            VERBATIM)
+    list(APPEND WEB_BENCHMARK_EMBEDDED_SOURCES "${ASSET_CPP}")
+endforeach ()
 
 add_library(elpida-web-benchmarks
+        ${WEB_BENCHMARK_EMBEDDED_SOURCES}
         Plugin.cpp
         XmlParseBenchmark.cpp
         ParseJsonTask.cpp
-        XmlGenerationTask.cpp
-        JsonGenerationTask.cpp
+        EmbeddedDocumentTask.cpp
         JsonParseBenchmark.cpp
         Base64.cpp
         Base64EncodeTask.cpp

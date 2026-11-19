@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025  Ioannis Panagiotopoulos
+ *  Copyright (c) 2026  Ioannis Panagiotopoulos
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,36 +15,41 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-//
-// Created by klapeto on 21/5/2024.
-//
-
-#ifndef ELPIDA_JSONGENERATIONTASK_HPP
-#define ELPIDA_JSONGENERATIONTASK_HPP
+#ifndef ELPIDA_EMBEDDEDDOCUMENTTASK_HPP
+#define ELPIDA_EMBEDDEDDOCUMENTTASK_HPP
 
 #include "Elpida/Core/Task.hpp"
 
 namespace Elpida::Benchmarks::Web
 {
+	// The real-world inputs of the web benchmarks, embedded at build time from Assets/ (see Assets/README.md)
+	extern const unsigned char JsonBenchmarkDocument[];
+	extern const std::size_t JsonBenchmarkDocument_SIZE;
+	extern const unsigned char XmlBenchmarkDocument[];
+	extern const std::size_t XmlBenchmarkDocument_SIZE;
+	extern const unsigned char RegexBenchmarkText[];
+	extern const std::size_t RegexBenchmarkText_SIZE;
 
-	class JsonGenerationTask : public Task
+	/// Copies a built-in document into the task data, as the input of the next task.
+	class EmbeddedDocumentTask : public Task
 	{
 	public:
 		void Prepare(SharedPtr<AbstractTaskData> inputData) override;
 		SharedPtr<AbstractTaskData> Finalize() override;
 		Size GetProcessedDataSize() const override;
-		explicit JsonGenerationTask(std::size_t jsonSize);
-		~JsonGenerationTask() override = default;
+
+		EmbeddedDocumentTask(const unsigned char* data, std::size_t size);
+		~EmbeddedDocumentTask() override = default;
 	protected:
 		TaskInfo DoGetInfo() const override;
 		void DoRun() override;
 		UniquePtr<Task> DoDuplicate() const override;
 	private:
 		std::shared_ptr<AbstractTaskData> _outputData;
-		std::size_t _elementCount;
-		std::size_t _jsonSize;
+		const unsigned char* _data;
+		std::size_t _size;
 	};
 
 } // Elpida
 
-#endif //ELPIDA_JSONGENERATIONTASK_HPP
+#endif //ELPIDA_EMBEDDEDDOCUMENTTASK_HPP
