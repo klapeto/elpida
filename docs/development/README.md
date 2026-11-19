@@ -27,6 +27,7 @@ Internal documentation for developers. The user documentation is the website in 
 | [android.md](android.md) | How Android runs the benchmarks: static executables, TLS, ABIs, supported devices |
 | [android-toolchain.md](android-toolchain.md) | Step by step: building the Android targets, their libraries and the app's native code |
 | [mimalloc.md](mimalloc.md) | Replacing the system allocator with mimalloc on Windows (XP), Linux and Android |
+| [reference-run.md](reference-run.md) | Measuring the base scores: the reference machine (i9-10900K), its frozen setup, the procedure and `scripts/reference/base-scores.py` |
 | [single-thread-affinity.md](single-thread-affinity.md) | Final decision: single-thread benchmarks run without affinity everywhere; measurements; `elpida-affinity-test` |
 | [virtualization-detection.md](virtualization-detection.md) | Detecting virtual machines: results from VMs are uploaded with a flag and left out of the statistics |
 | [cpu-availability.md](cpu-availability.md) | Not uploading results from a restricted CPU (affinity, cpusets, quotas) on every platform |
