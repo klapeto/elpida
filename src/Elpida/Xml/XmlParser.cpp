@@ -24,6 +24,7 @@
 #include "Elpida/Xml/CharacterStream.hpp"
 #include "Elpida/Xml/XmlElement.hpp"
 #include "Elpida/Xml/ParseException.hpp"
+#include "Elpida/Xml/StringBuffer.hpp"
 
 #include <sstream>
 #include <string>
@@ -197,6 +198,7 @@ namespace Elpida
 
 	static XmlElement ParseElement(CharacterStream& stream)
 	{
+		constexpr std::size_t BUFFER_SIZE = 256;
 		if (stream.Eof())
 		{
 			throw ParseException("Unexpected end of file. Expected <element>");
@@ -234,7 +236,7 @@ namespace Elpida
 			}
 			else if (type == NextNode::Cdata)
 			{
-				std::string buffer;
+				StringBuffer<BUFFER_SIZE> buffer;
 				bool spaceNeeded = false;
 				stream.SkipSpace();
 				while (!stream.Eof())
@@ -254,18 +256,18 @@ namespace Elpida
 					{
 						if (spaceNeeded)
 						{
-							buffer.append(" ");
+							buffer.Append(' ');
 							spaceNeeded = false;
 						}
-						buffer.append(1 , c);
+						buffer.Append(c);
 					}
 					stream.Next();
 				}
-				children.push_back(XmlElement("", {}, std::move(buffer), {}));
+				children.push_back(XmlElement("", {}, std::move(buffer.GetString()), {}));
 			}
 			else
 			{
-				std::string buffer;
+				StringBuffer<BUFFER_SIZE> buffer;
 				bool spaceNeeded = false;
 				stream.SkipSpace();
 				while (!stream.Eof())
@@ -282,14 +284,15 @@ namespace Elpida
 					{
 						if (spaceNeeded)
 						{
-							buffer.append(" ");
+							buffer.Append(' ');
 							spaceNeeded = false;
 						}
-						buffer.append(1, c);
+						buffer.Append(c);
 					}
 					stream.Next();
 				}
-				children.push_back(XmlElement("", {}, std::move(buffer), {}));
+
+				children.push_back(XmlElement("", {}, std::move(buffer.GetString()), {}));
 			}
 		}
 
