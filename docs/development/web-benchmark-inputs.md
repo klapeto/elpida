@@ -182,8 +182,49 @@ Multi-thread scaling (threads / 1 thread), XML old / before / after, and the con
 - In the callgrind simulation, misses at a 128 KB cache halve (0.133 to 0.072 per 1000 instructions) and at 256 KB fall
   to 0.016 (old input 0.007).
 
+## XML parser: text nodes through a fixed buffer (2026-11-20)
+
+Text and CDATA characters now go into a 256-byte `StringBuffer` (`include/Elpida/Xml/StringBuffer.hpp`), which appends
+to the `std::string` in blocks, instead of `std::string::append` per character. The parse trees are identical (XML
+input, three SVGs, and a synthetic file with text and CDATA nodes longer than the buffer and of exactly 256/257
+characters). The longest text node of the XML input is 244 characters, so in the benchmark the buffer is copied out once
+per node; the gain is the per-character capacity checks that go away. Builds: `before` (previous commit, the
+`std::string` parser), `after` (with `StringBuffer`); same tree otherwise, Release, 10 interleaved rounds, XML and the
+Base64 encode control, performance governor.
+
+| Machine | before | after | after / before | Control |
+|---|---|---|---|---|
+| i9-10900K, 1 thread | 187.5 Mchars/s | 305.3 | 1.63x (rounds 1.60-1.65) | 1.00 |
+| i9-10900K, 10 cores | | | 1.63x (1.61-1.65) | 1.00 |
+| i3-330M, 1 thread | 51.1 Mchars/s | 73.2 | 1.43x (1.43-1.45) | 1.00 |
+| i3-330M, 4 threads | | | 1.52x (1.51-1.56) | 1.00 |
+| Raspberry Pi 4, 1 thread | 45.6 Mchars/s | 67.1 | 1.47x (1.44-1.49) | 1.00 |
+| Raspberry Pi 4, 4 cores | | | 1.47x (1.33-1.52), throttled | 1.01 |
+
+Multi-thread scaling (threads / 1 thread), XML before / after, and the control:
+
+| Machine | XML before | XML after | Control |
+|---|---|---|---|
+| i9-10900K, 10 cores | 8.45x | 8.47x | 8.30-8.34x |
+| i3-330M, 4 threads | 2.29x | 2.43x | 1.75-1.76x |
+| Raspberry Pi 4, 4 cores | 3.40x | 3.39x | 3.23-3.27x (throttled) |
+
+- **Instructions per character fall to about 60%** on all three machines (0.60 10900K, 0.60 330M, 0.62 Pi). The gain
+  differs by CPU because mispredicts per character stay the same on the 330M and the Pi (they become a larger share of
+  the time: IPC 1.77 to 1.53 and 1.66 to 1.52), while on the 10900K they halve (IPC 2.63 to 2.58).
+- **Multi-thread scaling is unchanged or better**, so the faster parser adds no cache or memory pressure. On the 330M
+  Hyper-Threading has more to overlap (2.29x to 2.43x).
+- **The Pi's 4-core runs were all thermally throttled** (83-86 C, clock down to 600 MHz in about a third of the runs,
+  start temperature 75-77 C because the 60 s cooldown did not reach 68 C). Old and new were throttled alike, so the
+  ratio matches the 1-thread one, but the 4-core scaling and its 13-22% spread are not meaningful.
+- The 10900K `before` here is 187.5 Mchars/s against 180.0 for the same parser in the previous section: another build,
+  so a different code layout (see "Run-to-run spread" in parity-checks.md).
+- Together with the previous change, XML is about 2.6-2.9 times as fast as with the `ostringstream` parser. Base scores
+  are measured after both changes.
+
 ## Open
 
-- **Small shared caches.** After the parser change, XML on the Pi 4 with 4 cores is 1.5-3% below the control, within
-  the run spread, like the old input; Json about 1.5%. Quad-core A53 devices (128 KB of L2 per core) not measured.
+- **Small shared caches.** After the `std::string` parser change, XML on the Pi 4 with 4 cores is 1.5-3% below the
+  control, within the run spread, like the old input; Json about 1.5%. Not re-measured unthrottled after the
+  `StringBuffer` change. Quad-core A53 devices (128 KB of L2 per core) not measured.
 - **Regex code placement on the A72** (9% between two builds with identical regex code). Not investigated.
